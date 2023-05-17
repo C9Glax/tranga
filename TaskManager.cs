@@ -31,7 +31,7 @@ public class TaskManager
 
     public bool PublicationAlreadyAdded(Publication publication)
     {
-        return false;
+        throw new NotImplementedException();
         //TODO fuzzy check publications
     }
 
