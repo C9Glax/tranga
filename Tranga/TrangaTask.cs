@@ -1,30 +1,36 @@
-﻿namespace Tranga;
+﻿using System.Text.Json.Serialization;
+
+namespace Tranga;
 
 public class TrangaTask
 {
-    public TimeSpan reoccurrence { get; }
-    public DateTime lastExecuted { get; private set; }
-    public Connector connector { get; }
-    public availableTasks availableTaskToExecute { get; }
-    public enum availableTasks
+    [JsonInclude]public TimeSpan reoccurrence { get; }
+    [JsonInclude]public DateTime lastExecuted { get; private set; }
+    [JsonIgnore] private Connector connector { get; }
+    [JsonInclude] public string connectorName;
+    [JsonInclude]public AvailableTasks task { get; }
+    public enum AvailableTasks
     {
-        downloadNewChapters,
-        updateChapters,
-        updatePublications
+        DownloadNewChapters,
+        UpdateChapters,
+        UpdatePublications
     };
-    public Publication? publication { get; }
-    public string language { get; }
+    [JsonIgnore]public Publication? publication { get; }
+    [JsonInclude]public string? publicationIdentifier;
+    [JsonInclude]public string language { get; }
 
 
-    public TrangaTask(Connector connector, availableTasks availableTask, TimeSpan reoccurrence, Publication? publication = null, string language = "en")
+    public TrangaTask(Connector connector, AvailableTasks task, TimeSpan reoccurrence, Publication? publication = null, string language = "en")
     {
         this.connector = connector;
-        this.availableTaskToExecute = availableTask;
+        this.connectorName = connector.name;
+        this.task = task;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
         this.reoccurrence = reoccurrence;
         this.publication = publication;
+        this.publicationIdentifier = publication?.downloadUrl;
         this.language = language;
-        if (publication is null && availableTask is availableTasks.updateChapters or availableTasks.downloadNewChapters)
+        if (publication is null && task is AvailableTasks.UpdateChapters or AvailableTasks.DownloadNewChapters)
         {
             if (publication is null)
                 throw new ArgumentException(
@@ -34,15 +40,15 @@ public class TrangaTask
 
     public void Execute(ref Dictionary<Publication, Chapter[]> chapterCollection)
     {
-        switch (this.availableTaskToExecute)
+        switch (this.task)
         {
-            case availableTasks.updateChapters:
+            case AvailableTasks.UpdateChapters:
                 UpdateChapters(ref chapterCollection);
                 break;
-            case availableTasks.updatePublications:
+            case AvailableTasks.UpdatePublications:
                 UpdatePublications(ref chapterCollection);
                 break;
-            case availableTasks.downloadNewChapters:
+            case AvailableTasks.DownloadNewChapters:
                 DownloadNewChapters(UpdateChapters(ref chapterCollection));
                 break;
         }

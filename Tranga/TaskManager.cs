@@ -14,7 +14,7 @@ public class TaskManager
         taskChecker.Start();
     }
 
-    public void AddTask(Connector connector, TrangaTask.availableTasks task, TimeSpan reoccurrence, Publication? publication = null, string language = "en")
+    public void AddTask(Connector connector, TrangaTask.AvailableTasks task, TimeSpan reoccurrence, Publication? publication = null, string language = "en")
     {
         this._allTasks.Add(new TrangaTask(connector, task, reoccurrence, publication, language));
     }
