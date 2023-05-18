@@ -3,8 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Tranga.Connectors;
-//TODO Download covers: https://api.mangadex.org/docs/retrieving-covers/ https://api.mangadex.org/docs/swagger.html#/
-
 public class MangaDex : Connector
 {
     public override string name { get; }
@@ -189,5 +187,23 @@ public class MangaDex : Connector
         byte[] buffer = new byte[requestResult.result.Length];
         requestResult.result.ReadExactly(buffer, 0, buffer.Length);
         File.WriteAllBytes(savePath, buffer);
+    }
+
+    public override void DownloadCover(Publication publication)
+    {
+        DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest($"https://uploads.mangadex.org/cover/{publication.posterUrl}");
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+        if (result is null)
+            return;
+
+        string fileName = result!["data"]!["attributes"]!["fileName"]!.GetValue<string>();
+
+        string coverUrl = $"https://uploads.mangadex.org/covers/{publication.downloadUrl}/{fileName}";
+        string[] split = coverUrl.Split('.');
+        string extension = split[split.Length - 1];
+
+        string outFolderPath = Path.Join(downloadLocation, publication.folderName);
+        Directory.CreateDirectory(outFolderPath);
+        DownloadImage(coverUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"));
     }
 }

@@ -29,6 +29,9 @@ public static class Tranga_Cli
         
         Chapter[] allChapteres = connector.GetChapters(selectedPub, "en");
         Chapter[] downloadChapters = SelectChapters(allChapteres);
+        
+        if(downloadChapters.Length > 0)
+            connector.DownloadCover(selectedPub);
 
         foreach (Chapter chapter in downloadChapters)
         {
