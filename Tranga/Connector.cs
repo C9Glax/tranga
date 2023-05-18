@@ -5,7 +5,12 @@ namespace Tranga;
 
 public abstract class Connector
 {
-    internal abstract string downloadLocation { get; }
+    public Connector(string downloadLocation)
+    {
+        this.downloadLocation = downloadLocation;
+    }
+    
+    internal string downloadLocation { get; }
     public abstract string name { get; }
     public abstract Publication[] GetPublications(string publicationTitle = "");
     public abstract Chapter[] GetChapters(Publication publication, string language = "");

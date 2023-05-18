@@ -7,14 +7,12 @@ namespace Tranga.Connectors;
 
 public class MangaDex : Connector
 {
-    internal override string downloadLocation { get; }
     public override string name { get; }
     private DownloadClient _downloadClient = new (750);
 
-    public MangaDex(string downloadLocation)
+    public MangaDex(string downloadLocation) : base(downloadLocation)
     {
         name = "MangaDex.org";
-        this.downloadLocation = downloadLocation;
     }
 
     public override Publication[] GetPublications(string publicationTitle = "")
