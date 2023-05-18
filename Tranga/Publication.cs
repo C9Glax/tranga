@@ -42,17 +42,17 @@ public struct Publication
     
     internal struct SeriesInfo
     {
-        [JsonInclude]public Metadata metadata { get; }
+        [JsonRequired]public Metadata metadata { get; }
         public SeriesInfo(Metadata metadata) => this.metadata = metadata;
     }
         
     internal struct Metadata
     {
-        [JsonInclude]public string name { get; }
-        [JsonInclude]public string year { get; }
-        [JsonInclude]public string status { get; }
+        [JsonRequired]public string name { get; }
+        [JsonRequired]public string year { get; }
+        [JsonRequired]public string status { get; }
         // ReSharper disable twice InconsistentNaming
-        [JsonInclude]public string description_text { get; }
+        [JsonRequired]public string description_text { get; }
 
         public Metadata(string name, string year, string status, string description_text)
         {

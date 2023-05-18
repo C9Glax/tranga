@@ -2,7 +2,7 @@
 
 public class TaskManager
 {
-    private Dictionary<Publication, Chapter[]> _chapterCollection;
+    private readonly Dictionary<Publication, Chapter[]> _chapterCollection;
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     
@@ -14,18 +14,18 @@ public class TaskManager
         taskChecker.Start();
     }
 
-    public void AddTask(Connector connector, TrangaTask.AvailableTasks task, TimeSpan reoccurrence, Publication? publication = null, string language = "en")
-    {
-        this._allTasks.Add(new TrangaTask(connector, task, reoccurrence, publication, language));
-    }
-
     private void TaskCheckerThread()
     {
         while (_continueRunning)
         {
             foreach (TrangaTask task in _allTasks.Where(trangaTask => (DateTime.Now - trangaTask.lastExecuted) > trangaTask.reoccurrence))
             {
-                task.Execute(ref _chapterCollection);
+                if (!task.lastExecutedSuccessfully)
+                {
+                    task.Abort();
+                    //Add logging that task has failed
+                }
+                task.Execute();
             }
             Thread.Sleep(1000);
         }
@@ -39,7 +39,7 @@ public class TaskManager
 
     public Publication[] GetAddedPublications()
     {
-        return this._chapterCollection.Keys.ToArray();
+        throw new NotImplementedException();
     }
 
     public TrangaTask[] GetTasks()

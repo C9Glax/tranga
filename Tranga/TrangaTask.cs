@@ -1,84 +1,64 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Tranga;
+﻿namespace Tranga;
 
 public class TrangaTask
 {
-    [JsonInclude]public TimeSpan reoccurrence { get; }
-    [JsonInclude]public DateTime lastExecuted { get; private set; }
-    [JsonIgnore] private Connector connector { get; }
-    [JsonInclude] public string connectorName;
-    [JsonInclude]public AvailableTasks task { get; }
-    public enum AvailableTasks
-    {
-        DownloadNewChapters,
-        UpdateChapters,
-        UpdatePublications
-    };
-    [JsonIgnore]public Publication? publication { get; }
-    [JsonInclude]public string? publicationIdentifier;
-    [JsonInclude]public string language { get; }
+    private readonly Action _taskAction;
+    private Task? _task;
+    public bool lastExecutedSuccessfully => _task is not null && _task.IsCompleted;
+    public TimeSpan reoccurrence { get; }
+    public DateTime lastExecuted { get; private set; }
 
-
-    public TrangaTask(Connector connector, AvailableTasks task, TimeSpan reoccurrence, Publication? publication = null, string language = "en")
+    public TrangaTask(Action taskAction, TimeSpan reoccurrence)
     {
-        this.connector = connector;
-        this.connectorName = connector.name;
-        this.task = task;
-        this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
+        this._taskAction = taskAction;
         this.reoccurrence = reoccurrence;
-        this.publication = publication;
-        this.publicationIdentifier = publication?.downloadUrl;
-        this.language = language;
-        if (publication is null && task is AvailableTasks.UpdateChapters or AvailableTasks.DownloadNewChapters)
+    }
+
+    public void Abort()
+    {
+        if(_task is not null && !_task.IsCompleted)
+            _task.Dispose();
+    }
+
+    public void Execute()
+    {
+        lastExecuted = DateTime.Now;
+        _task = new (_taskAction);
+        _task.Start();
+    }
+
+    public static TrangaTask CreateDownloadChapterTask(Connector connector, Publication publication, Chapter chapter, TimeSpan reoccurrence)
+    {
+        void TaskAction()
         {
-            if (publication is null)
-                throw new ArgumentException(
-                    "If task is updateChapters or downloadNewChapters, Argument publication can not be null!");
+            connector.DownloadChapter(publication, chapter);
         }
+        return new TrangaTask(TaskAction, reoccurrence);
     }
-
-    public void Execute(ref Dictionary<Publication, Chapter[]> chapterCollection)
+    
+    public static TrangaTask CreateUpdateChaptersTask(ref Dictionary<Publication, Chapter[]> chapterCollection, Connector connector, Publication publication, string language, TimeSpan reoccurrence)
     {
-        switch (this.task)
+        Dictionary<Publication, Chapter[]> pChapterCollection = chapterCollection;
+
+        void TaskAction()
         {
-            case AvailableTasks.UpdateChapters:
-                UpdateChapters(ref chapterCollection);
-                break;
-            case AvailableTasks.UpdatePublications:
-                UpdatePublications(ref chapterCollection);
-                break;
-            case AvailableTasks.DownloadNewChapters:
-                DownloadNewChapters(UpdateChapters(ref chapterCollection));
-                break;
+            Chapter[] chapters = connector.GetChapters(publication, language);
+            if(pChapterCollection.TryAdd(publication, chapters))
+                pChapterCollection[publication] = chapters;
         }
-
-        this.lastExecuted = DateTime.Now;
+        return new TrangaTask(TaskAction, reoccurrence);
     }
 
-    private Chapter[] UpdateChapters(ref Dictionary<Publication, Chapter[]> chapterCollection)
+    public static TrangaTask CreateUpdatePublicationsTask(ref Dictionary<Publication, Chapter[]> chapterCollection, Connector connector, TimeSpan reoccurrence)
     {
-        Publication pPublication = (Publication)this.publication!;
-        Chapter[] presentChapters = chapterCollection[pPublication];
-        Chapter[] allChapters = connector.GetChapters(pPublication);
-        chapterCollection[pPublication] = allChapters;
+        Dictionary<Publication, Chapter[]> pChapterCollection = chapterCollection;
 
-        Dictionary<string, Chapter> pChapter = presentChapters.ToDictionary(chapter => chapter.url, chapter => chapter);
-        Dictionary<string, Chapter> aChapter = allChapters.ToDictionary(chapter => chapter.url, chapter => chapter);
-        return aChapter.Except(pChapter).ToDictionary(pair => pair.Key, pair => pair.Value).Values.ToArray();
-    }
-
-    private void UpdatePublications(ref Dictionary<Publication, Chapter[]> chapterCollection)
-    {
-        Publication[] allPublications = connector.GetPublications();
-        foreach(Publication publication in allPublications)
-            chapterCollection.TryAdd(publication, Array.Empty<Chapter>());
-    }
-
-    private void DownloadNewChapters(Chapter[] newChapters)
-    {
-        Publication pPublication = (Publication)this.publication!;
-        foreach(Chapter chapter in newChapters)
-            connector.DownloadChapter(pPublication, chapter);
+        void TaskAction()
+        {
+            Publication[] publications = connector.GetPublications();
+            foreach (Publication publication in publications)
+                pChapterCollection.TryAdd(publication, Array.Empty<Chapter>());
+        }
+        return new TrangaTask(TaskAction, reoccurrence);
     }
 }
