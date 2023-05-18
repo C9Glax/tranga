@@ -11,7 +11,7 @@ public struct Publication
     public int? year { get; }
     public string? originalLanguage { get; }
     public string status { get; }
-    
+    public string folderName { get; }
     public Connector connector { get; }
     public string downloadUrl { get; }
 
@@ -28,5 +28,6 @@ public struct Publication
         this.status = status;
         this.connector = connector;
         this.downloadUrl = downloadUrl;
+        this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars()));
     }
 }

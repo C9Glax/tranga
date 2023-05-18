@@ -180,9 +180,7 @@ public class MangaDex : Connector
         foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
-        string seriesFolder = string.Concat(publication.sortName.Split(Path.GetInvalidPathChars()));
-
-        DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, seriesFolder, chapter.relativeFilePath));
+        DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName));
     }
 
     protected override void DownloadImage(string url, string path)
