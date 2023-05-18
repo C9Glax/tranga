@@ -26,7 +26,11 @@ public class Program
         int cIndex = 0;
         foreach (Chapter ch in chapters)
         {
-            string name = ch.name is not null && ch.name.Length > 0 ? ch.name : cIndex.ToString();
+            string name = cIndex.ToString();
+            if (ch.name is not null && ch.name.Length > 0)
+                name = ch.name;
+            else if (ch.chapterNumber is not null && ch.chapterNumber.Length > 0)
+                name = ch.chapterNumber;
             Console.WriteLine($"{cIndex++}: {name}");
         }
         Console.WriteLine($"Select Chapters to download (0-{chapters.Length - 1}) [range x-y or 'a' for all]: ");
