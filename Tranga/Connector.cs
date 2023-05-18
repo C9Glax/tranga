@@ -19,8 +19,13 @@ public abstract class Connector
         Directory.CreateDirectory(tempFolder);
 
         int chapter = 0;
-        foreach(string imageUrl in imageUrls)
-            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}"));
+        foreach (string imageUrl in imageUrls)
+        {
+            string[] split = imageUrl.Split('.');
+            string extension = split[split.Length - 1];
+            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"));
+            
+        }
         
         ZipFile.CreateFromDirectory(tempFolder, $"{outputFolderPath}.cbz");
     }
