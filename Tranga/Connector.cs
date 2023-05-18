@@ -27,22 +27,23 @@ public abstract class Connector
 
     internal class DownloadClient
     {
-        private TimeSpan requestSpeed;
-        private DateTime lastRequest;
+        private readonly TimeSpan _requestSpeed;
+        private DateTime _lastRequest;
         static readonly HttpClient client = new HttpClient();
 
         public DownloadClient(uint delay)
         {
-            this.requestSpeed = TimeSpan.FromMilliseconds(delay);
-            this.lastRequest = DateTime.Now.Subtract(requestSpeed);
+            _requestSpeed = TimeSpan.FromMilliseconds(delay);
+            _lastRequest = DateTime.Now.Subtract(_requestSpeed);
         }
         
         public RequestResult MakeRequest(string url)
         {
-            while((DateTime.Now - lastRequest) < requestSpeed)
+            while((DateTime.Now - _lastRequest) < _requestSpeed)
                 Thread.Sleep(10);
-            
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+            _lastRequest = DateTime.Now;
+
+            HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
             HttpResponseMessage response = client.Send(requestMessage);
             Stream resultString = response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
             return new RequestResult(response.StatusCode, resultString);
