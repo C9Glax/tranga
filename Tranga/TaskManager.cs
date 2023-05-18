@@ -2,12 +2,14 @@
 
 public class TaskManager
 {
-    private readonly Dictionary<Publication, TrangaTask> _allTasks;
+    private readonly Dictionary<Publication, Chapter[]> _chapterCollection;
+    private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     
     public TaskManager()
     {
-        _allTasks = new Dictionary<Publication, TrangaTask>();
+        _chapterCollection = new();
+        _allTasks = new ();
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
     }
@@ -16,7 +18,7 @@ public class TaskManager
     {
         while (_continueRunning)
         {
-            foreach (TrangaTask task in _allTasks.Values.Where(tt => (DateTime.Now - tt.lastExecuted) > tt.reoccurrence))
+            foreach (TrangaTask task in _allTasks.Where(trangaTask => (DateTime.Now - trangaTask.lastExecuted) > trangaTask.reoccurrence))
             {
                 if (!task.lastExecutedSuccessfully)
                 {
@@ -37,12 +39,12 @@ public class TaskManager
 
     public Publication[] GetAddedPublications()
     {
-        return _allTasks.Keys.ToArray();
+        throw new NotImplementedException();
     }
 
     public TrangaTask[] GetTasks()
     {
-        return _allTasks.Values.ToArray();
+        return _allTasks.ToArray();
     }
 
     public void Shutdown()
