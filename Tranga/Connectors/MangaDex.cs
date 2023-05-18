@@ -8,7 +8,7 @@ public class MangaDex : Connector
 {
     internal override string downloadLocation { get; }
     public override string name { get; }
-    private DownloadClient _downloadClient = new ();
+    private DownloadClient _downloadClient = new (1500);
 
     public MangaDex(string downloadLocation)
     {
@@ -26,7 +26,7 @@ public class MangaDex : Connector
         while (offset < total)
         {
             offset += limit;
-            DownloadClient.RequestResult requestResult = _downloadClient.GetPage(string.Concat(publicationsUrl, "0"));
+            DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest(string.Concat(publicationsUrl, "0"));
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             if (result is null)
                 break;
@@ -116,7 +116,7 @@ public class MangaDex : Connector
         {
             offset += limit;
             DownloadClient.RequestResult requestResult =
-                _downloadClient.GetPage($"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}");
+                _downloadClient.MakeRequest($"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}");
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             if (result is null)
                 break;
@@ -149,7 +149,7 @@ public class MangaDex : Connector
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
         DownloadClient.RequestResult requestResult =
-            _downloadClient.GetPage($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
+            _downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
             return;

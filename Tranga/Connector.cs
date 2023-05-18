@@ -24,9 +24,21 @@ public abstract class Connector
 
     internal class DownloadClient
     {
+        private TimeSpan requestSpeed;
+        private DateTime lastRequest;
         static readonly HttpClient client = new HttpClient();
-        public RequestResult GetPage(string url)
+
+        public DownloadClient(uint delay)
         {
+            this.requestSpeed = TimeSpan.FromMilliseconds(delay);
+            this.lastRequest = DateTime.Now.Subtract(requestSpeed);
+        }
+        
+        public RequestResult MakeRequest(string url)
+        {
+            while((DateTime.Now - lastRequest) < requestSpeed)
+                Thread.Sleep(10);
+            
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             HttpResponseMessage response = client.Send(requestMessage);
             Stream resultString = response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
