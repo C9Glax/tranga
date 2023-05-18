@@ -17,7 +17,7 @@ public abstract class Connector
     public abstract void DownloadChapter(Publication publication, Chapter chapter); //where to?
     protected abstract void DownloadImage(string url, string savePath);
 
-    internal void DownloadChapter(string[] imageUrls, string outputFilePath)
+    internal void DownloadChapter(string[] imageUrls, string saveArchiveFilePath)
     {
         string tempFolder = Path.GetTempFileName();
         File.Delete(tempFolder);
@@ -31,12 +31,12 @@ public abstract class Connector
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"));
         }
 
-        string[] splitPath = outputFilePath.Split(Path.DirectorySeparatorChar);
+        string[] splitPath = saveArchiveFilePath.Split(Path.DirectorySeparatorChar);
         string directoryPath = Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray());
         if (!Directory.Exists(directoryPath))
             Directory.CreateDirectory(directoryPath);
 
-        string fullPath = $"{outputFilePath}.cbz";
+        string fullPath = $"{saveArchiveFilePath}.cbz";
         File.Delete(fullPath);
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
     }
