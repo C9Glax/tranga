@@ -21,7 +21,7 @@ public class Program
             selected = Console.ReadLine();
         Publication selectedPub = publications[Convert.ToInt32(selected)];
         
-        Chapter[] chapters = mangaDexConnector.GetChapters(selectedPub);
+        Chapter[] chapters = mangaDexConnector.GetChapters(selectedPub, "en");
 
         int cIndex = 0;
         foreach (Chapter ch in chapters)
