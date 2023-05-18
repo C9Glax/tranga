@@ -183,11 +183,11 @@ public class MangaDex : Connector
         DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName));
     }
 
-    protected override void DownloadImage(string url, string path)
+    protected override void DownloadImage(string url, string savePath)
     {
         DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest(url);
         byte[] buffer = new byte[requestResult.result.Length];
         requestResult.result.ReadExactly(buffer, 0, buffer.Length);
-        File.WriteAllBytes(path, buffer);
+        File.WriteAllBytes(savePath, buffer);
     }
 }

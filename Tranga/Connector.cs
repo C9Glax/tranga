@@ -15,7 +15,7 @@ public abstract class Connector
     public abstract Publication[] GetPublications(string publicationTitle = "");
     public abstract Chapter[] GetChapters(Publication publication, string language = "");
     public abstract void DownloadChapter(Publication publication, Chapter chapter); //where to?
-    protected abstract void DownloadImage(string url, string path);
+    protected abstract void DownloadImage(string url, string savePath);
 
     internal void DownloadChapter(string[] imageUrls, string outputFilePath)
     {
