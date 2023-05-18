@@ -6,10 +6,35 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        MangaDex mangaDexConnector = new MangaDex("D:");
+        Console.WriteLine("Output folder path (D:):");
+        string? folderPath = Console.ReadLine();
+        while(folderPath is null )
+            folderPath = Console.ReadLine();
+        if (folderPath.Length < 1)
+            folderPath = "D:";
+        
+        Console.WriteLine("Select Connector:");
+        Console.WriteLine("0: MangaDex");
+
+        string? selectedConnector = Console.ReadLine();
+        while(selectedConnector is null || selectedConnector.Length < 1)
+            selectedConnector = Console.ReadLine();
+        int selectedConnectorIndex = Convert.ToInt32(selectedConnector);
+
+        Connector connector;
+        switch (selectedConnectorIndex)
+        {
+            case 0:
+                connector = new MangaDex(folderPath);
+                break;
+            default:
+                connector = new MangaDex(folderPath);
+                break;
+        }
+
         Console.WriteLine("Search query (leave empty for all):");
         string? query = Console.ReadLine();
-        Publication[] publications = mangaDexConnector.GetPublications(query ?? "");
+        Publication[] publications = connector.GetPublications(query ?? "");
         
         int pIndex = 0;
         foreach(Publication publication in publications)
@@ -21,7 +46,7 @@ public class Program
             selected = Console.ReadLine();
         Publication selectedPub = publications[Convert.ToInt32(selected)];
         
-        Chapter[] chapters = mangaDexConnector.GetChapters(selectedPub, "en");
+        Chapter[] chapters = connector.GetChapters(selectedPub, "en");
 
         int cIndex = 0;
         foreach (Chapter ch in chapters)
@@ -57,7 +82,7 @@ public class Program
         for (int i = start; i < end + 1; i++)
         {
             Console.WriteLine($"Downloading {selectedPub.sortName} Chapter {i}");
-            mangaDexConnector.DownloadChapter(selectedPub, chapters[i]);
+            connector.DownloadChapter(selectedPub, chapters[i]);
         }
     }
 
