@@ -6,12 +6,14 @@ public struct Chapter
     public string? name { get; }
     public string? volumeNumber { get; }
     public string? chapterNumber { get; }
+    public string url { get; }
 
-    public Chapter(Publication publication, string? name, string? volumeNumber, string? chapterNumber)
+    public Chapter(Publication publication, string? name, string? volumeNumber, string? chapterNumber, string url)
     {
         this.publication = publication;
         this.name = name;
         this.volumeNumber = volumeNumber;
         this.chapterNumber = chapterNumber;
+        this.url = url;
     }
 }
