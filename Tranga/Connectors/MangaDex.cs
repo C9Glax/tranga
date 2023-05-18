@@ -15,10 +15,10 @@ public class MangaDex : Connector
         this.downloadLocation = downloadLocation;
     }
 
-    public override Publication[] GetPublications()
+    public override Publication[] GetPublications(string publicationTitle = "")
     {
         const int limit = 100;
-        string publicationsUrl = $"https://api.mangadex.org/manga?limit={limit}&offset=";
+        string publicationsUrl = $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset=";
         int offset = 0;
         int total = int.MaxValue;
         HashSet<Publication> publications = new();
