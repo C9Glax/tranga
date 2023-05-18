@@ -155,25 +155,22 @@ public class MangaDex : Connector
             return;
 
         string baseUrl = result["baseUrl"]!.GetValue<string>();
-        string hash = result["chapter"]!["hash"].GetValue<string>();
-        JsonArray imageFileNamesObject = result["chapter"]!["data"]!.AsArray();
-        HashSet<string> imageFileNames = new();
-        foreach (JsonObject imageFileNameObject in imageFileNamesObject)
-            imageFileNames.Add(imageFileNameObject!.GetValue<string>());
-        
-        foreach(string imageFileName in imageFileNames)
-            DownloadChapterImage($"{baseUrl}/{hash}/{imageFileName}", Path.Join(downloadLocation, publication.sortName));
+        string hash = result["chapter"]!["hash"]!.GetValue<string>();
+        JsonArray imageFileNames = result["chapter"]!["data"]!.AsArray();
+        HashSet<string> imageUrls = new();
+        foreach (JsonNode image in imageFileNames)
+            imageUrls.Add($"{baseUrl}/{hash}/{image!.GetValue<string>()}");
+
+        string fileName = string.Concat(publication.sortName.Split(Path.GetInvalidFileNameChars()));
+
+        DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, fileName));
     }
 
     internal override void DownloadImage(string url, string path)
     {
-        DownloadClient.RequestResult requestResult = _downloadClient.GetPage(url);
-        FileStream fs = new FileStream(path, FileMode.CreateNew);
-        Span<byte> buffer = new();
-        while (requestResult.result.CanRead)
-        {
-            _ = requestResult.result.Read(buffer);
-            fs.Write(buffer);
-        }
+        DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest(url);
+        byte[] buffer = new byte[requestResult.result.Length];
+        requestResult.result.ReadExactly(buffer, 0, buffer.Length);
+        File.WriteAllBytes(path, buffer);
     }
 }

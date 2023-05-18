@@ -12,14 +12,17 @@ public abstract class Connector
     public abstract void DownloadChapter(Publication publication, Chapter chapter); //where to?
     internal abstract void DownloadImage(string url, string path);
 
-    internal void DownloadChapterImage(string url, string outputFolder)
+    internal void DownloadChapter(string[] imageUrls, string outputFolderPath)
     {
         string tempFolder = Path.GetTempFileName();
         File.Delete(tempFolder);
         Directory.CreateDirectory(tempFolder);
+
+        int chapter = 0;
+        foreach(string imageUrl in imageUrls)
+            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}"));
         
-        DownloadImage(url, tempFolder);
-        ZipFile.CreateFromDirectory(tempFolder, $"{outputFolder}.cbz");
+        ZipFile.CreateFromDirectory(tempFolder, $"{outputFolderPath}.cbz");
     }
 
     internal class DownloadClient
