@@ -14,6 +14,31 @@ public static class Tranga_Cli
         if (folderPath.Length < 1)
             folderPath = "D:";
         
+        DownloadNow(folderPath);
+    }
+
+    private static void DownloadNow(string folderPath)
+    {
+        Connector connector = SelectConnector(folderPath);
+
+        Console.WriteLine("Search query (leave empty for all):");
+        string? query = Console.ReadLine();
+
+        Publication[] publications = connector.GetPublications(query ?? "");
+        Publication selectedPub = SelectPublication(publications);
+        
+        Chapter[] allChapteres = connector.GetChapters(selectedPub, "en");
+        Chapter[] downloadChapters = SelectChapters(allChapteres);
+
+        foreach (Chapter chapter in downloadChapters)
+        {
+            Console.WriteLine($"Downloading {selectedPub.sortName} V{chapter.volumeNumber}C{chapter.chapterNumber}");
+            connector.DownloadChapter(selectedPub, chapter);
+        }
+    }
+
+    private static Connector SelectConnector(string folderPath)
+    {
         Console.WriteLine("Select Connector:");
         Console.WriteLine("0: MangaDex");
 
@@ -33,9 +58,11 @@ public static class Tranga_Cli
                 break;
         }
 
-        Console.WriteLine("Search query (leave empty for all):");
-        string? query = Console.ReadLine();
-        Publication[] publications = connector.GetPublications(query ?? "");
+        return connector;
+    }
+
+    private static Publication SelectPublication(Publication[] publications)
+    {
         
         int pIndex = 0;
         foreach(Publication publication in publications)
@@ -45,10 +72,11 @@ public static class Tranga_Cli
         string? selected = Console.ReadLine();
         while(selected is null || selected.Length < 1)
             selected = Console.ReadLine();
-        Publication selectedPub = publications[Convert.ToInt32(selected)];
-        
-        Chapter[] chapters = connector.GetChapters(selectedPub, "en");
+        return publications[Convert.ToInt32(selected)];
+    }
 
+    private static Chapter[] SelectChapters(Chapter[] chapters)
+    {
         int cIndex = 0;
         foreach (Chapter ch in chapters)
         {
@@ -60,7 +88,7 @@ public static class Tranga_Cli
             Console.WriteLine($"{cIndex++}: {name}");
         }
         Console.WriteLine($"Select Chapters to download (0-{chapters.Length - 1}) [range x-y or 'a' for all]: ");
-        selected = Console.ReadLine();
+        string? selected = Console.ReadLine();
         while(selected is null || selected.Length < 1)
             selected = Console.ReadLine();
 
@@ -79,12 +107,7 @@ public static class Tranga_Cli
             start = Convert.ToInt32(selected);
             end = Convert.ToInt32(selected);
         }
-
-        for (int i = start; i < end + 1; i++)
-        {
-            Console.WriteLine($"Downloading {selectedPub.sortName} Chapter {i}");
-            connector.DownloadChapter(selectedPub, chapters[i]);
-        }
+        
+        return chapters.Skip(start).Take((end + 1)-start).ToArray();
     }
-
 }
