@@ -149,10 +149,7 @@ public class MangaDex : Connector
                     ? attributes["chapter"]!.GetValue<string>()
                     : null;
                 
-                string chapterName = string.Concat((title ?? "").Split(Path.GetInvalidFileNameChars()));
-                string chapterFileName = $"{chapterName} - V{volume}C{chapterNum}";
-                
-                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId, chapterFileName));
+                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
             }
         }
 
@@ -191,7 +188,7 @@ public class MangaDex : Connector
 
     public override void DownloadCover(Publication publication)
     {
-        DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest($"https://uploads.mangadex.org/cover/{publication.posterUrl}");
+        DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
             return;
