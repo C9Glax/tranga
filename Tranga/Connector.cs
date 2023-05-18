@@ -15,7 +15,7 @@ public abstract class Connector
     public abstract Publication[] GetPublications(string publicationTitle = "");
     public abstract Chapter[] GetChapters(Publication publication, string language = "");
     public abstract void DownloadChapter(Publication publication, Chapter chapter); //where to?
-    internal abstract void DownloadImage(string url, string path);
+    protected abstract void DownloadImage(string url, string path);
 
     internal void DownloadChapter(string[] imageUrls, string outputFilePath)
     {
@@ -45,7 +45,7 @@ public abstract class Connector
     {
         private readonly TimeSpan _requestSpeed;
         private DateTime _lastRequest;
-        static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient Client = new();
 
         public DownloadClient(uint delay)
         {
@@ -60,7 +60,7 @@ public abstract class Connector
             _lastRequest = DateTime.Now;
 
             HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
-            HttpResponseMessage response = client.Send(requestMessage);
+            HttpResponseMessage response = Client.Send(requestMessage);
             Stream resultString = response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
             return new RequestResult(response.StatusCode, resultString);
         }

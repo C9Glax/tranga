@@ -6,7 +6,7 @@ public struct Publication
     public string[,] altTitles { get;  }
     public string? description { get; }
     public string[] tags { get; }
-    public string? posterUrl { get; } //maybe there is a better way?
+    public string? posterUrl { get; }
     public string[,]? links { get; }
     public int? year { get; }
     public string? originalLanguage { get; }

@@ -1,8 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
-using Tranga;
+﻿using Tranga;
 using Tranga.Connectors;
 
-public class Program
+namespace Tranga_CLI;
+
+public static class Tranga_Cli
 {
     public static void Main(string[] args)
     {

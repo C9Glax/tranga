@@ -8,7 +8,7 @@ namespace Tranga.Connectors;
 public class MangaDex : Connector
 {
     public override string name { get; }
-    private DownloadClient _downloadClient = new (750);
+    private readonly DownloadClient _downloadClient = new (750);
 
     public MangaDex(string downloadLocation) : base(downloadLocation)
     {
@@ -31,9 +31,10 @@ public class MangaDex : Connector
             
             total = result["total"]!.GetValue<int>();
             JsonArray mangaInResult = result["data"]!.AsArray();
-            foreach (JsonObject manga in mangaInResult)
+            foreach (JsonNode? mangeNode in mangaInResult)
             {
-                JsonObject attributes = manga["attributes"].AsObject();
+                JsonObject manga = (JsonObject)mangeNode!;
+                JsonObject attributes = manga["attributes"]!.AsObject();
                 
                 string title = attributes["title"]!.AsObject().ContainsKey("en") && attributes["title"]!["en"] is not null
                     ? attributes["title"]!["en"]!.GetValue<string>()
@@ -46,19 +47,21 @@ public class MangaDex : Connector
                 JsonArray altTitlesObject = attributes["altTitles"]!.AsArray();
                 string[,] altTitles = new string[altTitlesObject.Count, 2];
                 int titleIndex = 0;
-                foreach (JsonObject altTitleObject in altTitlesObject)
+                foreach (JsonNode? altTitleNode in altTitlesObject)
                 {
-                    string key = ((IDictionary<string, JsonNode?>)altTitleObject!).Keys.ToArray()[0];
+                    JsonObject altTitleObject = (JsonObject)altTitleNode!;
+                    string key = ((IDictionary<string, JsonNode?>)altTitleObject).Keys.ToArray()[0];
                     altTitles[titleIndex, 0] = key;
                     altTitles[titleIndex++, 1] = altTitleObject[key]!.GetValue<string>();
                 }
 
                 JsonArray tagsObject = attributes["tags"]!.AsArray();
                 HashSet<string> tags = new();
-                foreach (JsonObject tagObject in tagsObject)
+                foreach (JsonNode? tagNode in tagsObject)
                 {
-                    if(tagObject!["attributes"]!["name"]!.AsObject().ContainsKey("en"))
-                        tags.Add(tagObject!["attributes"]!["name"]!["en"]!.GetValue<string>());
+                    JsonObject tagObject = (JsonObject)tagNode!;
+                    if(tagObject["attributes"]!["name"]!.AsObject().ContainsKey("en"))
+                        tags.Add(tagObject["attributes"]!["name"]!["en"]!.GetValue<string>());
                 }
 
                 string? poster = null;
@@ -130,9 +133,10 @@ public class MangaDex : Connector
             
             total = result["total"]!.GetValue<int>();
             JsonArray chaptersInResult = result["data"]!.AsArray();
-            foreach (JsonObject chapter in chaptersInResult)
+            foreach (JsonNode? jsonNode in chaptersInResult)
             {
-                JsonObject attributes = chapter!["attributes"]!.AsObject();
+                JsonObject chapter = (JsonObject)jsonNode!;
+                JsonObject attributes = chapter["attributes"]!.AsObject();
                 string chapterId = chapter["id"]!.GetValue<string>();
                 
                 string? title = attributes.ContainsKey("title") && attributes["title"] is not null
@@ -154,7 +158,7 @@ public class MangaDex : Connector
             }
         }
 
-        NumberFormatInfo chapterNumberFormatInfo = new NumberFormatInfo()
+        NumberFormatInfo chapterNumberFormatInfo = new()
         {
             NumberDecimalSeparator = "."
         };
@@ -173,7 +177,7 @@ public class MangaDex : Connector
         string hash = result["chapter"]!["hash"]!.GetValue<string>();
         JsonArray imageFileNames = result["chapter"]!["data"]!.AsArray();
         HashSet<string> imageUrls = new();
-        foreach (JsonNode image in imageFileNames)
+        foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
         string seriesFolder = string.Concat(publication.sortName.Split(Path.GetInvalidPathChars()));
@@ -181,7 +185,7 @@ public class MangaDex : Connector
         DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, seriesFolder, chapter.relativeFilePath));
     }
 
-    internal override void DownloadImage(string url, string path)
+    protected override void DownloadImage(string url, string path)
     {
         DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest(url);
         byte[] buffer = new byte[requestResult.result.Length];
