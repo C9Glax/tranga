@@ -19,14 +19,12 @@ public class MangaDex : Connector
     public override Publication[] GetPublications(string publicationTitle = "")
     {
         const int limit = 100;
-        string publicationsUrl = $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset=";
         int offset = 0;
         int total = int.MaxValue;
         HashSet<Publication> publications = new();
         while (offset < total)
         {
-            offset += limit;
-            DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest(string.Concat(publicationsUrl, "0"));
+            DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest($"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}");
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             offset += limit;
             if (result is null)
