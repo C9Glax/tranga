@@ -4,6 +4,7 @@ namespace Tranga;
 
 public abstract class Connector
 {
+    internal abstract string downloadLocation { get; }
     public abstract string name { get; }
     public abstract Publication[] GetPublications();
     public abstract Chapter[] GetChapters(Publication publication);

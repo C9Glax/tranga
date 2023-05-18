@@ -6,7 +6,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        MangaDex mangaDexConnector = new MangaDex();
+        MangaDex mangaDexConnector = new MangaDex("D:");
         Publication[] publications = mangaDexConnector.GetPublications();
         Console.ReadKey();
     }
