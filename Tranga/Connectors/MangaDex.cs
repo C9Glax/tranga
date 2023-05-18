@@ -161,6 +161,18 @@ public class MangaDex : Connector
             imageFileNames.Add(imageFileNameObject!.GetValue<string>());
         
         foreach(string imageFileName in imageFileNames)
-            DownloadChapter($"{baseUrl}/{hash}/imageFileName");
+            DownloadChapterImage($"{baseUrl}/{hash}/{imageFileName}", Path.Join(downloadLocation, publication.sortName));
+    }
+
+    internal override void DownloadImage(string url, string path)
+    {
+        DownloadClient.RequestResult requestResult = _downloadClient.GetPage(url);
+        FileStream fs = new FileStream(path, FileMode.CreateNew);
+        Span<byte> buffer = new();
+        while (requestResult.result.CanRead)
+        {
+            _ = requestResult.result.Read(buffer);
+            fs.Write(buffer);
+        }
     }
 }

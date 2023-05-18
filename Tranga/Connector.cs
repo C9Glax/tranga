@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IO.Compression;
+using System.Net;
 
 namespace Tranga;
 
@@ -9,10 +10,16 @@ public abstract class Connector
     public abstract Publication[] GetPublications(string publicationTitle = "");
     public abstract Chapter[] GetChapters(Publication publication);
     public abstract void DownloadChapter(Publication publication, Chapter chapter); //where to?
+    internal abstract void DownloadImage(string url, string path);
 
-    internal void DownloadChapter(string url)
+    internal void DownloadChapterImage(string url, string outputFolder)
     {
+        string tempFolder = Path.GetTempFileName();
+        File.Delete(tempFolder);
+        Directory.CreateDirectory(tempFolder);
         
+        DownloadImage(url, tempFolder);
+        ZipFile.CreateFromDirectory(tempFolder, $"{outputFolder}.cbz");
     }
 
     internal class DownloadClient
