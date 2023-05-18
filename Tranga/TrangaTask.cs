@@ -27,11 +27,11 @@ public class TrangaTask
         _task.Start();
     }
 
-    public static TrangaTask CreateDownloadChapterTask(Connector connector, Chapter chapter, TimeSpan reoccurrence)
+    public static TrangaTask CreateDownloadChapterTask(Connector connector, Publication publication, Chapter chapter, TimeSpan reoccurrence)
     {
         void TaskAction()
         {
-            connector.DownloadChapter(chapter);
+            connector.DownloadChapter(publication, chapter);
         }
         return new TrangaTask(TaskAction, reoccurrence);
     }

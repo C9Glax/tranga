@@ -7,7 +7,12 @@ public abstract class Connector
     public abstract string name { get; }
     public abstract Publication[] GetPublications();
     public abstract Chapter[] GetChapters(Publication publication);
-    public abstract void DownloadChapter(Chapter chapter); //where to?
+    public abstract void DownloadChapter(Publication publication, Chapter chapter); //where to?
+
+    internal void DownloadChapter(string url)
+    {
+        
+    }
 
     internal class DownloadClient
     {

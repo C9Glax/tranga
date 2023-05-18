@@ -141,7 +141,7 @@ public class MangaDex : Connector
         return chapters.OrderBy(chapter => chapter.chapterNumber).ToArray();
     }
 
-    public override void DownloadChapter(Chapter chapter)
+    public override void DownloadChapter(Publication publication, Chapter chapter)
     {
         throw new NotImplementedException();
     }
