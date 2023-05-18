@@ -29,9 +29,12 @@ public static class Tranga_Cli
         
         Chapter[] allChapteres = connector.GetChapters(selectedPub, "en");
         Chapter[] downloadChapters = SelectChapters(allChapteres);
-        
-        if(downloadChapters.Length > 0)
+
+        if (downloadChapters.Length > 0)
+        {
             connector.DownloadCover(selectedPub);
+            File.WriteAllText(Path.Join(folderPath, selectedPub.folderName, "series.json"),selectedPub.GetSeriesInfo());
+        }
 
         foreach (Chapter chapter in downloadChapters)
         {

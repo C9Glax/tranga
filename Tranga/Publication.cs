@@ -1,4 +1,7 @@
-﻿namespace Tranga;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Tranga;
 
 public struct Publication
 {
@@ -29,5 +32,34 @@ public struct Publication
         this.connector = connector;
         this.downloadUrl = downloadUrl;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars()));
+    }
+
+    public string GetSeriesInfo()
+    {
+        SeriesInfo si = new (new Metadata(this.sortName, this.year.ToString() ?? string.Empty, this.status, this.description ?? ""));
+        return JsonSerializer.Serialize(si, JsonSerializerOptions.Default);
+    }
+    
+    internal struct SeriesInfo
+    {
+        [JsonInclude]public Metadata metadata { get; }
+        public SeriesInfo(Metadata metadata) => this.metadata = metadata;
+    }
+        
+    internal struct Metadata
+    {
+        [JsonInclude]public string name { get; }
+        [JsonInclude]public string year { get; }
+        [JsonInclude]public string status { get; }
+        // ReSharper disable twice InconsistentNaming
+        [JsonInclude]public string description_text { get; }
+
+        public Metadata(string name, string year, string status, string description_text)
+        {
+            this.name = name;
+            this.year = year;
+            this.status = status;
+            this.description_text = description_text;
+        }
     }
 }
