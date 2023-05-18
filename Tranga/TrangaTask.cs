@@ -35,15 +35,30 @@ public class TrangaTask
         }
         return new TrangaTask(TaskAction, reoccurrence);
     }
-
     
-    public static TrangaTask CreateUpdateChaptersTask(Connector connector, Publication publication, TimeSpan reoccurrence)
+    public static TrangaTask CreateUpdateChaptersTask(ref Dictionary<Publication, Chapter[]> chapterCollection, Connector connector, Publication publication, string language, TimeSpan reoccurrence)
     {
-        throw new NotImplementedException();
+        Dictionary<Publication, Chapter[]> pChapterCollection = chapterCollection;
+
+        void TaskAction()
+        {
+            Chapter[] chapters = connector.GetChapters(publication, language);
+            if(pChapterCollection.TryAdd(publication, chapters))
+                pChapterCollection[publication] = chapters;
+        }
+        return new TrangaTask(TaskAction, reoccurrence);
     }
 
-    public static TrangaTask CreateUpdatePublicationsTask(Connector connector, TimeSpan reoccurrence)
+    public static TrangaTask CreateUpdatePublicationsTask(ref Dictionary<Publication, Chapter[]> chapterCollection, Connector connector, TimeSpan reoccurrence)
     {
-        throw new NotImplementedException();
+        Dictionary<Publication, Chapter[]> pChapterCollection = chapterCollection;
+
+        void TaskAction()
+        {
+            Publication[] publications = connector.GetPublications();
+            foreach (Publication publication in publications)
+                pChapterCollection.TryAdd(publication, Array.Empty<Chapter>());
+        }
+        return new TrangaTask(TaskAction, reoccurrence);
     }
 }
