@@ -3,20 +3,15 @@
 public struct Chapter
 {
     public Publication publication { get; }
-    public string name { get; }
-    public uint volumeNumber { get; }
-    public uint chapterNumber { get; }
-    public string summary { get; }
-    public string posterUrl { get; }//Better way?
+    public string? name { get; }
+    public string? volumeNumber { get; }
+    public string? chapterNumber { get; }
 
-    public Chapter(Publication publication, string name, uint volumeNumber, uint chapterNumber, string summary,
-        string posterUrl)
+    public Chapter(Publication publication, string? name, string? volumeNumber, string? chapterNumber)
     {
         this.publication = publication;
         this.name = name;
         this.volumeNumber = volumeNumber;
         this.chapterNumber = chapterNumber;
-        this.summary = summary;
-        this.posterUrl = posterUrl;
     }
 }
