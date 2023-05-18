@@ -104,7 +104,41 @@ public class MangaDex : Connector
 
     public override Chapter[] GetChapters(Publication publication)
     {
-        throw new NotImplementedException();
+        const int limit = 100;
+        int offset = 0;
+        string id = publication.downloadUrl;
+        int total = int.MaxValue;
+        List<Chapter> chapters = new();
+        while (offset < total)
+        {
+            offset += limit;
+            DownloadClient.RequestResult requestResult =
+                _downloadClient.GetPage($"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}");
+            JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+            if (result is null)
+                break;
+            
+            total = result["total"]!.GetValue<int>();
+            JsonArray chaptersInResult = result["data"]!.AsArray();
+            foreach (JsonObject chapter in chaptersInResult)
+            {
+                JsonObject attributes = chapter!["attributes"]!.AsObject();
+                string? title = attributes.ContainsKey("title") && attributes["title"] is not null
+                    ? attributes["title"]!.GetValue<string>()
+                    : null;
+                
+                string? volume = attributes.ContainsKey("volume") && attributes["volume"] is not null
+                    ? attributes["volume"]!.GetValue<string>()
+                    : null;
+                
+                string? chapterNum = attributes.ContainsKey("chapter") && attributes["chapter"] is not null
+                    ? attributes["chapter"]!.GetValue<string>()
+                    : null;
+                
+                chapters.Add(new Chapter(publication, title, volume, chapterNum));
+            }
+        }
+        return chapters.OrderBy(chapter => chapter.chapterNumber).ToArray();
     }
 
     public override void DownloadChapter(Chapter chapter)
