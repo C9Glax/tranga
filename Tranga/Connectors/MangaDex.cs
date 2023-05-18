@@ -167,7 +167,7 @@ public class MangaDex : Connector
         JsonArray imageFileNames = result["chapter"]!["data"]!.AsArray();
         HashSet<string> imageUrls = new();
         foreach (JsonNode image in imageFileNames)
-            imageUrls.Add($"{baseUrl}/{hash}/{image!.GetValue<string>()}");
+            imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
         string fileName = string.Concat(publication.sortName.Split(Path.GetInvalidFileNameChars()));
 
