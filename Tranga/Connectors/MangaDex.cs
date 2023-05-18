@@ -28,6 +28,7 @@ public class MangaDex : Connector
             offset += limit;
             DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest(string.Concat(publicationsUrl, "0"));
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+            offset += limit;
             if (result is null)
                 break;
             
@@ -122,10 +123,11 @@ public class MangaDex : Connector
         List<Chapter> chapters = new();
         while (offset < total)
         {
-            offset += limit;
             DownloadClient.RequestResult requestResult =
                 _downloadClient.MakeRequest($"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+            
+            offset += limit;
             if (result is null)
                 break;
             
