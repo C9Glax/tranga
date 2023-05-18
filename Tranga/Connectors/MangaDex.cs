@@ -134,7 +134,7 @@ public class MangaDex : Connector
             foreach (JsonObject chapter in chaptersInResult)
             {
                 JsonObject attributes = chapter!["attributes"]!.AsObject();
-                string chapterId = attributes["id"]!.GetValue<string>();
+                string chapterId = chapter["id"]!.GetValue<string>();
                 
                 string? title = attributes.ContainsKey("title") && attributes["title"] is not null
                     ? attributes["title"]!.GetValue<string>()
