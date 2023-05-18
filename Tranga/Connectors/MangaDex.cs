@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Tranga.Connectors;
@@ -151,7 +152,12 @@ public class MangaDex : Connector
                 chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
             }
         }
-        return chapters.OrderBy(chapter => chapter.chapterNumber).ToArray();
+
+        NumberFormatInfo chapterNumberFormatInfo = new NumberFormatInfo()
+        {
+            NumberDecimalSeparator = "."
+        };
+        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
     public override void DownloadChapter(Publication publication, Chapter chapter)
