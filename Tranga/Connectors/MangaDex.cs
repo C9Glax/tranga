@@ -152,9 +152,9 @@ public class MangaDex : Connector
                     : null;
                 
                 string chapterName = string.Concat((title ?? "").Split(Path.GetInvalidFileNameChars()));
-                string relativeFilePath = $"{chapterName} - V{volume}C{chapterNum}";
+                string chapterFileName = $"{chapterName} - V{volume}C{chapterNum}";
                 
-                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId, relativeFilePath));
+                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId, chapterFileName));
             }
         }
 

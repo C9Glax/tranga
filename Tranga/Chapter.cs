@@ -8,15 +8,15 @@ public struct Chapter
     public string? chapterNumber { get; }
     public string url { get; }
     
-    public string relativeFilePath { get; }
+    public string fileName { get; }
 
-    public Chapter(Publication publication, string? name, string? volumeNumber, string? chapterNumber, string url, string relativeFilePath)
+    public Chapter(Publication publication, string? name, string? volumeNumber, string? chapterNumber, string url, string fileName)
     {
         this.publication = publication;
         this.name = name;
         this.volumeNumber = volumeNumber;
         this.chapterNumber = chapterNumber;
         this.url = url;
-        this.relativeFilePath = relativeFilePath;
+        this.fileName = fileName;
     }
 }
