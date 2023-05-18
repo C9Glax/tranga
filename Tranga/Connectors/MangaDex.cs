@@ -8,7 +8,7 @@ public class MangaDex : Connector
 {
     internal override string downloadLocation { get; }
     public override string name { get; }
-    private DownloadClient _downloadClient = new (1500);
+    private DownloadClient _downloadClient = new (750);
 
     public MangaDex(string downloadLocation)
     {
