@@ -145,6 +145,20 @@ public class MangaDex : Connector
 
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
-        throw new NotImplementedException();
+        DownloadClient.RequestResult requestResult =
+            _downloadClient.GetPage($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+        if (result is null)
+            return;
+
+        string baseUrl = result["baseUrl"]!.GetValue<string>();
+        string hash = result["chapter"]!["hash"].GetValue<string>();
+        JsonArray imageFileNamesObject = result["chapter"]!["data"]!.AsArray();
+        HashSet<string> imageFileNames = new();
+        foreach (JsonObject imageFileNameObject in imageFileNamesObject)
+            imageFileNames.Add(imageFileNameObject!.GetValue<string>());
+        
+        foreach(string imageFileName in imageFileNames)
+            DownloadChapter($"{baseUrl}/{hash}/imageFileName");
     }
 }
