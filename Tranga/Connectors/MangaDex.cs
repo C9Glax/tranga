@@ -62,17 +62,25 @@ public class MangaDex : Connector
                     if(tagObject!["attributes"]!["name"]!.AsObject().ContainsKey("en"))
                         tags.Add(tagObject!["attributes"]!["name"]!["en"]!.GetValue<string>());
                 }
-                
-                JsonArray relationships = manga["relationships"]!.AsArray();
-                string poster = relationships.FirstOrDefault(relationship => relationship["type"].GetValue<string>() == "cover_art")["id"].GetValue<string>();
 
-                JsonObject linksObject = attributes["links"]!.AsObject();
-                string[,] links = new string[linksObject.Count, 2];
-                int linkIndex = 0;
-                foreach (string key in ((IDictionary<string, JsonNode?>)linksObject).Keys)
+                string? poster = null;
+                if (manga.ContainsKey("relationships") && manga["relationships"] is not null)
                 {
-                    links[linkIndex, 0] = key;
-                    links[linkIndex++, 1] = linksObject[key]!.GetValue<string>();
+                    JsonArray relationships = manga["relationships"]!.AsArray();
+                    poster = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
+                }
+
+                string[,]? links = null;
+                if (attributes.ContainsKey("links") && attributes["links"] is not null)
+                {
+                    JsonObject linksObject = attributes["links"]!.AsObject();
+                    links = new string[linksObject.Count, 2];
+                    int linkIndex = 0;
+                    foreach (string key in ((IDictionary<string, JsonNode?>)linksObject).Keys)
+                    {
+                        links[linkIndex, 0] = key;
+                        links[linkIndex++, 1] = linksObject[key]!.GetValue<string>();
+                    }
                 }
                 
                 int? year = attributes.ContainsKey("year") && attributes["year"] is not null
