@@ -149,7 +149,10 @@ public class MangaDex : Connector
                     ? attributes["chapter"]!.GetValue<string>()
                     : null;
                 
-                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
+                string chapterName = string.Concat((title ?? "").Split(Path.GetInvalidFileNameChars()));
+                string relativeFilePath = $"{chapterName} - V{volume}C{chapterNum}";
+                
+                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId, relativeFilePath));
             }
         }
 
