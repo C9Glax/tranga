@@ -18,7 +18,7 @@ public abstract class Connector
     protected abstract void DownloadImage(string url, string savePath);
     public abstract void DownloadCover(Publication publication);
 
-    internal void DownloadChapter(string[] imageUrls, string saveArchiveFilePath)
+    protected void DownloadChapter(string[] imageUrls, string saveArchiveFilePath)
     {
         string tempFolder = Path.GetTempFileName();
         File.Delete(tempFolder);
