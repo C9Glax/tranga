@@ -2,6 +2,7 @@
 using System.Text.Json.Nodes;
 
 namespace Tranga.Connectors;
+//TODO Download covers: https://api.mangadex.org/docs/retrieving-covers/ https://api.mangadex.org/docs/swagger.html#/
 
 public class MangaDex : Connector
 {
