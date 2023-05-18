@@ -113,7 +113,7 @@ public class MangaDex : Connector
         return publications.ToArray();
     }
 
-    public override Chapter[] GetChapters(Publication publication)
+    public override Chapter[] GetChapters(Publication publication, string language = "")
     {
         const int limit = 100;
         int offset = 0;
@@ -124,7 +124,7 @@ public class MangaDex : Connector
         {
             offset += limit;
             DownloadClient.RequestResult requestResult =
-                _downloadClient.MakeRequest($"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}");
+                _downloadClient.MakeRequest($"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             if (result is null)
                 break;
