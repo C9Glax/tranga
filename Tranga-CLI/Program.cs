@@ -57,7 +57,7 @@ public class Program
         for (int i = start; i < end + 1; i++)
         {
             Console.WriteLine($"Downloading {selectedPub.sortName} Chapter {i}");
-            mangaDexConnector.DownloadChapter(selectedPub, chapters[start]);
+            mangaDexConnector.DownloadChapter(selectedPub, chapters[i]);
         }
     }
 
