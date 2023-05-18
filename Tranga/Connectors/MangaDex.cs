@@ -22,6 +22,7 @@ public class MangaDex : Connector
         HashSet<Publication> publications = new();
         while (offset < total)
         {
+            offset += limit;
             DownloadClient.RequestResult requestResult = _downloadClient.GetPage(string.Concat(publicationsUrl, "0"));
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             if (result is null)
@@ -96,7 +97,6 @@ public class MangaDex : Connector
                 );
                 publications.Add(pub);
             }
-            offset += limit;
         }
 
         return publications.ToArray();
