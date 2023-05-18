@@ -178,9 +178,9 @@ public class MangaDex : Connector
         foreach (JsonNode image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
-        string fileName = string.Concat(publication.sortName.Split(Path.GetInvalidFileNameChars()));
+        string seriesFolder = string.Concat(publication.sortName.Split(Path.GetInvalidPathChars()));
 
-        DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, fileName));
+        DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, seriesFolder, chapter.relativeFilePath));
     }
 
     internal override void DownloadImage(string url, string path)
