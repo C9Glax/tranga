@@ -2,7 +2,7 @@
 
 public class TaskManager
 {
-    private readonly Dictionary<Publication, Chapter[]> _chapterCollection;
+    private readonly Dictionary<Publication, List<Chapter>> _chapterCollection;
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     
@@ -19,14 +19,9 @@ public class TaskManager
     {
         while (_continueRunning)
         {
-            foreach (TrangaTask task in _allTasks.Where(trangaTask => (DateTime.Now - trangaTask.lastExecuted) > trangaTask.reoccurrence))
+            foreach (TrangaTask task in _allTasks.Where(trangaTask => trangaTask.ShouldExecute(true)))
             {
-                if (!task.lastExecutedSuccessfully)
-                {
-                    task.Abort();
-                    //Add logging that task has failed
-                }
-                task.Execute();
+                TaskExecutor.Execute(task, this._chapterCollection);
             }
             Thread.Sleep(1000);
         }
