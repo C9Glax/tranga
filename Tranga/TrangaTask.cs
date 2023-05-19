@@ -42,4 +42,9 @@ public class TrangaTask
         UpdateChapters,
         DownloadNewChapters
     }
+
+    public override string ToString()
+    {
+        return $"{task}\t{lastExecuted}\t{reoccurrence}\t{(isBeingExecuted ? "running" : "waiting")}\t{connectorName}\t{publication?.sortName}";
+    }
 }
