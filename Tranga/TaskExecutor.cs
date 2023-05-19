@@ -1,7 +1,20 @@
 ﻿namespace Tranga;
 
+/// <summary>
+/// Executes TrangaTasks
+/// Based on the TrangaTask.Task a method is called.
+/// The chapterCollection is updated with new Publications/Chapters.
+/// </summary>
 public static class TaskExecutor
 {
+    
+    /// <summary>
+    /// Executes TrangaTask.
+    /// </summary>
+    /// <param name="connectors">List of all available Connectors</param>
+    /// <param name="trangaTask">Task to execute</param>
+    /// <param name="chapterCollection">Current chapterCollection to update</param>
+    /// <exception cref="ArgumentException">Is thrown when there is no Connector available with the name of the TrangaTask.connectorName</exception>
     public static void Execute(Connector[] connectors, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
     {
         Connector? connector = connectors.FirstOrDefault(c => c.name == trangaTask.connectorName);

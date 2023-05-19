@@ -3,6 +3,10 @@ using Tranga.Connectors;
 
 namespace Tranga;
 
+/// <summary>
+/// Manages all TrangaTasks.
+/// Provides a Threaded environment to execute Tasks, and still manage the Task-Collection
+/// </summary>
 public class TaskManager
 {
     private readonly Dictionary<Publication, List<Chapter>> _chapterCollection;
@@ -11,6 +15,10 @@ public class TaskManager
     private readonly Connector[] connectors;
     private readonly string folderPath;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="folderPath">Local path to save data (Manga) to</param>
     public TaskManager(string folderPath)
     {
         this.folderPath = folderPath;
@@ -34,6 +42,10 @@ public class TaskManager
         }
     }
 
+    /// <summary>
+    /// Forces the execution of a given task
+    /// </summary>
+    /// <param name="task">Task to execute</param>
     public void ExecuteTaskNow(TrangaTask task)
     {
         if (!this._allTasks.Contains(task))
@@ -46,6 +58,15 @@ public class TaskManager
         t.Start();
     }
 
+    /// <summary>
+    /// Creates and adds a new Task to the task-Collection
+    /// </summary>
+    /// <param name="task">TrangaTask.Task to later execute</param>
+    /// <param name="connectorName">Name of the connector to use</param>
+    /// <param name="publication">Publication to execute Task on, can be null in case of unrelated Task</param>
+    /// <param name="reoccurrence">Time-Interval between Executions</param>
+    /// <param name="language">language, should Task require parameter. Can be empty</param>
+    /// <exception cref="ArgumentException">Is thrown when connectorName is not a available Connector</exception>
     public void AddTask(TrangaTask.Task task, string connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
@@ -63,6 +84,12 @@ public class TaskManager
         }
     }
 
+    /// <summary>
+    /// Removes Task from task-collection
+    /// </summary>
+    /// <param name="task">TrangaTask.Task type</param>
+    /// <param name="connectorName">Name of Connector that was used</param>
+    /// <param name="publication">Publication that was used</param>
     public void RemoveTask(TrangaTask.Task task, string connectorName, Publication? publication)
     {
         _allTasks.RemoveWhere(trangaTask =>
@@ -71,11 +98,19 @@ public class TaskManager
         ExportTasks(Directory.GetCurrentDirectory());
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>All available Connectors</returns>
     public Dictionary<string, Connector> GetAvailableConnectors()
     {
         return this.connectors.ToDictionary(connector => connector.name, connector => connector);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>All TrangaTasks in task-collection</returns>
     public TrangaTask[] GetAllTasks()
     {
         TrangaTask[] ret = new TrangaTask[_allTasks.Count];
@@ -83,11 +118,19 @@ public class TaskManager
         return ret;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>All added Publications</returns>
     public Publication[] GetAllPublications()
     {
         return this._chapterCollection.Keys.ToArray();
     }
     
+    /// <summary>
+    /// Shuts down the taskManager.
+    /// </summary>
+    /// <param name="force">If force is true, tasks are aborted.</param>
     public void Shutdown(bool force = false)
     {
         _continueRunning = false;

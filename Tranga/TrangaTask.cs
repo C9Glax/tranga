@@ -2,6 +2,9 @@
 
 namespace Tranga;
 
+/// <summary>
+/// Stores information on Task
+/// </summary>
 public class TrangaTask
 {
     public TimeSpan reoccurrence { get; }
@@ -24,6 +27,10 @@ public class TrangaTask
         this.language = language;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>True if elapsed time since last execution is greater than set interval</returns>
     public bool ShouldExecute()
     {
         return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence;
