@@ -8,12 +8,18 @@ public static class Tranga_Cli
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("Output folder path [standard D:]:");
-        string? folderPath = Console.ReadLine();
-        while(folderPath is null )
-            folderPath = Console.ReadLine();
-        if (folderPath.Length < 1)
-            folderPath = "D:";
+        string folderPath = Directory.GetCurrentDirectory();
+        string settingsPath = Path.Join(Directory.GetCurrentDirectory(), "lastPath.setting");
+        if (File.Exists(settingsPath))
+            folderPath = File.ReadAllText(settingsPath);
+            
+        Console.WriteLine($"Output folder path [{folderPath}]:");
+        string? tmpPath = Console.ReadLine();
+        while(tmpPath is null)
+            tmpPath = Console.ReadLine();
+        if(tmpPath.Length > 0)
+            folderPath = tmpPath;
+        File.WriteAllText(settingsPath, folderPath);
         
         Console.Write("Mode (D: Interactive only, T: TaskManager):");
         ConsoleKeyInfo mode = Console.ReadKey();
