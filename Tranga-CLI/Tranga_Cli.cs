@@ -14,7 +14,7 @@ public static class Tranga_Cli
         if (folderPath.Length < 1)
             folderPath = "D:";
         
-        Console.Write("Mode (D: downloadNow, T: tasks):");
+        Console.Write("Mode (D: Interactive only, T: TaskManager):");
         ConsoleKeyInfo mode = Console.ReadKey();
         while (mode.Key != ConsoleKey.D && mode.Key != ConsoleKey.T)
             mode = Console.ReadKey();
