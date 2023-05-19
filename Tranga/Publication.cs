@@ -1,16 +1,15 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Tranga;
 
 public struct Publication
 {
     public string sortName { get; }
-    public string[,] altTitles { get;  }
+    [JsonIgnore]public string[,] altTitles { get; }
     public string? description { get; }
     public string[] tags { get; }
     public string? posterUrl { get; }
-    public string[,]? links { get; }
+    [JsonIgnore]public string[,]? links { get; }
     public int? year { get; }
     public string? originalLanguage { get; }
     public string status { get; }
@@ -35,7 +34,7 @@ public struct Publication
     public string GetSeriesInfo()
     {
         SeriesInfo si = new (new Metadata(this.sortName, this.year.ToString() ?? string.Empty, this.status, this.description ?? ""));
-        return JsonSerializer.Serialize(si, JsonSerializerOptions.Default);
+        return System.Text.Json.JsonSerializer.Serialize(si);
     }
     
     internal struct SeriesInfo

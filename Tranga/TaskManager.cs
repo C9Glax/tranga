@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
+using Tranga.Connectors;
 
 namespace Tranga;
 
@@ -54,18 +55,21 @@ public class TaskManager
         string filePath = Path.Join(importFolderPath, "tasks.json");
         if (!File.Exists(filePath))
             return new HashSet<TrangaTask>();
-        
-        FileStream file = new FileStream(filePath, FileMode.Open);
 
-        TrangaTask[] importTasks = JsonSerializer.Deserialize<TrangaTask[]>(file, JsonSerializerOptions.Default)!;
+        string toRead = File.ReadAllText(filePath);
+
+        TrangaTask[] importTasks = JsonConvert.DeserializeObject<TrangaTask[]>(toRead)!;
+        
+        foreach(TrangaTask task in importTasks.Where(task => task.publication is not null))
+            this._chapterCollection.Add((Publication)task.publication!, new List<Chapter>());
+        
         return importTasks.ToHashSet();
     }
 
     public void ExportTasks(string exportFolderPath)
     {
-        FileStream file = new FileStream(Path.Join(exportFolderPath, "tasks.json"), FileMode.CreateNew);
-        JsonSerializer.Serialize(file, _allTasks.ToArray(), JsonSerializerOptions.Default);
-        file.Close();
-        file.Dispose();
+        string filePath = Path.Join(exportFolderPath, "tasks.json");
+        string toWrite = JsonConvert.SerializeObject(_allTasks.ToArray());
+        File.WriteAllText(filePath,toWrite);
     }
 }

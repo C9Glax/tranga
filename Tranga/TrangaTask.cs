@@ -1,15 +1,13 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Tranga;
+﻿namespace Tranga;
 
 public struct TrangaTask
 {
-    [JsonInclude]public TimeSpan reoccurrence { get; }
-    [JsonInclude]public DateTime lastExecuted { get; set; }
-    [JsonInclude]public Connector connector { get; }
-    [JsonInclude]public Task task { get; }
-    [JsonInclude]public Publication publication { get; }
-    [JsonInclude]public string language { get; }
+    public TimeSpan reoccurrence { get; }
+    public DateTime lastExecuted { get; set; }
+    public string connectorName { get; }
+    public Task task { get; }
+    public Publication? publication { get; }
+    public string language { get; }
 
     public TrangaTask(Connector connector, Task task, Publication publication, TimeSpan reoccurrence, string language = "")
     {
