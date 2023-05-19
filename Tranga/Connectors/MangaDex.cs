@@ -156,7 +156,7 @@ public class MangaDex : Connector
                     ? attributes["chapter"]!.GetValue<string>()
                     : null;
                 
-                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
+                chapters.Add(new Chapter(title, volume, chapterNum, chapterId));
             }
         }
 
