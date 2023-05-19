@@ -224,13 +224,13 @@ public class MangaDex : Connector
         if (result is null)
             return;
 
-        string fileName = result!["data"]!["attributes"]!["fileName"]!.GetValue<string>();
+        string fileName = result["data"]!["attributes"]!["fileName"]!.GetValue<string>();
 
         string coverUrl = $"https://uploads.mangadex.org/covers/{publication.downloadUrl}/{fileName}";
         
         //Get file-extension (jpg, png)
         string[] split = coverUrl.Split('.');
-        string extension = split[split.Length - 1];
+        string extension = split[^1];
 
         string outFolderPath = Path.Join(downloadLocation, publication.folderName);
         Directory.CreateDirectory(outFolderPath);

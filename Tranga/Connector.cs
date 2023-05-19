@@ -68,7 +68,7 @@ public abstract class Connector
             File.WriteAllText(seriesInfoPath,publication.GetSeriesInfoJson());
     }
 
-    public static string CreateComicInfo(Publication publication, Chapter chapter)
+    protected static string CreateComicInfo(Publication publication, Chapter chapter)
     {
         XElement comicInfo = new XElement("ComicInfo",
             new XElement("Tags", string.Join(',',publication.tags)),
@@ -118,7 +118,7 @@ public abstract class Connector
         foreach (string imageUrl in imageUrls)
         {
             string[] split = imageUrl.Split('.');
-            string extension = split[split.Length - 1];
+            string extension = split[^1];
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient);
         }
         

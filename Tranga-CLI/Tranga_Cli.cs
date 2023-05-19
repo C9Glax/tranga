@@ -78,15 +78,15 @@ public static class Tranga_Cli
                     string? query = Console.ReadLine();
                     while (query is null || query.Length < 1)
                         query = Console.ReadLine();
-                    PrintTasks(taskManager.GetAllTasks().Where(task =>
-                        ((Publication)task.publication!).sortName.ToLower()
+                    PrintTasks(taskManager.GetAllTasks().Where(qTask =>
+                        ((Publication)qTask.publication!).sortName.ToLower()
                         .Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray());
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     menu = 0;
                     break; 
                 case 6:
-                    PrintTasks(taskManager.GetAllTasks().Where(task => task.isBeingExecuted).ToArray());
+                    PrintTasks(taskManager.GetAllTasks().Where(eTask => eTask.isBeingExecuted).ToArray());
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     menu = 0;
@@ -315,7 +315,7 @@ public static class Tranga_Cli
             selected = Console.ReadLine();
 
         int start = 0;
-        int end = 0;
+        int end;
         if (selected == "a")
             end = chapters.Length - 1;
         else if (selected.Contains('-'))

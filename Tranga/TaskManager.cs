@@ -12,8 +12,7 @@ public class TaskManager
     private readonly Dictionary<Publication, List<Chapter>> _chapterCollection;
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
-    private readonly Connector[] connectors;
-    private readonly string folderPath;
+    private readonly Connector[] _connectors;
 
     /// <summary>
     /// 
@@ -21,8 +20,7 @@ public class TaskManager
     /// <param name="folderPath">Local path to save data (Manga) to</param>
     public TaskManager(string folderPath)
     {
-        this.folderPath = folderPath;
-        this.connectors = new Connector[]{ new MangaDex(folderPath) };
+        this._connectors = new Connector[]{ new MangaDex(folderPath) };
         _chapterCollection = new();
         _allTasks = ImportTasks(Directory.GetCurrentDirectory());
         Thread taskChecker = new(TaskCheckerThread);
@@ -36,7 +34,7 @@ public class TaskManager
             foreach (TrangaTask task in _allTasks)
             {
                 if(task.ShouldExecute()) 
-                    TaskExecutor.Execute(this.connectors, task, this._chapterCollection);
+                    TaskExecutor.Execute(this._connectors, task, this._chapterCollection);
             }
             Thread.Sleep(1000);
         }
@@ -53,7 +51,7 @@ public class TaskManager
         
         Task t = new Task(() =>
         {
-            TaskExecutor.Execute(this.connectors, task, this._chapterCollection);
+            TaskExecutor.Execute(this._connectors, task, this._chapterCollection);
         });
         t.Start();
     }
@@ -71,7 +69,7 @@ public class TaskManager
         string language = "")
     {
         //Get appropriate Connector from available Connectors for TrangaTask
-        Connector? connector = connectors.FirstOrDefault(c => c.name == connectorName);
+        Connector? connector = _connectors.FirstOrDefault(c => c.name == connectorName);
         if (connector is null)
             throw new ArgumentException($"Connector {connectorName} is not a known connector.");
         
@@ -108,7 +106,7 @@ public class TaskManager
     /// <returns>All available Connectors</returns>
     public Dictionary<string, Connector> GetAvailableConnectors()
     {
-        return this.connectors.ToDictionary(connector => connector.name, connector => connector);
+        return this._connectors.ToDictionary(connector => connector.name, connector => connector);
     }
 
     /// <summary>

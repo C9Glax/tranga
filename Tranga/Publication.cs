@@ -5,7 +5,7 @@ namespace Tranga;
 /// <summary>
 /// Contains information on a Publication (Manga)
 /// </summary>
-public struct Publication
+public readonly struct Publication
 {
     public string sortName { get; }
     [JsonIgnore]public string[,] altTitles { get; }
