@@ -48,7 +48,7 @@ public static class Tranga_Cli
                     if(task != TrangaTask.Task.UpdatePublications)
                         publication = SelectPublication(connector);
                     TimeSpan reoccurrence = SelectReoccurence();
-                    taskManager.AddTask(task, connector, publication, reoccurrence, "en");
+                    taskManager.AddTask(task, connector.name, publication, reoccurrence, "en");
                     Console.WriteLine($"{task} - {connector.name} - {publication?.sortName}");
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();

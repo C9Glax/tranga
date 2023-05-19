@@ -34,9 +34,13 @@ public class TaskManager
         }
     }
 
-    public void AddTask(TrangaTask.Task task, Connector connector, Publication? publication, TimeSpan reoccurrence,
+    public void AddTask(TrangaTask.Task task, string connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
+        Connector? connector = connectors.FirstOrDefault(c => c.name == connectorName);
+        if (connector is null)
+            throw new ArgumentException($"Connector {connectorName} is not a known connector.");
+        
         if (!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name &&
                                          trangaTask.publication?.downloadUrl != publication?.downloadUrl))
         {
