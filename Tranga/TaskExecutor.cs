@@ -30,6 +30,8 @@ public static class TaskExecutor
         List<Chapter> newChapters = UpdateChapters(connector, publication, language, chapterCollection);
         foreach(Chapter newChapter in newChapters)
             connector.DownloadChapter(publication, newChapter);
+        connector.DownloadCover(publication);
+        connector.SaveSeriesInfo(publication);
     }
 
     private static List<Chapter> UpdateChapters(Connector connector, Publication publication, string language, Dictionary<Publication, List<Chapter>> chapterCollection)
