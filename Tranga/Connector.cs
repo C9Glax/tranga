@@ -18,7 +18,15 @@ public abstract class Connector
     protected abstract void DownloadImage(string url, string savePath);
     public abstract void DownloadCover(Publication publication);
 
-    protected void DownloadChapter(string[] imageUrls, string saveArchiveFilePath)
+    protected void DownloadImage(string imageUrl, string fullPath, DownloadClient downloadClient)
+    {
+        DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl);
+        byte[] buffer = new byte[requestResult.result.Length];
+        requestResult.result.ReadExactly(buffer, 0, buffer.Length);
+        File.WriteAllBytes(fullPath, buffer);
+    }
+    
+    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient)
     {
         string[] splitPath = saveArchiveFilePath.Split(Path.DirectorySeparatorChar);
         string directoryPath = Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray());
@@ -38,7 +46,7 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[split.Length - 1];
-            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"));
+            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient);
         }
         
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
@@ -51,7 +59,7 @@ public abstract class Connector
             File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
     }
 
-    internal class DownloadClient
+    protected class DownloadClient
     {
         private readonly TimeSpan _requestSpeed;
         private DateTime _lastRequest;

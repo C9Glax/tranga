@@ -184,15 +184,7 @@ public class MangaDex : Connector
         foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
-        DownloadChapter(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName));
-    }
-
-    protected override void DownloadImage(string url, string savePath)
-    {
-        DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest(url);
-        byte[] buffer = new byte[requestResult.result.Length];
-        requestResult.result.ReadExactly(buffer, 0, buffer.Length);
-        File.WriteAllBytes(savePath, buffer);
+        DownloadChapterImages(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName), this._downloadClient);
     }
 
     public override void DownloadCover(Publication publication)
@@ -220,6 +212,6 @@ public class MangaDex : Connector
 
         string outFolderPath = Path.Join(downloadLocation, publication.folderName);
         Directory.CreateDirectory(outFolderPath);
-        DownloadImage(coverUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"));
+        DownloadImage(coverUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this._downloadClient);
     }
 }
