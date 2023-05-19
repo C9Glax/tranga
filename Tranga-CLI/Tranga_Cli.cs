@@ -160,7 +160,7 @@ public static class Tranga_Cli
         int tIndex = 0;
         Console.WriteLine($"Tasks (Running/Total): {taskRunningCount}/{taskCount}");
         foreach(TrangaTask trangaTask in tasks)
-            Console.WriteLine($"{tIndex++}: {trangaTask.task} - {trangaTask.reoccurrence} - {trangaTask.publication?.sortName} - {trangaTask.connectorName} - {trangaTask.lastExecuted} - {(trangaTask.isBeingExecuted ? "Running" : "Waiting")}");
+            Console.WriteLine($"{tIndex++:000}: {trangaTask.ToString()}");
     }
 
     private static void ExecuteTaskNow(TaskManager taskManager)
