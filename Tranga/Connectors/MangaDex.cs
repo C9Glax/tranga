@@ -10,7 +10,7 @@ public class MangaDex : Connector
 
     public MangaDex(string downloadLocation) : base(downloadLocation)
     {
-        name = "MangaDex.org";
+        name = "MangaDex";
     }
 
     public override Publication[] GetPublications(string publicationTitle = "")
