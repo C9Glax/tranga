@@ -21,8 +21,6 @@ public struct Chapter
         this.chapterNumber = chapterNumber;
         this.url = url;
         string chapterName = string.Concat((name ?? "").Split(Path.GetInvalidFileNameChars()));
-        double multiplied = Convert.ToDouble(chapterNumber, new NumberFormatInfo() { NumberDecimalSeparator = "." }) *
-                            Convert.ToInt32(volumeNumber);
-        this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {multiplied.ToString(new NumberFormatInfo() { NumberDecimalSeparator = "." })}";
+        this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {volumeNumber}{chapterNumber}";
     }
 }
