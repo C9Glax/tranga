@@ -112,12 +112,11 @@ public static class Tranga_Cli
         int taskRunningCount = taskManager.GetAllTasks().Count(task => task.isBeingExecuted);
         Console.Clear();
         Console.WriteLine($"Download Folder: {folderPath} Tasks (Running/Total): {taskRunningCount}/{taskCount}");
-        Console.WriteLine("Select Option:");
         Console.WriteLine("L: List tasks");
         Console.WriteLine("C: Create Task");
         Console.WriteLine("D: Delete Task");
         Console.WriteLine("E: Execute Task now");
-        Console.WriteLine("Q: Exit with saving");
+        Console.WriteLine("Q: Exit");
         ConsoleKey selection = Console.ReadKey().Key;
         Console.WriteLine();
         return selection;
@@ -139,7 +138,7 @@ public static class Tranga_Cli
         TrangaTask[] tasks = taskManager.GetAllTasks();
         PrintTasks(tasks);
         
-        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
+        Console.WriteLine($"Select Task (0-{tasks.Length}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
@@ -154,7 +153,7 @@ public static class Tranga_Cli
         TrangaTask[] tasks = taskManager.GetAllTasks();
         PrintTasks(tasks);
         
-        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
+        Console.WriteLine($"Select Task (0-{tasks.Length}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
@@ -173,7 +172,7 @@ public static class Tranga_Cli
         Console.WriteLine("Available Tasks:");
         foreach (string taskName in taskNames)
             Console.WriteLine($"{tIndex++}: {taskName}");
-        Console.WriteLine($"Select Task (0-{taskNames.Length - 1}):");
+        Console.WriteLine($"Select Task (0-{taskNames.Length}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
