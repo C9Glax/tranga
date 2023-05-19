@@ -28,6 +28,21 @@ public class TaskManager
         }
     }
 
+    public bool AddTask(TrangaTask.Task task, Connector connector, Publication publication, TimeSpan reoccurrence,
+        string language = "")
+    {
+        if(!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.publication.downloadUrl != publication.downloadUrl))
+            return _allTasks.Add(new TrangaTask(connector, task, publication, reoccurrence, language));
+        return false;
+    }
+
+    public bool RemoveTask(TrangaTask.Task task, Publication publication)
+    {
+        return (_allTasks.RemoveWhere(trangaTask =>
+            trangaTask.task == task && trangaTask.publication.downloadUrl == publication.downloadUrl)
+            > 0);
+    }
+
     public void Shutdown()
     {
         _continueRunning = false;
