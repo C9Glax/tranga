@@ -37,7 +37,7 @@ public static class Tranga_Cli
             switch (menu)
             {
                 case 1:
-                    PrintTasks(taskManager);
+                    PrintTasks(taskManager.GetAllTasks());
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     menu = 0;
@@ -68,7 +68,7 @@ public static class Tranga_Cli
                     menu = 0;
                     break;
                 default:
-                    selection = Menu(folderPath);
+                    selection = Menu(taskManager, folderPath);
                     switch (selection)
                     {
                         case ConsoleKey.L:
@@ -100,10 +100,12 @@ public static class Tranga_Cli
             taskManager.Shutdown(false);
     }
 
-    private static ConsoleKey Menu(string folderPath)
+    private static ConsoleKey Menu(TaskManager taskManager, string folderPath)
     {
+        int taskCount = taskManager.GetAllTasks().Length;
+        int taskRunningCount = taskManager.GetAllTasks().Count(task => task.isBeingExecuted);
         Console.Clear();
-        Console.WriteLine($"Download Folder: {folderPath}");
+        Console.WriteLine($"Download Folder: {folderPath} Tasks (Running/Total): {taskRunningCount}/{taskCount}");
         Console.WriteLine("Select Option:");
         Console.WriteLine("L: List tasks");
         Console.WriteLine("C: Create Task");
@@ -115,15 +117,15 @@ public static class Tranga_Cli
         return selection;
     }
 
-    private static int PrintTasks(TaskManager taskManager)
+    private static void PrintTasks(TrangaTask[] tasks)
     {
+        int taskCount = tasks.Length;
+        int taskRunningCount = tasks.Count(task => task.isBeingExecuted);
         Console.Clear();
-        TrangaTask[] tasks = taskManager.GetAllTasks();
         int tIndex = 0;
-        Console.WriteLine("Tasks:");
+        Console.WriteLine($"Tasks (Running/Total): {taskRunningCount}/{taskCount}");
         foreach(TrangaTask trangaTask in tasks)
-            Console.WriteLine($"{tIndex++}: {trangaTask.task} - {trangaTask.reoccurrence} - {trangaTask.publication?.sortName} - {trangaTask.connectorName} - {trangaTask.lastExecuted}");
-        return tasks.Length;
+            Console.WriteLine($"{tIndex++}: {trangaTask.task} - {trangaTask.reoccurrence} - {trangaTask.publication?.sortName} - {trangaTask.connectorName} - {trangaTask.lastExecuted} - {(trangaTask.isBeingExecuted ? "Running" : "Waiting")}");
     }
 
     private static void ExecuteTask(TaskManager taskManager)
@@ -143,10 +145,10 @@ public static class Tranga_Cli
 
     private static void RemoveTask(TaskManager taskManager)
     {
-        int length = PrintTasks(taskManager);
-        
         TrangaTask[] tasks = taskManager.GetAllTasks();
-        Console.WriteLine($"Select Task (0-{length}):");
+        PrintTasks(tasks);
+        
+        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
