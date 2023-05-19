@@ -197,8 +197,11 @@ public class MangaDex : Connector
         foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
+        string comicInfoPath = Path.GetTempFileName();
+        File.WriteAllText(comicInfoPath, CreateComicInfo(publication, chapter));
+        
         //Download Chapter-Images
-        DownloadChapterImages(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName), this.downloadClient);
+        DownloadChapterImages(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName), this.downloadClient, comicInfoPath);
     }
 
     public override void DownloadCover(Publication publication)

@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
 using System.Net;
+using System.Xml.Linq;
 
 namespace Tranga;
 
@@ -66,6 +67,16 @@ public abstract class Connector
         if(!File.Exists(seriesInfoPath))
             File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
     }
+
+    public static string CreateComicInfo(Publication publication, Chapter chapter)
+    {
+        XElement comicInfo = new XElement("ComicInfo",
+            new XElement("Tags", string.Join(',',publication.tags)),
+            new XElement("LanguageISO", publication.originalLanguage),
+            new XElement("Title", chapter.name)
+        );
+        return comicInfo.ToString();
+    }
     
     /// <summary>
     /// Downloads Image from URL and saves it to the given path(incl. fileName)
@@ -87,7 +98,7 @@ public abstract class Connector
     /// <param name="imageUrls">List of URLs to download Images from</param>
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
     /// <param name="downloadClient">DownloadClient of the connector</param>
-    protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient)
+    protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, string? comicInfoPath = null)
     {
         //Check if Publication Directory already exists
         string[] splitPath = saveArchiveFilePath.Split(Path.DirectorySeparatorChar);
@@ -110,6 +121,9 @@ public abstract class Connector
             string extension = split[split.Length - 1];
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient);
         }
+        
+        if(comicInfoPath is not null)
+            File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
         
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
