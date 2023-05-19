@@ -61,6 +61,12 @@ public static class Tranga_Cli
                     Console.ReadKey();
                     menu = 0;
                     break;
+                case 4:
+                    ExecuteTask(taskManager);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    menu = 0;
+                    break;
                 default:
                     selection = Menu(folderPath);
                     switch (selection)
@@ -73,6 +79,9 @@ public static class Tranga_Cli
                             break;
                         case ConsoleKey.D:
                             menu = 3;
+                            break;
+                        case ConsoleKey.E:
+                            menu = 4;
                             break;
                         default:
                             menu = 0;
@@ -92,6 +101,7 @@ public static class Tranga_Cli
         Console.WriteLine("L: List tasks");
         Console.WriteLine("C: Create Task");
         Console.WriteLine("D: Delete Task");
+        Console.WriteLine("E: Execute Task now");
         Console.WriteLine("Q: Exit with saving");
         ConsoleKey selection = Console.ReadKey().Key;
         Console.WriteLine();

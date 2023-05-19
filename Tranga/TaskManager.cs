@@ -34,6 +34,15 @@ public class TaskManager
         }
     }
 
+    public void ExecuteTaskNow(TrangaTask task)
+    {
+        Task t = new Task(() =>
+        {
+            TaskExecutor.Execute(this.connectors, task, this._chapterCollection);
+        });
+        t.Start();
+    }
+
     public void AddTask(TrangaTask.Task task, string connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
