@@ -94,6 +94,7 @@ public abstract class Connector
         }
         
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
+        Directory.Delete(tempFolder); //Cleanup
     }
 
     
