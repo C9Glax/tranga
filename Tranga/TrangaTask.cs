@@ -1,4 +1,6 @@
-﻿namespace Tranga;
+﻿using Newtonsoft.Json;
+
+namespace Tranga;
 
 public class TrangaTask
 {
@@ -8,6 +10,7 @@ public class TrangaTask
     public Task task { get; }
     public Publication? publication { get; }
     public string language { get; }
+    [JsonIgnore]public bool isBeingExecuted { get; set; }
 
     public TrangaTask(string connectorName, Task task, Publication? publication, TimeSpan reoccurrence, string language = "")
     {

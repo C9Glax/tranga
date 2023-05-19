@@ -7,6 +7,10 @@ public static class TaskExecutor
         Connector? connector = connectors.FirstOrDefault(c => c.name == trangaTask.connectorName);
         if (connector is null)
             throw new ArgumentException($"Connector {trangaTask.connectorName} is not a known connector.");
+
+        if (trangaTask.isBeingExecuted)
+            return;
+        trangaTask.isBeingExecuted = true;
         trangaTask.lastExecuted = DateTime.Now;
         
         switch (trangaTask.task)
@@ -21,6 +25,8 @@ public static class TaskExecutor
                 UpdatePublications(connector, chapterCollection);
                 break;
         }
+
+        trangaTask.isBeingExecuted = false;
     }
 
     private static void UpdatePublications(Connector connector, Dictionary<Publication, List<Chapter>> chapterCollection)
