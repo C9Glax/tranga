@@ -100,9 +100,7 @@ public abstract class Connector
             return;
         
         //Create a temporary folder to store images
-        string tempFolder = Path.GetTempFileName();
-        File.Delete(tempFolder);
-        Directory.CreateDirectory(tempFolder);
+        string tempFolder = Directory.CreateTempSubdirectory().FullName;
 
         int chapter = 0;
         //Download all Images to temporary Folder
