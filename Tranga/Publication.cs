@@ -15,10 +15,9 @@ public struct Publication
     public string? originalLanguage { get; }
     public string status { get; }
     public string folderName { get; }
-    public Connector connector { get; }
     public string downloadUrl { get; }
 
-    public Publication(string sortName, string? description, string[,] altTitles, string[] tags, string? posterUrl, string[,]? links, int? year, string? originalLanguage, string status, Connector connector, string downloadUrl)
+    public Publication(string sortName, string? description, string[,] altTitles, string[] tags, string? posterUrl, string[,]? links, int? year, string? originalLanguage, string status, string downloadUrl)
     {
         this.sortName = sortName;
         this.description = description;
@@ -29,7 +28,6 @@ public struct Publication
         this.year = year;
         this.originalLanguage = originalLanguage;
         this.status = status;
-        this.connector = connector;
         this.downloadUrl = downloadUrl;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars()));
     }
