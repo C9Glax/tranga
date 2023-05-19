@@ -1,6 +1,6 @@
 ﻿namespace Tranga;
 
-public struct TrangaTask
+public class TrangaTask
 {
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
@@ -9,22 +9,21 @@ public struct TrangaTask
     public Publication? publication { get; }
     public string language { get; }
 
-    public TrangaTask(Connector connector, Task task, Publication publication, TimeSpan reoccurrence, string language = "")
+    public TrangaTask(string connectorName, Task task, Publication? publication, TimeSpan reoccurrence, string language = "")
     {
+        if (task != Task.UpdatePublications && publication is null)
+            throw new ArgumentException($"Publication has to be not null for task {task}");
+        this.publication = publication;
         this.reoccurrence = reoccurrence;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
-        this.connector = connector;
+        this.connectorName = connectorName;
         this.task = task;
-        this.publication = publication;
         this.language = language;
     }
 
-    public bool ShouldExecute(bool willBeExecuted)
+    public bool ShouldExecute()
     {
-        bool ret = (DateTime.Now - lastExecuted) > reoccurrence;
-        if (ret && willBeExecuted)
-            lastExecuted = DateTime.Now;
-        return ret;
+        return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence;
     }
 
     public enum Task

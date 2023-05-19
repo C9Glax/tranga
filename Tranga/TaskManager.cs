@@ -8,9 +8,13 @@ public class TaskManager
     private readonly Dictionary<Publication, List<Chapter>> _chapterCollection;
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
-    
-    public TaskManager()
+    private readonly Connector[] connectors;
+    private readonly string folderPath;
+
+    public TaskManager(string folderPath)
     {
+        this.folderPath = folderPath;
+        this.connectors = new Connector[]{ new MangaDex(folderPath) };
         _chapterCollection = new();
         _allTasks = ImportTasks(Directory.GetCurrentDirectory());
         Thread taskChecker = new(TaskCheckerThread);
@@ -21,29 +25,43 @@ public class TaskManager
     {
         while (_continueRunning)
         {
-            foreach (TrangaTask task in _allTasks.Where(trangaTask => trangaTask.ShouldExecute(true)))
+            foreach (TrangaTask task in _allTasks)
             {
-                TaskExecutor.Execute(task, this._chapterCollection);
+                if(task.ShouldExecute()) 
+                    TaskExecutor.Execute(this.connectors, task, this._chapterCollection);
+                task.lastExecuted = DateTime.Now;
             }
             Thread.Sleep(1000);
         }
     }
 
-    public bool AddTask(TrangaTask.Task task, Connector connector, Publication publication, TimeSpan reoccurrence,
+    public bool AddTask(TrangaTask.Task task, Connector connector, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
-        if(!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.publication.downloadUrl != publication.downloadUrl))
-            return _allTasks.Add(new TrangaTask(connector, task, publication, reoccurrence, language));
+        if(!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name && trangaTask.publication?.downloadUrl != publication?.downloadUrl))
+            return _allTasks.Add(new TrangaTask(connector.name, task, publication, reoccurrence, language));
         return false;
     }
 
-    public bool RemoveTask(TrangaTask.Task task, Publication publication)
+    public bool RemoveTask(TrangaTask.Task task, string connectorName, Publication? publication)
     {
         return (_allTasks.RemoveWhere(trangaTask =>
-            trangaTask.task == task && trangaTask.publication.downloadUrl == publication.downloadUrl)
+            trangaTask.task == task && trangaTask.connectorName == connectorName && trangaTask.publication?.downloadUrl == publication?.downloadUrl)
             > 0);
     }
 
+    public Dictionary<string, Connector> GetAvailableConnectors()
+    {
+        return this.connectors.ToDictionary(connector => connector.name, connector => connector);
+    }
+
+    public TrangaTask[] GetAllTasks()
+    {
+        TrangaTask[] ret = new TrangaTask[_allTasks.Count];
+        _allTasks.CopyTo(ret);
+        return ret;
+    }
+    
     public void Shutdown()
     {
         _continueRunning = false;

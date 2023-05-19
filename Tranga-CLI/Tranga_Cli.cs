@@ -7,70 +7,198 @@ public static class Tranga_Cli
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("Output folder path (D:):");
+        Console.WriteLine("Output folder path [standard D:]:");
         string? folderPath = Console.ReadLine();
         while(folderPath is null )
             folderPath = Console.ReadLine();
         if (folderPath.Length < 1)
             folderPath = "D:";
         
-        DownloadNow(folderPath);
+        Console.Write("Mode (D: downloadNow, T: tasks):");
+        ConsoleKeyInfo mode = Console.ReadKey();
+        while (mode.Key != ConsoleKey.D && mode.Key != ConsoleKey.T)
+            mode = Console.ReadKey();
+        Console.WriteLine();
+        
+        if(mode.Key == ConsoleKey.D)
+            DownloadNow(folderPath);
+        else if (mode.Key == ConsoleKey.T)
+            TaskMode(folderPath);
+    }
+
+    private static void TaskMode(string folderPath)
+    {
+        TaskManager taskManager = new TaskManager(folderPath);
+        ConsoleKey selection = ConsoleKey.NoName;
+        int menu = 0;
+        while (selection != ConsoleKey.Escape && selection != ConsoleKey.Q)
+        {
+            switch (menu)
+            {
+                case 1:
+                    PrintTasks(taskManager);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    menu = 0;
+                    break;
+                case 2:
+                    Connector connector = SelectConnector(folderPath, taskManager.GetAvailableConnectors().Values.ToArray());
+                    TrangaTask.Task task = SelectTask();
+                    Publication? publication = null;
+                    if(task != TrangaTask.Task.UpdatePublications)
+                        publication = SelectPublication(connector);
+                    TimeSpan reoccurrence = SelectReoccurence();
+                    taskManager.AddTask(task, connector, publication, reoccurrence, "en");
+                    Console.WriteLine($"{task} - {connector.name} - {publication?.sortName}");
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    menu = 0;
+                    break;
+                case 3:
+                    RemoveTask(taskManager);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    menu = 0;
+                    break;
+                default:
+                    selection = Menu(folderPath);
+                    switch (selection)
+                    {
+                        case ConsoleKey.L:
+                            menu = 1;
+                            break;
+                        case ConsoleKey.C:
+                            menu = 2;
+                            break;
+                        case ConsoleKey.D:
+                            menu = 3;
+                            break;
+                        default:
+                            menu = 0;
+                            break;
+                    }
+                    break;
+            }
+        }
+        taskManager.Shutdown();
+    }
+
+    private static ConsoleKey Menu(string folderPath)
+    {
+        Console.Clear();
+        Console.WriteLine($"Download Folder: {folderPath}");
+        Console.WriteLine("Select Option:");
+        Console.WriteLine("L: List tasks");
+        Console.WriteLine("C: Create Task");
+        Console.WriteLine("D: Delete Task");
+        Console.WriteLine("Q: Exit with saving");
+        ConsoleKey selection = Console.ReadKey().Key;
+        Console.WriteLine();
+        return selection;
+    }
+
+    private static int PrintTasks(TaskManager taskManager)
+    {
+        Console.Clear();
+        TrangaTask[] tasks = taskManager.GetAllTasks();
+        int tIndex = 0;
+        Console.WriteLine("Tasks:");
+        foreach(TrangaTask trangaTask in tasks)
+            Console.WriteLine($"{tIndex++}: {trangaTask.task} - {trangaTask.publication?.sortName} - {trangaTask.connectorName}");
+        return tasks.Length;
+    }
+
+    private static void RemoveTask(TaskManager taskManager)
+    {
+        int length = PrintTasks(taskManager);
+        
+        TrangaTask[] tasks = taskManager.GetAllTasks();
+        Console.WriteLine($"Select Task (0-{length - 1}:");
+
+        string? selectedTask = Console.ReadLine();
+        while(selectedTask is null || selectedTask.Length < 1)
+            selectedTask = Console.ReadLine();
+        int selectedTaskIndex = Convert.ToInt32(selectedTask);
+
+        taskManager.RemoveTask(tasks[selectedTaskIndex].task, tasks[selectedTaskIndex].connectorName, tasks[selectedTaskIndex].publication);
+    }
+
+    private static TrangaTask.Task SelectTask()
+    {
+        Console.Clear();
+        string[] taskNames = Enum.GetNames<TrangaTask.Task>();
+        
+        int tIndex = 0;
+        Console.WriteLine("Available Tasks:");
+        foreach (string taskName in taskNames)
+            Console.WriteLine($"{tIndex++}: {taskName}");
+        Console.WriteLine($"Select Task (0-{taskNames.Length - 1}):");
+
+        string? selectedTask = Console.ReadLine();
+        while(selectedTask is null || selectedTask.Length < 1)
+            selectedTask = Console.ReadLine();
+        int selectedTaskIndex = Convert.ToInt32(selectedTask);
+
+        string selectedTaskName = taskNames[selectedTaskIndex];
+        return Enum.Parse<TrangaTask.Task>(selectedTaskName);
+    }
+
+    private static TimeSpan SelectReoccurence()
+    {
+        return TimeSpan.FromSeconds(30); //TODO
     }
 
     private static void DownloadNow(string folderPath)
     {
         Connector connector = SelectConnector(folderPath);
 
-        Console.WriteLine("Search query (leave empty for all):");
-        string? query = Console.ReadLine();
-
-        Publication[] publications = connector.GetPublications(query ?? "");
-        Publication selectedPub = SelectPublication(publications);
+        Publication publication = SelectPublication(connector);
         
-        Chapter[] allChapteres = connector.GetChapters(selectedPub, "en");
-        Chapter[] downloadChapters = SelectChapters(allChapteres);
+        Chapter[] downloadChapters = SelectChapters(connector, publication);
 
         if (downloadChapters.Length > 0)
         {
-            connector.DownloadCover(selectedPub);
-            File.WriteAllText(Path.Join(folderPath, selectedPub.folderName, "series.json"),selectedPub.GetSeriesInfo());
+            connector.DownloadCover(publication);
+            connector.SaveSeriesInfo(publication);
         }
 
         foreach (Chapter chapter in downloadChapters)
         {
-            Console.WriteLine($"Downloading {selectedPub.sortName} V{chapter.volumeNumber}C{chapter.chapterNumber}");
-            connector.DownloadChapter(selectedPub, chapter);
+            Console.WriteLine($"Downloading {publication.sortName} V{chapter.volumeNumber}C{chapter.chapterNumber}");
+            connector.DownloadChapter(publication, chapter);
         }
     }
 
-    private static Connector SelectConnector(string folderPath)
+    private static Connector SelectConnector(string folderPath, Connector[]? availableConnectors = null)
     {
-        Console.WriteLine("Select Connector:");
-        Console.WriteLine("0: MangaDex");
+        Console.Clear();
+        Connector[] connectors = availableConnectors ?? new Connector[] { new MangaDex(folderPath) };
+        
+        int cIndex = 0;
+        Console.WriteLine("Connectors:");
+        foreach (Connector connector in connectors)
+            Console.WriteLine($"{cIndex++}: {connector.name}");
+        Console.WriteLine($"Select Connector (0-{connectors.Length - 1}):");
 
         string? selectedConnector = Console.ReadLine();
         while(selectedConnector is null || selectedConnector.Length < 1)
             selectedConnector = Console.ReadLine();
         int selectedConnectorIndex = Convert.ToInt32(selectedConnector);
-
-        Connector connector;
-        switch (selectedConnectorIndex)
-        {
-            case 0:
-                connector = new MangaDex(folderPath);
-                break;
-            default:
-                connector = new MangaDex(folderPath);
-                break;
-        }
-
-        return connector;
+        
+        return connectors[selectedConnectorIndex];
     }
 
-    private static Publication SelectPublication(Publication[] publications)
+    private static Publication SelectPublication(Connector connector)
     {
+        Console.Clear();
+        Console.WriteLine($"Connector: {connector.name}");
+        Console.WriteLine("Publication search query (leave empty for all):");
+        string? query = Console.ReadLine();
+
+        Publication[] publications = connector.GetPublications(query ?? "");
         
         int pIndex = 0;
+        Console.WriteLine("Publications:");
         foreach(Publication publication in publications)
             Console.WriteLine($"{pIndex++}: {publication.sortName}");
         Console.WriteLine($"Select publication to Download (0-{publications.Length - 1}):");
@@ -81,9 +209,14 @@ public static class Tranga_Cli
         return publications[Convert.ToInt32(selected)];
     }
 
-    private static Chapter[] SelectChapters(Chapter[] chapters)
+    private static Chapter[] SelectChapters(Connector connector, Publication publication)
     {
+        Console.Clear();
+        Console.WriteLine($"Connector: {connector.name} Publication: {publication.sortName}");
+        Chapter[] chapters = connector.GetChapters(publication, "en");
+        
         int cIndex = 0;
+        Console.WriteLine("Chapters:");
         foreach (Chapter ch in chapters)
         {
             string name = cIndex.ToString();

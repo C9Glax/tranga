@@ -2,18 +2,22 @@
 
 public static class TaskExecutor
 {
-    public static void Execute(TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
+    public static void Execute(Connector[] connectors, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
     {
+        Connector? connector = connectors.FirstOrDefault(c => c.name == trangaTask.connectorName);
+        if (connector is null)
+            throw new ArgumentException($"Connector {trangaTask.connectorName} is not a known connector.");
+        
         switch (trangaTask.task)
         {
             case TrangaTask.Task.DownloadNewChapters:
-                DownloadNewChapters(trangaTask.connector, trangaTask.publication, trangaTask.language, chapterCollection);
+                DownloadNewChapters(connector, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
                 break;
             case TrangaTask.Task.UpdateChapters:
-                UpdateChapters(trangaTask.connector, trangaTask.publication, trangaTask.language, chapterCollection);
+                UpdateChapters(connector, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
                 break;
             case TrangaTask.Task.UpdatePublications:
-                UpdatePublications(trangaTask.connector, chapterCollection);
+                UpdatePublications(connector, chapterCollection);
                 break;
         }
     }
