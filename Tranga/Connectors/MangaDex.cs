@@ -187,6 +187,12 @@ public class MangaDex : Connector
 
     public override void DownloadCover(Publication publication)
     {
+        string publicationPath = Path.Join(downloadLocation, publication.folderName);
+        DirectoryInfo dirInfo = new DirectoryInfo(publicationPath);
+        foreach(FileInfo fileInfo in dirInfo.EnumerateFiles())
+            if (fileInfo.Name.Contains("cover."))
+                return;
+        
         DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
