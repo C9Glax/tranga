@@ -10,6 +10,7 @@ public class TaskManager
     {
         _chapterCollection = new();
         _allTasks = new ();
+        ImportTasks();
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
     }
@@ -34,5 +35,16 @@ public class TaskManager
     public void Shutdown()
     {
         _continueRunning = false;
+        ExportTasks();
+    }
+
+    public void ImportTasks()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ExportTasks()
+    {
+        throw new NotImplementedException();
     }
 }
