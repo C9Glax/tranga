@@ -12,7 +12,7 @@ app.MapGet("/GetPublications", (string connectorName, string? title) =>
 {
     Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(c => c.Key == connectorName).Value;
     if (connector is null)
-        JsonSerializer.Serialize($"Connector {connectorName} is not a known connector.");
+        return JsonSerializer.Serialize($"Connector {connectorName} is not a known connector.");
 
     Publication[] publications;
     if (title is not null)
