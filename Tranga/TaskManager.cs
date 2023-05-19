@@ -44,6 +44,8 @@ public class TaskManager
         if (!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name &&
                                          trangaTask.publication?.downloadUrl != publication?.downloadUrl))
         {
+            if(task != TrangaTask.Task.UpdatePublications)
+                _chapterCollection.Add((Publication)publication!, new List<Chapter>());
             _allTasks.Add(new TrangaTask(connector.name, task, publication, reoccurrence, language));
             ExportTasks(Directory.GetCurrentDirectory());
         }
