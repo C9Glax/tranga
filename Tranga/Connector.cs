@@ -57,7 +57,10 @@ public abstract class Connector
     /// <param name="publication">Publication to save series.json for</param>
     public void SaveSeriesInfo(Publication publication)
     {
-        string seriesInfoPath = Path.Join(downloadLocation, publication.folderName, "series.json");
+        //Check if Publication already has a Folder and a series.json
+        string publicationFolder = Path.Join(downloadLocation, publication.folderName);
+        Directory.CreateDirectory(publicationFolder);
+        string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))
             File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
     }

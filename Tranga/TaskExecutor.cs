@@ -67,10 +67,10 @@ public static class TaskExecutor
     private static void DownloadNewChapters(Connector connector, Publication publication, string language, Dictionary<Publication, List<Chapter>> chapterCollection)
     {
         List<Chapter> newChapters = UpdateChapters(connector, publication, language, chapterCollection);
-        foreach(Chapter newChapter in newChapters)
-            connector.DownloadChapter(publication, newChapter);
         connector.DownloadCover(publication);
         connector.SaveSeriesInfo(publication);
+        foreach(Chapter newChapter in newChapters)
+            connector.DownloadChapter(publication, newChapter);
     }
 
     /// <summary>
