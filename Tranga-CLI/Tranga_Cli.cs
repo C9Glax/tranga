@@ -126,6 +126,21 @@ public static class Tranga_Cli
         return tasks.Length;
     }
 
+    private static void ExecuteTask(TaskManager taskManager)
+    {
+        TrangaTask[] tasks = taskManager.GetAllTasks();
+        PrintTasks(tasks);
+        
+        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
+
+        string? selectedTask = Console.ReadLine();
+        while(selectedTask is null || selectedTask.Length < 1)
+            selectedTask = Console.ReadLine();
+        int selectedTaskIndex = Convert.ToInt32(selectedTask);
+        
+        taskManager.ExecuteTaskNow(tasks[selectedTaskIndex]);
+    }
+
     private static void RemoveTask(TaskManager taskManager)
     {
         int length = PrintTasks(taskManager);
