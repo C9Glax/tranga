@@ -76,7 +76,7 @@ public static class TaskExecutor
         
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))
-            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
+            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfoJson());
 
         foreach(Chapter newChapter in newChapters)
             connector.DownloadChapter(publication, newChapter);

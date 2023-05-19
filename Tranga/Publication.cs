@@ -38,7 +38,7 @@ public struct Publication
     /// 
     /// </summary>
     /// <returns>Serialized JSON String for series.json</returns>
-    public string GetSeriesInfo()
+    public string GetSeriesInfoJson()
     {
         SeriesInfo si = new (new Metadata(this.sortName, this.year.ToString() ?? string.Empty, this.status, this.description ?? ""));
         return System.Text.Json.JsonSerializer.Serialize(si);

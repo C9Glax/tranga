@@ -65,7 +65,7 @@ public abstract class Connector
         
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))
-            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
+            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfoJson());
     }
 
     public static string CreateComicInfo(Publication publication, Chapter chapter)
