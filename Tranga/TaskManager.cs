@@ -36,6 +36,9 @@ public class TaskManager
 
     public void ExecuteTaskNow(TrangaTask task)
     {
+        if (!this._allTasks.Contains(task))
+            return;
+        
         Task t = new Task(() =>
         {
             TaskExecutor.Execute(this.connectors, task, this._chapterCollection);
