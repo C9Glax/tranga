@@ -67,7 +67,7 @@ public class TaskManager
     /// <param name="reoccurrence">Time-Interval between Executions</param>
     /// <param name="language">language, should Task require parameter. Can be empty</param>
     /// <exception cref="ArgumentException">Is thrown when connectorName is not a available Connector</exception>
-    public void AddTask(TrangaTask.Task task, string connectorName, Publication? publication, TimeSpan reoccurrence,
+    public TrangaTask AddTask(TrangaTask.Task task, string connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
         //Get appropriate Connector from available Connectors for TrangaTask
@@ -75,15 +75,17 @@ public class TaskManager
         if (connector is null)
             throw new ArgumentException($"Connector {connectorName} is not a known connector.");
         
+        TrangaTask newTask = new TrangaTask(connector.name, task, publication, reoccurrence, language);
         //Check if same task already exists
         if (!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name &&
                                          trangaTask.publication?.downloadUrl != publication?.downloadUrl))
         {
             if(task != TrangaTask.Task.UpdatePublications)
                 _chapterCollection.Add((Publication)publication!, new List<Chapter>());
-            _allTasks.Add(new TrangaTask(connector.name, task, publication, reoccurrence, language));
+            _allTasks.Add(newTask);
             ExportTasks(Directory.GetCurrentDirectory());
         }
+        return newTask;
     }
 
     /// <summary>
