@@ -136,6 +136,12 @@ public static class Tranga_Cli
     private static void ExecuteTask(TaskManager taskManager)
     {
         TrangaTask[] tasks = taskManager.GetAllTasks();
+        if (tasks.Length < 1)
+        {
+            Console.Clear();
+            Console.WriteLine("There are no available Tasks.");
+            return;
+        }
         PrintTasks(tasks);
         
         Console.WriteLine($"Select Task (0-{tasks.Length}):");
@@ -151,6 +157,12 @@ public static class Tranga_Cli
     private static void RemoveTask(TaskManager taskManager)
     {
         TrangaTask[] tasks = taskManager.GetAllTasks();
+        if (tasks.Length < 1)
+        {
+            Console.Clear();
+            Console.WriteLine("There are no available Tasks.");
+            return;
+        }
         PrintTasks(tasks);
         
         Console.WriteLine($"Select Task (0-{tasks.Length}):");
