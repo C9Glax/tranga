@@ -51,7 +51,7 @@ public struct Publication
         public SeriesInfo(Metadata metadata) => this.metadata = metadata;
     }
 
-    //Only for series.json
+    //Only for series.json what an abomination, why are all the fields not-null????
     private struct Metadata
     {
         [JsonRequired] public string type { get; }
