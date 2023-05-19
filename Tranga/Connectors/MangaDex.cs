@@ -205,7 +205,8 @@ public class MangaDex : Connector
     {
         //Check if Publication already has a Folder and cover
         string publicationFolder = Path.Join(downloadLocation, publication.folderName);
-        Directory.CreateDirectory(publicationFolder);
+        if(!Directory.Exists(publicationFolder))
+            Directory.CreateDirectory(publicationFolder);
         DirectoryInfo dirInfo = new (publicationFolder);
         foreach(FileInfo fileInfo in dirInfo.EnumerateFiles())
             if (fileInfo.Name.Contains("cover."))

@@ -59,7 +59,9 @@ public abstract class Connector
     {
         //Check if Publication already has a Folder and a series.json
         string publicationFolder = Path.Join(downloadLocation, publication.folderName);
-        Directory.CreateDirectory(publicationFolder);
+        if(!Directory.Exists(publicationFolder))
+            Directory.CreateDirectory(publicationFolder);
+        
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))
             File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
