@@ -7,6 +7,7 @@ public static class TaskExecutor
         Connector? connector = connectors.FirstOrDefault(c => c.name == trangaTask.connectorName);
         if (connector is null)
             throw new ArgumentException($"Connector {trangaTask.connectorName} is not a known connector.");
+        trangaTask.lastExecuted = DateTime.Now;
         
         switch (trangaTask.task)
         {

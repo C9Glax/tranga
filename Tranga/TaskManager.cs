@@ -29,7 +29,6 @@ public class TaskManager
             {
                 if(task.ShouldExecute()) 
                     TaskExecutor.Execute(this.connectors, task, this._chapterCollection);
-                task.lastExecuted = DateTime.Now;
             }
             Thread.Sleep(1000);
         }
