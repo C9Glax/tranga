@@ -113,7 +113,7 @@ public abstract class Connector
         
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
-        Directory.Delete(tempFolder); //Cleanup
+        Directory.Delete(tempFolder, true); //Cleanup
     }
     
     protected class DownloadClient
