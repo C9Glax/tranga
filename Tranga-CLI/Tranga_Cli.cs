@@ -73,6 +73,24 @@ public static class Tranga_Cli
                     Console.ReadKey();
                     menu = 0;
                     break;
+                case 5:
+                    Console.WriteLine("Search-Query (Name):");
+                    string? query = Console.ReadLine();
+                    while (query is null || query.Length < 1)
+                        query = Console.ReadLine();
+                    PrintTasks(taskManager.GetAllTasks().Where(task =>
+                        ((Publication)task.publication!).sortName.ToLower()
+                        .Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray());
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    menu = 0;
+                    break; 
+                case 6:
+                    PrintTasks(taskManager.GetAllTasks().Where(task => task.isBeingExecuted).ToArray());
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    menu = 0;
+                    break;
                 default:
                     selection = Menu(taskManager, folderPath);
                     switch (selection)
@@ -91,6 +109,12 @@ public static class Tranga_Cli
                             break;
                         case ConsoleKey.U:
                             menu = 0;
+                            break;
+                        case ConsoleKey.S:
+                            menu = 5;
+                            break;
+                        case ConsoleKey.R:
+                            menu = 6;
                             break;
                         default:
                             menu = 0;
@@ -120,6 +144,8 @@ public static class Tranga_Cli
         Console.WriteLine("C: Create Task");
         Console.WriteLine("D: Delete Task");
         Console.WriteLine("E: Execute Task now");
+        Console.WriteLine("S: Search Task");
+        Console.WriteLine("R: Running Tasks");
         Console.WriteLine("Q: Exit");
         ConsoleKey selection = Console.ReadKey().Key;
         Console.WriteLine();
