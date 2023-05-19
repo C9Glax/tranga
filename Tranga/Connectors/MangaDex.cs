@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -21,7 +22,11 @@ public class MangaDex : Connector
         HashSet<Publication> publications = new();
         while (offset < total)
         {
-            DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest($"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}");
+            DownloadClient.RequestResult requestResult =
+                _downloadClient.MakeRequest(
+                    $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}");
+            if (requestResult.statusCode != HttpStatusCode.OK)
+                break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             offset += limit;
             if (result is null)
@@ -121,7 +126,10 @@ public class MangaDex : Connector
         while (offset < total)
         {
             DownloadClient.RequestResult requestResult =
-                _downloadClient.MakeRequest($"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
+                _downloadClient.MakeRequest(
+                    $"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
+            if (requestResult.statusCode != HttpStatusCode.OK)
+                break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             
             offset += limit;
@@ -163,6 +171,8 @@ public class MangaDex : Connector
     {
         DownloadClient.RequestResult requestResult =
             _downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
+        if (requestResult.statusCode != HttpStatusCode.OK)
+            return;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
             return;
@@ -188,12 +198,16 @@ public class MangaDex : Connector
     public override void DownloadCover(Publication publication)
     {
         string publicationPath = Path.Join(downloadLocation, publication.folderName);
-        DirectoryInfo dirInfo = new DirectoryInfo(publicationPath);
+        Directory.CreateDirectory(publicationPath);
+        DirectoryInfo dirInfo = new (publicationPath);
         foreach(FileInfo fileInfo in dirInfo.EnumerateFiles())
             if (fileInfo.Name.Contains("cover."))
                 return;
-        
-        DownloadClient.RequestResult requestResult = _downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
+
+        DownloadClient.RequestResult requestResult =
+            _downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
+        if (requestResult.statusCode != HttpStatusCode.OK)
+            return;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
             return;
