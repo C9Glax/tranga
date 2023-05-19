@@ -85,10 +85,18 @@ public class TaskManager
         return this._chapterCollection.Keys.ToArray();
     }
     
-    public void Shutdown()
+    public void Shutdown(bool force = false)
     {
         _continueRunning = false;
         ExportTasks(Directory.GetCurrentDirectory());
+        
+        if(force)
+            Environment.Exit(_allTasks.Count(task => task.isBeingExecuted));
+        
+        //Wait for tasks to finish
+        while(_allTasks.Any(task => task.isBeingExecuted))
+            Thread.Sleep(10);
+        
     }
 
     private HashSet<TrangaTask> ImportTasks(string importFolderPath)

@@ -90,7 +90,14 @@ public static class Tranga_Cli
                     break;
             }
         }
-        taskManager.Shutdown();
+
+        if (taskManager.GetAllTasks().Any(task => task.isBeingExecuted))
+        {
+            Console.WriteLine("Force quit (Even with running tasks?) y/N");
+            selection = Console.ReadKey().Key;
+            taskManager.Shutdown(selection == ConsoleKey.Y);
+        }else
+            taskManager.Shutdown(false);
     }
 
     private static ConsoleKey Menu(string folderPath)
