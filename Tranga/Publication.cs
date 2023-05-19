@@ -66,7 +66,6 @@ public struct Publication
         [JsonRequired]public string name { get; }
         [JsonRequired]public string year { get; }
         [JsonRequired]public string status { get; }
-        // ReSharper disable twice InconsistentNaming
         [JsonRequired]public string description_text { get; }
 
         public Metadata(string name, string year, string status, string description_text)
