@@ -1,4 +1,6 @@
-﻿namespace Tranga;
+﻿using System.Text.Json;
+
+namespace Tranga;
 
 public class TaskManager
 {
@@ -9,8 +11,7 @@ public class TaskManager
     public TaskManager()
     {
         _chapterCollection = new();
-        _allTasks = new ();
-        ImportTasks();
+        _allTasks = ImportTasks(Directory.GetCurrentDirectory());
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
     }
@@ -30,16 +31,26 @@ public class TaskManager
     public void Shutdown()
     {
         _continueRunning = false;
-        ExportTasks();
+        ExportTasks(Directory.GetCurrentDirectory());
     }
 
-    public void ImportTasks()
+    public HashSet<TrangaTask> ImportTasks(string importFolderPath)
     {
-        throw new NotImplementedException();
+        string filePath = Path.Join(importFolderPath, "tasks.json");
+        if (!File.Exists(filePath))
+            return new HashSet<TrangaTask>();
+        
+        FileStream file = new FileStream(filePath, FileMode.Open);
+
+        TrangaTask[] importTasks = JsonSerializer.Deserialize<TrangaTask[]>(file, JsonSerializerOptions.Default)!;
+        return importTasks.ToHashSet();
     }
 
-    public void ExportTasks()
+    public void ExportTasks(string exportFolderPath)
     {
-        throw new NotImplementedException();
+        FileStream file = new FileStream(Path.Join(exportFolderPath, "tasks.json"), FileMode.CreateNew);
+        JsonSerializer.Serialize(file, _allTasks.ToArray(), JsonSerializerOptions.Default);
+        file.Close();
+        file.Dispose();
     }
 }
