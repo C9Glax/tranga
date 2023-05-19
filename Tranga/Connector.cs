@@ -42,6 +42,11 @@ public abstract class Connector
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
     }
 
+    public void SaveSeriesInfo(Publication publication)
+    {
+        File.WriteAllText(Path.Join(downloadLocation, publication.folderName, "series.json"),publication.GetSeriesInfo());
+    }
+
     internal class DownloadClient
     {
         private readonly TimeSpan _requestSpeed;
