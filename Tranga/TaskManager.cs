@@ -68,6 +68,11 @@ public class TaskManager
         _allTasks.CopyTo(ret);
         return ret;
     }
+
+    public Publication[] GetAllPublications()
+    {
+        return this._chapterCollection.Keys.ToArray();
+    }
     
     public void Shutdown()
     {
