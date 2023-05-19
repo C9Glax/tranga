@@ -56,7 +56,7 @@ public static class Tranga_Cli
                         publication = SelectPublication(connector);
                     TimeSpan reoccurrence = SelectReoccurrence();
                     taskManager.AddTask(task, connector.name, publication, reoccurrence, "en");
-                    Console.WriteLine($"{task} - {connector.name} - {publication?.sortName}");
+                    Console.WriteLine($"{task} - {reoccurrence} - {publication?.sortName} - {connector.name}");
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     menu = 0;
@@ -89,6 +89,9 @@ public static class Tranga_Cli
                         case ConsoleKey.E:
                             menu = 4;
                             break;
+                        case ConsoleKey.U:
+                            menu = 0;
+                            break;
                         default:
                             menu = 0;
                             break;
@@ -112,6 +115,7 @@ public static class Tranga_Cli
         int taskRunningCount = taskManager.GetAllTasks().Count(task => task.isBeingExecuted);
         Console.Clear();
         Console.WriteLine($"Download Folder: {folderPath} Tasks (Running/Total): {taskRunningCount}/{taskCount}");
+        Console.WriteLine("U: Update this Screen");
         Console.WriteLine("L: List tasks");
         Console.WriteLine("C: Create Task");
         Console.WriteLine("D: Delete Task");
@@ -144,7 +148,7 @@ public static class Tranga_Cli
         }
         PrintTasks(tasks);
         
-        Console.WriteLine($"Select Task (0-{tasks.Length}):");
+        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
@@ -165,7 +169,7 @@ public static class Tranga_Cli
         }
         PrintTasks(tasks);
         
-        Console.WriteLine($"Select Task (0-{tasks.Length}):");
+        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
@@ -184,7 +188,7 @@ public static class Tranga_Cli
         Console.WriteLine("Available Tasks:");
         foreach (string taskName in taskNames)
             Console.WriteLine($"{tIndex++}: {taskName}");
-        Console.WriteLine($"Select Task (0-{taskNames.Length}):");
+        Console.WriteLine($"Select Task (0-{taskNames.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
