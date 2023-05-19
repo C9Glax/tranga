@@ -49,8 +49,8 @@ public class MangaDex : Connector
                 
                 string title = attributes["title"]!.AsObject().ContainsKey("en") && attributes["title"]!["en"] is not null
                     ? attributes["title"]!["en"]!.GetValue<string>()
-                    : "";
-                
+                    : attributes["title"]![((IDictionary<string, JsonNode?>)attributes["title"]!.AsObject()).Keys.First()]!.GetValue<string>();
+
                 string? description = attributes["description"]!.AsObject().ContainsKey("en") && attributes["description"]!["en"] is not null
                     ? attributes["description"]!["en"]!.GetValue<string?>()
                     : null;
