@@ -34,19 +34,23 @@ public class TaskManager
         }
     }
 
-    public bool AddTask(TrangaTask.Task task, Connector connector, Publication? publication, TimeSpan reoccurrence,
+    public void AddTask(TrangaTask.Task task, Connector connector, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
-        if(!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name && trangaTask.publication?.downloadUrl != publication?.downloadUrl))
-            return _allTasks.Add(new TrangaTask(connector.name, task, publication, reoccurrence, language));
-        return false;
+        if (!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name &&
+                                         trangaTask.publication?.downloadUrl != publication?.downloadUrl))
+        {
+            _allTasks.Add(new TrangaTask(connector.name, task, publication, reoccurrence, language));
+            ExportTasks(Directory.GetCurrentDirectory());
+        }
     }
 
-    public bool RemoveTask(TrangaTask.Task task, string connectorName, Publication? publication)
+    public void RemoveTask(TrangaTask.Task task, string connectorName, Publication? publication)
     {
-        return (_allTasks.RemoveWhere(trangaTask =>
-            trangaTask.task == task && trangaTask.connectorName == connectorName && trangaTask.publication?.downloadUrl == publication?.downloadUrl)
-            > 0);
+        _allTasks.RemoveWhere(trangaTask =>
+            trangaTask.task == task && trangaTask.connectorName == connectorName &&
+            trangaTask.publication?.downloadUrl == publication?.downloadUrl);
+        ExportTasks(Directory.GetCurrentDirectory());
     }
 
     public Dictionary<string, Connector> GetAvailableConnectors()
