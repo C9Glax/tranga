@@ -93,8 +93,7 @@ public static class TaskExecutor
     private static List<Chapter> UpdateChapters(Connector connector, Publication publication, string language, Dictionary<Publication, List<Chapter>> chapterCollection)
     {
         List<Chapter> newChaptersList = new();
-        if (!chapterCollection.ContainsKey(publication))
-            return newChaptersList;
+        chapterCollection.TryAdd(publication, newChaptersList); //To ensure publication is actually in collection
         
         Chapter[] newChapters = connector.GetChapters(publication, language);
         newChaptersList = newChapters.Where(nChapter => !connector.ChapterIsDownloaded(publication, nChapter)).ToList();
