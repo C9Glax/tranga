@@ -31,22 +31,6 @@ public class TaskManager
         }
     }
 
-    public bool PublicationAlreadyAdded(Publication publication)
-    {
-        throw new NotImplementedException();
-        //TODO fuzzy check publications
-    }
-
-    public Publication[] GetAddedPublications()
-    {
-        throw new NotImplementedException();
-    }
-
-    public TrangaTask[] GetTasks()
-    {
-        return _allTasks.ToArray();
-    }
-
     public void Shutdown()
     {
         _continueRunning = false;
