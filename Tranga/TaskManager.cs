@@ -70,10 +70,12 @@ public class TaskManager
     public void AddTask(TrangaTask.Task task, string connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
+        //Get appropriate Connector from available Connectors for TrangaTask
         Connector? connector = connectors.FirstOrDefault(c => c.name == connectorName);
         if (connector is null)
             throw new ArgumentException($"Connector {connectorName} is not a known connector.");
         
+        //Check if same task already exists
         if (!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name &&
                                          trangaTask.publication?.downloadUrl != publication?.downloadUrl))
         {
@@ -142,7 +144,7 @@ public class TaskManager
         //Wait for tasks to finish
         while(_allTasks.Any(task => task.isBeingExecuted))
             Thread.Sleep(10);
-        
+        Environment.Exit(0);
     }
 
     private HashSet<TrangaTask> ImportTasks(string importFolderPath)

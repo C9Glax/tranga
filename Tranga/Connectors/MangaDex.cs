@@ -20,24 +20,28 @@ public class MangaDex : Connector
 
     public override Publication[] GetPublications(string publicationTitle = "")
     {
-        const int limit = 100;
-        int offset = 0;
-        int total = int.MaxValue;
+        const int limit = 100; //How many values we want returned at once
+        int offset = 0; //"Page"
+        int total = int.MaxValue; //How many total results are there, is updated on first request
         HashSet<Publication> publications = new();
-        while (offset < total)
+        while (offset < total) //As long as we haven't requested all "Pages"
         {
+            //Request next Page
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(
                     $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}");
             if (requestResult.statusCode != HttpStatusCode.OK)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+            
             offset += limit;
             if (result is null)
                 break;
             
-            total = result["total"]!.GetValue<int>();
-            JsonArray mangaInResult = result["data"]!.AsArray();
+            total = result["total"]!.GetValue<int>(); //Update the total number of Publications
+            
+            JsonArray mangaInResult = result["data"]!.AsArray(); //Manga-data-Array
+            //Loop each Manga and extract information from JSON
             foreach (JsonNode? mangeNode in mangaInResult)
             {
                 JsonObject manga = (JsonObject)mangeNode!;
@@ -113,7 +117,7 @@ public class MangaDex : Connector
                     status,
                     manga["id"]!.GetValue<string>()
                 );
-                publications.Add(pub);
+                publications.Add(pub); //Add Publication (Manga) to result
             }
         }
 
@@ -122,16 +126,17 @@ public class MangaDex : Connector
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
-        const int limit = 100;
-        int offset = 0;
-        string id = publication.downloadUrl;
-        int total = int.MaxValue;
+        const int limit = 100; //How many values we want returned at once
+        int offset = 0; //"Page"
+        int total = int.MaxValue; //How many total results are there, is updated on first request
         List<Chapter> chapters = new();
+        //As long as we haven't requested all "Pages"
         while (offset < total)
         {
+            //Request next "Page"
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
+                    $"https://api.mangadex.org/manga/{publication.downloadUrl}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
             if (requestResult.statusCode != HttpStatusCode.OK)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -142,6 +147,7 @@ public class MangaDex : Connector
             
             total = result["total"]!.GetValue<int>();
             JsonArray chaptersInResult = result["data"]!.AsArray();
+            //Loop through all Chapters in result and extract information from JSON
             foreach (JsonNode? jsonNode in chaptersInResult)
             {
                 JsonObject chapter = (JsonObject)jsonNode!;
@@ -164,6 +170,7 @@ public class MangaDex : Connector
             }
         }
 
+        //Return Chapters ordered by Chapter-Number
         NumberFormatInfo chapterNumberFormatInfo = new()
         {
             NumberDecimalSeparator = "."
@@ -173,6 +180,7 @@ public class MangaDex : Connector
 
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
+        //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
         if (requestResult.statusCode != HttpStatusCode.OK)
@@ -184,22 +192,26 @@ public class MangaDex : Connector
         string baseUrl = result["baseUrl"]!.GetValue<string>();
         string hash = result["chapter"]!["hash"]!.GetValue<string>();
         JsonArray imageFileNames = result["chapter"]!["data"]!.AsArray();
+        //Loop through all imageNames and construct urls (imageUrl)
         HashSet<string> imageUrls = new();
         foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
+        //Download Chapter-Images
         DownloadChapterImages(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName), this.downloadClient);
     }
 
     public override void DownloadCover(Publication publication)
     {
-        string publicationPath = Path.Join(downloadLocation, publication.folderName);
-        Directory.CreateDirectory(publicationPath);
-        DirectoryInfo dirInfo = new (publicationPath);
+        //Check if Publication already has a Folder and cover
+        string publicationFolder = Path.Join(downloadLocation, publication.folderName);
+        Directory.CreateDirectory(publicationFolder);
+        DirectoryInfo dirInfo = new (publicationFolder);
         foreach(FileInfo fileInfo in dirInfo.EnumerateFiles())
             if (fileInfo.Name.Contains("cover."))
                 return;
 
+        //Request information where to download Cover
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
         if (requestResult.statusCode != HttpStatusCode.OK)
@@ -211,11 +223,15 @@ public class MangaDex : Connector
         string fileName = result!["data"]!["attributes"]!["fileName"]!.GetValue<string>();
 
         string coverUrl = $"https://uploads.mangadex.org/covers/{publication.downloadUrl}/{fileName}";
+        
+        //Get file-extension (jpg, png)
         string[] split = coverUrl.Split('.');
         string extension = split[split.Length - 1];
 
         string outFolderPath = Path.Join(downloadLocation, publication.folderName);
         Directory.CreateDirectory(outFolderPath);
+        
+        //Download cover-Image
         DownloadImage(coverUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this.downloadClient);
     }
 }

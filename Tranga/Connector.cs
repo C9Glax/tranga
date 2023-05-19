@@ -62,6 +62,12 @@ public abstract class Connector
             File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
     }
     
+    /// <summary>
+    /// Downloads Image from URL and saves it to the given path(incl. fileName)
+    /// </summary>
+    /// <param name="imageUrl"></param>
+    /// <param name="fullPath"></param>
+    /// <param name="downloadClient">DownloadClient of the connector</param>
     protected static void DownloadImage(string imageUrl, string fullPath, DownloadClient downloadClient)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl);
@@ -70,22 +76,31 @@ public abstract class Connector
         File.WriteAllBytes(fullPath, buffer);
     }
     
+    /// <summary>
+    /// Downloads all Images from URLs, Compresses to zip(cbz) and saves.
+    /// </summary>
+    /// <param name="imageUrls">List of URLs to download Images from</param>
+    /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
+    /// <param name="downloadClient">DownloadClient of the connector</param>
     protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient)
     {
+        //Check if Publication Directory already exists
         string[] splitPath = saveArchiveFilePath.Split(Path.DirectorySeparatorChar);
         string directoryPath = Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray());
         if (!Directory.Exists(directoryPath))
             Directory.CreateDirectory(directoryPath);
         
         string fullPath = $"{saveArchiveFilePath}.cbz";
-        if (File.Exists(fullPath))
+        if (File.Exists(fullPath)) //Don't download twice.
             return;
         
+        //Create a temporary folder to store images
         string tempFolder = Path.GetTempFileName();
         File.Delete(tempFolder);
         Directory.CreateDirectory(tempFolder);
 
         int chapter = 0;
+        //Download all Images to temporary Folder
         foreach (string imageUrl in imageUrls)
         {
             string[] split = imageUrl.Split('.');
@@ -93,10 +108,10 @@ public abstract class Connector
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient);
         }
         
+        //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
         Directory.Delete(tempFolder); //Cleanup
     }
-
     
     protected class DownloadClient
     {
@@ -104,12 +119,21 @@ public abstract class Connector
         private DateTime _lastRequest;
         private static readonly HttpClient Client = new();
 
+        /// <summary>
+        /// Creates a httpClient
+        /// </summary>
+        /// <param name="delay">minimum delay between requests (to avoid spam)</param>
         public DownloadClient(uint delay)
         {
             _requestSpeed = TimeSpan.FromMilliseconds(delay);
             _lastRequest = DateTime.Now.Subtract(_requestSpeed);
         }
         
+        /// <summary>
+        /// Request Webpage
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns>RequestResult with StatusCode and Stream of received data</returns>
         public RequestResult MakeRequest(string url)
         {
             while((DateTime.Now - _lastRequest) < _requestSpeed)
