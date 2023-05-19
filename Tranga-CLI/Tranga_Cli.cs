@@ -68,7 +68,7 @@ public static class Tranga_Cli
                     menu = 0;
                     break;
                 case 4:
-                    ExecuteTask(taskManager);
+                    ExecuteTaskNow(taskManager);
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     menu = 0;
@@ -137,7 +137,7 @@ public static class Tranga_Cli
             Console.WriteLine($"{tIndex++}: {trangaTask.task} - {trangaTask.reoccurrence} - {trangaTask.publication?.sortName} - {trangaTask.connectorName} - {trangaTask.lastExecuted} - {(trangaTask.isBeingExecuted ? "Running" : "Waiting")}");
     }
 
-    private static void ExecuteTask(TaskManager taskManager)
+    private static void ExecuteTaskNow(TaskManager taskManager)
     {
         TrangaTask[] tasks = taskManager.GetAllTasks();
         if (tasks.Length < 1)
