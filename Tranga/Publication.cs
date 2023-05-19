@@ -33,7 +33,7 @@ public readonly struct Publication
         this.originalLanguage = originalLanguage;
         this.status = status;
         this.downloadUrl = downloadUrl;
-        this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars()));
+        this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
     }
 
     /// <summary>
