@@ -77,6 +77,16 @@ public abstract class Connector
         );
         return comicInfo.ToString();
     }
+
+    public bool ChapterIsDownloaded(Publication publication, Chapter chapter)
+    {
+        return File.Exists(CreateFullFilepath(publication, chapter));
+    }
+
+    protected string CreateFullFilepath(Publication publication, Chapter chapter)
+    {
+        return Path.Join(downloadLocation, publication.folderName, chapter.fileName);
+    }
     
     /// <summary>
     /// Downloads Image from URL and saves it to the given path(incl. fileName)

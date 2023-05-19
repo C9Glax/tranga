@@ -96,11 +96,9 @@ public static class TaskExecutor
         if (!chapterCollection.ContainsKey(publication))
             return newChaptersList;
         
-        List<Chapter> currentChapters = chapterCollection[publication];
         Chapter[] newChapters = connector.GetChapters(publication, language);
+        newChaptersList = newChapters.Where(nChapter => !connector.ChapterIsDownloaded(publication, nChapter)).ToList();
         
-        newChaptersList = newChapters.ToList()
-            .ExceptBy(currentChapters.Select(cChapter => cChapter.url), nChapter => nChapter.url).ToList();
         return newChaptersList;
     }
 }

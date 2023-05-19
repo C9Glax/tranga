@@ -201,7 +201,7 @@ public class MangaDex : Connector
         File.WriteAllText(comicInfoPath, CreateComicInfo(publication, chapter));
         
         //Download Chapter-Images
-        DownloadChapterImages(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName), this.downloadClient, comicInfoPath);
+        DownloadChapterImages(imageUrls.ToArray(), CreateFullFilepath(publication, chapter), downloadClient, comicInfoPath);
     }
 
     public override void DownloadCover(Publication publication)
