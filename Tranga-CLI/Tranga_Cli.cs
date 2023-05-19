@@ -1,4 +1,5 @@
-﻿using Tranga;
+﻿using System.Globalization;
+using Tranga;
 using Tranga.Connectors;
 
 namespace Tranga_CLI;
@@ -47,7 +48,7 @@ public static class Tranga_Cli
                     Publication? publication = null;
                     if(task != TrangaTask.Task.UpdatePublications)
                         publication = SelectPublication(connector);
-                    TimeSpan reoccurrence = SelectReoccurence();
+                    TimeSpan reoccurrence = SelectReoccurrence();
                     taskManager.AddTask(task, connector.name, publication, reoccurrence, "en");
                     Console.WriteLine($"{task} - {connector.name} - {publication?.sortName}");
                     Console.WriteLine("Press any key.");
@@ -104,7 +105,7 @@ public static class Tranga_Cli
         int tIndex = 0;
         Console.WriteLine("Tasks:");
         foreach(TrangaTask trangaTask in tasks)
-            Console.WriteLine($"{tIndex++}: {trangaTask.task} - {trangaTask.publication?.sortName} - {trangaTask.connectorName}");
+            Console.WriteLine($"{tIndex++}: {trangaTask.task} - {trangaTask.reoccurrence} - {trangaTask.publication?.sortName} - {trangaTask.connectorName}");
         return tasks.Length;
     }
 
@@ -143,9 +144,10 @@ public static class Tranga_Cli
         return Enum.Parse<TrangaTask.Task>(selectedTaskName);
     }
 
-    private static TimeSpan SelectReoccurence()
+    private static TimeSpan SelectReoccurrence()
     {
-        return TimeSpan.FromSeconds(30); //TODO
+        Console.WriteLine("Select reoccurrence Timer (Format hh:mm:ss):");
+        return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
     }
 
     private static void DownloadNow(string folderPath)
