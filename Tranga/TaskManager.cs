@@ -91,7 +91,7 @@ public class TaskManager
         ExportTasks(Directory.GetCurrentDirectory());
     }
 
-    public HashSet<TrangaTask> ImportTasks(string importFolderPath)
+    private HashSet<TrangaTask> ImportTasks(string importFolderPath)
     {
         string filePath = Path.Join(importFolderPath, "tasks.json");
         if (!File.Exists(filePath))
@@ -107,7 +107,7 @@ public class TaskManager
         return importTasks.ToHashSet();
     }
 
-    public void ExportTasks(string exportFolderPath)
+    private void ExportTasks(string exportFolderPath)
     {
         string filePath = Path.Join(exportFolderPath, "tasks.json");
         string toWrite = JsonConvert.SerializeObject(_allTasks.ToArray());
