@@ -44,7 +44,9 @@ public abstract class Connector
 
     public void SaveSeriesInfo(Publication publication)
     {
-        File.WriteAllText(Path.Join(downloadLocation, publication.folderName, "series.json"),publication.GetSeriesInfo());
+        string seriesInfoPath = Path.Join(downloadLocation, publication.folderName, "series.json");
+        if(!File.Exists(seriesInfoPath))
+            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
     }
 
     internal class DownloadClient
