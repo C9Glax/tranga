@@ -68,7 +68,16 @@ public static class TaskExecutor
     {
         List<Chapter> newChapters = UpdateChapters(connector, publication, language, chapterCollection);
         connector.DownloadCover(publication);
-        connector.SaveSeriesInfo(publication);
+        
+        //Check if Publication already has a Folder and a series.json
+        string publicationFolder = Path.Join(connector.downloadLocation, publication.folderName);
+        if(!Directory.Exists(publicationFolder))
+            Directory.CreateDirectory(publicationFolder);
+        
+        string seriesInfoPath = Path.Join(publicationFolder, "series.json");
+        if(!File.Exists(seriesInfoPath))
+            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfo());
+
         foreach(Chapter newChapter in newChapters)
             connector.DownloadChapter(publication, newChapter);
     }
