@@ -54,6 +54,15 @@ public struct Publication
     //Only for series.json
     private struct Metadata
     {
+        [JsonRequired] public string type { get; }
+        [JsonRequired] public string publisher { get; }
+        // ReSharper disable twice IdentifierTypo
+        [JsonRequired] public int comicid  { get; }
+        [JsonRequired] public string booktype { get; }
+        // ReSharper disable InconsistentNaming
+        [JsonRequired] public string ComicImage { get; }
+        [JsonRequired] public int total_issues { get; }
+        [JsonRequired] public string publication_run { get; }
         [JsonRequired]public string name { get; }
         [JsonRequired]public string year { get; }
         [JsonRequired]public string status { get; }
@@ -64,8 +73,22 @@ public struct Publication
         {
             this.name = name;
             this.year = year;
-            this.status = status;
+            if(status == "ongoing" || status == "hiatus")
+                this.status = "Continuing";
+            else if (status == "completed" || status == "cancelled")
+                this.status = "Ended";
+            else
+                this.status = status;
             this.description_text = description_text;
+            
+            //kill it with fire
+            type = "Manga";
+            publisher = "";
+            comicid = 0;
+            booktype = "";
+            ComicImage = "";
+            total_issues = 0;
+            publication_run = "";
         }
     }
 }
