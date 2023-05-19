@@ -7,9 +7,13 @@ namespace Tranga.Connectors;
 public class MangaDex : Connector
 {
     public override string name { get; }
-    private readonly DownloadClient _downloadClient = new (750);
 
-    public MangaDex(string downloadLocation) : base(downloadLocation)
+    public MangaDex(string downloadLocation, uint downloadDelay) : base(downloadLocation, downloadDelay)
+    {
+        name = "MangaDex";
+    }
+    
+    public MangaDex(string downloadLocation) : base(downloadLocation, 750)
     {
         name = "MangaDex";
     }
@@ -23,7 +27,7 @@ public class MangaDex : Connector
         while (offset < total)
         {
             DownloadClient.RequestResult requestResult =
-                _downloadClient.MakeRequest(
+                downloadClient.MakeRequest(
                     $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}");
             if (requestResult.statusCode != HttpStatusCode.OK)
                 break;
@@ -126,7 +130,7 @@ public class MangaDex : Connector
         while (offset < total)
         {
             DownloadClient.RequestResult requestResult =
-                _downloadClient.MakeRequest(
+                downloadClient.MakeRequest(
                     $"https://api.mangadex.org/manga/{id}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
             if (requestResult.statusCode != HttpStatusCode.OK)
                 break;
@@ -170,7 +174,7 @@ public class MangaDex : Connector
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
         DownloadClient.RequestResult requestResult =
-            _downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
+            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
         if (requestResult.statusCode != HttpStatusCode.OK)
             return;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -184,7 +188,7 @@ public class MangaDex : Connector
         foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
-        DownloadChapterImages(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName), this._downloadClient);
+        DownloadChapterImages(imageUrls.ToArray(), Path.Join(downloadLocation, publication.folderName, chapter.fileName), this.downloadClient);
     }
 
     public override void DownloadCover(Publication publication)
@@ -197,7 +201,7 @@ public class MangaDex : Connector
                 return;
 
         DownloadClient.RequestResult requestResult =
-            _downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
+            downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
         if (requestResult.statusCode != HttpStatusCode.OK)
             return;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -212,6 +216,6 @@ public class MangaDex : Connector
 
         string outFolderPath = Path.Join(downloadLocation, publication.folderName);
         Directory.CreateDirectory(outFolderPath);
-        DownloadImage(coverUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this._downloadClient);
+        DownloadImage(coverUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this.downloadClient);
     }
 }

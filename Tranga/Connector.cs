@@ -5,9 +5,13 @@ namespace Tranga;
 
 public abstract class Connector
 {
-    public Connector(string downloadLocation)
+    internal string downloadLocation { get; }  //Location of local files
+    protected DownloadClient downloadClient { get; }
+
+    protected Connector(string downloadLocation, uint downloadDelay)
     {
         this.downloadLocation = downloadLocation;
+        this.downloadClient = new DownloadClient(downloadDelay);
     }
     
     internal string downloadLocation { get; }
