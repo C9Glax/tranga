@@ -113,7 +113,7 @@ public static class Tranga_Cli
         int length = PrintTasks(taskManager);
         
         TrangaTask[] tasks = taskManager.GetAllTasks();
-        Console.WriteLine($"Select Task (0-{length - 1}:");
+        Console.WriteLine($"Select Task (0-{length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
