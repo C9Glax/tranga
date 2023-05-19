@@ -2,6 +2,9 @@
 
 namespace Tranga;
 
+/// <summary>
+/// Contains information on a Publication (Manga)
+/// </summary>
 public struct Publication
 {
     public string sortName { get; }
@@ -31,19 +34,25 @@ public struct Publication
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars()));
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>Serialized JSON String for series.json</returns>
     public string GetSeriesInfo()
     {
         SeriesInfo si = new (new Metadata(this.sortName, this.year.ToString() ?? string.Empty, this.status, this.description ?? ""));
         return System.Text.Json.JsonSerializer.Serialize(si);
     }
-    
-    internal struct SeriesInfo
+
+    //Only for series.json
+    private struct SeriesInfo
     {
         [JsonRequired]public Metadata metadata { get; }
         public SeriesInfo(Metadata metadata) => this.metadata = metadata;
     }
-        
-    internal struct Metadata
+
+    //Only for series.json
+    private struct Metadata
     {
         [JsonRequired]public string name { get; }
         [JsonRequired]public string year { get; }
