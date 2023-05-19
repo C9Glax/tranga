@@ -130,6 +130,7 @@ public static class Tranga_Cli
             selection = Console.ReadKey().Key;
             taskManager.Shutdown(selection == ConsoleKey.Y);
         }else
+            // ReSharper disable once RedundantArgumentDefaultValue Better readability
             taskManager.Shutdown(false);
     }
 
@@ -160,7 +161,7 @@ public static class Tranga_Cli
         int tIndex = 0;
         Console.WriteLine($"Tasks (Running/Total): {taskRunningCount}/{taskCount}");
         foreach(TrangaTask trangaTask in tasks)
-            Console.WriteLine($"{tIndex++:000}: {trangaTask.ToString()}");
+            Console.WriteLine($"{tIndex++:000}: {trangaTask}");
     }
 
     private static void ExecuteTaskNow(TaskManager taskManager)

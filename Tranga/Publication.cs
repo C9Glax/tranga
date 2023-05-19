@@ -8,7 +8,9 @@ namespace Tranga;
 public readonly struct Publication
 {
     public string sortName { get; }
+    // ReSharper disable UnusedAutoPropertyAccessor.Global we need it, trust
     [JsonIgnore]public string[,] altTitles { get; }
+    // ReSharper disable trice MemberCanBePrivate.Global, trust
     public string? description { get; }
     public string[] tags { get; }
     public string? posterUrl { get; }
@@ -47,6 +49,7 @@ public readonly struct Publication
     //Only for series.json
     private struct SeriesInfo
     {
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local we need it, trust
         [JsonRequired]public Metadata metadata { get; }
         public SeriesInfo(Metadata metadata) => this.metadata = metadata;
     }
@@ -54,6 +57,7 @@ public readonly struct Publication
     //Only for series.json what an abomination, why are all the fields not-null????
     private struct Metadata
     {
+        // ReSharper disable UnusedAutoPropertyAccessor.Local we need it, trust
         [JsonRequired] public string type { get; }
         [JsonRequired] public string publisher { get; }
         // ReSharper disable twice IdentifierTypo

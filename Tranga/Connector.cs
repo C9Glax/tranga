@@ -98,6 +98,7 @@ public abstract class Connector
     /// <param name="imageUrls">List of URLs to download Images from</param>
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
     /// <param name="downloadClient">DownloadClient of the connector</param>
+    /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, string? comicInfoPath = null)
     {
         //Check if Publication Directory already exists
