@@ -81,7 +81,7 @@ That is why I wanted to create my own project, in a language I understand, and t
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To use head over to [releases](/releases) and download a release.
+To use head over to [releases](https://git.bernloehr.eu/glax/Tranga/releases) and download a release.
 
 A CLI will guide you through setup.
 
