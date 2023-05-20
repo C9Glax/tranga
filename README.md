@@ -56,11 +56,9 @@ and automatically start updates in [Komga](https://komga.org/) to import them.
 
 ### Inspiration:
 
-Because [Kaizoku](https://github.com/oae/kaizoku) was relying on [mangal](https://github.com/metafates/mangal) on hasn't
-received bugfixes for it's issues with Titles not showing up, or throwing errors because of illegal characters, there
-were no alternatives for automatic downloads.
-
-[Kaizoku](https://github.com/oae/kaizoku) certainly had a great Web-UI, but just wasn't working.
+Because [Kaizoku](https://github.com/oae/kaizoku) was relying on [mangal](https://github.com/metafates/mangal) and mangal
+hasn't received bugfixes for it's issues with Titles not showing up, or throwing errors because of illegal characters,
+there were no alternatives for automatic downloads. However [Kaizoku](https://github.com/oae/kaizoku) certainly had a great Web-UI.
 
 That is why I wanted to create my own project, in a language I understand, and that I am able to maintain myself.
 
@@ -134,8 +132,6 @@ Distributed under the GNU GPLv3  License. See `LICENSE.txt` for more information
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
 
 * [Choose an Open Source License](https://choosealicense.com)
 * [Font Awesome](https://fontawesome.com)
