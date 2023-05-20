@@ -69,96 +69,33 @@ public static class Tranga_Cli
     private static void TaskMode(TaskManager.SettingsData settings)
     {
         TaskManager taskManager = new (settings);
-        ConsoleKey selection = ConsoleKey.NoName;
-        int menu = 0;
-        while (selection != ConsoleKey.Escape && selection != ConsoleKey.Q)
+        ConsoleKey selection = PrintMenu(taskManager, settings.downloadLocation);
+        while (selection != ConsoleKey.Q)
         {
-            switch (menu)
+            switch (selection)
             {
-                case 1:
+                case ConsoleKey.L:
                     PrintTasks(taskManager.GetAllTasks());
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    menu = 0;
                     break;
-                case 2:
-                    TrangaTask.Task task = SelectTaskType();
-                    
-                    Connector? connector = null;
-                    if(task != TrangaTask.Task.UpdateKomgaLibrary)
-                        connector = SelectConnector(settings.downloadLocation, taskManager.GetAvailableConnectors().Values.ToArray());
-                    
-                    Publication? publication = null;
-                    if(task != TrangaTask.Task.UpdatePublications && task != TrangaTask.Task.UpdateKomgaLibrary)
-                        publication = SelectPublication(connector!);
-                    
-                    TimeSpan reoccurrence = SelectReoccurrence();
-                    TrangaTask newTask = taskManager.AddTask(task, connector?.name, publication, reoccurrence, "en");
-                    Console.WriteLine(newTask);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    menu = 0;
+                case ConsoleKey.C:
+                    CreateTask(taskManager, settings);
                     break;
-                case 3:
-                    RemoveTask(taskManager);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    menu = 0;
+                case ConsoleKey.D:
+                    RemoveTask (taskManager);
                     break;
-                case 4:
+                case ConsoleKey.E:
                     ExecuteTaskNow(taskManager);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    menu = 0;
                     break;
-                case 5:
-                    Console.WriteLine("Search-Query (Name):");
-                    string? query = Console.ReadLine();
-                    while (query is null || query.Length < 1)
-                        query = Console.ReadLine();
-                    PrintTasks(taskManager.GetAllTasks().Where(qTask =>
-                        qTask.ToString().ToLower().Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray());
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    menu = 0;
-                    break; 
-                case 6:
+                case ConsoleKey.S:
+                    SearchTasks(taskManager);
+                    break;
+                case ConsoleKey.R:
                     PrintTasks(taskManager.GetAllTasks().Where(eTask => eTask.state == TrangaTask.ExecutionState.Running).ToArray());
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    menu = 0;
-                    break;
-                default:
-                    selection = Menu(taskManager, settings.downloadLocation);
-                    switch (selection)
-                    {
-                        case ConsoleKey.L:
-                            menu = 1;
-                            break;
-                        case ConsoleKey.C:
-                            menu = 2;
-                            break;
-                        case ConsoleKey.D:
-                            menu = 3;
-                            break;
-                        case ConsoleKey.E:
-                            menu = 4;
-                            break;
-                        case ConsoleKey.U:
-                            menu = 0;
-                            break;
-                        case ConsoleKey.S:
-                            menu = 5;
-                            break;
-                        case ConsoleKey.R:
-                            menu = 6;
-                            break;
-                        default:
-                            menu = 0;
-                            break;
-                    }
                     break;
             }
+            Console.WriteLine("Press any key.");
+            Console.ReadKey();
+            selection = PrintMenu(taskManager, settings.downloadLocation);
         }
 
         if (taskManager.GetAllTasks().Any(task => task.state == TrangaTask.ExecutionState.Running))
@@ -173,7 +110,7 @@ public static class Tranga_Cli
             taskManager.Shutdown(false);
     }
 
-    private static ConsoleKey Menu(TaskManager taskManager, string folderPath)
+    private static ConsoleKey PrintMenu(TaskManager taskManager, string folderPath)
     {
         int taskCount = taskManager.GetAllTasks().Length;
         int taskRunningCount = taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Running);
@@ -204,6 +141,34 @@ public static class Tranga_Cli
         Console.WriteLine($"Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         foreach(TrangaTask trangaTask in tasks)
             Console.WriteLine($"{tIndex++:000}: {trangaTask}");
+    }
+
+    private static void CreateTask(TaskManager taskManager, TaskManager.SettingsData settings)
+    {
+        TrangaTask.Task? tmpTask = SelectTaskType();
+        if (tmpTask is null)
+            return;
+        TrangaTask.Task task = (TrangaTask.Task)tmpTask!;
+                    
+        Connector? connector = null;
+        if (task != TrangaTask.Task.UpdateKomgaLibrary)
+        {
+            connector = SelectConnector(settings.downloadLocation, taskManager.GetAvailableConnectors().Values.ToArray());
+            if (connector is null)
+                return;
+        }
+                    
+        Publication? publication = null;
+        if (task != TrangaTask.Task.UpdatePublications && task != TrangaTask.Task.UpdateKomgaLibrary)
+        {
+            publication = SelectPublication(connector!);
+            if (publication is null)
+                return;
+        }
+                    
+        TimeSpan reoccurrence = SelectReoccurrence();
+        TrangaTask newTask = taskManager.AddTask(task, connector?.name, publication, reoccurrence, "en");
+        Console.WriteLine(newTask);
     }
 
     private static void ExecuteTaskNow(TaskManager taskManager)
@@ -277,7 +242,7 @@ public static class Tranga_Cli
         }
     }
 
-    private static TrangaTask.Task SelectTaskType()
+    private static TrangaTask.Task? SelectTaskType()
     {
         Console.Clear();
         string[] taskNames = Enum.GetNames<TrangaTask.Task>();
@@ -286,15 +251,32 @@ public static class Tranga_Cli
         Console.WriteLine("Available Tasks:");
         foreach (string taskName in taskNames)
             Console.WriteLine($"{tIndex++}: {taskName}");
+        
+        Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Task (0-{taskNames.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
             selectedTask = Console.ReadLine();
-        int selectedTaskIndex = Convert.ToInt32(selectedTask);
 
-        string selectedTaskName = taskNames[selectedTaskIndex];
-        return Enum.Parse<TrangaTask.Task>(selectedTaskName);
+        if (selectedTask.Length == 1 && selectedTask.ToLower() == "q")
+        {
+            Console.WriteLine("aborted.");
+            return null;
+        }
+        
+        try
+        {
+            int selectedTaskIndex = Convert.ToInt32(selectedTask);
+            string selectedTaskName = taskNames[selectedTaskIndex];
+            return Enum.Parse<TrangaTask.Task>(selectedTaskName);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+        }
+
+        return null;
     }
 
     private static TimeSpan SelectReoccurrence()
@@ -303,7 +285,7 @@ public static class Tranga_Cli
         return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
     }
 
-    private static Connector SelectConnector(string folderPath, Connector[] connectors)
+    private static Connector? SelectConnector(string folderPath, Connector[] connectors)
     {
         Console.Clear();
         
@@ -311,17 +293,34 @@ public static class Tranga_Cli
         Console.WriteLine("Connectors:");
         foreach (Connector connector in connectors)
             Console.WriteLine($"{cIndex++}: {connector.name}");
+        
+        Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Connector (0-{connectors.Length - 1}):");
 
         string? selectedConnector = Console.ReadLine();
         while(selectedConnector is null || selectedConnector.Length < 1)
             selectedConnector = Console.ReadLine();
-        int selectedConnectorIndex = Convert.ToInt32(selectedConnector);
+
+        if (selectedConnector.Length == 1 && selectedConnector.ToLower() == "q")
+        {
+            Console.WriteLine("aborted.");
+            return null;
+        }
         
-        return connectors[selectedConnectorIndex];
+        try
+        {
+            int selectedConnectorIndex = Convert.ToInt32(selectedConnector);
+            return connectors[selectedConnectorIndex];
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+        }
+
+        return null;
     }
 
-    private static Publication SelectPublication(Connector connector)
+    private static Publication? SelectPublication(Connector connector)
     {
         Console.Clear();
         Console.WriteLine($"Connector: {connector.name}");
@@ -334,11 +333,39 @@ public static class Tranga_Cli
         Console.WriteLine("Publications:");
         foreach(Publication publication in publications)
             Console.WriteLine($"{pIndex++}: {publication.sortName}");
-        Console.WriteLine($"Select publication to Download (0-{publications.Length - 1}):");
         
-        string? selected = Console.ReadLine();
-        while(selected is null || selected.Length < 1)
-            selected = Console.ReadLine();
-        return publications[Convert.ToInt32(selected)];
+        Console.WriteLine("Enter q to abort");
+        Console.WriteLine($"Select publication to Download (0-{publications.Length - 1}):");
+
+        string? selectedPublication = Console.ReadLine();
+        while(selectedPublication is null || selectedPublication.Length < 1)
+            selectedPublication = Console.ReadLine();
+
+        if (selectedPublication.Length == 1 && selectedPublication.ToLower() == "q")
+        {
+            Console.WriteLine("aborted.");
+            return null;
+        }
+        
+        try
+        {
+            int selectedPublicationIndex = Convert.ToInt32(selectedPublication);
+            return publications[selectedPublicationIndex];
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+        }
+
+        return null;
+    }
+
+    private static void SearchTasks(TaskManager taskManager)
+    {
+        string? query = Console.ReadLine();
+        while (query is null || query.Length < 1)
+            query = Console.ReadLine();
+        PrintTasks(taskManager.GetAllTasks().Where(qTask =>
+            qTask.ToString().ToLower().Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray());
     }
 }
