@@ -279,7 +279,7 @@ public static class Tranga_Cli
 
     private static void DownloadNow(TaskManager.SettingsData settings)
     {
-        Connector connector = SelectConnector(settings.downloadLocation);
+        Connector connector = SelectConnector(settings.downloadLocation, new Connector[]{new MangaDex(settings.downloadLocation)});
 
         Publication publication = SelectPublication(connector);
         
@@ -298,10 +298,9 @@ public static class Tranga_Cli
         }
     }
 
-    private static Connector SelectConnector(string folderPath, Connector[]? availableConnectors = null)
+    private static Connector SelectConnector(string folderPath, Connector[] connectors)
     {
         Console.Clear();
-        Connector[] connectors = availableConnectors ?? new Connector[] { new MangaDex(folderPath) };
         
         int cIndex = 0;
         Console.WriteLine("Connectors:");

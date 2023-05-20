@@ -18,11 +18,7 @@ public static class TaskExecutor
     {
         Connector? connector = null;
         if (trangaTask.task != TrangaTask.Task.UpdateKomgaLibrary)
-        {
-            //Get Connector from list of available Connectors and the required Connector of the TrangaTask
-            if (!taskManager.GetAvailableConnectors().TryGetValue(trangaTask.connectorName, out connector))
-                throw new ArgumentException($"Connector {trangaTask.connectorName} is not a known connector.");
-        }
+            connector = taskManager.GetConnector(trangaTask.connectorName!);
 
         if (trangaTask.isBeingExecuted)
             return;

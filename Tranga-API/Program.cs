@@ -10,9 +10,7 @@ app.MapGet("/GetConnectors", () => JsonSerializer.Serialize(taskManager.GetAvail
 
 app.MapGet("/GetPublications", (string connectorName, string? title) =>
 {
-    Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(c => c.Key == connectorName).Value;
-    if (connector is null)
-        return JsonSerializer.Serialize($"Connector {connectorName} is not a known connector.");
+    Connector connector = taskManager.GetConnector(connectorName);
 
     Publication[] publications;
     if (title is not null)
