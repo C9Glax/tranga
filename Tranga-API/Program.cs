@@ -1,20 +1,19 @@
 using System.Text.Json;
 using Tranga;
-using Tranga.Connectors;
 
-TaskManager taskManager = new TaskManager(Directory.GetCurrentDirectory());
+TaskManager taskManager = new (Directory.GetCurrentDirectory());
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.MapGet("/GetConnectors", () => JsonSerializer.Serialize(taskManager.GetAvailableConnectors().Values.ToArray()));
 
-app.MapGet("/GetPublications", (string connectorName, string? title) =>
+app.MapGet("/GetPublications", (string connectorName, string? publicationName) =>
 {
     Connector connector = taskManager.GetConnector(connectorName);
 
     Publication[] publications;
-    if (title is not null)
-        publications = connector.GetPublications(title);
+    if (publicationName is not null)
+        publications = connector.GetPublications(publicationName);
     else
         publications = connector.GetPublications();
 
@@ -24,26 +23,60 @@ app.MapGet("/GetPublications", (string connectorName, string? title) =>
 app.MapGet("/ListTasks", () => JsonSerializer.Serialize(taskManager.GetAllTasks()));
 
 app.MapGet("/CreateTask",
-    (TrangaTask.Task task, string connectorName, string? publicationName, TimeSpan reoccurrence, string language) =>
+    (TrangaTask.Task task, string? connectorName, string? publicationName, TimeSpan reoccurrence, string? language) =>
     {
-        Publication? publication =
-            taskManager.GetAllPublications().FirstOrDefault(pub => pub.downloadUrl == publicationName);
-        if (publication is null)
-            JsonSerializer.Serialize($"Publication {publicationName} is unknown.");
-        
-        taskManager.AddTask(task, connectorName, publication, reoccurrence, language);
-        JsonSerializer.Serialize("Success");
+        switch (task)
+        {
+            case TrangaTask.Task.UpdateKomgaLibrary:
+                taskManager.AddTask(TrangaTask.Task.UpdateKomgaLibrary, null, null, reoccurrence);
+                break;
+            case TrangaTask.Task.DownloadNewChapters:
+                try
+                {
+                    Connector connector = taskManager.GetConnector(connectorName);
+                    
+                    Publication[] publications;
+                    if (publicationName is not null)
+                        publications = connector.GetPublications(publicationName);
+                    else
+                        publications = connector.GetPublications();
+                    
+                    Publication? publication = publications.FirstOrDefault(pub => pub.downloadUrl == publicationName);
+                    if (publication is null)
+                        JsonSerializer.Serialize($"Publication {publicationName} is unknown.");
+                    taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connectorName, publication, reoccurrence, language ?? "");
+                    return JsonSerializer.Serialize("Success");
+                }
+                catch (Exception e)
+                {
+                    return JsonSerializer.Serialize(e.Message);
+                }
+
+            default: return JsonSerializer.Serialize("Not Implemented");
+        }
+
+        return JsonSerializer.Serialize("Not Implemented");
     });
 
-app.MapGet("/RemoveTask", (TrangaTask.Task task, string connector, string? publicationName) =>
+app.MapGet("/RemoveTask", (TrangaTask.Task task, string? connectorName, string? publicationName) =>
 {
-    Publication? publication =
-        taskManager.GetAllPublications().FirstOrDefault(pub => pub.downloadUrl == publicationName);
-    if (publication is null)
-        JsonSerializer.Serialize($"Publication {publicationName} is unknown.");
+    switch (task)
+    {
+        case TrangaTask.Task.UpdateKomgaLibrary:
+            taskManager.RemoveTask(TrangaTask.Task.UpdateKomgaLibrary, null, null);
+            return JsonSerializer.Serialize("Success");
+            break;
+        case TrangaTask.Task.DownloadNewChapters:
+            Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.downloadUrl == publicationName);
+            if (publication is null)
+                JsonSerializer.Serialize($"Publication {publicationName} is unknown.");
+            
+            taskManager.RemoveTask(TrangaTask.Task.DownloadNewChapters, connectorName, publication);
+            
+            return JsonSerializer.Serialize("Success");
         
-    taskManager.RemoveTask(task, connector, publication);
-    JsonSerializer.Serialize("Success");
+        default: return JsonSerializer.Serialize("Not Implemented");
+    }
 });
 
 app.Run();

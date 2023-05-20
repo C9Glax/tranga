@@ -193,6 +193,8 @@ public class TaskManager
     /// <exception cref="Exception">If Connector is not available</exception>
     public Connector GetConnector(string connectorName)
     {
+        if(connectorName is null)
+            throw new Exception($"connectorName can not be null");
         Connector? ret = this._connectors.FirstOrDefault(connector => connector.name == connectorName);
         if (ret is null)
             throw new Exception($"Connector {connectorName} is not an available Connector.");
