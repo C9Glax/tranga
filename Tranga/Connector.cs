@@ -73,7 +73,9 @@ public abstract class Connector
         XElement comicInfo = new XElement("ComicInfo",
             new XElement("Tags", string.Join(',',publication.tags)),
             new XElement("LanguageISO", publication.originalLanguage),
-            new XElement("Title", chapter.name)
+            new XElement("Title", chapter.name),
+            new XElement("Volume", chapter.volumeNumber),
+            new XElement("Number", chapter.chapterNumber)
         );
         return comicInfo.ToString();
     }
