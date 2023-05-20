@@ -5,7 +5,7 @@ namespace Logging;
 public abstract class LoggerBase : TextWriter
 {
     public override Encoding Encoding { get; }
-    private TextWriter? stdOut { get; }
+    protected TextWriter? stdOut { get; }
 
     public LoggerBase(TextWriter? stdOut, Encoding? encoding = null)
     {

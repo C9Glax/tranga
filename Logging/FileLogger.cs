@@ -14,6 +14,13 @@ public class FileLogger : LoggerBase
     
     protected override void Write(LogMessage logMessage)
     {
-        File.AppendAllText(logFilePath, logMessage.ToString());
+        try
+        {
+            File.AppendAllText(logFilePath, logMessage.ToString());
+        }
+        catch (Exception e)
+        {
+            stdOut?.WriteLine(e);
+        }
     }
 }
