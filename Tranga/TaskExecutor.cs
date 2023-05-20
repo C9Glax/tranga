@@ -16,10 +16,12 @@ public static class TaskExecutor
     /// <exception cref="ArgumentException">Is thrown when there is no Connector available with the name of the TrangaTask.connectorName</exception>
     public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
     {
+        //Only execute task if it is not already being executed.
         if (trangaTask.state == TrangaTask.ExecutionState.Running)
             return;
         trangaTask.state = TrangaTask.ExecutionState.Running;
         
+        //Connector is not needed for all tasks
         Connector? connector = null;
         if (trangaTask.task != TrangaTask.Task.UpdateKomgaLibrary)
             connector = taskManager.GetConnector(trangaTask.connectorName!);

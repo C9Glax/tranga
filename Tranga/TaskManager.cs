@@ -20,6 +20,8 @@ public class TaskManager
 
     /// <param name="folderPath">Local path to save data (Manga) to</param>
     /// <param name="komgaBaseUrl">The Url of the Komga-instance that you want to update</param>
+    /// <param name="komgaUsername">The Komga username</param>
+    /// <param name="komgaPassword">The Komga password</param>
     public TaskManager(string folderPath, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null)
     {
         this.downloadLocation = folderPath;
@@ -47,10 +49,15 @@ public class TaskManager
         taskChecker.Start();
     }
 
+    /// <summary>
+    /// Runs continuously until shutdown.
+    /// Checks if tasks have to be executed (time elapsed)
+    /// </summary>
     private void TaskCheckerThread()
     {
         while (_continueRunning)
         {
+            //Check if previous tasks have finished and execute new tasks
             foreach (KeyValuePair<Connector, List<TrangaTask>> connectorTaskQueue in tasksToExecute)
             {
                 connectorTaskQueue.Value.RemoveAll(task => task.state == TrangaTask.ExecutionState.Waiting);
@@ -58,6 +65,8 @@ public class TaskManager
                     ExecuteTaskNow(connectorTaskQueue.Value.First());
             }
             
+            //Check if task should be executed
+            //Depending on type execute immediately or enqueue
             foreach (TrangaTask task in _allTasks.Where(aTask => aTask.ShouldExecute()))
             {
                 task.state = TrangaTask.ExecutionState.Enqueued;
@@ -172,6 +181,11 @@ public class TaskManager
         return this._chapterCollection.Keys.ToArray();
     }
 
+    /// <summary>
+    /// Return Connector with given Name
+    /// </summary>
+    /// <param name="connectorName">Connector-name (exact)</param>
+    /// <exception cref="Exception">If Connector is not available</exception>
     public Connector GetConnector(string connectorName)
     {
         Connector? ret = this._connectors.FirstOrDefault(connector => connector.name == connectorName);
@@ -198,7 +212,11 @@ public class TaskManager
         Environment.Exit(0);
     }
 
-    public static SettingsData ImportData(string importFolderPath)
+    /// <summary>
+    /// Loads stored data (settings, tasks) from file
+    /// </summary>
+    /// <param name="importFolderPath">working directory, filename has to be data.json</param>
+    public static SettingsData LoadData(string importFolderPath)
     {
         string importPath = Path.Join(importFolderPath, "data.json");
         if (!File.Exists(importPath))
@@ -210,6 +228,10 @@ public class TaskManager
         return data;
     }
 
+    /// <summary>
+    /// Exports data (settings, tasks) to file
+    /// </summary>
+    /// <param name="exportFolderPath">Folder path, filename will be data.json</param>
     private void ExportData(string exportFolderPath)
     {
         SettingsData data = new SettingsData(this.downloadLocation, this.komga, this._allTasks);

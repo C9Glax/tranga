@@ -68,6 +68,11 @@ public abstract class Connector
             File.WriteAllText(seriesInfoPath,publication.GetSeriesInfoJson());
     }
 
+    /// <summary>
+    /// Creates a string containing XML of publication and chapter.
+    /// See ComicInfo.xml
+    /// </summary>
+    /// <returns>XML-string</returns>
     protected static string CreateComicInfo(Publication publication, Chapter chapter)
     {
         XElement comicInfo = new XElement("ComicInfo",
@@ -80,11 +85,19 @@ public abstract class Connector
         return comicInfo.ToString();
     }
 
+    /// <summary>
+    /// Checks if a chapter-archive is already present
+    /// </summary>
+    /// <returns>true if chapter is present</returns>
     public bool ChapterIsDownloaded(Publication publication, Chapter chapter)
     {
         return File.Exists(CreateFullFilepath(publication, chapter));
     }
 
+    /// <summary>
+    /// Creates full file path of chapter-archive
+    /// </summary>
+    /// <returns>Filepath</returns>
     protected string CreateFullFilepath(Publication publication, Chapter chapter)
     {
         return Path.Join(downloadLocation, publication.folderName, chapter.fileName);

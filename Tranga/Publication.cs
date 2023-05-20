@@ -35,10 +35,7 @@ public readonly struct Publication
         this.downloadUrl = downloadUrl;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
+    
     /// <returns>Serialized JSON String for series.json</returns>
     public string GetSeriesInfoJson()
     {
@@ -57,13 +54,13 @@ public readonly struct Publication
     //Only for series.json what an abomination, why are all the fields not-null????
     private struct Metadata
     {
-        // ReSharper disable UnusedAutoPropertyAccessor.Local we need it, trust
+        // ReSharper disable UnusedAutoPropertyAccessor.Local we need them all, trust me
         [JsonRequired] public string type { get; }
         [JsonRequired] public string publisher { get; }
         // ReSharper disable twice IdentifierTypo
         [JsonRequired] public int comicid  { get; }
         [JsonRequired] public string booktype { get; }
-        // ReSharper disable InconsistentNaming
+        // ReSharper disable InconsistentNaming This one property is capitalized. Why?
         [JsonRequired] public string ComicImage { get; }
         [JsonRequired] public int total_issues { get; }
         [JsonRequired] public string publication_run { get; }
@@ -84,7 +81,7 @@ public readonly struct Publication
                 this.status = status;
             this.description_text = description_text;
             
-            //kill it with fire
+            //kill it with fire, but otherwise Komga will not parse
             type = "Manga";
             publisher = "";
             comicid = 0;

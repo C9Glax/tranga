@@ -4,6 +4,12 @@ using Tranga.Connectors;
 
 namespace Tranga_CLI;
 
+/*
+ * This is written with pure hatred for readability.
+ * At some point do this properly.
+ * Read at own risk.
+ */
+
 public static class Tranga_Cli
 {
     public static void Main(string[] args)
@@ -11,7 +17,7 @@ public static class Tranga_Cli
         TaskManager.SettingsData settings;
         string settingsPath = Path.Join(Directory.GetCurrentDirectory(), "data.json");
         if (File.Exists(settingsPath))
-            settings = TaskManager.ImportData(Directory.GetCurrentDirectory());
+            settings = TaskManager.LoadData(Directory.GetCurrentDirectory());
         else
             settings = new TaskManager.SettingsData(Directory.GetCurrentDirectory(), null, new HashSet<TrangaTask>());
 

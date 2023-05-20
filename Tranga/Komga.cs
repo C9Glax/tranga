@@ -5,17 +5,26 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga;
 
+/// <summary>
+/// Provides connectivity to Komga-API
+/// Can fetch and update libraries
+/// </summary>
 public class Komga
 {
-    [System.Text.Json.Serialization.JsonRequired]public string baseUrl { get; }
-    [System.Text.Json.Serialization.JsonRequired]public string auth { get; }
-
+    public string baseUrl { get; }
+    public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
+    
+    /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
+    /// <param name="username">Komga Username</param>
+    /// <param name="password">Komga password, will be base64 encoded. yea</param>
     public Komga(string baseUrl, string username, string password)
     {
         this.baseUrl = baseUrl;
         this.auth = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}"));
     }
-
+    
+    /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
+    /// <param name="auth">Base64 string of username and password (username):(password)</param>
     [JsonConstructor]
     public Komga(string baseUrl, string auth)
     {
@@ -23,6 +32,10 @@ public class Komga
         this.auth = auth;
     }
 
+    /// <summary>
+    /// Fetches all libraries available to the user
+    /// </summary>
+    /// <returns>Array of KomgaLibraries</returns>
     public KomgaLibrary[] GetLibraries()
     {
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", auth);
@@ -43,6 +56,11 @@ public class Komga
         return ret.ToArray();
     }
 
+    /// <summary>
+    /// Updates library with given id
+    /// </summary>
+    /// <param name="libraryId">Id of the Komga-Library</param>
+    /// <returns>true if successful</returns>
     public bool UpdateLibrary(string libraryId)
     {
         return NetClient.MakePost($"{baseUrl}/api/v1/libraries/{libraryId}/scan", auth);
