@@ -13,16 +13,31 @@ public class TaskManager
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
+    private string downloadLocation { get; }
+    private string? komgaBaseUrl { get; }
 
-    /// <summary>
-    /// 
-    /// </summary>
     /// <param name="folderPath">Local path to save data (Manga) to</param>
-    public TaskManager(string folderPath)
+    /// <param name="komgaBaseUrl">The Url of the Komga-instance that you want to update</param>
+    public TaskManager(string folderPath, string? komgaBaseUrl = null)
     {
         this._connectors = new Connector[]{ new MangaDex(folderPath) };
         _chapterCollection = new();
-        _allTasks = ImportTasks(Directory.GetCurrentDirectory());
+        _allTasks = new HashSet<TrangaTask>();
+        
+        this.downloadLocation = folderPath;
+        this.komgaBaseUrl = komgaBaseUrl;
+        
+        Thread taskChecker = new(TaskCheckerThread);
+        taskChecker.Start();
+    }
+
+    public TaskManager(SettingsData settings)
+    {
+        this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation) };
+        _chapterCollection = new();
+        this.downloadLocation = settings.downloadLocation;
+        this.komgaBaseUrl = settings.komgaUrl;
+        _allTasks = settings.allTasks;
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
     }
@@ -81,7 +96,7 @@ public class TaskManager
             if(task != TrangaTask.Task.UpdatePublications)
                 _chapterCollection.Add((Publication)publication!, new List<Chapter>());
             _allTasks.Add(newTask);
-            ExportTasks(Directory.GetCurrentDirectory());
+            ExportData(Directory.GetCurrentDirectory());
         }
         return newTask;
     }
@@ -97,21 +112,15 @@ public class TaskManager
         _allTasks.RemoveWhere(trangaTask =>
             trangaTask.task == task && trangaTask.connectorName == connectorName &&
             trangaTask.publication?.downloadUrl == publication?.downloadUrl);
-        ExportTasks(Directory.GetCurrentDirectory());
+        ExportData(Directory.GetCurrentDirectory());
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
+    
     /// <returns>All available Connectors</returns>
     public Dictionary<string, Connector> GetAvailableConnectors()
     {
         return this._connectors.ToDictionary(connector => connector.name, connector => connector);
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
+    
     /// <returns>All TrangaTasks in task-collection</returns>
     public TrangaTask[] GetAllTasks()
     {
@@ -119,10 +128,7 @@ public class TaskManager
         _allTasks.CopyTo(ret);
         return ret;
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
+    
     /// <returns>All added Publications</returns>
     public Publication[] GetAllPublications()
     {
@@ -136,7 +142,7 @@ public class TaskManager
     public void Shutdown(bool force = false)
     {
         _continueRunning = false;
-        ExportTasks(Directory.GetCurrentDirectory());
+        ExportData(Directory.GetCurrentDirectory());
         
         if(force)
             Environment.Exit(_allTasks.Count(task => task.isBeingExecuted));
@@ -147,26 +153,38 @@ public class TaskManager
         Environment.Exit(0);
     }
 
-    private HashSet<TrangaTask> ImportTasks(string importFolderPath)
+    public static SettingsData ImportData(string importFolderPath)
     {
-        string filePath = Path.Join(importFolderPath, "tasks.json");
-        if (!File.Exists(filePath))
-            return new HashSet<TrangaTask>();
+        string importPath = Path.Join(importFolderPath, "data.json");
+        if (!File.Exists(importPath))
+            return new SettingsData("", null, new HashSet<TrangaTask>());
 
-        string toRead = File.ReadAllText(filePath);
+        string toRead = File.ReadAllText(importPath);
+        SettingsData data = JsonConvert.DeserializeObject<SettingsData>(toRead)!;
 
-        TrangaTask[] importTasks = JsonConvert.DeserializeObject<TrangaTask[]>(toRead)!;
-        
-        foreach(TrangaTask task in importTasks.Where(task => task.publication is not null))
-            this._chapterCollection.Add((Publication)task.publication!, new List<Chapter>());
-        
-        return importTasks.ToHashSet();
+        return data;
     }
 
-    private void ExportTasks(string exportFolderPath)
+    private void ExportData(string exportFolderPath)
     {
-        string filePath = Path.Join(exportFolderPath, "tasks.json");
-        string toWrite = JsonConvert.SerializeObject(_allTasks.ToArray());
-        File.WriteAllText(filePath,toWrite);
+        SettingsData data = new SettingsData(this.downloadLocation, this.komgaBaseUrl, this._allTasks);
+
+        string exportPath = Path.Join(exportFolderPath, "data.json");
+        string serializedData = JsonConvert.SerializeObject(data);
+        File.WriteAllText(exportPath, serializedData);
+    }
+
+    public class SettingsData
+    {
+        public string downloadLocation { get; }
+        public string? komgaUrl { get; }
+        public HashSet<TrangaTask> allTasks { get; }
+
+        public SettingsData(string downloadLocation, string? komgaUrl, HashSet<TrangaTask> allTasks)
+        {
+            this.downloadLocation = downloadLocation;
+            this.komgaUrl = komgaUrl;
+            this.allTasks = allTasks;
+        }
     }
 }

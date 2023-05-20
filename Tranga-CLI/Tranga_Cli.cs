@@ -35,7 +35,8 @@ public static class Tranga_Cli
 
     private static void TaskMode(string folderPath)
     {
-        TaskManager taskManager = new TaskManager(folderPath);
+        TaskManager.SettingsData settings = TaskManager.ImportData(Directory.GetCurrentDirectory());
+        TaskManager taskManager = new TaskManager(settings);
         ConsoleKey selection = ConsoleKey.NoName;
         int menu = 0;
         while (selection != ConsoleKey.Escape && selection != ConsoleKey.Q)
