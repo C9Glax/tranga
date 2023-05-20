@@ -45,7 +45,7 @@ public class Komga
 
         HashSet<KomgaLibrary> ret = new();
 
-        foreach (JsonNode jsonNode in result)
+        foreach (JsonNode? jsonNode in result)
         {
             var jObject = (JsonObject?)jsonNode;
             string libraryId = jObject!["id"]!.GetValue<string>();

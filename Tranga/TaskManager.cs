@@ -153,11 +153,16 @@ public class TaskManager
     /// <param name="task">TrangaTask.Task type</param>
     /// <param name="connectorName">Name of Connector that was used</param>
     /// <param name="publication">Publication that was used</param>
-    public void RemoveTask(TrangaTask.Task task, string connectorName, Publication? publication)
+    public void RemoveTask(TrangaTask.Task task, string? connectorName, Publication? publication)
     {
-        _allTasks.RemoveWhere(trangaTask =>
-            trangaTask.task == task && trangaTask.connectorName == connectorName &&
-            trangaTask.publication?.downloadUrl == publication?.downloadUrl);
+        if (task == TrangaTask.Task.UpdateKomgaLibrary)
+            _allTasks.RemoveWhere(uTask => uTask.task == TrangaTask.Task.UpdateKomgaLibrary);
+        else if (connectorName is null)
+            throw new ArgumentException($"connectorName can not be null for Task {task}");
+        else
+            _allTasks.RemoveWhere(trangaTask =>
+                trangaTask.task == task && trangaTask.connectorName == connectorName &&
+                trangaTask.publication?.downloadUrl == publication?.downloadUrl);
         ExportData(Directory.GetCurrentDirectory());
     }
     
