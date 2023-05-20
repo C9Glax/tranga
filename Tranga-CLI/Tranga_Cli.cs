@@ -82,7 +82,7 @@ public static class Tranga_Cli
                     menu = 0;
                     break;
                 case 2:
-                    TrangaTask.Task task = SelectTask();
+                    TrangaTask.Task task = SelectTaskType();
                     
                     Connector? connector = null;
                     if(task != TrangaTask.Task.UpdateKomgaLibrary)
@@ -248,7 +248,7 @@ public static class Tranga_Cli
         taskManager.RemoveTask(tasks[selectedTaskIndex].task, tasks[selectedTaskIndex].connectorName, tasks[selectedTaskIndex].publication);
     }
 
-    private static TrangaTask.Task SelectTask()
+    private static TrangaTask.Task SelectTaskType()
     {
         Console.Clear();
         string[] taskNames = Enum.GetNames<TrangaTask.Task>();
