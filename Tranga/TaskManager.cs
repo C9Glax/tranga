@@ -66,8 +66,12 @@ public class TaskManager
             foreach (KeyValuePair<Connector, List<TrangaTask>> connectorTaskQueue in tasksToExecute)
             {
                 connectorTaskQueue.Value.RemoveAll(task => task.state == TrangaTask.ExecutionState.Waiting);
-                if (connectorTaskQueue.Value.Count > 0 && connectorTaskQueue.Value.All(task => task.state is TrangaTask.ExecutionState.Running or TrangaTask.ExecutionState.Enqueued))
+                if (connectorTaskQueue.Value.Count > 0 && connectorTaskQueue.Value.All(task =>
+                        task.state is TrangaTask.ExecutionState.Running or TrangaTask.ExecutionState.Enqueued))
+                {
                     ExecuteTaskNow(connectorTaskQueue.Value.First());
+                    ExportData(Directory.GetCurrentDirectory());
+                }
             }
             
             //Check if task should be executed
