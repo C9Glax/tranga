@@ -18,7 +18,7 @@ public struct Chapter
     public Chapter(string? name, string? volumeNumber, string? chapterNumber, string url)
     {
         this.name = name;
-        this.volumeNumber = volumeNumber;
+        this.volumeNumber = volumeNumber is { Length: > 0 } ? volumeNumber : "1";
         this.chapterNumber = chapterNumber;
         this.url = url;
         string chapterName = string.Concat((name ?? "").Split(Path.GetInvalidFileNameChars()));
@@ -26,7 +26,7 @@ public struct Chapter
         {
             NumberDecimalSeparator = "."
         };
-        sortNumber = decimal.Round(Convert.ToDecimal(volumeNumber) * Convert.ToDecimal(chapterNumber, nfi), 1)
+        sortNumber = decimal.Round(Convert.ToDecimal(this.volumeNumber) * Convert.ToDecimal(this.chapterNumber, nfi), 1)
             .ToString(nfi);
         this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {sortNumber}";
     }
