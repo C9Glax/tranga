@@ -66,13 +66,11 @@ public class TaskManager
             //Check if previous tasks have finished and execute new tasks
             foreach (KeyValuePair<Connector, List<TrangaTask>> connectorTaskQueue in tasksToExecute)
             {
-                connectorTaskQueue.Value.RemoveAll(task => task.state == TrangaTask.ExecutionState.Waiting);
-                if (connectorTaskQueue.Value.Count > 0 && connectorTaskQueue.Value.All(task =>
-                        task.state is TrangaTask.ExecutionState.Running or TrangaTask.ExecutionState.Enqueued))
-                {
-                    ExecuteTaskNow(connectorTaskQueue.Value.First());
+                if(connectorTaskQueue.Value.RemoveAll(task => task.state == TrangaTask.ExecutionState.Waiting) > 0)
                     ExportData(Directory.GetCurrentDirectory());
-                }
+                
+                if (connectorTaskQueue.Value.Count > 0 && connectorTaskQueue.Value.All(task => task.state is TrangaTask.ExecutionState.Enqueued))
+                    ExecuteTaskNow(connectorTaskQueue.Value.First());
             }
             
             //Check if task should be executed
