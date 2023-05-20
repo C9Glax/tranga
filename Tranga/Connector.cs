@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using System.Net;
 using System.Xml.Linq;
+using Logging;
 
 namespace Tranga;
 
@@ -13,10 +14,13 @@ public abstract class Connector
     internal string downloadLocation { get; }  //Location of local files
     protected DownloadClient downloadClient { get; }
 
-    protected Connector(string downloadLocation, uint downloadDelay)
+    protected Logger? logger;
+
+    protected Connector(string downloadLocation, uint downloadDelay, Logger? logger)
     {
         this.downloadLocation = downloadLocation;
         this.downloadClient = new DownloadClient(downloadDelay);
+        this.logger = logger;
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)
@@ -58,6 +62,7 @@ public abstract class Connector
     /// <param name="publication">Publication to save series.json for</param>
     public void SaveSeriesInfo(Publication publication)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Saving series.json for {publication.sortName}");
         //Check if Publication already has a Folder and a series.json
         string publicationFolder = Path.Join(downloadLocation, publication.folderName);
         if(!Directory.Exists(publicationFolder))
@@ -73,8 +78,9 @@ public abstract class Connector
     /// See ComicInfo.xml
     /// </summary>
     /// <returns>XML-string</returns>
-    protected static string CreateComicInfo(Publication publication, Chapter chapter)
+    protected static string CreateComicInfo(Publication publication, Chapter chapter, Logger? logger)
     {
+        logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} Chapter {chapter.sortNumber}");
         XElement comicInfo = new XElement("ComicInfo",
             new XElement("Tags", string.Join(',',publication.tags)),
             new XElement("LanguageISO", publication.originalLanguage),
@@ -124,8 +130,9 @@ public abstract class Connector
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
     /// <param name="downloadClient">DownloadClient of the connector</param>
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
-    protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, string? comicInfoPath = null)
+    protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, Logger? logger, string? comicInfoPath = null)
     {
+        logger?.WriteLine("Connector", "Downloading Images");
         //Check if Publication Directory already exists
         string[] splitPath = saveArchiveFilePath.Split(Path.DirectorySeparatorChar);
         string directoryPath = Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray());
@@ -151,6 +158,7 @@ public abstract class Connector
         if(comicInfoPath is not null)
             File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
         
+        logger?.WriteLine("Connector", "Creating archive");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, fullPath);
         Directory.Delete(tempFolder, true); //Cleanup

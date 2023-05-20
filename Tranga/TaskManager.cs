@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Logging;
+using Newtonsoft.Json;
 using Tranga.Connectors;
 
 namespace Tranga;
@@ -15,20 +16,23 @@ public class TaskManager
     private readonly Connector[] _connectors;
     private Dictionary<Connector, List<TrangaTask>> tasksToExecute = new();
     private string downloadLocation { get; }
+    private Logger? logger { get; }
     
-    public Komga? komga { get; private set; }
+    public Komga? komga { get; }
 
     /// <param name="folderPath">Local path to save data (Manga) to</param>
     /// <param name="komgaBaseUrl">The Url of the Komga-instance that you want to update</param>
     /// <param name="komgaUsername">The Komga username</param>
     /// <param name="komgaPassword">The Komga password</param>
-    public TaskManager(string folderPath, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null)
+    /// <param name="logger"></param>
+    public TaskManager(string folderPath, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
     {
+        this.logger = logger;
         this.downloadLocation = folderPath;
 
         if (komgaBaseUrl != null && komgaUsername != null && komgaPassword != null)
-            this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword);
-        this._connectors = new Connector[]{ new MangaDex(folderPath) };
+            this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
+        this._connectors = new Connector[]{ new MangaDex(folderPath, logger) };
         foreach(Connector cConnector in this._connectors)
             tasksToExecute.Add(cConnector, new List<TrangaTask>());
         _allTasks = new HashSet<TrangaTask>();
@@ -37,9 +41,10 @@ public class TaskManager
         taskChecker.Start();
     }
 
-    public TaskManager(SettingsData settings)
+    public TaskManager(SettingsData settings, Logger? logger = null)
     {
-        this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation) };
+        this.logger = logger;
+        this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation, logger) };
         foreach(Connector cConnector in this._connectors)
             tasksToExecute.Add(cConnector, new List<TrangaTask>());
         this.downloadLocation = settings.downloadLocation;
@@ -74,6 +79,7 @@ public class TaskManager
                     ExecuteTaskNow(task);
                 else
                 {
+                    logger?.WriteLine(this.GetType().ToString(), $"Task due: {task}");
                     tasksToExecute[GetConnector(task.connectorName!)].Add(task);
                 }
             }
@@ -90,9 +96,10 @@ public class TaskManager
         if (!this._allTasks.Contains(task))
             return;
         
+        logger?.WriteLine(this.GetType().ToString(), $"Forcing Execution: {task}");
         Task t = new Task(() =>
         {
-            TaskExecutor.Execute(this, task, this._chapterCollection);
+            TaskExecutor.Execute(this, task, this._chapterCollection, logger);
         });
         t.Start();
     }
@@ -109,6 +116,7 @@ public class TaskManager
     public TrangaTask AddTask(TrangaTask.Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Adding new Task");
         if (task != TrangaTask.Task.UpdateKomgaLibrary && connectorName is null)
             throw new ArgumentException($"connectorName can not be null for task {task}");
 
@@ -142,6 +150,7 @@ public class TaskManager
                 _allTasks.Add(newTask);
             }
         }
+        logger?.WriteLine(this.GetType().ToString(), newTask.ToString());
         ExportData(Directory.GetCurrentDirectory());
         
         return newTask;
@@ -155,6 +164,7 @@ public class TaskManager
     /// <param name="publication">Publication that was used</param>
     public void RemoveTask(TrangaTask.Task task, string? connectorName, Publication? publication)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task}");
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
             _allTasks.RemoveWhere(uTask => uTask.task == TrangaTask.Task.UpdateKomgaLibrary);
         else if (connectorName is null)
@@ -207,6 +217,7 @@ public class TaskManager
     /// <param name="force">If force is true, tasks are aborted.</param>
     public void Shutdown(bool force = false)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Shutting down (forced={force})");
         _continueRunning = false;
         ExportData(Directory.GetCurrentDirectory());
         
@@ -241,6 +252,7 @@ public class TaskManager
     /// <param name="exportFolderPath">Folder path, filename will be data.json</param>
     private void ExportData(string exportFolderPath)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Exporting data to data.json");
         SettingsData data = new SettingsData(this.downloadLocation, this.komga, this._allTasks);
 
         string exportPath = Path.Join(exportFolderPath, "data.json");

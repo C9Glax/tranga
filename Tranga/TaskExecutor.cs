@@ -1,4 +1,6 @@
-﻿namespace Tranga;
+﻿using Logging;
+
+namespace Tranga;
 
 /// <summary>
 /// Executes TrangaTasks
@@ -14,12 +16,16 @@ public static class TaskExecutor
     /// <param name="trangaTask">Task to execute</param>
     /// <param name="chapterCollection">Current chapterCollection to update</param>
     /// <exception cref="ArgumentException">Is thrown when there is no Connector available with the name of the TrangaTask.connectorName</exception>
-    public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
+    public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection, Logger? logger)
     {
         //Only execute task if it is not already being executed.
         if (trangaTask.state == TrangaTask.ExecutionState.Running)
+        {
+            logger?.WriteLine("TaskExecutor", $"Task already running {trangaTask}");
             return;
+        }
         trangaTask.state = TrangaTask.ExecutionState.Running;
+        logger?.WriteLine("TaskExecutor", $"Executing Task {trangaTask}");
         
         //Connector is not needed for all tasks
         Connector? connector = null;
@@ -42,7 +48,8 @@ public static class TaskExecutor
                 UpdateKomgaLibrary(taskManager);
                 break;
         }
-
+        
+        logger?.WriteLine("TaskExecutor", $"Task executed! {trangaTask}");
         trangaTask.state = TrangaTask.ExecutionState.Waiting;
         trangaTask.lastExecuted = DateTime.Now;
     }

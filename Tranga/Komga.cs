@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
+using Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -13,23 +14,27 @@ public class Komga
 {
     public string baseUrl { get; }
     public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
+
+    private Logger? logger;
     
     /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
     /// <param name="username">Komga Username</param>
     /// <param name="password">Komga password, will be base64 encoded. yea</param>
-    public Komga(string baseUrl, string username, string password)
+    public Komga(string baseUrl, string username, string password, Logger? logger)
     {
         this.baseUrl = baseUrl;
         this.auth = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}"));
+        this.logger = logger;
     }
     
     /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
     /// <param name="auth">Base64 string of username and password (username):(password)</param>
     [JsonConstructor]
-    public Komga(string baseUrl, string auth)
+    public Komga(string baseUrl, string auth, Logger? logger)
     {
         this.baseUrl = baseUrl;
         this.auth = auth;
+        this.logger = logger;
     }
 
     /// <summary>
@@ -38,6 +43,7 @@ public class Komga
     /// <returns>Array of KomgaLibraries</returns>
     public KomgaLibrary[] GetLibraries()
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Libraries");
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", auth);
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
@@ -63,6 +69,7 @@ public class Komga
     /// <returns>true if successful</returns>
     public bool UpdateLibrary(string libraryId)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Updating Libraries");
         return NetClient.MakePost($"{baseUrl}/api/v1/libraries/{libraryId}/scan", auth);
     }
 

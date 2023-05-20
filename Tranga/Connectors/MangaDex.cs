@@ -2,24 +2,26 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Logging;
 
 namespace Tranga.Connectors;
 public class MangaDex : Connector
 {
     public override string name { get; }
 
-    public MangaDex(string downloadLocation, uint downloadDelay) : base(downloadLocation, downloadDelay)
+    public MangaDex(string downloadLocation, uint downloadDelay, Logger? logger) : base(downloadLocation, downloadDelay, logger)
     {
         name = "MangaDex";
     }
     
-    public MangaDex(string downloadLocation) : base(downloadLocation, 750)
+    public MangaDex(string downloadLocation, Logger? logger) : base(downloadLocation, 750, logger)
     {
         name = "MangaDex";
     }
 
     public override Publication[] GetPublications(string publicationTitle = "")
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Publications");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -126,6 +128,7 @@ public class MangaDex : Connector
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -180,6 +183,7 @@ public class MangaDex : Connector
 
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Download Chapter {publication.sortName} {chapter.sortNumber}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");
@@ -198,14 +202,15 @@ public class MangaDex : Connector
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
         string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, CreateComicInfo(publication, chapter));
+        File.WriteAllText(comicInfoPath, CreateComicInfo(publication, chapter, logger));
         
         //Download Chapter-Images
-        DownloadChapterImages(imageUrls.ToArray(), CreateFullFilepath(publication, chapter), downloadClient, comicInfoPath);
+        DownloadChapterImages(imageUrls.ToArray(), CreateFullFilepath(publication, chapter), downloadClient, logger, comicInfoPath);
     }
 
     public override void DownloadCover(Publication publication)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Download cover {publication.sortName}");
         //Check if Publication already has a Folder and cover
         string publicationFolder = Path.Join(downloadLocation, publication.folderName);
         if(!Directory.Exists(publicationFolder))

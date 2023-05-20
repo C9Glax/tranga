@@ -17,7 +17,7 @@ public static class Tranga_Cli
         Logger logger = new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.MemoryLogger }, null, null,
             Path.Join(Directory.GetCurrentDirectory(), $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt"));
         
-        logger.WriteLine(Type.Missing, "Loading Settings.");
+        logger.WriteLine("Tranga_CLI", "Loading Settings.");
         TaskManager.SettingsData settings;
         string settingsPath = Path.Join(Directory.GetCurrentDirectory(), "data.json");
         if (File.Exists(settingsPath))
@@ -26,7 +26,7 @@ public static class Tranga_Cli
             settings = new TaskManager.SettingsData(Directory.GetCurrentDirectory(), null, new HashSet<TrangaTask>());
 
             
-        logger.WriteLine(Type.Missing, "User Input");
+        logger.WriteLine("Tranga_CLI", "User Input");
         Console.WriteLine($"Output folder path [{settings.downloadLocation}]:");
         string? tmpPath = Console.ReadLine();
         while(tmpPath is null)
@@ -65,16 +65,16 @@ public static class Tranga_Cli
                 }
             } while (key != ConsoleKey.Enter);
 
-            settings.komga = new Komga(tmpUrl, tmpUser, tmpPass);
+            settings.komga = new Komga(tmpUrl, tmpUser, tmpPass, logger);
         }
         
-        logger.WriteLine(Type.Missing, "Loaded.");
+        logger.WriteLine("Tranga_CLI", "Loaded.");
         TaskMode(settings, logger);
     }
 
     private static void TaskMode(TaskManager.SettingsData settings, Logger logger)
     {
-        TaskManager taskManager = new (settings);
+        TaskManager taskManager = new (settings, logger);
         ConsoleKey selection = PrintMenu(taskManager, settings.downloadLocation, logger);
         while (selection != ConsoleKey.Q)
         {
@@ -114,7 +114,7 @@ public static class Tranga_Cli
             selection = PrintMenu(taskManager, settings.downloadLocation, logger);
         }
 
-        logger.WriteLine(Type.Missing, "Exiting.");
+        logger.WriteLine("Tranga_CLI", "Exiting.");
         if (taskManager.GetAllTasks().Any(task => task.state == TrangaTask.ExecutionState.Running))
         {
             Console.WriteLine("Force quit (Even with running tasks?) y/N");
@@ -143,13 +143,13 @@ public static class Tranga_Cli
         Console.WriteLine();
         Console.WriteLine($"{"U: Update this Screen",-30}{"Q: Exit",-30}");
         ConsoleKey selection = Console.ReadKey().Key;
-        logger.WriteLine(Type.Missing, $"Menu selection: {selection}");
+        logger.WriteLine("Tranga_CLI", $"Menu selection: {selection}");
         return selection;
     }
 
     private static void PrintTasks(TrangaTask[] tasks, Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Printing Tasks");
+        logger.WriteLine("Tranga_CLI", "Printing Tasks");
         int taskCount = tasks.Length;
         int taskRunningCount = tasks.Count(task => task.state == TrangaTask.ExecutionState.Running);
         int taskEnqueuedCount = tasks.Count(task => task.state == TrangaTask.ExecutionState.Enqueued);
@@ -166,7 +166,7 @@ public static class Tranga_Cli
 
     private static void CreateTask(TaskManager taskManager, TaskManager.SettingsData settings, Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Creating Task");
+        logger.WriteLine("Tranga_CLI", "Menu: Creating Task");
         TrangaTask.Task? tmpTask = SelectTaskType(logger);
         if (tmpTask is null)
             return;
@@ -189,25 +189,25 @@ public static class Tranga_Cli
         }
         
         TimeSpan reoccurrence = SelectReoccurrence(logger);
-        logger.WriteLine(Type.Missing, "Sending Task to TaskManager");
+        logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
         TrangaTask newTask = taskManager.AddTask(task, connector?.name, publication, reoccurrence, "en");
         Console.WriteLine(newTask);
     }
 
     private static void ExecuteTaskNow(TaskManager taskManager, Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Executing Task");
+        logger.WriteLine("Tranga_CLI", "Menu: Executing Task");
         TrangaTask[] tasks = taskManager.GetAllTasks();
         if (tasks.Length < 1)
         {
             Console.Clear();
             Console.WriteLine("There are no available Tasks.");
-            logger.WriteLine(Type.Missing, "No available Tasks.");
+            logger.WriteLine("Tranga_CLI", "No available Tasks.");
             return;
         }
         PrintTasks(tasks, logger);
         
-        logger.WriteLine(Type.Missing, "Selecting Task to Execute");
+        logger.WriteLine("Tranga_CLI", "Selecting Task to Execute");
         Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
 
@@ -219,38 +219,38 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine(Type.Missing, "aborted");
+            logger.WriteLine("Tranga_CLI", "aborted");
             return;
         }
         
         try
         {
             int selectedTaskIndex = Convert.ToInt32(selectedTask);
-            logger.WriteLine(Type.Missing, "Sending Task to TaskManager");
+            logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
             taskManager.ExecuteTaskNow(tasks[selectedTaskIndex]);
         }
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine(Type.Missing, e.Message);
+            logger.WriteLine("Tranga_CLI", e.Message);
         }
         
     }
 
     private static void RemoveTask(TaskManager taskManager, Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Remove Task");
+        logger.WriteLine("Tranga_CLI", "Menu: Remove Task");
         TrangaTask[] tasks = taskManager.GetAllTasks();
         if (tasks.Length < 1)
         {
             Console.Clear();
             Console.WriteLine("There are no available Tasks.");
-            logger.WriteLine(Type.Missing, "No available Tasks");
+            logger.WriteLine("Tranga_CLI", "No available Tasks");
             return;
         }
         PrintTasks(tasks, logger);
         
-        logger.WriteLine(Type.Missing, "Selecting Task");
+        logger.WriteLine("Tranga_CLI", "Selecting Task");
         Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
 
@@ -262,26 +262,26 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine(Type.Missing, "aborted.");
+            logger.WriteLine("Tranga_CLI", "aborted.");
             return;
         }
         
         try
         {
             int selectedTaskIndex = Convert.ToInt32(selectedTask);
-            logger.WriteLine(Type.Missing, "Sending Task to TaskManager");
+            logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
             taskManager.RemoveTask(tasks[selectedTaskIndex].task, tasks[selectedTaskIndex].connectorName, tasks[selectedTaskIndex].publication);
         }
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine(Type.Missing, e.Message);
+            logger.WriteLine("Tranga_CLI", e.Message);
         }
     }
 
     private static TrangaTask.Task? SelectTaskType(Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Select TaskType");
+        logger.WriteLine("Tranga_CLI", "Menu: Select TaskType");
         Console.Clear();
         string[] taskNames = Enum.GetNames<TrangaTask.Task>();
         
@@ -301,7 +301,7 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine(Type.Missing, "aborted.");
+            logger.WriteLine("Tranga_CLI", "aborted.");
             return null;
         }
         
@@ -314,7 +314,7 @@ public static class Tranga_Cli
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine(Type.Missing, e.Message);
+            logger.WriteLine("Tranga_CLI", e.Message);
         }
 
         return null;
@@ -322,14 +322,14 @@ public static class Tranga_Cli
 
     private static TimeSpan SelectReoccurrence(Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Select Reoccurrence");
+        logger.WriteLine("Tranga_CLI", "Menu: Select Reoccurrence");
         Console.WriteLine("Select reoccurrence Timer (Format hh:mm:ss):");
         return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
     }
 
     private static Connector? SelectConnector(string folderPath, Connector[] connectors, Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Select Connector");
+        logger.WriteLine("Tranga_CLI", "Menu: Select Connector");
         Console.Clear();
         
         int cIndex = 0;
@@ -348,7 +348,7 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine(Type.Missing, "aborted.");
+            logger.WriteLine("Tranga_CLI", "aborted.");
             return null;
         }
         
@@ -360,7 +360,7 @@ public static class Tranga_Cli
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine(Type.Missing, e.Message);
+            logger.WriteLine("Tranga_CLI", e.Message);
         }
 
         return null;
@@ -368,7 +368,7 @@ public static class Tranga_Cli
 
     private static Publication? SelectPublication(Connector connector, Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Select Publication");
+        logger.WriteLine("Tranga_CLI", "Menu: Select Publication");
         
         Console.Clear();
         Console.WriteLine($"Connector: {connector.name}");
@@ -393,7 +393,7 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine(Type.Missing, "aborted.");
+            logger.WriteLine("Tranga_CLI", "aborted.");
             return null;
         }
         
@@ -405,7 +405,7 @@ public static class Tranga_Cli
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine(Type.Missing, e.Message);
+            logger.WriteLine("Tranga_CLI", e.Message);
         }
 
         return null;
@@ -413,7 +413,7 @@ public static class Tranga_Cli
 
     private static void SearchTasks(TaskManager taskManager, Logger logger)
     {
-        logger.WriteLine(Type.Missing, "Menu: Search task");
+        logger.WriteLine("Tranga_CLI", "Menu: Search task");
         string? query = Console.ReadLine();
         while (query is null || query.Length < 1)
             query = Console.ReadLine();

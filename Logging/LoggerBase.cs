@@ -13,7 +13,7 @@ public abstract class LoggerBase : TextWriter
         this.stdOut = stdOut;
     }
     
-    public void WriteLine(object caller, string? value)
+    public void WriteLine(string caller, string? value)
     {
         value = value is null ? Environment.NewLine : string.Join(value, Environment.NewLine);
 
@@ -22,7 +22,7 @@ public abstract class LoggerBase : TextWriter
         Write(message);
     }
 
-    public void Write(object caller, string? value)
+    public void Write(string caller, string? value)
     {
         if (value is null)
             return;
@@ -39,21 +39,20 @@ public abstract class LoggerBase : TextWriter
     public class LogMessage
     {
         public DateTime logTime { get; }
-        public Type caller { get; }
+        public string caller { get; }
         public string value { get; }
 
-        public LogMessage(DateTime now, object caller, string value)
+        public LogMessage(DateTime now, string caller, string value)
         {
             this.logTime = now;
-            this.caller = caller.GetType();
+            this.caller = caller;
             this.value = value;
         }
 
         public override string ToString()
         {
             string dateTimeString = $"{logTime.ToShortDateString()} {logTime.ToShortTimeString()}";
-            string callerString = caller.ToString();
-            return $"[{dateTimeString}] {callerString,-15} | {value}";
+            return $"[{dateTimeString}] {caller,-30} | {value}";
         }
     }
 }

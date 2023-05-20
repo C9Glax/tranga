@@ -33,14 +33,14 @@ public class Logger : TextWriter
         _memoryLogger = enabledLoggers.Contains(LoggerType.MemoryLogger) ? new MemoryLogger(null, encoding) : null;
     }
 
-    public void WriteLine(object caller, string? value)
+    public void WriteLine(string caller, string? value)
     {
         value = value is null ? Environment.NewLine : string.Concat(value, Environment.NewLine);
 
         Write(caller, value);
     }
 
-    public void Write(object caller, string? value)
+    public void Write(string caller, string? value)
     {
         if (value is null)
             return;
