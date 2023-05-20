@@ -62,19 +62,7 @@ public static class Tranga_Cli
 
             settings.komga = new Komga(tmpUrl, tmpUser, tmpPass);
         }
-
-        //For now only TaskManager mode
-        /*
-        Console.Write("Mode (D: Interactive only, T: TaskManager):");
-        ConsoleKeyInfo mode = Console.ReadKey();
-        while (mode.Key != ConsoleKey.D && mode.Key != ConsoleKey.T)
-            mode = Console.ReadKey();
-        Console.WriteLine();
         
-        if(mode.Key == ConsoleKey.D)
-            DownloadNow(settings);
-        else if (mode.Key == ConsoleKey.T)
-            TaskMode(settings);*/
         TaskMode(settings);
     }
 
@@ -286,27 +274,6 @@ public static class Tranga_Cli
         return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
     }
 
-    private static void DownloadNow(TaskManager.SettingsData settings)
-    {
-        Connector connector = SelectConnector(settings.downloadLocation, new Connector[]{new MangaDex(settings.downloadLocation)});
-
-        Publication publication = SelectPublication(connector);
-        
-        Chapter[] downloadChapters = SelectChapters(connector, publication);
-
-        if (downloadChapters.Length > 0)
-        {
-            connector.DownloadCover(publication);
-            connector.SaveSeriesInfo(publication);
-        }
-
-        foreach (Chapter chapter in downloadChapters)
-        {
-            Console.WriteLine($"Downloading {publication.sortName} V{chapter.volumeNumber}C{chapter.chapterNumber}");
-            connector.DownloadChapter(publication, chapter);
-        }
-    }
-
     private static Connector SelectConnector(string folderPath, Connector[] connectors)
     {
         Console.Clear();
@@ -344,46 +311,5 @@ public static class Tranga_Cli
         while(selected is null || selected.Length < 1)
             selected = Console.ReadLine();
         return publications[Convert.ToInt32(selected)];
-    }
-
-    private static Chapter[] SelectChapters(Connector connector, Publication publication)
-    {
-        Console.Clear();
-        Console.WriteLine($"Connector: {connector.name} Publication: {publication.sortName}");
-        Chapter[] chapters = connector.GetChapters(publication, "en");
-        
-        int cIndex = 0;
-        Console.WriteLine("Chapters:");
-        foreach (Chapter ch in chapters)
-        {
-            string name = cIndex.ToString();
-            if (ch.name is not null && ch.name.Length > 0)
-                name = ch.name;
-            else if (ch.chapterNumber is not null && ch.chapterNumber.Length > 0)
-                name = ch.chapterNumber;
-            Console.WriteLine($"{cIndex++}: {name}");
-        }
-        Console.WriteLine($"Select Chapters to download (0-{chapters.Length - 1}) [range x-y or 'a' for all]: ");
-        string? selected = Console.ReadLine();
-        while(selected is null || selected.Length < 1)
-            selected = Console.ReadLine();
-
-        int start = 0;
-        int end;
-        if (selected == "a")
-            end = chapters.Length - 1;
-        else if (selected.Contains('-'))
-        {
-            string[] split = selected.Split('-');
-            start = Convert.ToInt32(split[0]);
-            end = Convert.ToInt32(split[1]);
-        }
-        else
-        {
-            start = Convert.ToInt32(selected);
-            end = Convert.ToInt32(selected);
-        }
-        
-        return chapters.Skip(start).Take((end + 1)-start).ToArray();
     }
 }
