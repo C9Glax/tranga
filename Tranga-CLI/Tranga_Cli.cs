@@ -414,8 +414,10 @@ public static class Tranga_Cli
     private static void SearchTasks(TaskManager taskManager, Logger logger)
     {
         logger.WriteLine("Tranga_CLI", "Menu: Search task");
+        Console.Clear();
+        Console.WriteLine("Enter search query:");
         string? query = Console.ReadLine();
-        while (query is null || query.Length < 1)
+        while (query is null || query.Length < 4)
             query = Console.ReadLine();
         PrintTasks(taskManager.GetAllTasks().Where(qTask =>
             qTask.ToString().ToLower().Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray(), logger);
