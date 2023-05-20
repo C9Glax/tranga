@@ -129,7 +129,7 @@ public static class Tranga_Cli
                     menu = 0;
                     break; 
                 case 6:
-                    PrintTasks(taskManager.GetAllTasks().Where(eTask => eTask.isBeingExecuted).ToArray());
+                    PrintTasks(taskManager.GetAllTasks().Where(eTask => eTask.state == TrangaTask.ExecutionState.Running).ToArray());
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     menu = 0;
@@ -167,7 +167,7 @@ public static class Tranga_Cli
             }
         }
 
-        if (taskManager.GetAllTasks().Any(task => task.isBeingExecuted))
+        if (taskManager.GetAllTasks().Any(task => task.state == TrangaTask.ExecutionState.Running))
         {
             Console.WriteLine("Force quit (Even with running tasks?) y/N");
             selection = Console.ReadKey().Key;
@@ -182,9 +182,11 @@ public static class Tranga_Cli
     private static ConsoleKey Menu(TaskManager taskManager, string folderPath)
     {
         int taskCount = taskManager.GetAllTasks().Length;
-        int taskRunningCount = taskManager.GetAllTasks().Count(task => task.isBeingExecuted);
+        int taskRunningCount = taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Running);
+        int taskEnqueuedCount =
+            taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Enqueued);
         Console.Clear();
-        Console.WriteLine($"Download Folder: {folderPath} Tasks (Running/Total): {taskRunningCount}/{taskCount}");
+        Console.WriteLine($"Download Folder: {folderPath} Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         Console.WriteLine("U: Update this Screen");
         Console.WriteLine("L: List tasks");
         Console.WriteLine("C: Create Task");
@@ -201,10 +203,11 @@ public static class Tranga_Cli
     private static void PrintTasks(TrangaTask[] tasks)
     {
         int taskCount = tasks.Length;
-        int taskRunningCount = tasks.Count(task => task.isBeingExecuted);
+        int taskRunningCount = tasks.Count(task => task.state == TrangaTask.ExecutionState.Running);
+        int taskEnqueuedCount = tasks.Count(task => task.state == TrangaTask.ExecutionState.Enqueued);
         Console.Clear();
         int tIndex = 0;
-        Console.WriteLine($"Tasks (Running/Total): {taskRunningCount}/{taskCount}");
+        Console.WriteLine($"Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         foreach(TrangaTask trangaTask in tasks)
             Console.WriteLine($"{tIndex++:000}: {trangaTask}");
     }

@@ -16,15 +16,14 @@ public static class TaskExecutor
     /// <exception cref="ArgumentException">Is thrown when there is no Connector available with the name of the TrangaTask.connectorName</exception>
     public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
     {
+        if (trangaTask.state == TrangaTask.ExecutionState.Running)
+            return;
+        trangaTask.state = TrangaTask.ExecutionState.Running;
+        
         Connector? connector = null;
         if (trangaTask.task != TrangaTask.Task.UpdateKomgaLibrary)
             connector = taskManager.GetConnector(trangaTask.connectorName!);
 
-        if (trangaTask.isBeingExecuted)
-            return;
-        trangaTask.isBeingExecuted = true;
-        trangaTask.lastExecuted = DateTime.Now;
-        
         //Call appropriate Method based on TrangaTask.Task
         switch (trangaTask.task)
         {
@@ -42,7 +41,8 @@ public static class TaskExecutor
                 break;
         }
 
-        trangaTask.isBeingExecuted = false;
+        trangaTask.state = TrangaTask.ExecutionState.Waiting;
+        trangaTask.lastExecuted = DateTime.Now;
     }
 
     /// <summary>

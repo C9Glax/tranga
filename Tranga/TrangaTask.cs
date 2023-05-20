@@ -15,7 +15,14 @@ public class TrangaTask
     public Task task { get; }
     public Publication? publication { get; }
     public string language { get; }
-    [JsonIgnore]public bool isBeingExecuted { get; set; }
+    [JsonIgnore]public ExecutionState state { get; set; }
+
+    public enum ExecutionState
+    {
+        Waiting,
+        Enqueued,
+        Running
+    };
 
     public TrangaTask(Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence, string language = "")
     {
@@ -36,7 +43,7 @@ public class TrangaTask
     /// <returns>True if elapsed time since last execution is greater than set interval</returns>
     public bool ShouldExecute()
     {
-        return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence;
+        return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence && state is ExecutionState.Waiting;
     }
 
     public enum Task
@@ -49,6 +56,6 @@ public class TrangaTask
 
     public override string ToString()
     {
-        return $"{task}\t{lastExecuted}\t{reoccurrence}\t{(isBeingExecuted ? "running" : "waiting")}\t{connectorName}\t{publication?.sortName}";
+        return $"{task}\t{lastExecuted}\t{reoccurrence}\t{state}\t{connectorName}\t{publication?.sortName}";
     }
 }

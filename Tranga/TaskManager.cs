@@ -13,6 +13,7 @@ public class TaskManager
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
+    private Dictionary<Connector, List<TrangaTask>> tasksToExecute = new();
     private string downloadLocation { get; }
     
     public Komga? komga { get; private set; }
@@ -26,6 +27,8 @@ public class TaskManager
         if (komgaBaseUrl != null && komgaUsername != null && komgaPassword != null)
             this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword);
         this._connectors = new Connector[]{ new MangaDex(folderPath) };
+        foreach(Connector cConnector in this._connectors)
+            tasksToExecute.Add(cConnector, new List<TrangaTask>());
         _allTasks = new HashSet<TrangaTask>();
         
         Thread taskChecker = new(TaskCheckerThread);
@@ -35,6 +38,8 @@ public class TaskManager
     public TaskManager(SettingsData settings)
     {
         this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation) };
+        foreach(Connector cConnector in this._connectors)
+            tasksToExecute.Add(cConnector, new List<TrangaTask>());
         this.downloadLocation = settings.downloadLocation;
         this.komga = settings.komga;
         _allTasks = settings.allTasks;
@@ -46,10 +51,22 @@ public class TaskManager
     {
         while (_continueRunning)
         {
-            foreach (TrangaTask task in _allTasks)
+            foreach (KeyValuePair<Connector, List<TrangaTask>> connectorTaskQueue in tasksToExecute)
             {
-                if(task.ShouldExecute()) 
-                    TaskExecutor.Execute(this, task, this._chapterCollection); //TODO Might crash here, when adding new Task while another Task is running. Check later
+                connectorTaskQueue.Value.RemoveAll(task => task.state == TrangaTask.ExecutionState.Waiting);
+                if (connectorTaskQueue.Value.Count > 0 && !connectorTaskQueue.Value.All(task => task.state is TrangaTask.ExecutionState.Running or TrangaTask.ExecutionState.Waiting))
+                    ExecuteTaskNow(connectorTaskQueue.Value.First());
+            }
+            
+            foreach (TrangaTask task in _allTasks.Where(aTask => aTask.ShouldExecute()))
+            {
+                task.state = TrangaTask.ExecutionState.Enqueued;
+                if(task.connectorName is null)
+                    ExecuteTaskNow(task);
+                else
+                {
+                    tasksToExecute[GetConnector(task.connectorName!)].Add(task);
+                }
             }
             Thread.Sleep(1000);
         }
@@ -173,10 +190,10 @@ public class TaskManager
         ExportData(Directory.GetCurrentDirectory());
         
         if(force)
-            Environment.Exit(_allTasks.Count(task => task.isBeingExecuted));
+            Environment.Exit(_allTasks.Count(task => task.state is TrangaTask.ExecutionState.Enqueued or TrangaTask.ExecutionState.Running));
         
         //Wait for tasks to finish
-        while(_allTasks.Any(task => task.isBeingExecuted))
+        while(_allTasks.Any(task => task.state is TrangaTask.ExecutionState.Running or TrangaTask.ExecutionState.Enqueued))
             Thread.Sleep(10);
         Environment.Exit(0);
     }
