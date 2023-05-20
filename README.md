@@ -92,9 +92,9 @@ A CLI will guide you through setup.
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Web-UI
+- [ ] Web-UI #1
 - [ ] More Connectors
-  - [ ] Manganato
+  - [ ] Manganato #2
 - [ ] ? 
 
 See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
