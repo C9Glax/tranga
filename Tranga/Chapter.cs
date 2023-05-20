@@ -13,6 +13,7 @@ public struct Chapter
     public string? chapterNumber { get; }
     public string url { get; }
     public string fileName { get; }
+    public string sortNumber { get; }
 
     public Chapter(string? name, string? volumeNumber, string? chapterNumber, string url)
     {
@@ -25,7 +26,8 @@ public struct Chapter
         {
             NumberDecimalSeparator = "."
         };
-        decimal orderNumber = Convert.ToDecimal(volumeNumber) * Convert.ToDecimal(chapterNumber, nfi);
-        this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {decimal.Round(orderNumber, 1).ToString(nfi)}";
+        sortNumber = decimal.Round(Convert.ToDecimal(volumeNumber) * Convert.ToDecimal(chapterNumber, nfi), 1)
+            .ToString(nfi);
+        this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {sortNumber}";
     }
 }

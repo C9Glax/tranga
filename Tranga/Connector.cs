@@ -75,7 +75,7 @@ public abstract class Connector
             new XElement("LanguageISO", publication.originalLanguage),
             new XElement("Title", chapter.name),
             new XElement("Volume", chapter.volumeNumber),
-            new XElement("Number", chapter.chapterNumber)
+            new XElement("Number", chapter.sortNumber)
         );
         return comicInfo.ToString();
     }
