@@ -191,6 +191,7 @@ public static class Tranga_Cli
         
         if (selectedTask.Length == 1 && selectedTask.ToLower() == "q")
         {
+            Console.Clear();
             Console.WriteLine("aborted.");
             return;
         }
@@ -227,6 +228,7 @@ public static class Tranga_Cli
 
         if (selectedTask.Length == 1 && selectedTask.ToLower() == "q")
         {
+            Console.Clear();
             Console.WriteLine("aborted.");
             return;
         }
@@ -261,6 +263,7 @@ public static class Tranga_Cli
 
         if (selectedTask.Length == 1 && selectedTask.ToLower() == "q")
         {
+            Console.Clear();
             Console.WriteLine("aborted.");
             return null;
         }
@@ -303,6 +306,7 @@ public static class Tranga_Cli
 
         if (selectedConnector.Length == 1 && selectedConnector.ToLower() == "q")
         {
+            Console.Clear();
             Console.WriteLine("aborted.");
             return null;
         }
@@ -343,6 +347,7 @@ public static class Tranga_Cli
 
         if (selectedPublication.Length == 1 && selectedPublication.ToLower() == "q")
         {
+            Console.Clear();
             Console.WriteLine("aborted.");
             return null;
         }
