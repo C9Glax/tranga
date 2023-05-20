@@ -25,7 +25,7 @@ public struct Chapter
         {
             NumberDecimalSeparator = "."
         };
-        decimal orderNumber = Math.Floor(Convert.ToDecimal(volumeNumber) * Convert.ToDecimal(chapterNumber, nfi));
-        this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {orderNumber.ToString(nfi)}";
+        decimal orderNumber = Convert.ToDecimal(volumeNumber) * Convert.ToDecimal(chapterNumber, nfi);
+        this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {decimal.Round(orderNumber, 1).ToString(nfi)}";
     }
 }
