@@ -68,7 +68,7 @@ public static class Tranga_Cli
 
     private static void TaskMode(TaskManager.SettingsData settings)
     {
-        TaskManager taskManager = new TaskManager(settings);
+        TaskManager taskManager = new (settings);
         ConsoleKey selection = ConsoleKey.NoName;
         int menu = 0;
         while (selection != ConsoleKey.Escape && selection != ConsoleKey.Q)
@@ -217,14 +217,29 @@ public static class Tranga_Cli
         }
         PrintTasks(tasks);
         
+        Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
             selectedTask = Console.ReadLine();
-        int selectedTaskIndex = Convert.ToInt32(selectedTask);
         
-        taskManager.ExecuteTaskNow(tasks[selectedTaskIndex]);
+        if (selectedTask.Length == 1 && selectedTask.ToLower() == "q")
+        {
+            Console.WriteLine("aborted.");
+            return;
+        }
+        
+        try
+        {
+            int selectedTaskIndex = Convert.ToInt32(selectedTask);
+            taskManager.ExecuteTaskNow(tasks[selectedTaskIndex]);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+        }
+        
     }
 
     private static void RemoveTask(TaskManager taskManager)
@@ -238,14 +253,28 @@ public static class Tranga_Cli
         }
         PrintTasks(tasks);
         
+        Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
             selectedTask = Console.ReadLine();
-        int selectedTaskIndex = Convert.ToInt32(selectedTask);
 
-        taskManager.RemoveTask(tasks[selectedTaskIndex].task, tasks[selectedTaskIndex].connectorName, tasks[selectedTaskIndex].publication);
+        if (selectedTask.Length == 1 && selectedTask.ToLower() == "q")
+        {
+            Console.WriteLine("aborted.");
+            return;
+        }
+        
+        try
+        {
+            int selectedTaskIndex = Convert.ToInt32(selectedTask);
+            taskManager.RemoveTask(tasks[selectedTaskIndex].task, tasks[selectedTaskIndex].connectorName, tasks[selectedTaskIndex].publication);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+        }
     }
 
     private static TrangaTask.Task SelectTaskType()
