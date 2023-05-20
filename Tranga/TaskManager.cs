@@ -271,6 +271,7 @@ public class TaskManager
 
         string exportPath = Path.Join(exportFolderPath, "data.json");
         string serializedData = JsonConvert.SerializeObject(data);
+        File.Delete(exportPath);
         File.WriteAllText(exportPath, serializedData);
     }
 
