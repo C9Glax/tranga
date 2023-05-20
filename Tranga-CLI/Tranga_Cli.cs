@@ -135,7 +135,7 @@ public static class Tranga_Cli
             taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Enqueued);
         Console.Clear();
         Console.WriteLine($"Download Folder: {folderPath}");
-        Console.WriteLine($"Tasks (Running/Queue/Total));: {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
+        Console.WriteLine($"Tasks (Running/Queue/Total)): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         Console.WriteLine();
         Console.WriteLine($"{"C: Create Task",-30}{"L: List tasks",-30}");
         Console.WriteLine($"{"D: Delete Task",-30}{"R: List Running Tasks", -30}");
