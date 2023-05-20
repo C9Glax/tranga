@@ -149,6 +149,7 @@ public static class Tranga_Cli
         Console.Clear();
         int tIndex = 0;
         Console.WriteLine($"Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
+        Console.WriteLine($"{"",-5}{"Task",-20} {"Last Executed",-20} {"Reoccurrence",-12} {"State",-10} {"Connector",-15} Publication/Manga");
         foreach(TrangaTask trangaTask in tasks)
             Console.WriteLine($"{tIndex++:000}: {trangaTask}");
     }
