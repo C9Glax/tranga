@@ -7,7 +7,7 @@ namespace Tranga;
 /// </summary>
 public class TrangaTask
 {
-    // ReSharper disable once CommentTypo ...tell me why!
+    // ReSharper disable once CommentTypo ...Tell me why!
     // ReSharper disable once MemberCanBePrivate.Global I want it thaaat way
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
@@ -29,9 +29,6 @@ public class TrangaTask
         this.language = language;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     /// <returns>True if elapsed time since last execution is greater than set interval</returns>
     public bool ShouldExecute()
     {

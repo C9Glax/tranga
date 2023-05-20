@@ -49,7 +49,7 @@ public class TaskManager
             foreach (TrangaTask task in _allTasks)
             {
                 if(task.ShouldExecute()) 
-                    TaskExecutor.Execute(this._connectors, task, this._chapterCollection); //Might crash here, when adding new Task while another Task is running. Check later
+                    TaskExecutor.Execute(this._connectors, task, this._chapterCollection); //TODO Might crash here, when adding new Task while another Task is running. Check later
             }
             Thread.Sleep(1000);
         }
