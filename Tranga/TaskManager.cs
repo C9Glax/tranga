@@ -157,10 +157,12 @@ public class TaskManager
         return this._chapterCollection.Keys.ToArray();
     }
 
-    public void NewKomga(Komga? pKomga)
+    public Connector GetConnector(string connectorName)
     {
-        this.komga = pKomga;
-        this.ExportData(Directory.GetCurrentDirectory());
+        Connector? ret = this._connectors.FirstOrDefault(connector => connector.name == connectorName);
+        if (ret is null)
+            throw new Exception($"Connector {connectorName} is not an available Connector.");
+        return (Connector)ret!;
     }
     
     /// <summary>
