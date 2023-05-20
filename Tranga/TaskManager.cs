@@ -9,7 +9,7 @@ namespace Tranga;
 /// </summary>
 public class TaskManager
 {
-    private readonly Dictionary<Publication, List<Chapter>> _chapterCollection;
+    private readonly Dictionary<Publication, List<Chapter>> _chapterCollection = new();
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
@@ -26,7 +26,6 @@ public class TaskManager
         if (komgaBaseUrl != null && komgaUsername != null && komgaPassword != null)
             this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword);
         this._connectors = new Connector[]{ new MangaDex(folderPath) };
-        _chapterCollection = new();
         _allTasks = new HashSet<TrangaTask>();
         
         Thread taskChecker = new(TaskCheckerThread);
@@ -36,7 +35,6 @@ public class TaskManager
     public TaskManager(SettingsData settings)
     {
         this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation) };
-        _chapterCollection = new();
         this.downloadLocation = settings.downloadLocation;
         this.komga = settings.komga;
         _allTasks = settings.allTasks;
