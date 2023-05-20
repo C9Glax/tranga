@@ -11,16 +11,20 @@ public class TrangaTask
     // ReSharper disable once MemberCanBePrivate.Global I want it thaaat way
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
-    public string connectorName { get; }
+    public string? connectorName { get; }
     public Task task { get; }
     public Publication? publication { get; }
     public string language { get; }
     [JsonIgnore]public bool isBeingExecuted { get; set; }
 
-    public TrangaTask(string connectorName, Task task, Publication? publication, TimeSpan reoccurrence, string language = "")
+    public TrangaTask(Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence, string language = "")
     {
-        if (task != Task.UpdatePublications && publication is null)
-            throw new ArgumentException($"Publication has to be not null for task {task}");
+        if(task != Task.UpdateKomgaLibrary && connectorName is null)
+            throw new ArgumentException($"connectorName can not be null for task {task}");
+        
+        if (publication is null && task != Task.UpdatePublications && task != Task.UpdateKomgaLibrary)
+            throw new ArgumentException($"Publication can not be null for task {task}");
+        
         this.publication = publication;
         this.reoccurrence = reoccurrence;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
@@ -39,7 +43,8 @@ public class TrangaTask
     {
         UpdatePublications,
         UpdateChapters,
-        DownloadNewChapters
+        DownloadNewChapters,
+        UpdateKomgaLibrary
     }
 
     public override string ToString()

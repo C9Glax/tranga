@@ -8,19 +8,57 @@ public static class Tranga_Cli
 {
     public static void Main(string[] args)
     {
-        string folderPath = Directory.GetCurrentDirectory();
-        string settingsPath = Path.Join(Directory.GetCurrentDirectory(), "lastPath.setting");
+        TaskManager.SettingsData settings;
+        string settingsPath = Path.Join(Directory.GetCurrentDirectory(), "data.json");
         if (File.Exists(settingsPath))
-            folderPath = File.ReadAllText(settingsPath);
+            settings = TaskManager.ImportData(Directory.GetCurrentDirectory());
+        else
+            settings = new TaskManager.SettingsData(Directory.GetCurrentDirectory(), null, new HashSet<TrangaTask>());
+
             
-        Console.WriteLine($"Output folder path [{folderPath}]:");
+        Console.WriteLine($"Output folder path [{settings.downloadLocation}]:");
         string? tmpPath = Console.ReadLine();
         while(tmpPath is null)
             tmpPath = Console.ReadLine();
         if(tmpPath.Length > 0)
-            folderPath = tmpPath;
-        File.WriteAllText(settingsPath, folderPath);
+            settings.downloadLocation = tmpPath;
         
+        Console.WriteLine($"Komga BaseURL [{settings.komga?.baseUrl}]:");
+        string? tmpUrl = Console.ReadLine();
+        while (tmpUrl is null)
+            tmpUrl = Console.ReadLine();
+        if (tmpUrl.Length > 0)
+        {
+            Console.WriteLine("Username:");
+            string? tmpUser = Console.ReadLine();
+            while (tmpUser is null || tmpUser.Length < 1)
+                tmpUser = Console.ReadLine();
+            
+            Console.WriteLine("Password:");
+            string tmpPass = string.Empty;
+            ConsoleKey key;
+            do
+            {
+                var keyInfo = Console.ReadKey(intercept: true);
+                key = keyInfo.Key;
+
+                if (key == ConsoleKey.Backspace && tmpPass.Length > 0)
+                {
+                    Console.Write("\b \b");
+                    tmpPass = tmpPass[0..^1];
+                }
+                else if (!char.IsControl(keyInfo.KeyChar))
+                {
+                    Console.Write("*");
+                    tmpPass += keyInfo.KeyChar;
+                }
+            } while (key != ConsoleKey.Enter);
+
+            settings.komga = new Komga(tmpUrl, tmpUser, tmpPass);
+        }
+
+        //For now only TaskManager mode
+        /*
         Console.Write("Mode (D: Interactive only, T: TaskManager):");
         ConsoleKeyInfo mode = Console.ReadKey();
         while (mode.Key != ConsoleKey.D && mode.Key != ConsoleKey.T)
@@ -28,14 +66,14 @@ public static class Tranga_Cli
         Console.WriteLine();
         
         if(mode.Key == ConsoleKey.D)
-            DownloadNow(folderPath);
+            DownloadNow(settings);
         else if (mode.Key == ConsoleKey.T)
-            TaskMode(folderPath);
+            TaskMode(settings);*/
+        TaskMode(settings);
     }
 
-    private static void TaskMode(string folderPath)
+    private static void TaskMode(TaskManager.SettingsData settings)
     {
-        TaskManager.SettingsData settings = TaskManager.ImportData(Directory.GetCurrentDirectory());
         TaskManager taskManager = new TaskManager(settings);
         ConsoleKey selection = ConsoleKey.NoName;
         int menu = 0;
@@ -50,13 +88,18 @@ public static class Tranga_Cli
                     menu = 0;
                     break;
                 case 2:
-                    Connector connector = SelectConnector(folderPath, taskManager.GetAvailableConnectors().Values.ToArray());
                     TrangaTask.Task task = SelectTask();
+                    
+                    Connector? connector = null;
+                    if(task != TrangaTask.Task.UpdateKomgaLibrary)
+                        connector = SelectConnector(settings.downloadLocation, taskManager.GetAvailableConnectors().Values.ToArray());
+                    
                     Publication? publication = null;
-                    if(task != TrangaTask.Task.UpdatePublications)
-                        publication = SelectPublication(connector);
+                    if(task != TrangaTask.Task.UpdatePublications && task != TrangaTask.Task.UpdateKomgaLibrary)
+                        publication = SelectPublication(connector!);
+                    
                     TimeSpan reoccurrence = SelectReoccurrence();
-                    TrangaTask newTask = taskManager.AddTask(task, connector.name, publication, reoccurrence, "en");
+                    TrangaTask newTask = taskManager.AddTask(task, connector?.name, publication, reoccurrence, "en");
                     Console.WriteLine(newTask);
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
@@ -80,8 +123,7 @@ public static class Tranga_Cli
                     while (query is null || query.Length < 1)
                         query = Console.ReadLine();
                     PrintTasks(taskManager.GetAllTasks().Where(qTask =>
-                        ((Publication)qTask.publication!).sortName.ToLower()
-                        .Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray());
+                        qTask.ToString().ToLower().Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray());
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     menu = 0;
@@ -93,7 +135,7 @@ public static class Tranga_Cli
                     menu = 0;
                     break;
                 default:
-                    selection = Menu(taskManager, folderPath);
+                    selection = Menu(taskManager, settings.downloadLocation);
                     switch (selection)
                     {
                         case ConsoleKey.L:
@@ -129,6 +171,8 @@ public static class Tranga_Cli
         {
             Console.WriteLine("Force quit (Even with running tasks?) y/N");
             selection = Console.ReadKey().Key;
+            while(selection != ConsoleKey.Y && selection != ConsoleKey.N)
+                selection = Console.ReadKey().Key;
             taskManager.Shutdown(selection == ConsoleKey.Y);
         }else
             // ReSharper disable once RedundantArgumentDefaultValue Better readability
@@ -233,9 +277,9 @@ public static class Tranga_Cli
         return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
     }
 
-    private static void DownloadNow(string folderPath)
+    private static void DownloadNow(TaskManager.SettingsData settings)
     {
-        Connector connector = SelectConnector(folderPath);
+        Connector connector = SelectConnector(settings.downloadLocation);
 
         Publication publication = SelectPublication(connector);
         

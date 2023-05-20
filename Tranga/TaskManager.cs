@@ -14,18 +14,20 @@ public class TaskManager
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
     private string downloadLocation { get; }
-    private string? komgaBaseUrl { get; }
+    
+    public Komga? komga { get; private set; }
 
     /// <param name="folderPath">Local path to save data (Manga) to</param>
     /// <param name="komgaBaseUrl">The Url of the Komga-instance that you want to update</param>
-    public TaskManager(string folderPath, string? komgaBaseUrl = null)
+    public TaskManager(string folderPath, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null)
     {
+        this.downloadLocation = folderPath;
+
+        if (komgaBaseUrl != null && komgaUsername != null && komgaPassword != null)
+            this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword);
         this._connectors = new Connector[]{ new MangaDex(folderPath) };
         _chapterCollection = new();
         _allTasks = new HashSet<TrangaTask>();
-        
-        this.downloadLocation = folderPath;
-        this.komgaBaseUrl = komgaBaseUrl;
         
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
@@ -36,7 +38,7 @@ public class TaskManager
         this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation) };
         _chapterCollection = new();
         this.downloadLocation = settings.downloadLocation;
-        this.komgaBaseUrl = settings.komgaUrl;
+        this.komga = settings.komga;
         _allTasks = settings.allTasks;
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
@@ -49,7 +51,7 @@ public class TaskManager
             foreach (TrangaTask task in _allTasks)
             {
                 if(task.ShouldExecute()) 
-                    TaskExecutor.Execute(this._connectors, task, this._chapterCollection); //TODO Might crash here, when adding new Task while another Task is running. Check later
+                    TaskExecutor.Execute(this, task, this._chapterCollection); //TODO Might crash here, when adding new Task while another Task is running. Check later
             }
             Thread.Sleep(1000);
         }
@@ -66,7 +68,7 @@ public class TaskManager
         
         Task t = new Task(() =>
         {
-            TaskExecutor.Execute(this._connectors, task, this._chapterCollection);
+            TaskExecutor.Execute(this, task, this._chapterCollection);
         });
         t.Start();
     }
@@ -80,24 +82,44 @@ public class TaskManager
     /// <param name="reoccurrence">Time-Interval between Executions</param>
     /// <param name="language">language, should Task require parameter. Can be empty</param>
     /// <exception cref="ArgumentException">Is thrown when connectorName is not a available Connector</exception>
-    public TrangaTask AddTask(TrangaTask.Task task, string connectorName, Publication? publication, TimeSpan reoccurrence,
+    public TrangaTask AddTask(TrangaTask.Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
-        //Get appropriate Connector from available Connectors for TrangaTask
-        Connector? connector = _connectors.FirstOrDefault(c => c.name == connectorName);
-        if (connector is null)
-            throw new ArgumentException($"Connector {connectorName} is not a known connector.");
-        
-        TrangaTask newTask = new TrangaTask(connector.name, task, publication, reoccurrence, language);
-        //Check if same task already exists
-        if (!_allTasks.Any(trangaTask => trangaTask.task != task && trangaTask.connectorName != connector.name &&
-                                         trangaTask.publication?.downloadUrl != publication?.downloadUrl))
+        if (task != TrangaTask.Task.UpdateKomgaLibrary && connectorName is null)
+            throw new ArgumentException($"connectorName can not be null for task {task}");
+
+        TrangaTask newTask;
+        if (task == TrangaTask.Task.UpdateKomgaLibrary)
         {
-            if(task != TrangaTask.Task.UpdatePublications)
-                _chapterCollection.Add((Publication)publication!, new List<Chapter>());
-            _allTasks.Add(newTask);
-            ExportData(Directory.GetCurrentDirectory());
+            newTask = new TrangaTask(task, null, null, reoccurrence, language);
+            
+            //Check if same task already exists
+            // ReSharper disable once SimplifyLinqExpressionUseAll readabilty
+            if (!_allTasks.Any(trangaTask => trangaTask.task == task))
+            {
+                _allTasks.Add(newTask);
+            }
         }
+        else
+        {
+            //Get appropriate Connector from available Connectors for TrangaTask
+            Connector? connector = _connectors.FirstOrDefault(c => c.name == connectorName);
+            if (connector is null)
+                throw new ArgumentException($"Connector {connectorName} is not a known connector.");
+        
+            newTask = new TrangaTask(task, connector.name, publication, reoccurrence, language);
+            
+            //Check if same task already exists
+            if (!_allTasks.Any(trangaTask => trangaTask.task == task && trangaTask.connectorName == connector.name &&
+                                             trangaTask.publication?.downloadUrl == publication?.downloadUrl))
+            {
+                if(task != TrangaTask.Task.UpdatePublications)
+                    _chapterCollection.Add((Publication)publication!, new List<Chapter>());
+                _allTasks.Add(newTask);
+            }
+        }
+        ExportData(Directory.GetCurrentDirectory());
+        
         return newTask;
     }
 
@@ -134,6 +156,12 @@ public class TaskManager
     {
         return this._chapterCollection.Keys.ToArray();
     }
+
+    public void NewKomga(Komga? pKomga)
+    {
+        this.komga = pKomga;
+        this.ExportData(Directory.GetCurrentDirectory());
+    }
     
     /// <summary>
     /// Shuts down the taskManager.
@@ -167,7 +195,7 @@ public class TaskManager
 
     private void ExportData(string exportFolderPath)
     {
-        SettingsData data = new SettingsData(this.downloadLocation, this.komgaBaseUrl, this._allTasks);
+        SettingsData data = new SettingsData(this.downloadLocation, this.komga, this._allTasks);
 
         string exportPath = Path.Join(exportFolderPath, "data.json");
         string serializedData = JsonConvert.SerializeObject(data);
@@ -176,14 +204,14 @@ public class TaskManager
 
     public class SettingsData
     {
-        public string downloadLocation { get; }
-        public string? komgaUrl { get; }
+        public string downloadLocation { get; set; }
+        public Komga? komga { get; set; }
         public HashSet<TrangaTask> allTasks { get; }
 
-        public SettingsData(string downloadLocation, string? komgaUrl, HashSet<TrangaTask> allTasks)
+        public SettingsData(string downloadLocation, Komga? komga, HashSet<TrangaTask> allTasks)
         {
             this.downloadLocation = downloadLocation;
-            this.komgaUrl = komgaUrl;
+            this.komga = komga;
             this.allTasks = allTasks;
         }
     }

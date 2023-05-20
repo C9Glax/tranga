@@ -1,20 +1,31 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga;
 
 public class Komga
 {
-    private string baseUrl { get; }
+    [System.Text.Json.Serialization.JsonRequired]public string baseUrl { get; }
+    [System.Text.Json.Serialization.JsonRequired]public string auth { get; }
 
-    public Komga(string baseUrl)
+    public Komga(string baseUrl, string username, string password)
     {
         this.baseUrl = baseUrl;
+        this.auth = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}"));
+    }
+
+    [JsonConstructor]
+    public Komga(string baseUrl, string auth)
+    {
+        this.baseUrl = baseUrl;
+        this.auth = auth;
     }
 
     public KomgaLibrary[] GetLibraries()
     {
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries");
+        Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", auth);
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
             return Array.Empty<KomgaLibrary>();
@@ -34,7 +45,7 @@ public class Komga
 
     public bool UpdateLibrary(string libraryId)
     {
-        return NetClient.MakePost($"{baseUrl}/api/v1/libraries/{libraryId}/scan");
+        return NetClient.MakePost($"{baseUrl}/api/v1/libraries/{libraryId}/scan", auth);
     }
 
     public struct KomgaLibrary
@@ -51,19 +62,37 @@ public class Komga
 
     private static class NetClient
     {
-        public static Stream MakeRequest(string url)
+        public static Stream MakeRequest(string url, string auth)
         {
             HttpClient client = new();
-            HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
+            HttpRequestMessage requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(url),
+                Headers =
+                {
+                    { "Accept", "application/json" },
+                    { "Authorization", new AuthenticationHeaderValue("Basic", auth).ToString() }
+                }
+            };
             HttpResponseMessage response = client.Send(requestMessage);
             Stream resultString = response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
             return resultString;
         }
 
-        public static bool MakePost(string url)
+        public static bool MakePost(string url, string auth)
         {
             HttpClient client = new();
-            HttpRequestMessage requestMessage = new(HttpMethod.Post, url);
+            HttpRequestMessage requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(url),
+                Headers =
+                {
+                    { "Accept", "application/json" },
+                    { "Authorization", new AuthenticationHeaderValue("Basic", auth).ToString() }
+                }
+            };
             HttpResponseMessage response = client.Send(requestMessage);
             return response.IsSuccessStatusCode;
         }

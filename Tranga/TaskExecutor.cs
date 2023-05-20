@@ -7,20 +7,22 @@
 /// </summary>
 public static class TaskExecutor
 {
-    
     /// <summary>
     /// Executes TrangaTask.
     /// </summary>
-    /// <param name="connectors">List of all available Connectors</param>
+    /// <param name="taskManager">Parent</param>
     /// <param name="trangaTask">Task to execute</param>
     /// <param name="chapterCollection">Current chapterCollection to update</param>
     /// <exception cref="ArgumentException">Is thrown when there is no Connector available with the name of the TrangaTask.connectorName</exception>
-    public static void Execute(Connector[] connectors, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
+    public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection)
     {
-        //Get Connector from list of available Connectors and the required Connector of the TrangaTask
-        Connector? connector = connectors.FirstOrDefault(c => c.name == trangaTask.connectorName);
-        if (connector is null)
-            throw new ArgumentException($"Connector {trangaTask.connectorName} is not a known connector.");
+        Connector? connector = null;
+        if (trangaTask.task != TrangaTask.Task.UpdateKomgaLibrary)
+        {
+            //Get Connector from list of available Connectors and the required Connector of the TrangaTask
+            if (!taskManager.GetAvailableConnectors().TryGetValue(trangaTask.connectorName, out connector))
+                throw new ArgumentException($"Connector {trangaTask.connectorName} is not a known connector.");
+        }
 
         if (trangaTask.isBeingExecuted)
             return;
@@ -31,17 +33,35 @@ public static class TaskExecutor
         switch (trangaTask.task)
         {
             case TrangaTask.Task.DownloadNewChapters:
-                DownloadNewChapters(connector, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
+                DownloadNewChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
                 break;
             case TrangaTask.Task.UpdateChapters:
-                UpdateChapters(connector, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
+                UpdateChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
                 break;
             case TrangaTask.Task.UpdatePublications:
-                UpdatePublications(connector, chapterCollection);
+                UpdatePublications(connector!, chapterCollection);
+                break;
+            case TrangaTask.Task.UpdateKomgaLibrary:
+                UpdateKomgaLibrary(taskManager);
                 break;
         }
 
         trangaTask.isBeingExecuted = false;
+    }
+
+    /// <summary>
+    /// Updates all Komga-Libraries
+    /// </summary>
+    /// <param name="taskManager">Parent</param>
+    private static void UpdateKomgaLibrary(TaskManager taskManager)
+    {
+        if (taskManager.komga is null)
+            return;
+        Komga komga = taskManager.komga;
+
+        Komga.KomgaLibrary[] allLibraries = komga.GetLibraries();
+        foreach (Komga.KomgaLibrary lib in allLibraries)
+            komga.UpdateLibrary(lib.id);
     }
 
     /// <summary>
