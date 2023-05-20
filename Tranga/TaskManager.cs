@@ -60,6 +60,7 @@ public class TaskManager
     /// </summary>
     private void TaskCheckerThread()
     {
+        logger?.WriteLine(this.GetType().ToString(), "Starting TaskCheckerThread.");
         while (_continueRunning)
         {
             //Check if previous tasks have finished and execute new tasks
@@ -120,7 +121,7 @@ public class TaskManager
     public TrangaTask AddTask(TrangaTask.Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence,
         string language = "")
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Adding new Task");
+        logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {task} {connectorName} {publication?.sortName}");
         if (task != TrangaTask.Task.UpdateKomgaLibrary && connectorName is null)
             throw new ArgumentException($"connectorName can not be null for task {task}");
 
@@ -154,7 +155,7 @@ public class TaskManager
                 _allTasks.Add(newTask);
             }
         }
-        logger?.WriteLine(this.GetType().ToString(), newTask.ToString());
+        logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask.ToString()}");
         ExportData(Directory.GetCurrentDirectory());
         
         return newTask;
@@ -168,15 +169,23 @@ public class TaskManager
     /// <param name="publication">Publication that was used</param>
     public void RemoveTask(TrangaTask.Task task, string? connectorName, Publication? publication)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task}");
+        logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task} {publication?.sortName}");
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
+        {
             _allTasks.RemoveWhere(uTask => uTask.task == TrangaTask.Task.UpdateKomgaLibrary);
+            logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task}");
+        }
         else if (connectorName is null)
             throw new ArgumentException($"connectorName can not be null for Task {task}");
         else
-            _allTasks.RemoveWhere(trangaTask =>
+        {
+            if(_allTasks.RemoveWhere(trangaTask =>
                 trangaTask.task == task && trangaTask.connectorName == connectorName &&
-                trangaTask.publication?.downloadUrl == publication?.downloadUrl);
+                trangaTask.publication?.downloadUrl == publication?.downloadUrl) > 0)
+                logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} {publication?.sortName} {publication?.downloadUrl}.");
+            else
+                logger?.WriteLine(this.GetType().ToString(), $"No Task {task} {publication?.sortName} {publication?.downloadUrl} could be found.");
+        }
         ExportData(Directory.GetCurrentDirectory());
     }
     
@@ -231,6 +240,7 @@ public class TaskManager
         //Wait for tasks to finish
         while(_allTasks.Any(task => task.state is TrangaTask.ExecutionState.Running or TrangaTask.ExecutionState.Enqueued))
             Thread.Sleep(10);
+        logger?.WriteLine(this.GetType().ToString(), "Tasks finished. Bye!");
         Environment.Exit(0);
     }
 

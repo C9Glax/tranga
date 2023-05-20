@@ -21,7 +21,7 @@ public class MangaDex : Connector
 
     public override Publication[] GetPublications(string publicationTitle = "")
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Publications");
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -128,7 +128,7 @@ public class MangaDex : Connector
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters");
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters {publication.sortName} (language={language})");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -183,7 +183,7 @@ public class MangaDex : Connector
 
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Download Chapter {publication.sortName} {chapter.sortNumber}");
+        logger?.WriteLine(this.GetType().ToString(), $"Download Chapter {publication.sortName} {chapter.volumeNumber}-{chapter.chapterNumber}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'");

@@ -15,6 +15,7 @@ public static class TaskExecutor
     /// <param name="taskManager">Parent</param>
     /// <param name="trangaTask">Task to execute</param>
     /// <param name="chapterCollection">Current chapterCollection to update</param>
+    /// <param name="logger"></param>
     /// <exception cref="ArgumentException">Is thrown when there is no Connector available with the name of the TrangaTask.connectorName</exception>
     public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection, Logger? logger)
     {
@@ -25,7 +26,7 @@ public static class TaskExecutor
             return;
         }
         trangaTask.state = TrangaTask.ExecutionState.Running;
-        logger?.WriteLine("TaskExecutor", $"Executing Task {trangaTask}");
+        logger?.WriteLine("TaskExecutor", $"Starting Task {trangaTask}");
         
         //Connector is not needed for all tasks
         Connector? connector = null;
@@ -49,9 +50,9 @@ public static class TaskExecutor
                 break;
         }
         
-        logger?.WriteLine("TaskExecutor", $"Task executed! {trangaTask}");
-        trangaTask.state = TrangaTask.ExecutionState.Waiting;
+        logger?.WriteLine("TaskExecutor", $"Task finished! {trangaTask}");
         trangaTask.lastExecuted = DateTime.Now;
+        trangaTask.state = TrangaTask.ExecutionState.Waiting;
     }
 
     /// <summary>
