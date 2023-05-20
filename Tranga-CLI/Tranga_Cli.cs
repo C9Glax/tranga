@@ -127,15 +127,14 @@ public static class Tranga_Cli
         int taskEnqueuedCount =
             taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Enqueued);
         Console.Clear();
-        Console.WriteLine($"Download Folder: {folderPath} Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
-        Console.WriteLine("U: Update this Screen");
-        Console.WriteLine("L: List tasks");
-        Console.WriteLine("C: Create Task");
-        Console.WriteLine("D: Delete Task");
-        Console.WriteLine("E: Execute Task now");
-        Console.WriteLine("S: Search Task");
-        Console.WriteLine("R: Running Tasks");
-        Console.WriteLine("Q: Exit");
+        Console.WriteLine($"Download Folder: {folderPath}");
+        Console.WriteLine($"Tasks (Running/Queue/Total)): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
+        Console.WriteLine();
+        Console.WriteLine($"{"C: Create Task",-30}{"L: List tasks",-30}");
+        Console.WriteLine($"{"D: Delete Task",-30}{"R: List Running Tasks", -30}");
+        Console.WriteLine($"{"E: Execute Task now",-30}{"S: Search Tasks", -30}");
+        Console.WriteLine();
+        Console.WriteLine($"{"U: Update this Screen",-30}{"Q: Exit",-30}");
         ConsoleKey selection = Console.ReadKey().Key;
         Console.WriteLine();
         return selection;
@@ -149,7 +148,10 @@ public static class Tranga_Cli
         Console.Clear();
         int tIndex = 0;
         Console.WriteLine($"Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
-        Console.WriteLine($"{"",-5}{"Task",-20} {"Last Executed",-20} {"Reoccurrence",-12} {"State",-10} {"Connector",-15} Publication/Manga");
+        string header =
+            $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Connector",-15} | Publication/Manga";
+        Console.WriteLine(header);
+        Console.WriteLine(new string('-', header.Length));
         foreach(TrangaTask trangaTask in tasks)
             Console.WriteLine($"{tIndex++:000}: {trangaTask}");
     }
