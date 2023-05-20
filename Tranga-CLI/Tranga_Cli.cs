@@ -76,25 +76,35 @@ public static class Tranga_Cli
             {
                 case ConsoleKey.L:
                     PrintTasks(taskManager.GetAllTasks());
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
                     break;
                 case ConsoleKey.C:
                     CreateTask(taskManager, settings);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
                     break;
                 case ConsoleKey.D:
                     RemoveTask (taskManager);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
                     break;
                 case ConsoleKey.E:
                     ExecuteTaskNow(taskManager);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
                     break;
                 case ConsoleKey.S:
                     SearchTasks(taskManager);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
                     break;
                 case ConsoleKey.R:
                     PrintTasks(taskManager.GetAllTasks().Where(eTask => eTask.state == TrangaTask.ExecutionState.Running).ToArray());
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
                     break;
             }
-            Console.WriteLine("Press any key.");
-            Console.ReadKey();
             selection = PrintMenu(taskManager, settings.downloadLocation);
         }
 
