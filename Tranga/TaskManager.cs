@@ -43,6 +43,15 @@ public class TaskManager
         taskChecker.Start();
     }
 
+    public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth)
+    {
+        Komga? komga = null;
+        if (komgaUrl is not null && komgaAuth is not null)
+            komga = new Komga(komgaUrl, komgaAuth, null);
+        settings.UpdateSettings(downloadLocation, komga);
+        ExportData();
+    }
+
     public TaskManager(SettingsData settings, Logger? logger = null)
     {
         this.logger = logger;
@@ -311,9 +320,9 @@ public class TaskManager
 
     public class SettingsData
     {
-        public string downloadLocation { get; set; }
+        public string downloadLocation { get; private set; }
         public string settingsFilePath { get; }
-        public Komga? komga { get; set; }
+        public Komga? komga { get; private set; }
         public HashSet<TrangaTask> allTasks { get; }
 
         public SettingsData(string downloadLocation, string? settingsFilePath, Komga? komga, HashSet<TrangaTask> allTasks)
@@ -324,6 +333,14 @@ public class TaskManager
             this.downloadLocation = downloadLocation;
             this.komga = komga;
             this.allTasks = allTasks;
+        }
+
+        public void UpdateSettings(string? pDownloadLocation, Komga? pKomga)
+        {
+            if(pDownloadLocation is not null)
+                this.downloadLocation = pDownloadLocation;
+            if(pKomga is not null)
+                this.komga = pKomga;
         }
     }
 }
