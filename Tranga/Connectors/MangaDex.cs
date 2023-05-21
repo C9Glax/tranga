@@ -63,7 +63,7 @@ public class MangaDex : Connector
                 {
                     JsonObject altTitleObject = (JsonObject)altTitleNode!;
                     string key = ((IDictionary<string, JsonNode?>)altTitleObject).Keys.ToArray()[0];
-                    altTitlesDict.Add(key, altTitleObject[key]!.GetValue<string>());
+                    altTitlesDict.TryAdd(key, altTitleObject[key]!.GetValue<string>());
                 }
 
                 JsonArray tagsObject = attributes["tags"]!.AsArray();
