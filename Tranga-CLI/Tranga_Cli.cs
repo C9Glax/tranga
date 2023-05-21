@@ -116,9 +116,7 @@ public static class Tranga_Cli
                     Console.ReadKey();
                     break;
                 case ConsoleKey.F:
-                    Console.Clear();
-                    foreach (string message in logger.Tail(20))
-                        Console.Write(message);
+                    ShowLastLoglines(logger);
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     break;
@@ -176,6 +174,40 @@ public static class Tranga_Cli
         Console.WriteLine(new string('-', header.Length));
         foreach(TrangaTask trangaTask in tasks)
             Console.WriteLine($"{tIndex++:000}: {trangaTask}");
+    }
+
+    private static void ShowLastLoglines(Logger logger)
+    {
+        Console.Clear();
+        logger.WriteLine("Tranga_CLI", "Menu: Show Log-lines");
+        
+        Console.WriteLine("Enter q to abort");
+        Console.WriteLine($"Number of lines:");
+
+        string? chosenNumber = Console.ReadLine();
+        while(chosenNumber is null || chosenNumber.Length < 1)
+            chosenNumber = Console.ReadLine();
+        
+        if (chosenNumber.Length == 1 && chosenNumber.ToLower() == "q")
+        {
+            Console.Clear();
+            Console.WriteLine("aborted.");
+            logger.WriteLine("Tranga_CLI", "aborted");
+            return;
+        }
+
+        try
+        {
+            string[] lines = logger.Tail(Convert.ToUInt32(chosenNumber));
+            Console.Clear();
+            foreach (string message in lines)
+                Console.Write(message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+            logger.WriteLine("Tranga_CLI", e.Message);
+        }
     }
 
     private static void CreateTask(TaskManager taskManager, TaskManager.SettingsData settings, Logger logger)
