@@ -14,7 +14,7 @@ public class TaskManager
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
-    private Dictionary<Connector, List<TrangaTask>> tasksToExecute = new();
+    private readonly Dictionary<Connector, List<TrangaTask>> _taskQueue = new();
     private string downloadLocation { get; }
     private Logger? logger { get; }
     
@@ -34,7 +34,7 @@ public class TaskManager
             this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
         this._connectors = new Connector[]{ new MangaDex(folderPath, logger) };
         foreach(Connector cConnector in this._connectors)
-            tasksToExecute.Add(cConnector, new List<TrangaTask>());
+            _taskQueue.Add(cConnector, new List<TrangaTask>());
         _allTasks = new HashSet<TrangaTask>();
         
         Thread taskChecker = new(TaskCheckerThread);
@@ -46,7 +46,7 @@ public class TaskManager
         this.logger = logger;
         this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation, logger) };
         foreach(Connector cConnector in this._connectors)
-            tasksToExecute.Add(cConnector, new List<TrangaTask>());
+            _taskQueue.Add(cConnector, new List<TrangaTask>());
         this.downloadLocation = settings.downloadLocation;
         this.komga = settings.komga;
         _allTasks = settings.allTasks;
@@ -64,7 +64,7 @@ public class TaskManager
         while (_continueRunning)
         {
             //Check if previous tasks have finished and execute new tasks
-            foreach (KeyValuePair<Connector, List<TrangaTask>> connectorTaskQueue in tasksToExecute)
+            foreach (KeyValuePair<Connector, List<TrangaTask>> connectorTaskQueue in _taskQueue)
             {
                 if(connectorTaskQueue.Value.RemoveAll(task => task.state == TrangaTask.ExecutionState.Waiting) > 0)
                     ExportData(Directory.GetCurrentDirectory());
@@ -83,7 +83,7 @@ public class TaskManager
                 else
                 {
                     logger?.WriteLine(this.GetType().ToString(), $"Task due: {task}");
-                    tasksToExecute[GetConnector(task.connectorName!)].Add(task);
+                    _taskQueue[GetConnector(task.connectorName!)].Add(task);
                 }
             }
             Thread.Sleep(1000);
@@ -165,7 +165,7 @@ public class TaskManager
     /// <param name="task">TrangaTask.Task type</param>
     /// <param name="connectorName">Name of Connector that was used</param>
     /// <param name="publication">Publication that was used</param>
-    public void RemoveTask(TrangaTask.Task task, string? connectorName, Publication? publication)
+    public void DeleteTask(TrangaTask.Task task, string? connectorName, Publication? publication)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task} {publication?.sortName}");
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
@@ -185,6 +185,18 @@ public class TaskManager
                 logger?.WriteLine(this.GetType().ToString(), $"No Task {task} {publication?.sortName} {publication?.downloadUrl} could be found.");
         }
         ExportData(Directory.GetCurrentDirectory());
+    }
+
+    /// <summary>
+    /// Removes a Task from the queue
+    /// </summary>
+    /// <param name="task"></param>
+    public void RemoveTaskFromQueue(TrangaTask task)
+    {
+        task.lastExecuted = DateTime.Now;
+        foreach (List<TrangaTask> taskList in this._taskQueue.Values)
+            taskList.Remove(task);
+        task.state = TrangaTask.ExecutionState.Waiting;
     }
     
     /// <returns>All available Connectors</returns>

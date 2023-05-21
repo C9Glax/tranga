@@ -91,7 +91,7 @@ public static class Tranga_Cli
                     Console.ReadKey();
                     break;
                 case ConsoleKey.D:
-                    RemoveTask (taskManager, logger);
+                    DeleteTask(taskManager, logger);
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     break;
@@ -117,6 +117,11 @@ public static class Tranga_Cli
                     break;
                 case ConsoleKey.F:
                     ShowLastLoglines(logger);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    break;
+                case ConsoleKey.M:
+                    RemoveTaskFromQueue(taskManager, logger);
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     break;
@@ -148,10 +153,9 @@ public static class Tranga_Cli
         Console.WriteLine($"Tasks (Running/Queue/Total)): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         Console.WriteLine();
         Console.WriteLine($"{"C: Create Task",-30}{"L: List tasks",-30}");
-        Console.WriteLine($"{"D: Delete Task",-30}{"R: List Running Tasks", -30}");
-        Console.WriteLine($"{"E: Execute Task now",-30}{"S: Search Tasks", -30}");
-        Console.WriteLine($"{"",-30}{"K: List Task Queue", -30}");
-        //Console.WriteLine();
+        Console.WriteLine($"{"D: Delete Task",-30}{"R: List Running Tasks", -30}{"K: List Task Queue", -30}");
+        Console.WriteLine($"{"E: Execute Task now",-30}{"S: Search Tasks", -30}{"M: Remove Task from Queue", -30}");
+        Console.WriteLine();
         Console.WriteLine($"{"F: Show Log",-30}{"",-30}");
         Console.WriteLine($"{"U: Update this Screen",-30}{"Q: Exit",-30}");
         ConsoleKey selection = Console.ReadKey().Key;
@@ -174,6 +178,53 @@ public static class Tranga_Cli
         Console.WriteLine(new string('-', header.Length));
         foreach(TrangaTask trangaTask in tasks)
             Console.WriteLine($"{tIndex++:000}: {trangaTask}");
+    }
+
+    private static void RemoveTaskFromQueue(TaskManager taskManager, Logger logger)
+    {
+        Console.Clear();
+        logger.WriteLine("Tranga_CLI", "Menu: Remove Task from queue");
+        
+        TrangaTask[] tasks = taskManager.GetAllTasks();
+        if (tasks.Length < 1)
+        {
+            Console.Clear();
+            Console.WriteLine("There are no available Tasks.");
+            logger.WriteLine("Tranga_CLI", "No available Tasks.");
+            return;
+        }
+        PrintTasks(tasks, logger);
+        
+        logger.WriteLine("Tranga_CLI", "Selecting Task to Remove (from queue)");
+        Console.WriteLine("Enter q to abort");
+        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
+
+        string? selectedTask = Console.ReadLine();
+        while(selectedTask is null || selectedTask.Length < 1)
+            selectedTask = Console.ReadLine();
+        
+        if (selectedTask.Length == 1 && selectedTask.ToLower() == "q")
+        {
+            Console.Clear();
+            Console.WriteLine("aborted.");
+            logger.WriteLine("Tranga_CLI", "aborted");
+            return;
+        }
+        
+        try
+        {
+            int selectedTaskIndex = Convert.ToInt32(selectedTask);
+            logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
+            taskManager.RemoveTaskFromQueue(tasks[selectedTaskIndex]);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+            logger.WriteLine("Tranga_CLI", e.Message);
+        }
+
+
+        
     }
 
     private static void ShowLastLoglines(Logger logger)
@@ -283,7 +334,7 @@ public static class Tranga_Cli
         
     }
 
-    private static void RemoveTask(TaskManager taskManager, Logger logger)
+    private static void DeleteTask(TaskManager taskManager, Logger logger)
     {
         logger.WriteLine("Tranga_CLI", "Menu: Remove Task");
         TrangaTask[] tasks = taskManager.GetAllTasks();
@@ -316,7 +367,7 @@ public static class Tranga_Cli
         {
             int selectedTaskIndex = Convert.ToInt32(selectedTask);
             logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-            taskManager.RemoveTask(tasks[selectedTaskIndex].task, tasks[selectedTaskIndex].connectorName, tasks[selectedTaskIndex].publication);
+            taskManager.DeleteTask(tasks[selectedTaskIndex].task, tasks[selectedTaskIndex].connectorName, tasks[selectedTaskIndex].publication);
         }
         catch (Exception e)
         {
