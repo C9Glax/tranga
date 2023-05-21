@@ -20,7 +20,7 @@ TrangaSettings settings;
 if (File.Exists(settingsFilePath))
     settings = TrangaSettings.LoadSettings(settingsFilePath);
 else
-    settings = new TrangaSettings(Directory.GetCurrentDirectory(), settingsFilePath, null);
+    settings = new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, null);
 
 TaskManager taskManager = new (settings, logger);
 
