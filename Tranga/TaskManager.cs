@@ -198,6 +198,16 @@ public class TaskManager
             taskList.Remove(task);
         task.state = TrangaTask.ExecutionState.Waiting;
     }
+
+    /// <summary>
+    /// Sets last execution time to start of time
+    /// Let taskManager handle enqueuing
+    /// </summary>
+    /// <param name="task"></param>
+    public void AddTaskToQueue(TrangaTask task)
+    {
+        task.lastExecuted = DateTime.UnixEpoch;
+    }
     
     /// <returns>All available Connectors</returns>
     public Dictionary<string, Connector> GetAvailableConnectors()
