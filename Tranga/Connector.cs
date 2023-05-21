@@ -80,7 +80,7 @@ public abstract class Connector
     /// <returns>XML-string</returns>
     protected static string CreateComicInfo(Publication publication, Chapter chapter, Logger? logger)
     {
-        logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} Chapter {chapter.sortNumber}");
+        logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} Chapter {chapter.volumeNumber} {chapter.chapterNumber}");
         XElement comicInfo = new XElement("ComicInfo",
             new XElement("Tags", string.Join(',',publication.tags)),
             new XElement("LanguageISO", publication.originalLanguage),
