@@ -5,7 +5,7 @@ using Tranga;
 string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tranga-API");
 string logsFolderPath = Path.Join(applicationFolderPath, "logs");
 string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
-string settingsFilePath = Path.Join(applicationFolderPath, "data.json");
+string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");
 
 Directory.CreateDirectory(applicationFolderPath);
 Directory.CreateDirectory(logsFolderPath);
@@ -16,11 +16,11 @@ Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
 Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null, logFilePath);
         
 logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
-TaskManager.SettingsData settings;
+TrangaSettings settings;
 if (File.Exists(settingsFilePath))
-    settings = TaskManager.LoadData(settingsFilePath);
+    settings = TrangaSettings.LoadSettings(settingsFilePath);
 else
-    settings = new TaskManager.SettingsData(Directory.GetCurrentDirectory(), settingsFilePath, null, new HashSet<TrangaTask>());
+    settings = new TrangaSettings(Directory.GetCurrentDirectory(), settingsFilePath, null);
 
 TaskManager taskManager = new (settings, logger);
 
@@ -114,7 +114,7 @@ class Settings
     public string downloadLocation { get; }
     public Komga? komga { get; }
 
-    public Settings(TaskManager.SettingsData settings)
+    public Settings(TrangaSettings settings)
     {
         this.downloadLocation = settings.downloadLocation;
         this.komga = settings.komga;

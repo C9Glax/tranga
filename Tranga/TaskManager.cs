@@ -11,28 +11,30 @@ namespace Tranga;
 public class TaskManager
 {
     public Dictionary<Publication, List<Chapter>> _chapterCollection = new();
-    private readonly HashSet<TrangaTask> _allTasks;
+    private HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
     private readonly Dictionary<Connector, List<TrangaTask>> _taskQueue = new();
-    public SettingsData settings { get; }
+    public TrangaSettings settings { get; }
     private Logger? logger { get; }
-    public Komga? komga { get; }
+    public Komga? komga => settings.komga;
 
     /// <param name="downloadFolderPath">Local path to save data (Manga) to</param>
-    /// <param name="settingsFilePath">Path to the settings file (data.json)</param>
+    /// <param name="workingDirectory">Path to the working directory</param>
     /// <param name="komgaBaseUrl">The Url of the Komga-instance that you want to update</param>
     /// <param name="komgaUsername">The Komga username</param>
     /// <param name="komgaPassword">The Komga password</param>
     /// <param name="logger"></param>
-    public TaskManager(string downloadFolderPath, string? settingsFilePath = null, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
+    public TaskManager(string downloadFolderPath, string? workingDirectory = null, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
     {
         this.logger = logger;
         _allTasks = new HashSet<TrangaTask>();
+
+        Komga? newKomga = null;
         if (komgaBaseUrl != null && komgaUsername != null && komgaPassword != null)
-            this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
+            newKomga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
         
-        this.settings = new SettingsData(downloadFolderPath, settingsFilePath, this.komga, this._allTasks);
+        this.settings = new TrangaSettings(downloadFolderPath, workingDirectory, newKomga);
         ExportData();
         
         this._connectors = new Connector[]{ new MangaDex(downloadFolderPath, logger) };
@@ -48,21 +50,22 @@ public class TaskManager
         Komga? komga = null;
         if (komgaUrl is not null && komgaAuth is not null)
             komga = new Komga(komgaUrl, komgaAuth, null);
-        settings.UpdateSettings(downloadLocation, komga);
+        settings.downloadLocation = downloadLocation ?? settings.downloadLocation;
+        settings.komga = komga ?? komga;
         ExportData();
     }
 
-    public TaskManager(SettingsData settings, Logger? logger = null)
+    public TaskManager(TrangaSettings settings, Logger? logger = null)
     {
         this.logger = logger;
         this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation, logger) };
-        this.settings = settings;
-        ExportData();
-        
         foreach(Connector cConnector in this._connectors)
             _taskQueue.Add(cConnector, new List<TrangaTask>());
-        this.komga = settings.komga;
-        _allTasks = settings.allTasks;
+        _allTasks = new HashSet<TrangaTask>();
+        
+        this.settings = settings;
+        ImportData();
+        ExportData();
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
     }
@@ -289,19 +292,25 @@ public class TaskManager
         Environment.Exit(0);
     }
 
-    /// <summary>
-    /// Loads stored data (settings, tasks) from file
-    /// </summary>
-    /// <param name="importFilePath">working directory, filename has to be data.json</param>
-    public static SettingsData LoadData(string importFilePath)
+    private void ImportData()
     {
-        if (!File.Exists(importFilePath))
-            return new SettingsData(Directory.GetCurrentDirectory(), null, null, new HashSet<TrangaTask>());
+        logger?.WriteLine(this.GetType().ToString(), "Importing Data");
+        string buffer;
+        if (File.Exists(settings.tasksFilePath))
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"Importing tasks from {settings.tasksFilePath}");
+            buffer = File.ReadAllText(settings.tasksFilePath);
+            this._allTasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(buffer)!;
+        }
 
-        string toRead = File.ReadAllText(importFilePath);
-        SettingsData data = JsonConvert.DeserializeObject<SettingsData>(toRead)!;
-
-        return data;
+        if (File.Exists(settings.knownPublicationsPath))
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"Importing known publications from {settings.knownPublicationsPath}");
+            buffer = File.ReadAllText(settings.knownPublicationsPath);
+            Publication[] publications = JsonConvert.DeserializeObject<Publication[]>(buffer)!;
+            foreach (Publication publication in publications)
+                this._chapterCollection.TryAdd(publication, new List<Chapter>());
+        }
     }
 
     /// <summary>
@@ -309,38 +318,15 @@ public class TaskManager
     /// </summary>
     private void ExportData()
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Exporting data to {settings.settingsFilePath}");
+        logger?.WriteLine(this.GetType().ToString(), $"Exporting settings to {settings.settingsFilePath}");
+        File.WriteAllText(settings.settingsFilePath, JsonConvert.SerializeObject(settings));
         
+        logger?.WriteLine(this.GetType().ToString(), $"Exporting tasks to {settings.tasksFilePath}");
+        File.WriteAllText(settings.tasksFilePath, JsonConvert.SerializeObject(this._allTasks));
         
-
-        string serializedData = JsonConvert.SerializeObject(settings);
-
-        File.WriteAllText(settings.settingsFilePath, serializedData);
+        logger?.WriteLine(this.GetType().ToString(), $"Exporting known publications to {settings.knownPublicationsPath}");
+        File.WriteAllText(settings.knownPublicationsPath, JsonConvert.SerializeObject(this._chapterCollection.Keys.ToArray()));
     }
 
-    public class SettingsData
-    {
-        public string downloadLocation { get; private set; }
-        public string settingsFilePath { get; }
-        public Komga? komga { get; private set; }
-        public HashSet<TrangaTask> allTasks { get; }
-
-        public SettingsData(string downloadLocation, string? settingsFilePath, Komga? komga, HashSet<TrangaTask> allTasks)
-        {
-            this.settingsFilePath = settingsFilePath ??
-                                    Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                        "Tranga", "data.json");
-            this.downloadLocation = downloadLocation;
-            this.komga = komga;
-            this.allTasks = allTasks;
-        }
-
-        public void UpdateSettings(string? pDownloadLocation, Komga? pKomga)
-        {
-            if(pDownloadLocation is not null)
-                this.downloadLocation = pDownloadLocation;
-            if(pKomga is not null)
-                this.komga = pKomga;
-        }
-    }
+    
 }
