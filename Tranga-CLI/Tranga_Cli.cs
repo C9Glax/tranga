@@ -255,6 +255,25 @@ public static class Tranga_Cli
 
         return null;
     }
+    
+    private static void AddMangaTaskToQueue(TaskManager taskManager, Logger logger)
+    {
+        Console.Clear();
+        logger.WriteLine("Tranga_CLI", "Menu: Add Manga Download to queue");
+        
+        Connector? connector = SelectConnector(taskManager.settings.downloadLocation, taskManager.GetAvailableConnectors().Values.ToArray(), logger);
+        if (connector is null)
+            return;
+                    
+        Publication? publication = SelectPublication(taskManager, connector!, logger);
+        if (publication is null)
+            return;
+        
+        TimeSpan reoccurrence = SelectReoccurrence(logger);
+        logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
+        TrangaTask newTask = taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connector?.name, publication, reoccurrence, "en");
+        Console.WriteLine(newTask);
+    }
 
     private static void AddTaskToQueue(TaskManager taskManager, Logger logger)
     {
