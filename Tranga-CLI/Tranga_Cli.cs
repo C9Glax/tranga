@@ -152,11 +152,11 @@ public static class Tranga_Cli
         Console.WriteLine($"Download Folder: {folderPath}");
         Console.WriteLine($"Tasks (Running/Queue/Total)): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         Console.WriteLine();
-        Console.WriteLine($"{"C: Create Task",-30}{"L: List tasks",-30}");
-        Console.WriteLine($"{"D: Delete Task",-30}{"R: List Running Tasks", -30}{"K: List Task Queue", -30}");
-        Console.WriteLine($"{"E: Execute Task now",-30}{"S: Search Tasks", -30}{"M: Remove Task from Queue", -30}");
+        Console.WriteLine($"{"C: Create Task",-30}{"L: List tasks",-30}{"R: List Running Tasks", -30}");
+        Console.WriteLine($"{"D: Delete Task",-30}{"S: Search Tasks", -30}{"K: List Task Queue", -30}");
+        Console.WriteLine($"{"",-30}{"E: Execute Task now",-30}{"M: Remove Task from Queue", -30}");
         Console.WriteLine();
-        Console.WriteLine($"{"F: Show Log",-30}{"U: Update this Screen",-30}{"Q: Exit",-30}");
+        Console.WriteLine($"{"U: Update this Screen",-30}{"F: Show Log",-30}{"Q: Exit",-30}");
         ConsoleKey selection = Console.ReadKey().Key;
         logger.WriteLine("Tranga_CLI", $"Menu selection: {selection}");
         return selection;
