@@ -14,16 +14,19 @@ public static class Tranga_Cli
 {
     public static void Main(string[] args)
     {
+        string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tranga");
+        string logMessageFolderPath = Path.Join(applicationFolderPath, "logs");
+        string settingsFilePath = Path.Join(applicationFolderPath, "data.json");
+
         Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null,
-            Path.Join(Directory.GetCurrentDirectory(), $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt"));
+            Path.Join(logMessageFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt"));
         
-        logger.WriteLine("Tranga_CLI", "Loading Settings.");
+        logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
         TaskManager.SettingsData settings;
-        string settingsPath = Path.Join(Directory.GetCurrentDirectory(), "data.json");
-        if (File.Exists(settingsPath))
-            settings = TaskManager.LoadData(Directory.GetCurrentDirectory());
+        if (File.Exists(settingsFilePath))
+            settings = TaskManager.LoadData(settingsFilePath);
         else
-            settings = new TaskManager.SettingsData(Directory.GetCurrentDirectory(), null, new HashSet<TrangaTask>());
+            settings = new TaskManager.SettingsData(Directory.GetCurrentDirectory(), settingsFilePath, null, new HashSet<TrangaTask>());
 
             
         logger.WriteLine("Tranga_CLI", "User Input");
@@ -76,7 +79,7 @@ public static class Tranga_Cli
     {
         TaskManager taskManager = new (settings, logger);
         ConsoleKey selection = ConsoleKey.EraseEndOfFile;
-        PrintMenu(taskManager, settings.downloadLocation, logger);
+        PrintMenu(taskManager, taskManager.settings.downloadLocation, logger);
         while (selection != ConsoleKey.Q)
         {
             int taskCount = taskManager.GetAllTasks().Length;
@@ -97,7 +100,7 @@ public static class Tranga_Cli
                         Console.ReadKey();
                         break;
                     case ConsoleKey.C:
-                        CreateTask(taskManager, settings, logger);
+                        CreateTask(taskManager, taskManager.settings, logger);
                         Console.WriteLine("Press any key.");
                         Console.ReadKey();
                         break;
@@ -145,7 +148,7 @@ public static class Tranga_Cli
                         Console.ReadKey();
                         break;
                 }
-                PrintMenu(taskManager, settings.downloadLocation, logger);
+                PrintMenu(taskManager, taskManager.settings.downloadLocation, logger);
             }
             Thread.Sleep(1000);
         }
