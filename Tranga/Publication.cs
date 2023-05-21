@@ -9,23 +9,18 @@ public readonly struct Publication
 {
     public string sortName { get; }
     // ReSharper disable UnusedAutoPropertyAccessor.Global we need it, trust
-    [JsonIgnore]public Dictionary<string,string> altTitles { get; }
+    public Dictionary<string,string> altTitles { get; }
     // ReSharper disable trice MemberCanBePrivate.Global, trust
     public string? description { get; }
     public string[] tags { get; }
     public string? posterUrl { get; }
-    [JsonIgnore]public Dictionary<string,string> links { get; }
+    public Dictionary<string,string> links { get; }
     public int? year { get; }
     public string? originalLanguage { get; }
     public string status { get; }
     public string folderName { get; }
     public string downloadUrl { get; }
-    public string internalId { get; }
-
-    public readonly struct ValueTuple
-    {
-        
-    }
+    [JsonIgnore]public string internalId { get; }
 
     public Publication(string sortName, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string downloadUrl)
     {
