@@ -15,11 +15,17 @@ public static class Tranga_Cli
     public static void Main(string[] args)
     {
         string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tranga");
-        string logMessageFolderPath = Path.Join(applicationFolderPath, "logs");
+        string logsFolderPath = Path.Join(applicationFolderPath, "logs");
+        string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
         string settingsFilePath = Path.Join(applicationFolderPath, "data.json");
 
-        Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null,
-            Path.Join(logMessageFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt"));
+        Directory.CreateDirectory(applicationFolderPath);
+        Directory.CreateDirectory(logsFolderPath);
+        
+        Console.WriteLine($"Logfile-Path: {logFilePath}");
+        Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
+
+        Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null, logFilePath);
         
         logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
         TaskManager.SettingsData settings;

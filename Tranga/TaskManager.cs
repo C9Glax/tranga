@@ -34,9 +34,8 @@ public class TaskManager
             this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
         
         this.settings = new SettingsData(downloadFolderPath, settingsFilePath, this.komga, this._allTasks);
-
-        if (komgaBaseUrl != null && komgaUsername != null && komgaPassword != null)
-            this.komga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
+        ExportData();
+        
         this._connectors = new Connector[]{ new MangaDex(downloadFolderPath, logger) };
         foreach(Connector cConnector in this._connectors)
             _taskQueue.Add(cConnector, new List<TrangaTask>());
@@ -50,6 +49,8 @@ public class TaskManager
         this.logger = logger;
         this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation, logger) };
         this.settings = settings;
+        ExportData();
+        
         foreach(Connector cConnector in this._connectors)
             _taskQueue.Add(cConnector, new List<TrangaTask>());
         this.komga = settings.komga;
@@ -289,7 +290,7 @@ public class TaskManager
     /// </summary>
     private void ExportData()
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Exporting data to data.json");
+        logger?.WriteLine(this.GetType().ToString(), $"Exporting data to {settings.settingsFilePath}");
 
         string serializedData = JsonConvert.SerializeObject(settings);
         File.WriteAllText(settings.settingsFilePath, serializedData);
