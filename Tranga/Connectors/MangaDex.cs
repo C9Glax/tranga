@@ -213,7 +213,10 @@ public class MangaDex : Connector
         DirectoryInfo dirInfo = new (publicationFolder);
         foreach(FileInfo fileInfo in dirInfo.EnumerateFiles())
             if (fileInfo.Name.Contains("cover."))
+            {
+                logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
                 return;
+            }
 
         //Request information where to download Cover
         DownloadClient.RequestResult requestResult =
