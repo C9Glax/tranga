@@ -105,13 +105,7 @@ app.MapPost("/Queue/Dequeue", (string taskType, string? connectorName, string? p
 
 app.MapGet("/Settings/Get", () => new Settings(taskManager.settings));
 
-app.MapPost("/Settings/Update", (string? downloadLocation, string? komgaUrl, string? komgaAuth) =>
-{
-    if(downloadLocation is not null)
-        taskManager.settings.downloadLocation = downloadLocation;
-    if(komgaUrl is not null && komgaAuth is not null)
-        taskManager.settings.komga = new Komga(komgaUrl, komgaAuth, logger);
-});
+app.MapPost("/Settings/Update", (string? downloadLocation, string? komgaUrl, string? komgaAuth) => taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth) );
 
 app.Run();
 
