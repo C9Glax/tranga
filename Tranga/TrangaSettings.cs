@@ -14,7 +14,7 @@ public class TrangaSettings
     public TrangaSettings(string downloadLocation, string? workingDirectory, Komga? komga)
     {
         this.workingDirectory = workingDirectory ??
-                                Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tranga");
+                                Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga");
         this.downloadLocation = downloadLocation;
         this.komga = komga;
     }
