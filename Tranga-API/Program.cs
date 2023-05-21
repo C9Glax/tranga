@@ -146,6 +146,36 @@ app.MapGet("/TaskDequeue", (TrangaTask.Task task, string? connectorName, string?
     return JsonSerializer.Serialize("Success");
 });
 
-app.MapGet("/Settings", () => JsonSerializer.Serialize(taskManager.settings));
+app.MapGet("/Settings", () =>
+{
+    return JsonSerializer.Serialize(new Settings(taskManager.settings));
+});
 
 app.Run();
+
+struct Settings
+{
+    public Komga? komga { get; set; }
+    public string downloadLocation { get; set; }
+    public string settingsFilePath { get; set; }
+    public Settings(TaskManager.SettingsData data)
+    {
+        this.settingsFilePath = data.settingsFilePath;
+        this.downloadLocation = data.downloadLocation;
+        this.komga = data.komga;
+    }
+
+    public Settings(string downloadLocation, string settingsFilePath, Komga komga)
+    {
+        this.downloadLocation = downloadLocation;
+        this.settingsFilePath = settingsFilePath;
+        this.komga = komga;
+    }
+
+    public void Update(string? newDownloadLocation = null, string? newSettingsFilePath = null, Komga? newKomga= null)
+    {
+        this.downloadLocation = newDownloadLocation ?? this.downloadLocation;
+        this.settingsFilePath = newSettingsFilePath ?? this.settingsFilePath;
+        this.komga = newKomga ?? this.komga;
+    }
+}
