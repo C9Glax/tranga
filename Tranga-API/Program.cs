@@ -103,4 +103,46 @@ app.MapGet("/RemoveTask", (TrangaTask.Task task, string? connectorName, string? 
     }
 });
 
+app.MapGet("/StartTask", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
+{
+    TrangaTask[] allTasks = taskManager.GetAllTasks();
+    TrangaTask? taskToStart = allTasks.FirstOrDefault(tTask =>
+        tTask.task == task && tTask.connectorName == connectorName &&
+        tTask.publication?.internalId == publicationInternalId);
+    if(taskToStart is null)
+        JsonSerializer.Serialize($"Task with parameters {task} {connectorName} {publicationInternalId} is unknown.");
+    taskManager.ExecuteTaskNow(taskToStart!);
+    return JsonSerializer.Serialize("Success");
+});
+
+app.MapGet("/TaskQueue", () =>
+{
+    return JsonSerializer.Serialize(taskManager.GetAllTasks()
+        .Where(task => task.state is TrangaTask.ExecutionState.Enqueued or TrangaTask.ExecutionState.Running)
+        .ToArray());
+});
+
+app.MapGet("/TaskEnqueue", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
+{
+    TrangaTask[] allTasks = taskManager.GetAllTasks();
+    TrangaTask? taskToEnqueue = allTasks.FirstOrDefault(tTask =>
+        tTask.task == task && tTask.connectorName == connectorName &&
+        tTask.publication?.internalId == publicationInternalId);
+    if(taskToEnqueue is null)
+        JsonSerializer.Serialize($"Task with parameters {task} {connectorName} {publicationInternalId} is unknown.");
+    taskManager.AddTaskToQueue(taskToEnqueue!);
+    return JsonSerializer.Serialize("Success");
+});
+
+app.MapGet("/TaskDequeue", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
+{TrangaTask[] allTasks = taskManager.GetAllTasks();
+    TrangaTask? taskToDequeue = allTasks.FirstOrDefault(tTask =>
+        tTask.task == task && tTask.connectorName == connectorName &&
+        tTask.publication?.internalId == publicationInternalId);
+    if(taskToDequeue is null)
+        JsonSerializer.Serialize($"Task with parameters {task} {connectorName} {publicationInternalId} is unknown.");
+    taskManager.RemoveTaskFromQueue(taskToDequeue);
+    return JsonSerializer.Serialize("Success");
+});
+
 app.Run();
