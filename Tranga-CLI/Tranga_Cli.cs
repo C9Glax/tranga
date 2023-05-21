@@ -41,7 +41,7 @@ public static class Tranga_Cli
         while(tmpPath is null)
             tmpPath = Console.ReadLine();
         if(tmpPath.Length > 0)
-            settings.downloadLocation = tmpPath;
+            settings.UpdateSettings(pDownloadLocation: tmpPath, null);
         
         Console.WriteLine($"Komga BaseURL [{settings.komga?.baseUrl}]:");
         string? tmpUrl = Console.ReadLine();
@@ -73,8 +73,8 @@ public static class Tranga_Cli
                     tmpPass += keyInfo.KeyChar;
                 }
             } while (key != ConsoleKey.Enter);
-
-            settings.komga = new Komga(tmpUrl, tmpUser, tmpPass, logger);
+            
+            settings.UpdateSettings(null, new Komga(tmpUrl, tmpUser, tmpPass, logger));
         }
         
         logger.WriteLine("Tranga_CLI", "Loaded.");

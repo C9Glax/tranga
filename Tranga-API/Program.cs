@@ -1,19 +1,21 @@
-using System.Text.Json;
-using Tranga;
+
 using Logging;
+using Tranga;
 
 string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tranga-API");
 string logsFolderPath = Path.Join(applicationFolderPath, "logs");
 string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
 string settingsFilePath = Path.Join(applicationFolderPath, "data.json");
 
+Directory.CreateDirectory(applicationFolderPath);
+Directory.CreateDirectory(logsFolderPath);
+        
 Console.WriteLine($"Logfile-Path: {logFilePath}");
 Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
 
 Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null, logFilePath);
-
-logger.WriteLine("Tranga_API", "Loading Taskmanager.");
-
+        
+logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
 TaskManager.SettingsData settings;
 if (File.Exists(settingsFilePath))
     settings = TaskManager.LoadData(settingsFilePath);
@@ -23,162 +25,98 @@ else
 TaskManager taskManager = new (settings, logger);
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllers().AddNewtonsoftJson();
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.MapGet("/GetConnectors", () => JsonSerializer.Serialize(taskManager.GetAvailableConnectors().Values.ToArray()));
+app.MapGet("/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors());
 
-app.MapGet("/GetPublications", (string connectorName, string? publicationName) =>
+app.MapGet("/GetKnownPublications", () => taskManager.GetAllPublications());
+
+app.MapGet("/GetPublicationsFromConnector", (string connectorName, string title) =>
 {
-    Connector connector = taskManager.GetConnector(connectorName);
-
-    Publication[] publications;
-    if (publicationName is not null)
-        publications = connector.GetPublications(publicationName);
-    else
-        publications = connector.GetPublications();
-
-    return JsonSerializer.Serialize(publications);
+    Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
+    if (connector is null)
+        return Array.Empty<Publication>();
+    if(title.Length < 4)
+        return Array.Empty<Publication>();
+    return taskManager.GetPublicationsFromConnector(connector, title);
 });
 
-app.MapGet("/ListTasks", () => JsonSerializer.Serialize(taskManager.GetAllTasks()));
+app.MapGet("/Tasks/GetTaskTypes", () => Enum.GetNames(typeof(TrangaTask.Task)));
 
-app.MapGet("/TaskTypes", () =>
+
+app.MapPost("/Tasks/Create", (string taskType, string? connectorName, string? publicationId, string reoccurrenceTime, string? language) =>
 {
-    string[] availableTasks = Enum.GetNames(typeof(TrangaTask.Task));
-    return JsonSerializer.Serialize(availableTasks);
+    Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == publicationId);
+    TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
+    taskManager.AddTask(task, connectorName, publication, TimeSpan.Parse(reoccurrenceTime), language??"");
 });
 
-app.MapGet("/CreateTask",
-    (TrangaTask.Task task, string? connectorName, string? publicationInternalId, TimeSpan reoccurrence, string? language) =>
-    {
-        switch (task)
-        {
-            case TrangaTask.Task.UpdateKomgaLibrary:
-                taskManager.AddTask(TrangaTask.Task.UpdateKomgaLibrary, null, null, reoccurrence);
-                break;
-            case TrangaTask.Task.DownloadNewChapters:
-                try
-                {
-                    Publication? publication = taskManager.GetAllPublications()
-                        .FirstOrDefault(pub => pub.internalId == publicationInternalId);
-
-                    if (publication is null)
-                    {
-                        return JsonSerializer.Serialize($"Publication {publicationInternalId} is unknown.");
-                    }
-                    else
-                    {
-                        taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connectorName, publication, reoccurrence, language ?? "");
-                        return JsonSerializer.Serialize("Success");
-                    }
-                }
-                catch (Exception e)
-                {
-                    return JsonSerializer.Serialize(e.Message);
-                }
-
-            default: return JsonSerializer.Serialize("Not Implemented");
-        }
-
-        return JsonSerializer.Serialize("Not Implemented");
-    });
-
-app.MapGet("/RemoveTask", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
+app.MapPost("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
 {
-    switch (task)
-    {
-        case TrangaTask.Task.UpdateKomgaLibrary:
-            taskManager.DeleteTask(TrangaTask.Task.UpdateKomgaLibrary, null, null);
-            return JsonSerializer.Serialize("Success");
-        case TrangaTask.Task.DownloadNewChapters:
-            Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == publicationInternalId);
-            if (publication is null)
-                JsonSerializer.Serialize($"Publication with id {publicationInternalId} is unknown.");
-            
-            taskManager.DeleteTask(TrangaTask.Task.DownloadNewChapters, connectorName, publication);
-            
-            return JsonSerializer.Serialize("Success");
-        
-        default: return JsonSerializer.Serialize("Not Implemented");
-    }
+    Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == publicationId);
+    TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
+    taskManager.DeleteTask(task, connectorName, publication);
 });
 
-app.MapGet("/StartTask", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
+app.MapGet("/Tasks/GetList", () => taskManager.GetAllTasks());
+
+app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? publicationId) =>
 {
-    TrangaTask[] allTasks = taskManager.GetAllTasks();
-    TrangaTask? taskToStart = allTasks.FirstOrDefault(tTask =>
-        tTask.task == task && tTask.connectorName == connectorName &&
-        tTask.publication?.internalId == publicationInternalId);
-    if(taskToStart is null)
-        JsonSerializer.Serialize($"Task with parameters {task} {connectorName} {publicationInternalId} is unknown.");
-    taskManager.ExecuteTaskNow(taskToStart!);
-    return JsonSerializer.Serialize("Success");
+    TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
+    TrangaTask? task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+        tTask.task == pTask && tTask.publication?.internalId == publicationId && tTask.connectorName == connectorName);
+    if (task is null)
+        return;
+    taskManager.ExecuteTaskNow(task);
 });
 
-app.MapGet("/TaskQueue", () =>
+app.MapGet("/Tasks/GetRunningTasks",
+    () => taskManager.GetAllTasks().Where(task => task.state is TrangaTask.ExecutionState.Running));
+
+app.MapGet("/Queue/GetList",
+    () => taskManager.GetAllTasks().Where(task => task.state is TrangaTask.ExecutionState.Enqueued));
+
+app.MapPost("/Queue/Enqueue", (string taskType, string? connectorName, string? publicationId) =>
 {
-    return JsonSerializer.Serialize(taskManager.GetAllTasks()
-        .Where(task => task.state is TrangaTask.ExecutionState.Enqueued or TrangaTask.ExecutionState.Running)
-        .ToArray());
+    TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
+    TrangaTask? task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+        tTask.task == pTask && tTask.publication?.internalId == publicationId && tTask.connectorName == connectorName);
+    if (task is null)
+        return;
+    taskManager.AddTaskToQueue(task);
 });
 
-app.MapGet("/TaskEnqueue", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
+app.MapPost("/Queue/Dequeue", (string taskType, string? connectorName, string? publicationId) =>
 {
-    TrangaTask[] allTasks = taskManager.GetAllTasks();
-    TrangaTask? taskToEnqueue = allTasks.FirstOrDefault(tTask =>
-        tTask.task == task && tTask.connectorName == connectorName &&
-        tTask.publication?.internalId == publicationInternalId);
-    if(taskToEnqueue is null)
-        JsonSerializer.Serialize($"Task with parameters {task} {connectorName} {publicationInternalId} is unknown.");
-    taskManager.AddTaskToQueue(taskToEnqueue!);
-    return JsonSerializer.Serialize("Success");
+    TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
+    TrangaTask? task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+        tTask.task == pTask && tTask.publication?.internalId == publicationId && tTask.connectorName == connectorName);
+    if (task is null)
+        return;
+    taskManager.RemoveTaskFromQueue(task);
 });
 
-app.MapGet("/TaskDequeue", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
-{
-    TrangaTask[] allTasks = taskManager.GetAllTasks();
-    TrangaTask? taskToDequeue = allTasks.FirstOrDefault(tTask =>
-        tTask.task == task && tTask.connectorName == connectorName &&
-        tTask.publication?.internalId == publicationInternalId);
-    if(taskToDequeue is null)
-        JsonSerializer.Serialize($"Task with parameters {task} {connectorName} {publicationInternalId} is unknown.");
-    taskManager.RemoveTaskFromQueue(taskToDequeue);
-    return JsonSerializer.Serialize("Success");
-});
+app.MapGet("/Settings/Get", () => new Settings(taskManager.settings));
 
-app.MapGet("/Settings", () => JsonSerializer.Serialize(new Settings(taskManager.settings)));
-
-app.MapGet("/EditSettings", (string downloadLocation, string komgaBaseUrl, string komgaAuthString) =>
-{
-    taskManager.settings.downloadLocation = downloadLocation;
-    taskManager.settings.komga = new Komga(komgaBaseUrl, komgaAuthString, logger);
-});
+app.MapPost("/Settings/Update", (string? downloadLocation, string? komgaUrl, string? komgaAuth) => taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth) );
 
 app.Run();
 
-struct Settings
+class Settings
 {
-    public Komga? komga { get; set; }
-    public string downloadLocation { get; set; }
-    public string settingsFilePath { get; set; }
-    public Settings(TaskManager.SettingsData data)
-    {
-        this.settingsFilePath = data.settingsFilePath;
-        this.downloadLocation = data.downloadLocation;
-        this.komga = data.komga;
-    }
+    public string downloadLocation { get; }
+    public Komga? komga { get; }
 
-    public Settings(string downloadLocation, string settingsFilePath, Komga komga)
+    public Settings(TaskManager.SettingsData settings)
     {
-        this.downloadLocation = downloadLocation;
-        this.settingsFilePath = settingsFilePath;
-        this.komga = komga;
-    }
-
-    public void Update(string? newDownloadLocation = null, string? newSettingsFilePath = null, Komga? newKomga= null)
-    {
-        this.downloadLocation = newDownloadLocation ?? this.downloadLocation;
-        this.settingsFilePath = newSettingsFilePath ?? this.settingsFilePath;
-        this.komga = newKomga ?? this.komga;
+        this.downloadLocation = settings.downloadLocation;
+        this.komga = settings.komga;
     }
 }

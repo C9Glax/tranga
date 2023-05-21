@@ -15,7 +15,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Logging\Logging.csproj" />
       <ProjectReference Include="..\Tranga\Tranga.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
+      <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.6" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
 </Project>

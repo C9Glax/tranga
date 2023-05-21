@@ -10,7 +10,7 @@ namespace Tranga;
 /// </summary>
 public class TaskManager
 {
-    private readonly Dictionary<Publication, List<Chapter>> _chapterCollection = new();
+    public Dictionary<Publication, List<Chapter>> _chapterCollection = new();
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
@@ -41,6 +41,15 @@ public class TaskManager
         
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
+    }
+
+    public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth)
+    {
+        Komga? komga = null;
+        if (komgaUrl is not null && komgaAuth is not null)
+            komga = new Komga(komgaUrl, komgaAuth, null);
+        settings.UpdateSettings(downloadLocation, komga);
+        ExportData();
     }
 
     public TaskManager(SettingsData settings, Logger? logger = null)
@@ -106,7 +115,7 @@ public class TaskManager
         logger?.WriteLine(this.GetType().ToString(), $"Forcing Execution: {task}");
         Task t = new Task(() =>
         {
-            TaskExecutor.Execute(this, task, this._chapterCollection, logger);
+            TaskExecutor.Execute(this, task, logger);
         });
         t.Start();
     }
@@ -154,7 +163,7 @@ public class TaskManager
                                              trangaTask.publication?.downloadUrl == publication?.downloadUrl))
             {
                 if(task != TrangaTask.Task.UpdatePublications)
-                    _chapterCollection.Add((Publication)publication!, new List<Chapter>());
+                    _chapterCollection.TryAdd((Publication)publication!, new List<Chapter>());
                 _allTasks.Add(newTask);
             }
         }
@@ -227,6 +236,17 @@ public class TaskManager
         _allTasks.CopyTo(ret);
         return ret;
     }
+
+    public Publication[] GetPublicationsFromConnector(Connector connector, string? title = null)
+    {
+        Publication[] ret = connector.GetPublications(title ?? "");
+        foreach (Publication publication in ret)
+        {
+            if(!_chapterCollection.Any(pub => pub.Key.sortName == publication.sortName))
+                this._chapterCollection.TryAdd(publication, new List<Chapter>());
+        }
+        return ret;
+    }
     
     /// <returns>All added Publications</returns>
     public Publication[] GetAllPublications()
@@ -290,16 +310,19 @@ public class TaskManager
     private void ExportData()
     {
         logger?.WriteLine(this.GetType().ToString(), $"Exporting data to {settings.settingsFilePath}");
+        
+        
 
         string serializedData = JsonConvert.SerializeObject(settings);
+
         File.WriteAllText(settings.settingsFilePath, serializedData);
     }
 
     public class SettingsData
     {
-        public string downloadLocation { get; set; }
+        public string downloadLocation { get; private set; }
         public string settingsFilePath { get; }
-        public Komga? komga { get; set; }
+        public Komga? komga { get; private set; }
         public HashSet<TrangaTask> allTasks { get; }
 
         public SettingsData(string downloadLocation, string? settingsFilePath, Komga? komga, HashSet<TrangaTask> allTasks)
@@ -310,6 +333,14 @@ public class TaskManager
             this.downloadLocation = downloadLocation;
             this.komga = komga;
             this.allTasks = allTasks;
+        }
+
+        public void UpdateSettings(string? pDownloadLocation, Komga? pKomga)
+        {
+            if(pDownloadLocation is not null)
+                this.downloadLocation = pDownloadLocation;
+            if(pKomga is not null)
+                this.komga = pKomga;
         }
     }
 }

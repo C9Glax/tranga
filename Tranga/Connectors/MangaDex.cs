@@ -58,14 +58,12 @@ public class MangaDex : Connector
                     : null;
 
                 JsonArray altTitlesObject = attributes["altTitles"]!.AsArray();
-                string[,] altTitles = new string[altTitlesObject.Count, 2];
-                int titleIndex = 0;
+                Dictionary<string, string> altTitlesDict = new();
                 foreach (JsonNode? altTitleNode in altTitlesObject)
                 {
                     JsonObject altTitleObject = (JsonObject)altTitleNode!;
                     string key = ((IDictionary<string, JsonNode?>)altTitleObject).Keys.ToArray()[0];
-                    altTitles[titleIndex, 0] = key;
-                    altTitles[titleIndex++, 1] = altTitleObject[key]!.GetValue<string>();
+                    altTitlesDict.TryAdd(key, altTitleObject[key]!.GetValue<string>());
                 }
 
                 JsonArray tagsObject = attributes["tags"]!.AsArray();
@@ -84,16 +82,14 @@ public class MangaDex : Connector
                     poster = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
                 }
 
+                Dictionary<string, string> linksDict = new();
                 string[,]? links = null;
                 if (attributes.ContainsKey("links") && attributes["links"] is not null)
                 {
                     JsonObject linksObject = attributes["links"]!.AsObject();
-                    links = new string[linksObject.Count, 2];
-                    int linkIndex = 0;
                     foreach (string key in ((IDictionary<string, JsonNode?>)linksObject).Keys)
                     {
-                        links[linkIndex, 0] = key;
-                        links[linkIndex++, 1] = linksObject[key]!.GetValue<string>();
+                        linksDict.Add(key, linksObject[key]!.GetValue<string>());
                     }
                 }
                 
@@ -110,14 +106,13 @@ public class MangaDex : Connector
                 Publication pub = new Publication(
                     title,
                     description,
-                    altTitles,
+                    altTitlesDict,
                     tags.ToArray(),
                     poster,
-                    links,
+                    linksDict,
                     year,
                     originalLanguage,
                     status,
-                    manga["id"]!.GetValue<string>(),
                     manga["id"]!.GetValue<string>()
                 );
                 publications.Add(pub); //Add Publication (Manga) to result
