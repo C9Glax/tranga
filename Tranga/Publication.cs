@@ -20,8 +20,10 @@ public readonly struct Publication
     public string status { get; }
     public string folderName { get; }
     public string downloadUrl { get; }
+    
+    public string internalId { get; }
 
-    public Publication(string sortName, string? description, string[,] altTitles, string[] tags, string? posterUrl, string[,]? links, int? year, string? originalLanguage, string status, string downloadUrl)
+    public Publication(string sortName, string? description, string[,] altTitles, string[] tags, string? posterUrl, string[,]? links, int? year, string? originalLanguage, string status, string downloadUrl, string internalId)
     {
         this.sortName = sortName;
         this.description = description;
@@ -34,6 +36,7 @@ public readonly struct Publication
         this.status = status;
         this.downloadUrl = downloadUrl;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
+        this.internalId = internalId;
     }
     
     /// <returns>Serialized JSON String for series.json</returns>

@@ -117,6 +117,7 @@ public class MangaDex : Connector
                     year,
                     originalLanguage,
                     status,
+                    manga["id"]!.GetValue<string>(),
                     manga["id"]!.GetValue<string>()
                 );
                 publications.Add(pub); //Add Publication (Manga) to result
