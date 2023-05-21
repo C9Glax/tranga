@@ -125,8 +125,6 @@ public class TaskManager
         string language = "")
     {
         logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {task} {connectorName} {publication?.sortName}");
-        if (task != TrangaTask.Task.UpdateKomgaLibrary && connectorName is null)
-            throw new ArgumentException($"connectorName can not be null for task {task}");
 
         TrangaTask newTask;
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
@@ -142,6 +140,9 @@ public class TaskManager
         }
         else
         {
+            if(connectorName is null)
+                throw new ArgumentException($"connectorName can not be null for task {task}");
+            
             //Get appropriate Connector from available Connectors for TrangaTask
             Connector? connector = _connectors.FirstOrDefault(c => c.name == connectorName);
             if (connector is null)
