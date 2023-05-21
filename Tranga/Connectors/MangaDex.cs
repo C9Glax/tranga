@@ -83,7 +83,6 @@ public class MangaDex : Connector
                 }
 
                 Dictionary<string, string> linksDict = new();
-                string[,]? links = null;
                 if (attributes.ContainsKey("links") && attributes["links"] is not null)
                 {
                     JsonObject linksObject = attributes["links"]!.AsObject();
