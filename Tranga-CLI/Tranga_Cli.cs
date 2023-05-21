@@ -97,7 +97,6 @@ public static class Tranga_Cli
 
             if (Console.KeyAvailable)
             {
-                selection = Console.ReadKey().Key;
                 switch (selection)
                 {
                     case ConsoleKey.L:
@@ -156,10 +155,13 @@ public static class Tranga_Cli
                 }
                 PrintMenu(taskManager, taskManager.settings.downloadLocation, logger);
             }
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
+            selection = Console.ReadKey().Key;
         }
 
         logger.WriteLine("Tranga_CLI", "Exiting.");
+        Console.Clear();
+        Console.WriteLine("Exiting.");
         if (taskManager.GetAllTasks().Any(task => task.state == TrangaTask.ExecutionState.Running))
         {
             Console.WriteLine("Force quit (Even with running tasks?) y/N");
