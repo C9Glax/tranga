@@ -231,8 +231,11 @@ public class TaskManager
     public Publication[] GetPublicationsFromConnector(Connector connector, string? title = null)
     {
         Publication[] ret = connector.GetPublications(title ?? "");
-        foreach(Publication publication in ret)
-            this._chapterCollection.TryAdd(publication, new List<Chapter>());
+        foreach (Publication publication in ret)
+        {
+            if(!_chapterCollection.Any(pub => pub.Key.sortName == publication.sortName))
+                this._chapterCollection.TryAdd(publication, new List<Chapter>());
+        }
         return ret;
     }
     
