@@ -163,7 +163,7 @@ public class TaskManager
                                              trangaTask.publication?.downloadUrl == publication?.downloadUrl))
             {
                 if(task != TrangaTask.Task.UpdatePublications)
-                    _chapterCollection.Add((Publication)publication!, new List<Chapter>());
+                    _chapterCollection.TryAdd((Publication)publication!, new List<Chapter>());
                 _allTasks.Add(newTask);
             }
         }
