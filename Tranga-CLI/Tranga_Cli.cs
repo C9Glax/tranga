@@ -97,6 +97,7 @@ public static class Tranga_Cli
 
             if (Console.KeyAvailable)
             {
+                selection = Console.ReadKey().Key;
                 switch (selection)
                 {
                     case ConsoleKey.L:
@@ -156,7 +157,6 @@ public static class Tranga_Cli
                 PrintMenu(taskManager, taskManager.settings.downloadLocation, logger);
             }
             Thread.Sleep(200);
-            selection = Console.ReadKey().Key;
         }
 
         logger.WriteLine("Tranga_CLI", "Exiting.");
