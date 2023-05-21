@@ -135,7 +135,8 @@ app.MapGet("/TaskEnqueue", (TrangaTask.Task task, string? connectorName, string?
 });
 
 app.MapGet("/TaskDequeue", (TrangaTask.Task task, string? connectorName, string? publicationInternalId) =>
-{TrangaTask[] allTasks = taskManager.GetAllTasks();
+{
+    TrangaTask[] allTasks = taskManager.GetAllTasks();
     TrangaTask? taskToDequeue = allTasks.FirstOrDefault(tTask =>
         tTask.task == task && tTask.connectorName == connectorName &&
         tTask.publication?.internalId == publicationInternalId);
@@ -144,5 +145,7 @@ app.MapGet("/TaskDequeue", (TrangaTask.Task task, string? connectorName, string?
     taskManager.RemoveTaskFromQueue(taskToDequeue);
     return JsonSerializer.Serialize("Success");
 });
+
+app.MapGet("/Settings", () => JsonSerializer.Serialize(taskManager.settings));
 
 app.Run();
