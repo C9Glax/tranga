@@ -110,6 +110,18 @@ public static class Tranga_Cli
                     Console.WriteLine("Press any key.");
                     Console.ReadKey();
                     break;
+                case ConsoleKey.K:
+                    PrintTasks(taskManager.GetAllTasks().Where(qTask => qTask.state is TrangaTask.ExecutionState.Enqueued).ToArray(), logger);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    break;
+                case ConsoleKey.F:
+                    Console.Clear();
+                    foreach (string message in logger.Tail(20))
+                        Console.Write(message);
+                    Console.WriteLine("Press any key.");
+                    Console.ReadKey();
+                    break;
             }
             selection = PrintMenu(taskManager, settings.downloadLocation, logger);
         }
@@ -140,7 +152,9 @@ public static class Tranga_Cli
         Console.WriteLine($"{"C: Create Task",-30}{"L: List tasks",-30}");
         Console.WriteLine($"{"D: Delete Task",-30}{"R: List Running Tasks", -30}");
         Console.WriteLine($"{"E: Execute Task now",-30}{"S: Search Tasks", -30}");
-        Console.WriteLine();
+        Console.WriteLine($"{"",-30}{"K: List Task Queue", -30}");
+        //Console.WriteLine();
+        Console.WriteLine($"{"F: Show last 20 Log-lines",-30}{"",-30}");
         Console.WriteLine($"{"U: Update this Screen",-30}{"Q: Exit",-30}");
         ConsoleKey selection = Console.ReadKey().Key;
         logger.WriteLine("Tranga_CLI", $"Menu selection: {selection}");

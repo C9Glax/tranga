@@ -18,25 +18,22 @@ public class MemoryLogger : LoggerBase
 
     public string[] GetLogMessage()
     {
-        string[] ret = new string[logMessages.Count];
-        for (int logMessageIndex = 0; logMessageIndex < ret.Length; logMessageIndex++)
-        {
-            DateTime logTime = logMessages.GetValueAtIndex(logMessageIndex).logTime;
-            string dateTimeString = $"{logTime.ToShortDateString()} {logTime.ToShortTimeString()}";
-            string callerString = logMessages.GetValueAtIndex(logMessageIndex).caller.ToString();
-            string value = $"[{dateTimeString}] {callerString} | {logMessages.GetValueAtIndex(logMessageIndex).value}";
-            ret[logMessageIndex] = value;
-        }
-
-        return ret;
+        return Tail(Convert.ToUInt32(logMessages.Count));
     }
 
-    public string[] Tail(uint length)
+    public string[] Tail(uint? length)
     {
-        string[] ret = new string[length];
-        for (int logMessageIndex = logMessages.Count - 1; logMessageIndex > logMessageIndex - length; logMessageIndex--)
-            ret[logMessageIndex] = logMessages.GetValueAtIndex(logMessageIndex).ToString();
+        int retLength;
+        if (length is null || length > logMessages.Count)
+            retLength = logMessages.Count;
+        else
+            retLength = (int)length;
+        
+        string[] ret = new string[retLength];
+        
+        for (int logMessageIndex = logMessages.Count - retLength; logMessageIndex < logMessages.Count; logMessageIndex++)
+            ret[logMessageIndex + retLength - logMessages.Count] = logMessages.GetValueAtIndex(logMessageIndex).ToString();
 
-        return ret.Reverse().ToArray();
+        return ret;
     }
 }
