@@ -17,7 +17,6 @@ public class TaskManager
     private readonly Dictionary<Connector, List<TrangaTask>> _taskQueue = new();
     public SettingsData settings { get; }
     private Logger? logger { get; }
-    
     public Komga? komga { get; }
 
     /// <param name="downloadFolderPath">Local path to save data (Manga) to</param>

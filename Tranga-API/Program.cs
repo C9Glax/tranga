@@ -146,9 +146,12 @@ app.MapGet("/TaskDequeue", (TrangaTask.Task task, string? connectorName, string?
     return JsonSerializer.Serialize("Success");
 });
 
-app.MapGet("/Settings", () =>
+app.MapGet("/Settings", () => JsonSerializer.Serialize(new Settings(taskManager.settings)));
+
+app.MapGet("/EditSettings", (string downloadLocation, string komgaBaseUrl, string komgaAuthString) =>
 {
-    return JsonSerializer.Serialize(new Settings(taskManager.settings));
+    taskManager.settings.downloadLocation = downloadLocation;
+    taskManager.settings.komga = new Komga(komgaBaseUrl, komgaAuthString, logger);
 });
 
 app.Run();
