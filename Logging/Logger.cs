@@ -55,4 +55,9 @@ public class Logger : TextWriter
     {
         return _memoryLogger.Tail(lines);
     }
+
+    public string[] GetNewLines()
+    {
+        return _memoryLogger.GetNewLines();
+    }
 }

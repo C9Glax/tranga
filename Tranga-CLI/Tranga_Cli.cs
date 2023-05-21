@@ -75,63 +75,79 @@ public static class Tranga_Cli
     private static void TaskMode(TaskManager.SettingsData settings, Logger logger)
     {
         TaskManager taskManager = new (settings, logger);
-        ConsoleKey selection = PrintMenu(taskManager, settings.downloadLocation, logger);
+        ConsoleKey selection = ConsoleKey.EraseEndOfFile;
+        PrintMenu(taskManager, settings.downloadLocation, logger);
         while (selection != ConsoleKey.Q)
         {
-            switch (selection)
+            int taskCount = taskManager.GetAllTasks().Length;
+            int taskRunningCount = taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Running);
+            int taskEnqueuedCount =
+                taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Enqueued);
+            Console.SetCursorPosition(0,1);
+            Console.WriteLine($"Tasks (Running/Queue/Total)): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
+
+            if (Console.KeyAvailable)
             {
-                case ConsoleKey.L:
-                    PrintTasks(taskManager.GetAllTasks(), logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.C:
-                    CreateTask(taskManager, settings, logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.D:
-                    DeleteTask(taskManager, logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.E:
-                    ExecuteTaskNow(taskManager, logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.S:
-                    SearchTasks(taskManager, logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.R:
-                    PrintTasks(taskManager.GetAllTasks().Where(eTask => eTask.state == TrangaTask.ExecutionState.Running).ToArray(), logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.K:
-                    PrintTasks(taskManager.GetAllTasks().Where(qTask => qTask.state is TrangaTask.ExecutionState.Enqueued).ToArray(), logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.F:
-                    ShowLastLoglines(logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.M:
-                    RemoveTaskFromQueue(taskManager, logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
-                case ConsoleKey.B:
-                    AddTaskToQueue(taskManager, logger);
-                    Console.WriteLine("Press any key.");
-                    Console.ReadKey();
-                    break;
+                selection = Console.ReadKey().Key;
+                switch (selection)
+                {
+                    case ConsoleKey.L:
+                        PrintTasks(taskManager.GetAllTasks(), logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.C:
+                        CreateTask(taskManager, settings, logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.D:
+                        DeleteTask(taskManager, logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.E:
+                        ExecuteTaskNow(taskManager, logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.S:
+                        SearchTasks(taskManager, logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.R:
+                        PrintTasks(
+                            taskManager.GetAllTasks().Where(eTask => eTask.state == TrangaTask.ExecutionState.Running)
+                                .ToArray(), logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.K:
+                        PrintTasks(
+                            taskManager.GetAllTasks().Where(qTask => qTask.state is TrangaTask.ExecutionState.Enqueued)
+                                .ToArray(), logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.F:
+                        TailLog(logger);
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.M:
+                        RemoveTaskFromQueue(taskManager, logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                    case ConsoleKey.B:
+                        AddTaskToQueue(taskManager, logger);
+                        Console.WriteLine("Press any key.");
+                        Console.ReadKey();
+                        break;
+                }
+                PrintMenu(taskManager, settings.downloadLocation, logger);
             }
-            selection = PrintMenu(taskManager, settings.downloadLocation, logger);
+            Thread.Sleep(1000);
         }
 
         logger.WriteLine("Tranga_CLI", "Exiting.");
@@ -147,7 +163,7 @@ public static class Tranga_Cli
             taskManager.Shutdown(false);
     }
 
-    private static ConsoleKey PrintMenu(TaskManager taskManager, string folderPath, Logger logger)
+    private static void PrintMenu(TaskManager taskManager, string folderPath, Logger logger)
     {
         int taskCount = taskManager.GetAllTasks().Length;
         int taskRunningCount = taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Running);
@@ -161,10 +177,7 @@ public static class Tranga_Cli
         Console.WriteLine($"{"D: Delete Task",-30}{"S: Search Tasks", -30}{"K: List Task Queue", -30}");
         Console.WriteLine($"{"E: Execute Task now",-30}{"R: List Running Tasks", -30}{"M: Remove Task from Queue", -30}");
         Console.WriteLine();
-        Console.WriteLine($"{"U: Update this Screen",-30}{"F: Show Log",-30}{"Q: Exit",-30}");
-        ConsoleKey selection = Console.ReadKey().Key;
-        logger.WriteLine("Tranga_CLI", $"Menu selection: {selection}");
-        return selection;
+        Console.WriteLine($"{"",-30}{"F: Show Log",-30}{"Q: Exit",-30}");
     }
 
     private static void PrintTasks(TrangaTask[] tasks, Logger logger)
@@ -258,37 +271,21 @@ public static class Tranga_Cli
         taskManager.RemoveTaskFromQueue(selectedTask);
     }
 
-    private static void ShowLastLoglines(Logger logger)
+    private static void TailLog(Logger logger)
     {
-        Console.Clear();
         logger.WriteLine("Tranga_CLI", "Menu: Show Log-lines");
+        Console.Clear();
         
-        Console.WriteLine("Enter q to abort");
-        Console.WriteLine($"Number of lines:");
+        string[] lines = logger.Tail(20);
+        foreach (string message in lines)
+            Console.Write(message);
 
-        string? chosenNumber = Console.ReadLine();
-        while(chosenNumber is null || chosenNumber.Length < 1)
-            chosenNumber = Console.ReadLine();
-        
-        if (chosenNumber.Length == 1 && chosenNumber.ToLower() == "q")
+        while (!Console.KeyAvailable)
         {
-            Console.Clear();
-            Console.WriteLine("aborted.");
-            logger.WriteLine("Tranga_CLI", "aborted");
-            return;
-        }
-
-        try
-        {
-            string[] lines = logger.Tail(Convert.ToUInt32(chosenNumber));
-            Console.Clear();
-            foreach (string message in lines)
+            string[] newLines = logger.GetNewLines();
+            foreach(string message in newLines)
                 Console.Write(message);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine("Tranga_CLI", e.Message);
+            Thread.Sleep(40);
         }
     }
 
