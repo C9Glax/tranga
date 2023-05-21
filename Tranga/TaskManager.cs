@@ -212,7 +212,7 @@ public class TaskManager
     /// </summary>
     /// <param name="connectorName">Connector-name (exact)</param>
     /// <exception cref="Exception">If Connector is not available</exception>
-    public Connector GetConnector(string connectorName)
+    public Connector GetConnector(string? connectorName)
     {
         if(connectorName is null)
             throw new Exception($"connectorName can not be null");

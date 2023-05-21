@@ -65,7 +65,6 @@ app.MapGet("/RemoveTask", (TrangaTask.Task task, string? connectorName, string? 
         case TrangaTask.Task.UpdateKomgaLibrary:
             taskManager.RemoveTask(TrangaTask.Task.UpdateKomgaLibrary, null, null);
             return JsonSerializer.Serialize("Success");
-            break;
         case TrangaTask.Task.DownloadNewChapters:
             Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.downloadUrl == publicationName);
             if (publication is null)
