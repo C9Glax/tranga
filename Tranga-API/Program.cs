@@ -6,6 +6,8 @@ string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.
 string logsFolderPath = Path.Join(applicationFolderPath, "logs");
 string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
 string settingsFilePath = Path.Join(applicationFolderPath, "data.json");
+Directory.CreateDirectory(applicationFolderPath);
+Directory.CreateDirectory(logsFolderPath);
 
 Console.WriteLine($"Logfile-Path: {logFilePath}");
 Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
