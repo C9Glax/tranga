@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
+using Newtonsoft.Json;
 
 namespace Tranga;
 
@@ -35,7 +36,8 @@ public readonly struct Publication
         this.status = status;
         this.downloadUrl = downloadUrl;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
-        this.internalId = Guid.NewGuid().ToString();
+        string onlyLowerAscii = this.sortName.ToLower().Where(Char.IsAscii).ToString()!;
+        this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerAscii}{this.year}"));
     }
     
     /// <returns>Serialized JSON String for series.json</returns>
