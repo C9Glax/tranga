@@ -272,14 +272,13 @@ public class TaskManager
     /// <summary>
     /// Loads stored data (settings, tasks) from file
     /// </summary>
-    /// <param name="importFolderPath">working directory, filename has to be data.json</param>
-    public static SettingsData LoadData(string importFolderPath)
+    /// <param name="importFilePath">working directory, filename has to be data.json</param>
+    public static SettingsData LoadData(string importFilePath)
     {
-        string importPath = Path.Join(importFolderPath, "data.json");
-        if (!File.Exists(importPath))
+        if (!File.Exists(importFilePath))
             return new SettingsData(Directory.GetCurrentDirectory(), null, null, new HashSet<TrangaTask>());
 
-        string toRead = File.ReadAllText(importPath);
+        string toRead = File.ReadAllText(importFilePath);
         SettingsData data = JsonConvert.DeserializeObject<SettingsData>(toRead)!;
 
         return data;
