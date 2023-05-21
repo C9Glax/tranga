@@ -184,7 +184,7 @@ public static class Tranga_Cli
         Console.Clear();
         logger.WriteLine("Tranga_CLI", "Menu: Remove Task from queue");
         
-        TrangaTask[] tasks = taskManager.GetAllTasks();
+        TrangaTask[] tasks = taskManager.GetAllTasks().Where(rTask => rTask.state is TrangaTask.ExecutionState.Enqueued).ToArray();
         if (tasks.Length < 1)
         {
             Console.Clear();
