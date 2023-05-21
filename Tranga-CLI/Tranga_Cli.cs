@@ -14,7 +14,7 @@ public static class Tranga_Cli
 {
     public static void Main(string[] args)
     {
-        Logger logger = new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.MemoryLogger }, null, null,
+        Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null,
             Path.Join(Directory.GetCurrentDirectory(), $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt"));
         
         logger.WriteLine("Tranga_CLI", "Loading Settings.");

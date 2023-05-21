@@ -9,13 +9,12 @@ public class Logger : TextWriter
     public enum LoggerType
     {
         FileLogger,
-        ConsoleLogger,
-        MemoryLogger
+        ConsoleLogger
     }
 
     private FileLogger? _fileLogger;
     private FormattedConsoleLogger? _formattedConsoleLogger;
-    private MemoryLogger? _memoryLogger;
+    private MemoryLogger _memoryLogger;
     private TextWriter? stdOut;
 
     public Logger(LoggerType[] enabledLoggers, TextWriter? stdOut, Encoding? encoding, string? logFilePath)
@@ -30,7 +29,7 @@ public class Logger : TextWriter
             throw new ArgumentException($"logFilePath can not be null for LoggerType {LoggerType.FileLogger}");
         }
         _formattedConsoleLogger = enabledLoggers.Contains(LoggerType.ConsoleLogger) ? new FormattedConsoleLogger(null, encoding) : null;
-        _memoryLogger = enabledLoggers.Contains(LoggerType.MemoryLogger) ? new MemoryLogger(null, encoding) : null;
+        _memoryLogger = new MemoryLogger(null, encoding);
     }
 
     public void WriteLine(string caller, string? value)
@@ -46,9 +45,14 @@ public class Logger : TextWriter
             return;
         
         _fileLogger?.Write(caller, value);
-        _memoryLogger?.Write(caller, value);
         _formattedConsoleLogger?.Write(caller, value);
         
+        _memoryLogger.Write(caller, value);
         stdOut?.Write(value);
+    }
+
+    public string[] Tail(uint? lines)
+    {
+        return _memoryLogger.Tail(lines);
     }
 }
