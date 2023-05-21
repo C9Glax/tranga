@@ -58,7 +58,7 @@ app.MapPost("/Tasks/Create", (string taskType, string? connectorName, string? pu
     taskManager.AddTask(task, connectorName, publication, TimeSpan.Parse(reoccurrenceTime), language??"");
 });
 
-app.MapPost("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
+app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
 {
     Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == publicationId);
     TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
@@ -93,7 +93,7 @@ app.MapPost("/Queue/Enqueue", (string taskType, string? connectorName, string? p
     taskManager.AddTaskToQueue(task);
 });
 
-app.MapPost("/Queue/Dequeue", (string taskType, string? connectorName, string? publicationId) =>
+app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string? publicationId) =>
 {
     TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
     TrangaTask? task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
