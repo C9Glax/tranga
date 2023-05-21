@@ -325,7 +325,7 @@ public static class Tranga_Cli
     private static void ExecuteTaskNow(TaskManager taskManager, Logger logger)
     {
         logger.WriteLine("Tranga_CLI", "Menu: Executing Task");
-        TrangaTask[] tasks = taskManager.GetAllTasks();
+        TrangaTask[] tasks = taskManager.GetAllTasks().Where(nTask => nTask.state is not TrangaTask.ExecutionState.Running).ToArray();
         
         TrangaTask? selectedTask = SelectTask(tasks, logger);
         if (selectedTask is null)
