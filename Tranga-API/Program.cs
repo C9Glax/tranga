@@ -123,6 +123,6 @@ class Settings
     public Settings(TaskManager.SettingsData settings)
     {
         this.downloadLocation = settings.downloadLocation;
-        this.komga = komga;
+        this.komga = settings.komga;
     }
 }
