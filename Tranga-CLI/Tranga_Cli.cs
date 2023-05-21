@@ -14,7 +14,7 @@ public static class Tranga_Cli
 {
     public static void Main(string[] args)
     {
-        string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tranga");
+        string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga");
         string logsFolderPath = Path.Join(applicationFolderPath, "logs");
         string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
         string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");

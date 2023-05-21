@@ -1,8 +1,8 @@
-
 using Logging;
 using Tranga;
 
-string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tranga-API");
+string applicationFolderPath =
+    Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API");
 string logsFolderPath = Path.Join(applicationFolderPath, "logs");
 string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
 string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");
@@ -103,20 +103,8 @@ app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string?
     taskManager.RemoveTaskFromQueue(task);
 });
 
-app.MapGet("/Settings/Get", () => new Settings(taskManager.settings));
+app.MapGet("/Settings/Get", () => taskManager.settings);
 
 app.MapPost("/Settings/Update", (string? downloadLocation, string? komgaUrl, string? komgaAuth) => taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth) );
 
 app.Run();
-
-class Settings
-{
-    public string downloadLocation { get; }
-    public Komga? komga { get; }
-
-    public Settings(TrangaSettings settings)
-    {
-        this.downloadLocation = settings.downloadLocation;
-        this.komga = settings.komga;
-    }
-}
