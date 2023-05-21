@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranga-CLI", "Tranga-CLI\Tr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{415BE889-BB7D-426F-976F-8D977876A462}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranga-API", "Tranga-API\Tranga-API.csproj", "{48F4E495-75BC-4402-8E03-DEC5B79D7E83}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{415BE889-BB7D-426F-976F-8D977876A462}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{415BE889-BB7D-426F-976F-8D977876A462}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{415BE889-BB7D-426F-976F-8D977876A462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48F4E495-75BC-4402-8E03-DEC5B79D7E83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48F4E495-75BC-4402-8E03-DEC5B79D7E83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48F4E495-75BC-4402-8E03-DEC5B79D7E83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48F4E495-75BC-4402-8E03-DEC5B79D7E83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

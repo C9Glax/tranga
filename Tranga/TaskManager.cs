@@ -10,7 +10,7 @@ namespace Tranga;
 /// </summary>
 public class TaskManager
 {
-    private readonly Dictionary<Publication, List<Chapter>> _chapterCollection = new();
+    public Dictionary<Publication, List<Chapter>> _chapterCollection = new();
     private readonly HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
@@ -106,7 +106,7 @@ public class TaskManager
         logger?.WriteLine(this.GetType().ToString(), $"Forcing Execution: {task}");
         Task t = new Task(() =>
         {
-            TaskExecutor.Execute(this, task, this._chapterCollection, logger);
+            TaskExecutor.Execute(this, task, logger);
         });
         t.Start();
     }
@@ -227,6 +227,14 @@ public class TaskManager
         _allTasks.CopyTo(ret);
         return ret;
     }
+
+    public Publication[] GetPublicationsFromConnector(Connector connector, string? title = null)
+    {
+        Publication[] ret = connector.GetPublications(title ?? "");
+        foreach(Publication publication in ret)
+            this._chapterCollection.TryAdd(publication, new List<Chapter>());
+        return ret;
+    }
     
     /// <returns>All added Publications</returns>
     public Publication[] GetAllPublications()
@@ -290,8 +298,11 @@ public class TaskManager
     private void ExportData()
     {
         logger?.WriteLine(this.GetType().ToString(), $"Exporting data to {settings.settingsFilePath}");
+        
+        
 
         string serializedData = JsonConvert.SerializeObject(settings);
+
         File.WriteAllText(settings.settingsFilePath, serializedData);
     }
 

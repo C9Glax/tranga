@@ -17,7 +17,7 @@ public static class TaskExecutor
     /// <param name="chapterCollection">Current chapterCollection to update</param>
     /// <param name="logger"></param>
     /// <exception cref="ArgumentException">Is thrown when there is no Connector available with the name of the TrangaTask.connectorName</exception>
-    public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Dictionary<Publication, List<Chapter>> chapterCollection, Logger? logger)
+    public static void Execute(TaskManager taskManager, TrangaTask trangaTask, Logger? logger)
     {
         //Only execute task if it is not already being executed.
         if (trangaTask.state == TrangaTask.ExecutionState.Running)
@@ -37,13 +37,13 @@ public static class TaskExecutor
         switch (trangaTask.task)
         {
             case TrangaTask.Task.DownloadNewChapters:
-                DownloadNewChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
+                DownloadNewChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, ref taskManager._chapterCollection);
                 break;
             case TrangaTask.Task.UpdateChapters:
-                UpdateChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, chapterCollection);
+                UpdateChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, ref taskManager._chapterCollection);
                 break;
             case TrangaTask.Task.UpdatePublications:
-                UpdatePublications(connector!, chapterCollection);
+                UpdatePublications(connector!, ref taskManager._chapterCollection);
                 break;
             case TrangaTask.Task.UpdateKomgaLibrary:
                 UpdateKomgaLibrary(taskManager);
@@ -75,7 +75,7 @@ public static class TaskExecutor
     /// </summary>
     /// <param name="connector">Connector to receive Publications from</param>
     /// <param name="chapterCollection"></param>
-    private static void UpdatePublications(Connector connector, Dictionary<Publication, List<Chapter>> chapterCollection)
+    private static void UpdatePublications(Connector connector, ref Dictionary<Publication, List<Chapter>> chapterCollection)
     {
         Publication[] publications = connector.GetPublications();
         foreach (Publication publication in publications)
@@ -90,9 +90,9 @@ public static class TaskExecutor
     /// <param name="publication">Publication to check</param>
     /// <param name="language">Language to receive chapters for</param>
     /// <param name="chapterCollection"></param>
-    private static void DownloadNewChapters(Connector connector, Publication publication, string language, Dictionary<Publication, List<Chapter>> chapterCollection)
+    private static void DownloadNewChapters(Connector connector, Publication publication, string language, ref Dictionary<Publication, List<Chapter>> chapterCollection)
     {
-        List<Chapter> newChapters = UpdateChapters(connector, publication, language, chapterCollection);
+        List<Chapter> newChapters = UpdateChapters(connector, publication, language, ref chapterCollection);
         connector.DownloadCover(publication);
         
         //Check if Publication already has a Folder and a series.json
@@ -116,7 +116,7 @@ public static class TaskExecutor
     /// <param name="language">Language to receive chapters for</param>
     /// <param name="chapterCollection"></param>
     /// <returns>List of Chapters that were previously not in collection</returns>
-    private static List<Chapter> UpdateChapters(Connector connector, Publication publication, string language, Dictionary<Publication, List<Chapter>> chapterCollection)
+    private static List<Chapter> UpdateChapters(Connector connector, Publication publication, string language, ref Dictionary<Publication, List<Chapter>> chapterCollection)
     {
         List<Chapter> newChaptersList = new();
         chapterCollection.TryAdd(publication, newChaptersList); //To ensure publication is actually in collection

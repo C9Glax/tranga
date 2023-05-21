@@ -9,34 +9,38 @@ public readonly struct Publication
 {
     public string sortName { get; }
     // ReSharper disable UnusedAutoPropertyAccessor.Global we need it, trust
-    [JsonIgnore]public string[,] altTitles { get; }
+    [JsonIgnore]public Dictionary<string,string> altTitles { get; }
     // ReSharper disable trice MemberCanBePrivate.Global, trust
     public string? description { get; }
     public string[] tags { get; }
     public string? posterUrl { get; }
-    [JsonIgnore]public string[,]? links { get; }
+    [JsonIgnore]public Dictionary<string,string> links { get; }
     public int? year { get; }
     public string? originalLanguage { get; }
     public string status { get; }
     public string folderName { get; }
     public string downloadUrl { get; }
-    
     public string internalId { get; }
 
-    public Publication(string sortName, string? description, string[,] altTitles, string[] tags, string? posterUrl, string[,]? links, int? year, string? originalLanguage, string status, string downloadUrl, string internalId)
+    public readonly struct ValueTuple
+    {
+        
+    }
+
+    public Publication(string sortName, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string downloadUrl)
     {
         this.sortName = sortName;
         this.description = description;
         this.altTitles = altTitles;
         this.tags = tags;
         this.posterUrl = posterUrl;
-        this.links = links;
+        this.links = links ?? new Dictionary<string, string>();
         this.year = year;
         this.originalLanguage = originalLanguage;
         this.status = status;
         this.downloadUrl = downloadUrl;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
-        this.internalId = internalId;
+        this.internalId = Guid.NewGuid().ToString();
     }
     
     /// <returns>Serialized JSON String for series.json</returns>
