@@ -188,16 +188,23 @@ public class TaskManager
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
         {
             _allTasks.RemoveWhere(uTask => uTask.task == TrangaTask.Task.UpdateKomgaLibrary);
-            logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task}");
+            logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} from all Tasks.");
         }
         else if (connectorName is null)
             throw new ArgumentException($"connectorName can not be null for Task {task}");
         else
         {
+            foreach (List<TrangaTask> taskQueue in this._taskQueue.Values)
+                if(taskQueue.RemoveAll(trangaTask =>
+                       trangaTask.task == task && trangaTask.connectorName == connectorName &&
+                       trangaTask.publication?.internalId == publication?.internalId) > 0)
+                    logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} {publication?.sortName} {publication?.internalId} from Queue.");
+                else
+                    logger?.WriteLine(this.GetType().ToString(), $"Task {task} {publication?.sortName} {publication?.internalId} was not in Queue.");
             if(_allTasks.RemoveWhere(trangaTask =>
                 trangaTask.task == task && trangaTask.connectorName == connectorName &&
                 trangaTask.publication?.internalId == publication?.internalId) > 0)
-                logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} {publication?.sortName} {publication?.internalId}.");
+                logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} {publication?.sortName} {publication?.internalId} from all Tasks.");
             else
                 logger?.WriteLine(this.GetType().ToString(), $"No Task {task} {publication?.sortName} {publication?.internalId} could be found.");
         }
