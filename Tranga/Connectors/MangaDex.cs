@@ -276,7 +276,7 @@ public class MangaDex : Connector
             return;
         }
 
-        if (publication.posterUrl is null || !(bool)publication.posterUrl?.Contains("http"))
+        if (publication.posterUrl is null || publication.posterUrl!.Contains("http"))
         {
             logger?.WriteLine(this.GetType().ToString(), $"No Poster-URL in publication");
             return;

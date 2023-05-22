@@ -25,7 +25,7 @@ public class TaskManager
     /// <param name="komgaUsername">The Komga username</param>
     /// <param name="komgaPassword">The Komga password</param>
     /// <param name="logger"></param>
-    public TaskManager(string downloadFolderPath, string? workingDirectory = null, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
+    public TaskManager(string downloadFolderPath, string workingDirectory, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
     {
         this.logger = logger;
         _allTasks = new HashSet<TrangaTask>();
@@ -170,7 +170,7 @@ public class TaskManager
                 _allTasks.Add(newTask);
             }
             else
-                logger.WriteLine(this.GetType().ToString(), $"Publication already exists {publication?.internalId}");
+                logger?.WriteLine(this.GetType().ToString(), $"Publication already exists {publication?.internalId}");
         }
         logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask.ToString()}");
         ExportData();

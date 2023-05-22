@@ -20,6 +20,10 @@ public abstract class Connector
     {
         this.downloadLocation = downloadLocation;
         this.logger = logger;
+        this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
+        {
+            //RequestTypes for RateLimits
+        }, logger);
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)
@@ -219,6 +223,7 @@ public abstract class Connector
                 }
                 catch (HttpRequestException e)
                 {
+                    logger?.WriteLine(this.GetType().ToString(), e.Message);
                     Thread.Sleep(_rateLimit[requestType] * 2);
                 }
             }
