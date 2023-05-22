@@ -106,7 +106,7 @@ public abstract class Connector
     /// <returns>Filepath</returns>
     protected string CreateFullFilepath(Publication publication, Chapter chapter)
     {
-        return Path.Join(downloadLocation, publication.folderName, chapter.fileName);
+        return Path.Join(downloadLocation, publication.folderName, $"{chapter.fileName}.cbz");
     }
     
     /// <summary>
@@ -134,13 +134,11 @@ public abstract class Connector
     {
         logger?.WriteLine("Connector", "Downloading Images");
         //Check if Publication Directory already exists
-        string[] splitPath = saveArchiveFilePath.Split(Path.DirectorySeparatorChar);
-        string directoryPath = Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray());
+        string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
             Directory.CreateDirectory(directoryPath);
-        
-        string fullPath = $"{saveArchiveFilePath}.cbz";
-        if (File.Exists(fullPath)) //Don't download twice.
+
+        if (File.Exists(saveArchiveFilePath)) //Don't download twice.
             return;
         
         //Create a temporary folder to store images
@@ -160,7 +158,7 @@ public abstract class Connector
         
         logger?.WriteLine("Connector", "Creating archive");
         //ZIP-it and ship-it
-        ZipFile.CreateFromDirectory(tempFolder, fullPath);
+        ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         Directory.Delete(tempFolder, true); //Cleanup
     }
     
