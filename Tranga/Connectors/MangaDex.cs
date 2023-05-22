@@ -49,6 +49,8 @@ public class MangaDex : Connector
                 JsonObject manga = (JsonObject)mangeNode!;
                 JsonObject attributes = manga["attributes"]!.AsObject();
                 
+                string publicationId = manga["id"]!.GetValue<string>();
+                
                 string title = attributes["title"]!.AsObject().ContainsKey("en") && attributes["title"]!["en"] is not null
                     ? attributes["title"]!["en"]!.GetValue<string>()
                     : attributes["title"]![((IDictionary<string, JsonNode?>)attributes["title"]!.AsObject()).Keys.First()]!.GetValue<string>();
@@ -76,11 +78,15 @@ public class MangaDex : Connector
                 }
 
                 string? posterId = null;
+                string? authorId = null;
                 if (manga.ContainsKey("relationships") && manga["relationships"] is not null)
                 {
                     JsonArray relationships = manga["relationships"]!.AsArray();
                     posterId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
+                    authorId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "author")!["id"]!.GetValue<string>();
                 }
+                string? coverUrl = GetCoverUrl(publicationId, posterId);
+                string? author = GetAuthor(authorId);
 
                 Dictionary<string, string> linksDict = new();
                 if (attributes.ContainsKey("links") && attributes["links"] is not null)
@@ -102,12 +108,9 @@ public class MangaDex : Connector
                 
                 string status = attributes["status"]!.GetValue<string>();
 
-                string publicationId = manga["id"]!.GetValue<string>();
-
-                string? coverUrl = GetCoverUrl(publicationId, posterId);
-
                 Publication pub = new (
                     title,
+                    author,
                     description,
                     altTitlesDict,
                     tags.ToArray(),
@@ -228,6 +231,23 @@ public class MangaDex : Connector
 
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
         return coverUrl;
+    }
+
+    private string? GetAuthor(string? authorId)
+    {
+        if (authorId is null)
+            return null;
+        
+        DownloadClient.RequestResult requestResult =
+            downloadClient.MakeRequest($"https://api.mangadex.org/author/{authorId}");
+        if (requestResult.statusCode != HttpStatusCode.OK)
+            return null;
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+        if (result is null)
+            return null;
+
+        string author = result["data"]!["attributes"]!["name"]!.GetValue<string>();
+        return author;
     }
 
     public override void DownloadCover(Publication publication)

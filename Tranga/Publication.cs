@@ -9,6 +9,7 @@ namespace Tranga;
 public readonly struct Publication
 {
     public string sortName { get; }
+    public string? author { get; }
     public Dictionary<string,string> altTitles { get; }
     // ReSharper disable trice MemberCanBePrivate.Global, trust
     public string? description { get; }
@@ -22,9 +23,10 @@ public readonly struct Publication
     public string publicationId { get; }
     public string internalId { get; }
 
-    public Publication(string sortName, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
+    public Publication(string sortName, string? author, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
     {
         this.sortName = sortName;
+        this.author = author;
         this.description = description;
         this.altTitles = altTitles;
         this.tags = tags;
