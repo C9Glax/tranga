@@ -1,8 +1,9 @@
 ﻿:root{
-    --background-color: #5bcefa;
-    --second-background-color: #000;
+    --background-color: #eee;
+    --second-background-color: #fff;
     --primary-color: #f5a9b8;
-    --secondary-color: #fff;
+    --secondary-color: #5bcefa;
+    --accent-color: #fff;
     --topbar-height: 60px;
     box-sizing: content-box;
 }
@@ -21,18 +22,19 @@ body{
 
 background-placeholder{
     background-color: var(--second-background-color);
-    opacity: 0.05;
+    opacity: 1;
     position: absolute;
     width: 100%;
     height: 100%;
-    border-radius: 5px;
+    border-radius: 0 0 5px 0;
+    z-index: -1;
 }
 
 topbar {
     display: flex;
     align-items: center;
     height: var(--topbar-height);
-    margin: 5px;
+    background-color: var(--secondary-color);
 }
 
 titlebox {
@@ -47,7 +49,7 @@ titlebox {
 titlebox span{
     font-size: 24pt;
     font-weight: bold;
-    background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(150deg, var(--primary-color), var(--accent-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-left: 20px;
@@ -92,8 +94,11 @@ viewport {
 sidebar{
     position: relative;
     width: 20rem;
-    margin-bottom: 10px;
-    border-radius: 0 5px 5px 0;
+    margin-bottom: 20px;
+    border-radius: 0 0 5px 0;
+    display: flex;
+    flex-direction: column;
+    
 }
 
 content {
@@ -119,16 +124,14 @@ settingstab{
     border-radius: 5px 0 0 5px;
 }
 
-publication{
+#addPublication {
     background-color: var(--secondary-color);
     width: 180px;
     height: 300px;
     border-radius: 5px;
     margin: 10px 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
     padding: 15px 20px;
+    position: relative;
 }
 
 #addPublication p{
@@ -138,24 +141,64 @@ publication{
     vertical-align: middle;
     line-height: 300px;
     margin: 0;
+    color: var(--accent-color);
 }
 
 .pill {
     flex-grow: 0;
     height: 14pt;
     font-size: 12pt;
-    border-radius: 7pt;
+    border-radius: 9pt;
     background-color: var(--primary-color);
-    padding: 1pt 15px;
+    padding: 2pt 20px;
+}
+
+publication{
+    background-color: var(--secondary-color);
+    width: 180px;
+    height: 300px;
+    border-radius: 5px;
+    margin: 10px 10px;
+    padding: 15px 20px;
+    position: relative;
+}
+
+publication::after{
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    border-radius: 5px;
+    width: 100%; height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.1));
+}
+
+publication-information {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    background-image: linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73))
+    z-index: 1;
 }
 
 connector-name{
     width: fit-content;
     margin: 10px 0;
+    z-index: 2;
 }
 
 publication-name{
     width: fit-content;
     font-size: 16pt;
     font-weight: bold;
+    z-index: 2;
+    color: var(--accent-color);
+}
+
+publication img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
 }

@@ -13,7 +13,7 @@
     </titlebox>
     <spacer></spacer>
     <searchdiv>
-      <input id="searchbox" placeholder="Search" type="text">
+      <input id="searchbox" placeholder="Filter" type="text">
     </searchdiv>
     <img id="settingscog" src="media/settings-cogwheel.svg" height="100%" alt="settingscog">
   </topbar>
@@ -21,15 +21,19 @@
     <sidebar>
       <background-placeholder></background-placeholder>
       
+      <spacer></spacer>
+      <p style="text-align: center">Made with Blåhaj 🦈</p>
     </sidebar>
     <content>
-      <background-placeholder></background-placeholder>
-      <publication id="addPublication">
+      <div id="addPublication">
         <p>+</p>
-      </publication>
+      </div>
       <publication>
-        <connector-name class="pill">Connector Name</connector-name>
-        <publication-name>Publication Name</publication-name>
+        <img src="media/cover.jpg">
+        <publication-information>
+          <connector-name class="pill">MangaDex</connector-name>
+          <publication-name>Tensei Pandemic</publication-name>
+        </publication-information>
       </publication>
     </content>
   </viewport>
