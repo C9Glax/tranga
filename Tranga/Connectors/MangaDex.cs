@@ -270,29 +270,26 @@ public class MangaDex : Connector
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
         DirectoryInfo dirInfo = new (publicationFolder);
-        foreach(FileInfo fileInfo in dirInfo.EnumerateFiles())
-            if (fileInfo.Name.Contains("cover."))
-            {
-                logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
-                return;
-            }
-
-        if (publication.posterUrl is null)
+        if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover.")))
         {
-            logger?.WriteLine(this.GetType().ToString(), $"No posterurl in publication");
+            logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
             return;
         }
 
-        string coverUrl = publication.posterUrl;
+        if (publication.posterUrl is null || !(bool)publication.posterUrl?.Contains("http"))
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"No Poster-URL in publication");
+            return;
+        }
 
         //Get file-extension (jpg, png)
-        string[] split = coverUrl.Split('.');
+        string[] split = publication.posterUrl.Split('.');
         string extension = split[^1];
 
         string outFolderPath = Path.Join(downloadLocation, publication.folderName);
         Directory.CreateDirectory(outFolderPath);
         
         //Download cover-Image
-        DownloadImage(coverUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this.downloadClient, (byte)RequestType.AtHomeServer);
+        DownloadImage(publication.posterUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this.downloadClient, (byte)RequestType.AtHomeServer);
     }
 }
