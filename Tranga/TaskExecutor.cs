@@ -92,13 +92,13 @@ public static class TaskExecutor
     /// <param name="chapterCollection"></param>
     private static void DownloadNewChapters(Connector connector, Publication publication, string language, ref Dictionary<Publication, List<Chapter>> chapterCollection)
     {
-        List<Chapter> newChapters = UpdateChapters(connector, publication, language, ref chapterCollection);
-        connector.DownloadCover(publication);
-        
-        //Check if Publication already has a Folder and a series.json
+        //Check if Publication already has a Folder
         string publicationFolder = Path.Join(connector.downloadLocation, publication.folderName);
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
+        List<Chapter> newChapters = UpdateChapters(connector, publication, language, ref chapterCollection);
+
+        connector.DownloadCover(publication);
         
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))
