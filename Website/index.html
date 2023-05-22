@@ -7,21 +7,35 @@
 </head>
 <body>
   <topbar>
-    <titlebox>Tranga</titlebox>
+    <titlebox>
+      <img src="media/blahaj.png">
+      <span>Tranga</span>
+    </titlebox>
+    <spacer></spacer>
+    <searchdiv>
+      <input id="searchbox" placeholder="Search" type="text">
+    </searchdiv>
+    <img id="settingscog" src="media/settings-cogwheel.svg" height="100%" alt="settingscog">
   </topbar>
   <viewport>
     <sidebar>
+      <background-placeholder></background-placeholder>
       
     </sidebar>
     <content>
+      <background-placeholder></background-placeholder>
+      <publication id="addPublication">
+        <p>+</p>
+      </publication>
       <publication>
-        <connector class="pill">Connector Name</connector>
+        <connector-name class="pill">Connector Name</connector-name>
         <publication-name>Publication Name</publication-name>
       </publication>
     </content>
-    <settingstab>
-      
-    </settingstab>
   </viewport>
+  <settingstab id="settingstab">
+
+  </settingstab>
+  <script src="interaction.js"></script>
 </body>
 </html>
