@@ -12,14 +12,13 @@ namespace Tranga;
 public abstract class Connector
 {
     internal string downloadLocation { get; }  //Location of local files
-    protected DownloadClient downloadClient { get; }
+    protected DownloadClient downloadClient { get; init; }
 
     protected Logger? logger;
 
-    protected Connector(string downloadLocation, uint downloadDelay, Logger? logger)
+    protected Connector(string downloadLocation, Logger? logger)
     {
         this.downloadLocation = downloadLocation;
-        this.downloadClient = new DownloadClient(downloadDelay);
         this.logger = logger;
     }
     
@@ -109,21 +108,22 @@ public abstract class Connector
     {
         return Path.Join(downloadLocation, publication.folderName, $"{chapter.fileName}.cbz");
     }
-    
+
     /// <summary>
     /// Downloads Image from URL and saves it to the given path(incl. fileName)
     /// </summary>
     /// <param name="imageUrl"></param>
     /// <param name="fullPath"></param>
     /// <param name="downloadClient">DownloadClient of the connector</param>
-    protected static void DownloadImage(string imageUrl, string fullPath, DownloadClient downloadClient)
+    /// <param name="requestType">Requesttype for ratelimit</param>
+    protected static void DownloadImage(string imageUrl, string fullPath, DownloadClient downloadClient, byte requestType)
     {
-        DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl);
+        DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType);
         byte[] buffer = new byte[requestResult.result.Length];
         requestResult.result.ReadExactly(buffer, 0, buffer.Length);
         File.WriteAllBytes(fullPath, buffer);
     }
-    
+
     /// <summary>
     /// Downloads all Images from URLs, Compresses to zip(cbz) and saves.
     /// </summary>
@@ -131,7 +131,8 @@ public abstract class Connector
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
     /// <param name="downloadClient">DownloadClient of the connector</param>
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
-    protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, Logger? logger, string? comicInfoPath = null)
+    /// <param name="requestType">RequestType for RateLimits</param>
+    protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, byte requestType, Logger? logger, string? comicInfoPath = null)
     {
         logger?.WriteLine("Connector", "Downloading Images");
         //Check if Publication Directory already exists
@@ -151,7 +152,7 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
-            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient);
+            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient, requestType);
         }
         
         if(comicInfoPath is not null)
@@ -165,30 +166,41 @@ public abstract class Connector
     
     protected class DownloadClient
     {
-        private readonly TimeSpan _requestSpeed;
-        private DateTime _lastRequest;
         private static readonly HttpClient Client = new();
+
+        private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
+        private readonly Dictionary<byte, TimeSpan> _RateLimit;
 
         /// <summary>
         /// Creates a httpClient
         /// </summary>
         /// <param name="delay">minimum delay between requests (to avoid spam)</param>
-        public DownloadClient(uint delay)
+        /// <param name="rateLimitRequestsPerMinute">Rate limits for requests. byte is RequestType, int maximum requests per minute for RequestType</param>
+        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute)
         {
-            _requestSpeed = TimeSpan.FromMilliseconds(delay);
-            _lastRequest = DateTime.Now.Subtract(_requestSpeed);
+            _lastExecutedRateLimit = new();
+            _RateLimit = new();
+            foreach(KeyValuePair<byte, int> limit in rateLimitRequestsPerMinute)
+                _RateLimit.Add(limit.Key, TimeSpan.FromMinutes(1).Divide(limit.Value));
         }
-        
+
         /// <summary>
         /// Request Webpage
         /// </summary>
         /// <param name="url"></param>
+        /// <param name="requestType">For RateLimits: Same Endpoints use same type</param>
         /// <returns>RequestResult with StatusCode and Stream of received data</returns>
-        public RequestResult MakeRequest(string url)
+        public RequestResult MakeRequest(string url, byte requestType)
         {
-            while((DateTime.Now - _lastRequest) < _requestSpeed)
+            if (_RateLimit.TryGetValue(requestType, out TimeSpan value))
+                _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(value));
+            else
+                return new RequestResult(HttpStatusCode.NotAcceptable, Stream.Null);
+ 
+            
+            while(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]) < _RateLimit[requestType])
                 Thread.Sleep(10);
-            _lastRequest = DateTime.Now;
+            _lastExecutedRateLimit[requestType] = DateTime.Now;
 
             HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
             HttpResponseMessage response = Client.Send(requestMessage);
