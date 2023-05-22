@@ -205,7 +205,8 @@ public abstract class Connector
             TimeSpan rateLimitTimeout = _rateLimit[requestType]
                 .Subtract(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]));
             
-            Thread.Sleep(rateLimitTimeout);
+            if(rateLimitTimeout > TimeSpan.Zero)
+                Thread.Sleep(rateLimitTimeout);
 
             HttpResponseMessage? response = null;
             while (response is null)
