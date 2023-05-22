@@ -6,15 +6,14 @@ public class TrangaSettings
 {
     public string downloadLocation { get; set; }
     public string workingDirectory { get; set; }
-    public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
-    public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
-    public string knownPublicationsPath => Path.Join(workingDirectory, "knownPublications.json");
+    [JsonIgnore]public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
+    [JsonIgnore]public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
+    [JsonIgnore]public string knownPublicationsPath => Path.Join(workingDirectory, "knownPublications.json");
     public Komga? komga { get; set; }
 
-    public TrangaSettings(string downloadLocation, string? workingDirectory, Komga? komga)
+    public TrangaSettings(string downloadLocation, string workingDirectory, Komga? komga)
     {
-        this.workingDirectory = workingDirectory ??
-                                Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga");
+        this.workingDirectory = workingDirectory;
         this.downloadLocation = downloadLocation;
         this.komga = komga;
     }
@@ -22,7 +21,7 @@ public class TrangaSettings
     public static TrangaSettings LoadSettings(string importFilePath)
     {
         if (!File.Exists(importFilePath))
-            return new TrangaSettings(Directory.GetCurrentDirectory(), null, null);
+            return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory(), null);
 
         string toRead = File.ReadAllText(importFilePath);
         TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(toRead)!;
