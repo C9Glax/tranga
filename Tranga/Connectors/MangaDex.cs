@@ -75,11 +75,11 @@ public class MangaDex : Connector
                         tags.Add(tagObject["attributes"]!["name"]!["en"]!.GetValue<string>());
                 }
 
-                string? poster = null;
+                string? posterId = null;
                 if (manga.ContainsKey("relationships") && manga["relationships"] is not null)
                 {
                     JsonArray relationships = manga["relationships"]!.AsArray();
-                    poster = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
+                    posterId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
                 }
 
                 Dictionary<string, string> linksDict = new();
@@ -102,17 +102,21 @@ public class MangaDex : Connector
                 
                 string status = attributes["status"]!.GetValue<string>();
 
-                Publication pub = new Publication(
+                string publicationId = manga["id"]!.GetValue<string>();
+
+                string? coverUrl = GetCoverUrl(publicationId, posterId);
+
+                Publication pub = new (
                     title,
                     description,
                     altTitlesDict,
                     tags.ToArray(),
-                    poster,
+                    coverUrl,
                     linksDict,
                     year,
                     originalLanguage,
                     status,
-                    manga["id"]!.GetValue<string>()
+                    publicationId
                 );
                 publications.Add(pub); //Add Publication (Manga) to result
             }
@@ -134,7 +138,7 @@ public class MangaDex : Connector
             //Request next "Page"
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga/{publication.downloadUrl}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
+                    $"https://api.mangadex.org/manga/{publication.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}");
             if (requestResult.statusCode != HttpStatusCode.OK)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -203,6 +207,29 @@ public class MangaDex : Connector
         DownloadChapterImages(imageUrls.ToArray(), CreateFullFilepath(publication, chapter), downloadClient, logger, comicInfoPath);
     }
 
+    private string? GetCoverUrl(string publicationId, string? posterId)
+    {
+        if (posterId is null)
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"No posterId");
+            return null;
+        }
+        
+        //Request information where to download Cover
+        DownloadClient.RequestResult requestResult =
+            downloadClient.MakeRequest($"https://api.mangadex.org/cover/{posterId}");
+        if (requestResult.statusCode != HttpStatusCode.OK)
+            return null;
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+        if (result is null)
+            return null;
+
+        string fileName = result["data"]!["attributes"]!["fileName"]!.GetValue<string>();
+
+        string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
+        return coverUrl;
+    }
+
     public override void DownloadCover(Publication publication)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Download cover {publication.sortName}");
@@ -218,19 +245,14 @@ public class MangaDex : Connector
                 return;
             }
 
-        //Request information where to download Cover
-        DownloadClient.RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/cover/{publication.posterUrl}");
-        if (requestResult.statusCode != HttpStatusCode.OK)
+        if (publication.posterUrl is null)
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"No posterurl in publication");
             return;
-        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
-        if (result is null)
-            return;
+        }
 
-        string fileName = result["data"]!["attributes"]!["fileName"]!.GetValue<string>();
+        string coverUrl = publication.posterUrl;
 
-        string coverUrl = $"https://uploads.mangadex.org/covers/{publication.downloadUrl}/{fileName}";
-        
         //Get file-extension (jpg, png)
         string[] split = coverUrl.Split('.');
         string extension = split[^1];

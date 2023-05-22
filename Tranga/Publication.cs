@@ -9,7 +9,6 @@ namespace Tranga;
 public readonly struct Publication
 {
     public string sortName { get; }
-    // ReSharper disable UnusedAutoPropertyAccessor.Global we need it, trust
     public Dictionary<string,string> altTitles { get; }
     // ReSharper disable trice MemberCanBePrivate.Global, trust
     public string? description { get; }
@@ -20,10 +19,10 @@ public readonly struct Publication
     public string? originalLanguage { get; }
     public string status { get; }
     public string folderName { get; }
-    public string downloadUrl { get; }
-    [JsonIgnore]public string internalId { get; }
+    public string publicationId { get; }
+    public string internalId { get; }
 
-    public Publication(string sortName, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string downloadUrl)
+    public Publication(string sortName, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
     {
         this.sortName = sortName;
         this.description = description;
@@ -34,7 +33,7 @@ public readonly struct Publication
         this.year = year;
         this.originalLanguage = originalLanguage;
         this.status = status;
-        this.downloadUrl = downloadUrl;
+        this.publicationId = publicationId;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
         string onlyLowerAscii = this.sortName.ToLower().Where(Char.IsAscii).ToString()!;
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerAscii}{this.year}"));

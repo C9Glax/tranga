@@ -163,7 +163,7 @@ public class TaskManager
             
             //Check if same task already exists
             if (!_allTasks.Any(trangaTask => trangaTask.task == task && trangaTask.connectorName == connector.name &&
-                                             trangaTask.publication?.downloadUrl == publication?.downloadUrl))
+                                             trangaTask.publication?.internalId == publication?.internalId))
             {
                 if(task != TrangaTask.Task.UpdatePublications)
                     _chapterCollection.TryAdd((Publication)publication!, new List<Chapter>());
@@ -196,10 +196,10 @@ public class TaskManager
         {
             if(_allTasks.RemoveWhere(trangaTask =>
                 trangaTask.task == task && trangaTask.connectorName == connectorName &&
-                trangaTask.publication?.downloadUrl == publication?.downloadUrl) > 0)
-                logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} {publication?.sortName} {publication?.downloadUrl}.");
+                trangaTask.publication?.internalId == publication?.internalId) > 0)
+                logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} {publication?.sortName} {publication?.internalId}.");
             else
-                logger?.WriteLine(this.GetType().ToString(), $"No Task {task} {publication?.sortName} {publication?.downloadUrl} could be found.");
+                logger?.WriteLine(this.GetType().ToString(), $"No Task {task} {publication?.sortName} {publication?.internalId} could be found.");
         }
         ExportData();
     }
