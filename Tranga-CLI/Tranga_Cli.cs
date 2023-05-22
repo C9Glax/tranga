@@ -477,6 +477,13 @@ public static class Tranga_Cli
         string? query = Console.ReadLine();
 
         Publication[] publications = taskManager.GetPublicationsFromConnector(connector, query ?? "");
+
+        if (publications.Length < 1)
+        {
+            logger.WriteLine("Tranga_CLI", "No publications returned");
+            Console.WriteLine($"No publications for query '{query}' returned;");
+            return null;
+        }
         
         int pIndex = 0;
         Console.WriteLine("Publications:");
