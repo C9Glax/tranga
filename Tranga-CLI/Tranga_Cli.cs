@@ -244,7 +244,6 @@ public static class Tranga_Cli
         try
         {
             int selectedTaskIndex = Convert.ToInt32(selectedTask);
-            logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
             return tasks[selectedTaskIndex];
         }
         catch (Exception e)
