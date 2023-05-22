@@ -37,8 +37,8 @@ public readonly struct Publication
         this.status = status;
         this.publicationId = publicationId;
         this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
-        string onlyLowerAscii = this.sortName.ToLower().Where(Char.IsAscii).ToString()!;
-        this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerAscii}{this.year}"));
+        string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
+        this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
     }
     
     /// <returns>Serialized JSON String for series.json</returns>

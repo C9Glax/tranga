@@ -169,6 +169,8 @@ public class TaskManager
                     _chapterCollection.TryAdd((Publication)publication!, new List<Chapter>());
                 _allTasks.Add(newTask);
             }
+            else
+                logger.WriteLine(this.GetType().ToString(), $"Publication already exists {publication?.internalId}");
         }
         logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask.ToString()}");
         ExportData();
