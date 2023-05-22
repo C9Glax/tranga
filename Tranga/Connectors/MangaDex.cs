@@ -28,7 +28,7 @@ public class MangaDex : Connector
             {(byte)RequestType.AtHomeServer, 40},
             {(byte)RequestType.Cover, 250},
             {(byte)RequestType.Author, 250}
-        });
+        }, logger);
     }
 
     public override Publication[] GetPublications(string publicationTitle = "")

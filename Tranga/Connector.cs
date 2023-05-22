@@ -169,19 +169,21 @@ public abstract class Connector
         private static readonly HttpClient Client = new();
 
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
-        private readonly Dictionary<byte, TimeSpan> _RateLimit;
+        private readonly Dictionary<byte, TimeSpan> _rateLimit;
+        private Logger? logger;
 
         /// <summary>
         /// Creates a httpClient
         /// </summary>
         /// <param name="delay">minimum delay between requests (to avoid spam)</param>
         /// <param name="rateLimitRequestsPerMinute">Rate limits for requests. byte is RequestType, int maximum requests per minute for RequestType</param>
-        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute)
+        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, Logger? logger)
         {
+            this.logger = logger;
             _lastExecutedRateLimit = new();
-            _RateLimit = new();
+            _rateLimit = new();
             foreach(KeyValuePair<byte, int> limit in rateLimitRequestsPerMinute)
-                _RateLimit.Add(limit.Key, TimeSpan.FromMinutes(1).Divide(limit.Value));
+                _rateLimit.Add(limit.Key, TimeSpan.FromMinutes(1).Divide(limit.Value));
         }
 
         /// <summary>
@@ -192,19 +194,36 @@ public abstract class Connector
         /// <returns>RequestResult with StatusCode and Stream of received data</returns>
         public RequestResult MakeRequest(string url, byte requestType)
         {
-            if (_RateLimit.TryGetValue(requestType, out TimeSpan value))
+            if (_rateLimit.TryGetValue(requestType, out TimeSpan value))
                 _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(value));
             else
+            {
+                logger?.WriteLine(this.GetType().ToString(), "RequestType not configured for rate-limit.");
                 return new RequestResult(HttpStatusCode.NotAcceptable, Stream.Null);
- 
-            
-            while(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]) < _RateLimit[requestType])
-                Thread.Sleep(10);
-            _lastExecutedRateLimit[requestType] = DateTime.Now;
+            }
 
-            HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
-            HttpResponseMessage response = Client.Send(requestMessage);
+            TimeSpan rateLimitTimeout = _rateLimit[requestType]
+                .Subtract(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]));
+            
+            Thread.Sleep(rateLimitTimeout);
+
+            HttpResponseMessage? response = null;
+            while (response is null)
+            {
+                try
+                {
+                    HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
+                    _lastExecutedRateLimit[requestType] = DateTime.Now;
+                    response = Client.Send(requestMessage);
+                }
+                catch (HttpRequestException e)
+                {
+                    Thread.Sleep(_rateLimit[requestType] * 2);
+                }
+            }
             Stream resultString = response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
+            if (!response.IsSuccessStatusCode)
+                logger?.WriteLine(this.GetType().ToString(), $"Request-Error {response.StatusCode}: {response.ReasonPhrase}");
             return new RequestResult(response.StatusCode, resultString);
         }
 
