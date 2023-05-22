@@ -52,7 +52,7 @@ public abstract class LoggerBase : TextWriter
         public override string ToString()
         {
             string dateTimeString = $"{logTime.ToShortDateString()} {logTime.ToLongTimeString()}";
-            return $"[{dateTimeString}] {caller,30} | {value}";
+            return $"[{dateTimeString}] {caller.Split(new char[]{'.','+'}).Last(),15} | {value}";
         }
     }
 }

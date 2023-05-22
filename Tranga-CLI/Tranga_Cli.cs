@@ -209,8 +209,12 @@ public static class Tranga_Cli
             $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Connector",-15} | Publication/Manga";
         Console.WriteLine(header);
         Console.WriteLine(new string('-', header.Length));
-        foreach(TrangaTask trangaTask in tasks)
-            Console.WriteLine($"{tIndex++:000}: {trangaTask}");
+        foreach (TrangaTask trangaTask in tasks)
+        {
+            string[] taskSplit = trangaTask.ToString().Split(", ");
+            Console.WriteLine($"{tIndex++:000}: {taskSplit[0],-20} | {taskSplit[1],-20} | {taskSplit[2],-12} | {taskSplit[3],-10} | {(taskSplit.Length > 4 ? taskSplit[4] : ""),-15} | {(taskSplit.Length > 5 ? taskSplit[5] : "")}");
+        }
+            
     }
 
     private static TrangaTask? SelectTask(TrangaTask[] tasks, Logger logger)

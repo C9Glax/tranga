@@ -56,6 +56,6 @@ public class TrangaTask
 
     public override string ToString()
     {
-        return $"{task,-20} | {lastExecuted,-20} | {reoccurrence,-12} | {state,-10} | {connectorName,-15} | {publication?.sortName}";
+        return $"{task}, {lastExecuted}, {reoccurrence}, {state} {(connectorName is not null ? $", {connectorName}" : "" )} {(publication is not null ? $", {publication?.sortName}": "")}";
     }
 }
