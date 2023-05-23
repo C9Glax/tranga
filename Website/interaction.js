@@ -59,6 +59,7 @@ GetAvailableControllers()
 
 searchPublicationQuery.addEventListener("keypress", (event) => {
    if(event.key === "Enter"){
+       selectPublication.replaceChildren();
        GetPublication(connectorSelect.value, searchPublicationQuery.value)
            //.then(json => console.log(json));
            .then(json => 
@@ -121,6 +122,7 @@ function ResetContent(){
 }
 
 function ShowNewTaskWindow(){
+    selectPublication.replaceChildren();
     addtaskpopup.style.display = "block";
     addtaskpopup.animate(fadeIn, fadeInTiming);
 }
