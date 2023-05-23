@@ -20,6 +20,7 @@ const slideOutRightTiming = {
 
 let publications = [];
 let tasks = [];
+let toRemoveId;
 
 const taskTypesSelect = document.querySelector("#taskTypes")
 const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
@@ -40,9 +41,11 @@ const publicationDelete = document.querySelector("publication-delete");
 const closetaskpopup = document.querySelector("#closePopupImg");
 
 settingsCog.addEventListener("click", () => slide());
-closetaskpopup.addEventListener("click", () => HidePopup())
+closetaskpopup.addEventListener("click", () => HidePopup());
 document.querySelector("blur-background").addEventListener("click", () => HidePopup());
+publicationDelete.addEventListener("click", () => DeleteTaskClick());
 
+/*
 let availableTaskTypes;
 GetTaskTypes()
     .then(json => availableTaskTypes = json)
@@ -52,7 +55,7 @@ GetTaskTypes()
             option.value = taskType;
             option.innerText = taskType;
             taskTypesSelect.appendChild(option);
-        }));
+        }));*/
 
 let availableConnectors;
 GetAvailableControllers()
@@ -76,7 +79,7 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
                json.forEach(publication => {
                    var option = CreatePublication(publication, connectorSelect.value);
                    option.addEventListener("click", () => {
-                       CreateTask(taskTypesSelect.value, selectRecurrence.value, connectorSelect.value, publication.internalId, "en");
+                       CreateTask("DownloadNewChapters", selectRecurrence.value, connectorSelect.value, publication.internalId, "en");
                        selectPublication.replaceChildren();
                    });
                    selectPublication.appendChild(option);
@@ -105,8 +108,21 @@ function CreatePublication(publication, connector){
     return publicationElement;
 }
 
-function DeleteTask(taskType, connectorName, publicationId){
-    
+function DeleteTaskClick(){
+    taskToDelete = tasks.filter(tTask => tTask.publication.internalId === toRemoveId)[0];
+    DeleteTask("DownloadNewChapters", taskToDelete.connectorName, toRemoveId);
+    ResetContent();
+    GetTasks()
+        //.then(json => console.log(json))
+        .then(json => json.forEach(task => {
+            var publication = CreatePublication(task.publication, task.connectorName);
+            publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
+            tasksContent.appendChild(publication);
+
+            if(tasks.filter(tTask => tTask.publication.internalId === task.publication.internalId) < 1)
+                tasks.push(task);
+        }));
+    HidePopup();
 }
 
 var slideIn = true;
@@ -134,7 +150,6 @@ function ShowPopup(){
     generalPopup.animate(fadeIn, fadeInTiming);
 }
 
-let toRemoveId;
 function ShowPublicationViewerWindow(publicationId, event){
     publicationViewer.style.top = `${event.clientY - 60}px`;
     publicationViewer.style.left = `${event.clientX}px`;
@@ -144,6 +159,7 @@ function ShowPublicationViewerWindow(publicationId, event){
     publicationViewerDescription.innerText = publication.description;
     publicationViewerAuthor.innerText = publication.author;
     pubviewcover.src = publication.posterUrl;
+    toRemoveId = publicationId;
     
     toRemoveId = publicationId;
     publicationViewer.style.display = "block";
@@ -179,8 +195,8 @@ GetTasks()
         var publication = CreatePublication(task.publication, task.connectorName);
         publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
         tasksContent.appendChild(publication);
-        
-        if(tasks.filter(task => task.publication.internalId === publication.internalId) < 1)
+
+        if(tasks.filter(tTask => tTask.publication.internalId === task.publication.internalId) < 1)
             tasks.push(task);
     }));
 
@@ -193,7 +209,7 @@ setInterval(() => {
             publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
             tasksContent.appendChild(publication);
 
-            if(tasks.filter(task => task.publication.internalId === publication.internalId) < 1)
+            if(tasks.filter(tTask => tTask.publication.internalId === task.publication.internalId) < 1)
                 tasks.push(task);
         }));
 }, 5000);
