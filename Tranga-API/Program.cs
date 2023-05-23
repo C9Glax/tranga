@@ -36,6 +36,7 @@ builder.Services.AddCors(options =>
         policy  =>
         {
             policy.WithOrigins("http://localhost", "http://127.0.0.1", "http://localhost:63342");
+            policy.WithMethods("GET", "POST", "DELETE");
         });
 });
 
