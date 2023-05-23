@@ -47,9 +47,11 @@ app.UseSwaggerUI();
 
 app.UseCors(corsHeader);
 
-app.MapGet("/GetKnownPublications", () => taskManager.GetAllPublications());
+app.MapGet("/Tranga/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors());
 
-app.MapGet("/GetPublicationsFromConnector", (string connectorName, string title) =>
+app.MapGet("/Tranga/GetKnownPublications", () => taskManager.GetAllPublications());
+
+app.MapGet("/Tranga/GetPublicationsFromConnector", (string connectorName, string title) =>
 {
     Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
     if (connector is null)
