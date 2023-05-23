@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tranga</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <topbar>
+    <titlebox>
+      <img src="media/blahaj.png">
+      <span>Tranga</span>
+    </titlebox>
+    <spacer></spacer>
+    <searchdiv>
+      <input id="searchbox" placeholder="Filter" type="text">
+    </searchdiv>
+    <img id="settingscog" src="media/settings-cogwheel.svg" height="100%" alt="settingscog">
+  </topbar>
+  <viewport>
+    <sidebar>
+      <background-placeholder></background-placeholder>
+      
+      <spacer></spacer>
+      <p style="text-align: center">Made with Blåhaj 🦈</p>
+    </sidebar>
+    <content>
+      <div id="addPublication">
+        <p>+</p>
+      </div>
+      <publication>
+        <img src="media/cover.jpg">
+        <publication-information>
+          <connector-name class="pill">MangaDex</connector-name>
+          <publication-name>Tensei Pandemic</publication-name>
+        </publication-information>
+      </publication>
+    </content>    
+    
+    <popup id="addTaskPopup">
+      <blur-background id="blurBackgroundTaskPopup"></blur-background>
+      <addtask-window>
+        <window-titlebar>
+          <p>Add Task</p>
+          <img id="closePopupImg" src="media/close-x.svg" alt="Close">
+        </window-titlebar>
+        <window-content>
+          <addtask-settings>
+            <addtask-setting><label for="selectReccurrence">Recurrence</label><input id="selectReccurrence" type="time" value="01:00" step="3600"></addtask-setting>
+            <addtask-setting><label for="connectors">Connector</label>
+              <select id="connectors">
+                <option value=""></option>
+              </select>
+            </addtask-setting>
+            <addtask-setting><label for="searchPublicationQuery">Search Title</label><input id="searchPublicationQuery" type="text"></addtask-setting>
+          </addtask-settings>
+          <div id="taskSelectOutput"></div>
+        </window-content>
+      </addtask-window>
+    </popup>
+    <popup id="publicationViewerPopup">
+      <blur-background id="blurBackgroundPublicationPopup"></blur-background>
+      <publication-viewer>
+        <img id="pubviewcover" src="media/cover.jpg" alt="cover">
+        <publication-information>
+          <publication-name id="publicationViewerName">Tensei Pandemic</publication-name>
+          <publication-author id="publicationViewerAuthor">Imamura Hinata</publication-author>
+          <publication-description id="publicationViewerDescription">Imamura Hinata is a high school boy with a cute appearance.
+            Since his trauma with the first love, he wanted to be more manly than anybody else. But one day he woke up to something different…
+            The total opposite of his ideal male body!
+            Pandemic love comedy!
+          </publication-description>
+          <publication-delete>Delete Task ❌</publication-delete>
+          <publication-add>Add Task ➕</publication-add>
+        </publication-information>
+      </publication-viewer>
+    </popup>
+    
+  </viewport>
+  
+  <settingstab id="settingstab">
+
+  </settingstab>
+  
+  <script src="apiConnector.js"></script>
+  <script src="interaction.js"></script>
+</body>
+</html>

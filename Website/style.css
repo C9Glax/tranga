@@ -1,0 +1,391 @@
+﻿:root{
+    --background-color: #eee;
+    --second-background-color: #fff;
+    --primary-color: #f5a9b8;
+    --secondary-color: #5bcefa;
+    --accent-color: #fff;
+    --topbar-height: 60px;
+    box-sizing: border-box;
+}
+
+body{
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-flow: column;
+    flex-wrap: nowrap;
+    height: 100vh;
+    background-color: var(--background-color);
+    font-family: "Inter", sans-serif;
+    overflow-x: hidden;
+}
+
+background-placeholder{
+    background-color: var(--second-background-color);
+    opacity: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 0 0 5px 0;
+    z-index: -1;
+}
+
+topbar {
+    display: flex;
+    align-items: center;
+    height: var(--topbar-height);
+    background-color: var(--secondary-color);
+}
+
+titlebox {
+    position: relative;
+    display: flex;
+    margin: 0 0 0 40px;
+    height: 100%;
+    align-items:center;
+    justify-content:center;
+}
+
+titlebox span{
+    font-size: 24pt;
+    font-weight: bold;
+    background: linear-gradient(150deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-left: 20px;
+}
+
+titlebox img {
+    height: 100%;
+    margin-right: 10px;
+}
+
+spacer{
+    flex-grow: 1;
+}
+
+searchdiv{
+    display: block;
+    margin: 0 10px 0 0;
+}
+
+#searchbox {
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 3px;
+    font-size: 14pt;
+    width: 250px;
+}
+
+#settingscog {
+    cursor: pointer;
+    margin: 0px 30px;
+    height: calc(100% - 40px);
+    filter: invert(100%) sepia(0%) saturate(7465%) hue-rotate(115deg) brightness(116%) contrast(101%);
+}
+
+viewport {
+    position: relative;
+    display: flex;
+    flex-flow: row;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+}
+
+sidebar{
+    position: relative;
+    width: 20rem;
+    margin-bottom: 20px;
+    border-radius: 0 0 5px 0;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+content {
+    position: relative;
+    flex-grow: 1;
+    margin: 0 10px 10px 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-content: start;
+}
+
+settingstab{
+    position: absolute;
+    right: -20rem;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    width: 20rem;
+    height: calc(100% - var(--topbar-height) - 40px);
+    margin-bottom: 10px;
+    border-radius: 5px 0 0 5px;
+}
+
+#addPublication {
+    cursor: pointer;
+    background-color: var(--secondary-color);
+    width: 180px;
+    height: 300px;
+    border-radius: 5px;
+    margin: 10px 10px;
+    padding: 15px 20px;
+    position: relative;
+}
+
+#addPublication p{
+    width: 100%;
+    text-align: center;
+    font-size: 150pt;
+    vertical-align: middle;
+    line-height: 300px;
+    margin: 0;
+    color: var(--accent-color);
+}
+
+.pill {
+    flex-grow: 0;
+    height: 14pt;
+    font-size: 12pt;
+    border-radius: 9pt;
+    background-color: var(--primary-color);
+    padding: 2pt 20px;
+}
+
+publication{
+    cursor: pointer;
+    background-color: var(--secondary-color);
+    width: 180px;
+    height: 300px;
+    border-radius: 5px;
+    margin: 10px 10px;
+    padding: 15px 20px;
+    position: relative;
+}
+
+publication::after{
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    border-radius: 5px;
+    width: 100%; height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.1));
+}
+
+publication-information {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+publication-information * {
+    z-index: 1;
+    color: var(--accent-color);
+}
+
+connector-name{
+    width: fit-content;
+    margin: 10px 0;
+}
+
+publication-name{
+    width: fit-content;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+publication img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+popup{
+    display: none;
+    width: 100%;
+    min-height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: 2;
+}
+
+blur-background {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    background-color: black;
+    opacity: 0.5;
+}
+
+addtask-window {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    position: absolute;
+    left: 12.5%;
+    top: 15%;
+    width: 75%;
+    min-height: 70%;
+    max-height: 80%;
+    padding: 0;
+    background-color: var(--accent-color);
+    z-index: 5;
+    border-radius: 5px;
+}
+
+window-titlebar {
+    width: 100%;
+    height: 60px;
+    background-color: var(--primary-color);
+    border-radius: 5px 5px 0 0;
+    color: var(--accent-color);
+    display: flex block;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+window-titlebar p {
+    margin: 0 30px;
+    font-size: 14pt;
+    font-weight: bolder;
+    letter-spacing: 1px;
+}
+
+window-titlebar #closePopupImg {
+    height: 70%;
+    cursor: pointer;
+    margin-right: 20px;
+    filter: invert(100%) sepia(0%) saturate(100%) hue-rotate(115deg) brightness(116%) contrast(101%);
+}
+
+window-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 5%;
+    overflow-x: scroll;
+}
+
+addtask-settings{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+addtask-settings select, addtask-settings input{
+    padding: 5px;
+    font-size: 10pt;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    background-color: transparent;
+    margin: 10px 0;
+    width: 150px;
+}
+
+addtask-settings label {
+    font-weight: bolder;
+    margin: 0 5px;
+}
+
+addtask-settings addtask-setting{
+    margin: 0 15px;
+}
+
+#taskSelectOutput{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-content: start;
+}
+
+#publicationViewerPopup{
+    z-index: 6;
+}
+
+publication-viewer{
+    display: block;
+    width: 500px;
+    height: 300px;
+    position: absolute;
+    top: 200px;
+    left: 400px;
+    background-color: var(--accent-color);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+publication-viewer{
+    padding: 30px;
+}
+
+publication-viewer::after{
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    border-radius: 5px;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(3px);
+}
+
+publication-viewer img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    min-height: 100%;
+    max-width: 100%;
+    border-radius: 5px;
+    z-index: 0;
+}
+
+publication-viewer publication-information publication-name{
+    margin: 5px 0;
+}
+
+publication-viewer publication-information publication-author {
+    margin: 5px 0;
+}
+
+publication-viewer publication-information publication-author::before {
+    content: "Author: ";
+}
+
+publication-viewer publication-information publication-description::before {
+    content: "Description";
+    display: block;
+    font-weight: bolder;
+}
+
+publication-viewer publication-information publication-description {
+    font-size: 12pt;
+    margin: 5px 0;
+    max-height: 200px;
+    overflow-x: scroll;
+}
+
+publication-viewer publication-information publication-delete {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    color: red;
+    margin: 20px;
+    font-size: 16pt;
+}
+
+publication-viewer publication-information publication-add {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    color: limegreen;
+    margin: 20px;
+    font-size: 16pt;
+}
