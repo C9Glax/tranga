@@ -46,7 +46,13 @@
         </window-titlebar>
         <window-content>
           <label for="taskTypes">TaskType</label><select id="taskTypes"></select>
-          <label for="connectors">Connector</label><select id="connectors"></select>
+          <label for="selectReccurrence">Recurrence</label><input id="selectReccurrence" type="time" value="01:00" step="3600">
+          <label for="connectors">Connector</label>
+          <select id="connectors">
+            <option value=""></option>
+          </select>
+          <label for="searchPublicationQuery">Search:</label><input id="searchPublicationQuery" type="text">
+          <div id="taskSelectOutput"></div>
         </window-content>
       </addtask-window>
     </addtask-popup>

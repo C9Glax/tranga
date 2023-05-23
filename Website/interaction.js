@@ -35,16 +35,60 @@ const connectorSelect = document.querySelector("#connectors");
 let availableConnectors;
 GetAvailableControllers()
     .then(json => availableConnectors = json)
-    .then(json => console.log(json));
-    /*.then(json => 
+    //.then(json => console.log(json))
+    .then(json => 
         json.forEach(connector => {
-        var option = document.createElement('option');
-        option.value = connector.name;
-        option.innerText = connector.name;
-        taskTypesSelect.appendChild(option);
-    }));*/
+            var option = document.createElement('option');
+            option.value = connector;
+            option.innerText = connector;
+            connectorSelect.appendChild(option);
+        })
+    );
 
+const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
+const selectPublication = document.querySelector("#taskSelectOutput");
+searchPublicationQuery.addEventListener("keypress", (event) => {
+   if(event.key === "Enter"){
+       GetPublication(connectorSelect.value, searchPublicationQuery.value)
+           //.then(json => console.log(json));
+           .then(json => 
+               json.forEach(publication => {
+                   var option = CreatePublication(publication);
+                   option.addEventListener("click", () => {
+                       CreateNewMangaDownloadTask(
+                           taskTypesSelect.select,
+                           connectorSelect.value,
+                           publication.internalId
+                           );
+                   });
+                   selectPublication.appendChild(option);
+               }
+           ));
+   } 
+});
 
+function CreatePublication(publcationData){
+    var option = document.createElement('publication');
+    var img = document.createElement('img');
+    img.src = publication.posterUrl;
+    option.appendChild(img);
+    var info = document.createElement('publication-information');
+    var connectorName = document.createElement('connector-name');
+    connectorName.innerText = connectorSelect.value;
+    connectorName.className = "pill";
+    info.appendChild(connectorName);
+    var publicationName = document.createElement('publication-name');
+    publicationName.innerText = publication.sortName;
+    info.appendChild(publicationName);
+    option.appendChild(info);
+    return option;
+}
+
+const selectRecurrence = document.querySelector("#selectReccurrence");
+function CreateNewMangaDownloadTask(taskType, connectorName, publicationId){
+    CreateTask(taskType, selectRecurrence.value, connectorName, publicationId, "en");
+    selectPublication.innerHTML = "";
+}
 
 const settingsTab = document.querySelector("#settingstab");
 const settingsCog = document.querySelector("#settingscog");

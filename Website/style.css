@@ -270,4 +270,14 @@ window-content {
     width: 100%;
     top: 60px;
     left: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#taskSelectOutput{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-content: start;
 }
