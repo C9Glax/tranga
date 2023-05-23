@@ -226,7 +226,7 @@ blur-background {
 }
 
 addtask-window {
-    display: none;
+    display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     position: absolute;
@@ -307,8 +307,12 @@ addtask-settings addtask-setting{
     align-content: start;
 }
 
+#publicationViewerPopup{
+    z-index: 6;
+}
+
 publication-viewer{
-    display: none;
+    display: block;
     width: 500px;
     height: 300px;
     position: absolute;
@@ -373,6 +377,15 @@ publication-viewer publication-information publication-delete {
     bottom: 0px;
     right: 0px;
     color: red;
+    margin: 20px;
+    font-size: 16pt;
+}
+
+publication-viewer publication-information publication-add {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    color: limegreen;
     margin: 20px;
     font-size: 16pt;
 }

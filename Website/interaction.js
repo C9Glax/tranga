@@ -30,9 +30,9 @@ const settingsTab = document.querySelector("#settingstab");
 const settingsCog = document.querySelector("#settingscog");
 const selectRecurrence = document.querySelector("#selectReccurrence");
 const tasksContent = document.querySelector("content");
-const generalPopup = document.querySelector("popup");
-const addTaskWindow = document.querySelector("addtask-window");
-const publicationViewer = document.querySelector("publication-viewer");
+const addTaskPopup = document.querySelector("#addTaskPopup");
+const publicationViewerPopup = document.querySelector("#publicationViewerPopup");
+const publicationViewerWindow = document.querySelector("publication-viewer");
 const publicationViewerDescription = document.querySelector("#publicationViewerDescription");
 const publicationViewerName = document.querySelector("#publicationViewerName");
 const publicationViewerAuthor = document.querySelector("#publicationViewerAuthor");
@@ -42,10 +42,11 @@ const publicationAdd = document.querySelector("publication-add");
 const closetaskpopup = document.querySelector("#closePopupImg");
 
 settingsCog.addEventListener("click", () => slide());
-closetaskpopup.addEventListener("click", () => HidePopup());
-document.querySelector("blur-background").addEventListener("click", () => HidePopup());
+closetaskpopup.addEventListener("click", () => HideAddTaskPopup());
+document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () => HideAddTaskPopup());
+document.querySelector("#blurBackgroundPublicationPopup").addEventListener("click", () => HidePublicationPopup());
 publicationDelete.addEventListener("click", () => DeleteTaskClick());
-publicationAdd.addEventListener("click", () => CreateTask("DownloadNewChapters", selectRecurrence.value, connectorSelect.value, toEditId, "en"));
+publicationAdd.addEventListener("click", () => AddTaskClick());
 
 /*
 let availableTaskTypes;
@@ -74,18 +75,27 @@ GetAvailableControllers()
 
 searchPublicationQuery.addEventListener("keypress", (event) => {
    if(event.key === "Enter"){
+       selectRecurrence.disabled = true;
+       connectorSelect.disabled = true;
+       searchPublicationQuery.disabled = true;
+       
        selectPublication.replaceChildren();
        GetPublication(connectorSelect.value, searchPublicationQuery.value)
            //.then(json => console.log(json));
            .then(json => 
                json.forEach(publication => {
                    var option = CreatePublication(publication, connectorSelect.value);
-                   option.addEventListener("click", () => {
-                       ShowPublicationViewerWindow(publication.internalId, event, true);
+                   option.addEventListener("click", (mouseEvent) => {
+                       ShowPublicationViewerWindow(publication.internalId, mouseEvent, true);
                    });
                    selectPublication.appendChild(option);
                }
-           ));
+           ))
+           .then(() => {
+               selectRecurrence.disabled = false;
+               connectorSelect.disabled = false;
+               searchPublicationQuery.disabled = false;
+           });
    } 
 });
 
@@ -112,7 +122,12 @@ function CreatePublication(publication, connector){
 function DeleteTaskClick(){
     taskToDelete = tasks.filter(tTask => tTask.publication.internalId === toEditId)[0];
     DeleteTask("DownloadNewChapters", taskToDelete.connectorName, toEditId);
-    HidePopup();
+    HideAddTaskPopup();
+}
+
+function AddTaskClick(){
+    CreateTask("DownloadNewChapters", selectRecurrence.value, connectorSelect.value, toEditId, "en")
+    HideAddTaskPopup();
 }
 
 var slideIn = true;
@@ -134,15 +149,9 @@ function ResetContent(){
     add.addEventListener("click", () => ShowNewTaskWindow());
     tasksContent.appendChild(add);
 }
-
-function ShowPopup(){
-    generalPopup.style.display = "block";
-    generalPopup.animate(fadeIn, fadeInTiming);
-}
-
 function ShowPublicationViewerWindow(publicationId, event, add){
-    publicationViewer.style.top = `${event.clientY - 60}px`;
-    publicationViewer.style.left = `${event.clientX}px`;
+    publicationViewerWindow.style.top = `${event.clientY - 60}px`;
+    publicationViewerWindow.style.left = `${event.clientX}px`;
     var publication = publications.filter(pub => pub.internalId === publicationId)[0];
     
     publicationViewerName.innerText = publication.sortName;
@@ -152,28 +161,28 @@ function ShowPublicationViewerWindow(publicationId, event, add){
     toEditId = publicationId;
     
     if(add){
-        publicationAdd.style.display = "none";
-        publicationDelete.style.display = "block";
-    }
-    else{
         publicationAdd.style.display = "block";
         publicationDelete.style.display = "none";
     }
+    else{
+        publicationAdd.style.display = "none";
+        publicationDelete.style.display = "block";
+    }
     
     toEditId = publicationId;
-    publicationViewer.style.display = "block";
-    ShowPopup();
+    publicationViewerPopup.style.display = "block";
 }
 
 function ShowNewTaskWindow(){
     selectPublication.replaceChildren();
-    addTaskWindow.style.display = "flex";
-    ShowPopup();
+    addTaskPopup.style.display = "block";
 }
-function HidePopup(){
-    generalPopup.style.display = "none";
-    addTaskWindow.style.display = "none";
-    publicationViewer.style.display = "none";
+function HideAddTaskPopup(){
+    addTaskPopup.style.display = "none";
+}
+
+function HidePublicationPopup(){
+    publicationViewerPopup.style.display = "none";
 }
 
 const fadeIn = [
