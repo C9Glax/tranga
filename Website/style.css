@@ -78,6 +78,7 @@ searchdiv{
 }
 
 #settingscog {
+    cursor: pointer;
     margin: 0px 30px;
     height: calc(100% - 40px);
     filter: invert(100%) sepia(0%) saturate(7465%) hue-rotate(115deg) brightness(116%) contrast(101%);
@@ -125,6 +126,7 @@ settingstab{
 }
 
 #addPublication {
+    cursor: pointer;
     background-color: var(--secondary-color);
     width: 180px;
     height: 300px;
@@ -154,6 +156,7 @@ settingstab{
 }
 
 publication{
+    cursor: pointer;
     background-color: var(--secondary-color);
     width: 180px;
     height: 300px;
