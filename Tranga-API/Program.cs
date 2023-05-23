@@ -28,17 +28,31 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddNewtonsoftJson();
+
+string corsHeader = "Tranga";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsHeader,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost", "http://127.0.0.1", "http://localhost:63342");
+            policy.WithMethods("GET", "POST", "DELETE");
+        });
+});
+
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapGet("/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors());
+app.UseCors(corsHeader);
 
-app.MapGet("/GetKnownPublications", () => taskManager.GetAllPublications());
+app.MapGet("/Tranga/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors().Keys.ToArray());
 
-app.MapGet("/GetPublicationsFromConnector", (string connectorName, string title) =>
+app.MapGet("/Tranga/GetKnownPublications", () => taskManager.GetAllPublications());
+
+app.MapGet("/Tranga/GetPublicationsFromConnector", (string connectorName, string title) =>
 {
     Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
     if (connector is null)
