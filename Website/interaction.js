@@ -18,6 +18,9 @@ const slideOutRightTiming = {
     easing: "ease-in"
 }
 
+let publications = [];
+let tasks = [];
+
 const taskTypesSelect = document.querySelector("#taskTypes")
 const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
 const selectPublication = document.querySelector("#taskSelectOutput");
@@ -26,12 +29,19 @@ const settingsTab = document.querySelector("#settingstab");
 const settingsCog = document.querySelector("#settingscog");
 const selectRecurrence = document.querySelector("#selectReccurrence");
 const tasksContent = document.querySelector("content");
-const addtaskpopup = document.querySelector("addtask-popup");
+const generalPopup = document.querySelector("popup");
+const addTaskWindow = document.querySelector("addtask-window");
+const publicationViewer = document.querySelector("publication-viewer");
+const publicationViewerDescription = document.querySelector("#publicationViewerDescription");
+const publicationViewerName = document.querySelector("#publicationViewerName");
+const publicationViewerAuthor = document.querySelector("#publicationViewerAuthor");
+const pubviewcover = document.querySelector("#pubviewcover");
+const publicationDelete = document.querySelector("publication-delete");
 const closetaskpopup = document.querySelector("#closePopupImg");
 
 settingsCog.addEventListener("click", () => slide());
-closetaskpopup.addEventListener("click", () => HideNewTaskWindow())
-document.querySelector("addtask-background").addEventListener("click", () => HideNewTaskWindow());
+closetaskpopup.addEventListener("click", () => HidePopup())
+document.querySelector("blur-background").addEventListener("click", () => HidePopup());
 
 let availableTaskTypes;
 GetTaskTypes()
@@ -66,11 +76,8 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
                json.forEach(publication => {
                    var option = CreatePublication(publication, connectorSelect.value);
                    option.addEventListener("click", () => {
-                       CreateNewMangaDownloadTask(
-                           taskTypesSelect.value,
-                           connectorSelect.value,
-                           publication.internalId
-                           );
+                       CreateTask(taskTypesSelect.value, selectRecurrence.value, connectorSelect.value, publication.internalId, "en");
+                       selectPublication.replaceChildren();
                    });
                    selectPublication.appendChild(option);
                }
@@ -79,11 +86,11 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
 });
 
 function CreatePublication(publication, connector){
-    var option = document.createElement('publication');
-    option.setAttribute("id", publication.internalId);
+    var publicationElement = document.createElement('publication');
+    publicationElement.setAttribute("id", publication.internalId);
     var img = document.createElement('img');
     img.src = publication.posterUrl;
-    option.appendChild(img);
+    publicationElement.appendChild(img);
     var info = document.createElement('publication-information');
     var connectorName = document.createElement('connector-name');
     connectorName.innerText = connector;
@@ -92,18 +99,19 @@ function CreatePublication(publication, connector){
     var publicationName = document.createElement('publication-name');
     publicationName.innerText = publication.sortName;
     info.appendChild(publicationName);
-    option.appendChild(info);
-    return option;
+    publicationElement.appendChild(info);
+    if(publications.filter(pub => pub.internalId === publication.internalId) < 1)
+        publications.push(publication);
+    return publicationElement;
 }
 
-function CreateNewMangaDownloadTask(taskType, connectorName, publicationId){
-    CreateTask(taskType, selectRecurrence.value, connectorName, publicationId, "en");
-    selectPublication.innerHTML = "";
+function DeleteTask(taskType, connectorName, publicationId){
+    
 }
 
 var slideIn = true;
-function slide(){
-    if(slideIn)
+function slide() {
+    if (slideIn)
         settingsTab.animate(slideInRight, slideInRightTiming);
     else
         settingsTab.animate(slideInRight, slideOutRightTiming);
@@ -121,13 +129,36 @@ function ResetContent(){
     tasksContent.appendChild(add);
 }
 
+function ShowPopup(){
+    generalPopup.style.display = "block";
+    generalPopup.animate(fadeIn, fadeInTiming);
+}
+
+let toRemoveId;
+function ShowPublicationViewerWindow(publicationId, event){
+    publicationViewer.style.top = `${event.clientY - 60}px`;
+    publicationViewer.style.left = `${event.clientX}px`;
+    var publication = publications.filter(pub => pub.internalId === publicationId)[0];
+    
+    publicationViewerName.innerText = publication.sortName;
+    publicationViewerDescription.innerText = publication.description;
+    publicationViewerAuthor.innerText = publication.author;
+    pubviewcover.src = publication.posterUrl;
+    
+    toRemoveId = publicationId;
+    publicationViewer.style.display = "block";
+    ShowPopup();
+}
+
 function ShowNewTaskWindow(){
     selectPublication.replaceChildren();
-    addtaskpopup.style.display = "block";
-    addtaskpopup.animate(fadeIn, fadeInTiming);
+    addTaskWindow.style.display = "flex";
+    ShowPopup();
 }
-function HideNewTaskWindow(){
-    addtaskpopup.style.display = "none";
+function HidePopup(){
+    generalPopup.style.display = "none";
+    addTaskWindow.style.display = "none";
+    publicationViewer.style.display = "none";
 }
 
 const fadeIn = [
@@ -136,7 +167,7 @@ const fadeIn = [
 ];
 
 const fadeInTiming = {
-    duration: 150,
+    duration: 50,
     iterations: 1,
     fill: "forwards"
 }
@@ -146,7 +177,11 @@ GetTasks()
     //.then(json => console.log(json))
     .then(json => json.forEach(task => {
         var publication = CreatePublication(task.publication, task.connectorName);
+        publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
         tasksContent.appendChild(publication);
+        
+        if(tasks.filter(task => task.publication.internalId === publication.internalId) < 1)
+            tasks.push(task);
     }));
 
 setInterval(() => {
@@ -155,6 +190,10 @@ setInterval(() => {
         //.then(json => console.log(json))
         .then(json => json.forEach(task => {
             var publication = CreatePublication(task.publication, task.connectorName);
+            publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
             tasksContent.appendChild(publication);
+
+            if(tasks.filter(task => task.publication.internalId === publication.internalId) < 1)
+                tasks.push(task);
         }));
 }, 5000);
