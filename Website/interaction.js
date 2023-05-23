@@ -18,8 +18,19 @@ const slideOutRightTiming = {
     easing: "ease-in"
 }
 
-
 const taskTypesSelect = document.querySelector("#taskTypes")
+const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
+const selectPublication = document.querySelector("#taskSelectOutput");
+const connectorSelect = document.querySelector("#connectors");
+const settingsTab = document.querySelector("#settingstab");
+const settingsCog = document.querySelector("#settingscog");
+const selectRecurrence = document.querySelector("#selectReccurrence");
+const tasksContent = document.querySelector("content");
+const addtaskpopup = document.querySelector("addtask-popup");
+const closetaskpopup = document.querySelector("#closePopupImg");
+
+settingsCog.addEventListener("click", () => slide());
+
 let availableTaskTypes;
 GetTaskTypes()
     .then(json => availableTaskTypes = json)
@@ -31,7 +42,6 @@ GetTaskTypes()
             taskTypesSelect.appendChild(option);
         }));
 
-const connectorSelect = document.querySelector("#connectors");
 let availableConnectors;
 GetAvailableControllers()
     .then(json => availableConnectors = json)
@@ -45,18 +55,16 @@ GetAvailableControllers()
         })
     );
 
-const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
-const selectPublication = document.querySelector("#taskSelectOutput");
 searchPublicationQuery.addEventListener("keypress", (event) => {
    if(event.key === "Enter"){
        GetPublication(connectorSelect.value, searchPublicationQuery.value)
            //.then(json => console.log(json));
            .then(json => 
                json.forEach(publication => {
-                   var option = CreatePublication(publication);
+                   var option = CreatePublication(publication, connectorSelect.value);
                    option.addEventListener("click", () => {
                        CreateNewMangaDownloadTask(
-                           "DownloadNewChapters",
+                           taskTypesSelect.value,
                            connectorSelect.value,
                            publication.internalId
                            );
@@ -67,14 +75,15 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
    } 
 });
 
-function CreatePublication(publication){
+function CreatePublication(publication, connector){
     var option = document.createElement('publication');
+    option.setAttribute("id", publication.internalId);
     var img = document.createElement('img');
     img.src = publication.posterUrl;
     option.appendChild(img);
     var info = document.createElement('publication-information');
     var connectorName = document.createElement('connector-name');
-    connectorName.innerText = connectorSelect.value;
+    connectorName.innerText = connector;
     connectorName.className = "pill";
     info.appendChild(connectorName);
     var publicationName = document.createElement('publication-name');
@@ -84,14 +93,11 @@ function CreatePublication(publication){
     return option;
 }
 
-const selectRecurrence = document.querySelector("#selectReccurrence");
 function CreateNewMangaDownloadTask(taskType, connectorName, publicationId){
     CreateTask(taskType, selectRecurrence.value, connectorName, publicationId, "en");
     selectPublication.innerHTML = "";
 }
 
-const settingsTab = document.querySelector("#settingstab");
-const settingsCog = document.querySelector("#settingscog");
 var slideIn = true;
 function slide(){
     if(slideIn)
@@ -101,12 +107,53 @@ function slide(){
     slideIn = !slideIn;
 }
 
-settingsCog.addEventListener("click", () => slide());
 
-const addTask = document.querySelector("addPublication");
+
+function ResetContent(){
+    tasksContent.replaceChildren();
+    var add = document.createElement("div");
+    add.setAttribute("id", "addPublication")
+    var plus = document.createElement("p");
+    plus.innerText = "+";
+    add.appendChild(plus);
+    add.addEventListener("click", () => ShowNewTaskWindow());
+    tasksContent.appendChild(add);
+}
+
+closetaskpopup.addEventListener("click", () => HideNewTaskWindow())
+function ShowNewTaskWindow(){
+    addtaskpopup.style.display = "block";
+    addtaskpopup.animate(fadeIn, fadeInTiming);
+}
+function HideNewTaskWindow(){
+    addtaskpopup.style.display = "none";
+}
+
+const fadeIn = [
+    { opacity: "0" },
+    { opacity: "1" }
+];
+
+const fadeInTiming = {
+    duration: 150,
+    iterations: 1,
+    fill: "forwards"
+}
+
+ResetContent();
+GetTasks()
+    //.then(json => console.log(json))
+    .then(json => json.forEach(task => {
+        var publication = CreatePublication(task.publication, task.connectorName);
+        tasksContent.appendChild(publication);
+    }));
 
 setInterval(() => {
-    GetTasks().then(json => {
-        //TODO
-    });
-}, 1000);
+    ResetContent();
+    GetTasks()
+        //.then(json => console.log(json))
+        .then(json => json.forEach(task => {
+            var publication = CreatePublication(task.publication, task.connectorName);
+            tasksContent.appendChild(publication);
+        }));
+}, 5000);
