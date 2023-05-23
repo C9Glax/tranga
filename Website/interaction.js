@@ -56,7 +56,7 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
                    var option = CreatePublication(publication);
                    option.addEventListener("click", () => {
                        CreateNewMangaDownloadTask(
-                           taskTypesSelect.select,
+                           "DownloadNewChapters",
                            connectorSelect.value,
                            publication.internalId
                            );
@@ -67,7 +67,7 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
    } 
 });
 
-function CreatePublication(publcationData){
+function CreatePublication(publication){
     var option = document.createElement('publication');
     var img = document.createElement('img');
     img.src = publication.posterUrl;
