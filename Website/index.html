@@ -36,10 +36,26 @@
         </publication-information>
       </publication>
     </content>
+
+    <addtask-popup>
+      <addtask-background></addtask-background>
+      <addtask-window>
+        <window-titlebar>
+          <p>Add Task</p>
+          <img src="media/close-x.svg" alt="Close">
+        </window-titlebar>
+        <window-content>
+          <label for="taskTypes">TaskType</label><select id="taskTypes"></select>
+          <label for="connectors">Connector</label><select id="connectors"></select>
+        </window-content>
+      </addtask-window>
+    </addtask-popup>
   </viewport>
+  
   <settingstab id="settingstab">
 
   </settingstab>
+  
   <script src="apiConnector.js"></script>
   <script src="interaction.js"></script>
 </body>
