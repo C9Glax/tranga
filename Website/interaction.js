@@ -30,6 +30,8 @@ const addtaskpopup = document.querySelector("addtask-popup");
 const closetaskpopup = document.querySelector("#closePopupImg");
 
 settingsCog.addEventListener("click", () => slide());
+closetaskpopup.addEventListener("click", () => HideNewTaskWindow())
+document.querySelector("addtask-background").addEventListener("click", () => HideNewTaskWindow());
 
 let availableTaskTypes;
 GetTaskTypes()
@@ -107,8 +109,6 @@ function slide(){
     slideIn = !slideIn;
 }
 
-
-
 function ResetContent(){
     tasksContent.replaceChildren();
     var add = document.createElement("div");
@@ -120,7 +120,6 @@ function ResetContent(){
     tasksContent.appendChild(add);
 }
 
-closetaskpopup.addEventListener("click", () => HideNewTaskWindow())
 function ShowNewTaskWindow(){
     addtaskpopup.style.display = "block";
     addtaskpopup.animate(fadeIn, fadeInTiming);
