@@ -80,6 +80,7 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
                    var option = CreatePublication(publication, connectorSelect.value);
                    option.addEventListener("click", () => {
                        CreateTask("DownloadNewChapters", selectRecurrence.value, connectorSelect.value, publication.internalId, "en");
+                       HidePopup();
                        selectPublication.replaceChildren();
                    });
                    selectPublication.appendChild(option);
@@ -111,17 +112,6 @@ function CreatePublication(publication, connector){
 function DeleteTaskClick(){
     taskToDelete = tasks.filter(tTask => tTask.publication.internalId === toRemoveId)[0];
     DeleteTask("DownloadNewChapters", taskToDelete.connectorName, toRemoveId);
-    ResetContent();
-    GetTasks()
-        //.then(json => console.log(json))
-        .then(json => json.forEach(task => {
-            var publication = CreatePublication(task.publication, task.connectorName);
-            publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
-            tasksContent.appendChild(publication);
-
-            if(tasks.filter(tTask => tTask.publication.internalId === task.publication.internalId) < 1)
-                tasks.push(task);
-        }));
     HidePopup();
 }
 
@@ -212,4 +202,4 @@ setInterval(() => {
             if(tasks.filter(tTask => tTask.publication.internalId === task.publication.internalId) < 1)
                 tasks.push(task);
         }));
-}, 5000);
+}, 1000);
