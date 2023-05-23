@@ -196,9 +196,11 @@ setInterval(() => {
         .then(() => {
             if(tasks.length != cTasks.length) {
                 ResetContent();
-                var publication = CreatePublication(task.publication, task.connectorName);
-                publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
-                tasksContent.appendChild(publication);
+                cTasks.forEach(task => {
+                    var publication = CreatePublication(task.publication, task.connectorName);
+                    publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
+                    tasksContent.appendChild(publication);
+                })
 
                 tasks = cTasks;
             }
