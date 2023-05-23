@@ -47,7 +47,7 @@ app.UseSwaggerUI();
 
 app.UseCors(corsHeader);
 
-app.MapGet("/Tranga/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors());
+app.MapGet("/Tranga/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors().Keys.ToArray());
 
 app.MapGet("/Tranga/GetKnownPublications", () => taskManager.GetAllPublications());
 
