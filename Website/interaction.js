@@ -185,21 +185,25 @@ GetTasks()
         var publication = CreatePublication(task.publication, task.connectorName);
         publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
         tasksContent.appendChild(publication);
-
-        if(tasks.filter(tTask => tTask.publication.internalId === task.publication.internalId) < 1)
-            tasks.push(task);
+        tasks.push(task);
     }));
 
 setInterval(() => {
-    ResetContent();
+    var cTasks = [];
     GetTasks()
         //.then(json => console.log(json))
-        .then(json => json.forEach(task => {
-            var publication = CreatePublication(task.publication, task.connectorName);
-            publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
-            tasksContent.appendChild(publication);
+        .then(json => json.forEach(task => cTasks.push(task)))
+        .then(() => {
+            if(tasks.length != cTasks.length) {
+                ResetContent();
+                var publication = CreatePublication(task.publication, task.connectorName);
+                publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
+                tasksContent.appendChild(publication);
 
-            if(tasks.filter(tTask => tTask.publication.internalId === task.publication.internalId) < 1)
-                tasks.push(task);
-        }));
+                tasks = cTasks;
+            }
+        }
+    );
+    
+    
 }, 1000);
