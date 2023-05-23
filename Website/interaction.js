@@ -122,12 +122,13 @@ function CreatePublication(publication, connector){
 function DeleteTaskClick(){
     taskToDelete = tasks.filter(tTask => tTask.publication.internalId === toEditId)[0];
     DeleteTask("DownloadNewChapters", taskToDelete.connectorName, toEditId);
-    HideAddTaskPopup();
+    HidePublicationPopup();
 }
 
 function AddTaskClick(){
     CreateTask("DownloadNewChapters", selectRecurrence.value, connectorSelect.value, toEditId, "en")
     HideAddTaskPopup();
+    HidePublicationPopup();
 }
 
 var slideIn = true;
@@ -201,7 +202,7 @@ GetTasks()
     //.then(json => console.log(json))
     .then(json => json.forEach(task => {
         var publication = CreatePublication(task.publication, task.connectorName);
-        publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event));
+        publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event, false));
         tasksContent.appendChild(publication);
         tasks.push(task);
     }));
@@ -216,7 +217,7 @@ setInterval(() => {
                 ResetContent();
                 cTasks.forEach(task => {
                     var publication = CreatePublication(task.publication, task.connectorName);
-                    publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event, true));
+                    publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event, false));
                     tasksContent.appendChild(publication);
                 })
 
