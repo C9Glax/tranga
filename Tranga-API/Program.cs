@@ -28,13 +28,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddNewtonsoftJson();
+
+string corsHeader = "Tranga";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsHeader,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost", "http://127.0.0.1", "http://localhost:63342");
+        });
+});
+
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapGet("/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors());
+app.UseCors(corsHeader);
 
 app.MapGet("/GetKnownPublications", () => taskManager.GetAllPublications());
 
