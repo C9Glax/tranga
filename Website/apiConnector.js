@@ -42,7 +42,7 @@ async function GetKnownPublications(){
 }
 
 async function GetTaskTypes(){
-    var uri = apiUri + "/Tranga/Tasks/GetTaskTypes";
+    var uri = apiUri + "/Tasks/GetTaskTypes";
     let json = await GetData(uri);
     return json;
 }
