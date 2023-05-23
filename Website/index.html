@@ -45,13 +45,16 @@
           <img id="closePopupImg" src="media/close-x.svg" alt="Close">
         </window-titlebar>
         <window-content>
-          <label for="taskTypes">TaskType</label><select id="taskTypes"></select>
-          <label for="selectReccurrence">Recurrence</label><input id="selectReccurrence" type="time" value="01:00" step="3600">
-          <label for="connectors">Connector</label>
-          <select id="connectors">
-            <option value=""></option>
-          </select>
-          <label for="searchPublicationQuery">Search:</label><input id="searchPublicationQuery" type="text">
+          <addtask-settings>
+            <addtask-setting><label for="taskTypes">TaskType</label><select id="taskTypes"></select></addtask-setting>
+            <addtask-setting><label for="selectReccurrence">Recurrence</label><input id="selectReccurrence" type="time" value="01:00" step="3600"></addtask-setting>
+            <addtask-setting><label for="connectors">Connector</label>
+              <select id="connectors">
+                <option value=""></option>
+              </select>
+            </addtask-setting>
+            <addtask-setting><label for="searchPublicationQuery">Search Title</label><input id="searchPublicationQuery" type="text"></addtask-setting>
+          </addtask-settings>
           <div id="taskSelectOutput"></div>
         </window-content>
       </addtask-window>

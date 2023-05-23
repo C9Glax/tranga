@@ -5,7 +5,7 @@
     --secondary-color: #5bcefa;
     --accent-color: #fff;
     --topbar-height: 60px;
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 
 body{
@@ -207,7 +207,7 @@ publication img {
 addtask-popup{
     display: none;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     top: 0;
     left: 0;
     position: absolute;
@@ -224,12 +224,15 @@ addtask-background {
 }
 
 addtask-window {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
     position: absolute;
-    left: 25%;
+    left: 12.5%;
     top: 15%;
-    width: 50%;
-    height: 70%;
+    width: 75%;
+    min-height: 70%;
+    max-height: 80%;
     padding: 0;
     background-color: var(--accent-color);
     z-index: 5;
@@ -240,9 +243,6 @@ window-titlebar {
     width: 100%;
     height: 60px;
     background-color: var(--primary-color);
-    position: absolute;
-    left: 0;
-    top: 0;
     border-radius: 5px 5px 0 0;
     color: var(--accent-color);
     display: flex block;
@@ -261,16 +261,40 @@ window-titlebar p {
 window-titlebar #closePopupImg {
     height: 70%;
     cursor: pointer;
+    margin-right: 20px;
     filter: invert(100%) sepia(0%) saturate(100%) hue-rotate(115deg) brightness(116%) contrast(101%);
 }
 
 window-content {
-    position: absolute;
-    width: 100%;
-    top: 60px;
-    left: 0;
     display: flex;
     flex-direction: column;
+    padding: 20px 5%;
+    overflow-x: scroll;
+}
+
+addtask-settings{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+addtask-settings select, addtask-settings input{
+    padding: 5px;
+    font-size: 10pt;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    background-color: transparent;
+    margin: 10px 0;
+    width: 150px;
+}
+
+addtask-settings label {
+    font-weight: bolder;
+    margin: 0 5px;
+}
+
+addtask-settings addtask-setting{
+    margin: 0 15px;
 }
 
 #taskSelectOutput{
