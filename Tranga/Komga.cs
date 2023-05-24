@@ -89,7 +89,13 @@ public class Komga
     {
         public static Stream MakeRequest(string url, string auth)
         {
-            HttpClient client = new();
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) =>
+            {
+                return true;
+            };
+            HttpClient client = new(clientHandler);
+            
             HttpRequestMessage requestMessage = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
