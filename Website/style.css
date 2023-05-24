@@ -123,6 +123,36 @@ settingstab{
     height: calc(100% - var(--topbar-height) - 40px);
     margin-bottom: 10px;
     border-radius: 5px 0 0 5px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+settingstab > * {
+    margin: 0 20px;
+}
+
+settingstab .title {
+    font-size: 14pt;
+    font-weight: bolder;
+    margin-top: 20px;
+}
+
+komga-settings {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+komga-settings > * {
+    margin: 2px 0;
+}
+
+komga-settings input {
+    padding: 3px;
+    border-radius: 3px;
+    border: 0;
 }
 
 #addPublication {

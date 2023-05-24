@@ -53,6 +53,7 @@
               </select>
             </addtask-setting>
             <addtask-setting><label for="searchPublicationQuery">Search Title</label><input id="searchPublicationQuery" type="text"></addtask-setting>
+            <input type="submit" value="Search" onclick="NewSearch();">
           </addtask-settings>
           <div id="taskSelectOutput"></div>
         </window-content>
@@ -79,7 +80,17 @@
   </viewport>
   
   <settingstab id="settingstab">
-
+    <span class="title">Download Location:</span>
+    <span id="downloadLocation"></span>
+    <komga-settings>
+      <span class="title">Komga</span>
+      <div>Configured: <span id="komgaConfigured">✅❌</span></div>
+      <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
+      <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
+      <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
+      <div><label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01"></div>
+      <input type="submit" value="Update" onclick="UpdateSettingsClick()">
+    </komga-settings>
   </settingstab>
   
   <script src="apiConnector.js"></script>
