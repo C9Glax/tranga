@@ -215,7 +215,6 @@ function GetSettingsClick(){
     settingKomgaPass.value = "";
     
     GetSettings().then(json => {
-        console.log(json);
         settingDownloadLocation.innerText = json.downloadLocation;
         if(json.komga != null)
             settingKomgaUrl.placeholder = json.komga.baseUrl;
