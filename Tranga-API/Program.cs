@@ -79,7 +79,16 @@ app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? 
     taskManager.DeleteTask(task, connectorName, publication);
 });
 
-app.MapGet("/Tasks/GetList", () => taskManager.GetAllTasks());
+app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? searchString) =>
+{
+    TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
+    if (searchString is null)
+        return taskManager.GetAllTasks().Where(tTask => tTask.task == task && tTask.connectorName == connectorName);
+    else
+        return taskManager.GetAllTasks().Where(tTask =>
+            tTask.task == task && tTask.connectorName == connectorName && tTask.ToString()
+                .Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
+});
 
 app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? publicationId) =>
 {
