@@ -67,31 +67,35 @@ GetAvailableControllers()
 
 searchPublicationQuery.addEventListener("keypress", (event) => {
    if(event.key === "Enter"){
-       //Disable inputs
-       selectRecurrence.disabled = true;
-       connectorSelect.disabled = true;
-       searchPublicationQuery.disabled = true;
-       
-       //Empty previous results
-       selectPublication.replaceChildren();
-       GetPublication(connectorSelect.value, searchPublicationQuery.value)
-           .then(json => 
-               json.forEach(publication => {
-                   var option = CreatePublication(publication, connectorSelect.value);
-                   option.addEventListener("click", (mouseEvent) => {
-                       ShowPublicationViewerWindow(publication.internalId, mouseEvent, true);
-                   });
-                   selectPublication.appendChild(option);
-               }
-           ))
-           .then(() => {
-               //Re-enable inputs
-               selectRecurrence.disabled = false;
-               connectorSelect.disabled = false;
-               searchPublicationQuery.disabled = false;
-           });
+       NewSearch();
    } 
 });
+
+function NewSearch(){
+    //Disable inputs
+    selectRecurrence.disabled = true;
+    connectorSelect.disabled = true;
+    searchPublicationQuery.disabled = true;
+
+    //Empty previous results
+    selectPublication.replaceChildren();
+    GetPublication(connectorSelect.value, searchPublicationQuery.value)
+        .then(json =>
+            json.forEach(publication => {
+                    var option = CreatePublication(publication, connectorSelect.value);
+                    option.addEventListener("click", (mouseEvent) => {
+                        ShowPublicationViewerWindow(publication.internalId, mouseEvent, true);
+                    });
+                    selectPublication.appendChild(option);
+                }
+            ))
+        .then(() => {
+            //Re-enable inputs
+            selectRecurrence.disabled = false;
+            connectorSelect.disabled = false;
+            searchPublicationQuery.disabled = false;
+        });
+}
 
 //Returns a new "Publication" Item to display in the tasks section
 function CreatePublication(publication, connector){
