@@ -80,13 +80,16 @@
   </viewport>
   
   <settingstab id="settingstab">
-    <p>Download Location: <span id="downloadLocation"></span></p>
+    <span class="title">Download Location:</span>
+    <span id="downloadLocation"></span>
     <komga-settings>
+      <span class="title">Komga</span>
+      <div>Configured: <span id="komgaConfigured">✅❌</span></div>
       <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
       <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
       <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
-      <label for="komgaUpdateTime">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01">
-      <input type="submit" value="Update" onclick="UpdateSettingsClick()">;
+      <div><label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01"></div>
+      <input type="submit" value="Update" onclick="UpdateSettingsClick()">
     </komga-settings>
   </settingstab>
   

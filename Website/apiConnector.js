@@ -52,14 +52,20 @@ async function GetRunningTasks(){
     return json;
 }
 
-async function GetTasks(){
-    var uri = apiUri + "/Tasks/GetList";
+async function GetDownloadTasks(){
+    var uri = apiUri + "/Tasks/Get?taskType=DownloadNewChapters";
     let json = await GetData(uri);
     return json;
 }
 
 async function GetSettings(){
     var uri = apiUri + "/Settings/Get";
+    let json = await GetData(uri);
+    return json;
+}
+
+async function GetKomgaTask(){
+    var uri = apiUri + "/Tasks/Get?taskType=UpdateKomgaLibrary";
     let json = await GetData(uri);
     return json;
 }
@@ -80,7 +86,7 @@ function EnqueueTask(taskType, connectorName, publicationId){
 }
 
 function UpdateSettings(downloadLocation, komgaUrl, komgaAuth){
-    var uri = apiUri + `/Settings/Update?downloadLocation=${downloadLocation}&komgaUrl=${komgaAuth}&komgaAuth=${komgaAuth}`;
+    var uri = apiUri + `/Settings/Update?downloadLocation=${downloadLocation}&komgaUrl=${komgaUrl}&komgaAuth=${komgaAuth}`;
     PostData(uri);
 }
 

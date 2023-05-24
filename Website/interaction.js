@@ -40,13 +40,14 @@ const publicationDelete = document.querySelector("publication-delete");
 const publicationAdd = document.querySelector("publication-add");
 const closetaskpopup = document.querySelector("#closePopupImg");
 const settingDownloadLocation = document.querySelector("#downloadLocation");
-const settingKomgaUrl = document.querySelector("#komgaURL");
+const settingKomgaUrl = document.querySelector("#komgaUrl");
 const settingKomgaUser = document.querySelector("#komgaUsername");
 const settingKomgaPass = document.querySelector("#komgaPassword");
 const settingKomgaTime = document.querySelector("#komgaUpdateTime");
+const settingKomgaConfigured = document.querySelector("#komgaConfigured");
 
 
-settingsCog.addEventListener("click", () => slide());
+settingsCog.addEventListener("click", () => OpenSettings());
 closetaskpopup.addEventListener("click", () => HideAddTaskPopup());
 document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () => HideAddTaskPopup());
 document.querySelector("#blurBackgroundPublicationPopup").addEventListener("click", () => HidePublicationPopup());
@@ -203,20 +204,47 @@ const fadeInTiming = {
     fill: "forwards"
 }
 
+function OpenSettings(){
+    GetSettingsClick();
+    slide();
+}
+
 function GetSettingsClick(){
+    settingKomgaUrl.value = "";
+    settingKomgaUser.value = "";
+    settingKomgaPass.value = "";
     
+    GetSettings().then(json => {
+        console.log(json);
+        settingDownloadLocation.innerText = json.downloadLocation;
+        if(json.komga != null)
+            settingKomgaUrl.placeholder = json.komga.baseUrl;
+    });
+    
+    GetKomgaTask().then(json => {
+        if(json.length > 0)
+            settingKomgaConfigured.innerText = "✅";
+        else
+            settingKomgaConfigured.innerText = "❌";
+    });
 }
 
 function UpdateSettingsClick(){
-    var auth = atob(`${settingKomgaUser.value}:${settingKomgaPass.value}`)
-    UpdateSettings(settingDownloadLocation.value, settingKomgaUrl.value, auth);
+    var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
+    console.log(auth);
+    UpdateSettings("", settingKomgaUrl.value, auth);
     CreateTask("UpdateKomgaLibrary", settingKomgaTime.value, "","","");
+    setTimeout(() => GetSettingsClick(), 500);
+}
+
+function utf8_to_b64( str ) {
+    return window.btoa(unescape(encodeURIComponent( str )));
 }
 
 //Resets the tasks shown
 ResetContent();
 //Get Tasks and show them
-GetTasks()
+GetDownloadTasks()
     .then(json => json.forEach(task => {
         var publication = CreatePublication(task.publication, task.connectorName);
         publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event, false));
@@ -227,7 +255,7 @@ GetTasks()
 setInterval(() => {
     //Tasks from API
     var cTasks = [];
-    GetTasks()
+    GetDownloadTasks()
         .then(json => json.forEach(task => cTasks.push(task)))
         .then(() => {
             //Only update view if tasks-amount has changed
