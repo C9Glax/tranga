@@ -82,23 +82,45 @@ app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? 
 
 app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? searchString) =>
 {
-    TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
-    if (searchString is null)
-        return taskManager.GetAllTasks().Where(tTask => tTask.task == task && tTask.connectorName == connectorName);
-    else
-        return taskManager.GetAllTasks().Where(tTask =>
-            tTask.task == task && tTask.connectorName == connectorName && tTask.ToString()
-                .Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
+    try
+    {
+        TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
+        if (searchString is null || connectorName is null)
+            return taskManager.GetAllTasks().Where(tTask => tTask.task == task);
+        else
+            return taskManager.GetAllTasks().Where(tTask =>
+                tTask.task == task && tTask.connectorName == connectorName && tTask.ToString()
+                    .Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
+    }
+    catch (ArgumentException)
+    {
+        return Array.Empty<TrangaTask>();
+    }
 });
 
 app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? publicationId) =>
 {
-    TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-    TrangaTask? task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-        tTask.task == pTask && tTask.publication?.internalId == publicationId && tTask.connectorName == connectorName);
-    if (task is null)
+    try
+    {
+        TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
+        TrangaTask? task = null;
+        if (connectorName is null || publicationId is null)
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask);
+        else
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
+                tTask.connectorName == connectorName);
+            
+        if (task is null)
+            return;
+        taskManager.ExecuteTaskNow(task);
+    }
+    catch (ArgumentException)
+    {
         return;
-    taskManager.ExecuteTaskNow(task);
+    }
+
 });
 
 app.MapGet("/Tasks/GetRunningTasks",
@@ -109,22 +131,50 @@ app.MapGet("/Queue/GetList",
 
 app.MapPost("/Queue/Enqueue", (string taskType, string? connectorName, string? publicationId) =>
 {
-    TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-    TrangaTask? task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-        tTask.task == pTask && tTask.publication?.internalId == publicationId && tTask.connectorName == connectorName);
-    if (task is null)
+    try
+    {
+        TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
+        TrangaTask? task = null;
+        if (connectorName is null || publicationId is null)
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask);
+        else
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
+                tTask.connectorName == connectorName);
+            
+        if (task is null)
+            return;
+        taskManager.AddTaskToQueue(task);
+    }
+    catch (ArgumentException)
+    {
         return;
-    taskManager.AddTaskToQueue(task);
+    }
 });
 
 app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string? publicationId) =>
 {
-    TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-    TrangaTask? task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-        tTask.task == pTask && tTask.publication?.internalId == publicationId && tTask.connectorName == connectorName);
-    if (task is null)
+    try
+    {
+        TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
+        TrangaTask? task = null;
+        if (connectorName is null || publicationId is null)
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask);
+        else
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
+                tTask.connectorName == connectorName);
+            
+        if (task is null)
+            return;
+        taskManager.RemoveTaskFromQueue(task);
+    }
+    catch (ArgumentException)
+    {
         return;
-    taskManager.RemoveTaskFromQueue(task);
+    }
 });
 
 app.MapGet("/Settings/Get", () => taskManager.settings);
