@@ -3,6 +3,7 @@ using Tranga;
 
 string applicationFolderPath =
     Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API");
+string downloadFolderPath = Path.Join(applicationFolderPath, "Manga");
 string logsFolderPath = Path.Join(applicationFolderPath, "logs");
 string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
 string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");
@@ -20,7 +21,7 @@ TrangaSettings settings;
 if (File.Exists(settingsFilePath))
     settings = TrangaSettings.LoadSettings(settingsFilePath);
 else
-    settings = new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, null);
+    settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, null);
 
 TaskManager taskManager = new (settings, logger);
 
