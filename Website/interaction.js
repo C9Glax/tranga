@@ -39,6 +39,12 @@ const pubviewcover = document.querySelector("#pubviewcover");
 const publicationDelete = document.querySelector("publication-delete");
 const publicationAdd = document.querySelector("publication-add");
 const closetaskpopup = document.querySelector("#closePopupImg");
+const settingDownloadLocation = document.querySelector("#downloadLocation");
+const settingKomgaUrl = document.querySelector("#komgaURL");
+const settingKomgaUser = document.querySelector("#komgaUsername");
+const settingKomgaPass = document.querySelector("#komgaPassword");
+const settingKomgaTime = document.querySelector("#komgaUpdateTime");
+
 
 settingsCog.addEventListener("click", () => slide());
 closetaskpopup.addEventListener("click", () => HideAddTaskPopup());
@@ -191,6 +197,16 @@ const fadeInTiming = {
     duration: 50,
     iterations: 1,
     fill: "forwards"
+}
+
+function GetSettingsClick(){
+    
+}
+
+function UpdateSettingsClick(){
+    var auth = atob(`${settingKomgaUser.value}:${settingKomgaPass.value}`)
+    UpdateSettings(settingDownloadLocation.value, settingKomgaUrl.value, auth);
+    CreateTask("UpdateKomgaLibrary", settingKomgaTime.value, "","","");
 }
 
 //Resets the tasks shown
