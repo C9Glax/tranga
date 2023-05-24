@@ -22,7 +22,6 @@ let publications = [];
 let tasks = [];
 let toEditId;
 
-const taskTypesSelect = document.querySelector("#taskTypes")
 const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
 const selectPublication = document.querySelector("#taskSelectOutput");
 const connectorSelect = document.querySelector("#connectors");
@@ -48,22 +47,9 @@ document.querySelector("#blurBackgroundPublicationPopup").addEventListener("clic
 publicationDelete.addEventListener("click", () => DeleteTaskClick());
 publicationAdd.addEventListener("click", () => AddTaskClick());
 
-/*
-let availableTaskTypes;
-GetTaskTypes()
-    .then(json => availableTaskTypes = json)
-    .then(json => 
-        json.forEach(taskType => {
-            var option = document.createElement('option');
-            option.value = taskType;
-            option.innerText = taskType;
-            taskTypesSelect.appendChild(option);
-        }));*/
-
 let availableConnectors;
 GetAvailableControllers()
     .then(json => availableConnectors = json)
-    //.then(json => console.log(json))
     .then(json => 
         json.forEach(connector => {
             var option = document.createElement('option');
@@ -75,13 +61,14 @@ GetAvailableControllers()
 
 searchPublicationQuery.addEventListener("keypress", (event) => {
    if(event.key === "Enter"){
+       //Disable inputs
        selectRecurrence.disabled = true;
        connectorSelect.disabled = true;
        searchPublicationQuery.disabled = true;
        
+       //Empty previous results
        selectPublication.replaceChildren();
        GetPublication(connectorSelect.value, searchPublicationQuery.value)
-           //.then(json => console.log(json));
            .then(json => 
                json.forEach(publication => {
                    var option = CreatePublication(publication, connectorSelect.value);
@@ -92,6 +79,7 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
                }
            ))
            .then(() => {
+               //Re-enable inputs
                selectRecurrence.disabled = false;
                connectorSelect.disabled = false;
                searchPublicationQuery.disabled = false;
@@ -99,6 +87,7 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
    } 
 });
 
+//Returns a new "Publication" Item to display in the tasks section
 function CreatePublication(publication, connector){
     var publicationElement = document.createElement('publication');
     publicationElement.setAttribute("id", publication.internalId);
@@ -131,7 +120,7 @@ function AddTaskClick(){
     HidePublicationPopup();
 }
 
-var slideIn = true;
+let slideIn = true;
 function slide() {
     if (slideIn)
         settingsTab.animate(slideInRight, slideInRightTiming);
@@ -141,7 +130,10 @@ function slide() {
 }
 
 function ResetContent(){
+    //Delete everything
     tasksContent.replaceChildren();
+    
+    //Add "Add new Task" Button
     var add = document.createElement("div");
     add.setAttribute("id", "addPublication")
     var plus = document.createElement("p");
@@ -151,16 +143,19 @@ function ResetContent(){
     tasksContent.appendChild(add);
 }
 function ShowPublicationViewerWindow(publicationId, event, add){
+    //Set position to mouse-position
     publicationViewerWindow.style.top = `${event.clientY - 60}px`;
     publicationViewerWindow.style.left = `${event.clientX}px`;
-    var publication = publications.filter(pub => pub.internalId === publicationId)[0];
     
+    //Edit information inside the window
+    var publication = publications.filter(pub => pub.internalId === publicationId)[0];
     publicationViewerName.innerText = publication.sortName;
     publicationViewerDescription.innerText = publication.description;
     publicationViewerAuthor.innerText = publication.author;
     pubviewcover.src = publication.posterUrl;
     toEditId = publicationId;
     
+    //Check what action should be listed
     if(add){
         publicationAdd.style.display = "block";
         publicationDelete.style.display = "none";
@@ -170,8 +165,12 @@ function ShowPublicationViewerWindow(publicationId, event, add){
         publicationDelete.style.display = "block";
     }
     
-    toEditId = publicationId;
+    //Show popup
     publicationViewerPopup.style.display = "block";
+}
+
+function HidePublicationPopup(){
+    publicationViewerPopup.style.display = "none";
 }
 
 function ShowNewTaskWindow(){
@@ -182,9 +181,6 @@ function HideAddTaskPopup(){
     addTaskPopup.style.display = "none";
 }
 
-function HidePublicationPopup(){
-    publicationViewerPopup.style.display = "none";
-}
 
 const fadeIn = [
     { opacity: "0" },
@@ -197,9 +193,10 @@ const fadeInTiming = {
     fill: "forwards"
 }
 
+//Resets the tasks shown
 ResetContent();
+//Get Tasks and show them
 GetTasks()
-    //.then(json => console.log(json))
     .then(json => json.forEach(task => {
         var publication = CreatePublication(task.publication, task.connectorName);
         publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event, false));
@@ -208,13 +205,16 @@ GetTasks()
     }));
 
 setInterval(() => {
+    //Tasks from API
     var cTasks = [];
     GetTasks()
-        //.then(json => console.log(json))
         .then(json => json.forEach(task => cTasks.push(task)))
         .then(() => {
+            //Only update view if tasks-amount has changed
             if(tasks.length != cTasks.length) {
+                //Resets the tasks shown
                 ResetContent();
+                //Add all currenttasks to view
                 cTasks.forEach(task => {
                     var publication = CreatePublication(task.publication, task.connectorName);
                     publication.addEventListener("click", (event) => ShowPublicationViewerWindow(task.publication.internalId, event, false));
