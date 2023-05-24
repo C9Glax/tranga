@@ -1,4 +1,4 @@
-﻿const apiUri = "http://localhost:5177";
+﻿const apiUri = "http://localhost:6530";
 
 async function GetData(uri){
     let request = await fetch(uri, {
