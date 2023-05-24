@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
 using Logging;
 using Newtonsoft.Json;
@@ -45,9 +46,17 @@ public class Komga
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Libraries");
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", auth);
+        if (data == Stream.Null)
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");
+            return Array.Empty<KomgaLibrary>();
+        }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");
             return Array.Empty<KomgaLibrary>();
+        }
 
         HashSet<KomgaLibrary> ret = new();
 
@@ -89,43 +98,51 @@ public class Komga
     {
         public static Stream MakeRequest(string url, string auth)
         {
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) =>
-            {
-                return true;
-            };
+            HttpClientHandler clientHandler = new ();
+            clientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
             HttpClient client = new(clientHandler);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", auth);
             
-            HttpRequestMessage requestMessage = new HttpRequestMessage
+            HttpRequestMessage requestMessage = new ()
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(url),
-                Headers =
-                {
-                    { "Accept", "application/json" },
-                    { "Authorization", new AuthenticationHeaderValue("Basic", auth).ToString() }
-                }
+                RequestUri = new Uri(url)
             };
             HttpResponseMessage response = client.Send(requestMessage);
-            Stream resultString = response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
-            return resultString;
+            Stream ret;
+            if (response.StatusCode is HttpStatusCode.Unauthorized)
+            {
+                ret = MakeRequest(response.RequestMessage!.RequestUri!.AbsoluteUri, auth);
+            }else
+                return response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
+            return ret;
         }
 
         public static bool MakePost(string url, string auth)
         {
-            HttpClient client = new();
-            HttpRequestMessage requestMessage = new HttpRequestMessage
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
+            HttpClient client = new(clientHandler)
             {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri(url),
-                Headers =
+                DefaultRequestHeaders =
                 {
                     { "Accept", "application/json" },
                     { "Authorization", new AuthenticationHeaderValue("Basic", auth).ToString() }
                 }
             };
+            HttpRequestMessage requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(url)
+            };
             HttpResponseMessage response = client.Send(requestMessage);
-            return response.IsSuccessStatusCode;
+            bool ret;
+            if (response.StatusCode is HttpStatusCode.Unauthorized)
+            {
+                ret = MakePost(response.RequestMessage!.RequestUri!.AbsoluteUri, auth);
+            }else
+                return response.IsSuccessStatusCode;
+            return ret;
         }
     }
 }
