@@ -1,0 +1,15 @@
+﻿services:
+  tranga-api:
+    image: glax/tranga-api:latest
+    container_name: tranga-api
+    volumes:
+      - ./tranga:/usr/share/Tranga-API
+      - ./Manga:/Manga
+    ports:
+      - 6531:80
+    restart: unless-stopped
+  tranga-website:
+    image: glax/tranga-website:latest
+    container_name: tranga-website
+    ports:
+      - 9555:80
