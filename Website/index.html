@@ -73,13 +73,13 @@
     <popup id="settingsPopup">
       <blur-background id="blurBackgroundSettingsPopup"></blur-background>
       <settings>
-        <span class="title">Settings</span>
+        <span style="font-weight: bold; text-align: center; font-size: 16pt;">Settings</span>
         <div>
-          <span class="title">Download Location:</span>
+          <p class="title">Download Location:</p>
           <span id="downloadLocation"></span>
         </div>
         <div>
-          <span class="title">API-URI</span>
+          <p class="title">API-URI</p>
           <label for="settingApiUri"></label><input placeholder="https://" type="text" id="settingApiUri">
         </div>
         <komga-settings>
@@ -88,7 +88,7 @@
           <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
           <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
           <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
-          <div><label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01:00" step="10"></div>
+          <label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01:00" step="10">
           <input type="submit" value="Update" onclick="UpdateKomgaSettings()">
         </komga-settings>
       </settings>

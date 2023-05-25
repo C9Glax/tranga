@@ -149,18 +149,29 @@ settings {
     left: 25%;
     top: 25%;
     border-radius: 5px;
+    padding: 10px 0;
 }
 
 #settingsPopup{
     z-index: 10;
 }
 
-settings > *{
-    margin: 10px 5px;
+settings > * {
+    margin: 0 20%;
+}
+
+settings input {
+    margin: 3px 0;
+    padding: 3px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.2);
+    width: 100%;
 }
 
 settings .title {
     font-weight: bolder;
+    font-size: 14pt;
+    margin: 15px 0 2px 0;
 }
 
 komga-settings {
@@ -168,10 +179,6 @@ komga-settings {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-}
-
-komga-settings input {
-    margin: 3px 0;
 }
 
 #addPublication {
