@@ -14,8 +14,8 @@ public class MangaDex : Connector
         Manga,
         Feed,
         AtHomeServer,
-        Cover,
-        Author
+        CoverUrl,
+        Author,
     }
 
     public MangaDex(string downloadLocation, Logger? logger) : base(downloadLocation, logger)
@@ -26,7 +26,7 @@ public class MangaDex : Connector
             {(byte)RequestType.Manga, 250},
             {(byte)RequestType.Feed, 250},
             {(byte)RequestType.AtHomeServer, 40},
-            {(byte)RequestType.Cover, 250},
+            {(byte)RequestType.CoverUrl, 250},
             {(byte)RequestType.Author, 250}
         }, logger);
     }
