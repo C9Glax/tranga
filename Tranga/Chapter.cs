@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Tranga;
 
@@ -14,14 +15,15 @@ public struct Chapter
     public string url { get; }
     public string fileName { get; }
     public string sortNumber { get; }
-
+    
+    private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*~*!*)*");
     public Chapter(string? name, string? volumeNumber, string? chapterNumber, string url)
     {
         this.name = name;
         this.volumeNumber = volumeNumber is { Length: > 0 } ? volumeNumber : "1";
         this.chapterNumber = chapterNumber;
         this.url = url;
-        string chapterName = string.Concat((name ?? "").Split(Path.GetInvalidFileNameChars()));
+        string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
         NumberFormatInfo nfi = new NumberFormatInfo()
         {
             NumberDecimalSeparator = "."
