@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace Tranga;
@@ -24,6 +25,8 @@ public readonly struct Publication
     public string publicationId { get; }
     public string internalId { get; }
 
+    private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*~*!*)*");
+
     public Publication(string sortName, string? author, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
     {
         this.sortName = sortName;
@@ -38,7 +41,7 @@ public readonly struct Publication
         this.originalLanguage = originalLanguage;
         this.status = status;
         this.publicationId = publicationId;
-        this.folderName = string.Concat(sortName.Split(Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray()));
+        this.folderName = string.Concat(LegalCharacters.Matches(sortName));
         string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
     }
