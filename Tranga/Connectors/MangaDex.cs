@@ -98,6 +98,15 @@ public class MangaDex : Connector
                     authorId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "author")!["id"]!.GetValue<string>();
                 }
                 string? coverUrl = GetCoverUrl(publicationId, posterId);
+                string? coverBase64 = null;
+                if (coverUrl is not null)
+                {
+                    DownloadClient.RequestResult coverResult = downloadClient.MakeRequest(coverUrl, (byte)RequestType.AtHomeServer);
+                    using MemoryStream ms = new();
+                    coverResult.result.CopyTo(ms);
+                    byte[] imageBytes = ms.ToArray();
+                    coverBase64 = Convert.ToBase64String(imageBytes);
+                }
                 string? author = GetAuthor(authorId);
 
                 Dictionary<string, string> linksDict = new();
@@ -127,6 +136,7 @@ public class MangaDex : Connector
                     altTitlesDict,
                     tags.ToArray(),
                     coverUrl,
+                    coverBase64,
                     linksDict,
                     year,
                     originalLanguage,
@@ -232,7 +242,7 @@ public class MangaDex : Connector
         
         //Request information where to download Cover
         DownloadClient.RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/cover/{posterId}", (byte)RequestType.Cover);
+            downloadClient.MakeRequest($"https://api.mangadex.org/cover/{posterId}", (byte)RequestType.CoverUrl);
         if (requestResult.statusCode != HttpStatusCode.OK)
             return null;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);

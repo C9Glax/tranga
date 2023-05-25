@@ -15,6 +15,7 @@ public readonly struct Publication
     public string? description { get; }
     public string[] tags { get; }
     public string? posterUrl { get; }
+    public string? posterBase64 { get; }
     public Dictionary<string,string> links { get; }
     public int? year { get; }
     public string? originalLanguage { get; }
@@ -23,13 +24,14 @@ public readonly struct Publication
     public string publicationId { get; }
     public string internalId { get; }
 
-    public Publication(string sortName, string? author, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
+    public Publication(string sortName, string? author, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? posterBase64, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
     {
         this.sortName = sortName;
         this.author = author;
         this.description = description;
         this.altTitles = altTitles;
         this.tags = tags;
+        this.posterBase64 = posterBase64;
         this.posterUrl = posterUrl;
         this.links = links ?? new Dictionary<string, string>();
         this.year = year;
