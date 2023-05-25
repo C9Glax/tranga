@@ -66,7 +66,7 @@ async function GetTaskTypes(){
     return json;
 }
 async function GetRunningTasks(){
-    var uri = apiUri + "/Tranga/GetRunningTasks";
+    var uri = apiUri + "/Tasks/GetRunningTasks";
     let json = await GetData(uri);
     return json;
 }
@@ -117,4 +117,10 @@ function DeleteTask(taskType, connectorName, publicationId){
 function DequeueTask(taskType, connectorName, publicationId){
     var uri = apiUri + `/Queue/Dequeue?taskType=${taskType}&connectorName=${connectorName}&publicationId=${publicationId}`;
     DeleteData(uri);
+}
+
+async function GetQueue(){
+    var uri = apiUri + "/Queue/GetList";
+    let json = await GetData(uri);
+    return json;
 }

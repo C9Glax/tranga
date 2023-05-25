@@ -26,7 +26,9 @@ const settingKomgaPass = document.querySelector("#komgaPassword");
 const settingKomgaTime = document.querySelector("#komgaUpdateTime");
 const settingKomgaConfigured = document.querySelector("#komgaConfigured");
 const settingApiUri = document.querySelector("#settingApiUri");
-
+const tagTasksRunning = document.querySelector("#tasksRunningTag");
+const tagTasksQueued = document.querySelector("#tasksQueuedTag");
+const tagTasksTotal = document.querySelector("#totalTasksTag");
 
 settingsCog.addEventListener("click", () => OpenSettings());
 document.querySelector("#blurBackgroundSettingsPopup").addEventListener("click", () => HideSettings());
@@ -247,6 +249,21 @@ GetDownloadTasks()
         tasks.push(task);
     }));
 
+GetRunningTasks()
+    .then(json => {
+        tagTasksRunning.innerText = json.length;
+    });
+
+GetDownloadTasks()
+    .then(json => {
+        tagTasksTotal.innerText = json.length;
+    });
+
+GetQueue()
+    .then(json => {
+        tagTasksQueued.innerText = json.length;
+    })
+
 setInterval(() => {
     //Tasks from API
     var cTasks = [];
@@ -268,6 +285,20 @@ setInterval(() => {
             }
         }
     );
+
+    GetRunningTasks()
+        .then(json => {
+           tagTasksRunning.innerText = json.length;
+        });
+
+    GetDownloadTasks()
+        .then(json => {
+            tagTasksTotal.innerText = json.length;
+        });
     
+    GetQueue()
+        .then(json => {
+            tagTasksQueued.innerText = json.length;
+        })
     
 }, 1000);

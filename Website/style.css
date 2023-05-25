@@ -103,8 +103,29 @@ footer {
     width: 100%;
     height: 40px;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     background-color: var(--primary-color);
+    align-content: center;
+}
+
+footer > div {
+    height: 100%;
+    margin: 0 30px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+footer > div > *{
+    height: 40%;
+    margin: 0 5px;
+}
+
+#madeWith {
+    flex-grow: 1;
+    text-align: right;
+    margin-right: 20px;
 }
 
 content {
