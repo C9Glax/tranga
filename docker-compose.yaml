@@ -14,4 +14,4 @@
     ports:
       - 9555:80
     volumes:
-      - ./tranga/imageCache:/usr/share/nginx/html/imageCache #2 when replacing Point to same value as #1/imageCache
+      - ./tranga/imageCache:/usr/share/nginx/html/imageCache:ro #2 when replacing Point to same value as #1/imageCache
