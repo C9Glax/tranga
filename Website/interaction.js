@@ -143,7 +143,7 @@ function ShowPublicationViewerWindow(publicationId, event, add){
     publicationViewerName.innerText = publication.sortName;
     publicationViewerDescription.innerText = publication.description;
     publicationViewerAuthor.innerText = publication.author;
-    pubviewcover.src = publication.posterUrl;
+    pubviewcover.src = `imageCache/${publication.coverFileNameInCache}`;
     toEditId = publicationId;
     
     //Check what action should be listed
