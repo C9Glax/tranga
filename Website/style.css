@@ -90,22 +90,24 @@ viewport {
     flex-flow: row;
     flex-wrap: nowrap;
     flex-grow: 1;
+    height: 100%;
+    overflow-y: scroll;
 }
 
-sidebar{
-    position: relative;
-    width: 20rem;
-    margin-bottom: 20px;
-    border-radius: 0 0 5px 0;
+footer {
     display: flex;
-    flex-direction: column;
-    
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 40px;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: var(--primary-color);
 }
 
 content {
     position: relative;
     flex-grow: 1;
-    margin: 0 10px 10px 10px;
     border-radius: 5px;
     display: flex;
     flex-direction: row;
@@ -114,35 +116,28 @@ content {
     align-content: start;
 }
 
-settingstab{
-    position: absolute;
-    right: -20rem;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.5);
-    width: 20rem;
-    height: calc(100% - var(--topbar-height) - 40px);
-    margin-bottom: 10px;
-    border-radius: 5px 0 0 5px;
+settings {
+    width: 50%;
+    background-color: var(--accent-color);
     display: flex;
     flex-direction: column;
-    flex-wrap: nowrap;
+    z-index: 10;
+    position: absolute;
+    left: 25%;
+    top: 25%;
+    border-radius: 5px;
 }
 
-settingstab > * {
-    margin: 0 20px;
+#settingsPopup{
+    z-index: 10;
 }
 
-settingstab input {
-    padding: 3px;
-    border-radius: 3px;
-    border: 0;
-    margin: 2px 20px;
+settings > *{
+    margin: 10px 5px;
 }
 
-settingstab .title {
-    font-size: 14pt;
+settings .title {
     font-weight: bolder;
-    margin-top: 20px;
 }
 
 komga-settings {
@@ -153,7 +148,7 @@ komga-settings {
 }
 
 komga-settings input {
-    margin: 2px 0;
+    margin: 3px 0;
 }
 
 #addPublication {
@@ -232,8 +227,8 @@ publication img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     z-index: 0;
 }
 
@@ -268,7 +263,6 @@ addtask-window {
     max-height: 80%;
     padding: 0;
     background-color: var(--accent-color);
-    z-index: 5;
     border-radius: 5px;
 }
 
@@ -339,7 +333,7 @@ addtask-settings addtask-setting{
 }
 
 #publicationViewerPopup{
-    z-index: 6;
+    z-index: 5;
 }
 
 publication-viewer{
@@ -372,7 +366,7 @@ publication-viewer img {
     position: absolute;
     left: 0;
     top: 0;
-    min-height: 100%;
+    max-height: 100%;
     max-width: 100%;
     border-radius: 5px;
     z-index: 0;

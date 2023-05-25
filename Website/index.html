@@ -18,12 +18,6 @@
     <img id="settingscog" src="media/settings-cogwheel.svg" height="100%" alt="settingscog">
   </topbar>
   <viewport>
-    <sidebar>
-      <background-placeholder></background-placeholder>
-      
-      <spacer></spacer>
-      <p style="text-align: center">Made with Blåhaj 🦈</p>
-    </sidebar>
     <content>
       <div id="addPublication">
         <p>+</p>
@@ -76,25 +70,33 @@
         </publication-information>
       </publication-viewer>
     </popup>
-    
+    <popup id="settingsPopup">
+      <blur-background id="blurBackgroundSettingsPopup"></blur-background>
+      <settings>
+        <span class="title">Settings</span>
+        <div>
+          <span class="title">Download Location:</span>
+          <span id="downloadLocation"></span>
+        </div>
+        <div>
+          <span class="title">API-URI</span>
+          <label for="settingApiUri"></label><input placeholder="https://" type="text" id="settingApiUri">
+        </div>
+        <komga-settings>
+          <span class="title">Komga</span>
+          <div>Configured: <span id="komgaConfigured">✅❌</span></div>
+          <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
+          <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
+          <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
+          <div><label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01:00" step="10"></div>
+          <input type="submit" value="Update" onclick="UpdateKomgaSettings()">
+        </komga-settings>
+      </settings>
+    </popup>
   </viewport>
-  
-  <settingstab id="settingstab">
-    <span class="title">Download Location:</span>
-    <span id="downloadLocation"></span>
-    <span class="title">API-URI</span>
-    <label for="settingApiUri"></label><input placeholder="https://" type="text" id="settingApiUri">
-    <komga-settings>
-      <span class="title">Komga</span>
-      <div>Configured: <span id="komgaConfigured">✅❌</span></div>
-      <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
-      <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
-      <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
-      <div><label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01:00" step="10"></div>
-      <input type="submit" value="Update" onclick="UpdateKomgaSettings()">
-    </komga-settings>
-  </settingstab>
-  
+  <footer>
+    <p style="text-align: center">Made with Blåhaj 🦈</p>
+  </footer>  
   <script src="apiConnector.js"></script>
   <script src="interaction.js"></script>
 </body>

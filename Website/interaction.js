@@ -1,31 +1,11 @@
-﻿const slideInRight = [
-    { right: "-20rem" },
-    { right: "0" }
-];
-
-const slideInRightTiming = {
-    duration: 200,
-    iterations: 1,
-    fill: "forwards",
-    easing: "ease-out"
-}
-
-const slideOutRightTiming = {
-    direction: "reverse",
-    duration: 200,
-    iterations: 1,
-    fill: "forwards",
-    easing: "ease-in"
-}
-
-let publications = [];
+﻿let publications = [];
 let tasks = [];
 let toEditId;
 
 const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
 const selectPublication = document.querySelector("#taskSelectOutput");
 const connectorSelect = document.querySelector("#connectors");
-const settingsTab = document.querySelector("#settingstab");
+const settingsPopup = document.querySelector("#settingsPopup");
 const settingsCog = document.querySelector("#settingscog");
 const selectRecurrence = document.querySelector("#selectReccurrence");
 const tasksContent = document.querySelector("content");
@@ -49,6 +29,7 @@ const settingApiUri = document.querySelector("#settingApiUri");
 
 
 settingsCog.addEventListener("click", () => OpenSettings());
+document.querySelector("#blurBackgroundSettingsPopup").addEventListener("click", () => HideSettings());
 closetaskpopup.addEventListener("click", () => HideAddTaskPopup());
 document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () => HideAddTaskPopup());
 document.querySelector("#blurBackgroundPublicationPopup").addEventListener("click", () => HidePublicationPopup());
@@ -139,15 +120,6 @@ function AddTaskClick(){
     HidePublicationPopup();
 }
 
-let slideIn = true;
-function slide() {
-    if (slideIn)
-        settingsTab.animate(slideInRight, slideInRightTiming);
-    else
-        settingsTab.animate(slideInRight, slideOutRightTiming);
-    slideIn = !slideIn;
-}
-
 function ResetContent(){
     //Delete everything
     tasksContent.replaceChildren();
@@ -214,7 +186,11 @@ const fadeInTiming = {
 
 function OpenSettings(){
     GetSettingsClick();
-    slide();
+    settingsPopup.style.display = "flex";
+}
+
+function HideSettings(){
+    settingsPopup.style.display = "none";
 }
 
 function GetSettingsClick(){
