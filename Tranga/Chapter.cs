@@ -16,7 +16,7 @@ public struct Chapter
     public string fileName { get; }
     public string sortNumber { get; }
     
-    private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*~*!*)*");
+    private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
     public Chapter(string? name, string? volumeNumber, string? chapterNumber, string url)
     {
         this.name = name;
