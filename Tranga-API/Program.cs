@@ -1,20 +1,23 @@
+using System.Runtime.InteropServices;
 using Logging;
 using Tranga;
 
-string applicationFolderPath =
-    Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API");
-string downloadFolderPath = Path.Join(applicationFolderPath, "Manga");
-string logsFolderPath = Path.Join(applicationFolderPath, "logs");
+string applicationFolderPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API");
+string downloadFolderPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(applicationFolderPath, "Manga");
+string logsFolderPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/logs/Tranga" : Path.Join(applicationFolderPath, "logs");
 string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
 string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");
 
 Directory.CreateDirectory(applicationFolderPath);
+Directory.CreateDirectory(downloadFolderPath);
 Directory.CreateDirectory(logsFolderPath);
-        
+
+Console.WriteLine($"Application-Folder: {applicationFolderPath}");
+Console.WriteLine($"Download-Folder-Path: {downloadFolderPath}");
 Console.WriteLine($"Logfile-Path: {logFilePath}");
 Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
 
-Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null, logFilePath);
+Logger logger = new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath);
         
 logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
 TrangaSettings settings;
