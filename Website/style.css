@@ -234,6 +234,7 @@ publication img {
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    border-radius: 5px;
 }
 
 popup{
