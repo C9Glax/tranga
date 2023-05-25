@@ -31,6 +31,9 @@
       </ul>
     </li>
     <li>
+      <a href="#screenshots">Screenshots</a>
+    </li>
+    <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
@@ -64,24 +67,43 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 ### Built With
 
 - .NET-Core
 - Newtonsoft.JSON
-- Love <3
+- Love <3 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+## Screenshots
+
+![image](screenshots/overview.png)
+
+![image](screenshots/addtask.png)
+
+| ![image](screenshots/settings.png) | ![image](screenshots/publication-description.png) |
+|-----------------------------------:|:-------------------------------------------------:|
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To use head over to [releases](https://git.bernloehr.eu/glax/Tranga/releases) and download a release.
+There is two release types:
 
-A CLI will guide you through setup.
+- CLI
+- Docker
+
+### CLI
+
+Head over to [releases](https://git.bernloehr.eu/glax/Tranga/releases) and download. The CLI will guide you through setup.
+
+### Docker
+
+Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.
+
+Wherever you are mounting `/usr/share/Tranga-API` you also need to mount that same path + `/imageCache` in the webserver container.
 
 ### Prerequisites
 
@@ -90,7 +112,7 @@ A CLI will guide you through setup.
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Web-UI #1
+- [x] Web-UI #1
 - [ ] More Connectors
   - [ ] Manganato #2
 - [ ] ? 
