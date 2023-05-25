@@ -29,6 +29,8 @@ const settingApiUri = document.querySelector("#settingApiUri");
 const tagTasksRunning = document.querySelector("#tasksRunningTag");
 const tagTasksQueued = document.querySelector("#tasksQueuedTag");
 const tagTasksTotal = document.querySelector("#totalTasksTag");
+const tagTaskPopup = document.querySelector("footer-tag-popup");
+const tagTasksPopupContent = document.querySelector("footer-tag-content");
 
 settingsCog.addEventListener("click", () => OpenSettings());
 document.querySelector("#blurBackgroundSettingsPopup").addEventListener("click", () => HideSettings());
@@ -49,6 +51,12 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
         NewSearch();
     }
 });
+tagTasksRunning.addEventListener("mouseover", (event) => ShowRunningTasks(event));
+tagTasksRunning.addEventListener("mouseout", () => CloseTasksPopup());
+tagTasksQueued.addEventListener("mouseover", (event) => ShowQueuedTasks(event));
+tagTasksQueued.addEventListener("mouseout", () => CloseTasksPopup());
+tagTasksTotal.addEventListener("mouseover", (event) => ShowAllTasks(event));
+tagTasksTotal.addEventListener("mouseout", () => CloseTasksPopup());
 
 let availableConnectors;
 GetAvailableControllers()
@@ -236,6 +244,60 @@ function UpdateKomgaSettings(){
 
 function utf8_to_b64( str ) {
     return window.btoa(unescape(encodeURIComponent( str )));
+}
+
+
+function ShowRunningTasks(event){
+    GetRunningTasks()
+        .then(json => {
+            tagTasksPopupContent.replaceChildren();
+            json.forEach(task => {
+                var taskname = document.createElement("footer-tag-task-name");
+                taskname.innerText = task.publication.sortName;
+                tagTasksPopupContent.appendChild(taskname);
+            });
+            if(json.length > 0){
+                tagTaskPopup.style.display = "block";
+                tagTaskPopup.style.left = `${event.client - 20}px`;
+            }
+                
+        });
+}
+
+function ShowQueuedTasks(event){
+    GetQueue()
+        .then(json => {
+            tagTasksPopupContent.replaceChildren();
+            json.forEach(task => {
+                var taskname = document.createElement("footer-tag-task-name");
+                taskname.innerText = task.publication.sortName;
+                tagTasksPopupContent.appendChild(taskname);
+            });
+            if(json.length > 0){
+                tagTaskPopup.style.display = "block";
+                tagTaskPopup.style.left = `${event.clientX - 20}px`;
+            }
+        });
+}
+
+function ShowAllTasks(event){
+    GetDownloadTasks()
+        .then(json => {
+            tagTasksPopupContent.replaceChildren();
+            json.forEach(task => {
+                var taskname = document.createElement("footer-tag-task-name");
+                taskname.innerText = task.publication.sortName;
+                tagTasksPopupContent.appendChild(taskname);
+            });
+            if(json.length > 0){
+                tagTaskPopup.style.display = "block";
+                tagTaskPopup.style.left = `${event.clientX - 20}px`;
+            }
+        });
+}
+
+function CloseTasksPopup(){
+    tagTaskPopup.style.display = "none";
 }
 
 //Resets the tasks shown

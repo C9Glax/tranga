@@ -6,106 +6,114 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <topbar>
-    <titlebox>
-      <img src="media/blahaj.png">
-      <span>Tranga</span>
-    </titlebox>
-    <spacer></spacer>
-    <searchdiv>
-      <input id="searchbox" placeholder="Filter" type="text">
-    </searchdiv>
-    <img id="settingscog" src="media/settings-cogwheel.svg" height="100%" alt="settingscog">
-  </topbar>
-  <viewport>
-    <content>
-      <div id="addPublication">
-        <p>+</p>
+  <wrapper>
+    <topbar>
+      <titlebox>
+        <img src="media/blahaj.png">
+        <span>Tranga</span>
+      </titlebox>
+      <spacer></spacer>
+      <searchdiv>
+        <input id="searchbox" placeholder="Filter" type="text">
+      </searchdiv>
+      <img id="settingscog" src="media/settings-cogwheel.svg" height="100%" alt="settingscog">
+    </topbar>
+    <viewport>
+      <content>
+        <div id="addPublication">
+          <p>+</p>
+        </div>
+        <publication>
+          <img src="media/cover.jpg">
+          <publication-information>
+            <connector-name class="pill">MangaDex</connector-name>
+            <publication-name>Tensei Pandemic</publication-name>
+          </publication-information>
+        </publication>
+      </content>
+
+      <popup id="addTaskPopup">
+        <blur-background id="blurBackgroundTaskPopup"></blur-background>
+        <addtask-window>
+          <window-titlebar>
+            <p>Add Task</p>
+            <img id="closePopupImg" src="media/close-x.svg" alt="Close">
+          </window-titlebar>
+          <window-content>
+            <addtask-settings>
+              <addtask-setting><label for="selectReccurrence">Recurrence</label><input id="selectReccurrence" type="time" value="01:00:00" step="3600"></addtask-setting>
+              <addtask-setting><label for="connectors">Connector</label>
+                <select id="connectors">
+                  <option value=""></option>
+                </select>
+              </addtask-setting>
+              <addtask-setting><label for="searchPublicationQuery">Search Title</label><input id="searchPublicationQuery" type="text"></addtask-setting>
+              <input type="submit" value="Search" onclick="NewSearch();">
+            </addtask-settings>
+            <div id="taskSelectOutput"></div>
+          </window-content>
+        </addtask-window>
+      </popup>
+      <popup id="publicationViewerPopup">
+        <blur-background id="blurBackgroundPublicationPopup"></blur-background>
+        <publication-viewer>
+          <img id="pubviewcover" src="media/cover.jpg" alt="cover">
+          <publication-information>
+            <publication-name id="publicationViewerName">Tensei Pandemic</publication-name>
+            <publication-author id="publicationViewerAuthor">Imamura Hinata</publication-author>
+            <publication-description id="publicationViewerDescription">Imamura Hinata is a high school boy with a cute appearance.
+              Since his trauma with the first love, he wanted to be more manly than anybody else. But one day he woke up to something different…
+              The total opposite of his ideal male body!
+              Pandemic love comedy!
+            </publication-description>
+            <publication-delete>Delete Task ❌</publication-delete>
+            <publication-add>Add Task ➕</publication-add>
+          </publication-information>
+        </publication-viewer>
+      </popup>
+      <popup id="settingsPopup">
+        <blur-background id="blurBackgroundSettingsPopup"></blur-background>
+        <settings>
+          <span style="font-weight: bold; text-align: center; font-size: 16pt;">Settings</span>
+          <div>
+            <p class="title">Download Location:</p>
+            <span id="downloadLocation"></span>
+          </div>
+          <div>
+            <p class="title">API-URI</p>
+            <label for="settingApiUri"></label><input placeholder="https://" type="text" id="settingApiUri">
+          </div>
+          <komga-settings>
+            <span class="title">Komga</span>
+            <div>Configured: <span id="komgaConfigured">✅❌</span></div>
+            <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
+            <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
+            <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
+            <label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01:00" step="10">
+            <input type="submit" value="Update" onclick="UpdateKomgaSettings()">
+          </komga-settings>
+        </settings>
+      </popup>
+    </viewport>
+    <footer>
+      <div>
+        <img src="media/running.svg" alt="running"><div id="tasksRunningTag">0</div>
       </div>
-      <publication>
-        <img src="media/cover.jpg">
-        <publication-information>
-          <connector-name class="pill">MangaDex</connector-name>
-          <publication-name>Tensei Pandemic</publication-name>
-        </publication-information>
-      </publication>
-    </content>    
-    
-    <popup id="addTaskPopup">
-      <blur-background id="blurBackgroundTaskPopup"></blur-background>
-      <addtask-window>
-        <window-titlebar>
-          <p>Add Task</p>
-          <img id="closePopupImg" src="media/close-x.svg" alt="Close">
-        </window-titlebar>
-        <window-content>
-          <addtask-settings>
-            <addtask-setting><label for="selectReccurrence">Recurrence</label><input id="selectReccurrence" type="time" value="01:00:00" step="3600"></addtask-setting>
-            <addtask-setting><label for="connectors">Connector</label>
-              <select id="connectors">
-                <option value=""></option>
-              </select>
-            </addtask-setting>
-            <addtask-setting><label for="searchPublicationQuery">Search Title</label><input id="searchPublicationQuery" type="text"></addtask-setting>
-            <input type="submit" value="Search" onclick="NewSearch();">
-          </addtask-settings>
-          <div id="taskSelectOutput"></div>
-        </window-content>
-      </addtask-window>
-    </popup>
-    <popup id="publicationViewerPopup">
-      <blur-background id="blurBackgroundPublicationPopup"></blur-background>
-      <publication-viewer>
-        <img id="pubviewcover" src="media/cover.jpg" alt="cover">
-        <publication-information>
-          <publication-name id="publicationViewerName">Tensei Pandemic</publication-name>
-          <publication-author id="publicationViewerAuthor">Imamura Hinata</publication-author>
-          <publication-description id="publicationViewerDescription">Imamura Hinata is a high school boy with a cute appearance.
-            Since his trauma with the first love, he wanted to be more manly than anybody else. But one day he woke up to something different…
-            The total opposite of his ideal male body!
-            Pandemic love comedy!
-          </publication-description>
-          <publication-delete>Delete Task ❌</publication-delete>
-          <publication-add>Add Task ➕</publication-add>
-        </publication-information>
-      </publication-viewer>
-    </popup>
-    <popup id="settingsPopup">
-      <blur-background id="blurBackgroundSettingsPopup"></blur-background>
-      <settings>
-        <span style="font-weight: bold; text-align: center; font-size: 16pt;">Settings</span>
-        <div>
-          <p class="title">Download Location:</p>
-          <span id="downloadLocation"></span>
-        </div>
-        <div>
-          <p class="title">API-URI</p>
-          <label for="settingApiUri"></label><input placeholder="https://" type="text" id="settingApiUri">
-        </div>
-        <komga-settings>
-          <span class="title">Komga</span>
-          <div>Configured: <span id="komgaConfigured">✅❌</span></div>
-          <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
-          <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
-          <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
-          <label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01:00" step="10">
-          <input type="submit" value="Update" onclick="UpdateKomgaSettings()">
-        </komga-settings>
-      </settings>
-    </popup>
-  </viewport>
-  <footer>
-    <div>
-      <img src="media/running.svg" alt="running"><div id="tasksRunningTag">0</div>
-    </div>
-    <div>
-      <img src="media/queue.svg" alt="queue"><div id="tasksQueuedTag">0</div>
-    </div>
-    <div>
-      <img src="media/tasks.svg" alt="queue"><div id="totalTasksTag">0</div>
-    </div>
-    <p id="madeWith">Made with Blåhaj 🦈</p>
-  </footer>  
+      <div>
+        <img src="media/queue.svg" alt="queue"><div id="tasksQueuedTag">0</div>
+      </div>
+      <div>
+        <img src="media/tasks.svg" alt="queue"><div id="totalTasksTag">0</div>
+      </div>
+      <p id="madeWith">Made with Blåhaj 🦈</p>
+    </footer> 
+  </wrapper>
+  <footer-tag-popup>
+    <footer-tag-content>
+      <footer-tag-task-name>Test</footer-tag-task-name>
+    </footer-tag-content>
+  </footer-tag-popup>
+  
   <script src="apiConnector.js"></script>
   <script src="interaction.js"></script>
 </body>

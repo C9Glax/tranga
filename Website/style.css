@@ -11,13 +11,17 @@
 body{
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-flow: column;
-    flex-wrap: nowrap;
     height: 100vh;
     background-color: var(--background-color);
     font-family: "Inter", sans-serif;
     overflow-x: hidden;
+}
+
+wrapper {
+    display: flex;
+    flex-flow: column;
+    flex-wrap: nowrap;
+    height: 100vh;
 }
 
 background-placeholder{
@@ -447,4 +451,43 @@ publication-viewer publication-information publication-add {
     color: limegreen;
     margin: 20px;
     font-size: 16pt;
+}
+
+footer-tag-popup {
+    display: none;
+    padding: 5px;
+    position: fixed;
+    bottom: 55px;
+    left: 20px;
+    background-color: var(--secondary-color);
+    z-index: 8;
+    border-radius: 5px;
+    max-height: 400px;
+}
+
+footer-tag-content{
+    position: relative;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-y: scroll;
+}
+
+footer-tag-content > * {
+    margin: 2px 0;
+}
+
+footer-tag-popup::before{
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    border-right: 20px solid var(--secondary-colorr);
+    border-left: 20px solid transparent;
+    border-top: 20px solid var(--secondary-color);
+    border-bottom: 20px solid transparent;
+    left: 0px;
+    bottom: -36px;
+    border-radius: 0 0 0 5px;
 }
