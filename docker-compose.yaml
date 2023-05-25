@@ -11,7 +11,9 @@
   tranga-website:
     image: glax/tranga-website:latest
     container_name: tranga-website
-    ports:
-      - 9555:80
     volumes:
       - ./tranga/imageCache:/usr/share/nginx/html/imageCache:ro #2 when replacing Point to same value as #1/imageCache
+    ports:
+      - 9555:80
+    depends_on: 
+      - tranga-api
