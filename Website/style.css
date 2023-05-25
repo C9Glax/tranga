@@ -242,7 +242,7 @@ popup{
     min-height: 100%;
     top: 0;
     left: 0;
-    position: absolute;
+    position: fixed;
     z-index: 2;
 }
 
@@ -342,7 +342,7 @@ addtask-settings addtask-setting{
 
 publication-viewer{
     display: block;
-    width: 500px;
+    width: 450px;
     height: 300px;
     position: absolute;
     top: 200px;
