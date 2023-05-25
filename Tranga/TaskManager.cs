@@ -21,11 +21,12 @@ public class TaskManager
 
     /// <param name="downloadFolderPath">Local path to save data (Manga) to</param>
     /// <param name="workingDirectory">Path to the working directory</param>
+    /// <param name="imageCachePath">Path to the cover-image cache</param>
     /// <param name="komgaBaseUrl">The Url of the Komga-instance that you want to update</param>
     /// <param name="komgaUsername">The Komga username</param>
     /// <param name="komgaPassword">The Komga password</param>
     /// <param name="logger"></param>
-    public TaskManager(string downloadFolderPath, string workingDirectory, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
+    public TaskManager(string downloadFolderPath, string workingDirectory, string imageCachePath, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
     {
         this.logger = logger;
         _allTasks = new HashSet<TrangaTask>();
@@ -37,7 +38,7 @@ public class TaskManager
         this.settings = new TrangaSettings(downloadFolderPath, workingDirectory, newKomga);
         ExportData();
         
-        this._connectors = new Connector[]{ new MangaDex(downloadFolderPath, logger) };
+        this._connectors = new Connector[]{ new MangaDex(downloadFolderPath, imageCachePath, logger) };
         foreach(Connector cConnector in this._connectors)
             _taskQueue.Add(cConnector, new List<TrangaTask>());
         
@@ -58,7 +59,7 @@ public class TaskManager
     public TaskManager(TrangaSettings settings, Logger? logger = null)
     {
         this.logger = logger;
-        this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation, logger) };
+        this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation, settings.coverImageCache, logger) };
         foreach(Connector cConnector in this._connectors)
             _taskQueue.Add(cConnector, new List<TrangaTask>());
         _allTasks = new HashSet<TrangaTask>();

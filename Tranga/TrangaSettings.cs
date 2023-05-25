@@ -9,6 +9,7 @@ public class TrangaSettings
     [JsonIgnore]public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore]public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
     [JsonIgnore]public string knownPublicationsPath => Path.Join(workingDirectory, "knownPublications.json");
+    [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public Komga? komga { get; set; }
 
     public TrangaSettings(string downloadLocation, string workingDirectory, Komga? komga)

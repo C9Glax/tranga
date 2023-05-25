@@ -18,7 +18,7 @@ public class MangaDex : Connector
         Author,
     }
 
-    public MangaDex(string downloadLocation, Logger? logger) : base(downloadLocation, logger)
+    public MangaDex(string downloadLocation, string imageCachePath, Logger? logger) : base(downloadLocation, imageCachePath, logger)
     {
         name = "MangaDex";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
@@ -98,14 +98,11 @@ public class MangaDex : Connector
                     authorId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "author")!["id"]!.GetValue<string>();
                 }
                 string? coverUrl = GetCoverUrl(publicationId, posterId);
-                string? coverBase64 = null;
+                string? coverCacheName = null;
                 if (coverUrl is not null)
                 {
                     DownloadClient.RequestResult coverResult = downloadClient.MakeRequest(coverUrl, (byte)RequestType.AtHomeServer);
-                    using MemoryStream ms = new();
-                    coverResult.result.CopyTo(ms);
-                    byte[] imageBytes = ms.ToArray();
-                    coverBase64 = Convert.ToBase64String(imageBytes);
+                    coverCacheName = SaveImage(coverUrl, coverResult.result);
                 }
                 string? author = GetAuthor(authorId);
 
@@ -136,7 +133,7 @@ public class MangaDex : Connector
                     altTitlesDict,
                     tags.ToArray(),
                     coverUrl,
-                    coverBase64,
+                    coverCacheName,
                     linksDict,
                     year,
                     originalLanguage,
@@ -301,5 +298,16 @@ public class MangaDex : Connector
         
         //Download cover-Image
         DownloadImage(publication.posterUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this.downloadClient, (byte)RequestType.AtHomeServer);
+    }
+
+    private string SaveImage(string url, Stream imageData)
+    {
+        string[] split = url.Split('/');
+        string filename = split[^1];
+        string saveImagePath = Path.Join(imageCachePath, filename);
+        using MemoryStream ms = new();
+        imageData.CopyTo(ms);
+        File.WriteAllBytes(saveImagePath, ms.ToArray());
+        return filename;
     }
 }

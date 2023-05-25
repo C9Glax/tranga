@@ -16,7 +16,9 @@ public abstract class Connector
 
     protected Logger? logger;
 
-    protected Connector(string downloadLocation, Logger? logger)
+    protected string imageCachePath;
+
+    protected Connector(string downloadLocation, string imageCachePath, Logger? logger)
     {
         this.downloadLocation = downloadLocation;
         this.logger = logger;
@@ -24,6 +26,7 @@ public abstract class Connector
         {
             //RequestTypes for RateLimits
         }, logger);
+        this.imageCachePath = imageCachePath;
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)

@@ -8,24 +8,28 @@ string logsFolderPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/va
 string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
 string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");
 
-Directory.CreateDirectory(applicationFolderPath);
-Directory.CreateDirectory(downloadFolderPath);
 Directory.CreateDirectory(logsFolderPath);
-
-Console.WriteLine($"Application-Folder: {applicationFolderPath}");
-Console.WriteLine($"Download-Folder-Path: {downloadFolderPath}");
-Console.WriteLine($"Logfile-Path: {logFilePath}");
-Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
-
 Logger logger = new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath);
-        
-logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
+
+logger.WriteLine("Tranga", "Loading settings.");
+
 TrangaSettings settings;
 if (File.Exists(settingsFilePath))
     settings = TrangaSettings.LoadSettings(settingsFilePath);
 else
     settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, null);
 
+Directory.CreateDirectory(settings.workingDirectory);
+Directory.CreateDirectory(settings.downloadLocation);
+Directory.CreateDirectory(settings.coverImageCache);
+
+logger.WriteLine("Tranga",$"Application-Folder: {settings.workingDirectory}");
+logger.WriteLine("Tranga",$"Settings-File-Path: {settings.settingsFilePath}");
+logger.WriteLine("Tranga",$"Download-Folder-Path: {settings.downloadLocation}");
+logger.WriteLine("Tranga",$"Logfile-Path: {logFilePath}");
+logger.WriteLine("Tranga",$"Image-Cache-Path: {settings.coverImageCache}");
+
+logger.WriteLine("Tranga", "Loading Taskmanager.");
 TaskManager taskManager = new (settings, logger);
 
 var builder = WebApplication.CreateBuilder(args);
