@@ -42,6 +42,8 @@ public readonly struct Publication
         this.status = status;
         this.publicationId = publicationId;
         this.folderName = string.Concat(LegalCharacters.Matches(sortName));
+        while (this.folderName.EndsWith('.'))
+            this.folderName = this.folderName.Substring(0, this.folderName.Length - 1);
         string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
     }
