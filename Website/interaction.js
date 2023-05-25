@@ -111,7 +111,7 @@ function CreatePublication(publication, connector){
     var publicationElement = document.createElement('publication');
     publicationElement.setAttribute("id", publication.internalId);
     var img = document.createElement('img');
-    img.src = publication.posterUrl;
+    img.src = `data:image;base64,${publication.posterBase64}`;
     publicationElement.appendChild(img);
     var info = document.createElement('publication-information');
     var connectorName = document.createElement('connector-name');
