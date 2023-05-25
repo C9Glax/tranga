@@ -132,6 +132,13 @@ settingstab > * {
     margin: 0 20px;
 }
 
+settingstab input {
+    padding: 3px;
+    border-radius: 3px;
+    border: 0;
+    margin: 2px 20px;
+}
+
 settingstab .title {
     font-size: 14pt;
     font-weight: bolder;
@@ -145,14 +152,8 @@ komga-settings {
     flex-wrap: nowrap;
 }
 
-komga-settings > * {
-    margin: 2px 0;
-}
-
 komga-settings input {
-    padding: 3px;
-    border-radius: 3px;
-    border: 0;
+    margin: 2px 0;
 }
 
 #addPublication {

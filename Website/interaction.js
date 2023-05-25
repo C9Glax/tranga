@@ -45,6 +45,7 @@ const settingKomgaUser = document.querySelector("#komgaUsername");
 const settingKomgaPass = document.querySelector("#komgaPassword");
 const settingKomgaTime = document.querySelector("#komgaUpdateTime");
 const settingKomgaConfigured = document.querySelector("#komgaConfigured");
+const settingApiUri = document.querySelector("#settingApiUri");
 
 
 settingsCog.addEventListener("click", () => OpenSettings());
@@ -53,6 +54,18 @@ document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () 
 document.querySelector("#blurBackgroundPublicationPopup").addEventListener("click", () => HidePublicationPopup());
 publicationDelete.addEventListener("click", () => DeleteTaskClick());
 publicationAdd.addEventListener("click", () => AddTaskClick());
+settingApiUri.addEventListener("keypress", (event) => {
+    if(event.key === "Enter"){
+        apiUri = settingApiUri.value;
+        setTimeout(() => GetSettingsClick(), 100);
+        document.cookie = `apiUri=${apiUri};`;
+    }
+});
+searchPublicationQuery.addEventListener("keypress", (event) => {
+    if(event.key === "Enter"){
+        NewSearch();
+    }
+});
 
 let availableConnectors;
 GetAvailableControllers()
@@ -66,11 +79,6 @@ GetAvailableControllers()
         })
     );
 
-searchPublicationQuery.addEventListener("keypress", (event) => {
-   if(event.key === "Enter"){
-       NewSearch();
-   } 
-});
 
 function NewSearch(){
     //Disable inputs
@@ -210,9 +218,12 @@ function OpenSettings(){
 }
 
 function GetSettingsClick(){
+    settingApiUri.value = "";
     settingKomgaUrl.value = "";
     settingKomgaUser.value = "";
     settingKomgaPass.value = "";
+    
+    settingApiUri.placeholder = apiUri;
     
     GetSettings().then(json => {
         settingDownloadLocation.innerText = json.downloadLocation;
@@ -228,7 +239,7 @@ function GetSettingsClick(){
     });
 }
 
-function UpdateSettingsClick(){
+function UpdateKomgaSettings(){
     var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
     console.log(auth);
     UpdateSettings("", settingKomgaUrl.value, auth);
