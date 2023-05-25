@@ -134,9 +134,21 @@ function ResetContent(){
     tasksContent.appendChild(add);
 }
 function ShowPublicationViewerWindow(publicationId, event, add){
+
+
+    //Show popup
+    publicationViewerPopup.style.display = "block";
+    
     //Set position to mouse-position
-    publicationViewerWindow.style.top = `${event.clientY - 60}px`;
-    publicationViewerWindow.style.left = `${event.clientX}px`;
+    if(event.clientY < window.innerHeight - publicationViewerWindow.offsetHeight)
+        publicationViewerWindow.style.top = `${event.clientY}px`;
+    else
+        publicationViewerWindow.style.top = `${event.clientY - publicationViewerWindow.offsetHeight}px`;
+    
+    if(event.clientX < window.innerWidth - publicationViewerWindow.offsetWidth)
+        publicationViewerWindow.style.left = `${event.clientX}px`;
+    else
+        publicationViewerWindow.style.left = `${event.clientX - publicationViewerWindow.offsetWidth}px`;
     
     //Edit information inside the window
     var publication = publications.filter(pub => pub.internalId === publicationId)[0];
@@ -155,9 +167,6 @@ function ShowPublicationViewerWindow(publicationId, event, add){
         publicationAdd.style.display = "none";
         publicationDelete.style.display = "block";
     }
-    
-    //Show popup
-    publicationViewerPopup.style.display = "block";
 }
 
 function HidePublicationPopup(){
