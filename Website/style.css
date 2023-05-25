@@ -35,6 +35,8 @@ topbar {
     align-items: center;
     height: var(--topbar-height);
     background-color: var(--secondary-color);
+    z-index: 100;
+    box-shadow: 0 0 20px black;
 }
 
 titlebox {
@@ -70,9 +72,9 @@ searchdiv{
 }
 
 #searchbox {
-    padding: 6px 8px;
+    padding: 3px 10px;
     border: 0;
-    border-radius: 3px;
+    border-radius: 4px;
     font-size: 14pt;
     width: 250px;
 }
@@ -80,7 +82,7 @@ searchdiv{
 #settingscog {
     cursor: pointer;
     margin: 0px 30px;
-    height: calc(100% - 40px);
+    height: 50%;
     filter: invert(100%) sepia(0%) saturate(7465%) hue-rotate(115deg) brightness(116%) contrast(101%);
 }
 
@@ -178,7 +180,8 @@ komga-settings input {
     font-size: 12pt;
     border-radius: 9pt;
     background-color: var(--primary-color);
-    padding: 2pt 20px;
+    padding: 2pt 17px;
+    color: black;
 }
 
 publication{
