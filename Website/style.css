@@ -455,11 +455,12 @@ publication-viewer publication-information publication-add {
 
 footer-tag-popup {
     display: none;
-    padding: 5px;
+    padding: 0 4px;
     position: fixed;
-    bottom: 55px;
+    bottom: 58px;
     left: 20px;
-    background-color: var(--secondary-color);
+    border: 3px solid var(--secondary-color);
+    background-color: var(--accent-color);
     z-index: 8;
     border-radius: 5px;
     max-height: 400px;
@@ -488,6 +489,6 @@ footer-tag-popup::before{
     border-top: 20px solid var(--secondary-color);
     border-bottom: 20px solid transparent;
     left: 0px;
-    bottom: -36px;
+    bottom: -41px;
     border-radius: 0 0 0 5px;
 }
