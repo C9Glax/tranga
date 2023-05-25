@@ -305,7 +305,7 @@ public class MangaDex : Connector
         string saveImagePath = Path.Join(imageCachePath, filename);
 
         if (File.Exists(saveImagePath))
-            return saveImagePath;
+            return filename;
         
         DownloadClient.RequestResult coverResult = downloadClient.MakeRequest(url, (byte)RequestType.AtHomeServer);
         using MemoryStream ms = new();
