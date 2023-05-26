@@ -18,6 +18,7 @@ const publicationViewerAuthor = document.querySelector("#publicationViewerAuthor
 const pubviewcover = document.querySelector("#pubviewcover");
 const publicationDelete = document.querySelector("publication-delete");
 const publicationAdd = document.querySelector("publication-add");
+const publicationTaskStart = document.querySelector("publication-starttask");
 const closetaskpopup = document.querySelector("#closePopupImg");
 const settingDownloadLocation = document.querySelector("#downloadLocation");
 const settingKomgaUrl = document.querySelector("#komgaUrl");
@@ -39,6 +40,7 @@ document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () 
 document.querySelector("#blurBackgroundPublicationPopup").addEventListener("click", () => HidePublicationPopup());
 publicationDelete.addEventListener("click", () => DeleteTaskClick());
 publicationAdd.addEventListener("click", () => AddTaskClick());
+publicationTaskStart.addEventListener("click", () => StartTaskClick());
 settingApiUri.addEventListener("keypress", (event) => {
     if(event.key === "Enter"){
         apiUri = settingApiUri.value;
@@ -130,6 +132,12 @@ function AddTaskClick(){
     HidePublicationPopup();
 }
 
+function StartTaskClick(){
+    var toEditTask = tasks.filter(task => task.publication.internalId == toEditId)[0];
+    StartTask("DownloadNewChapters", toEditTask.connectorName, toEditId);
+    HidePublicationPopup();
+}
+
 function ResetContent(){
     //Delete everything
     tasksContent.replaceChildren();
@@ -144,8 +152,6 @@ function ResetContent(){
     tasksContent.appendChild(add);
 }
 function ShowPublicationViewerWindow(publicationId, event, add){
-
-
     //Show popup
     publicationViewerPopup.style.display = "block";
     
@@ -170,12 +176,14 @@ function ShowPublicationViewerWindow(publicationId, event, add){
     
     //Check what action should be listed
     if(add){
-        publicationAdd.style.display = "block";
+        publicationAdd.style.display = "initial";
         publicationDelete.style.display = "none";
+        publicationTaskStart.style.display = "none";
     }
     else{
         publicationAdd.style.display = "none";
-        publicationDelete.style.display = "block";
+        publicationDelete.style.display = "initial";
+        publicationTaskStart.style.display = "initial";
     }
 }
 
@@ -259,15 +267,17 @@ function ShowRunningTasks(event){
         .then(json => {
             tagTasksPopupContent.replaceChildren();
             json.forEach(task => {
-                var taskname = document.createElement("footer-tag-task-name");
-                taskname.innerText = task.publication.sortName;
-                tagTasksPopupContent.appendChild(taskname);
+                console.log(task);
+                if(task.publication != null){
+                    var taskname = document.createElement("footer-tag-task-name");
+                    taskname.innerText = task.publication.sortName;
+                    tagTasksPopupContent.appendChild(taskname);
+                }
             });
-            if(json.length > 0){
+            if(tagTasksPopupContent.children.length > 0){
                 tagTaskPopup.style.display = "block";
                 tagTaskPopup.style.left = `${tagTasksRunning.offsetLeft - 20}px`;
             }
-                
         });
 }
 

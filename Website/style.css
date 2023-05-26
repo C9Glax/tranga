@@ -383,9 +383,6 @@ publication-viewer{
     background-color: var(--accent-color);
     border-radius: 5px;
     overflow: hidden;
-}
-
-publication-viewer{
     padding: 30px;
 }
 
@@ -435,22 +432,32 @@ publication-viewer publication-information publication-description {
     overflow-x: scroll;
 }
 
-publication-viewer publication-information publication-delete {
+publication-viewer publication-information publication-interactions {
+    display: flex;
+    flex-direction: row;
     position: absolute;
-    bottom: 0px;
-    right: 0px;
-    color: red;
-    margin: 20px;
+    justify-content: end;
+    align-items: start;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+publication-viewer publication-information publication-interactions > * {
+    margin: 0 10px 10px 10px;
     font-size: 16pt;
 }
 
-publication-viewer publication-information publication-add {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
+publication-viewer publication-information publication-interactions publication-starttask {
+    color: var(--secondary-color);
+}
+
+publication-viewer publication-information publication-interactions publication-delete {
+    color: red;
+}
+
+publication-viewer publication-information publication-interactions publication-add {
     color: limegreen;
-    margin: 20px;
-    font-size: 16pt;
 }
 
 footer-tag-popup {
