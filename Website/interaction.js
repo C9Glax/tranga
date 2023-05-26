@@ -227,6 +227,7 @@ function GetSettingsClick(){
     });
     
     GetKomgaTask().then(json => {
+        settingKomgaTime.value = json[0].reoccurrence;
         if(json.length > 0)
             settingKomgaConfigured.innerText = "✅";
         else
@@ -235,11 +236,17 @@ function GetSettingsClick(){
 }
 
 function UpdateKomgaSettings(){
-    var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
-    console.log(auth);
-    UpdateSettings("", settingKomgaUrl.value, auth);
+    if(settingKomgaUser.value != "" && settingKomgaPass != ""){
+        var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
+        console.log(auth);
+
+        if(settingKomgaUrl.value != "")
+            UpdateSettings("", settingKomgaUrl.value, auth);
+        else
+            UpdateSettings("", settingKomgaUrl.placeholder, auth);
+    }
     CreateTask("UpdateKomgaLibrary", settingKomgaTime.value, "","","");
-    setTimeout(() => GetSettingsClick(), 500);
+    setTimeout(() => GetSettingsClick(), 100);
 }
 
 function utf8_to_b64( str ) {

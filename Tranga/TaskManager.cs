@@ -141,14 +141,11 @@ public class TaskManager
         TrangaTask newTask;
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
         {
-            newTask = new TrangaTask(task, null, null, reoccurrence, language);
-            
-            //Check if same task already exists
-            // ReSharper disable once SimplifyLinqExpressionUseAll readabilty
-            if (!_allTasks.Any(trangaTask => trangaTask.task == task))
-            {
-                _allTasks.Add(newTask);
-            }
+            newTask = new TrangaTask(task, null, null, reoccurrence);
+            logger?.WriteLine(this.GetType().ToString(), $"Removing old {task}-Task.");
+            //Only one UpdateKomgaLibrary Task
+            _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateKomgaLibrary);
+            _allTasks.Add(newTask);
         }
         else
         {
