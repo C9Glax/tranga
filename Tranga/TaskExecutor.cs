@@ -37,7 +37,7 @@ public static class TaskExecutor
         switch (trangaTask.task)
         {
             case TrangaTask.Task.DownloadNewChapters:
-                DownloadNewChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, ref taskManager._chapterCollection);
+                DownloadNewChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, ref taskManager._chapterCollection, taskManager.settings);
                 break;
             case TrangaTask.Task.UpdateChapters:
                 UpdateChapters(connector!, (Publication)trangaTask.publication!, trangaTask.language, ref taskManager._chapterCollection);
@@ -90,7 +90,7 @@ public static class TaskExecutor
     /// <param name="publication">Publication to check</param>
     /// <param name="language">Language to receive chapters for</param>
     /// <param name="chapterCollection"></param>
-    private static void DownloadNewChapters(Connector connector, Publication publication, string language, ref Dictionary<Publication, List<Chapter>> chapterCollection)
+    private static void DownloadNewChapters(Connector connector, Publication publication, string language, ref Dictionary<Publication, List<Chapter>> chapterCollection, TrangaSettings settings)
     {
         //Check if Publication already has a Folder
         string publicationFolder = Path.Join(connector.downloadLocation, publication.folderName);
@@ -98,7 +98,7 @@ public static class TaskExecutor
             Directory.CreateDirectory(publicationFolder);
         List<Chapter> newChapters = UpdateChapters(connector, publication, language, ref chapterCollection);
 
-        connector.DownloadCover(publication);
+        connector.CloneCoverFromCache(publication, settings);
         
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))

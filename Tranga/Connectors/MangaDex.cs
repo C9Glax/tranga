@@ -267,11 +267,12 @@ public class MangaDex : Connector
         return author;
     }
 
-    public override void DownloadCover(Publication publication)
+    public override void CloneCoverFromCache(Publication publication, TrangaSettings settings)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Download cover {publication.sortName}");
+        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName}");
         //Check if Publication already has a Folder and cover
         string publicationFolder = Path.Join(downloadLocation, publication.folderName);
+        
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
         DirectoryInfo dirInfo = new (publicationFolder);
@@ -281,21 +282,11 @@ public class MangaDex : Connector
             return;
         }
 
-        if (publication.posterUrl is null || publication.posterUrl!.Contains("http"))
-        {
-            logger?.WriteLine(this.GetType().ToString(), $"No Poster-URL in publication");
-            return;
-        }
-
-        //Get file-extension (jpg, png)
-        string[] split = publication.posterUrl.Split('.');
-        string extension = split[^1];
-
-        string outFolderPath = Path.Join(downloadLocation, publication.folderName);
-        Directory.CreateDirectory(outFolderPath);
+        string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
+        string newFilePath = Path.Join(publicationFolder, Path.GetFileName(fileInCache));
+        if(File.Exists(fileInCache))
+            File.Copy(fileInCache, newFilePath);
         
-        //Download cover-Image
-        DownloadImage(publication.posterUrl, Path.Join(downloadLocation, publication.folderName, $"cover.{extension}"), this.downloadClient, (byte)RequestType.AtHomeServer);
     }
 
     private string SaveImage(string url)

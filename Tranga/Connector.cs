@@ -55,12 +55,13 @@ public abstract class Connector
     /// <param name="publication">Publication that contains Chapter</param>
     /// <param name="chapter">Chapter with Images to retrieve</param>
     public abstract void DownloadChapter(Publication publication, Chapter chapter);
-    
+
     /// <summary>
     /// Retrieves the Cover from the Website
     /// </summary>
     /// <param name="publication">Publication to retrieve Cover for</param>
-    public abstract void DownloadCover(Publication publication);
+    /// <param name="settings">TrangaSettings</param>
+    public abstract void CloneCoverFromCache(Publication publication, TrangaSettings settings);
 
     /// <summary>
     /// Saves the series-info to series.json in the Publication Folder
