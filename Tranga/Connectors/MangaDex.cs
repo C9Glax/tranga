@@ -284,7 +284,7 @@ public class MangaDex : Connector
 
         string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
         string newFilePath = Path.Join(publicationFolder, Path.GetFileName(fileInCache));
-        if(File.Exists(fileInCache))
+        if(!File.Exists(fileInCache) && !File.Exists(newFilePath))
             File.Copy(fileInCache, newFilePath);
         
     }
