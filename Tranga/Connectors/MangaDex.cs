@@ -283,7 +283,7 @@ public class MangaDex : Connector
         }
 
         string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
-        string newFilePath = Path.Join(publicationFolder, Path.GetFileName(fileInCache));
+        string newFilePath = Path.Join(publicationFolder, "cover.", Path.GetFileName(fileInCache).Split('.')[^1]);
         if(!File.Exists(fileInCache) && !File.Exists(newFilePath))
             File.Copy(fileInCache, newFilePath);
         logger?.WriteLine(this.GetType().ToString(), $"Done cloning cover {publication.sortName}");
