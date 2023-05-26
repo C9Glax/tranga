@@ -87,7 +87,7 @@ public abstract class Connector
     /// <returns>XML-string</returns>
     protected static string CreateComicInfo(Publication publication, Chapter chapter, Logger? logger)
     {
-        logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} Chapter {chapter.volumeNumber} {chapter.chapterNumber}");
+        logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         XElement comicInfo = new XElement("ComicInfo",
             new XElement("Tags", string.Join(',',publication.tags)),
             new XElement("LanguageISO", publication.originalLanguage),
@@ -138,11 +138,12 @@ public abstract class Connector
     /// <param name="imageUrls">List of URLs to download Images from</param>
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
     /// <param name="downloadClient">DownloadClient of the connector</param>
+    /// <param name="logger"></param>
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
     protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, byte requestType, Logger? logger, string? comicInfoPath = null)
     {
-        logger?.WriteLine("Connector", "Downloading Images");
+        logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
@@ -160,13 +161,14 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
+            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1}/{imageUrls.Length}");
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient, requestType);
         }
         
         if(comicInfoPath is not null)
             File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
         
-        logger?.WriteLine("Connector", "Creating archive");
+        logger?.WriteLine("Connector", $"Creating archive {saveArchiveFilePath}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         Directory.Delete(tempFolder, true); //Cleanup
@@ -228,6 +230,7 @@ public abstract class Connector
                 catch (HttpRequestException e)
                 {
                     logger?.WriteLine(this.GetType().ToString(), e.Message);
+                    logger?.WriteLine(this.GetType().ToString(), $"Waiting {_rateLimit[requestType] * 2}");
                     Thread.Sleep(_rateLimit[requestType] * 2);
                 }
             }

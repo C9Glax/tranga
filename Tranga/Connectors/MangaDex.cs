@@ -55,6 +55,7 @@ public class MangaDex : Connector
             total = result["total"]!.GetValue<int>(); //Update the total number of Publications
             
             JsonArray mangaInResult = result["data"]!.AsArray(); //Manga-data-Array
+            logger?.WriteLine(this.GetType().ToString(), $"Getting publication data.");
             //Loop each Manga and extract information from JSON
             foreach (JsonNode? mangeNode in mangaInResult)
             {
@@ -142,12 +143,13 @@ public class MangaDex : Connector
             }
         }
 
+        logger?.WriteLine(this.GetType().ToString(), $"Done getting publications (title={publicationTitle})");
         return publications.ToArray();
     }
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters {publication.sortName} (language={language})");
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -197,12 +199,13 @@ public class MangaDex : Connector
         {
             NumberDecimalSeparator = "."
         };
+        logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Download Chapter {publication.sortName} {chapter.volumeNumber}-{chapter.chapterNumber}");
+        logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
@@ -229,9 +232,10 @@ public class MangaDex : Connector
 
     private string? GetCoverUrl(string publicationId, string? posterId)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Getting CoverUrl for {publicationId}");
         if (posterId is null)
         {
-            logger?.WriteLine(this.GetType().ToString(), $"No posterId");
+            logger?.WriteLine(this.GetType().ToString(), $"No posterId, aborting");
             return null;
         }
         
@@ -247,6 +251,7 @@ public class MangaDex : Connector
         string fileName = result["data"]!["attributes"]!["fileName"]!.GetValue<string>();
 
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
+        logger?.WriteLine(this.GetType().ToString(), $"Got Cover-Url for {publicationId} -> {coverUrl}");
         return coverUrl;
     }
 
@@ -264,6 +269,7 @@ public class MangaDex : Connector
             return null;
 
         string author = result["data"]!["attributes"]!["name"]!.GetValue<string>();
+        logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {author}");
         return author;
     }
 
@@ -286,8 +292,6 @@ public class MangaDex : Connector
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
         logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);
-        logger?.WriteLine(this.GetType().ToString(), $"Done cloning cover {publication.sortName}");
-        
     }
 
     private string SaveImage(string url)
@@ -303,6 +307,7 @@ public class MangaDex : Connector
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
+        logger?.WriteLine(this.GetType().ToString(), $"Saving image to {saveImagePath}");
         return filename;
     }
 }
