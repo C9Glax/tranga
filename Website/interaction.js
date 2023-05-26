@@ -258,7 +258,7 @@ function ShowRunningTasks(event){
             });
             if(json.length > 0){
                 tagTaskPopup.style.display = "block";
-                tagTaskPopup.style.left = `${event.client - 20}px`;
+                tagTaskPopup.style.left = `${tagTasksRunning.offsetLeft - 20}px`;
             }
                 
         });
@@ -275,7 +275,7 @@ function ShowQueuedTasks(event){
             });
             if(json.length > 0){
                 tagTaskPopup.style.display = "block";
-                tagTaskPopup.style.left = `${event.clientX - 20}px`;
+                tagTaskPopup.style.left = `${tagTasksQueued.offsetLeft- 20}px`;
             }
         });
 }
@@ -291,7 +291,7 @@ function ShowAllTasks(event){
             });
             if(json.length > 0){
                 tagTaskPopup.style.display = "block";
-                tagTaskPopup.style.left = `${event.clientX - 20}px`;
+                tagTaskPopup.style.left = `${tagTasksTotal.offsetLeft - 20}px`;
             }
         });
 }
