@@ -48,11 +48,10 @@ public class TaskManager
 
     public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth)
     {
-        Komga? komga = null;
-        if (komgaUrl is not null && komgaAuth is not null)
-            komga = new Komga(komgaUrl, komgaAuth, null);
-        settings.downloadLocation = downloadLocation ?? settings.downloadLocation;
-        settings.komga = komga ?? komga;
+        if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 0 && komgaAuth.Length > 0)
+            settings.komga = new Komga(komgaUrl, komgaAuth, null);
+        if (downloadLocation is not null && downloadLocation.Length > 0)
+            settings.downloadLocation = downloadLocation;
         ExportData();
     }
 

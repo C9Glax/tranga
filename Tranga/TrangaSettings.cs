@@ -14,6 +14,8 @@ public class TrangaSettings
 
     public TrangaSettings(string downloadLocation, string workingDirectory, Komga? komga)
     {
+        if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
+            throw new ArgumentException("Download-location and working-directory paths can not be empty!");
         this.workingDirectory = workingDirectory;
         this.downloadLocation = downloadLocation;
         this.komga = komga;
