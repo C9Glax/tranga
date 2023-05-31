@@ -36,7 +36,7 @@ public class TaskManager
             newKomga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
         
         this.settings = new TrangaSettings(downloadFolderPath, workingDirectory, newKomga);
-        ExportData();
+        ExportDataAndSettings();
         
         this._connectors = new Connector[]{ new MangaDex(downloadFolderPath, imageCachePath, logger) };
         foreach(Connector cConnector in this._connectors)
@@ -52,7 +52,7 @@ public class TaskManager
             settings.komga = new Komga(komgaUrl, komgaAuth, null);
         if (downloadLocation is not null && downloadLocation.Length > 0)
             settings.downloadLocation = downloadLocation;
-        ExportData();
+        ExportDataAndSettings();
     }
 
     public TaskManager(TrangaSettings settings, Logger? logger = null)
@@ -65,7 +65,7 @@ public class TaskManager
         
         this.settings = settings;
         ImportData();
-        ExportData();
+        ExportDataAndSettings();
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
     }
@@ -83,7 +83,7 @@ public class TaskManager
             foreach (KeyValuePair<Connector, List<TrangaTask>> connectorTaskQueue in _taskQueue)
             {
                 if(connectorTaskQueue.Value.RemoveAll(task => task.state == TrangaTask.ExecutionState.Waiting) > 0)
-                    ExportData();
+                    ExportDataAndSettings();
                 
                 if (connectorTaskQueue.Value.Count > 0 && connectorTaskQueue.Value.All(task => task.state is TrangaTask.ExecutionState.Enqueued))
                     ExecuteTaskNow(connectorTaskQueue.Value.First());
@@ -169,9 +169,10 @@ public class TaskManager
             else
                 logger?.WriteLine(this.GetType().ToString(), $"Publication already exists {publication?.internalId}");
         }
-        logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask.ToString()}");
-        ExportData();
-        
+        ExportDataAndSettings();
+
+        if (newTask is null)
+            throw new Exception("Invalid path");
         return newTask;
     }
 
@@ -207,7 +208,7 @@ public class TaskManager
             else
                 logger?.WriteLine(this.GetType().ToString(), $"No Task {task} {publication?.sortName} {publication?.internalId} could be found.");
         }
-        ExportData();
+        ExportDataAndSettings();
     }
 
     /// <summary>
@@ -286,7 +287,7 @@ public class TaskManager
     {
         logger?.WriteLine(this.GetType().ToString(), $"Shutting down (forced={force})");
         _continueRunning = false;
-        ExportData();
+        ExportDataAndSettings();
         
         if(force)
             Environment.Exit(_allTasks.Count(task => task.state is TrangaTask.ExecutionState.Enqueued or TrangaTask.ExecutionState.Running));
@@ -322,7 +323,7 @@ public class TaskManager
     /// <summary>
     /// Exports data (settings, tasks) to file
     /// </summary>
-    private void ExportData()
+    private void ExportDataAndSettings()
     {
         logger?.WriteLine(this.GetType().ToString(), $"Exporting settings to {settings.settingsFilePath}");
         File.WriteAllText(settings.settingsFilePath, JsonConvert.SerializeObject(settings));
