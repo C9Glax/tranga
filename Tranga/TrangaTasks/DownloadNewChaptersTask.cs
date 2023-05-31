@@ -1,4 +1,6 @@
-﻿namespace Tranga.TrangaTasks;
+﻿using Logging;
+
+namespace Tranga.TrangaTasks;
 
 public class DownloadNewChaptersTask : TrangaTask
 {
@@ -6,9 +8,9 @@ public class DownloadNewChaptersTask : TrangaTask
     {
     }
 
-    public override void Execute(TaskManager taskManager)
+    public override void Execute(TaskManager taskManager, Logger? logger)
     {
-        this.state = ExecutionState.Running;
+        StartExecutionChores(logger);
         Publication pub = (Publication)this.publication!;
         Connector connector = taskManager.GetConnector(this.connectorName);
 
@@ -25,8 +27,7 @@ public class DownloadNewChaptersTask : TrangaTask
         foreach(Chapter newChapter in newChapters)
             connector.DownloadChapter(pub, newChapter);
 
-        this.lastExecuted = DateTime.Now;
-        this.state = ExecutionState.Waiting;
+        EndExecutionChores(logger);
     }
     
     /// <summary>

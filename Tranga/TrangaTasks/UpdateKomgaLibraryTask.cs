@@ -1,4 +1,6 @@
-﻿namespace Tranga.TrangaTasks;
+﻿using Logging;
+
+namespace Tranga.TrangaTasks;
 
 public class UpdateKomgaLibraryTask : TrangaTask
 {
@@ -6,9 +8,9 @@ public class UpdateKomgaLibraryTask : TrangaTask
     {
     }
 
-    public override void Execute(TaskManager taskManager)
+    public override void Execute(TaskManager taskManager, Logger? logger)
     {
-        this.state = ExecutionState.Running;
+        StartExecutionChores(logger);
         if (taskManager.komga is null)
             return;
         Komga komga = taskManager.komga;
@@ -16,8 +18,6 @@ public class UpdateKomgaLibraryTask : TrangaTask
         Komga.KomgaLibrary[] allLibraries = komga.GetLibraries();
         foreach (Komga.KomgaLibrary lib in allLibraries)
             komga.UpdateLibrary(lib.id);
-        
-        this.lastExecuted = DateTime.Now;
-        this.state = ExecutionState.Waiting;
+        EndExecutionChores(logger);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tranga.TrangaTasks;
 
@@ -37,15 +38,29 @@ public abstract class TrangaTask
     }
 
     /// <summary>
-    /// Set state to running
+    /// Should call StartExecutionChores and EndExecutionChores
     /// </summary>
     /// <param name="taskManager"></param>
-    public abstract void Execute(TaskManager taskManager);
+    /// <param name="logger"></param>
+    public abstract void Execute(TaskManager taskManager, Logger? logger);
 
     /// <returns>True if elapsed time since last execution is greater than set interval</returns>
     public bool ShouldExecute()
     {
         return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence && state is ExecutionState.Waiting;
+    }
+
+    protected void StartExecutionChores(Logger? logger)
+    {
+        logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
+        this.state = ExecutionState.Running;
+    }
+
+    protected void EndExecutionChores(Logger? logger)
+    {
+        logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
+        this.lastExecuted = DateTime.Now;
+        this.state = ExecutionState.Waiting;
     }
 
     public enum Task : byte
