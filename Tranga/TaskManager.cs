@@ -116,10 +116,9 @@ public class TaskManager
         if (!this._allTasks.Contains(task))
             return;
         
-        logger?.WriteLine(this.GetType().ToString(), $"Forcing Execution: {task}");
         Task t = new(() =>
         {
-            task.Execute(this);
+            task.Execute(this, this.logger);
         });
         t.Start();
     }
