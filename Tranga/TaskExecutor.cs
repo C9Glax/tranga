@@ -98,7 +98,7 @@ public static class TaskExecutor
             Directory.CreateDirectory(publicationFolder);
         List<Chapter> newChapters = UpdateChapters(connector, publication, language, ref chapterCollection);
 
-        connector.CloneCoverFromCache(publication, settings);
+        connector.CopyCoverFromCacheToDownloadLocation(publication, settings);
         
         publication.SaveSeriesInfoJson(connector.downloadLocation);
 

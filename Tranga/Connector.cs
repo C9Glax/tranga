@@ -57,16 +57,15 @@ public abstract class Connector
     public abstract void DownloadChapter(Publication publication, Chapter chapter);
 
     /// <summary>
-    /// Retrieves the Cover from the Website
+    /// Copies the already downloaded cover from cache to downloadLocation
     /// </summary>
     /// <param name="publication">Publication to retrieve Cover for</param>
     /// <param name="settings">TrangaSettings</param>
-    public void CloneCoverFromCache(Publication publication, TrangaSettings settings)
+    public void CopyCoverFromCacheToDownloadLocation(Publication publication, TrangaSettings settings)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName}");
+        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} {publication.internalId}");
         //Check if Publication already has a Folder and cover
         string publicationFolder = Path.Join(downloadLocation, publication.folderName);
-        
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
         DirectoryInfo dirInfo = new (publicationFolder);
