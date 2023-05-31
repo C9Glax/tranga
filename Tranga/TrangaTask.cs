@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Tranga.TrangaTasks;
 
 namespace Tranga;
 
@@ -55,5 +57,32 @@ public abstract class TrangaTask
     public override string ToString()
     {
         return $"{task}, {lastExecuted}, {reoccurrence}, {state} {(connectorName is not null ? $", {connectorName}" : "" )} {(publication is not null ? $", {publication?.sortName}": "")}";
+    }
+    
+    public class TrangaTaskJsonConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType == typeof(TrangaTask));
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        {
+            JObject jo = JObject.Load(reader);
+            if (jo["task"]!.Value<Int64>() == (Int64)Task.DownloadNewChapters)
+                return jo.ToObject<DownloadNewChaptersTask>(serializer)!;
+
+            if (jo["task"]!.Value<Int64>() == (Int64)Task.UpdateKomgaLibrary)
+                return jo.ToObject<UpdateKomgaLibraryTask>(serializer)!;
+
+            throw new Exception();
+        }
+
+        public override bool CanWrite => false;
+
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        {
+            throw new Exception("Dont call this");
+        }
     }
 }

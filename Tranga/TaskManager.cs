@@ -307,7 +307,7 @@ public class TaskManager
         {
             logger?.WriteLine(this.GetType().ToString(), $"Importing tasks from {settings.tasksFilePath}");
             buffer = File.ReadAllText(settings.tasksFilePath);
-            this._allTasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(buffer)!;
+            this._allTasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(buffer, new JsonSerializerSettings() { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
         }
 
         if (File.Exists(settings.knownPublicationsPath))
