@@ -95,7 +95,7 @@ public class TaskManager
             foreach (TrangaTask task in _allTasks.Where(aTask => aTask.ShouldExecute()))
             {
                 task.state = TrangaTask.ExecutionState.Enqueued;
-                if(task.connectorName is null)
+                if(task.task == TrangaTask.Task.UpdateKomgaLibrary)
                     ExecuteTaskNow(task);
                 else
                 {
