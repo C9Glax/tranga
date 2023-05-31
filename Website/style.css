@@ -53,6 +53,7 @@ titlebox {
 }
 
 titlebox span{
+    cursor: default;
     font-size: 24pt;
     font-weight: bold;
     background: linear-gradient(150deg, var(--primary-color), var(--accent-color));
@@ -64,6 +65,7 @@ titlebox span{
 titlebox img {
     height: 100%;
     margin-right: 10px;
+    cursor: grab;
 }
 
 spacer{
@@ -119,6 +121,7 @@ footer > div {
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
+    cursor: pointer;
 }
 
 footer > div > *{
@@ -130,6 +133,7 @@ footer > div > *{
     flex-grow: 1;
     text-align: right;
     margin-right: 20px;
+    cursor: url("media/blahaj.png"), grab;
 }
 
 content {
@@ -459,6 +463,7 @@ publication-viewer publication-information publication-interactions {
 publication-viewer publication-information publication-interactions > * {
     margin: 0 10px;
     font-size: 16pt;
+    cursor: pointer;
 }
 
 publication-viewer publication-information publication-interactions publication-starttask {

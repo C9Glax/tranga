@@ -79,6 +79,11 @@ function NewSearch(){
     selectRecurrence.disabled = true;
     connectorSelect.disabled = true;
     searchPublicationQuery.disabled = true;
+    //Waitcursor
+    document.body.style.cursor = "wait";
+    selectRecurrence.style.cursor = "wait";
+    connectorSelect.style.cursor = "wait";
+    searchPublicationQuery.style.cursor = "wait";
 
     //Empty previous results
     selectPublication.replaceChildren();
@@ -97,6 +102,11 @@ function NewSearch(){
             selectRecurrence.disabled = false;
             connectorSelect.disabled = false;
             searchPublicationQuery.disabled = false;
+            //Cursor
+            document.body.style.cursor = "initial";
+            selectRecurrence.style.cursor = "initial";
+            connectorSelect.style.cursor = "initial";
+            searchPublicationQuery.style.cursor = "initial";
         });
 }
 
