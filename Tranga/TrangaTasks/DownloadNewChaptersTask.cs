@@ -25,6 +25,7 @@ public class DownloadNewChaptersTask : TrangaTask
         foreach(Chapter newChapter in newChapters)
             connector.DownloadChapter(pub, newChapter);
 
+        this.lastExecuted = DateTime.Now;
         this.state = ExecutionState.Waiting;
     }
     
