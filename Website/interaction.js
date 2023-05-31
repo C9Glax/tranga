@@ -2,6 +2,7 @@
 let tasks = [];
 let toEditId;
 
+const searchBox = document.querySelector("#searchbox");
 const searchPublicationQuery = document.querySelector("#searchPublicationQuery");
 const selectPublication = document.querySelector("#taskSelectOutput");
 const connectorSelect = document.querySelector("#connectors");
@@ -34,6 +35,7 @@ const tagTasksTotal = document.querySelector("#totalTasksTag");
 const tagTaskPopup = document.querySelector("footer-tag-popup");
 const tagTasksPopupContent = document.querySelector("footer-tag-content");
 
+searchbox.addEventListener("keyup", (event) => FilterResults());
 settingsCog.addEventListener("click", () => OpenSettings());
 document.querySelector("#blurBackgroundSettingsPopup").addEventListener("click", () => HideSettings());
 closetaskpopup.addEventListener("click", () => HideAddTaskPopup());
@@ -329,6 +331,30 @@ function ShowAllTasks(event){
 
 function CloseTasksPopup(){
     tagTaskPopup.style.display = "none";
+}
+
+function FilterResults(){
+    if(searchBox.value.length > 0){
+        tasksContent.childNodes.forEach(publication => {
+            publication.childNodes.forEach(item => {
+                if(item.nodeName.toLowerCase() == "publication-information"){
+                    item.childNodes.forEach(information => {
+                        if(information.nodeName.toLowerCase() == "publication-name"){
+                            if(!information.textContent.toLowerCase().includes(searchBox.value.toLowerCase())){
+                                publication.style.display = "none";
+                            }else{
+                                publication.style.display = "initial";
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }else{
+        tasksContent.childNodes.forEach(publication => publication.style.display = "initial");
+    }
+    
+    
 }
 
 //Resets the tasks shown
