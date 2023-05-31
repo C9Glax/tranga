@@ -14,6 +14,7 @@ const publicationViewerPopup = document.querySelector("#publicationViewerPopup")
 const publicationViewerWindow = document.querySelector("publication-viewer");
 const publicationViewerDescription = document.querySelector("#publicationViewerDescription");
 const publicationViewerName = document.querySelector("#publicationViewerName");
+const publicationViewerTags = document.querySelector("#publicationViewerTags");
 const publicationViewerAuthor = document.querySelector("#publicationViewerAuthor");
 const pubviewcover = document.querySelector("#pubviewcover");
 const publicationDelete = document.querySelector("publication-delete");
@@ -169,6 +170,7 @@ function ShowPublicationViewerWindow(publicationId, event, add){
     //Edit information inside the window
     var publication = publications.filter(pub => pub.internalId === publicationId)[0];
     publicationViewerName.innerText = publication.sortName;
+    publicationViewerTags.innerText = publication.tags.join(", ");
     publicationViewerDescription.innerText = publication.description;
     publicationViewerAuthor.innerText = publication.author;
     pubviewcover.src = `imageCache/${publication.coverFileNameInCache}`;
@@ -296,7 +298,6 @@ function ShowQueuedTasks(event){
             }
         });
 }
-
 function ShowAllTasks(event){
     GetDownloadTasks()
         .then(json => {

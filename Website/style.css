@@ -376,14 +376,13 @@ addtask-settings addtask-setting{
 publication-viewer{
     display: block;
     width: 450px;
-    height: 300px;
     position: absolute;
     top: 200px;
     left: 400px;
     background-color: var(--accent-color);
     border-radius: 5px;
     overflow: hidden;
-    padding: 30px;
+    padding: 15px;
 }
 
 publication-viewer::after{
@@ -391,7 +390,8 @@ publication-viewer::after{
     position: absolute;
     left: 0; top: 0;
     border-radius: 5px;
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     background: rgba(0,0,0,0.8);
     backdrop-filter: blur(3px);
 }
@@ -407,16 +407,32 @@ publication-viewer img {
     z-index: 0;
 }
 
-publication-viewer publication-information publication-name{
+publication-viewer publication-information > * {
     margin: 5px 0;
 }
 
-publication-viewer publication-information publication-author {
-    margin: 5px 0;
+publication-viewer publication-information publication-name {
+    width: initial;
+    overflow-x: scroll;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+publication-viewer publication-information publication-tags::before {
+    content: "Tags";
+    display: block;
+    font-weight: bolder;
+}
+
+publication-viewer publication-information publication-tags {
+    overflow-x: scroll;
+    white-space: nowrap;
+    scrollbar-width: none;
 }
 
 publication-viewer publication-information publication-author::before {
     content: "Author: ";
+    font-weight: bolder;
 }
 
 publication-viewer publication-information publication-description::before {
@@ -428,23 +444,20 @@ publication-viewer publication-information publication-description::before {
 publication-viewer publication-information publication-description {
     font-size: 12pt;
     margin: 5px 0;
-    max-height: 200px;
+    height: 145px;
     overflow-x: scroll;
 }
 
 publication-viewer publication-information publication-interactions {
     display: flex;
     flex-direction: row;
-    position: absolute;
     justify-content: end;
     align-items: start;
-    bottom: 0;
-    left: 0;
     width: 100%;
 }
 
 publication-viewer publication-information publication-interactions > * {
-    margin: 0 10px 10px 10px;
+    margin: 0 10px;
     font-size: 16pt;
 }
 
