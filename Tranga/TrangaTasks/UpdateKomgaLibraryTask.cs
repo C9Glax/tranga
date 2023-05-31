@@ -16,5 +16,6 @@ public class UpdateKomgaLibraryTask : TrangaTask
         Komga.KomgaLibrary[] allLibraries = komga.GetLibraries();
         foreach (Komga.KomgaLibrary lib in allLibraries)
             komga.UpdateLibrary(lib.id);
+        this.state = ExecutionState.Waiting;
     }
 }
