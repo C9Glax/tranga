@@ -242,8 +242,11 @@ function GetSettingsClick(){
     
     GetSettings().then(json => {
         settingDownloadLocation.innerText = json.downloadLocation;
-        if(json.komga != null)
+        if(json.komga != null) {
             settingKomgaUrl.placeholder = json.komga.baseUrl;
+            settingKomgaUser.placeholder = "Configured";
+            settingKomgaPass.placeholder = "***";
+        }
     });
     
     GetKomgaTask().then(json => {
