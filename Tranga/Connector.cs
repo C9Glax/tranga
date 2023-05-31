@@ -50,7 +50,7 @@ public abstract class Connector
     
     /// <summary>
     /// Retrieves the Chapter (+Images) from the website.
-    /// Should later call DownloadChapterImages to retrieve the individual Images of the Chapter.
+    /// Should later call DownloadChapterImages to retrieve the individual Images of the Chapter and create .cbz archive.
     /// </summary>
     /// <param name="publication">Publication that contains Chapter</param>
     /// <param name="chapter">Chapter with Images to retrieve</param>
