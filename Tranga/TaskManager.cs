@@ -11,7 +11,7 @@ namespace Tranga;
 /// </summary>
 public class TaskManager
 {
-    public Dictionary<Publication, List<Chapter>> _chapterCollection = new();
+    public Dictionary<Publication, List<Chapter>> chapterCollection = new();
     private HashSet<TrangaTask> _allTasks;
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
@@ -138,7 +138,7 @@ public class TaskManager
     {
         logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {task} {connectorName} {publication?.sortName}");
 
-        TrangaTask newTask = null;
+        TrangaTask? newTask = null;
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
         {
             newTask = new UpdateKomgaLibraryTask(task, reoccurrence);
@@ -164,10 +164,10 @@ public class TaskManager
                     trangaTask.connectorName == connector.name))
             {
                 _allTasks.Add(newTask);
-                logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask.ToString()}");
+                logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask}");
             }
             else
-                logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask.ToString()}");
+                logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
         }
         ExportDataAndSettings();
 
@@ -252,8 +252,8 @@ public class TaskManager
         Publication[] ret = connector.GetPublications(title ?? "");
         foreach (Publication publication in ret)
         {
-            if(!_chapterCollection.Any(pub => pub.Key.sortName == publication.sortName))
-                this._chapterCollection.TryAdd(publication, new List<Chapter>());
+            if(!chapterCollection.Any(pub => pub.Key.sortName == publication.sortName))
+                this.chapterCollection.TryAdd(publication, new List<Chapter>());
         }
         return ret;
     }
@@ -261,7 +261,7 @@ public class TaskManager
     /// <returns>All added Publications</returns>
     public Publication[] GetAllPublications()
     {
-        return this._chapterCollection.Keys.ToArray();
+        return this.chapterCollection.Keys.ToArray();
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public class TaskManager
         Connector? ret = this._connectors.FirstOrDefault(connector => connector.name == connectorName);
         if (ret is null)
             throw new Exception($"Connector {connectorName} is not an available Connector.");
-        return (Connector)ret!;
+        return ret;
     }
     
     /// <summary>
@@ -316,7 +316,7 @@ public class TaskManager
             buffer = File.ReadAllText(settings.knownPublicationsPath);
             Publication[] publications = JsonConvert.DeserializeObject<Publication[]>(buffer)!;
             foreach (Publication publication in publications)
-                this._chapterCollection.TryAdd(publication, new List<Chapter>());
+                this.chapterCollection.TryAdd(publication, new List<Chapter>());
         }
     }
 
@@ -332,7 +332,7 @@ public class TaskManager
         File.WriteAllText(settings.tasksFilePath, JsonConvert.SerializeObject(this._allTasks));
         
         logger?.WriteLine(this.GetType().ToString(), $"Exporting known publications to {settings.knownPublicationsPath}");
-        File.WriteAllText(settings.knownPublicationsPath, JsonConvert.SerializeObject(this._chapterCollection.Keys.ToArray()));
+        File.WriteAllText(settings.knownPublicationsPath, JsonConvert.SerializeObject(this.chapterCollection.Keys.ToArray()));
     }
 
     

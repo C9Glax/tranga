@@ -15,7 +15,7 @@ public class DownloadNewChaptersTask : TrangaTask
         string publicationFolder = Path.Join(connector.downloadLocation, pub.folderName);
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
-        List<Chapter> newChapters = UpdateChapters(connector, pub, language!, ref taskManager._chapterCollection);
+        List<Chapter> newChapters = UpdateChapters(connector, pub, language!, ref taskManager.chapterCollection);
 
         connector.CopyCoverFromCacheToDownloadLocation(pub, taskManager.settings);
         

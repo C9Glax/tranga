@@ -123,7 +123,7 @@ public abstract class Connector
     /// </summary>
     /// <param name="imageUrl"></param>
     /// <param name="fullPath"></param>
-    /// <param name="requestType">Requesttype for ratelimit</param>
+    /// <param name="requestType">RequestType for Rate-Limit</param>
     private void DownloadImage(string imageUrl, string fullPath, byte requestType)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType);
@@ -183,8 +183,8 @@ public abstract class Connector
         /// <summary>
         /// Creates a httpClient
         /// </summary>
-        /// <param name="delay">minimum delay between requests (to avoid spam)</param>
         /// <param name="rateLimitRequestsPerMinute">Rate limits for requests. byte is RequestType, int maximum requests per minute for RequestType</param>
+        /// <param name="logger"></param>
         public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, Logger? logger)
         {
             this.logger = logger;

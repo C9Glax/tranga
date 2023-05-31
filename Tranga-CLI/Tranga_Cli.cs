@@ -28,11 +28,7 @@ public static class Tranga_Cli
         Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null, logFilePath);
         
         logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
-        TrangaSettings settings;
-        if (File.Exists(settingsFilePath))
-            settings = TrangaSettings.LoadSettings(settingsFilePath);
-        else
-            settings = new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, null);
+        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, null);
 
             
         logger.WriteLine("Tranga_CLI", "User Input");
@@ -85,7 +81,7 @@ public static class Tranga_Cli
     {
         TaskManager taskManager = new (settings, logger);
         ConsoleKey selection = ConsoleKey.EraseEndOfFile;
-        PrintMenu(taskManager, taskManager.settings.downloadLocation, logger);
+        PrintMenu(taskManager, taskManager.settings.downloadLocation);
         while (selection != ConsoleKey.Q)
         {
             int taskCount = taskManager.GetAllTasks().Length;
@@ -106,7 +102,7 @@ public static class Tranga_Cli
                         Console.ReadKey();
                         break;
                     case ConsoleKey.C:
-                        CreateTask(taskManager, taskManager.settings, logger);
+                        CreateTask(taskManager, logger);
                         Console.WriteLine("Press any key.");
                         Console.ReadKey();
                         break;
@@ -159,7 +155,7 @@ public static class Tranga_Cli
                         Console.ReadKey();
                         break; 
                 }
-                PrintMenu(taskManager, taskManager.settings.downloadLocation, logger);
+                PrintMenu(taskManager, taskManager.settings.downloadLocation);
             }
             Thread.Sleep(200);
         }
@@ -179,7 +175,7 @@ public static class Tranga_Cli
             taskManager.Shutdown(false);
     }
 
-    private static void PrintMenu(TaskManager taskManager, string folderPath, Logger logger)
+    private static void PrintMenu(TaskManager taskManager, string folderPath)
     {
         int taskCount = taskManager.GetAllTasks().Length;
         int taskRunningCount = taskManager.GetAllTasks().Count(task => task.state == TrangaTask.ExecutionState.Running);
@@ -264,17 +260,17 @@ public static class Tranga_Cli
         Console.Clear();
         logger.WriteLine("Tranga_CLI", "Menu: Add Manga Download to queue");
         
-        Connector? connector = SelectConnector(taskManager.settings.downloadLocation, taskManager.GetAvailableConnectors().Values.ToArray(), logger);
+        Connector? connector = SelectConnector(taskManager.GetAvailableConnectors().Values.ToArray(), logger);
         if (connector is null)
             return;
                     
-        Publication? publication = SelectPublication(taskManager, connector!, logger);
+        Publication? publication = SelectPublication(taskManager, connector, logger);
         if (publication is null)
             return;
         
         TimeSpan reoccurrence = SelectReoccurrence(logger);
         logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        TrangaTask newTask = taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connector?.name, publication, reoccurrence, "en");
+        TrangaTask newTask = taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connector.name, publication, reoccurrence, "en");
         Console.WriteLine(newTask);
     }
 
@@ -327,18 +323,18 @@ public static class Tranga_Cli
         }
     }
 
-    private static void CreateTask(TaskManager taskManager, TrangaSettings settings, Logger logger)
+    private static void CreateTask(TaskManager taskManager, Logger logger)
     {
         logger.WriteLine("Tranga_CLI", "Menu: Creating Task");
         TrangaTask.Task? tmpTask = SelectTaskType(logger);
         if (tmpTask is null)
             return;
-        TrangaTask.Task task = (TrangaTask.Task)tmpTask!;
+        TrangaTask.Task task = (TrangaTask.Task)tmpTask;
                     
         Connector? connector = null;
         if (task != TrangaTask.Task.UpdateKomgaLibrary)
         {
-            connector = SelectConnector(settings.downloadLocation, taskManager.GetAvailableConnectors().Values.ToArray(), logger);
+            connector = SelectConnector(taskManager.GetAvailableConnectors().Values.ToArray(), logger);
             if (connector is null)
                 return;
         }
@@ -431,7 +427,7 @@ public static class Tranga_Cli
         return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
     }
 
-    private static Connector? SelectConnector(string folderPath, Connector[] connectors, Logger logger)
+    private static Connector? SelectConnector(Connector[] connectors, Logger logger)
     {
         logger.WriteLine("Tranga_CLI", "Menu: Select Connector");
         Console.Clear();
