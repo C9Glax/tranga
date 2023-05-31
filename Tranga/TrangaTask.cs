@@ -5,7 +5,7 @@ namespace Tranga;
 /// <summary>
 /// Stores information on Task
 /// </summary>
-public class TrangaTask
+public abstract class TrangaTask
 {
     // ReSharper disable once CommentTypo ...Tell me why!
     // ReSharper disable once MemberCanBePrivate.Global I want it thaaat way
@@ -14,7 +14,7 @@ public class TrangaTask
     public string? connectorName { get; }
     public Task task { get; }
     public Publication? publication { get; }
-    public string language { get; }
+    public string? language { get; }
     [JsonIgnore]public ExecutionState state { get; set; }
 
     public enum ExecutionState
@@ -24,14 +24,8 @@ public class TrangaTask
         Running
     };
 
-    public TrangaTask(Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence, string language = "")
+    protected TrangaTask(Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence, string? language = null)
     {
-        if(task != Task.UpdateKomgaLibrary && connectorName is null)
-            throw new ArgumentException($"connectorName can not be null for task {task}");
-        
-        if (publication is null && task != Task.UpdatePublications && task != Task.UpdateKomgaLibrary)
-            throw new ArgumentException($"Publication can not be null for task {task}");
-        
         this.publication = publication;
         this.reoccurrence = reoccurrence;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
@@ -39,6 +33,8 @@ public class TrangaTask
         this.task = task;
         this.language = language;
     }
+
+    public abstract void Execute(TaskManager taskManager);
 
     /// <returns>True if elapsed time since last execution is greater than set interval</returns>
     public bool ShouldExecute()
@@ -48,8 +44,6 @@ public class TrangaTask
 
     public enum Task
     {
-        UpdatePublications,
-        UpdateChapters,
         DownloadNewChapters,
         UpdateKomgaLibrary
     }

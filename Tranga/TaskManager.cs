@@ -1,6 +1,7 @@
 ﻿using Logging;
 using Newtonsoft.Json;
 using Tranga.Connectors;
+using Tranga.TrangaTasks;
 
 namespace Tranga;
 
@@ -116,9 +117,9 @@ public class TaskManager
             return;
         
         logger?.WriteLine(this.GetType().ToString(), $"Forcing Execution: {task}");
-        Task t = new Task(() =>
+        Task t = new(() =>
         {
-            TaskExecutor.Execute(this, task, logger);
+            task.Execute(this);
         });
         t.Start();
     }
@@ -137,37 +138,36 @@ public class TaskManager
     {
         logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {task} {connectorName} {publication?.sortName}");
 
-        TrangaTask newTask;
+        TrangaTask newTask = null;
         if (task == TrangaTask.Task.UpdateKomgaLibrary)
         {
-            newTask = new TrangaTask(task, null, null, reoccurrence);
+            newTask = new UpdateKomgaLibraryTask(task, reoccurrence);
             logger?.WriteLine(this.GetType().ToString(), $"Removing old {task}-Task.");
             //Only one UpdateKomgaLibrary Task
             _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateKomgaLibrary);
             _allTasks.Add(newTask);
-        }
-        else
+            logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask}");
+        }else if (task == TrangaTask.Task.DownloadNewChapters)
         {
-            if(connectorName is null)
-                throw new ArgumentException($"connectorName can not be null for task {task}");
-            
             //Get appropriate Connector from available Connectors for TrangaTask
             Connector? connector = _connectors.FirstOrDefault(c => c.name == connectorName);
-            if (connector is null)
-                throw new ArgumentException($"Connector {connectorName} is not a known connector.");
-        
-            newTask = new TrangaTask(task, connector.name, publication, reoccurrence, language);
-            
-            //Check if same task already exists
-            if (!_allTasks.Any(trangaTask => trangaTask.task == task && trangaTask.connectorName == connector.name &&
-                                             trangaTask.publication?.internalId == publication?.internalId))
+            if (connectorName is null)
+                throw new ArgumentException($"connectorName can not be null for task {task}");
+
+            if (publication is null)
+                throw new ArgumentException($"publication can not be null for task {task}");
+            Publication pub = (Publication)publication;
+            newTask = new DownloadNewChaptersTask(task, connector!.name, pub, reoccurrence, language);
+
+            if (!_allTasks.Any(trangaTask =>
+                    trangaTask.task == task && trangaTask.publication?.internalId == pub.internalId &&
+                    trangaTask.connectorName == connector.name))
             {
-                if(task != TrangaTask.Task.UpdatePublications)
-                    _chapterCollection.TryAdd((Publication)publication!, new List<Chapter>());
                 _allTasks.Add(newTask);
+                logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask.ToString()}");
             }
             else
-                logger?.WriteLine(this.GetType().ToString(), $"Publication already exists {publication?.internalId}");
+                logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask.ToString()}");
         }
         ExportDataAndSettings();
 

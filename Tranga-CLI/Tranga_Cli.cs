@@ -344,7 +344,7 @@ public static class Tranga_Cli
         }
                     
         Publication? publication = null;
-        if (task != TrangaTask.Task.UpdatePublications && task != TrangaTask.Task.UpdateKomgaLibrary)
+        if (task != TrangaTask.Task.UpdateKomgaLibrary)
         {
             publication = SelectPublication(taskManager, connector!, logger);
             if (publication is null)
