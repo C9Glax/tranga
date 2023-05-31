@@ -8,6 +8,7 @@ public class UpdateKomgaLibraryTask : TrangaTask
 
     public override void Execute(TaskManager taskManager)
     {
+        this.state = ExecutionState.Running;
         if (taskManager.komga is null)
             return;
         Komga komga = taskManager.komga;

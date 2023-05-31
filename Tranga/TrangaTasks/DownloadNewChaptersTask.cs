@@ -8,6 +8,7 @@ public class DownloadNewChaptersTask : TrangaTask
 
     public override void Execute(TaskManager taskManager)
     {
+        this.state = ExecutionState.Running;
         Publication pub = (Publication)this.publication!;
         Connector connector = taskManager.GetConnector(this.connectorName);
 

@@ -34,6 +34,10 @@ public abstract class TrangaTask
         this.language = language;
     }
 
+    /// <summary>
+    /// Set state to running
+    /// </summary>
+    /// <param name="taskManager"></param>
     public abstract void Execute(TaskManager taskManager);
 
     /// <returns>True if elapsed time since last execution is greater than set interval</returns>
