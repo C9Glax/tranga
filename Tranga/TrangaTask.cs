@@ -48,10 +48,10 @@ public abstract class TrangaTask
         return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence && state is ExecutionState.Waiting;
     }
 
-    public enum Task
+    public enum Task : byte
     {
-        DownloadNewChapters,
-        UpdateKomgaLibrary
+        DownloadNewChapters = 2,
+        UpdateKomgaLibrary = 3
     }
 
     public override string ToString()
