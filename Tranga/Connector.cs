@@ -14,9 +14,9 @@ public abstract class Connector
     internal string downloadLocation { get; }  //Location of local files
     protected DownloadClient downloadClient { get; init; }
 
-    protected Logger? logger;
+    protected readonly Logger? logger;
 
-    protected string imageCachePath;
+    protected readonly string imageCachePath;
 
     protected Connector(string downloadLocation, string imageCachePath, Logger? logger)
     {
@@ -61,23 +61,25 @@ public abstract class Connector
     /// </summary>
     /// <param name="publication">Publication to retrieve Cover for</param>
     /// <param name="settings">TrangaSettings</param>
-    public abstract void CloneCoverFromCache(Publication publication, TrangaSettings settings);
-
-    /// <summary>
-    /// Saves the series-info to series.json in the Publication Folder
-    /// </summary>
-    /// <param name="publication">Publication to save series.json for</param>
-    public void SaveSeriesInfo(Publication publication)
+    public void CloneCoverFromCache(Publication publication, TrangaSettings settings)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Saving series.json for {publication.sortName}");
-        //Check if Publication already has a Folder and a series.json
+        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName}");
+        //Check if Publication already has a Folder and cover
         string publicationFolder = Path.Join(downloadLocation, publication.folderName);
+        
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
-        
-        string seriesInfoPath = Path.Join(publicationFolder, "series.json");
-        if(!File.Exists(seriesInfoPath))
-            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfoJson());
+        DirectoryInfo dirInfo = new (publicationFolder);
+        if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover.")))
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
+            return;
+        }
+
+        string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
+        string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
+        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
+        File.Copy(fileInCache, newFilePath, true);
     }
 
     /// <summary>
@@ -85,7 +87,7 @@ public abstract class Connector
     /// See ComicInfo.xml
     /// </summary>
     /// <returns>XML-string</returns>
-    protected static string CreateComicInfo(Publication publication, Chapter chapter, Logger? logger)
+    protected static string GetComicInfoXmlString(Publication publication, Chapter chapter, Logger? logger)
     {
         logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         XElement comicInfo = new XElement("ComicInfo",
@@ -103,16 +105,16 @@ public abstract class Connector
     /// Checks if a chapter-archive is already present
     /// </summary>
     /// <returns>true if chapter is present</returns>
-    public bool ChapterIsDownloaded(Publication publication, Chapter chapter)
+    public bool CheckChapterIsDownloaded(Publication publication, Chapter chapter)
     {
-        return File.Exists(CreateFullFilepath(publication, chapter));
+        return File.Exists(GetArchiveFilePath(publication, chapter));
     }
 
     /// <summary>
     /// Creates full file path of chapter-archive
     /// </summary>
     /// <returns>Filepath</returns>
-    protected string CreateFullFilepath(Publication publication, Chapter chapter)
+    protected string GetArchiveFilePath(Publication publication, Chapter chapter)
     {
         return Path.Join(downloadLocation, publication.folderName, $"{chapter.fileName}.cbz");
     }
@@ -122,9 +124,8 @@ public abstract class Connector
     /// </summary>
     /// <param name="imageUrl"></param>
     /// <param name="fullPath"></param>
-    /// <param name="downloadClient">DownloadClient of the connector</param>
     /// <param name="requestType">Requesttype for ratelimit</param>
-    protected static void DownloadImage(string imageUrl, string fullPath, DownloadClient downloadClient, byte requestType)
+    private void DownloadImage(string imageUrl, string fullPath, byte requestType)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType);
         byte[] buffer = new byte[requestResult.result.Length];
@@ -137,11 +138,9 @@ public abstract class Connector
     /// </summary>
     /// <param name="imageUrls">List of URLs to download Images from</param>
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
-    /// <param name="downloadClient">DownloadClient of the connector</param>
-    /// <param name="logger"></param>
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
-    protected static void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, DownloadClient downloadClient, byte requestType, Logger? logger, string? comicInfoPath = null)
+    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, string? comicInfoPath = null)
     {
         logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
@@ -162,7 +161,7 @@ public abstract class Connector
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
             logger?.WriteLine("Connector", $"Downloading Image {chapter + 1}/{imageUrls.Length}");
-            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), downloadClient, requestType);
+            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType);
         }
         
         if(comicInfoPath is not null)

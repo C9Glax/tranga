@@ -47,6 +47,16 @@ public readonly struct Publication
         string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
     }
+
+    public void SaveSeriesInfoJson(string downloadDirectory)
+    {
+        string publicationFolder = Path.Join(downloadDirectory, this.folderName);
+        if(!Directory.Exists(publicationFolder))
+            Directory.CreateDirectory(publicationFolder);
+        string seriesInfoPath = Path.Join(publicationFolder, "series.json");
+        if(!File.Exists(seriesInfoPath))
+            File.WriteAllText(seriesInfoPath,this.GetSeriesInfoJson());
+    }
     
     /// <returns>Serialized JSON String for series.json</returns>
     public string GetSeriesInfoJson()

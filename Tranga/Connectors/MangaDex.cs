@@ -38,6 +38,7 @@ public class MangaDex : Connector
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
         HashSet<Publication> publications = new();
+        int loadedPublicationData = 0;
         while (offset < total) //As long as we haven't requested all "Pages"
         {
             //Request next Page
@@ -55,10 +56,10 @@ public class MangaDex : Connector
             total = result["total"]!.GetValue<int>(); //Update the total number of Publications
             
             JsonArray mangaInResult = result["data"]!.AsArray(); //Manga-data-Array
-            logger?.WriteLine(this.GetType().ToString(), $"Getting publication data.");
             //Loop each Manga and extract information from JSON
             foreach (JsonNode? mangeNode in mangaInResult)
             {
+                logger?.WriteLine(this.GetType().ToString(), $"Getting publication data. {++loadedPublicationData}/{total}");
                 JsonObject manga = (JsonObject)mangeNode!;
                 JsonObject attributes = manga["attributes"]!.AsObject();
                 
@@ -224,10 +225,10 @@ public class MangaDex : Connector
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
         string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, CreateComicInfo(publication, chapter, logger));
+        File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
         //Download Chapter-Images
-        DownloadChapterImages(imageUrls.ToArray(), CreateFullFilepath(publication, chapter), downloadClient, (byte)RequestType.AtHomeServer, logger, comicInfoPath);
+        DownloadChapterImages(imageUrls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)RequestType.AtHomeServer, comicInfoPath);
     }
 
     private string? GetCoverUrl(string publicationId, string? posterId)
@@ -271,27 +272,6 @@ public class MangaDex : Connector
         string author = result["data"]!["attributes"]!["name"]!.GetValue<string>();
         logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {author}");
         return author;
-    }
-
-    public override void CloneCoverFromCache(Publication publication, TrangaSettings settings)
-    {
-        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName}");
-        //Check if Publication already has a Folder and cover
-        string publicationFolder = Path.Join(downloadLocation, publication.folderName);
-        
-        if(!Directory.Exists(publicationFolder))
-            Directory.CreateDirectory(publicationFolder);
-        DirectoryInfo dirInfo = new (publicationFolder);
-        if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover.")))
-        {
-            logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
-            return;
-        }
-
-        string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
-        string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
-        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
-        File.Copy(fileInCache, newFilePath, true);
     }
 
     private string SaveImage(string url)

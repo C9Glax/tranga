@@ -100,9 +100,7 @@ public static class TaskExecutor
 
         connector.CloneCoverFromCache(publication, settings);
         
-        string seriesInfoPath = Path.Join(publicationFolder, "series.json");
-        if(!File.Exists(seriesInfoPath))
-            File.WriteAllText(seriesInfoPath,publication.GetSeriesInfoJson());
+        publication.SaveSeriesInfoJson(connector.downloadLocation);
 
         foreach(Chapter newChapter in newChapters)
             connector.DownloadChapter(publication, newChapter);
@@ -122,7 +120,7 @@ public static class TaskExecutor
         chapterCollection.TryAdd(publication, newChaptersList); //To ensure publication is actually in collection
         
         Chapter[] newChapters = connector.GetChapters(publication, language);
-        newChaptersList = newChapters.Where(nChapter => !connector.ChapterIsDownloaded(publication, nChapter)).ToList();
+        newChaptersList = newChapters.Where(nChapter => !connector.CheckChapterIsDownloaded(publication, nChapter)).ToList();
         
         return newChaptersList;
     }
