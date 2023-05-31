@@ -27,6 +27,8 @@ public abstract class Connector
             //RequestTypes for RateLimits
         }, logger);
         this.imageCachePath = imageCachePath;
+        if (!Directory.Exists(imageCachePath))
+            Directory.CreateDirectory(this.imageCachePath);
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)
