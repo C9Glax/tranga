@@ -15,7 +15,7 @@ public class Manganato : Connector
         this.name = "Manganato";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
         {
-            {(byte)1, 100}
+            {(byte)1, 60}
         }, logger);
     }
 
