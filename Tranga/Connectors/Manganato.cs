@@ -21,6 +21,7 @@ public class Manganato : Connector
 
     public override Publication[] GetPublications(string publicationTitle = "")
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         string sanitizedTitle = publicationTitle.ToLower().Replace(' ', '_');
         logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={sanitizedTitle})");
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
@@ -121,6 +122,7 @@ public class Manganato : Connector
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
         string requestUrl = $"https://manganato.com/{publication.publicationId}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
@@ -157,6 +159,7 @@ public class Manganato : Connector
 
     public override void DownloadChapter(Publication publication, Chapter chapter)
     {
+        logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
