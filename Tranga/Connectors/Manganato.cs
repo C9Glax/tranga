@@ -112,7 +112,7 @@ public class Manganato : Connector
         string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
 
         string description = document.DocumentNode.Descendants("div").First(d => d.HasClass("panel-story-info-description"))
-            .InnerText;
+            .InnerText.Replace("Description :", "");
         
 
         return new Publication(sortName, author, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
