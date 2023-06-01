@@ -18,3 +18,4 @@ services:
       - 9555:80
     depends_on: 
       - tranga-api
+    restart: unless-stopped
