@@ -131,9 +131,13 @@ public abstract class Connector
     private void DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
-        byte[] buffer = new byte[requestResult.result.Length];
-        requestResult.result.ReadExactly(buffer, 0, buffer.Length);
-        File.WriteAllBytes(fullPath, buffer);
+        if (requestResult.result != Stream.Null)
+        {
+            byte[] buffer = new byte[requestResult.result.Length];
+            requestResult.result.ReadExactly(buffer, 0, buffer.Length);
+            File.WriteAllBytes(fullPath, buffer);
+        }else
+            logger?.WriteLine(this.GetType().ToString(), "No Stream-Content in result.");
     }
 
     /// <summary>
@@ -163,7 +167,7 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
-            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1}/{imageUrls.Length}");
+            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1}/{imageUrls.Length} {imageUrl}");
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
         }
         
@@ -253,7 +257,7 @@ public abstract class Connector
                 catch (HttpRequestException e)
                 {
                     logger?.WriteLine(this.GetType().ToString(), e.Message);
-                    logger?.WriteLine(this.GetType().ToString(), $"Waiting {_rateLimit[requestType] * 2}");
+                    logger?.WriteLine(this.GetType().ToString(), $"Waiting {_rateLimit[requestType] * 2}... Retrying.");
                     Thread.Sleep(_rateLimit[requestType] * 2);
                 }
             }
