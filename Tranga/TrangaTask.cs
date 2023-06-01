@@ -19,6 +19,9 @@ public abstract class TrangaTask
     public Publication? publication { get; }
     public string? language { get; }
     [JsonIgnore]public ExecutionState state { get; set; }
+    [JsonIgnore] public float progress => (tasksFinished != 0f ? tasksFinished / tasksCount : 0f);
+    [JsonIgnore]public float tasksCount { get; set; }
+    [JsonIgnore]public float tasksFinished { get; set; }
 
     public enum ExecutionState
     {
@@ -35,6 +38,8 @@ public abstract class TrangaTask
         this.connectorName = connectorName;
         this.task = task;
         this.language = language;
+        this.tasksCount = 1;
+        this.tasksFinished = 0;
     }
     
     /// <summary>

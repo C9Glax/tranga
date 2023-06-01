@@ -162,7 +162,7 @@ public class Manganato : Connector
         return ret.ToArray();
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter)
+    public override void DownloadChapter(Publication publication, Chapter chapter, TrangaTask parentTask)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;
@@ -176,7 +176,7 @@ public class Manganato : Connector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
-        DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, comicInfoPath, "https://chapmanganato.com/");
+        DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/");
     }
 
     private string[] ParseImageUrlsFromHtml(Stream html)

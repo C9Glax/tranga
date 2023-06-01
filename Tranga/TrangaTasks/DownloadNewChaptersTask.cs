@@ -18,13 +18,14 @@ public class DownloadNewChaptersTask : TrangaTask
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
         List<Chapter> newChapters = UpdateChapters(connector, pub, language!, ref taskManager.chapterCollection);
+        this.tasksCount = newChapters.Count;
 
         connector.CopyCoverFromCacheToDownloadLocation(pub, taskManager.settings);
         
         pub.SaveSeriesInfoJson(connector.downloadLocation);
 
         foreach(Chapter newChapter in newChapters)
-            connector.DownloadChapter(pub, newChapter);
+            connector.DownloadChapter(pub, newChapter, this);
     }
     
     /// <summary>

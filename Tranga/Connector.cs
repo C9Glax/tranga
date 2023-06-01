@@ -58,7 +58,8 @@ public abstract class Connector
     /// </summary>
     /// <param name="publication">Publication that contains Chapter</param>
     /// <param name="chapter">Chapter with Images to retrieve</param>
-    public abstract void DownloadChapter(Publication publication, Chapter chapter);
+    /// <param name="parentTask">Will be used for progress-tracking</param>
+    public abstract void DownloadChapter(Publication publication, Chapter chapter, TrangaTask parentTask);
 
     /// <summary>
     /// Copies the already downloaded cover from cache to downloadLocation
@@ -128,6 +129,7 @@ public abstract class Connector
     /// <param name="imageUrl"></param>
     /// <param name="fullPath"></param>
     /// <param name="requestType">RequestType for Rate-Limit</param>
+    /// <param name="referrer">referrer used in html request header</param>
     private void DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
@@ -145,9 +147,11 @@ public abstract class Connector
     /// </summary>
     /// <param name="imageUrls">List of URLs to download Images from</param>
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
+    /// <param name="parentTask">Used for progress tracking</param>
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
-    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, string? comicInfoPath = null, string? referrer = null)
+    /// <param name="referrer">Used in http request header</param>
+    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, TrangaTask parentTask, string? comicInfoPath = null, string? referrer = null)
     {
         logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
@@ -167,8 +171,9 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
-            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1}/{imageUrls.Length} {imageUrl}");
+            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1}/{imageUrls.Length} {parentTask.publication?.sortName,20} {parentTask.publication?.internalId,20} Total Task Progress: {parentTask.progress:00.0}%");
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
+            parentTask.tasksFinished++;
         }
         
         if(comicInfoPath is not null)
@@ -226,6 +231,7 @@ public abstract class Connector
         /// </summary>
         /// <param name="url"></param>
         /// <param name="requestType">For RateLimits: Same Endpoints use same type</param>
+        /// <param name="referrer">Used in http request header</param>
         /// <returns>RequestResult with StatusCode and Stream of received data</returns>
         public RequestResult MakeRequest(string url, byte requestType, string? referrer = null)
         {
