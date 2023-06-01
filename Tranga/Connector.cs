@@ -70,9 +70,7 @@ public abstract class Connector
     {
         logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} {publication.internalId}");
         //Check if Publication already has a Folder and cover
-        string publicationFolder = Path.Join(downloadLocation, publication.folderName);
-        if(!Directory.Exists(publicationFolder))
-            Directory.CreateDirectory(publicationFolder);
+        string publicationFolder = publication.CreatePublicationFolder(downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover.")))
         {

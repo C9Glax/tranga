@@ -50,11 +50,19 @@ public readonly struct Publication
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
     }
 
-    public void SaveSeriesInfoJson(string downloadDirectory)
+    public string CreatePublicationFolder(string downloadDirectory)
     {
         string publicationFolder = Path.Join(downloadDirectory, this.folderName);
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            File.SetUnixFileMode(publicationFolder, GroupRead | GroupWrite | GroupExecute | OtherRead | OtherWrite | OtherExecute | UserRead | UserWrite | UserExecute);
+        return publicationFolder;
+    }
+
+    public void SaveSeriesInfoJson(string downloadDirectory)
+    {
+        string publicationFolder = CreatePublicationFolder(downloadDirectory);
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))
             File.WriteAllText(seriesInfoPath,this.GetSeriesInfoJson());

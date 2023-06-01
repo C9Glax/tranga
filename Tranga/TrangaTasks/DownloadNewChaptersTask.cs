@@ -14,9 +14,7 @@ public class DownloadNewChaptersTask : TrangaTask
         Connector connector = taskManager.GetConnector(this.connectorName);
 
         //Check if Publication already has a Folder
-        string publicationFolder = Path.Join(connector.downloadLocation, pub.folderName);
-        if(!Directory.Exists(publicationFolder))
-            Directory.CreateDirectory(publicationFolder);
+        pub.CreatePublicationFolder(taskManager.settings.downloadLocation);
         List<Chapter> newChapters = UpdateChapters(connector, pub, language!, ref taskManager.chapterCollection);
         this.tasksCount = newChapters.Count;
 
