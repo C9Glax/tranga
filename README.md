@@ -54,6 +54,7 @@
 Tranga can download Chapters and Metadata from Scanlation sites such as 
 
 - [MangaDex.org](https://mangadex.org/)
+- [Manganato.com](https://manganato.com/)
 
 and automatically start updates in [Komga](https://komga.org/) to import them.
 
