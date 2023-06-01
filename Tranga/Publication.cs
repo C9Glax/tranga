@@ -95,9 +95,9 @@ public readonly struct Publication
         {
             this.name = name;
             this.year = year;
-            if(status == "ongoing" || status == "hiatus")
+            if(status.ToLower() == "ongoing" || status.ToLower() == "hiatus")
                 this.status = "Continuing";
-            else if (status == "completed" || status == "cancelled")
+            else if (status.ToLower() == "completed" || status.ToLower() == "cancelled")
                 this.status = "Ended";
             else
                 this.status = status;
