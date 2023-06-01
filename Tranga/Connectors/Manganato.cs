@@ -72,7 +72,7 @@ public class Manganato : Connector
         Dictionary<string, string>? links = null;
         HashSet<string> tags = new();
         string? author = null, originalLanguage = null;
-        int? year = null;
+        int? year = DateTime.Now.Year;
 
         HtmlNode infoNode = document.DocumentNode.Descendants("div").First(d => d.HasClass("story-info-right"));
 
@@ -114,11 +114,13 @@ public class Manganato : Connector
 
         string description = document.DocumentNode.Descendants("div").First(d => d.HasClass("panel-story-info-description"))
             .InnerText.Replace("Description :", "");
-
         while (description.StartsWith('\n'))
             description = description.Substring(1);
-        
 
+        string yearString = document.DocumentNode.Descendants("li").Last(li => li.HasClass("a-h")).Descendants("span")
+            .First(s => s.HasClass("chapter-time")).InnerText;
+        year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
+        
         return new Publication(sortName, author, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
     }
