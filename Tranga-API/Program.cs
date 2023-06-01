@@ -105,6 +105,31 @@ app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? search
     }
 });
 
+app.MapGet("/Tasks/GetTaskProgress", (string taskType, string? connectorName, string? publicationId) =>
+{
+    try
+    {
+        TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
+        TrangaTask? task = null;
+        if (connectorName is null || publicationId is null)
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask);
+        else
+            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
+                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
+                tTask.connectorName == connectorName);
+            
+        if (task is null)
+            return -1f;
+
+        return task.progress;
+    }
+    catch (ArgumentException)
+    {
+        return -1f;
+    }
+});
+
 app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? publicationId) =>
 {
     try
