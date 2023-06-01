@@ -123,7 +123,7 @@ public class Manganato : Connector
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
-        string requestUrl = $"https://manganato.com/{publication.publicationId}";
+        string requestUrl = $"https://chapmanganato.com/{publication.publicationId}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
         if (requestResult.statusCode != HttpStatusCode.OK)
