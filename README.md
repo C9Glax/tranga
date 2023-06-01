@@ -115,7 +115,7 @@ Wherever you are mounting `/usr/share/Tranga-API` you also need to mount that sa
 
 - [x] Web-UI #1
 - [ ] More Connectors
-  - [ ] Manganato #2
+  - [x] Manganato #2
 - [ ] ? 
 
 See the [open issues](https://git.bernloehr.eu/glax/Tranga/issues) for a full list of proposed features (and known issues).
