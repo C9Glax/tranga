@@ -84,6 +84,8 @@ public abstract class Connector
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
         logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
     }
 
     /// <summary>
