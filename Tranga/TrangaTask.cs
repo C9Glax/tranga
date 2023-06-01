@@ -79,7 +79,7 @@ public abstract class TrangaTask
 
     public override string ToString()
     {
-        return $"{task}, {lastExecuted}, {reoccurrence}, {state} {(connectorName is not null ? $", {connectorName}" : "" )} {(publication is not null ? $", {publication?.sortName}": "")}";
+        return $"{task}, {lastExecuted}, {reoccurrence}, {state} {(connectorName is not null ? $", {connectorName}" : "" )} {(publication is not null ? $", {progress:00.00}%" : "")} {(publication is not null ? $", {publication?.sortName}" : "")}";
     }
     
     public class TrangaTaskJsonConverter : JsonConverter

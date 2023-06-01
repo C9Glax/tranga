@@ -171,7 +171,7 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
-            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {(parentTask.publication?.sortName)![..25],-25} {(parentTask.publication?.internalId)![..25],-25} Total Task Progress: {parentTask.progress:00.0}%");
+            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {(parentTask.publication?.sortName)![..(int)(parentTask.publication?.sortName.Length > 25 ? 25 : parentTask.publication?.sortName.Length)!],-25} {(parentTask.publication?.internalId)![..(int)(parentTask.publication?.internalId.Length > 25 ? 25 : parentTask.publication?.internalId.Length)!],-25} Total Task Progress: {parentTask.progress:00.0}%");
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
             parentTask.tasksFinished++;
         }

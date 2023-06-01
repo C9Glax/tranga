@@ -202,13 +202,13 @@ public static class Tranga_Cli
         int tIndex = 0;
         Console.WriteLine($"Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         string header =
-            $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Connector",-15} | Publication/Manga";
+            $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Connector",-15} | {"Progress",-9} | Publication/Manga";
         Console.WriteLine(header);
         Console.WriteLine(new string('-', header.Length));
         foreach (TrangaTask trangaTask in tasks)
         {
             string[] taskSplit = trangaTask.ToString().Split(", ");
-            Console.WriteLine($"{tIndex++:000}: {taskSplit[0],-20} | {taskSplit[1],-20} | {taskSplit[2],-12} | {taskSplit[3],-10} | {(taskSplit.Length > 4 ? taskSplit[4] : ""),-15} | {(taskSplit.Length > 5 ? taskSplit[5] : "")}");
+            Console.WriteLine($"{tIndex++:000}: {taskSplit[0],-20} | {taskSplit[1],-20} | {taskSplit[2],-12} | {taskSplit[3],-10} | {(taskSplit.Length > 4 ? taskSplit[4] : ""),-15} | {(taskSplit.Length > 5 ? taskSplit[5] : ""),-9} |{(taskSplit.Length > 6 ? taskSplit[6] : "")}");
         }
             
     }
