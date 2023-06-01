@@ -1,7 +1,9 @@
 ﻿using System.IO.Compression;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using Logging;
+using static System.IO.UnixFileMode;
 
 namespace Tranga;
 
@@ -171,6 +173,8 @@ public abstract class Connector
         logger?.WriteLine("Connector", $"Creating archive {saveArchiveFilePath}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            File.SetUnixFileMode(saveArchiveFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
         Directory.Delete(tempFolder, true); //Cleanup
     }
     

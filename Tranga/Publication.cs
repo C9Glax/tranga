@@ -1,6 +1,8 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using static System.IO.UnixFileMode;
 
 namespace Tranga;
 
@@ -56,6 +58,8 @@ public readonly struct Publication
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(!File.Exists(seriesInfoPath))
             File.WriteAllText(seriesInfoPath,this.GetSeriesInfoJson());
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            File.SetUnixFileMode(seriesInfoPath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
     }
     
     /// <returns>Serialized JSON String for series.json</returns>
