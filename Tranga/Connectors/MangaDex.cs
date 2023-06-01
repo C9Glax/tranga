@@ -102,7 +102,7 @@ public class MangaDex : Connector
                 string? coverUrl = GetCoverUrl(publicationId, posterId);
                 string? coverCacheName = null;
                 if (coverUrl is not null)
-                    coverCacheName = SaveImage(coverUrl);
+                    coverCacheName = SaveCoverImageToCache(coverUrl, (byte)RequestType.AtHomeServer);
                 
                 string? author = GetAuthor(authorId);
 
@@ -272,22 +272,5 @@ public class MangaDex : Connector
         string author = result["data"]!["attributes"]!["name"]!.GetValue<string>();
         logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {author}");
         return author;
-    }
-
-    private string SaveImage(string url)
-    {
-        string[] split = url.Split('/');
-        string filename = split[^1];
-        string saveImagePath = Path.Join(imageCachePath, filename);
-
-        if (File.Exists(saveImagePath))
-            return filename;
-        
-        DownloadClient.RequestResult coverResult = downloadClient.MakeRequest(url, (byte)RequestType.AtHomeServer);
-        using MemoryStream ms = new();
-        coverResult.result.CopyTo(ms);
-        File.WriteAllBytes(saveImagePath, ms.ToArray());
-        logger?.WriteLine(this.GetType().ToString(), $"Saving image to {saveImagePath}");
-        return filename;
     }
 }

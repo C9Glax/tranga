@@ -126,9 +126,9 @@ public abstract class Connector
     /// <param name="imageUrl"></param>
     /// <param name="fullPath"></param>
     /// <param name="requestType">RequestType for Rate-Limit</param>
-    private void DownloadImage(string imageUrl, string fullPath, byte requestType)
+    private void DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
     {
-        DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType);
+        DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
         byte[] buffer = new byte[requestResult.result.Length];
         requestResult.result.ReadExactly(buffer, 0, buffer.Length);
         File.WriteAllBytes(fullPath, buffer);
@@ -141,7 +141,7 @@ public abstract class Connector
     /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
-    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, string? comicInfoPath = null)
+    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, string? comicInfoPath = null, string? referrer = null)
     {
         logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
@@ -162,7 +162,7 @@ public abstract class Connector
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
             logger?.WriteLine("Connector", $"Downloading Image {chapter + 1}/{imageUrls.Length}");
-            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType);
+            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
         }
         
         if(comicInfoPath is not null)
@@ -172,6 +172,23 @@ public abstract class Connector
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         Directory.Delete(tempFolder, true); //Cleanup
+    }
+    
+    protected string SaveCoverImageToCache(string url, byte requestType)
+    {
+        string[] split = url.Split('/');
+        string filename = split[^1];
+        string saveImagePath = Path.Join(imageCachePath, filename);
+
+        if (File.Exists(saveImagePath))
+            return filename;
+        
+        DownloadClient.RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
+        using MemoryStream ms = new();
+        coverResult.result.CopyTo(ms);
+        File.WriteAllBytes(saveImagePath, ms.ToArray());
+        logger?.WriteLine(this.GetType().ToString(), $"Saving image to {saveImagePath}");
+        return filename;
     }
     
     protected class DownloadClient
@@ -202,7 +219,7 @@ public abstract class Connector
         /// <param name="url"></param>
         /// <param name="requestType">For RateLimits: Same Endpoints use same type</param>
         /// <returns>RequestResult with StatusCode and Stream of received data</returns>
-        public RequestResult MakeRequest(string url, byte requestType)
+        public RequestResult MakeRequest(string url, byte requestType, string? referrer = null)
         {
             if (_rateLimit.TryGetValue(requestType, out TimeSpan value))
                 _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(value));
@@ -224,6 +241,8 @@ public abstract class Connector
                 try
                 {
                     HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
+                    if(referrer is not null)
+                        requestMessage.Headers.Referrer = new Uri(referrer);
                     _lastExecutedRateLimit[requestType] = DateTime.Now;
                     response = Client.Send(requestMessage);
                 }

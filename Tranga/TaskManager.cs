@@ -39,7 +39,11 @@ public class TaskManager
         this.settings = new TrangaSettings(downloadFolderPath, workingDirectory, newKomga);
         ExportDataAndSettings();
         
-        this._connectors = new Connector[]{ new MangaDex(downloadFolderPath, imageCachePath, logger) };
+        this._connectors = new Connector[]
+        {
+            new MangaDex(downloadFolderPath, imageCachePath, logger),
+            new Manganato(downloadFolderPath, imageCachePath, logger)
+        };
         foreach(Connector cConnector in this._connectors)
             _taskQueue.Add(cConnector, new List<TrangaTask>());
         
@@ -59,7 +63,11 @@ public class TaskManager
     public TaskManager(TrangaSettings settings, Logger? logger = null)
     {
         this.logger = logger;
-        this._connectors = new Connector[]{ new MangaDex(settings.downloadLocation, settings.coverImageCache, logger) };
+        this._connectors = new Connector[]
+        {
+            new MangaDex(settings.downloadLocation, settings.coverImageCache, logger),
+            new Manganato(settings.downloadLocation, settings.coverImageCache, logger)
+        };
         foreach(Connector cConnector in this._connectors)
             _taskQueue.Add(cConnector, new List<TrangaTask>());
         _allTasks = new HashSet<TrangaTask>();
