@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Logging;
@@ -22,7 +21,7 @@ public class Manganato : Connector
     public override Publication[] GetPublications(string publicationTitle = "")
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
-        string sanitizedTitle = publicationTitle.ToLower().Replace(' ', '_');
+        string sanitizedTitle = string.Concat(Regex.Matches(publicationTitle, "[A-z]* *")).ToLower().Replace(' ', '_');
         logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={sanitizedTitle})");
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
@@ -152,7 +151,7 @@ public class Manganato : Connector
             string fullString = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name")).InnerText;
 
             string? volumeNumber = fullString.Contains("Vol.") ? fullString.Replace("Vol.", "").Split(' ')[0] : null;
-            string? chapterNumber = fullString.Split(':')[0].Split(' ')[^1];
+            string? chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Replace('-','.');
             string chapterName = string.Concat(fullString.Split(':')[1..]);
             string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
                 .GetAttributeValue("href", "");
