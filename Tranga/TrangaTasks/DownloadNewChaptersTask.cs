@@ -8,9 +8,8 @@ public class DownloadNewChaptersTask : TrangaTask
     {
     }
 
-    public override void Execute(TaskManager taskManager, Logger? logger)
+    protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
     {
-        StartExecutionChores(logger);
         Publication pub = (Publication)this.publication!;
         Connector connector = taskManager.GetConnector(this.connectorName);
 
@@ -26,8 +25,6 @@ public class DownloadNewChaptersTask : TrangaTask
 
         foreach(Chapter newChapter in newChapters)
             connector.DownloadChapter(pub, newChapter);
-
-        EndExecutionChores(logger);
     }
     
     /// <summary>

@@ -36,31 +36,34 @@ public abstract class TrangaTask
         this.task = task;
         this.language = language;
     }
-
+    
     /// <summary>
-    /// Should call StartExecutionChores and EndExecutionChores
+    /// BL for concrete Tasks
     /// </summary>
     /// <param name="taskManager"></param>
     /// <param name="logger"></param>
-    public abstract void Execute(TaskManager taskManager, Logger? logger);
+    protected abstract void ExecuteTask(TaskManager taskManager, Logger? logger);
+
+    /// <summary>
+    /// Execute the task
+    /// </summary>
+    /// <param name="taskManager">Should be the parent taskManager</param>
+    /// <param name="logger"></param>
+    public void Execute(TaskManager taskManager, Logger? logger)
+    {
+        logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
+        this.state = ExecutionState.Running;
+        ExecuteTask(taskManager, logger);
+        this.lastExecuted = DateTime.Now;
+        this.state = ExecutionState.Waiting;
+        logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
+        
+    }
 
     /// <returns>True if elapsed time since last execution is greater than set interval</returns>
     public bool ShouldExecute()
     {
         return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence && state is ExecutionState.Waiting;
-    }
-
-    protected void StartExecutionChores(Logger? logger)
-    {
-        logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
-        this.state = ExecutionState.Running;
-    }
-
-    protected void EndExecutionChores(Logger? logger)
-    {
-        logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
-        this.lastExecuted = DateTime.Now;
-        this.state = ExecutionState.Waiting;
     }
 
     public enum Task : byte

@@ -8,9 +8,8 @@ public class UpdateKomgaLibraryTask : TrangaTask
     {
     }
 
-    public override void Execute(TaskManager taskManager, Logger? logger)
+    protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
     {
-        StartExecutionChores(logger);
         if (taskManager.komga is null)
             return;
         Komga komga = taskManager.komga;
@@ -18,6 +17,5 @@ public class UpdateKomgaLibraryTask : TrangaTask
         Komga.KomgaLibrary[] allLibraries = komga.GetLibraries();
         foreach (Komga.KomgaLibrary lib in allLibraries)
             komga.UpdateLibrary(lib.id);
-        EndExecutionChores(logger);
     }
 }
