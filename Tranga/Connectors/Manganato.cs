@@ -114,6 +114,9 @@ public class Manganato : Connector
 
         string description = document.DocumentNode.Descendants("div").First(d => d.HasClass("panel-story-info-description"))
             .InnerText.Replace("Description :", "");
+
+        while (description.StartsWith('\n'))
+            description = description.Substring(1);
         
 
         return new Publication(sortName, author, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
