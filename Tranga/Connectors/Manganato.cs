@@ -88,7 +88,9 @@ public class Manganato : Connector
             switch (keySanitized)
             {
                 case "alternative":
-                    altTitles.Add("",value);
+                    string[] alts = value.Split(" ; ");
+                    for(int i = 0; i < alts.Length; i++)
+                        altTitles.Add(i.ToString(), alts[i]);
                     break;
                 case "authors":
                     author = value;
