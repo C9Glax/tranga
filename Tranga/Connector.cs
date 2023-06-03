@@ -114,7 +114,7 @@ public abstract class Connector
     {
         Regex legalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
         string oldFilePath = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - V{chapter.volumeNumber}C{chapter.chapterNumber} - {chapter.sortNumber}.cbz");
-        string oldFilePath2 = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - VC{chapter.chapterNumber} - {chapter.sortNumber}.cbz");
+        string oldFilePath2 = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - VC{chapter.chapterNumber} - {chapter.chapterNumber}.cbz");
         string newFilePath = GetArchiveFilePath(publication, chapter);
         if (File.Exists(oldFilePath))
         {
