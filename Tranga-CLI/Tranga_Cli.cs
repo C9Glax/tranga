@@ -82,32 +82,12 @@ public static class Tranga_Cli
         if (tmpUrlKavita.Length > 0)
         {
             Console.WriteLine("Username:");
-            string? tmpUser = Console.ReadLine();
-            while (tmpUser is null || tmpUser.Length < 1)
-                tmpUser = Console.ReadLine();
-            
-            Console.WriteLine("Password:");
-            string tmpPass = string.Empty;
-            ConsoleKey key;
-            do
-            {
-                var keyInfo = Console.ReadKey(intercept: true);
-                key = keyInfo.Key;
-
-                if (key == ConsoleKey.Backspace && tmpPass.Length > 0)
-                {
-                    Console.Write("\b \b");
-                    tmpPass = tmpPass[0..^1];
-                }
-                else if (!char.IsControl(keyInfo.KeyChar))
-                {
-                    Console.Write("*");
-                    tmpPass += keyInfo.KeyChar;
-                }
-            } while (key != ConsoleKey.Enter);
+            string? tmpApiKey = Console.ReadLine();
+            while (tmpApiKey is null || tmpApiKey.Length < 1)
+                tmpApiKey = Console.ReadLine();
 
             settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Kavita));
-            settings.libraryManagers.Add(new Kavita(tmpUrlKavita, tmpUser, tmpPass, logger));
+            settings.libraryManagers.Add(new Kavita(tmpUrlKavita, tmpApiKey, logger));
         }
         
         logger.WriteLine("Tranga_CLI", "Loaded.");

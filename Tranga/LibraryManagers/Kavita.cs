@@ -6,13 +6,7 @@ namespace Tranga.LibraryManagers;
 
 public class Kavita : LibraryManager
 {
-    public Kavita(string baseUrl, string username, string password, Logger? logger)
-        : base(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), logger)
-    {
-        this.libraryType = LibraryType.Kavita;
-    }
-    
-    public Kavita(string baseUrl, string auth, Logger? logger) : base(baseUrl, auth, logger)
+    public Kavita(string baseUrl, string apiKey, Logger? logger) : base(baseUrl, apiKey, logger)
     {
         this.libraryType = LibraryType.Kavita;
     }
