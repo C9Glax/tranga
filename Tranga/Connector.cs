@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Logging;
 using static System.IO.UnixFileMode;
@@ -111,7 +112,20 @@ public abstract class Connector
     /// <returns>true if chapter is present</returns>
     public bool CheckChapterIsDownloaded(Publication publication, Chapter chapter)
     {
-        return File.Exists(GetArchiveFilePath(publication, chapter));
+        Regex legalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
+        string oldFilePath = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - V{chapter.volumeNumber}C{chapter.chapterNumber} - {chapter.sortNumber}.cbz");
+        string oldFilePath2 = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - VC{chapter.chapterNumber} - {chapter.sortNumber}.cbz");
+        string newFilePath = GetArchiveFilePath(publication, chapter);
+        if (File.Exists(oldFilePath))
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"Moving old file {oldFilePath} -> {newFilePath}");
+            File.Move(oldFilePath, newFilePath);
+        }else if (File.Exists(oldFilePath2))
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"Moving old file {oldFilePath2} -> {newFilePath}");
+            File.Move(oldFilePath2, newFilePath);
+        }
+        return File.Exists(newFilePath);
     }
 
     /// <summary>
@@ -120,7 +134,7 @@ public abstract class Connector
     /// <returns>Filepath</returns>
     protected string GetArchiveFilePath(Publication publication, Chapter chapter)
     {
-        return Path.Join(downloadLocation, publication.folderName, $"{chapter.fileName}.cbz");
+        return Path.Join(downloadLocation, publication.folderName, $"{publication.folderName} - {chapter.fileName}.cbz");
     }
 
     /// <summary>

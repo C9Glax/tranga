@@ -20,16 +20,20 @@ public struct Chapter
     public Chapter(string? name, string? volumeNumber, string? chapterNumber, string url)
     {
         this.name = name;
-        this.volumeNumber = volumeNumber is { Length: > 0 } ? volumeNumber : "1";
+        this.volumeNumber = volumeNumber;
         this.chapterNumber = chapterNumber;
         this.url = url;
-        string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
         NumberFormatInfo nfi = new NumberFormatInfo()
         {
             NumberDecimalSeparator = "."
         };
         sortNumber = decimal.Round(Convert.ToDecimal(this.volumeNumber) * Convert.ToDecimal(this.chapterNumber, nfi), 1)
             .ToString(nfi);
-        this.fileName = $"{chapterName} - V{volumeNumber}C{chapterNumber} - {sortNumber}";
+
+        string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
+        string volStr = this.volumeNumber is not null ? $"Vol.{this.volumeNumber} " : "";
+        string chNumberStr = this.chapterNumber is not null ? $"Ch.{chapterNumber} " : "";
+        string chNameStr = chapterName.Length > 0 ? $"- {chapterName}" : "";
+        this.fileName = $"{volStr}{chNumberStr}{chNameStr}";
     }
 }
