@@ -34,6 +34,7 @@ public struct Chapter
         string volStr = this.volumeNumber is not null ? $"Vol.{this.volumeNumber} " : "";
         string chNumberStr = this.chapterNumber is not null ? $"Ch.{chapterNumber} " : "";
         string chNameStr = chapterName.Length > 0 ? $"- {chapterName}" : "";
+        chNameStr = chNameStr.Replace("Volume", "").Replace("volume", "");
         this.fileName = $"{volStr}{chNumberStr}{chNameStr}";
     }
 }
