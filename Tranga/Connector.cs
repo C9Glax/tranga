@@ -117,18 +117,9 @@ public abstract class Connector
         string oldFilePath2 = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - VC{chapter.chapterNumber} - {chapter.chapterNumber}.cbz");
         string newFilePath = GetArchiveFilePath(publication, chapter);
         if (File.Exists(oldFilePath))
-        {
-            logger?.WriteLine(this.GetType().ToString(), $"Moving old file {oldFilePath} -> {newFilePath}");
             File.Move(oldFilePath, newFilePath);
-        }else if (File.Exists(oldFilePath2))
-        {
-            logger?.WriteLine(this.GetType().ToString(), $"Moving old file {oldFilePath2} -> {newFilePath}");
+        else if (File.Exists(oldFilePath2))
             File.Move(oldFilePath2, newFilePath);
-        }
-        else
-        {
-            logger?.WriteLine(this.GetType().ToString(), $"No old files found:\n{oldFilePath}\n{oldFilePath2}");
-        }
         return File.Exists(newFilePath);
     }
 
