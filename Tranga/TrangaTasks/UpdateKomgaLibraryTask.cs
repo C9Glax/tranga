@@ -10,12 +10,6 @@ public class UpdateKomgaLibraryTask : TrangaTask
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
     {
-        if (taskManager.komga is null)
-            return;
-        Komga komga = taskManager.komga;
-
-        Komga.KomgaLibrary[] allLibraries = komga.GetLibraries();
-        foreach (Komga.KomgaLibrary lib in allLibraries)
-            komga.UpdateLibrary(lib.id);
+        taskManager.komga?.UpdateLibrary();
     }
 }

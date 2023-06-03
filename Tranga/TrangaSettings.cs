@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Logging;
+using Newtonsoft.Json;
+using Tranga.LibraryManagers;
 
 namespace Tranga;
 
@@ -21,13 +23,15 @@ public class TrangaSettings
         this.komga = komga;
     }
 
-    public static TrangaSettings LoadSettings(string importFilePath)
+    public static TrangaSettings LoadSettings(string importFilePath, Logger? logger)
     {
         if (!File.Exists(importFilePath))
             return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory(), null);
 
         string toRead = File.ReadAllText(importFilePath);
         TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(toRead)!;
+        if(settings.komga is not null && logger is not null)
+            settings.komga.AddLogger(logger);
 
         return settings;
     }

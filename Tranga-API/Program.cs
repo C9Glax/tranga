@@ -15,7 +15,7 @@ logger.WriteLine("Tranga", "Loading settings.");
 
 TrangaSettings settings;
 if (File.Exists(settingsFilePath))
-    settings = TrangaSettings.LoadSettings(settingsFilePath);
+    settings = TrangaSettings.LoadSettings(settingsFilePath, logger);
 else
     settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, null);
 

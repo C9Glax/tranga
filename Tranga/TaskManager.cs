@@ -1,6 +1,7 @@
 ﻿using Logging;
 using Newtonsoft.Json;
 using Tranga.Connectors;
+using Tranga.LibraryManagers;
 using Tranga.TrangaTasks;
 
 namespace Tranga;
@@ -54,7 +55,7 @@ public class TaskManager
     public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth)
     {
         if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 0 && komgaAuth.Length > 0)
-            settings.komga = new Komga(komgaUrl, komgaAuth, null);
+            settings.komga = new Komga(komgaUrl, komgaAuth, logger);
         if (downloadLocation is not null && downloadLocation.Length > 0)
             settings.downloadLocation = downloadLocation;
         ExportDataAndSettings();

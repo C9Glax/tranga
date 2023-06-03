@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Logging;
 using Tranga;
+using Tranga.LibraryManagers;
 
 namespace Tranga_CLI;
 
@@ -25,10 +26,10 @@ public static class Tranga_Cli
         Console.WriteLine($"Logfile-Path: {logFilePath}");
         Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
 
-        Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, null, logFilePath);
+        Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, Console.Out.Encoding, logFilePath);
         
         logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
-        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, null);
+        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath, logger) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, null);
 
             
         logger.WriteLine("Tranga_CLI", "User Input");
