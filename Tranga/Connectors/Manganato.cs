@@ -157,7 +157,7 @@ public class Manganato : Connector
                 .GetAttributeValue("href", "");
             ret.Add(new Chapter(chapterName, volumeNumber, chapterNumber, url));
         }
-
+        ret.Reverse();
         return ret.ToArray();
     }
 
