@@ -212,7 +212,7 @@ app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string?
 app.MapGet("/Settings/Get", () => taskManager.settings);
 
 app.MapPost("/Settings/Update",
-    (string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaAuth) =>
-        taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth, kavitaUrl, kavitaAuth));
+    (string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaApiKey) =>
+        taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth, kavitaUrl, kavitaApiKey));
 
 app.Run();

@@ -47,17 +47,17 @@ public class TaskManager
         taskChecker.Start();
     }
 
-    public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaAuth)
+    public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaApiKey)
     {
         if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 0 && komgaAuth.Length > 0)
         {
             settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Komga));
             settings.libraryManagers.Add(new Komga(komgaUrl, komgaAuth, logger));
         }
-        if (kavitaUrl is not null && kavitaAuth is not null && kavitaUrl.Length > 0 && kavitaAuth.Length > 0)
+        if (kavitaUrl is not null && kavitaApiKey is not null && kavitaUrl.Length > 0 && kavitaApiKey.Length > 0)
         {
             settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Kavita));
-            settings.libraryManagers.Add(new Kavita(kavitaUrl, kavitaAuth, logger));
+            settings.libraryManagers.Add(new Kavita(kavitaUrl, kavitaApiKey, logger));
         }
         if (downloadLocation is not null && downloadLocation.Length > 0)
             settings.downloadLocation = downloadLocation;
