@@ -19,7 +19,6 @@ public class TaskManager
     private readonly Dictionary<Connector, List<TrangaTask>> _taskQueue = new();
     public TrangaSettings settings { get; }
     private Logger? logger { get; }
-    public Komga? komga => settings.komga;
 
     /// <param name="downloadFolderPath">Local path to save data (Manga) to</param>
     /// <param name="workingDirectory">Path to the working directory</param>
@@ -28,16 +27,12 @@ public class TaskManager
     /// <param name="komgaUsername">The Komga username</param>
     /// <param name="komgaPassword">The Komga password</param>
     /// <param name="logger"></param>
-    public TaskManager(string downloadFolderPath, string workingDirectory, string imageCachePath, string? komgaBaseUrl = null, string? komgaUsername = null, string? komgaPassword = null, Logger? logger = null)
+    public TaskManager(string downloadFolderPath, string workingDirectory, string imageCachePath, HashSet<LibraryManager> libraryManagers, Logger? logger = null)
     {
         this.logger = logger;
         _allTasks = new HashSet<TrangaTask>();
 
-        Komga? newKomga = null;
-        if (komgaBaseUrl != null && komgaUsername != null && komgaPassword != null)
-            newKomga = new Komga(komgaBaseUrl, komgaUsername, komgaPassword, logger);
-        
-        this.settings = new TrangaSettings(downloadFolderPath, workingDirectory, newKomga);
+        this.settings = new TrangaSettings(downloadFolderPath, workingDirectory, libraryManagers);
         ExportDataAndSettings();
         
         this._connectors = new Connector[]
@@ -52,10 +47,18 @@ public class TaskManager
         taskChecker.Start();
     }
 
-    public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth)
+    public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaAuth)
     {
         if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 0 && komgaAuth.Length > 0)
-            settings.komga = new Komga(komgaUrl, komgaAuth, logger);
+        {
+            settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Komga));
+            settings.libraryManagers.Add(new Komga(komgaUrl, komgaAuth, logger));
+        }
+        if (kavitaUrl is not null && kavitaAuth is not null && kavitaUrl.Length > 0 && kavitaAuth.Length > 0)
+        {
+            settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Kavita));
+            settings.libraryManagers.Add(new Kavita(kavitaUrl, kavitaAuth, logger));
+        }
         if (downloadLocation is not null && downloadLocation.Length > 0)
             settings.downloadLocation = downloadLocation;
         ExportDataAndSettings();
@@ -104,7 +107,7 @@ public class TaskManager
             foreach (TrangaTask task in _allTasks.Where(aTask => aTask.ShouldExecute()))
             {
                 task.state = TrangaTask.ExecutionState.Enqueued;
-                if(task.task == TrangaTask.Task.UpdateKomgaLibrary)
+                if(task.task == TrangaTask.Task.UpdateLibraries)
                     ExecuteTaskNow(task);
                 else
                 {
@@ -147,12 +150,12 @@ public class TaskManager
         logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {task} {connectorName} {publication?.sortName}");
 
         TrangaTask? newTask = null;
-        if (task == TrangaTask.Task.UpdateKomgaLibrary)
+        if (task == TrangaTask.Task.UpdateLibraries)
         {
-            newTask = new UpdateKomgaLibraryTask(task, reoccurrence);
+            newTask = new UpdateLibrariesTask(task, reoccurrence);
             logger?.WriteLine(this.GetType().ToString(), $"Removing old {task}-Task.");
             //Only one UpdateKomgaLibrary Task
-            _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateKomgaLibrary);
+            _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateLibraries);
             _allTasks.Add(newTask);
             logger?.WriteLine(this.GetType().ToString(), $"Added new Task {newTask}");
         }else if (task == TrangaTask.Task.DownloadNewChapters)
@@ -193,9 +196,9 @@ public class TaskManager
     public void DeleteTask(TrangaTask.Task task, string? connectorName, Publication? publication)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task} {publication?.sortName}");
-        if (task == TrangaTask.Task.UpdateKomgaLibrary)
+        if (task == TrangaTask.Task.UpdateLibraries)
         {
-            _allTasks.RemoveWhere(uTask => uTask.task == TrangaTask.Task.UpdateKomgaLibrary);
+            _allTasks.RemoveWhere(uTask => uTask.task == TrangaTask.Task.UpdateLibraries);
             logger?.WriteLine(this.GetType().ToString(), $"Removed Task {task} from all Tasks.");
         }
         else if (connectorName is null)

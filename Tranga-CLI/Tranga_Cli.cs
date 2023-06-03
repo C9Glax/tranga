@@ -29,7 +29,7 @@ public static class Tranga_Cli
         Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, Console.Out.Encoding, logFilePath);
         
         logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
-        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath, logger) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, null);
+        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath, logger) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, new HashSet<LibraryManager>());
 
             
         logger.WriteLine("Tranga_CLI", "User Input");
@@ -39,8 +39,10 @@ public static class Tranga_Cli
             tmpPath = Console.ReadLine();
         if (tmpPath.Length > 0)
             settings.downloadLocation = tmpPath;
+
+        Komga? komga = (Komga?)settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Komga));
         
-        Console.WriteLine($"Komga BaseURL [{settings.komga?.baseUrl}]:");
+        Console.WriteLine($"Komga BaseURL [{komga?.baseUrl}]:");
         string? tmpUrl = Console.ReadLine();
         while (tmpUrl is null)
             tmpUrl = Console.ReadLine();
@@ -70,8 +72,9 @@ public static class Tranga_Cli
                     tmpPass += keyInfo.KeyChar;
                 }
             } while (key != ConsoleKey.Enter);
-            
-            settings.komga = new Komga(tmpUrl, tmpUser, tmpPass, logger);
+
+            settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Komga));
+            settings.libraryManagers.Add(new Komga(tmpUrl, tmpUser, tmpPass, logger));
         }
         
         logger.WriteLine("Tranga_CLI", "Loaded.");
@@ -333,7 +336,7 @@ public static class Tranga_Cli
         TrangaTask.Task task = (TrangaTask.Task)tmpTask;
                     
         Connector? connector = null;
-        if (task != TrangaTask.Task.UpdateKomgaLibrary)
+        if (task != TrangaTask.Task.UpdateLibraries)
         {
             connector = SelectConnector(taskManager.GetAvailableConnectors().Values.ToArray(), logger);
             if (connector is null)
@@ -341,7 +344,7 @@ public static class Tranga_Cli
         }
                     
         Publication? publication = null;
-        if (task != TrangaTask.Task.UpdateKomgaLibrary)
+        if (task != TrangaTask.Task.UpdateLibraries)
         {
             publication = SelectPublication(taskManager, connector!, logger);
             if (publication is null)

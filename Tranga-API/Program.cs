@@ -17,7 +17,7 @@ TrangaSettings settings;
 if (File.Exists(settingsFilePath))
     settings = TrangaSettings.LoadSettings(settingsFilePath, logger);
 else
-    settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, null);
+    settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, new HashSet<LibraryManager>());
 
 Directory.CreateDirectory(settings.workingDirectory);
 Directory.CreateDirectory(settings.downloadLocation);
@@ -211,6 +211,8 @@ app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string?
 
 app.MapGet("/Settings/Get", () => taskManager.settings);
 
-app.MapPost("/Settings/Update", (string? downloadLocation, string? komgaUrl, string? komgaAuth) => taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth) );
+app.MapPost("/Settings/Update",
+    (string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaAuth) =>
+        taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth, kavitaUrl, kavitaAuth));
 
 app.Run();

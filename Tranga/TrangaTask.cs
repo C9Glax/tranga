@@ -74,7 +74,7 @@ public abstract class TrangaTask
     public enum Task : byte
     {
         DownloadNewChapters = 2,
-        UpdateKomgaLibrary = 3
+        UpdateLibraries = 3
     }
 
     public override string ToString()
@@ -95,8 +95,8 @@ public abstract class TrangaTask
             if (jo["task"]!.Value<Int64>() == (Int64)Task.DownloadNewChapters)
                 return jo.ToObject<DownloadNewChaptersTask>(serializer)!;
 
-            if (jo["task"]!.Value<Int64>() == (Int64)Task.UpdateKomgaLibrary)
-                return jo.ToObject<UpdateKomgaLibraryTask>(serializer)!;
+            if (jo["task"]!.Value<Int64>() == (Int64)Task.UpdateLibraries)
+                return jo.ToObject<UpdateLibrariesTask>(serializer)!;
 
             throw new Exception();
         }
