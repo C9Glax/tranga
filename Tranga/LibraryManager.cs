@@ -15,7 +15,7 @@ public abstract class LibraryManager
         Kavita = 1
     }
 
-    public LibraryType libraryType;
+    public LibraryType libraryType { get; }
     public string baseUrl { get; }
     protected string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
     protected Logger? logger;
@@ -23,11 +23,12 @@ public abstract class LibraryManager
     /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
     /// <param name="auth">Base64 string of username and password (username):(password)</param>
     /// <param name="logger"></param>
-    protected LibraryManager(string baseUrl, string auth, Logger? logger)
+    protected LibraryManager(string baseUrl, string auth, Logger? logger, LibraryType libraryType)
     {
         this.baseUrl = baseUrl;
         this.auth = auth;
         this.logger = logger;
+        this.libraryType = libraryType;
     }
     public abstract void UpdateLibrary();
 

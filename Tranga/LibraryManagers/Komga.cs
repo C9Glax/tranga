@@ -12,15 +12,13 @@ namespace Tranga.LibraryManagers;
 public class Komga : LibraryManager
 {
     public Komga(string baseUrl, string username, string password, Logger? logger)
-        : base(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), logger)
+        : base(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), logger, LibraryType.Komga)
     {
-        this.libraryType = LibraryType.Komga;
     }
 
     [JsonConstructor]
-    public Komga(string baseUrl, string auth, Logger? logger) : base(baseUrl, auth, logger)
+    public Komga(string baseUrl, string auth, Logger? logger) : base(baseUrl, auth, logger, LibraryType.Komga)
     {
-        this.libraryType = LibraryType.Komga;
     }
 
     public override void UpdateLibrary()

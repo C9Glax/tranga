@@ -6,9 +6,8 @@ namespace Tranga.LibraryManagers;
 
 public class Kavita : LibraryManager
 {
-    public Kavita(string baseUrl, string apiKey, Logger? logger) : base(baseUrl, apiKey, logger)
+    public Kavita(string baseUrl, string apiKey, Logger? logger) : base(baseUrl, apiKey, logger, LibraryType.Kavita)
     {
-        this.libraryType = LibraryType.Kavita;
     }
 
     public override void UpdateLibrary()
