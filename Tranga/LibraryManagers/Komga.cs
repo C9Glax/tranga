@@ -25,7 +25,7 @@ public class Komga : LibraryManager
     {
         logger?.WriteLine(this.GetType().ToString(), $"Updating Libraries");
         foreach (KomgaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", auth, logger);
+            NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth, logger);
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class Komga : LibraryManager
     private IEnumerable<KomgaLibrary> GetLibraries()
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Libraries");
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", auth, logger);
+        Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", "Basic", auth, logger);
         if (data == Stream.Null)
         {
             logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");

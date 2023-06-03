@@ -104,8 +104,17 @@ function EnqueueTask(taskType, connectorName, publicationId){
     PostData(uri);
 }
 
-function UpdateSettings(downloadLocation, komgaUrl, komgaAuth){
-    var uri = apiUri + `/Settings/Update?downloadLocation=${downloadLocation}&komgaUrl=${komgaUrl}&komgaAuth=${komgaAuth}`;
+function UpdateSettings(downloadLocation, komgaUrl, komgaAuth, kavitaUrl, kavitaUser, kavitaPass){
+    var uri = apiUri + "/Settings/Update?"
+    if(downloadLocation != ""){
+        uri += "&downloadLocation="+downloadLocation;
+    }
+    if(komgaUrl != "" && komgaAuth != ""){
+        uri += `&komgaUrl=${komgaUrl}&komgaAuth=${komgaAuth}`;
+    }
+    if(kavitaUrl != "" && kavitaUser != "" && kavitaPass != ""){
+        uri += `&kavitaUrl=${kavitaUrl}&kavitaUsername=${kavitaUser}&kavitaPassword=${kavitaPass}`;
+    }
     PostData(uri);
 }
 

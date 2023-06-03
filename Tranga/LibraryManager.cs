@@ -17,7 +17,7 @@ public abstract class LibraryManager
 
     public LibraryType libraryType { get; }
     public string baseUrl { get; }
-    protected string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
+    public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
     protected Logger? logger;
     
     /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
@@ -39,11 +39,10 @@ public abstract class LibraryManager
 
     protected static class NetClient
     {
-        public static Stream MakeRequest(string url, string auth, Logger? logger)
+        public static Stream MakeRequest(string url, string authScheme, string auth, Logger? logger)
         {
-            HttpClientHandler clientHandler = new ();
-            HttpClient client = new(clientHandler);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", auth);
+            HttpClient client = new();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authScheme, auth);
             
             HttpRequestMessage requestMessage = new ()
             {
@@ -55,22 +54,21 @@ public abstract class LibraryManager
             logger?.WriteLine("LibraryManager", $"{(int)response.StatusCode} {response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
-                return MakeRequest(response.RequestMessage!.RequestUri!.AbsoluteUri, auth, logger);
+                return MakeRequest(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
             else if (response.IsSuccessStatusCode)
                 return response.Content.ReadAsStream();
             else
                 return Stream.Null;
         }
 
-        public static bool MakePost(string url, string auth, Logger? logger)
+        public static bool MakePost(string url, string authScheme, string auth, Logger? logger)
         {
-            HttpClientHandler clientHandler = new ();
-            HttpClient client = new(clientHandler)
+            HttpClient client = new()
             {
                 DefaultRequestHeaders =
                 {
                     { "Accept", "application/json" },
-                    { "Authorization", new AuthenticationHeaderValue("Basic", auth).ToString() }
+                    { "Authorization", new AuthenticationHeaderValue(authScheme, auth).ToString() }
                 }
             };
             HttpRequestMessage requestMessage = new ()
@@ -83,7 +81,7 @@ public abstract class LibraryManager
             logger?.WriteLine("LibraryManager", $"{(int)response.StatusCode} {response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
-                return MakePost(response.RequestMessage!.RequestUri!.AbsoluteUri, auth, logger);
+                return MakePost(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
             else if (response.IsSuccessStatusCode)
                 return true;
             else 

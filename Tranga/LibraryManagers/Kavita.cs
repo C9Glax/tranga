@@ -1,20 +1,50 @@
-﻿using System.Text.Json;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using Logging;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga.LibraryManagers;
 
 public class Kavita : LibraryManager
 {
-    public Kavita(string baseUrl, string apiKey, Logger? logger) : base(baseUrl, apiKey, logger, LibraryType.Kavita)
+
+    public Kavita(string baseUrl, string username, string password, Logger? logger) : base(baseUrl, GetToken(baseUrl, username, password), logger, LibraryType.Kavita)
     {
+    }
+    
+    [JsonConstructor]
+    public Kavita(string baseUrl, string auth, Logger? logger) : base(baseUrl, auth, logger, LibraryType.Kavita)
+    {
+    }
+
+    private static string GetToken(string baseUrl, string username, string password)
+    {
+        HttpClient client = new()
+        {
+            DefaultRequestHeaders =
+            {
+                { "Accept", "application/json" }
+            }
+        };
+        HttpRequestMessage requestMessage = new ()
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri($"{baseUrl}/api/Account/login"),
+            Content = new StringContent($"{{\"username\":\"{username}\",\"password\":\"{password}\"}}", System.Text.Encoding.UTF8, "application/json")
+        };
+        
+        HttpResponseMessage response = client.Send(requestMessage);
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
+        if (result is not null)
+            return result!["token"]!.GetValue<string>();
+        else return "";
     }
 
     public override void UpdateLibrary()
     {
         logger?.WriteLine(this.GetType().ToString(), $"Updating Libraries");
         foreach (KavitaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", auth, logger);
+            NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger);
     }
     
     /// <summary>
@@ -24,7 +54,7 @@ public class Kavita : LibraryManager
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Libraries");
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library", auth, logger);
+        Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library", "Bearer", auth, logger);
         if (data == Stream.Null)
         {
             logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");
@@ -42,7 +72,7 @@ public class Kavita : LibraryManager
         foreach (JsonNode? jsonNode in result)
         {
             var jObject = (JsonObject?)jsonNode;
-            string libraryId = jObject!["id"]!.GetValue<string>();
+            int libraryId = jObject!["id"]!.GetValue<int>();
             string libraryName = jObject!["name"]!.GetValue<string>();
             ret.Add(new KavitaLibrary(libraryId, libraryName));
         }
@@ -52,10 +82,10 @@ public class Kavita : LibraryManager
     
     private struct KavitaLibrary
     {
-        public string id { get; }
+        public int id { get; }
         public string name { get; }
 
-        public KavitaLibrary(string id, string name)
+        public KavitaLibrary(int id, string name)
         {
             this.id = id;
             this.name = name;

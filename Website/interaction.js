@@ -27,7 +27,8 @@ const settingKomgaUrl = document.querySelector("#komgaUrl");
 const settingKomgaUser = document.querySelector("#komgaUsername");
 const settingKomgaPass = document.querySelector("#komgaPassword");
 const settingKavitaUrl = document.querySelector("#kavitaUrl");
-const settingKavitaApi = document.querySelector("#kavitaApiKey");
+const settingKavitaUser = document.querySelector("#kavitaUsername");
+const settingKavitaPass = document.querySelector("#kavitaPassword");
 const libraryUpdateTime = document.querySelector("#libraryUpdateTime");
 const settingKomgaConfigured = document.querySelector("#komgaConfigured");
 const settingKavitaConfigured = document.querySelector("#kavitaConfigured");
@@ -243,7 +244,8 @@ function GetSettingsClick(){
     settingKomgaUser.value = "";
     settingKomgaPass.value = "";
     settingKavitaUrl.value = "";
-    settingKavitaApi.value = "";
+    settingKavitaUser.value = "";
+    settingKavitaPass.value = "";
     settingKomgaConfigured.innerText = "❌";
     settingKavitaConfigured.innerText = "❌";
     
@@ -254,12 +256,13 @@ function GetSettingsClick(){
         json.libraryManagers.forEach(lm => {
            if(lm.libraryType == 0){
                settingKomgaUrl.placeholder = lm.baseUrl;
-               settingKomgaUser.placeholder = "Configured";
+               settingKomgaUser.placeholder = "User";
                settingKomgaPass.placeholder = "***";
                settingKomgaConfigured.innerText = "✅";
-           } else if(libraryType == 1){
+           } else if(lm.libraryType == 1){
                settingKavitaUrl.placeholder = lm.baseUrl;
-               settingKavitaApi.placeholder = "***";
+               settingKavitaUser.placeholder = "User";
+               settingKavitaPass.placeholder = "***";
                settingKavitaConfigured.innerText = "✅";
            }
         });
@@ -282,8 +285,8 @@ function UpdateLibrarySettings(){
             UpdateSettings("", settingKomgaUrl.placeholder, auth, "", "");
     }
     
-    if(settingKavitaUrl.value != "" && settingKavitaApi != ""){
-        UpdateSettings("", "", "", settingKavitaUrl.value, settingKavitaApi.value);
+    if(settingKavitaUrl.value != "" && settingKavitaUser.value != "" && settingKavitaPass.value != ""){
+        UpdateSettings("", "", "", settingKavitaUrl.value, settingKavitaUser.value, settingKavitaPass.value);
     }
     CreateTask("UpdateLibraries", libraryUpdateTime.value, "","","");
     setTimeout(() => GetSettingsClick(), 100);
