@@ -27,7 +27,7 @@ public readonly struct Publication
     public string publicationId { get; }
     public string internalId { get; }
 
-    private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
+    private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*)*");
 
     public Publication(string sortName, string? author, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
     {
