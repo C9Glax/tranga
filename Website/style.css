@@ -155,7 +155,7 @@ settings {
     z-index: 10;
     position: absolute;
     left: 25%;
-    top: 25%;
+    top: 100px;
     border-radius: 5px;
     padding: 10px 0;
 }

@@ -84,7 +84,7 @@ async function GetSettings(){
 }
 
 async function GetKomgaTask(){
-    var uri = apiUri + "/Tasks/Get?taskType=UpdateKomgaLibrary";
+    var uri = apiUri + "/Tasks/Get?taskType=UpdateLibraries";
     let json = await GetData(uri);
     return json;
 }

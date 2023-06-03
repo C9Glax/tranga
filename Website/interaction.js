@@ -26,8 +26,11 @@ const settingDownloadLocation = document.querySelector("#downloadLocation");
 const settingKomgaUrl = document.querySelector("#komgaUrl");
 const settingKomgaUser = document.querySelector("#komgaUsername");
 const settingKomgaPass = document.querySelector("#komgaPassword");
-const settingKomgaTime = document.querySelector("#komgaUpdateTime");
+const settingKavitaUrl = document.querySelector("#kavitaUrl");
+const settingKavitaApi = document.querySelector("#kavitaApiKey");
+const libraryUpdateTime = document.querySelector("#libraryUpdateTime");
 const settingKomgaConfigured = document.querySelector("#komgaConfigured");
+const settingKavitaConfigured = document.querySelector("#kavitaConfigured");
 const settingApiUri = document.querySelector("#settingApiUri");
 const tagTasksRunning = document.querySelector("#tasksRunningTag");
 const tagTasksQueued = document.querySelector("#tasksQueuedTag");
@@ -239,38 +242,50 @@ function GetSettingsClick(){
     settingKomgaUrl.value = "";
     settingKomgaUser.value = "";
     settingKomgaPass.value = "";
+    settingKavitaUrl.value = "";
+    settingKavitaApi.value = "";
+    settingKomgaConfigured.innerText = "❌";
+    settingKavitaConfigured.innerText = "❌";
     
     settingApiUri.placeholder = apiUri;
     
     GetSettings().then(json => {
         settingDownloadLocation.innerText = json.downloadLocation;
-        if(json.komga != null) {
-            settingKomgaUrl.placeholder = json.komga.baseUrl;
-            settingKomgaUser.placeholder = "Configured";
-            settingKomgaPass.placeholder = "***";
-        }
+        json.libraryManagers.forEach(lm => {
+           if(lm.libraryType == 0){
+               settingKomgaUrl.placeholder = lm.baseUrl;
+               settingKomgaUser.placeholder = "Configured";
+               settingKomgaPass.placeholder = "***";
+               settingKomgaConfigured.innerText = "✅";
+           } else if(libraryType == 1){
+               settingKavitaUrl.placeholder = lm.baseUrl;
+               settingKavitaApi.placeholder = "***";
+               settingKavitaConfigured.innerText = "✅";
+           }
+        });
     });
     
     GetKomgaTask().then(json => {
-        settingKomgaTime.value = json[0].reoccurrence;
         if(json.length > 0)
-            settingKomgaConfigured.innerText = "✅";
-        else
-            settingKomgaConfigured.innerText = "❌";
+            libraryUpdateTime.value = json[0].reoccurrence;
     });
 }
 
-function UpdateKomgaSettings(){
+function UpdateLibrarySettings(){
     if(settingKomgaUser.value != "" && settingKomgaPass != ""){
         var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
         console.log(auth);
 
         if(settingKomgaUrl.value != "")
-            UpdateSettings("", settingKomgaUrl.value, auth);
+            UpdateSettings("", settingKomgaUrl.value, auth, "", "");
         else
-            UpdateSettings("", settingKomgaUrl.placeholder, auth);
+            UpdateSettings("", settingKomgaUrl.placeholder, auth, "", "");
     }
-    CreateTask("UpdateKomgaLibrary", settingKomgaTime.value, "","","");
+    
+    if(settingKavitaUrl.value != "" && settingKavitaApi != ""){
+        UpdateSettings("", "", "", settingKavitaUrl.value, settingKavitaApi.value);
+    }
+    CreateTask("UpdateLibraries", libraryUpdateTime.value, "","","");
     setTimeout(() => GetSettingsClick(), 100);
 }
 

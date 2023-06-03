@@ -94,9 +94,17 @@
             <label for="komgaUrl"></label><input placeholder="URL" id="komgaUrl" type="text">
             <label for="komgaUsername"></label><input placeholder="Username" id="komgaUsername" type="text">
             <label for="komgaPassword"></label><input placeholder="Password" id="komgaPassword" type="password">
-            <label for="komgaUpdateTime" style="margin-right: 5px;">Update Time</label><input id="komgaUpdateTime" type="time" value="00:01:00" step="10">
-            <input type="submit" value="Update" onclick="UpdateKomgaSettings()">
           </komga-settings>
+          <kavita-settings>
+            <span class="title">Kavita</span>
+            <div>Configured: <span id="kavitaConfigured">✅❌</span></div>
+            <label for="kavitaUrl"></label><input placeholder="URL" id="kavitaUrl" type="text">
+            <label for="kavitaApiKey"></label><input placeholder="API-Key" id="kavitaApiKey" type="text">
+          </kavita-settings>
+          <div>
+            <label for="libraryUpdateTime" style="margin-right: 5px;">Update Time</label><input id="libraryUpdateTime" type="time" value="00:01:00" step="10">
+            <input type="submit" value="Update" onclick="UpdateLibrarySettings()">
+          </div>
         </settings>
       </popup>
     </viewport>
