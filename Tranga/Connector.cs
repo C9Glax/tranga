@@ -125,6 +125,10 @@ public abstract class Connector
             logger?.WriteLine(this.GetType().ToString(), $"Moving old file {oldFilePath2} -> {newFilePath}");
             File.Move(oldFilePath2, newFilePath);
         }
+        else
+        {
+            logger?.WriteLine(this.GetType().ToString(), $"No old files found:\n{oldFilePath}\n{oldFilePath2}");
+        }
         return File.Exists(newFilePath);
     }
 
