@@ -106,10 +106,6 @@ public abstract class TrangaTask
         /// <summary>
         /// Don't call this
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="value"></param>
-        /// <param name="serializer"></param>
-        /// <exception cref="Exception"></exception>
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new Exception("Dont call this");
