@@ -40,13 +40,11 @@ public static class Tranga_Cli
         if (tmpPath.Length > 0)
             settings.downloadLocation = tmpPath;
 
-        Komga? komga = (Komga?)settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Komga));
-        
-        Console.WriteLine($"Komga BaseURL [{komga?.baseUrl}]:");
-        string? tmpUrl = Console.ReadLine();
-        while (tmpUrl is null)
-            tmpUrl = Console.ReadLine();
-        if (tmpUrl.Length > 0)
+        Console.WriteLine($"Komga BaseURL [{settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Komga))?.baseUrl}]:");
+        string? tmpUrlKomga = Console.ReadLine();
+        while (tmpUrlKomga is null)
+            tmpUrlKomga = Console.ReadLine();
+        if (tmpUrlKomga.Length > 0)
         {
             Console.WriteLine("Username:");
             string? tmpUser = Console.ReadLine();
@@ -74,7 +72,42 @@ public static class Tranga_Cli
             } while (key != ConsoleKey.Enter);
 
             settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Komga));
-            settings.libraryManagers.Add(new Komga(tmpUrl, tmpUser, tmpPass, logger));
+            settings.libraryManagers.Add(new Komga(tmpUrlKomga, tmpUser, tmpPass, logger));
+        }
+        
+        Console.WriteLine($"Kavita BaseURL [{settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Kavita))?.baseUrl}]:");
+        string? tmpUrlKavita = Console.ReadLine();
+        while (tmpUrlKavita is null)
+            tmpUrlKavita = Console.ReadLine();
+        if (tmpUrlKavita.Length > 0)
+        {
+            Console.WriteLine("Username:");
+            string? tmpUser = Console.ReadLine();
+            while (tmpUser is null || tmpUser.Length < 1)
+                tmpUser = Console.ReadLine();
+            
+            Console.WriteLine("Password:");
+            string tmpPass = string.Empty;
+            ConsoleKey key;
+            do
+            {
+                var keyInfo = Console.ReadKey(intercept: true);
+                key = keyInfo.Key;
+
+                if (key == ConsoleKey.Backspace && tmpPass.Length > 0)
+                {
+                    Console.Write("\b \b");
+                    tmpPass = tmpPass[0..^1];
+                }
+                else if (!char.IsControl(keyInfo.KeyChar))
+                {
+                    Console.Write("*");
+                    tmpPass += keyInfo.KeyChar;
+                }
+            } while (key != ConsoleKey.Enter);
+
+            settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Kavita));
+            settings.libraryManagers.Add(new Kavita(tmpUrlKavita, tmpUser, tmpPass, logger));
         }
         
         logger.WriteLine("Tranga_CLI", "Loaded.");

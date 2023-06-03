@@ -29,7 +29,7 @@ public class TrangaSettings
             return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory(), new HashSet<LibraryManager>());
 
         string toRead = File.ReadAllText(importFilePath);
-        TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(toRead)!;
+        TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(toRead, new JsonSerializerSettings() { Converters = { new LibraryManager.LibraryManagerJsonConverter()} })!;
         if(logger is not null)
             foreach(LibraryManager lm in settings.libraryManagers)
                 lm.AddLogger(logger);

@@ -1,11 +1,21 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Tranga.LibraryManagers;
 
 namespace Tranga;
 
 public abstract class LibraryManager
 {
+    public enum LibraryType : byte
+    {
+        Komga = 0,
+        Kavita = 1
+    }
+
+    public LibraryType libraryType;
     public string baseUrl { get; }
     protected string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
     protected Logger? logger;
@@ -77,6 +87,36 @@ public abstract class LibraryManager
                 return true;
             else 
                 return false;
+        }
+    }
+    
+    public class LibraryManagerJsonConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType == typeof(LibraryManager));
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        {
+            JObject jo = JObject.Load(reader);
+            if (jo["libraryType"]!.Value<Int64>() == (Int64)LibraryType.Komga)
+                return jo.ToObject<Komga>(serializer)!;
+
+            if (jo["libraryType"]!.Value<Int64>() == (Int64)LibraryType.Kavita)
+                return jo.ToObject<Kavita>(serializer)!;
+
+            throw new Exception();
+        }
+
+        public override bool CanWrite => false;
+
+        /// <summary>
+        /// Don't call this
+        /// </summary>
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        {
+            throw new Exception("Dont call this");
         }
     }
 }
