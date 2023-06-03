@@ -289,7 +289,7 @@ function UpdateLibrarySettings(){
         UpdateSettings("", "", "", settingKavitaUrl.value, settingKavitaUser.value, settingKavitaPass.value);
     }
     CreateTask("UpdateLibraries", libraryUpdateTime.value, "","","");
-    setTimeout(() => GetSettingsClick(), 100);
+    setTimeout(() => GetSettingsClick(), 200);
 }
 
 function utf8_to_b64( str ) {
