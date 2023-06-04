@@ -94,8 +94,8 @@ function CreateTask(taskType, reoccurrence, connectorName, publicationId, langua
     PostData(uri);
 }
 
-function StartTask(taskType, connectorName, publicationId){
-    var uri = apiUri + `/Tasks/Start?taskType=${taskType}&connectorName=${connectorName}&publicationId=${publicationId}`;
+function StartTask(taskType, connectorName, internalId){
+    var uri = apiUri + `/Tasks/Start?taskType=${taskType}&connectorName=${connectorName}&internalId=${internalId}`;
     PostData(uri);
 }
 
