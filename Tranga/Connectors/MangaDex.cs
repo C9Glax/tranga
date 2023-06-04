@@ -3,6 +3,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Logging;
+using Tranga.TrangaTasks;
 
 namespace Tranga.Connectors;
 public class MangaDex : Connector
@@ -204,7 +205,7 @@ public class MangaDex : Connector
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, TrangaTask parentTask)
+    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         //Request URLs for Chapter-Images

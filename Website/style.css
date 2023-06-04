@@ -500,7 +500,7 @@ footer-tag-content{
 }
 
 footer-tag-content > * {
-    margin: 2px 0;
+    margin: 2px 5px;
 }
 
 footer-tag-popup::before{

@@ -2,6 +2,7 @@
 using Logging;
 using Tranga;
 using Tranga.LibraryManagers;
+using Tranga.TrangaTasks;
 
 namespace Tranga_CLI;
 
@@ -239,18 +240,18 @@ public static class Tranga_Cli
         int tIndex = 0;
         Console.WriteLine($"Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         string header =
-            $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Connector",-15} | {"Progress",-9} | Publication/Manga";
+            $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Progress",-9} | {"Connector",-15} | Publication/Manga ";
         Console.WriteLine(header);
         Console.WriteLine(new string('-', header.Length));
         foreach (TrangaTask trangaTask in tasks)
         {
             string[] taskSplit = trangaTask.ToString().Split(", ");
-            Console.WriteLine($"{tIndex++:000}: {taskSplit[0],-20} | {taskSplit[1],-20} | {taskSplit[2],-12} | {taskSplit[3],-10} | {(taskSplit.Length > 4 ? taskSplit[4] : ""),-15} | {(taskSplit.Length > 5 ? taskSplit[5] : ""),-9} |{(taskSplit.Length > 6 ? taskSplit[6] : "")}");
+            Console.WriteLine($"{tIndex++:000}: {taskSplit[0],-20} | {taskSplit[1],-20} | {taskSplit[2],-12} | {taskSplit[3],-10} | {(taskSplit.Length > 4 ? taskSplit[4] : ""),-9} | {(taskSplit.Length > 5 ? taskSplit[5] : ""),-15} | {(taskSplit.Length > 6 ? taskSplit[6] : "")} {(taskSplit.Length > 7 ? taskSplit[7] : "")} {(taskSplit.Length > 8 ? taskSplit[8] : "")}");
         }
             
     }
 
-    private static TrangaTask? SelectTask(TrangaTask[] tasks, Logger logger)
+    private static TrangaTask[] SelectTasks(TrangaTask[] tasks, Logger logger)
     {
         logger.WriteLine("Tranga_CLI", "Menu: Select task");
         if (tasks.Length < 1)
@@ -258,13 +259,13 @@ public static class Tranga_Cli
             Console.Clear();
             Console.WriteLine("There are no available Tasks.");
             logger.WriteLine("Tranga_CLI", "No available Tasks.");
-            return null;
+            return Array.Empty<TrangaTask>();
         }
         PrintTasks(tasks, logger);
         
         logger.WriteLine("Tranga_CLI", "Selecting Task to Remove (from queue)");
         Console.WriteLine("Enter q to abort");
-        Console.WriteLine($"Select Task (0-{tasks.Length - 1}):");
+        Console.WriteLine($"Select Task(s) (0-{tasks.Length - 1}):");
 
         string? selectedTask = Console.ReadLine();
         while(selectedTask is null || selectedTask.Length < 1)
@@ -275,21 +276,20 @@ public static class Tranga_Cli
             Console.Clear();
             Console.WriteLine("aborted.");
             logger.WriteLine("Tranga_CLI", "aborted");
-            return null;
-        }
-        
-        try
-        {
-            int selectedTaskIndex = Convert.ToInt32(selectedTask);
-            return tasks[selectedTaskIndex];
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine("Tranga_CLI", e.Message);
+            return Array.Empty<TrangaTask>();
         }
 
-        return null;
+        if (selectedTask.Contains('-'))
+        {
+            int start = Convert.ToInt32(selectedTask.Split('-')[0]);
+            int end = Convert.ToInt32(selectedTask.Split('-')[1]);
+            return tasks[start..end];
+        }
+        else
+        {
+            int selectedTaskIndex = Convert.ToInt32(selectedTask);
+            return new[] { tasks[selectedTaskIndex] };
+        }
     }
     
     private static void AddMangaTaskToQueue(TaskManager taskManager, Logger logger)
@@ -307,7 +307,7 @@ public static class Tranga_Cli
         
         TimeSpan reoccurrence = SelectReoccurrence(logger);
         logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        TrangaTask newTask = taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connector.name, publication, reoccurrence, "en");
+        TrangaTask? newTask = taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connector.name, publication.Value.publicationId, reoccurrence, "en");
         Console.WriteLine(newTask);
     }
 
@@ -319,12 +319,10 @@ public static class Tranga_Cli
         TrangaTask[] tasks = taskManager.GetAllTasks().Where(rTask =>
             rTask.state is not TrangaTask.ExecutionState.Enqueued and not TrangaTask.ExecutionState.Running).ToArray();
         
-        TrangaTask? selectedTask = SelectTask(tasks, logger);
-        if (selectedTask is null)
-            return;
-        
-        logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        taskManager.AddTaskToQueue(selectedTask);
+        TrangaTask[] selectedTasks = SelectTasks(tasks, logger);
+        logger.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
+        foreach(TrangaTask task in selectedTasks)
+            taskManager.AddTaskToQueue(task);
     }
 
     private static void RemoveTaskFromQueue(TaskManager taskManager, Logger logger)
@@ -334,12 +332,10 @@ public static class Tranga_Cli
         
         TrangaTask[] tasks = taskManager.GetAllTasks().Where(rTask => rTask.state is TrangaTask.ExecutionState.Enqueued).ToArray();
 
-        TrangaTask? selectedTask = SelectTask(tasks, logger);
-        if (selectedTask is null)
-            return;
-        
-        logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        taskManager.RemoveTaskFromQueue(selectedTask);
+        TrangaTask[] selectedTasks = SelectTasks(tasks, logger);
+        logger.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
+        foreach(TrangaTask task in selectedTasks)
+            taskManager.RemoveTaskFromQueue(task);
     }
 
     private static void TailLog(Logger logger)
@@ -367,7 +363,7 @@ public static class Tranga_Cli
         if (tmpTask is null)
             return;
         TrangaTask.Task task = (TrangaTask.Task)tmpTask;
-                    
+        
         Connector? connector = null;
         if (task != TrangaTask.Task.UpdateLibraries)
         {
@@ -383,11 +379,25 @@ public static class Tranga_Cli
             if (publication is null)
                 return;
         }
-        
-        TimeSpan reoccurrence = SelectReoccurrence(logger);
-        logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        TrangaTask newTask = taskManager.AddTask(task, connector?.name, publication, reoccurrence, "en");
-        Console.WriteLine(newTask);
+
+        if (task is TrangaTask.Task.DownloadNewChapters)
+        {
+            TimeSpan reoccurrence = SelectReoccurrence(logger);
+            logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
+
+            TrangaTask newTask = new DownloadNewChaptersTask(TrangaTask.Task.DownloadNewChapters, connector!.name, (Publication)publication!, reoccurrence, "en");
+            taskManager.AddTask(newTask);
+            Console.WriteLine(newTask);
+        }else if (task is TrangaTask.Task.DownloadChapter)
+        {
+            foreach (Chapter chapter in SelectChapters(connector!, (Publication)publication!, logger))
+            {
+                TrangaTask newTask = new DownloadChapterTask(TrangaTask.Task.DownloadChapter, connector!.name,
+                    (Publication)publication!, chapter, "en");
+                taskManager.AddTask(newTask);
+                Console.WriteLine(newTask);
+            }
+        }
     }
 
     private static void ExecuteTaskNow(TaskManager taskManager, Logger logger)
@@ -395,12 +405,10 @@ public static class Tranga_Cli
         logger.WriteLine("Tranga_CLI", "Menu: Executing Task");
         TrangaTask[] tasks = taskManager.GetAllTasks().Where(nTask => nTask.state is not TrangaTask.ExecutionState.Running).ToArray();
         
-        TrangaTask? selectedTask = SelectTask(tasks, logger);
-        if (selectedTask is null)
-            return;
-        
-        logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        taskManager.ExecuteTaskNow(selectedTask);
+        TrangaTask[] selectedTasks = SelectTasks(tasks, logger);
+        logger.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
+        foreach(TrangaTask task in selectedTasks)
+            taskManager.ExecuteTaskNow(task);
     }
 
     private static void DeleteTask(TaskManager taskManager, Logger logger)
@@ -408,12 +416,10 @@ public static class Tranga_Cli
         logger.WriteLine("Tranga_CLI", "Menu: Delete Task");
         TrangaTask[] tasks = taskManager.GetAllTasks();
         
-        TrangaTask? selectedTask = SelectTask(tasks, logger);
-        if (selectedTask is null)
-            return;
-        
-        logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        taskManager.DeleteTask(selectedTask.task, selectedTask.connectorName, selectedTask.publication);
+        TrangaTask[] selectedTasks = SelectTasks(tasks, logger);
+        logger.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
+        foreach(TrangaTask task in selectedTasks)
+            taskManager.DeleteTask(task);
     }
 
     private static TrangaTask.Task? SelectTaskType(Logger logger)
@@ -462,6 +468,40 @@ public static class Tranga_Cli
         logger.WriteLine("Tranga_CLI", "Menu: Select Reoccurrence");
         Console.WriteLine("Select reoccurrence Timer (Format hh:mm:ss):");
         return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
+    }
+
+    private static Chapter[] SelectChapters(Connector connector, Publication publication, Logger logger)
+    {
+        logger.WriteLine("Tranga_CLI", "Menu: Select Chapters");
+        Chapter[] availableChapters = connector.GetChapters(publication, "en");
+        int cIndex = 0;
+        Console.WriteLine("Chapters:");
+        foreach(Chapter chapter in availableChapters)
+            Console.WriteLine($"{cIndex++}: Vol.{chapter.volumeNumber} Ch.{chapter.chapterNumber} - {chapter.name}");
+        
+        Console.WriteLine("Enter q to abort");
+        Console.WriteLine($"Select Chapter(s):");
+
+        string? selectedChapters = Console.ReadLine();
+        while(selectedChapters is null || selectedChapters.Length < 1)
+            selectedChapters = Console.ReadLine();
+
+        if (selectedChapters.Length == 1 && selectedChapters.ToLower() == "q")
+        {
+            Console.Clear();
+            Console.WriteLine("aborted.");
+            logger.WriteLine("Tranga_CLI", "aborted.");
+            return Array.Empty<Chapter>();
+        }
+        
+        if (selectedChapters.Contains('-'))
+        {
+            int start = Convert.ToInt32(selectedChapters.Split('-')[0]);
+            int end = Convert.ToInt32(selectedChapters.Split('-')[1]);
+            return availableChapters[start..end];
+        }
+        else
+            return new Chapter[] { availableChapters[Convert.ToInt32(selectedChapters)] };
     }
 
     private static Connector? SelectConnector(Connector[] connectors, Logger logger)
