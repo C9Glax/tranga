@@ -73,9 +73,8 @@ app.MapGet("/Tasks/GetTaskTypes", () => Enum.GetNames(typeof(TrangaTask.Task)));
 
 app.MapPost("/Tasks/Create", (string taskType, string? connectorName, string? publicationId, string reoccurrenceTime, string? language) =>
 {
-    Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == publicationId);
     TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
-    taskManager.AddTask(task, connectorName, publication, TimeSpan.Parse(reoccurrenceTime), language??"");
+    taskManager.AddTask(task, connectorName, publicationId, TimeSpan.Parse(reoccurrenceTime), language??"");
 });
 
 app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
@@ -90,12 +89,7 @@ app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? search
     try
     {
         TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
-        if (searchString is null || connectorName is null)
-            return taskManager.GetAllTasks().Where(tTask => tTask.task == task);
-        else
-            return taskManager.GetAllTasks().Where(tTask =>
-                tTask.task == task && tTask.connectorName == connectorName && tTask.ToString()
-                    .Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
+        return taskManager.GetTasksMatching(task, connectorName:connectorName, searchString:searchString);
     }
     catch (ArgumentException)
     {
@@ -108,15 +102,9 @@ app.MapGet("/Tasks/GetTaskProgress", (string taskType, string? connectorName, st
     try
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-        TrangaTask? task = null;
-        if (connectorName is null || publicationId is null)
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask);
-        else
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
-                tTask.connectorName == connectorName);
-            
+        TrangaTask? task = taskManager
+            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
+
         if (task is null)
             return -1f;
 
@@ -133,14 +121,8 @@ app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? pub
     try
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-        TrangaTask? task = null;
-        if (connectorName is null || publicationId is null)
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask);
-        else
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
-                tTask.connectorName == connectorName);
+        TrangaTask? task = taskManager
+            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
             
         if (task is null)
             return;
@@ -164,14 +146,8 @@ app.MapPost("/Queue/Enqueue", (string taskType, string? connectorName, string? p
     try
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-        TrangaTask? task = null;
-        if (connectorName is null || publicationId is null)
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask);
-        else
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
-                tTask.connectorName == connectorName);
+        TrangaTask? task = taskManager
+            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
             
         if (task is null)
             return;
@@ -188,14 +164,8 @@ app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string?
     try
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-        TrangaTask? task = null;
-        if (connectorName is null || publicationId is null)
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask);
-        else
-            task = taskManager.GetAllTasks().FirstOrDefault(tTask =>
-                tTask.task == pTask && tTask.publication?.internalId == publicationId &&
-                tTask.connectorName == connectorName);
+        TrangaTask? task = taskManager
+            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
             
         if (task is null)
             return;

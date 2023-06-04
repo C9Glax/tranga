@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Logging;
+using Tranga.TrangaTasks;
 
 namespace Tranga.Connectors;
 
@@ -161,7 +162,7 @@ public class Manganato : Connector
         return ret.ToArray();
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, TrangaTask parentTask)
+    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;

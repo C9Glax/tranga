@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Logging;
+using Tranga.TrangaTasks;
 using static System.IO.UnixFileMode;
 
 namespace Tranga;
@@ -60,7 +61,7 @@ public abstract class Connector
     /// <param name="publication">Publication that contains Chapter</param>
     /// <param name="chapter">Chapter with Images to retrieve</param>
     /// <param name="parentTask">Will be used for progress-tracking</param>
-    public abstract void DownloadChapter(Publication publication, Chapter chapter, TrangaTask parentTask);
+    public abstract void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask);
 
     /// <summary>
     /// Copies the already downloaded cover from cache to downloadLocation
@@ -160,7 +161,7 @@ public abstract class Connector
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
     /// <param name="referrer">Used in http request header</param>
-    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, TrangaTask parentTask, string? comicInfoPath = null, string? referrer = null)
+    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, DownloadChapterTask parentTask, string? comicInfoPath = null, string? referrer = null)
     {
         logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
@@ -180,9 +181,9 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
-            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {(parentTask.publication?.sortName)![..(int)(parentTask.publication?.sortName.Length > 25 ? 25 : parentTask.publication?.sortName.Length)!],-25} {(parentTask.publication?.internalId)![..(int)(parentTask.publication?.internalId.Length > 25 ? 25 : parentTask.publication?.internalId.Length)!],-25} Total Task Progress: {parentTask.progress:00.0}%");
+            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
-            parentTask.tasksFinished++;
+            parentTask.progress += 1f / imageUrls.Length;
         }
         
         if(comicInfoPath is not null)

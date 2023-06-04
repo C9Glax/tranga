@@ -1,27 +1,28 @@
-﻿using Logging;
+﻿using System.Text.Json.Serialization;
+using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tranga.TrangaTasks;
+using JsonConverter = Newtonsoft.Json.JsonConverter;
 
 namespace Tranga;
 
 /// <summary>
 /// Stores information on Task, when implementing new Tasks also update the serializer
 /// </summary>
+[JsonDerivedType(typeof(DownloadNewChaptersTask), 2)]
+[JsonDerivedType(typeof(UpdateLibrariesTask), 3)]
+[JsonDerivedType(typeof(DownloadChapterTask), 4)]
 public abstract class TrangaTask
 {
     // ReSharper disable once CommentTypo ...Tell me why!
     // ReSharper disable once MemberCanBePrivate.Global I want it thaaat way
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
-    public string? connectorName { get; }
     public Task task { get; }
-    public Publication? publication { get; }
-    public string? language { get; }
-    [JsonIgnore]public ExecutionState state { get; set; }
-    [JsonIgnore] public float progress => (tasksFinished != 0f ? tasksFinished / tasksCount : 0f);
-    [JsonIgnore]public float tasksCount { get; set; }
-    [JsonIgnore]public float tasksFinished { get; set; }
+    [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
+    [Newtonsoft.Json.JsonIgnore]public float progress { get; set; }
+    [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
     public enum ExecutionState
     {
@@ -30,16 +31,12 @@ public abstract class TrangaTask
         Running
     };
 
-    protected TrangaTask(Task task, string? connectorName, Publication? publication, TimeSpan reoccurrence, string? language = null)
+    protected TrangaTask(Task task, TimeSpan reoccurrence)
     {
-        this.publication = publication;
         this.reoccurrence = reoccurrence;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
-        this.connectorName = connectorName;
         this.task = task;
-        this.language = language;
-        this.tasksCount = 1;
-        this.tasksFinished = 0;
+        this.progress = 0f;
     }
     
     /// <summary>
@@ -62,24 +59,24 @@ public abstract class TrangaTask
         this.lastExecuted = DateTime.Now;
         this.state = ExecutionState.Waiting;
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
-        
     }
 
     /// <returns>True if elapsed time since last execution is greater than set interval</returns>
     public bool ShouldExecute()
     {
-        return DateTime.Now.Subtract(this.lastExecuted) > reoccurrence && state is ExecutionState.Waiting;
+        return nextExecution < DateTime.Now && state is ExecutionState.Waiting;
     }
 
     public enum Task : byte
     {
         DownloadNewChapters = 2,
-        UpdateLibraries = 3
+        UpdateLibraries = 3,
+        DownloadChapter = 4
     }
 
     public override string ToString()
     {
-        return $"{task}, {lastExecuted}, {reoccurrence}, {state} {(connectorName is not null ? $", {connectorName}" : "" )} {(publication is not null ? $", {progress:00.00}%" : "")} {(publication is not null ? $", {publication?.sortName}" : "")}";
+        return $"{task}, {lastExecuted}, {reoccurrence}, {state}, {progress:P2}";
     }
     
     public class TrangaTaskJsonConverter : JsonConverter
@@ -97,6 +94,9 @@ public abstract class TrangaTask
 
             if (jo["task"]!.Value<Int64>() == (Int64)Task.UpdateLibraries)
                 return jo.ToObject<UpdateLibrariesTask>(serializer)!;
+            
+            if (jo["task"]!.Value<Int64>() == (Int64)Task.DownloadChapter)
+                return jo.ToObject<DownloadChapterTask>(serializer)!;
 
             throw new Exception();
         }

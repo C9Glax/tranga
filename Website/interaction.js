@@ -302,10 +302,12 @@ function ShowRunningTasks(event){
         .then(json => {
             tagTasksPopupContent.replaceChildren();
             json.forEach(task => {
-                console.log(task);
                 if(task.publication != null){
                     var taskname = document.createElement("footer-tag-task-name");
-                    taskname.innerText = task.publication.sortName;
+                    if(task.task == 2)
+                        taskname.innerText = `${task.publication.sortName} - ${task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2})}`;
+                    else if(task.task == 4)
+                        taskname.innerText = `${task.publication.sortName} Vol.${task.chapter.volumeNumber} Ch.${task.chapter.chapterNumber} - ${task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2})}`;
                     tagTasksPopupContent.appendChild(taskname);
                 }
             });
@@ -322,7 +324,10 @@ function ShowQueuedTasks(event){
             tagTasksPopupContent.replaceChildren();
             json.forEach(task => {
                 var taskname = document.createElement("footer-tag-task-name");
-                taskname.innerText = task.publication.sortName;
+                if(task.task == 2)
+                    taskname.innerText = `${task.publication.sortName}`;
+                else if(task.task == 4)
+                    taskname.innerText = `${task.publication.sortName} Vol.${task.chapter.volumeNumber} Ch.${task.chapter.chapterNumber}`;
                 tagTasksPopupContent.appendChild(taskname);
             });
             if(json.length > 0){
