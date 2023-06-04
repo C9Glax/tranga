@@ -103,7 +103,7 @@ app.MapGet("/Tasks/GetTaskProgress", (string taskType, string? connectorName, st
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
         TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
+            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId)?.First();
 
         if (task is null)
             return -1f;
@@ -116,13 +116,13 @@ app.MapGet("/Tasks/GetTaskProgress", (string taskType, string? connectorName, st
     }
 });
 
-app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? publicationId) =>
+app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? internalId) =>
 {
     try
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
         TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
+            .GetTasksMatching(pTask, connectorName: connectorName, internalId: internalId)?.FirstOrDefault();
             
         if (task is null)
             return;
@@ -147,7 +147,7 @@ app.MapPost("/Queue/Enqueue", (string taskType, string? connectorName, string? p
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
         TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
+            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId)?.First();
             
         if (task is null)
             return;
@@ -165,7 +165,7 @@ app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string?
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
         TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, publicationId: publicationId)?.First();
+            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId)?.First();
             
         if (task is null)
             return;

@@ -229,7 +229,7 @@ public class TaskManager
         ExportDataAndSettings();
     }
 
-    public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? publicationId = null)
+    public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null)
     {
         switch (taskType)
         {
@@ -246,11 +246,11 @@ public class TaskManager
                         ((DownloadNewChaptersTask)mTask).connectorName == connectorName &&
                         ((DownloadNewChaptersTask)mTask).ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
                 }
-                else if (publicationId is not null)
+                else if (internalId is not null)
                 {
                     return matchingdnc.Where(mTask =>
                         ((DownloadNewChaptersTask)mTask).connectorName == connectorName &&
-                        ((DownloadNewChaptersTask)mTask).publication.publicationId == publicationId);
+                        ((DownloadNewChaptersTask)mTask).publication.internalId == internalId);
                 }
                 else
                     return _allTasks.Where(tTask =>
@@ -268,11 +268,11 @@ public class TaskManager
                         ((DownloadChapterTask)mTask).connectorName == connectorName &&
                         ((DownloadChapterTask)mTask).ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
                 }
-                else if (publicationId is not null)
+                else if (internalId is not null)
                 {
                     return matchingdc.Where(mTask =>
                         ((DownloadChapterTask)mTask).connectorName == connectorName &&
-                        ((DownloadChapterTask)mTask).publication.publicationId == publicationId);
+                        ((DownloadChapterTask)mTask).publication.publicationId == internalId);
                 }
                 else
                     return _allTasks.Where(tTask =>
