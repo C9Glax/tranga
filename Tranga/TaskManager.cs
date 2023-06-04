@@ -95,7 +95,7 @@ public class TaskManager
                     case TrangaTask.Task.DownloadNewChapters:
                         if (!_allTasks.Any(taskQuery => taskQuery.task == TrangaTask.Task.DownloadNewChapters &&
                                                         taskQuery.state is TrangaTask.ExecutionState.Running &&
-                                                        ((DownloadChapterTask)taskQuery).connectorName == ((DownloadNewChaptersTask)task).connectorName))
+                                                        ((DownloadNewChaptersTask)taskQuery).connectorName == ((DownloadNewChaptersTask)task).connectorName))
                         {
                             ExecuteTaskNow(task);
                         }
