@@ -12,7 +12,8 @@ namespace Tranga.Connectors;
 public class Mangasee : Connector
 {
     public override string name { get; }
-    private IBrowser? browser = null;
+    private IBrowser? _browser = null;
+    private const string ChromiumVersion = "1153303";
 
     public Mangasee(string downloadLocation, string imageCachePath, Logger? logger) : base(downloadLocation,
         imageCachePath, logger)
@@ -29,8 +30,14 @@ public class Mangasee : Connector
 
     private async void DownloadBrowser()
     {
-        logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
         BrowserFetcher browserFetcher = new BrowserFetcher();
+        if (browserFetcher.LocalRevisions().Contains(ChromiumVersion))
+            return;
+        else
+            foreach(string rev in browserFetcher.LocalRevisions())
+                browserFetcher.Remove(rev);
+        
+        logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
         DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
         browserFetcher.DownloadProgressChanged += async (sender, args) =>
         {
@@ -46,16 +53,21 @@ public class Mangasee : Connector
             }
 
         };
-        if (!browserFetcher.CanDownloadAsync(BrowserFetcher.DefaultChromiumRevision).Result)
+        if (!browserFetcher.CanDownloadAsync(ChromiumVersion).Result)
         {
-            logger?.WriteLine(this.GetType().ToString(), "Can't download");
+            logger?.WriteLine(this.GetType().ToString(), $"Can't download browser version {ChromiumVersion}");
             return;
         }
-        await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
-        this.browser = await Puppeteer.LaunchAsync(new LaunchOptions
+        await browserFetcher.DownloadAsync(ChromiumVersion);
+        this._browser = await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
-            ExecutablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultChromiumRevision)
+            ExecutablePath = browserFetcher.GetExecutablePath(ChromiumVersion),
+            Args = new [] {
+                "--disable-gpu",
+                "--disable-dev-shm-usage",
+                "--disable-setuid-sandbox",
+                "--no-sandbox"}
         });
     }
 
@@ -191,13 +203,13 @@ public class Mangasee : Connector
 
     public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)
     {
-        while (this.browser is null)
+        while (this._browser is null)
         {
             logger?.WriteLine(this.GetType().ToString(), "Waiting for headless browser to download...");
             Thread.Sleep(1000);
         }
 
-        IPage page = browser.NewPageAsync().Result;
+        IPage page = _browser.NewPageAsync().Result;
         IResponse response = page.GoToAsync(chapter.url).Result;
         if (response.Ok)
         {
