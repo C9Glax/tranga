@@ -223,10 +223,16 @@ public class TaskManager
                 if (connectorName is null || publicationId is null)
                     logger?.WriteLine(this.GetType().ToString(), "connectorName and publication can not be null");
                 else
+                {
                     _allTasks.RemoveWhere(mTask =>
                         mTask.GetType() == typeof(DownloadNewChaptersTask) &&
                         ((DownloadNewChaptersTask)mTask).publication.internalId == publicationId &&
                         ((DownloadNewChaptersTask)mTask).connectorName == connectorName!);
+                    _allTasks.RemoveWhere(mTask =>
+                        mTask.GetType() == typeof(DownloadChapterTask) &&
+                        ((DownloadChapterTask)mTask).publication.internalId == publicationId &&
+                        ((DownloadChapterTask)mTask).connectorName == connectorName!);
+                }
                 break;
         }
         ExportDataAndSettings();
