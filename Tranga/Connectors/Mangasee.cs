@@ -31,34 +31,35 @@ public class Mangasee : Connector
     private async void DownloadBrowser()
     {
         BrowserFetcher browserFetcher = new BrowserFetcher();
-        if (browserFetcher.LocalRevisions().Contains(ChromiumVersion))
-            return;
-        else
-            foreach(string rev in browserFetcher.LocalRevisions())
-                browserFetcher.Remove(rev);
-        
-        logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
-        DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
-        browserFetcher.DownloadProgressChanged += async (sender, args) =>
+        foreach(string rev in browserFetcher.LocalRevisions().Where(rev => rev != ChromiumVersion))
+            browserFetcher.Remove(rev);
+        if (!browserFetcher.LocalRevisions().Contains(ChromiumVersion))
         {
-            double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
-            if (args.TotalBytesToReceive == args.BytesReceived)
+            logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
+            DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
+            browserFetcher.DownloadProgressChanged += async (sender, args) =>
             {
-                logger?.WriteLine(this.GetType().ToString(), "Browser downloaded. Launching...");
-            }
-            else if (DateTime.Now > last.AddSeconds(5))
-            {
-                logger?.WriteLine(this.GetType().ToString(), $"Browser progress: {currentBytes:P2}");
-                last = DateTime.Now;
-            }
+                double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
+                if (args.TotalBytesToReceive == args.BytesReceived)
+                {
+                    logger?.WriteLine(this.GetType().ToString(), "Browser downloaded.");
+                }
+                else if (DateTime.Now > last.AddSeconds(5))
+                {
+                    logger?.WriteLine(this.GetType().ToString(), $"Browser download progress: {currentBytes:P2}");
+                    last = DateTime.Now;
+                }
 
-        };
-        if (!browserFetcher.CanDownloadAsync(ChromiumVersion).Result)
-        {
-            logger?.WriteLine(this.GetType().ToString(), $"Can't download browser version {ChromiumVersion}");
-            return;
+            };
+            if (!browserFetcher.CanDownloadAsync(ChromiumVersion).Result)
+            {
+                logger?.WriteLine(this.GetType().ToString(), $"Can't download browser version {ChromiumVersion}");
+                return;
+            }
+            await browserFetcher.DownloadAsync(ChromiumVersion);
         }
-        await browserFetcher.DownloadAsync(ChromiumVersion);
+        
+        logger?.WriteLine(this.GetType().ToString(), "Starting browser.");
         this._browser = await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
@@ -207,7 +208,8 @@ public class Mangasee : Connector
             logger?.WriteLine(this.GetType().ToString(), "Waiting for headless browser to download...");
             Thread.Sleep(1000);
         }
-
+        
+        logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         IPage page = _browser.NewPageAsync().Result;
         IResponse response = page.GoToAsync(chapter.url).Result;
         if (response.Ok)
