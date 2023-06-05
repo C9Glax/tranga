@@ -34,7 +34,8 @@ public class TaskManager
         this._connectors = new Connector[]
         {
             new MangaDex(downloadFolderPath, imageCachePath, logger),
-            new Manganato(downloadFolderPath, imageCachePath, logger)
+            new Manganato(downloadFolderPath, imageCachePath, logger),
+            new Mangasee(downloadFolderPath, imageCachePath, logger)
         };
         
         Thread taskChecker = new(TaskCheckerThread);
@@ -64,7 +65,8 @@ public class TaskManager
         this._connectors = new Connector[]
         {
             new MangaDex(settings.downloadLocation, settings.coverImageCache, logger),
-            new Manganato(settings.downloadLocation, settings.coverImageCache, logger)
+            new Manganato(settings.downloadLocation, settings.coverImageCache, logger),
+            new Mangasee(settings.downloadLocation, settings.coverImageCache, logger)
         };
         
         this.settings = settings;
