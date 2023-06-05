@@ -31,18 +31,18 @@ public class Mangasee : Connector
     {
         logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
         BrowserFetcher browserFetcher = new BrowserFetcher();
-        double last = 0;
+        DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
         browserFetcher.DownloadProgressChanged += async (sender, args) =>
         {
-            double current = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
+            double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
             if (args.TotalBytesToReceive == args.BytesReceived)
             {
                 logger?.WriteLine(this.GetType().ToString(), "Browser downloaded. Launching...");
             }
-            else if (current > last + 0.01)
+            else if (DateTime.Now > last.AddSeconds(5))
             {
-                logger?.WriteLine(this.GetType().ToString(), $"Browser progress: {current:P2}");
-                last = current;
+                logger?.WriteLine(this.GetType().ToString(), $"Browser progress: {currentBytes:P2}");
+                last = DateTime.Now;
             }
 
         };
