@@ -27,7 +27,7 @@ public struct Chapter
         {
             NumberDecimalSeparator = "."
         };
-        sortNumber = decimal.Round(Convert.ToDecimal(this.volumeNumber) * Convert.ToDecimal(this.chapterNumber, nfi), 1)
+        sortNumber = decimal.Round(Convert.ToDecimal(this.volumeNumber ?? "1") * Convert.ToDecimal(this.chapterNumber, nfi), 1)
             .ToString(nfi);
 
         string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
