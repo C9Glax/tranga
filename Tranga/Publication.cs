@@ -109,7 +109,7 @@ public readonly struct Publication
             this.year = year;
             if(status.ToLower() == "ongoing" || status.ToLower() == "hiatus")
                 this.status = "Continuing";
-            else if (status.ToLower() == "completed" || status.ToLower() == "cancelled")
+            else if (status.ToLower() == "completed" || status.ToLower() == "cancelled" || status.ToLower() == "discontinued")
                 this.status = "Ended";
             else
                 this.status = status;
