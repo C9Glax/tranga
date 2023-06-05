@@ -187,14 +187,13 @@ public class Mangasee : Connector
         List<Chapter> ret = new();
         foreach (XElement chapter in chapterItems)
         {
-            string? volumeNumber = null;
+            string? volumeNumber = "1";
             string chapterName = chapter.Descendants("title").First().Value;
-            string parseFrom = name.Replace(publication.sortName, "", StringComparison.InvariantCultureIgnoreCase);
             string chapterNumber = Regex.Matches(chapterName, "[0-9]+")[^1].ToString();
 
             string url = chapter.Descendants("link").First().Value;
             url = url.Replace(Regex.Matches(url,"(-page-[0-9])")[0].ToString(),"");
-            ret.Add(new Chapter(chapterName, volumeNumber, chapterNumber, url));
+            ret.Add(new Chapter("", volumeNumber, chapterNumber, url));
         }
 
         ret.Reverse();
