@@ -208,9 +208,9 @@ public class TaskManager
     /// <param name="task">TrangaTask.Task type</param>
     /// <param name="connectorName">Name of Connector that was used</param>
     /// <param name="publication">Publication that was used</param>
-    public void DeleteTask(TrangaTask.Task task, string? connectorName, Publication? publication)
+    public void DeleteTask(TrangaTask.Task task, string? connectorName, string? publicationId)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task} {publication?.sortName}");
+        logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task} {publicationId}");
         
         switch (task)
         {
@@ -220,12 +220,13 @@ public class TaskManager
                 _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateLibraries);
                 break;
             case TrangaTask.Task.DownloadNewChapters:
-                if(connectorName is null || publication is null)
+                if(connectorName is null || publicationId is null)
                     logger?.WriteLine(this.GetType().ToString(), "connectorName and publication can not be null");
-                _allTasks.RemoveWhere(mTask =>
-                        mTask.GetType() == typeof(DownloadNewChaptersTask) &&
-                        ((DownloadNewChaptersTask)mTask).publication.internalId != publication!.Value.publicationId &&
-                        ((DownloadNewChaptersTask)mTask).connectorName != connectorName!);
+                else
+                    _allTasks.RemoveWhere(mTask =>
+                            mTask.GetType() == typeof(DownloadNewChaptersTask) &&
+                            ((DownloadNewChaptersTask)mTask).publication.internalId != publicationId &&
+                            ((DownloadNewChaptersTask)mTask).connectorName != connectorName!);
                 break;
         }
         ExportDataAndSettings();

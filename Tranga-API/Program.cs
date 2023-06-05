@@ -79,9 +79,8 @@ app.MapPost("/Tasks/Create", (string taskType, string? connectorName, string? pu
 
 app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
 {
-    Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == publicationId);
     TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
-    taskManager.DeleteTask(task, connectorName, publication);
+    taskManager.DeleteTask(task, connectorName, publicationId);
 });
 
 app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? searchString) =>
