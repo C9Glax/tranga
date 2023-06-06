@@ -74,6 +74,7 @@ That is why I wanted to create my own project, in a language I understand, and t
 - .NET-Core
 - Newtonsoft.JSON
 - [PuppeteerSharp](https://www.puppeteersharp.com/)
+- [Html Agility Pack (HAP)](https://html-agility-pack.net/)
 - Love <3 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
