@@ -55,8 +55,9 @@ Tranga can download Chapters and Metadata from Scanlation sites such as
 
 - [MangaDex.org](https://mangadex.org/)
 - [Manganato.com](https://manganato.com/)
+- [Mangasee](https://mangasee123.com/)
 
-and automatically start updates in [Komga](https://komga.org/) to import them.
+and automatically start updates in [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/) to import them.
 
 ### Inspiration:
 
@@ -72,6 +73,7 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 - .NET-Core
 - Newtonsoft.JSON
+- [PuppeteerSharp](https://www.puppeteersharp.com/)
 - Love <3 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -108,14 +110,12 @@ Wherever you are mounting `/usr/share/Tranga-API` you also need to mount that sa
 
 ### Prerequisites
 
-[.NET-Core 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+[.NET-Core 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Web-UI #1
-- [ ] More Connectors
-  - [x] Manganato #2
+- [ ] Docker ARM support
 - [ ] ? 
 
 See the [open issues](https://git.bernloehr.eu/glax/Tranga/issues) for a full list of proposed features (and known issues).
