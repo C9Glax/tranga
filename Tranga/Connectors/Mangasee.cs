@@ -37,7 +37,7 @@ public class Mangasee : Connector
         {
             logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
             DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
-            browserFetcher.DownloadProgressChanged += async (sender, args) =>
+            browserFetcher.DownloadProgressChanged += (sender, args) =>
             {
                 double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
                 if (args.TotalBytesToReceive == args.BytesReceived)
@@ -174,11 +174,14 @@ public class Mangasee : Connector
             year, originalLanguage, status, publicationId);
     }
     
+    // ReSharper disable once ClassNeverInstantiated.Local Will be instantiated during deserialization
     private class SearchResultItem
     {
+#pragma warning disable CS8618 //Will always be set
         public string i { get; set; }
         public string s { get; set; }
         public string[] a { get; set; }
+#pragma warning restore CS8618
     }
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
