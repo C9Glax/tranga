@@ -19,6 +19,8 @@ public class TaskManager
     public TrangaSettings settings { get; }
     private Logger? logger { get; }
 
+    private readonly Dictionary<DownloadChapterTask, Task> _runningDownloadChapterTasks = new();
+
     /// <param name="downloadFolderPath">Local path to save data (Manga) to</param>
     /// <param name="workingDirectory">Path to the working directory</param>
     /// <param name="imageCachePath">Path to the cover-image cache</param>
@@ -117,6 +119,25 @@ public class TaskManager
                         break;
                 }
             }
+
+            HashSet<DownloadChapterTask> toRemove = new();
+            foreach (KeyValuePair<DownloadChapterTask,Task> removeTask in _runningDownloadChapterTasks)
+            {
+                if (removeTask.Key.GetType() == typeof(DownloadChapterTask) &&
+                    DateTime.Now.Subtract(removeTask.Key.executionStarted) > TimeSpan.FromMinutes(10))//TODO better way to check if task has failed?
+                {
+                    logger?.WriteLine(this.GetType().ToString(), $"Removing failed task {removeTask}.");
+                    removeTask.Value.Dispose();
+                    DeleteTask(removeTask.Key);
+                    AddTask(new DownloadChapterTask(removeTask.Key.task, removeTask.Key.connectorName,
+                        removeTask.Key.publication, removeTask.Key.chapter, removeTask.Key.language,
+                        removeTask.Key.parentTask));
+                    toRemove.Add(removeTask.Key);
+                }
+            }
+            foreach (DownloadChapterTask taskToRemove in toRemove)
+                _runningDownloadChapterTasks.Remove(taskToRemove);
+            
             if(allTasksWaitingLength != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))
                 ExportDataAndSettings();
             allTasksWaitingLength = _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting);
@@ -135,6 +156,8 @@ public class TaskManager
         {
             task.Execute(this, this.logger);
         });
+        if(task.GetType() == typeof(DownloadChapterTask))
+            _runningDownloadChapterTasks.Add((DownloadChapterTask)task, t);
         t.Start();
     }
 
