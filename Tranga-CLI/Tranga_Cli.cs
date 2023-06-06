@@ -135,8 +135,12 @@ public static class Tranga_Cli
                 switch (selection)
                 {
                     case ConsoleKey.L:
-                        PrintTasks(taskManager.GetAllTasks(), logger);
-                        Console.WriteLine("Press any key.");
+                        while (!Console.KeyAvailable)
+                        {
+                            PrintTasks(taskManager.GetAllTasks(), logger);
+                            Console.WriteLine("Press any key.");
+                            Thread.Sleep(500);
+                        }
                         Console.ReadKey();
                         break;
                     case ConsoleKey.C:
@@ -160,17 +164,26 @@ public static class Tranga_Cli
                         Console.ReadKey();
                         break;
                     case ConsoleKey.R:
-                        PrintTasks(
-                            taskManager.GetAllTasks().Where(eTask => eTask.state == TrangaTask.ExecutionState.Running)
-                                .ToArray(), logger);
-                        Console.WriteLine("Press any key.");
+                        while (!Console.KeyAvailable)
+                        {
+                            PrintTasks(
+                                taskManager.GetAllTasks().Where(eTask => eTask.state == TrangaTask.ExecutionState.Running)
+                                    .ToArray(), logger);
+                            Console.WriteLine("Press any key.");
+                            Thread.Sleep(500);
+                        }
                         Console.ReadKey();
                         break;
                     case ConsoleKey.K:
-                        PrintTasks(
-                            taskManager.GetAllTasks().Where(qTask => qTask.state is TrangaTask.ExecutionState.Enqueued)
-                                .ToArray(), logger);
-                        Console.WriteLine("Press any key.");
+                        while (!Console.KeyAvailable)
+                        {
+                            PrintTasks(
+                                taskManager.GetAllTasks()
+                                    .Where(qTask => qTask.state is TrangaTask.ExecutionState.Enqueued)
+                                    .ToArray(), logger);
+                            Console.WriteLine("Press any key.");
+                            Thread.Sleep(500);
+                        }
                         Console.ReadKey();
                         break;
                     case ConsoleKey.F:
@@ -240,13 +253,13 @@ public static class Tranga_Cli
         int tIndex = 0;
         Console.WriteLine($"Tasks (Running/Queue/Total): {taskRunningCount}/{taskEnqueuedCount}/{taskCount}");
         string header =
-            $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Progress",-9} | {"Connector",-15} | Publication/Manga ";
+            $"{"",-5}{"Task",-20} | {"Last Executed",-20} | {"Reoccurrence",-12} | {"State",-10} | {"Progress",-9} | {"Finished",-20} | {"Remaining",-12} | {"Connector",-15} | Publication/Manga ";
         Console.WriteLine(header);
         Console.WriteLine(new string('-', header.Length));
         foreach (TrangaTask trangaTask in tasks)
         {
             string[] taskSplit = trangaTask.ToString().Split(", ");
-            Console.WriteLine($"{tIndex++:000}: {taskSplit[0],-20} | {taskSplit[1],-20} | {taskSplit[2],-12} | {taskSplit[3],-10} | {(taskSplit.Length > 4 ? taskSplit[4] : ""),-9} | {(taskSplit.Length > 5 ? taskSplit[5] : ""),-15} | {(taskSplit.Length > 6 ? taskSplit[6] : "")} {(taskSplit.Length > 7 ? taskSplit[7] : "")} {(taskSplit.Length > 8 ? taskSplit[8] : "")}");
+            Console.WriteLine($"{tIndex++:000}: {taskSplit[0],-20} | {taskSplit[1],-20} | {taskSplit[2],-12} | {taskSplit[3],-10} | {taskSplit[4],-9} | {taskSplit[5],-20} | {taskSplit[6][..12],-12} | {(taskSplit.Length > 7 ? taskSplit[7] : ""),-15} | {(taskSplit.Length > 8 ? taskSplit[8] : "")} {(taskSplit.Length > 9 ? taskSplit[9] : "")} {(taskSplit.Length > 10 ? taskSplit[10] : "")}");
         }
             
     }

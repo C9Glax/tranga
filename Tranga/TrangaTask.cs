@@ -23,6 +23,15 @@ public abstract class TrangaTask
     [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
     [Newtonsoft.Json.JsonIgnore]public float progress { get; protected set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
+    [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; protected set; }
+
+    [Newtonsoft.Json.JsonIgnore]
+    public DateTime executionApproximatelyFinished => this.progress != 0
+        ? this.executionStarted.Add(DateTime.Now.Subtract(this.executionStarted) / this.progress)
+        : DateTime.MaxValue;
+    
+    [Newtonsoft.Json.JsonIgnore]
+    public TimeSpan executionApproximatelyRemaining => this.executionApproximatelyFinished.Subtract(DateTime.Now);
 
     public enum ExecutionState
     {
@@ -37,6 +46,7 @@ public abstract class TrangaTask
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
         this.task = task;
         this.progress = 0f;
+        this.executionStarted = DateTime.Now;
     }
 
     public float IncrementProgress(float amount)
@@ -61,6 +71,7 @@ public abstract class TrangaTask
     {
         logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
+        this.executionStarted = DateTime.Now;
         ExecuteTask(taskManager, logger);
         this.lastExecuted = DateTime.Now;
         this.state = ExecutionState.Waiting;
@@ -82,7 +93,7 @@ public abstract class TrangaTask
 
     public override string ToString()
     {
-        return $"{task}, {lastExecuted}, {reoccurrence}, {state}, {progress:P2}";
+        return $"{task}, {lastExecuted}, {reoccurrence}, {state}, {progress:P2}, {executionApproximatelyFinished}, {executionApproximatelyRemaining}";
     }
     
     public class TrangaTaskJsonConverter : JsonConverter
