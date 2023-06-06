@@ -180,7 +180,7 @@ public class TaskManager
         _allTasks.Remove(removeTask);
     }
 
-    public TrangaTask? AddTask(TrangaTask.Task taskType, string? connectorName, string? publicationId,
+    public TrangaTask? AddTask(TrangaTask.Task taskType, string? connectorName, string? internalId,
         TimeSpan reoccurrenceTime, string? language = "en")
     {
         TrangaTask? newTask = null;
@@ -190,10 +190,10 @@ public class TaskManager
                 newTask = new UpdateLibrariesTask(taskType, reoccurrenceTime);
                 break;
             case TrangaTask.Task.DownloadNewChapters:
-                if(connectorName is null || publicationId is null || language is null)
+                if(connectorName is null || internalId is null || language is null)
                     logger?.WriteLine(this.GetType().ToString(), $"Values connectorName, publicationName and language can not be null.");
                 GetConnector(connectorName); //Check if connectorName is valid
-                Publication publication = GetAllPublications().First(pub => pub.internalId == publicationId);
+                Publication publication = GetAllPublications().First(pub => pub.internalId == internalId);
                 newTask = new DownloadNewChaptersTask(taskType, connectorName!, publication, reoccurrenceTime, language!);
                 break;
         }

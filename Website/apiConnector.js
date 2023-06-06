@@ -89,8 +89,8 @@ async function GetKomgaTask(){
     return json;
 }
 
-function CreateTask(taskType, reoccurrence, connectorName, publicationId, language){
-    var uri = apiUri + `/Tasks/Create?taskType=${taskType}&connectorName=${connectorName}&publicationId=${publicationId}&reoccurrenceTime=${reoccurrence}&language=${language}`;
+function CreateTask(taskType, reoccurrence, connectorName, internalId, language){
+    var uri = apiUri + `/Tasks/Create?taskType=${taskType}&connectorName=${connectorName}&internalId=${internalId}&reoccurrenceTime=${reoccurrence}&language=${language}`;
     PostData(uri);
 }
 
