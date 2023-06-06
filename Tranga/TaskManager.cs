@@ -13,7 +13,7 @@ namespace Tranga;
 public class TaskManager
 {
     public Dictionary<Publication, List<Chapter>> chapterCollection = new();
-    private HashSet<TrangaTask> _allTasks = new HashSet<TrangaTask>();
+    private HashSet<TrangaTask> _allTasks = new();
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
     public TrangaSettings settings { get; }

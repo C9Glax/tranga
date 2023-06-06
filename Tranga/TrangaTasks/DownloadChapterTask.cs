@@ -9,7 +9,7 @@ public class DownloadChapterTask : TrangaTask
     public Publication publication { get; }
     public string language { get; }
     public Chapter chapter { get; }
-    [JsonIgnore]private DownloadNewChaptersTask? parentTask { get; init; }
+    [JsonIgnore]public DownloadNewChaptersTask? parentTask { get; init; }
     
     public DownloadChapterTask(Task task, string connectorName, Publication publication, Chapter chapter, string language = "en", DownloadNewChaptersTask? parentTask = null) : base(task, TimeSpan.Zero)
     {
@@ -22,9 +22,8 @@ public class DownloadChapterTask : TrangaTask
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
     {
-        Publication pub = (Publication)this.publication!;
         Connector connector = taskManager.GetConnector(this.connectorName);
-        connector.DownloadChapter(pub, this.chapter, this);
+        connector.DownloadChapter(this.publication, this.chapter, this);
         taskManager.DeleteTask(this);
     }
     
