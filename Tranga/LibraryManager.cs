@@ -49,9 +49,8 @@ public abstract class LibraryManager
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(url)
             };
-            logger?.WriteLine("LibraryManager", $"GET {url}");
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine("LibraryManager", $"{(int)response.StatusCode} {response.StatusCode}: {response.ReasonPhrase}");
+            logger?.WriteLine("LibraryManager", $"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
                 return MakeRequest(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
@@ -76,9 +75,8 @@ public abstract class LibraryManager
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(url)
             };
-            logger?.WriteLine("LibraryManager", $"POST {url}");
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine("LibraryManager", $"{(int)response.StatusCode} {response.StatusCode}: {response.ReasonPhrase}");
+            logger?.WriteLine("LibraryManager", $"POST {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
                 return MakePost(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
