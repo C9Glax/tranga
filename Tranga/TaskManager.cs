@@ -152,9 +152,9 @@ public class TaskManager
             case TrangaTask.Task.DownloadNewChapters:
                 IEnumerable<TrangaTask> matchingdnc =
                     _allTasks.Where(mTask => mTask.GetType() == typeof(DownloadNewChaptersTask));
-                if (matchingdnc.All(mTask =>
-                        ((DownloadNewChaptersTask)mTask).publication.internalId != ((DownloadNewChaptersTask)newTask).publication.publicationId &&
-                        ((DownloadNewChaptersTask)mTask).connectorName != ((DownloadNewChaptersTask)newTask).connectorName))
+                if (!matchingdnc.Any(mTask =>
+                        ((DownloadNewChaptersTask)mTask).publication.internalId == ((DownloadNewChaptersTask)newTask).publication.internalId &&
+                        ((DownloadNewChaptersTask)mTask).connectorName == ((DownloadNewChaptersTask)newTask).connectorName))
                     _allTasks.Add(newTask);
                 else
                     logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
