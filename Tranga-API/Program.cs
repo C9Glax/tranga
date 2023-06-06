@@ -74,7 +74,7 @@ app.MapGet("/Tasks/GetTaskTypes", () => Enum.GetNames(typeof(TrangaTask.Task)));
 app.MapPost("/Tasks/Create", (string taskType, string? connectorName, string? internalId, string reoccurrenceTime, string? language) =>
 {
     TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
-    taskManager.AddTask(task, connectorName, internalId, TimeSpan.Parse(reoccurrenceTime), language??"");
+    taskManager.AddTask(task, connectorName, internalId, TimeSpan.Parse(reoccurrenceTime), language);
 });
 
 app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
