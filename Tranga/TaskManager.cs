@@ -190,8 +190,14 @@ public class TaskManager
                 newTask = new UpdateLibrariesTask(taskType, reoccurrenceTime);
                 break;
             case TrangaTask.Task.DownloadNewChapters:
-                if(connectorName is null || internalId is null || language is null)
-                    logger?.WriteLine(this.GetType().ToString(), $"Values connectorName, publicationName and language can not be null.");
+                if (connectorName is null)
+                    logger?.WriteLine(this.GetType().ToString(), $"Value connectorName can not be null.");
+                if(internalId is null)
+                    logger?.WriteLine(this.GetType().ToString(), $"Value internalId can not be null.");
+                if(language is null)
+                    logger?.WriteLine(this.GetType().ToString(), $"Value language can not be null.");
+                if (connectorName is null || internalId is null || language is null)
+                    return null;
                 GetConnector(connectorName); //Check if connectorName is valid
                 Publication publication = GetAllPublications().First(pub => pub.internalId == internalId);
                 newTask = new DownloadNewChaptersTask(taskType, connectorName!, publication, reoccurrenceTime, language!);
