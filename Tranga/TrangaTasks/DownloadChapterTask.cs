@@ -30,6 +30,7 @@ public class DownloadChapterTask : TrangaTask
     public new float IncrementProgress(float amount)
     {
         this.progress += amount;
+        this.lastChange = DateTime.Now;
         parentTask?.IncrementProgress(amount);
         return this.progress;
     }

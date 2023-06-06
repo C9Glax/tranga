@@ -124,7 +124,7 @@ public class TaskManager
             foreach (KeyValuePair<DownloadChapterTask,Task> removeTask in _runningDownloadChapterTasks)
             {
                 if (removeTask.Key.GetType() == typeof(DownloadChapterTask) &&
-                    DateTime.Now.Subtract(removeTask.Key.executionStarted) > TimeSpan.FromMinutes(10))//TODO better way to check if task has failed?
+                    DateTime.Now.Subtract(removeTask.Key.lastChange) > TimeSpan.FromMinutes(3))//3 Minutes since last update to task -> remove
                 {
                     logger?.WriteLine(this.GetType().ToString(), $"Removing failed task {removeTask}.");
                     removeTask.Value.Dispose();

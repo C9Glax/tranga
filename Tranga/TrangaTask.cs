@@ -23,7 +23,7 @@ public abstract class TrangaTask
     [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
     [Newtonsoft.Json.JsonIgnore]public float progress { get; protected set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
-    [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; protected set; }
+    [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
 
     [Newtonsoft.Json.JsonIgnore]
     public DateTime executionApproximatelyFinished => this.progress != 0
@@ -32,6 +32,8 @@ public abstract class TrangaTask
     
     [Newtonsoft.Json.JsonIgnore]
     public TimeSpan executionApproximatelyRemaining => this.executionApproximatelyFinished.Subtract(DateTime.Now);
+    
+    [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; protected set; }
 
     public enum ExecutionState
     {
@@ -47,11 +49,13 @@ public abstract class TrangaTask
         this.task = task;
         this.progress = 0f;
         this.executionStarted = DateTime.Now;
+        this.lastChange = DateTime.Now;
     }
 
     public float IncrementProgress(float amount)
     {
         this.progress += amount;
+        this.lastChange = DateTime.Now;
         return this.progress;
     }
     
