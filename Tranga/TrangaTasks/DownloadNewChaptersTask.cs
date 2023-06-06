@@ -1,4 +1,5 @@
 ﻿using Logging;
+using Newtonsoft.Json;
 
 namespace Tranga.TrangaTasks;
 
@@ -7,34 +8,38 @@ public class DownloadNewChaptersTask : TrangaTask
     public string connectorName { get; }
     public Publication publication { get; }
     public string language { get; }
+    [JsonIgnore]private int childTaskAmount { get; set; }
+    
     public DownloadNewChaptersTask(Task task, string connectorName, Publication publication, TimeSpan reoccurrence, string language = "en") : base(task, reoccurrence)
     {
         this.connectorName = connectorName;
         this.publication = publication;
         this.language = language;
+        childTaskAmount = 0;
+    }
+    
+    public new float IncrementProgress(float amount)
+    {
+        this.progress += amount / this.childTaskAmount;
+        return this.progress;
     }
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
     {
         Publication pub = publication!;
         Connector connector = taskManager.GetConnector(this.connectorName);
-        this.progress = 0.1f;
         
         //Check if Publication already has a Folder
         pub.CreatePublicationFolder(taskManager.settings.downloadLocation);
-        this.progress = 0.2f;
         List<Chapter> newChapters = GetNewChaptersList(connector, pub, language!, ref taskManager.chapterCollection);
-        this.progress = 0.6f;
+        this.childTaskAmount = newChapters.Count;
 
         connector.CopyCoverFromCacheToDownloadLocation(pub, taskManager.settings);
-        this.progress = 0.7f;
         
         pub.SaveSeriesInfoJson(connector.downloadLocation);
-        this.progress = 0.8f;
 
         foreach (Chapter newChapter in newChapters)
-            taskManager.AddTask(new DownloadChapterTask(Task.DownloadChapter, this.connectorName!, pub, newChapter, this.language));
-        this.progress = 1f;
+            taskManager.AddTask(new DownloadChapterTask(Task.DownloadChapter, this.connectorName!, pub, newChapter, this.language, this));
     }
     
     /// <summary>

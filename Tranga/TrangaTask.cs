@@ -21,7 +21,7 @@ public abstract class TrangaTask
     public DateTime lastExecuted { get; set; }
     public Task task { get; }
     [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
-    [Newtonsoft.Json.JsonIgnore]public float progress { get; set; }
+    [Newtonsoft.Json.JsonIgnore]public float progress { get; protected set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
     public enum ExecutionState
@@ -37,6 +37,12 @@ public abstract class TrangaTask
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
         this.task = task;
         this.progress = 0f;
+    }
+
+    public float IncrementProgress(float amount)
+    {
+        this.progress += amount;
+        return this.progress;
     }
     
     /// <summary>
