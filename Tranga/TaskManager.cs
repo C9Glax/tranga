@@ -126,17 +126,18 @@ public class TaskManager
                 if (removeTask.Key.GetType() == typeof(DownloadChapterTask) &&
                     DateTime.Now.Subtract(removeTask.Key.lastChange) > TimeSpan.FromMinutes(3))//3 Minutes since last update to task -> remove
                 {
-                    logger?.WriteLine(this.GetType().ToString(), $"Removing failed task {removeTask}.");
-                    removeTask.Value.Dispose();
-                    DeleteTask(removeTask.Key);
-                    AddTask(new DownloadChapterTask(removeTask.Key.task, removeTask.Key.connectorName,
-                        removeTask.Key.publication, removeTask.Key.chapter, removeTask.Key.language,
-                        removeTask.Key.parentTask));
+                    logger?.WriteLine(this.GetType().ToString(), $"Disposing failed task {removeTask.Key}.");
+                    removeTask.Value.Dispose();;
                     toRemove.Add(removeTask.Key);
                 }
             }
             foreach (DownloadChapterTask taskToRemove in toRemove)
-                _runningDownloadChapterTasks.Remove(taskToRemove);
+            {
+                DeleteTask(taskToRemove);
+                AddTask(new DownloadChapterTask(taskToRemove.task, taskToRemove.connectorName,
+                    taskToRemove.publication, taskToRemove.chapter, taskToRemove.language,
+                    taskToRemove.parentTask));
+            }
             
             if(allTasksWaitingLength != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))
                 ExportDataAndSettings();
@@ -201,6 +202,8 @@ public class TaskManager
     {
         logger?.WriteLine(this.GetType().ToString(), $"Removing Task {removeTask}");
         _allTasks.Remove(removeTask);
+        if (removeTask.GetType() == typeof(DownloadChapterTask))
+            _runningDownloadChapterTasks.Remove((DownloadChapterTask)removeTask);
     }
 
     public TrangaTask? AddTask(TrangaTask.Task taskType, string? connectorName, string? internalId,
