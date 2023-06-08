@@ -147,46 +147,22 @@ content {
     align-content: start;
 }
 
-settings {
-    width: 50%;
-    background-color: var(--accent-color);
-    display: flex;
-    flex-direction: column;
-    z-index: 10;
-    position: absolute;
-    left: 25%;
-    top: 100px;
-    border-radius: 5px;
-    padding: 10px 0;
-}
-
 #settingsPopup{
     z-index: 10;
 }
 
-settings > * {
-    margin: 0 20%;
-}
-
-settings input {
-    margin: 3px 0;
-    padding: 3px;
-    border-radius: 3px;
-    border: 1px solid rgba(0,0,0,0.2);
-    width: 100%;
-}
-
-settings .title {
-    font-weight: bolder;
-    font-size: 14pt;
-    margin: 15px 0 2px 0;
-}
-
-komga-settings {
-    margin-top: 20px;
-    display: flex;
+#settingsPopup popup-content{
     flex-direction: column;
-    flex-wrap: nowrap;
+    align-items: start;
+    margin: 15px 10px;
+}
+
+#settingsPopup popup-content > * {
+    margin: 5px 10px;
+}
+
+#settingsPopup popup-content .title {
+    font-weight: bolder;
 }
 
 #addPublication {
@@ -281,6 +257,112 @@ popup{
     left: 0;
     position: fixed;
     z-index: 2;
+    flex-direction: column;
+}
+
+
+popup popup-window {
+    position: absolute;
+    z-index: 3;
+    left: 25%;
+    top: 100px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--second-background-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+popup popup-window popup-title {
+    height: 30px;
+    font-size: 14pt;
+    font-weight: bolder;
+    padding: 5px 10px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: var(--accent-color)
+}
+
+popup popup-window popup-content{
+    margin: 15px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+popup popup-window popup-content div > * {
+    margin: 2px 3px 0 0;
+}
+
+popup popup-window popup-content input, select {
+    padding: 3px 4px;
+    width: 130px;
+    border: 1px solid lightgrey;
+    background-color: var(--accent-color);
+    border-radius: 3px;
+}
+
+#selectPublicationPopup publication {
+    width: 150px;
+    height: 250px;
+}
+
+#createTaskPopup {
+    z-index: 7;
+}
+
+#createTaskPopup input {
+    height: 30px;
+    width: 200px;
+}
+
+#createMonitorTaskPopup, #createDownloadChaptersTask {
+    z-index: 9;
+}
+
+#createDownloadChaptersTask popup-content {
+    flex-direction: column;
+    align-items: start;
+}
+
+
+#createDownloadChaptersTask popup-content > * {
+    margin: 3px 0;
+}
+
+#createDownloadChaptersTask #chapterOutput {
+    max-height: 50vh;
+    overflow-y: scroll;
+}
+
+#createDownloadChaptersTask #chapterOutput .index{
+    display: inline-block;
+    width: 25px;
+}
+
+#createDownloadChaptersTask #chapterOutput .index::after{
+    content: ':';
+}
+
+#createDownloadChaptersTask #chapterOutput .vol::before{
+    content: 'Vol.';
+}
+
+#createDownloadChaptersTask #chapterOutput .vol{
+    display: inline-block;
+    width: 45px;
+}
+
+#createDownloadChaptersTask #chapterOutput .ch::before{
+    content: 'Ch.';
+}
+
+#createDownloadChaptersTask #chapterOutput .ch {
+    display: inline-block;
+    width: 60px;
 }
 
 blur-background {
@@ -290,79 +372,6 @@ blur-background {
     left: 0;
     background-color: black;
     opacity: 0.5;
-}
-
-addtask-window {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    position: absolute;
-    left: 12.5%;
-    top: 15%;
-    width: 75%;
-    min-height: 70%;
-    max-height: 80%;
-    padding: 0;
-    background-color: var(--accent-color);
-    border-radius: 5px;
-}
-
-window-titlebar {
-    width: 100%;
-    height: 60px;
-    background-color: var(--primary-color);
-    border-radius: 5px 5px 0 0;
-    color: var(--accent-color);
-    display: flex block;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-window-titlebar p {
-    margin: 0 30px;
-    font-size: 14pt;
-    font-weight: bolder;
-    letter-spacing: 1px;
-}
-
-window-titlebar #closePopupImg {
-    height: 70%;
-    cursor: pointer;
-    margin-right: 20px;
-    filter: invert(100%) sepia(0%) saturate(100%) hue-rotate(115deg) brightness(116%) contrast(101%);
-}
-
-window-content {
-    display: flex;
-    flex-direction: column;
-    padding: 20px 5%;
-    overflow-x: scroll;
-}
-
-addtask-settings{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-addtask-settings select, addtask-settings input{
-    padding: 5px;
-    font-size: 10pt;
-    border: 1px solid rgba(0,0,0,0.2);
-    border-radius: 3px;
-    background-color: transparent;
-    margin: 10px 0;
-    width: 150px;
-}
-
-addtask-settings label {
-    font-weight: bolder;
-    margin: 0 5px;
-}
-
-addtask-settings addtask-setting{
-    margin: 0 15px;
 }
 
 #taskSelectOutput{
@@ -512,7 +521,7 @@ footer-tag-popup::before{
     border-left: 10px solid transparent;
     border-top: 10px solid var(--second-background-color);
     border-bottom: 10px solid transparent;
-    left: 0px;
+    left: 0;
     bottom: -17px;
     border-radius: 0 0 0 5px;
 }

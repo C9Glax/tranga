@@ -10,7 +10,13 @@ const settingsPopup = document.querySelector("#settingsPopup");
 const settingsCog = document.querySelector("#settingscog");
 const selectRecurrence = document.querySelector("#selectReccurrence");
 const tasksContent = document.querySelector("content");
-const addTaskPopup = document.querySelector("#addTaskPopup");
+const selectPublicationPopup = document.querySelector("#selectPublicationPopup");
+const createMonitorTaskButton = document.querySelector("#createMonitorTaskButton");
+const createDownloadChapterTaskButton = document.querySelector("#createDownloadChapterTaskButton");
+const createMonitorTaskPopup = document.querySelector("#createMonitorTaskPopup");
+const createDownloadChaptersTask = document.querySelector("#createDownloadChaptersTask");
+const chapterOutput = document.querySelector("#chapterOutput");
+const selectedChapters = document.querySelector("#selectedChapters");
 const publicationViewerPopup = document.querySelector("#publicationViewerPopup");
 const publicationViewerWindow = document.querySelector("publication-viewer");
 const publicationViewerDescription = document.querySelector("#publicationViewerDescription");
@@ -19,9 +25,7 @@ const publicationViewerTags = document.querySelector("#publicationViewerTags");
 const publicationViewerAuthor = document.querySelector("#publicationViewerAuthor");
 const pubviewcover = document.querySelector("#pubviewcover");
 const publicationDelete = document.querySelector("publication-delete");
-const publicationAdd = document.querySelector("publication-add");
 const publicationTaskStart = document.querySelector("publication-starttask");
-const closetaskpopup = document.querySelector("#closePopupImg");
 const settingDownloadLocation = document.querySelector("#downloadLocation");
 const settingKomgaUrl = document.querySelector("#komgaUrl");
 const settingKomgaUser = document.querySelector("#komgaUsername");
@@ -41,12 +45,25 @@ const tagTasksPopupContent = document.querySelector("footer-tag-content");
 
 searchbox.addEventListener("keyup", (event) => FilterResults());
 settingsCog.addEventListener("click", () => OpenSettings());
-document.querySelector("#blurBackgroundSettingsPopup").addEventListener("click", () => HideSettings());
-closetaskpopup.addEventListener("click", () => HideAddTaskPopup());
-document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () => HideAddTaskPopup());
+document.querySelector("#blurBackgroundSettingsPopup").addEventListener("click", () => settingsPopup.style.display = "none");
+document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () => selectPublicationPopup.style.display = "none");
 document.querySelector("#blurBackgroundPublicationPopup").addEventListener("click", () => HidePublicationPopup());
+document.querySelector("#blurBackgroundCreateMonitorTaskPopup").addEventListener("click", () => createMonitorTaskPopup.style.display = "none");
+document.querySelector("#blurBackgroundCreateDownloadChaptersTask").addEventListener("click", () => createDownloadChaptersTask.style.display = "none");
+selectedChapters.addEventListener("keypress", (event) => {
+    if(event.key === "Enter"){
+        DownloadChapterTaskClick();
+    }
+})
 publicationDelete.addEventListener("click", () => DeleteTaskClick());
-publicationAdd.addEventListener("click", () => AddTaskClick());
+createMonitorTaskButton.addEventListener("click", () => {
+    HidePublicationPopup();
+    createMonitorTaskPopup.style.display = "block";
+});
+createDownloadChapterTaskButton.addEventListener("click", () => {
+    HidePublicationPopup();
+    OpenDownloadChapterTaskPopup();
+})
 publicationTaskStart.addEventListener("click", () => StartTaskClick());
 settingApiUri.addEventListener("keypress", (event) => {
     if(event.key === "Enter"){
@@ -82,14 +99,10 @@ GetAvailableControllers()
 
 function NewSearch(){
     //Disable inputs
-    selectRecurrence.disabled = true;
     connectorSelect.disabled = true;
     searchPublicationQuery.disabled = true;
     //Waitcursor
     document.body.style.cursor = "wait";
-    selectRecurrence.style.cursor = "wait";
-    connectorSelect.style.cursor = "wait";
-    searchPublicationQuery.style.cursor = "wait";
 
     //Empty previous results
     selectPublication.replaceChildren();
@@ -105,14 +118,10 @@ function NewSearch(){
             ))
         .then(() => {
             //Re-enable inputs
-            selectRecurrence.disabled = false;
             connectorSelect.disabled = false;
             searchPublicationQuery.disabled = false;
             //Cursor
             document.body.style.cursor = "initial";
-            selectRecurrence.style.cursor = "initial";
-            connectorSelect.style.cursor = "initial";
-            searchPublicationQuery.style.cursor = "initial";
         });
 }
 
@@ -137,15 +146,54 @@ function CreatePublication(publication, connector){
     return publicationElement;
 }
 
+function AddMonitorTask(){
+    var hours = document.querySelector("#hours").value;
+    var minutes = document.querySelector("#minutes").value;
+    CreateMonitorTask(connectorSelect.value, toEditId, `${hours}:${minutes}:00`, "en");
+    HidePublicationPopup();
+    createMonitorTaskPopup.style.display = "none";
+    selectPublicationPopup.style.display = "none";
+}
+
+function OpenDownloadChapterTaskPopup(){
+    createDownloadChaptersTask.style.display = "block";
+    GetChapters(toEditId, connectorSelect.value, "en").then((json) => {
+        var i = 0;
+        json.forEach(chapter => {
+            var chapterDom = document.createElement("div");
+            var indexDom = document.createElement("span");
+            indexDom.className = "index";
+            indexDom.innerText = i++;
+            chapterDom.appendChild(indexDom);
+            
+            var volDom = document.createElement("span");
+            volDom.className = "vol";
+            volDom.innerText = chapter.volumeNumber;
+            chapterDom.appendChild(volDom);
+            
+            var chDom = document.createElement("span");
+            chDom.className = "ch";
+            chDom.innerText = chapter.chapterNumber;
+            chapterDom.appendChild(chDom);
+            
+            var titleDom = document.createElement("span");
+            titleDom.innerText = chapter.name;
+            chapterDom.appendChild(titleDom);
+            chapterOutput.appendChild(chapterDom);
+        });
+    });
+}
+
+function DownloadChapterTaskClick(){
+    CreateDownloadChaptersTask(connectorSelect.value, toEditId, selectedChapters.value, "en");
+    HidePublicationPopup();
+    createDownloadChaptersTask.style.display = "none";
+    selectPublicationPopup.style.display = "none";
+}
+
 function DeleteTaskClick(){
     taskToDelete = tasks.filter(tTask => tTask.publication.internalId === toEditId)[0];
     DeleteTask("DownloadNewChapters", taskToDelete.connectorName, toEditId);
-    HidePublicationPopup();
-}
-
-function AddTaskClick(){
-    CreateTask("DownloadNewChapters", selectRecurrence.value, connectorSelect.value, toEditId, "en")
-    HideAddTaskPopup();
     HidePublicationPopup();
 }
 
@@ -194,12 +242,14 @@ function ShowPublicationViewerWindow(publicationId, event, add){
     
     //Check what action should be listed
     if(add){
-        publicationAdd.style.display = "initial";
+        createMonitorTaskButton.style.display = "initial";
+        createDownloadChapterTaskButton.style.display = "initial";
         publicationDelete.style.display = "none";
         publicationTaskStart.style.display = "none";
     }
     else{
-        publicationAdd.style.display = "none";
+        createMonitorTaskButton.style.display = "none";
+        createDownloadChapterTaskButton.style.display = "none";
         publicationDelete.style.display = "initial";
         publicationTaskStart.style.display = "initial";
     }
@@ -211,10 +261,7 @@ function HidePublicationPopup(){
 
 function ShowNewTaskWindow(){
     selectPublication.replaceChildren();
-    addTaskPopup.style.display = "block";
-}
-function HideAddTaskPopup(){
-    addTaskPopup.style.display = "none";
+    selectPublicationPopup.style.display = "flex";
 }
 
 
@@ -234,9 +281,6 @@ function OpenSettings(){
     settingsPopup.style.display = "flex";
 }
 
-function HideSettings(){
-    settingsPopup.style.display = "none";
-}
 
 function GetSettingsClick(){
     settingApiUri.value = "";
