@@ -120,20 +120,38 @@ app.MapPost("/Tasks/CreateDownloadChaptersTask", (string connectorName, string i
         return;
     
     Chapter[] availableChapters = connector.GetChapters((Publication)publication, language??"en");;
+    IEnumerable<Chapter> toDownload;
     
-    if (chapters.Contains('-'))
+    if (chapters.Contains("vol", StringComparison.InvariantCultureIgnoreCase))
+    {
+        if (chapters.Contains('-'))
+        {
+            string selectString = chapters.Split(' ').First(str => str.Contains('-'));
+            int start = Convert.ToInt32(selectString.Split('-')[0]);
+            int end = Convert.ToInt32(selectString.Split('-')[1]);
+            toDownload = availableChapters.Where(chapter =>
+                Convert.ToInt32(chapter.volumeNumber) >= start && Convert.ToInt32(chapter.volumeNumber) <= end);
+        }
+        else
+        {
+            string selectString = chapters.Split(' ').First(str => !str.Contains("vol", StringComparison.InvariantCultureIgnoreCase));
+            toDownload = availableChapters.Where(chapter => chapter.volumeNumber.Equals(selectString));
+        }
+    }
+    else if (chapters.Contains('-'))
     {
         int start = Convert.ToInt32(chapters.Split('-')[0]);
         int end = Convert.ToInt32(chapters.Split('-')[1]) + 1;
-        foreach (Chapter chapter in availableChapters[start..end])
-        {
-            taskManager.AddTask(new DownloadChapterTask(TrangaTask.Task.DownloadChapter, connectorName,
-                (Publication)publication, chapter, "en"));
-        }
+        toDownload = availableChapters[start..end];
     }
     else
+    {
+        toDownload = new[] { availableChapters[Convert.ToInt32(chapters)] };
+    }
+    
+    foreach(Chapter chapter in toDownload)
         taskManager.AddTask(new DownloadChapterTask(TrangaTask.Task.DownloadChapter, connectorName,
-            (Publication)publication, availableChapters[Convert.ToInt32(chapters)], "en"));
+            (Publication)publication, chapter, "en"));
 });
 
 app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
