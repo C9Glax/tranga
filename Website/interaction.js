@@ -93,7 +93,7 @@ function NewSearch(){
 
     //Empty previous results
     selectPublication.replaceChildren();
-    GetPublication(connectorSelect.value, searchPublicationQuery.value)
+    GetPublicationFromConnector(connectorSelect.value, searchPublicationQuery.value)
         .then(json =>
             json.forEach(publication => {
                     var option = CreatePublication(publication, connectorSelect.value);
@@ -288,7 +288,7 @@ function UpdateLibrarySettings(){
     if(settingKavitaUrl.value != "" && settingKavitaUser.value != "" && settingKavitaPass.value != ""){
         UpdateSettings("", "", "", settingKavitaUrl.value, settingKavitaUser.value, settingKavitaPass.value);
     }
-    CreateTask("UpdateLibraries", libraryUpdateTime.value, "","","");
+    CreateUpdateLibraryTask(libraryUpdateTime.value);
     setTimeout(() => GetSettingsClick(), 200);
 }
 

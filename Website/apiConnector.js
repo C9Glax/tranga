@@ -43,25 +43,37 @@ function DeleteData(uri){
 }
 
 async function GetAvailableControllers(){
-    var uri = apiUri + "/Tranga/GetAvailableControllers";
+    var uri = apiUri + "/Controllers/Get";
     let json = await GetData(uri);
     return json;
 }
 
-async function GetPublication(connectorName, title){
-    var uri = apiUri + `/Tranga/GetPublicationsFromConnector?connectorName=${connectorName}&title=${title}`;
+async function GetPublicationFromConnector(connectorName, title){
+    var uri = apiUri + `/Publications/GetFromConnector?connectorName=${connectorName}&title=${title}`;
     let json = await GetData(uri);
     return json;
 }
 
 async function GetKnownPublications(){
-    var uri = apiUri + "/Tranga/GetKnownPublications";
+    var uri = apiUri + "/Publications/GetKnown";
+    let json = await GetData(uri);
+    return json;
+}
+
+async function GetPublication(internalId){
+    var uri = apiUri + `/Publications/GetKnown?internalId=${internalId}`;
+    let json = await GetData(uri);
+    return json;
+}
+
+async function GetChapters(internalId, connectorName, language){
+    var uri = apiUri + `/Publications/GetChapters?internalId=${internalId}&connectorName=${connectorName}&language=${language}`;
     let json = await GetData(uri);
     return json;
 }
 
 async function GetTaskTypes(){
-    var uri = apiUri + "/Tasks/GetTaskTypes";
+    var uri = apiUri + "/Tasks/GetTypes";
     let json = await GetData(uri);
     return json;
 }
@@ -89,8 +101,18 @@ async function GetKomgaTask(){
     return json;
 }
 
-function CreateTask(taskType, reoccurrence, connectorName, internalId, language){
-    var uri = apiUri + `/Tasks/Create?taskType=${taskType}&connectorName=${connectorName}&internalId=${internalId}&reoccurrenceTime=${reoccurrence}&language=${language}`;
+function CreateMonitorTask(connectorName, internalId, reoccurrence, language){
+    var uri = apiUri + `/Tasks/CreateMonitorTask?connectorName=${connectorName}&internalId=${internalId}&reoccurrenceTime=${reoccurrence}&language=${language}`;
+    PostData(uri);
+}
+
+function CreateUpdateLibraryTask(reoccurrence){
+    var uri = apiUri + `/Tasks/CreateUpdateLibraryTask?reoccurrenceTime=${reoccurrence}`;
+    PostData(uri);
+}
+
+function CreateDownloadChaptersTask(connectorName, internalId, chapters, language){
+    var uri = apiUri + `/Tasks/CreateDownloadChaptersTask?connectorName=${connectorName}&internalId=${internalId}&chapters=${chapters}&language=${language}`;
     PostData(uri);
 }
 

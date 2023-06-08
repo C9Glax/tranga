@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Logging;
 using Tranga;
+using Tranga.TrangaTasks;
 
 string applicationFolderPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API");
 string downloadFolderPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(applicationFolderPath, "Manga");
@@ -54,11 +55,17 @@ app.UseSwaggerUI();
 
 app.UseCors(corsHeader);
 
-app.MapGet("/Tranga/GetAvailableControllers", () =>  taskManager.GetAvailableConnectors().Keys.ToArray());
+app.MapGet("/Controllers/Get", () =>  taskManager.GetAvailableConnectors().Keys.ToArray());
 
-app.MapGet("/Tranga/GetKnownPublications", () => taskManager.GetAllPublications());
+app.MapGet("/Publications/GetKnown", (string? internalId) =>
+{
+    if(internalId is null)
+        return taskManager.GetAllPublications();
+    
+    return new [] { taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId) };
+});
 
-app.MapGet("/Tranga/GetPublicationsFromConnector", (string connectorName, string title) =>
+app.MapGet("/Publications/GetFromConnector", (string connectorName, string title) =>
 {
     Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
     if (connector is null)
@@ -68,13 +75,65 @@ app.MapGet("/Tranga/GetPublicationsFromConnector", (string connectorName, string
     return taskManager.GetPublicationsFromConnector(connector, title);
 });
 
-app.MapGet("/Tasks/GetTaskTypes", () => Enum.GetNames(typeof(TrangaTask.Task)));
-
-
-app.MapPost("/Tasks/Create", (string taskType, string? connectorName, string? internalId, string reoccurrenceTime, string? language) =>
+app.MapGet("/Publications/GetChapters", (string connectorName, string internalId, string? language) =>
 {
-    TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
-    taskManager.AddTask(task, connectorName, internalId, TimeSpan.Parse(reoccurrenceTime), language);
+    Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
+    if (connector is null)
+        return Array.Empty<Chapter>();
+    Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId);
+    if (publication is null)
+        return Array.Empty<Chapter>();
+    return connector.GetChapters((Publication)publication, language??"en");
+});
+
+app.MapGet("/Tasks/GetTypes", () => Enum.GetNames(typeof(TrangaTask.Task)));
+
+
+app.MapPost("/Tasks/CreateMonitorTask",
+    (string connectorName, string internalId, string reoccurrenceTime, string? language) =>
+    {
+        Connector? connector =
+            taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
+        if (connector is null)
+            return;
+        Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId);
+        if (publication is null)
+            return;
+        taskManager.AddTask(new DownloadNewChaptersTask(TrangaTask.Task.DownloadNewChapters, connectorName,
+            (Publication)publication,
+            TimeSpan.Parse(reoccurrenceTime), language ?? "en"));
+    });
+
+app.MapPost("/Tasks/CreateUpdateLibraryTask", (string reoccurrenceTime) =>
+{
+    taskManager.AddTask(new UpdateLibrariesTask(TrangaTask.Task.UpdateLibraries, TimeSpan.Parse(reoccurrenceTime)));
+});
+
+app.MapPost("/Tasks/CreateDownloadChaptersTask", (string connectorName, string internalId, string chapters, string? language) => {
+    
+    Connector? connector =
+        taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
+    if (connector is null)
+        return;
+    Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId);
+    if (publication is null)
+        return;
+    
+    Chapter[] availableChapters = connector.GetChapters((Publication)publication, language??"en");;
+    
+    if (chapters.Contains('-'))
+    {
+        int start = Convert.ToInt32(chapters.Split('-')[0]);
+        int end = Convert.ToInt32(chapters.Split('-')[1]) + 1;
+        foreach (Chapter chapter in availableChapters[start..end])
+        {
+            taskManager.AddTask(new DownloadChapterTask(TrangaTask.Task.DownloadChapter, connectorName,
+                (Publication)publication, chapter, "en"));
+        }
+    }
+    else
+        taskManager.AddTask(new DownloadChapterTask(TrangaTask.Task.DownloadChapter, connectorName,
+            (Publication)publication, availableChapters[Convert.ToInt32(chapters)], "en"));
 });
 
 app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
@@ -96,7 +155,7 @@ app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? search
     }
 });
 
-app.MapGet("/Tasks/GetTaskProgress", (string taskType, string? connectorName, string? publicationId) =>
+app.MapGet("/Tasks/GetProgress", (string taskType, string? connectorName, string? publicationId) =>
 {
     try
     {
