@@ -510,7 +510,7 @@ public static class Tranga_Cli
         if (selectedChapters.Contains('-'))
         {
             int start = Convert.ToInt32(selectedChapters.Split('-')[0]);
-            int end = Convert.ToInt32(selectedChapters.Split('-')[1]);
+            int end = Convert.ToInt32(selectedChapters.Split('-')[1]) + 1;
             return availableChapters[start..end];
         }
         else
