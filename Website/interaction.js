@@ -363,7 +363,6 @@ function ShowTasksQueue(){
     var outputDom = downloadTasksPopup.querySelector("popup-content");
     outputDom.replaceChildren();
     GetRunningTasks().then((taskJson) => {
-       console.log(taskJson);
        taskJson.forEach(task => {
           outputDom.appendChild(CreateProgressChild(task)); 
        });
