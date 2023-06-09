@@ -36,6 +36,7 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
+        <li><a href="#prerequisites">Usage</a></li>
         <li><a href="#prerequisites">Prerequisites</a></li>
       </ul>
     </li>
@@ -108,6 +109,28 @@ Head over to [releases](https://git.bernloehr.eu/glax/Tranga/releases) and downl
 Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.
 
 Wherever you are mounting `/usr/share/Tranga-API` you also need to mount that same path + `/imageCache` in the webserver container.
+
+### Usage
+
+There is two ways to download Mangas:
+- Downloading everything and monitor for new Chapters
+- Selecting specific Volumes/Chapters
+
+On the website you add new tasks, by selecting the blue '+' field. Next select the connector/site you want to use, and enter a search term.
+After pressing 'Search', the results will be presented below - this might, depending on the result-size, take a while.
+Next select the publication and a new popup will open with two options:
+- "Monitor" - Download all chapters and monitor for new ones
+- "Download Chapter" - Download specific chapters only
+
+When selecting `Monitor` you will be presented with a new window and the selection of the interval you want to check for new chapters.
+When selecting `Download Chapter` a list will open with all available chapters from which you can then select a range.
+
+The syntax for selecting chapters is as follows:
+- To download a single Chapter enter either the index number (the number at the very start of the line) or its absolute number like so: `c(h)(apter)[number]`, spaces are allowed.
+- To download a range of chapters enter either a range of index numbers (`3-6`) or chapters (`ch 12-23`).
+- For volumes the syntax is as follows: `v(ol)[number](-[number])`, again spaces allowed.
+
+Examples: `2-12`, `c1`, `ch 2`, `chapter 3`, `v 2`, `vol3-4`, `v2c4` (note: you can only specify a single chapter with this syntax).
 
 ### Prerequisites
 
