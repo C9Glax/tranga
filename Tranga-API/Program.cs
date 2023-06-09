@@ -144,14 +144,24 @@ app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? search
     }
 });
 
-app.MapGet("/Tasks/GetProgress", (string taskType, string? connectorName, string? publicationId) =>
+app.MapGet("/Tasks/GetProgress", (string taskType, string connectorName, string publicationId, string? chapterSortNumber) =>
 {
+    Connector? connector =
+        taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
+    if (connector is null)
+        return -1f;
     try
     {
+        TrangaTask? task = null;
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-        TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId)?.First();
-
+        if (pTask is TrangaTask.Task.DownloadNewChapters)
+        {
+            task = taskManager.GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId).FirstOrDefault();
+        }else if (pTask is TrangaTask.Task.DownloadChapter && chapterSortNumber is not null)
+        {
+            task = taskManager.GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId,
+                chapterSortNumber: chapterSortNumber).FirstOrDefault();
+        }
         if (task is null)
             return -1f;
 
