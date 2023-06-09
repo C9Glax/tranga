@@ -49,7 +49,7 @@ public abstract class TrangaTask
         this.task = task;
         this.progress = 0f;
         this.executionStarted = DateTime.Now;
-        this.lastChange = DateTime.Now;
+        this.lastChange = DateTime.MaxValue;
     }
 
     public float IncrementProgress(float amount)
@@ -83,6 +83,7 @@ public abstract class TrangaTask
         logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
+        this.lastChange = DateTime.Now;
         ExecuteTask(taskManager, logger);
         this.lastExecuted = DateTime.Now;
         this.state = ExecutionState.Waiting;
