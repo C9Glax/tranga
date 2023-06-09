@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Logging;
@@ -132,11 +133,18 @@ public class Manganato : Connector
             downloadClient.MakeRequest(requestUrl, (byte)1);
         if (requestResult.statusCode != HttpStatusCode.OK)
             return Array.Empty<Chapter>();
-
-        return ParseChaptersFromHtml(requestResult.result);
+        
+        //Return Chapters ordered by Chapter-Number
+        NumberFormatInfo chapterNumberFormatInfo = new()
+        {
+            NumberDecimalSeparator = "."
+        };
+        List<Chapter> chapters = ParseChaptersFromHtml(requestResult.result);
+        logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    private Chapter[] ParseChaptersFromHtml(Stream html)
+    private List<Chapter> ParseChaptersFromHtml(Stream html)
     {
         StreamReader reader = new (html);
         string htmlString = reader.ReadToEnd();
@@ -158,7 +166,7 @@ public class Manganato : Connector
             ret.Add(new Chapter(chapterName, volumeNumber, chapterNumber, url));
         }
         ret.Reverse();
-        return ret.ToArray();
+        return ret;
     }
 
     public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)

@@ -196,7 +196,7 @@ app.MapGet("/Tasks/GetRunningTasks",
     () => taskManager.GetAllTasks().Where(task => task.state is TrangaTask.ExecutionState.Running));
 
 app.MapGet("/Queue/GetList",
-    () => taskManager.GetAllTasks().Where(task => task.state is TrangaTask.ExecutionState.Enqueued));
+    () => taskManager.GetAllTasks().Where(task => task.state is TrangaTask.ExecutionState.Enqueued).OrderBy(task => task.nextExecution));
 
 app.MapPost("/Queue/Enqueue", (string taskType, string? connectorName, string? publicationId) =>
 {

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
@@ -200,8 +201,13 @@ public class Mangasee : Connector
             ret.Add(new Chapter("", volumeNumber, chapterNumber, url));
         }
 
-        ret.Reverse();
-        return ret.ToArray();
+        //Return Chapters ordered by Chapter-Number
+        NumberFormatInfo chapterNumberFormatInfo = new()
+        {
+            NumberDecimalSeparator = "."
+        };
+        logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+        return ret.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
     public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)

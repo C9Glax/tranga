@@ -89,8 +89,9 @@ public class TaskManager
         while (_continueRunning)
         {
             TrangaTask[] tmp = _allTasks.Where(taskQuery =>
-                taskQuery.nextExecution < DateTime.Now &&
-                taskQuery.state is TrangaTask.ExecutionState.Waiting or TrangaTask.ExecutionState.Enqueued).ToArray();
+                    taskQuery.nextExecution < DateTime.Now &&
+                    taskQuery.state is TrangaTask.ExecutionState.Waiting or TrangaTask.ExecutionState.Enqueued)
+                .OrderBy(tmpTask => tmpTask.nextExecution).ToArray();
             foreach (TrangaTask task in tmp)
             {
                 task.state = TrangaTask.ExecutionState.Enqueued;
