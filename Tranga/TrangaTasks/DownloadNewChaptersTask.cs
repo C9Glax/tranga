@@ -24,6 +24,13 @@ public class DownloadNewChaptersTask : TrangaTask
         this.lastChange = DateTime.Now;
         return this.progress;
     }
+    
+    public new float DecrementProgress(float amount)
+    {
+        this.progress -= amount / this.childTaskAmount;
+        this.lastChange = DateTime.Now;
+        return this.progress;
+    }
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
     {

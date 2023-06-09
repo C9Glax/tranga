@@ -58,6 +58,13 @@ public abstract class TrangaTask
         this.lastChange = DateTime.Now;
         return this.progress;
     }
+
+    public float DecrementProgress(float amount)
+    {
+        this.progress -= amount;
+        this.lastChange = DateTime.Now;
+        return this.progress;
+    }
     
     /// <summary>
     /// BL for concrete Tasks
