@@ -128,7 +128,7 @@ public class TaskManager
                 {
                     logger?.WriteLine(this.GetType().ToString(), $"Disposing failed task {removeTask.Key}.");
                     removeTask.Key.parentTask?.DecrementProgress(removeTask.Key.progress);
-                    removeTask.Value.Dispose();;
+                    //removeTask.Value.Dispose(); Currently not available, however since task is removed from _allTasks should work. Memory leak however...
                     toRemove.Add(removeTask.Key);
                 }
             }
