@@ -323,6 +323,10 @@ popup popup-window popup-content input, select {
     z-index: 9;
 }
 
+#createMonitorTaskPopup input[type="number"] {
+    width: 40px;
+}
+
 #createDownloadChaptersTask popup-content {
     flex-direction: column;
     align-items: start;
