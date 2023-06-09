@@ -40,6 +40,7 @@ const settingApiUri = document.querySelector("#settingApiUri");
 const tagTasksRunning = document.querySelector("#tasksRunningTag");
 const tagTasksQueued = document.querySelector("#tasksQueuedTag");
 const downloadTasksPopup = document.querySelector("#downloadTasksPopup");
+const downloadTasksOutput = downloadTasksPopup.querySelector("popup-content");
 
 searchbox.addEventListener("keyup", (event) => FilterResults());
 settingsCog.addEventListener("click", () => OpenSettings());
@@ -359,33 +360,31 @@ function FilterResults(){
 }
 
 function ShowTasksQueue(){
-    downloadTasksPopup.style.display = "flex";
-    var outputDom = downloadTasksPopup.querySelector("popup-content");
-    outputDom.replaceChildren();
-    GetRunningTasks().then((taskJson) => {
-       taskJson.forEach(task => {
-          outputDom.appendChild(CreateProgressChild(task)); 
-       });
-    });
-    GetQueue().then((taskJson) => {
-        taskJson.forEach(task => {
-            outputDom.appendChild(CreateProgressChild(task));
-        });
-    });
 
-    setInterval(() => {
-        GetRunningTasks().then((json) => {
-           json.forEach(task => {
-               if(task.chapter != undefined){
-                   document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
-                   document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-               }else{
-                   document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
-                   document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-               }
-           });
+    downloadTasksOutput.replaceChildren();
+    GetRunningTasks()
+        .then(json => {
+            tagTasksRunning.innerText = json.length;
+            json.forEach(task => {
+                downloadTasksOutput.appendChild(CreateProgressChild(task));
+            });
+            if(task.chapter != undefined){
+                document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
+                document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+            }else{
+                document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
+                document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+            }
         });
-    },500);
+
+    GetQueue()
+        .then(json => {
+            tagTasksQueued.innerText = json.length;
+            json.forEach(task => {
+                downloadTasksOutput.appendChild(CreateProgressChild(task));
+            });
+        });
+    downloadTasksPopup.style.display = "flex";
 }
 
 function CreateProgressChild(task){
@@ -433,6 +432,7 @@ function CreateProgressChild(task){
 
 //Resets the tasks shown
 ResetContent();
+downloadTasksOutput.replaceChildren();
 //Get Tasks and show them
 GetDownloadTasks()
     .then(json => json.forEach(task => {
@@ -445,11 +445,17 @@ GetDownloadTasks()
 GetRunningTasks()
     .then(json => {
         tagTasksRunning.innerText = json.length;
+        json.forEach(task => {
+            downloadTasksOutput.appendChild(CreateProgressChild(task));
+        });
     });
 
 GetQueue()
     .then(json => {
         tagTasksQueued.innerText = json.length;
+        json.forEach(task => {
+            downloadTasksOutput.appendChild(CreateProgressChild(task));
+        });
     })
 
 setInterval(() => {
@@ -482,6 +488,19 @@ setInterval(() => {
     GetQueue()
         .then(json => {
             tagTasksQueued.innerText = json.length;
-        })
-    
+        });
 }, 1000);
+
+setInterval(() => {
+    GetRunningTasks().then((json) => {
+        json.forEach(task => {
+            if(task.chapter != undefined){
+                document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
+                document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+            }else{
+                document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
+                document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+            }
+        });
+    });
+},500);
