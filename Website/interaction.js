@@ -369,8 +369,8 @@ function ShowTasksQueue(){
                 downloadTasksOutput.appendChild(CreateProgressChild(task));
 
                 if(task.chapter != undefined){
-                    document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
-                    document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+                    document.querySelector(`#progress${task.publication.internalId}-${task.chapter.chapterNumber}`).value = task.progress;
+                    document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.chapterNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
                 }else{
                     document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
                     document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
@@ -420,8 +420,8 @@ function CreateProgressChild(task){
         chapterName.innerText = task.chapter.name;
         child.appendChild(chapterName);
 
-        progress.id = `progress${task.publication.internalId}-${task.chapter.sortNumber}`;
-        progressStr.id = `progressStr${task.publication.internalId}-${task.chapter.sortNumber}`;
+        progress.id = `progress${task.publication.internalId}-${task.chapter.chapterNumber}`;
+        progressStr.id = `progressStr${task.publication.internalId}-${task.chapter.chapterNumber}`;
     }else{
         progress.id = `progress${task.publication.internalId}`;
         progressStr.id = `progressStr${task.publication.internalId}`;
@@ -496,8 +496,8 @@ setInterval(() => {
     GetRunningTasks().then((json) => {
         json.forEach(task => {
             if(task.chapter != undefined){
-                document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
-                document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+                document.querySelector(`#progress${task.publication.internalId}-${task.chapter.chapterNumber}`).value = task.progress;
+                document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.chapterNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
             }else{
                 document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
                 document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
