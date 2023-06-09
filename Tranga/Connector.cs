@@ -53,6 +53,72 @@ public abstract class Connector
     /// <param name="language">Language of the Chapters</param>
     /// <returns>Array of Chapters matching Publication and Language</returns>
     public abstract Chapter[] GetChapters(Publication publication, string language = "");
+
+    public Chapter[] SearchChapters(Publication publication, string searchTerm, string? language = null)
+    {
+        Chapter[] availableChapters = this.GetChapters(publication, language??"en");
+        Regex volumeRegex = new ("((v(ol)*(olume)*)+ *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
+        Regex chapterRegex = new ("((c(h)*(hapter)*)+ *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
+        Regex singleResultRegex = new("([0-9]+)", RegexOptions.IgnoreCase);
+        Regex rangeResultRegex = new("([0-9]+(-[0-9]+))", RegexOptions.IgnoreCase);
+        if (volumeRegex.IsMatch(searchTerm) && chapterRegex.IsMatch(searchTerm))
+        {
+            string volume = singleResultRegex.Match(volumeRegex.Match(searchTerm).Value).Value;
+            string chapter = singleResultRegex.Match(chapterRegex.Match(searchTerm).Value).Value;
+            return availableChapters.Where(aCh => aCh.volumeNumber is not null && aCh.chapterNumber is not null &&
+                aCh.volumeNumber.Equals(volume, StringComparison.InvariantCultureIgnoreCase) &&
+                aCh.chapterNumber.Equals(chapter, StringComparison.InvariantCultureIgnoreCase))
+                .ToArray();
+        }
+        else if (volumeRegex.IsMatch(searchTerm))
+        {
+            string volume = volumeRegex.Match(searchTerm).Value;
+            if (rangeResultRegex.IsMatch(volume))
+            {
+                string range = rangeResultRegex.Match(volume).Value;
+                int start = Convert.ToInt32(range.Split('-')[0]);
+                int end = Convert.ToInt32(range.Split('-')[1]);
+                return availableChapters.Where(aCh => aCh.volumeNumber is not null &&
+                                                      Convert.ToInt32(aCh.volumeNumber) >= start &&
+                                                      Convert.ToInt32(aCh.volumeNumber) <= end).ToArray();
+            }
+            else if(singleResultRegex.IsMatch(volume))
+                return availableChapters.Where(aCh =>
+                    aCh.volumeNumber is not null &&
+                    aCh.volumeNumber.Equals(volume, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+
+        }
+        else if (chapterRegex.IsMatch(searchTerm))
+        {
+            string chapter = volumeRegex.Match(searchTerm).Value;
+            if (rangeResultRegex.IsMatch(chapter))
+            {
+                string range = rangeResultRegex.Match(chapter).Value;
+                int start = Convert.ToInt32(range.Split('-')[0]);
+                int end = Convert.ToInt32(range.Split('-')[1]);
+                return availableChapters.Where(aCh => aCh.chapterNumber is not null &&
+                                                      Convert.ToInt32(aCh.chapterNumber) >= start &&
+                                                      Convert.ToInt32(aCh.chapterNumber) <= end).ToArray();
+            }
+            else if(singleResultRegex.IsMatch(chapter))
+                return availableChapters.Where(aCh =>
+                    aCh.chapterNumber is not null &&
+                    aCh.chapterNumber.Equals(chapter, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+        }
+        else
+        {
+            if (rangeResultRegex.IsMatch(searchTerm))
+            {
+                int start = Convert.ToInt32(searchTerm.Split('-')[0]);
+                int end = Convert.ToInt32(searchTerm.Split('-')[1]);
+                return availableChapters[start..(end + 1)];
+            }
+            else if(singleResultRegex.IsMatch(searchTerm))
+                return new [] { availableChapters[Convert.ToInt32(searchTerm)] };
+        }
+
+        return Array.Empty<Chapter>();
+    }
     
     /// <summary>
     /// Retrieves the Chapter (+Images) from the website.

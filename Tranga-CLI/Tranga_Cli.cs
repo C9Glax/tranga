@@ -499,22 +499,7 @@ public static class Tranga_Cli
         while(selectedChapters is null || selectedChapters.Length < 1)
             selectedChapters = Console.ReadLine();
 
-        if (selectedChapters.Length == 1 && selectedChapters.ToLower() == "q")
-        {
-            Console.Clear();
-            Console.WriteLine("aborted.");
-            logger.WriteLine("Tranga_CLI", "aborted.");
-            return Array.Empty<Chapter>();
-        }
-        
-        if (selectedChapters.Contains('-'))
-        {
-            int start = Convert.ToInt32(selectedChapters.Split('-')[0]);
-            int end = Convert.ToInt32(selectedChapters.Split('-')[1]) + 1;
-            return availableChapters[start..end];
-        }
-        else
-            return new Chapter[] { availableChapters[Convert.ToInt32(selectedChapters)] };
+        return connector.SearchChapters(publication, selectedChapters);
     }
 
     private static Connector? SelectConnector(Connector[] connectors, Logger logger)
