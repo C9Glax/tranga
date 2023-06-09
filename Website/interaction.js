@@ -63,7 +63,7 @@ createMonitorTaskButton.addEventListener("click", () => {
 createDownloadChapterTaskButton.addEventListener("click", () => {
     HidePublicationPopup();
     OpenDownloadChapterTaskPopup();
-})
+});
 publicationTaskStart.addEventListener("click", () => StartTaskClick());
 settingApiUri.addEventListener("keypress", (event) => {
     if(event.key === "Enter"){
@@ -156,6 +156,8 @@ function AddMonitorTask(){
 }
 
 function OpenDownloadChapterTaskPopup(){
+    selectedChapters.value = "";
+    chapterOutput.replaceChildren();
     createDownloadChaptersTask.style.display = "block";
     GetChapters(toEditId, connectorSelect.value, "en").then((json) => {
         var i = 0;
@@ -261,6 +263,7 @@ function HidePublicationPopup(){
 
 function ShowNewTaskWindow(){
     selectPublication.replaceChildren();
+    searchPublicationQuery.value = "";
     selectPublicationPopup.style.display = "flex";
 }
 
