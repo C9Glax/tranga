@@ -271,7 +271,7 @@ public class TaskManager
         ExportDataAndSettings();
     }
 
-    public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null)
+    public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null, string? chapterSortNumber = null)
     {
         switch (taskType)
         {
@@ -310,11 +310,12 @@ public class TaskManager
                         ((DownloadChapterTask)mTask).connectorName == connectorName &&
                         ((DownloadChapterTask)mTask).ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
                 }
-                else if (internalId is not null)
+                else if (internalId is not null && chapterSortNumber is not null)
                 {
                     return matchingdc.Where(mTask =>
                         ((DownloadChapterTask)mTask).connectorName == connectorName &&
-                        ((DownloadChapterTask)mTask).publication.publicationId == internalId);
+                        ((DownloadChapterTask)mTask).publication.publicationId == internalId &&
+                        ((DownloadChapterTask)mTask).chapter.sortNumber == chapterSortNumber);
                 }
                 else
                     return _allTasks.Where(tTask =>
