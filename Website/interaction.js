@@ -401,7 +401,6 @@ function CreateProgressChild(task){
 
 
     var progress = document.createElement("progress");
-    progress.value = 0;
     child.appendChild(progress);
     
     var progressStr = document.createElement("span");
