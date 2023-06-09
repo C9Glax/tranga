@@ -367,14 +367,15 @@ function ShowTasksQueue(){
             tagTasksRunning.innerText = json.length;
             json.forEach(task => {
                 downloadTasksOutput.appendChild(CreateProgressChild(task));
+
+                if(task.chapter != undefined){
+                    document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
+                    document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+                }else{
+                    document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
+                    document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+                }
             });
-            if(task.chapter != undefined){
-                document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
-                document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-            }else{
-                document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
-                document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-            }
         });
 
     GetQueue()
