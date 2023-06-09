@@ -39,9 +39,7 @@ const settingKavitaConfigured = document.querySelector("#kavitaConfigured");
 const settingApiUri = document.querySelector("#settingApiUri");
 const tagTasksRunning = document.querySelector("#tasksRunningTag");
 const tagTasksQueued = document.querySelector("#tasksQueuedTag");
-const tagTasksTotal = document.querySelector("#totalTasksTag");
-const tagTaskPopup = document.querySelector("footer-tag-popup");
-const tagTasksPopupContent = document.querySelector("footer-tag-content");
+const downloadTasksPopup = document.querySelector("#downloadTasksPopup");
 
 searchbox.addEventListener("keyup", (event) => FilterResults());
 settingsCog.addEventListener("click", () => OpenSettings());
@@ -50,6 +48,7 @@ document.querySelector("#blurBackgroundTaskPopup").addEventListener("click", () 
 document.querySelector("#blurBackgroundPublicationPopup").addEventListener("click", () => HidePublicationPopup());
 document.querySelector("#blurBackgroundCreateMonitorTaskPopup").addEventListener("click", () => createMonitorTaskPopup.style.display = "none");
 document.querySelector("#blurBackgroundCreateDownloadChaptersTask").addEventListener("click", () => createDownloadChaptersTask.style.display = "none");
+document.querySelector("#blurBackgroundTasksQueuePopup").addEventListener("click", () => downloadTasksPopup.style.display = "none");
 selectedChapters.addEventListener("keypress", (event) => {
     if(event.key === "Enter"){
         DownloadChapterTaskClick();
@@ -77,12 +76,7 @@ searchPublicationQuery.addEventListener("keypress", (event) => {
         NewSearch();
     }
 });
-tagTasksRunning.addEventListener("mouseover", (event) => ShowRunningTasks(event));
-tagTasksRunning.addEventListener("mouseout", () => CloseTasksPopup());
-tagTasksQueued.addEventListener("mouseover", (event) => ShowQueuedTasks(event));
-tagTasksQueued.addEventListener("mouseout", () => CloseTasksPopup());
-tagTasksTotal.addEventListener("mouseover", (event) => ShowAllTasks(event));
-tagTasksTotal.addEventListener("mouseout", () => CloseTasksPopup());
+
 
 let availableConnectors;
 GetAvailableControllers()
@@ -284,7 +278,6 @@ function OpenSettings(){
     settingsPopup.style.display = "flex";
 }
 
-
 function GetSettingsClick(){
     settingApiUri.value = "";
     settingKomgaUrl.value = "";
@@ -343,66 +336,6 @@ function utf8_to_b64( str ) {
     return window.btoa(unescape(encodeURIComponent( str )));
 }
 
-
-function ShowRunningTasks(event){
-    GetRunningTasks()
-        .then(json => {
-            tagTasksPopupContent.replaceChildren();
-            json.forEach(task => {
-                if(task.publication != null){
-                    var taskname = document.createElement("footer-tag-task-name");
-                    if(task.task == 2)
-                        taskname.innerText = `${task.publication.sortName} - ${task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2})}`;
-                    else if(task.task == 4)
-                        taskname.innerText = `${task.publication.sortName} Vol.${task.chapter.volumeNumber} Ch.${task.chapter.chapterNumber} - ${task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2})}`;
-                    tagTasksPopupContent.appendChild(taskname);
-                }
-            });
-            if(tagTasksPopupContent.children.length > 0){
-                tagTaskPopup.style.display = "block";
-                tagTaskPopup.style.left = `${tagTasksRunning.offsetLeft - 20}px`;
-            }
-        });
-}
-
-function ShowQueuedTasks(event){
-    GetQueue()
-        .then(json => {
-            tagTasksPopupContent.replaceChildren();
-            json.forEach(task => {
-                var taskname = document.createElement("footer-tag-task-name");
-                if(task.task == 2)
-                    taskname.innerText = `${task.publication.sortName}`;
-                else if(task.task == 4)
-                    taskname.innerText = `${task.publication.sortName} Vol.${task.chapter.volumeNumber} Ch.${task.chapter.chapterNumber}`;
-                tagTasksPopupContent.appendChild(taskname);
-            });
-            if(json.length > 0){
-                tagTaskPopup.style.display = "block";
-                tagTaskPopup.style.left = `${tagTasksQueued.offsetLeft- 20}px`;
-            }
-        });
-}
-function ShowAllTasks(event){
-    GetDownloadTasks()
-        .then(json => {
-            tagTasksPopupContent.replaceChildren();
-            json.forEach(task => {
-                var taskname = document.createElement("footer-tag-task-name");
-                taskname.innerText = task.publication.sortName;
-                tagTasksPopupContent.appendChild(taskname);
-            });
-            if(json.length > 0){
-                tagTaskPopup.style.display = "block";
-                tagTaskPopup.style.left = `${tagTasksTotal.offsetLeft - 20}px`;
-            }
-        });
-}
-
-function CloseTasksPopup(){
-    tagTaskPopup.style.display = "none";
-}
-
 function FilterResults(){
     if(searchBox.value.length > 0){
         tasksContent.childNodes.forEach(publication => {
@@ -423,8 +356,80 @@ function FilterResults(){
     }else{
         tasksContent.childNodes.forEach(publication => publication.style.display = "initial");
     }
+}
+
+function ShowTasksQueue(){
+    downloadTasksPopup.style.display = "flex";
+    var outputDom = downloadTasksPopup.querySelector("popup-content");
+    outputDom.replaceChildren();
+    GetRunningTasks().then((taskJson) => {
+       console.log(taskJson);
+       taskJson.forEach(task => {
+          outputDom.appendChild(CreateProgressChild(task)); 
+       });
+    });
+    GetQueue().then((taskJson) => {
+        taskJson.forEach(task => {
+            outputDom.appendChild(CreateProgressChild(task));
+        });
+    });
+
+    setInterval(() => {
+        GetRunningTasks().then((json) => {
+           json.forEach(task => {
+               if(task.chapter != undefined){
+                   document.querySelector(`#progress${task.publication.internalId}-${task.chapter.sortNumber}`).value = task.progress;
+                   document.querySelector(`#progressStr${task.publication.internalId}-${task.chapter.sortNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+               }else{
+                   document.querySelector(`#progress${task.publication.internalId}`).value = task.progress;
+                   document.querySelector(`#progressStr${task.publication.internalId}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+               }
+           });
+        });
+    },500);
+}
+
+function CreateProgressChild(task){
+    var child = document.createElement("div");
+    var img = document.createElement('img');
+    img.src = `imageCache/${task.publication.coverFileNameInCache}`;
+    child.appendChild(img);
+    
+    var name = document.createElement("span");
+    name.innerText = task.publication.sortName;
+    name.className = "pubTitle";
+    child.appendChild(name);
+
+
+    var progress = document.createElement("progress");
+    progress.value = 0;
+    child.appendChild(progress);
+    
+    var progressStr = document.createElement("span");
+    progressStr.innerText = "00.00%";
+    progressStr.className = "progressStr";
+    child.appendChild(progressStr);
+    
+    if(task.chapter != undefined){
+        var chapterNumber = document.createElement("span");
+        chapterNumber.className = "chapterNumber";
+        chapterNumber.innerText = `Vol.${task.chapter.volumeNumber} Ch.${task.chapter.chapterNumber}`;
+        child.appendChild(chapterNumber);
+        
+        var chapterName = document.createElement("span");
+        chapterName.className = "chapterName";
+        chapterName.innerText = task.chapter.name;
+        child.appendChild(chapterName);
+
+        progress.id = `progress${task.publication.internalId}-${task.chapter.sortNumber}`;
+        progressStr.id = `progressStr${task.publication.internalId}-${task.chapter.sortNumber}`;
+    }else{
+        progress.id = `progress${task.publication.internalId}`;
+        progressStr.id = `progressStr${task.publication.internalId}`;
+    }
     
     
+    return child;
 }
 
 //Resets the tasks shown
@@ -441,11 +446,6 @@ GetDownloadTasks()
 GetRunningTasks()
     .then(json => {
         tagTasksRunning.innerText = json.length;
-    });
-
-GetDownloadTasks()
-    .then(json => {
-        tagTasksTotal.innerText = json.length;
     });
 
 GetQueue()
@@ -478,11 +478,6 @@ setInterval(() => {
     GetRunningTasks()
         .then(json => {
            tagTasksRunning.innerText = json.length;
-        });
-
-    GetDownloadTasks()
-        .then(json => {
-            tagTasksTotal.innerText = json.length;
         });
     
     GetQueue()

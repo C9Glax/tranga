@@ -332,7 +332,6 @@ popup popup-window popup-content input, select {
     align-items: start;
 }
 
-
 #createDownloadChaptersTask popup-content > * {
     margin: 3px 0;
 }
@@ -367,6 +366,77 @@ popup popup-window popup-content input, select {
 #createDownloadChaptersTask #chapterOutput .ch {
     display: inline-block;
     width: 60px;
+}
+
+#downloadTasksPopup popup-window {
+    left: 0;
+    top: 80px;
+    margin: 0 0 0 10px;
+    height: calc(100vh - 140px);
+    width: 400px;
+    max-width: 50vw;
+    overflow-y: scroll;
+}
+
+#downloadTasksPopup popup-content {
+    flex-direction: column;
+    align-items: start;
+    margin: 5px;
+}
+
+#downloadTasksPopup popup-content > div {
+    display: block;
+    height: 80px;
+    position: relative;
+    margin: 5px 0;
+}
+
+#downloadTasksPopup popup-content > div > img {
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 60px;
+    left: 0;
+    top: 0;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+#downloadTasksPopup popup-content > div > span {
+    display: block;
+    position: absolute;
+    width: max-content;
+}
+
+#downloadTasksPopup popup-content > div > .pubTitle {
+    left: 70px;
+    top: 0;
+}
+
+#downloadTasksPopup popup-content > div > .chapterName {
+    left: 70px;
+    top: 28pt;
+}
+
+#downloadTasksPopup popup-content > div > .chapterNumber {
+    left: 70px;
+    top: 14pt;
+}
+
+#downloadTasksPopup popup-content > div > progress {
+    display: block;
+    position: absolute;
+    left: 150px;
+    bottom: 0;
+    width: 200px;
+}
+
+#downloadTasksPopup popup-content > div > .progressStr {
+    display: block;
+    position: absolute;
+    left: 70px;
+    bottom: 0;
+    width: 70px;
 }
 
 blur-background {
