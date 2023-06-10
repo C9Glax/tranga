@@ -19,7 +19,7 @@ public class TaskManager
     public TrangaSettings settings { get; }
     private Logger? logger { get; }
 
-    private readonly Dictionary<DownloadChapterTask, Task> _runningDownloadChapterTasks = new();
+    private readonly Dictionary<DownloadChapterTask, CancellationTokenSource> _runningDownloadChapterTasks = new();
 
     /// <param name="downloadFolderPath">Local path to save data (Manga) to</param>
     /// <param name="workingDirectory">Path to the working directory</param>
@@ -122,14 +122,14 @@ public class TaskManager
             }
 
             HashSet<DownloadChapterTask> toRemove = new();
-            foreach (KeyValuePair<DownloadChapterTask,Task> removeTask in _runningDownloadChapterTasks)
+            foreach (KeyValuePair<DownloadChapterTask, CancellationTokenSource> removeTask in _runningDownloadChapterTasks)
             {
                 if (removeTask.Key.GetType() == typeof(DownloadChapterTask) &&
                     DateTime.Now.Subtract(removeTask.Key.lastChange) > TimeSpan.FromMinutes(3))//3 Minutes since last update to task -> remove
                 {
                     logger?.WriteLine(this.GetType().ToString(), $"Disposing failed task {removeTask.Key}.");
                     removeTask.Key.parentTask?.DecrementProgress(removeTask.Key.progress);
-                    removeTask.Value.Dispose();
+                    removeTask.Value.Cancel();
                     toRemove.Add(removeTask.Key);
                 }
             }
@@ -157,13 +157,13 @@ public class TaskManager
     public void ExecuteTaskNow(TrangaTask task)
     {
         task.state = TrangaTask.ExecutionState.Running;
-        CancellationToken cToken = new CancellationToken();
+        CancellationTokenSource cToken = new ();
         Task t = new(() =>
         {
-            task.Execute(this, this.logger, cToken);
-        }, cToken);
+            task.Execute(this, this.logger, cToken.Token);
+        }, cToken.Token);
         if(task.GetType() == typeof(DownloadChapterTask))
-            _runningDownloadChapterTasks.Add((DownloadChapterTask)task, t);
+            _runningDownloadChapterTasks.Add((DownloadChapterTask)task, cToken);
         t.Start();
     }
 
