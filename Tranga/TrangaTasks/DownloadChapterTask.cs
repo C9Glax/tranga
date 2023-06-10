@@ -24,8 +24,12 @@ public class DownloadChapterTask : TrangaTask
     {
         if (cancellationToken?.IsCancellationRequested??false)
             return;
+        if(this.parentTask is not null)
+            this.parentTask.state = ExecutionState.Running;
         Connector connector = taskManager.GetConnector(this.connectorName);
         connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
+        if(this.parentTask is not null)
+            this.parentTask.state = ExecutionState.Waiting;
         taskManager.DeleteTask(this);
     }
     
