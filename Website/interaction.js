@@ -367,14 +367,8 @@ function ShowTasksQueue(){
             tagTasksRunning.innerText = json.length;
             json.forEach(task => {
                 downloadTasksOutput.appendChild(CreateProgressChild(task));
-
-                if(task.chapter != undefined){
-                    document.querySelector(`#progress${task.publication.internalId.replace('=','')}-${task.chapter.chapterNumber}`).value = task.progress;
-                    document.querySelector(`#progressStr${task.publication.internalId.replace('=','')}-${task.chapter.chapterNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-                }else{
-                    document.querySelector(`#progress${task.publication.internalId.replace('=','')}`).value = task.progress;
-                    document.querySelector(`#progressStr${task.publication.internalId.replace('=','')}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-                }
+                document.querySelector(`#progress${task.taskId.replaceAll('=','')}`).value = task.progress;
+                document.querySelector(`#progressStr${task.taskId.replaceAll('=','')}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
             });
         });
 
@@ -401,11 +395,13 @@ function CreateProgressChild(task){
 
 
     var progress = document.createElement("progress");
+    progress.id = `progress${task.taskId.replaceAll('=','')}`;
     child.appendChild(progress);
     
     var progressStr = document.createElement("span");
     progressStr.innerText = "00.00%";
     progressStr.className = "progressStr";
+    progressStr.id = `progressStr${task.taskId.replaceAll('=','')}`;
     child.appendChild(progressStr);
     
     if(task.chapter != undefined){
@@ -418,12 +414,6 @@ function CreateProgressChild(task){
         chapterName.className = "chapterName";
         chapterName.innerText = task.chapter.name;
         child.appendChild(chapterName);
-
-        progress.id = `progress${task.publication.internalId.replace('=','')}-${task.chapter.chapterNumber}`;
-        progressStr.id = `progressStr${task.publication.internalId.replace('=','')}-${task.chapter.chapterNumber}`;
-    }else{
-        progress.id = `progress${task.publication.internalId.replace('=','')}`;
-        progressStr.id = `progressStr${task.publication.internalId.replace('=','')}`;
     }
     
     
@@ -494,13 +484,8 @@ setInterval(() => {
 setInterval(() => {
     GetRunningTasks().then((json) => {
         json.forEach(task => {
-            if(task.chapter != undefined){
-                document.querySelector(`#progress${task.publication.internalId.replace('=','')}-${task.chapter.chapterNumber}`).value = task.progress;
-                document.querySelector(`#progressStr${task.publication.internalId.replace('=','')}-${task.chapter.chapterNumber}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-            }else{
-                document.querySelector(`#progress${task.publication.internalId.replace('=','')}`).value = task.progress;
-                document.querySelector(`#progressStr${task.publication.internalId.replace('=','')}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
-            }
+            document.querySelector(`#progress${task.taskId.replaceAll('=','')}`).value = task.progress;
+            document.querySelector(`#progressStr${task.taskId.replaceAll('=','')}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
         });
     });
 },500);
