@@ -12,7 +12,7 @@ namespace Tranga;
 public readonly struct Publication
 {
     public string sortName { get; }
-    public string? author { get; }
+    public List<string> authors { get; }
     public Dictionary<string,string> altTitles { get; }
     // ReSharper disable trice MemberCanBePrivate.Global, trust
     public string? description { get; }
@@ -29,10 +29,10 @@ public readonly struct Publication
 
     private static readonly Regex LegalCharacters = new Regex(@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
-    public Publication(string sortName, string? author, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
+    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
     {
         this.sortName = sortName;
-        this.author = author;
+        this.authors = authors;
         this.description = description;
         this.altTitles = altTitles;
         this.tags = tags;

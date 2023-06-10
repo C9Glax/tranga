@@ -141,10 +141,9 @@ public class Mangasee : Connector
         HtmlNode[] authorsNodes = attributes.Descendants("li")
             .First(node => node.InnerText.Contains("author(s):", StringComparison.CurrentCultureIgnoreCase))
             .Descendants("a").ToArray();
-        string[] authors = new string[authorsNodes.Length];
-        for (int j = 0; j < authors.Length; j++)
-            authors[j] = authorsNodes[j].InnerText;
-        string author = string.Join(" - ", authors);
+        List<string> authors = new();
+        foreach(HtmlNode authorNode in authorsNodes)
+            authors.Add(authorNode.InnerText);
 
         HtmlNode[] genreNodes = attributes.Descendants("li")
             .First(node => node.InnerText.Contains("genre(s):", StringComparison.CurrentCultureIgnoreCase))
@@ -171,7 +170,7 @@ public class Mangasee : Connector
         foreach(string at in a)
             altTitles.Add((i++).ToString(), at);
         
-        return new Publication(sortName, author, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+        return new Publication(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
     }
     

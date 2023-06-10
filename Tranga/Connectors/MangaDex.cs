@@ -93,19 +93,21 @@ public class MangaDex : Connector
                 }
 
                 string? posterId = null;
-                string? authorId = null;
+                HashSet<string> authorIds = new();
                 if (manga.ContainsKey("relationships") && manga["relationships"] is not null)
                 {
                     JsonArray relationships = manga["relationships"]!.AsArray();
                     posterId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
-                    authorId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "author")!["id"]!.GetValue<string>();
+                    foreach (JsonNode node in relationships.Where(relationship =>
+                                 relationship!["type"]!.GetValue<string>() == "author"))
+                        authorIds.Add(node!["id"]!.GetValue<string>());
                 }
                 string? coverUrl = GetCoverUrl(publicationId, posterId);
                 string? coverCacheName = null;
                 if (coverUrl is not null)
                     coverCacheName = SaveCoverImageToCache(coverUrl, (byte)RequestType.AtHomeServer);
-                
-                string? author = GetAuthor(authorId);
+
+                List<string> authors = GetAuthors(authorIds);
 
                 Dictionary<string, string> linksDict = new();
                 if (attributes.ContainsKey("links") && attributes["links"] is not null)
@@ -129,7 +131,7 @@ public class MangaDex : Connector
 
                 Publication pub = new (
                     title,
-                    author,
+                    authors,
                     description,
                     altTitlesDict,
                     tags.ToArray(),
@@ -257,21 +259,23 @@ public class MangaDex : Connector
         return coverUrl;
     }
 
-    private string? GetAuthor(string? authorId)
+    private List<string> GetAuthors(IEnumerable<string> authorIds)
     {
-        if (authorId is null)
-            return null;
-        
-        DownloadClient.RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/author/{authorId}", (byte)RequestType.Author);
-        if (requestResult.statusCode != HttpStatusCode.OK)
-            return null;
-        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
-        if (result is null)
-            return null;
+        List<string> ret = new();
+        foreach (string authorId in authorIds)
+        {
+            DownloadClient.RequestResult requestResult =
+                downloadClient.MakeRequest($"https://api.mangadex.org/author/{authorId}", (byte)RequestType.Author);
+            if (requestResult.statusCode != HttpStatusCode.OK)
+                return ret;
+            JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+            if (result is null)
+                return ret;
 
-        string author = result["data"]!["attributes"]!["name"]!.GetValue<string>();
-        logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {author}");
-        return author;
+            string authorName = result["data"]!["attributes"]!["name"]!.GetValue<string>();
+            ret.Add(authorName);
+            logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {authorName}");
+        }
+        return ret;
     }
 }

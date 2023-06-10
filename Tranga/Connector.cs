@@ -166,7 +166,7 @@ public abstract class Connector
             new XElement("Tags", string.Join(',',publication.tags)),
             new XElement("LanguageISO", publication.originalLanguage),
             new XElement("Title", chapter.name),
-            new XElement("Writer", publication.author),
+            new XElement("Writer", string.Join(',', publication.authors)),
             new XElement("Volume", chapter.volumeNumber),
             new XElement("Number", chapter.chapterNumber)
         );
