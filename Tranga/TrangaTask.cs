@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Globalization;
+using System.Text.Json.Serialization;
 using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,6 +21,7 @@ public abstract class TrangaTask
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
     public Task task { get; }
+    public string taskId { get; set; }
     [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
     [Newtonsoft.Json.JsonIgnore]public double progress { get; protected set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
@@ -50,6 +52,7 @@ public abstract class TrangaTask
         this.progress = 0f;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.MaxValue;
+        this.taskId = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(this.executionStarted.ToString(CultureInfo.InvariantCulture)));
     }
 
     public double IncrementProgress(double amount)

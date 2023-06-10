@@ -428,6 +428,16 @@ public class TaskManager
             this._allTasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(buffer, new JsonSerializerSettings() { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
         }
 
+        foreach (TrangaTask task in this._allTasks.Where(task => task.GetType() == typeof(DownloadChapterTask)))
+        {
+            DownloadChapterTask dcTask = (DownloadChapterTask)task;
+            IEnumerable<TrangaTask> dncTasks = this._allTasks.Where(pTask => pTask.GetType() == typeof(DownloadNewChaptersTask));
+            DownloadNewChaptersTask? parentTask = (DownloadNewChaptersTask?)dncTasks.FirstOrDefault(pTask => pTask.taskId.Equals(dcTask.parentTaskId));
+            dcTask.parentTask = parentTask;
+            parentTask?.AddChildTask(dcTask);
+        }
+            
+
         if (File.Exists(settings.knownPublicationsPath))
         {
             logger?.WriteLine(this.GetType().ToString(), $"Importing known publications from {settings.knownPublicationsPath}");

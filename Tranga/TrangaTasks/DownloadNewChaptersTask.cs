@@ -62,6 +62,11 @@ public class DownloadNewChaptersTask : TrangaTask
         this.childTasks.Remove(failed);
         this.childTasks.Add(newTask);
     }
+
+    public void AddChildTask(DownloadChapterTask childTask)
+    {
+        this.childTasks.Add(childTask);
+    }
     
     /// <summary>
     /// Updates the available Chapters of a Publication
