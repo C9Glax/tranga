@@ -252,7 +252,7 @@ public abstract class Connector
             string extension = split[^1];
             logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
-            parentTask.IncrementProgress(1f / imageUrls.Length);
+            parentTask.IncrementProgress(1.0 / imageUrls.Length);
             if (cancellationToken?.IsCancellationRequested??false)
                 return;
         }
