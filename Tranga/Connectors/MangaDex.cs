@@ -207,8 +207,10 @@ public class MangaDex : Connector
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)
+    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
     {
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
@@ -231,7 +233,7 @@ public class MangaDex : Connector
         File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
         //Download Chapter-Images
-        DownloadChapterImages(imageUrls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)RequestType.AtHomeServer, parentTask, comicInfoPath);
+        DownloadChapterImages(imageUrls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)RequestType.AtHomeServer, parentTask, comicInfoPath, cancellationToken:cancellationToken);
     }
 
     private string? GetCoverUrl(string publicationId, string? posterId)

@@ -209,16 +209,20 @@ public class Mangasee : Connector
         return ret.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)
+    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
     {
-        while (this._browser is null)
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
+        while (this._browser is null && !(cancellationToken?.IsCancellationRequested??false))
         {
             logger?.WriteLine(this.GetType().ToString(), "Waiting for headless browser to download...");
             Thread.Sleep(1000);
         }
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
         
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
-        IPage page = _browser.NewPageAsync().Result;
+        IPage page = _browser!.NewPageAsync().Result;
         IResponse response = page.GoToAsync(chapter.url).Result;
         if (response.Ok)
         {
@@ -234,7 +238,7 @@ public class Mangasee : Connector
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
-            DownloadChapterImages(urls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath);
+            DownloadChapterImages(urls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
         }
     }
 }

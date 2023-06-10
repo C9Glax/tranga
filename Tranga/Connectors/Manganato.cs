@@ -169,8 +169,10 @@ public class Manganato : Connector
         return ret;
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask)
+    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
     {
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
@@ -183,7 +185,7 @@ public class Manganato : Connector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
-        DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/");
+        DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
     }
 
     private string[] ParseImageUrlsFromHtml(Stream html)

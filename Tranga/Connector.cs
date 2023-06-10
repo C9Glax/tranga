@@ -127,7 +127,8 @@ public abstract class Connector
     /// <param name="publication">Publication that contains Chapter</param>
     /// <param name="chapter">Chapter with Images to retrieve</param>
     /// <param name="parentTask">Will be used for progress-tracking</param>
-    public abstract void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask);
+    /// <param name="cancellationToken"></param>
+    public abstract void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Copies the already downloaded cover from cache to downloadLocation
@@ -227,8 +228,10 @@ public abstract class Connector
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
     /// <param name="referrer">Used in http request header</param>
-    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, DownloadChapterTask parentTask, string? comicInfoPath = null, string? referrer = null)
+    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, DownloadChapterTask parentTask, string? comicInfoPath = null, string? referrer = null, CancellationToken? cancellationToken = null)
     {
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
         logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
@@ -250,6 +253,8 @@ public abstract class Connector
             logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
             DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
             parentTask.IncrementProgress(1f / imageUrls.Length);
+            if (cancellationToken?.IsCancellationRequested??false)
+                return;
         }
         
         if(comicInfoPath is not null)

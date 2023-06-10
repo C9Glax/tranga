@@ -71,20 +71,22 @@ public abstract class TrangaTask
     /// </summary>
     /// <param name="taskManager"></param>
     /// <param name="logger"></param>
-    protected abstract void ExecuteTask(TaskManager taskManager, Logger? logger);
+    /// <param name="cancellationToken"></param>
+    protected abstract void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Execute the task
     /// </summary>
     /// <param name="taskManager">Should be the parent taskManager</param>
     /// <param name="logger"></param>
-    public void Execute(TaskManager taskManager, Logger? logger)
+    /// <param name="cancellationToken"></param>
+    public void Execute(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
-        ExecuteTask(taskManager, logger);
+        ExecuteTask(taskManager, logger, cancellationToken);
         this.lastExecuted = DateTime.Now;
         this.state = ExecutionState.Waiting;
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");

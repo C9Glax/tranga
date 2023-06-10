@@ -8,46 +8,59 @@ public class DownloadNewChaptersTask : TrangaTask
     public string connectorName { get; }
     public Publication publication { get; }
     public string language { get; }
-    [JsonIgnore]private int childTaskAmount { get; set; }
+    [JsonIgnore]private HashSet<DownloadChapterTask> childTasks { get; }
     
     public DownloadNewChaptersTask(Task task, string connectorName, Publication publication, TimeSpan reoccurrence, string language = "en") : base(task, reoccurrence)
     {
         this.connectorName = connectorName;
         this.publication = publication;
         this.language = language;
-        childTaskAmount = 0;
+        this.childTasks = new();
     }
     
     public new float IncrementProgress(float amount)
     {
-        this.progress += amount / this.childTaskAmount;
+        this.progress += amount / this.childTasks.Count;
         this.lastChange = DateTime.Now;
         return this.progress;
     }
     
     public new float DecrementProgress(float amount)
     {
-        this.progress -= amount / this.childTaskAmount;
+        this.progress -= amount / this.childTasks.Count;
         this.lastChange = DateTime.Now;
         return this.progress;
     }
 
-    protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
+    protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
         Publication pub = publication!;
         Connector connector = taskManager.GetConnector(this.connectorName);
         
         //Check if Publication already has a Folder
         pub.CreatePublicationFolder(taskManager.settings.downloadLocation);
         List<Chapter> newChapters = GetNewChaptersList(connector, pub, language!, ref taskManager.chapterCollection);
-        this.childTaskAmount = newChapters.Count;
 
         connector.CopyCoverFromCacheToDownloadLocation(pub, taskManager.settings);
         
         pub.SaveSeriesInfoJson(connector.downloadLocation);
 
         foreach (Chapter newChapter in newChapters)
-            taskManager.AddTask(new DownloadChapterTask(Task.DownloadChapter, this.connectorName!, pub, newChapter, this.language, this));
+        {
+            DownloadChapterTask newTask = new (Task.DownloadChapter, this.connectorName!, pub, newChapter, this.language, this);
+            taskManager.AddTask(newTask);
+            this.childTasks.Add(newTask);
+        }
+    }
+
+    public void ReplaceFailedChildTask(DownloadChapterTask failed, DownloadChapterTask newTask)
+    {
+        if (!this.childTasks.Contains(failed))
+            throw new ArgumentException($"Task {failed} is not childTask of {this}");
+        this.childTasks.Remove(failed);
+        this.childTasks.Add(newTask);
     }
     
     /// <summary>

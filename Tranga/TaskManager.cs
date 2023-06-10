@@ -129,16 +129,18 @@ public class TaskManager
                 {
                     logger?.WriteLine(this.GetType().ToString(), $"Disposing failed task {removeTask.Key}.");
                     removeTask.Key.parentTask?.DecrementProgress(removeTask.Key.progress);
-                    //removeTask.Value.Dispose(); Currently not available, however since task is removed from _allTasks should work. Memory leak however...
+                    removeTask.Value.Dispose();
                     toRemove.Add(removeTask.Key);
                 }
             }
             foreach (DownloadChapterTask taskToRemove in toRemove)
             {
                 DeleteTask(taskToRemove);
-                AddTask(new DownloadChapterTask(taskToRemove.task, taskToRemove.connectorName,
+                DownloadChapterTask newTask = new DownloadChapterTask(taskToRemove.task, taskToRemove.connectorName,
                     taskToRemove.publication, taskToRemove.chapter, taskToRemove.language,
-                    taskToRemove.parentTask));
+                    taskToRemove.parentTask);
+                AddTask(newTask);
+                taskToRemove.parentTask?.ReplaceFailedChildTask(taskToRemove, newTask);
             }
             
             if(allTasksWaitingLength != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))
@@ -155,10 +157,11 @@ public class TaskManager
     public void ExecuteTaskNow(TrangaTask task)
     {
         task.state = TrangaTask.ExecutionState.Running;
+        CancellationToken cToken = new CancellationToken();
         Task t = new(() =>
         {
-            task.Execute(this, this.logger);
-        });
+            task.Execute(this, this.logger, cToken);
+        }, cToken);
         if(task.GetType() == typeof(DownloadChapterTask))
             _runningDownloadChapterTasks.Add((DownloadChapterTask)task, t);
         t.Start();

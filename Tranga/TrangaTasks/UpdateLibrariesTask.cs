@@ -8,8 +8,10 @@ public class UpdateLibrariesTask : TrangaTask
     {
     }
 
-    protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
+    protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
         foreach(LibraryManager lm in taskManager.settings.libraryManagers)
             lm.UpdateLibrary();
         this.progress = 1f;

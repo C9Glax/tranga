@@ -20,10 +20,12 @@ public class DownloadChapterTask : TrangaTask
         this.parentTask = parentTask;
     }
 
-    protected override void ExecuteTask(TaskManager taskManager, Logger? logger)
+    protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
+        if (cancellationToken?.IsCancellationRequested??false)
+            return;
         Connector connector = taskManager.GetConnector(this.connectorName);
-        connector.DownloadChapter(this.publication, this.chapter, this);
+        connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
         taskManager.DeleteTask(this);
     }
     
