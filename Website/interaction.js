@@ -233,7 +233,7 @@ function ShowPublicationViewerWindow(publicationId, event, add){
     publicationViewerName.innerText = publication.sortName;
     publicationViewerTags.innerText = publication.tags.join(", ");
     publicationViewerDescription.innerText = publication.description;
-    publicationViewerAuthor.innerText = publication.author;
+    publicationViewerAuthor.innerText = publication.authors.join(',');
     pubviewcover.src = `imageCache/${publication.coverFileNameInCache}`;
     toEditId = publicationId;
     

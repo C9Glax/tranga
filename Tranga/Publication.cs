@@ -29,6 +29,18 @@ public readonly struct Publication
 
     private static readonly Regex LegalCharacters = new Regex(@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
+    [JsonConstructor] //Legacy
+    public Publication(string sortName, string? author, string? description, Dictionary<string, string> altTitles,
+        string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string, string>? links, int? year,
+        string? originalLanguage, string status, string publicationId)
+    {
+        List<string> pAuthors = new();
+        if(author is not null)
+            pAuthors.Add(author);
+        this = new Publication(sortName, pAuthors, description, altTitles, tags, posterUrl,
+            coverFileNameInCache, links, year, originalLanguage, status, publicationId);
+    }
+
     public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
     {
         this.sortName = sortName;
