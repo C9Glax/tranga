@@ -9,6 +9,7 @@ public class DownloadNewChaptersTask : TrangaTask
     public Publication publication { get; }
     public string language { get; }
     [JsonIgnore]private HashSet<DownloadChapterTask> childTasks { get; }
+    [JsonIgnore]public new double progress => childTasks.Count > 0 ? childTasks.Sum(childTask => childTask.progress) / childTasks.Count : 0;
     
     public DownloadNewChaptersTask(Task task, string connectorName, Publication publication, TimeSpan reoccurrence, string language = "en") : base(task, reoccurrence)
     {
@@ -16,20 +17,6 @@ public class DownloadNewChaptersTask : TrangaTask
         this.publication = publication;
         this.language = language;
         this.childTasks = new();
-    }
-    
-    public new float IncrementProgress(float amount)
-    {
-        this.progress += amount / this.childTasks.Count;
-        this.lastChange = DateTime.Now;
-        return this.progress;
-    }
-    
-    public new float DecrementProgress(float amount)
-    {
-        this.progress -= amount / this.childTasks.Count;
-        this.lastChange = DateTime.Now;
-        return this.progress;
     }
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)

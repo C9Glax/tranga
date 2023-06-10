@@ -35,14 +35,6 @@ public class DownloadChapterTask : TrangaTask
             this.parentTask.state = ExecutionState.Waiting;
         taskManager.DeleteTask(this);
     }
-    
-    public new float IncrementProgress(float amount)
-    {
-        this.progress += amount;
-        this.lastChange = DateTime.Now;
-        parentTask?.IncrementProgress(amount);
-        return this.progress;
-    }
 
     public override string ToString()
     {

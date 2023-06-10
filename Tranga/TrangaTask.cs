@@ -35,7 +35,7 @@ public abstract class TrangaTask
     [Newtonsoft.Json.JsonIgnore]
     public TimeSpan executionApproximatelyRemaining => this.executionApproximatelyFinished.Subtract(DateTime.Now);
     
-    [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; protected set; }
+    [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; private set; }
 
     public enum ExecutionState
     {
