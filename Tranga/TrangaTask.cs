@@ -22,21 +22,16 @@ public abstract class TrangaTask
     public DateTime lastExecuted { get; set; }
     public Task task { get; }
     public string taskId { get; set; }
-    [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
-    [Newtonsoft.Json.JsonIgnore]protected HashSet<TrangaTask> childTasks { get; }
-    [Newtonsoft.Json.JsonIgnore]public TrangaTask? parentTask { get; set; }
-    public string? parentTaskId { get; set;  }
+    [Newtonsoft.Json.JsonIgnore] public ExecutionState state { get; set; }
+    [Newtonsoft.Json.JsonIgnore] protected HashSet<TrangaTask> childTasks { get; }
+    [Newtonsoft.Json.JsonIgnore] public TrangaTask? parentTask { get; set; }
+    public string? parentTaskId { get; set; }
     [Newtonsoft.Json.JsonIgnore]public double progress { get; private set; }
-    [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
-
-    [Newtonsoft.Json.JsonIgnore]
-    public DateTime executionApproximatelyFinished => this.progress != 0
-        ? this.executionStarted.Add(DateTime.Now.Subtract(this.executionStarted).Divide(this.progress))
-        : DateTime.MaxValue;
-    
-    [Newtonsoft.Json.JsonIgnore]public TimeSpan executionApproximatelyRemaining => this.executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; private set; }
+    [Newtonsoft.Json.JsonIgnore]public DateTime executionApproximatelyFinished => progress != 0 ? lastChange.Add(GetRemainingTime()) : DateTime.MaxValue;
+    [Newtonsoft.Json.JsonIgnore]public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
+    [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
     public enum ExecutionState { Waiting, Enqueued, Running }
 
@@ -88,21 +83,35 @@ public abstract class TrangaTask
         this.DecrementProgress(failed.progress);
     }
 
-    public void AddChildTask(DownloadChapterTask childTask)
+    public void AddChildTask(TrangaTask childTask)
     {
         this.childTasks.Add(childTask);
     }
 
     public void IncrementProgress(double amount)
     {
+        this.lastChange = DateTime.Now;
         this.progress += amount / (childTasks.Count > 0 ? childTasks.Count : 1);
-        parentTask?.IncrementProgress(amount);
+        if (parentTask is not null)
+        {
+            parentTask.IncrementProgress(amount);
+            parentTask.state = ExecutionState.Running;
+        }
     }
 
     public void DecrementProgress(double amount)
     {
+        this.lastChange = DateTime.Now;
         this.progress -= amount / childTasks.Count > 0 ? childTasks.Count : 1;
         parentTask?.DecrementProgress(amount);
+    }
+
+    private TimeSpan GetRemainingTime()
+    {
+        if(progress == 0)
+            return DateTime.MaxValue.Subtract(DateTime.Now);
+        TimeSpan elapsed = lastChange.Subtract(executionStarted);
+        return elapsed.Divide(progress).Subtract(elapsed);
     }
 
     public enum Task : byte

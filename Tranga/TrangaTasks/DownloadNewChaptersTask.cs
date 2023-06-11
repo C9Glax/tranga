@@ -32,7 +32,7 @@ public class DownloadNewChaptersTask : TrangaTask
 
         foreach (Chapter newChapter in newChapters)
         {
-            DownloadChapterTask newTask = new (Task.DownloadChapter, this.connectorName!, pub, newChapter, this.language, this);
+            DownloadChapterTask newTask = new (Task.DownloadChapter, this.connectorName, pub, newChapter, this.language, this);
             taskManager.AddTask(newTask);
             this.childTasks.Add(newTask);
         }

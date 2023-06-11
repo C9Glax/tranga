@@ -10,7 +10,7 @@ public class DownloadChapterTask : TrangaTask
     public string language { get; }
     public Chapter chapter { get; }
 
-    public DownloadChapterTask(Task task, string connectorName, Publication publication, Chapter chapter, string language = "en", TrangaTask? parentTask = null) : base(task, TimeSpan.Zero, parentTask)
+    public DownloadChapterTask(Task task, string connectorName, Publication publication, Chapter chapter, string language = "en", DownloadNewChaptersTask? parentTask = null) : base(task, TimeSpan.Zero, parentTask)
     {
         this.chapter = chapter;
         this.connectorName = connectorName;
