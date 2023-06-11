@@ -11,6 +11,7 @@ public class DownloadChapterTask : TrangaTask
     public Chapter chapter { get; }
     [JsonIgnore]public DownloadNewChaptersTask? parentTask { get; set; }
     public string? parentTaskId { get; set; }
+    [JsonIgnore]public new double progress { get; private set; }
 
     
     public DownloadChapterTask(Task task, string connectorName, Publication publication, Chapter chapter, string language = "en", DownloadNewChaptersTask? parentTask = null) : base(task, TimeSpan.Zero)
@@ -21,6 +22,7 @@ public class DownloadChapterTask : TrangaTask
         this.language = language;
         this.parentTask = parentTask;
         this.parentTaskId = parentTask?.taskId;
+        this.progress = 0;
     }
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)

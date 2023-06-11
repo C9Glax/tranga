@@ -8,15 +8,11 @@ public class DownloadNewChaptersTask : TrangaTask
     public string connectorName { get; }
     public Publication publication { get; }
     public string language { get; }
-    [JsonIgnore]private HashSet<DownloadChapterTask> childTasks { get; }
-    [JsonIgnore]public new double progress => childTasks.Count > 0 ? childTasks.Sum(childTask => childTask.progress) / childTasks.Count : 0;
-    
     public DownloadNewChaptersTask(Task task, string connectorName, Publication publication, TimeSpan reoccurrence, string language = "en") : base(task, reoccurrence)
     {
         this.connectorName = connectorName;
         this.publication = publication;
         this.language = language;
-        this.childTasks = new();
     }
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
@@ -40,19 +36,6 @@ public class DownloadNewChaptersTask : TrangaTask
             taskManager.AddTask(newTask);
             this.childTasks.Add(newTask);
         }
-    }
-
-    public void ReplaceFailedChildTask(DownloadChapterTask failed, DownloadChapterTask newTask)
-    {
-        if (!this.childTasks.Contains(failed))
-            throw new ArgumentException($"Task {failed} is not childTask of {this}");
-        this.childTasks.Remove(failed);
-        this.childTasks.Add(newTask);
-    }
-
-    public void AddChildTask(DownloadChapterTask childTask)
-    {
-        this.childTasks.Add(childTask);
     }
     
     /// <summary>

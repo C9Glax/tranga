@@ -23,50 +23,31 @@ public abstract class TrangaTask
     public Task task { get; }
     public string taskId { get; set; }
     [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
-    [Newtonsoft.Json.JsonIgnore]public double progress { get; protected set; }
+    [Newtonsoft.Json.JsonIgnore]protected HashSet<TrangaTask> childTasks { get; }
+    [Newtonsoft.Json.JsonIgnore]public double progress => childTasks.Count > 0 ? childTasks.Sum(childTask => childTask.progress) / childTasks.Count : _myProgress;
+    [Newtonsoft.Json.JsonIgnore]private double _myProgress = 0;
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
 
     [Newtonsoft.Json.JsonIgnore]
     public DateTime executionApproximatelyFinished => this.progress != 0
-        ? this.executionStarted.Add(DateTime.Now.Subtract(this.executionStarted) / this.progress)
+        ? this.executionStarted.Add(DateTime.Now.Subtract(this.executionStarted).Divide(this.progress))
         : DateTime.MaxValue;
     
-    [Newtonsoft.Json.JsonIgnore]
-    public TimeSpan executionApproximatelyRemaining => this.executionApproximatelyFinished.Subtract(DateTime.Now);
-    
+    [Newtonsoft.Json.JsonIgnore]public TimeSpan executionApproximatelyRemaining => this.executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; private set; }
 
-    public enum ExecutionState
-    {
-        Waiting,
-        Enqueued,
-        Running
-    };
+    public enum ExecutionState { Waiting, Enqueued, Running }
 
     protected TrangaTask(Task task, TimeSpan reoccurrence)
     {
         this.reoccurrence = reoccurrence;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
         this.task = task;
-        this.progress = 0f;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.MaxValue;
         this.taskId = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(this.executionStarted.ToString(CultureInfo.InvariantCulture)));
-    }
-
-    public double IncrementProgress(double amount)
-    {
-        this.progress += amount;
-        this.lastChange = DateTime.Now;
-        return this.progress;
-    }
-
-    public double DecrementProgress(double amount)
-    {
-        this.progress -= amount;
-        this.lastChange = DateTime.Now;
-        return this.progress;
+        this.childTasks = new();
     }
     
     /// <summary>
@@ -95,10 +76,22 @@ public abstract class TrangaTask
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
     }
 
-    /// <returns>True if elapsed time since last execution is greater than set interval</returns>
-    public bool ShouldExecute()
+    public void ReplaceFailedChildTask(DownloadChapterTask failed, DownloadChapterTask newTask)
     {
-        return nextExecution < DateTime.Now && state is ExecutionState.Waiting;
+        if (!this.childTasks.Contains(failed))
+            throw new ArgumentException($"Task {failed} is not childTask of {this}");
+        this.childTasks.Remove(failed);
+        this.childTasks.Add(newTask);
+    }
+
+    public void AddChildTask(DownloadChapterTask childTask)
+    {
+        this.childTasks.Add(childTask);
+    }
+    
+    public void IncrementProgress(double amount)
+    {
+        this._myProgress += amount;
     }
 
     public enum Task : byte

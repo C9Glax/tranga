@@ -14,6 +14,6 @@ public class UpdateLibrariesTask : TrangaTask
             return;
         foreach(LibraryManager lm in taskManager.settings.libraryManagers)
             lm.UpdateLibrary();
-        this.progress = 1f;
+        IncrementProgress(1);
     }
 }

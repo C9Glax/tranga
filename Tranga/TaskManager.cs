@@ -128,7 +128,6 @@ public class TaskManager
                     DateTime.Now.Subtract(removeTask.Key.lastChange) > TimeSpan.FromMinutes(3))//3 Minutes since last update to task -> remove
                 {
                     logger?.WriteLine(this.GetType().ToString(), $"Disposing failed task {removeTask.Key}.");
-                    removeTask.Key.parentTask?.DecrementProgress(removeTask.Key.progress);
                     removeTask.Value.Cancel();
                     toRemove.Add(removeTask.Key);
                 }
