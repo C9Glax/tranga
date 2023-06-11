@@ -368,7 +368,10 @@ function ShowTasksQueue(){
             json.forEach(task => {
                 downloadTasksOutput.appendChild(CreateProgressChild(task));
                 document.querySelector(`#progress${task.taskId.replaceAll('=','')}`).value = task.progress;
-                document.querySelector(`#progressStr${task.taskId.replaceAll('=','')}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+                var finishedHours = task.executionApproximatelyRemaining.split(':')[0];
+                var finishedMinutes = task.executionApproximatelyRemaining.split(':')[1];
+                var finishedSeconds = task.executionApproximatelyRemaining.split(':')[2].split('.')[0];
+                document.querySelector(`#progressStr${task.taskId.replaceAll('=','')}`).innerText = `${finishedHours}:${finishedMinutes}:${finishedSeconds}`;
             });
         });
 
@@ -399,7 +402,7 @@ function CreateProgressChild(task){
     child.appendChild(progress);
     
     var progressStr = document.createElement("span");
-    progressStr.innerText = "00.00%";
+    progressStr.innerText = " \t∞";
     progressStr.className = "progressStr";
     progressStr.id = `progressStr${task.taskId.replaceAll('=','')}`;
     child.appendChild(progressStr);
@@ -485,7 +488,10 @@ setInterval(() => {
     GetRunningTasks().then((json) => {
         json.forEach(task => {
             document.querySelector(`#progress${task.taskId.replaceAll('=','')}`).value = task.progress;
-            document.querySelector(`#progressStr${task.taskId.replaceAll('=','')}`).innerText = task.progress.toLocaleString(undefined,{style: 'percent', minimumFractionDigits:2});
+            var finishedHours = task.executionApproximatelyRemaining.split(':')[0];
+            var finishedMinutes = task.executionApproximatelyRemaining.split(':')[1];
+            var finishedSeconds = task.executionApproximatelyRemaining.split(':')[2].split('.')[0];
+            document.querySelector(`#progressStr${task.taskId.replaceAll('=','')}`).innerText = `${finishedHours}:${finishedMinutes}:${finishedSeconds}`;
         });
     });
 },500);
