@@ -137,11 +137,11 @@ public abstract class Connector
     /// <param name="settings">TrangaSettings</param>
     public void CopyCoverFromCacheToDownloadLocation(Publication publication, TrangaSettings settings)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} {publication.internalId}");
+        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} -> {publication.internalId}");
         //Check if Publication already has a Folder and cover
         string publicationFolder = publication.CreatePublicationFolder(downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
-        if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover.")))
+        if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
             logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
             return;

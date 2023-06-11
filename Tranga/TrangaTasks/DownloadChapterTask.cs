@@ -25,6 +25,7 @@ public class DownloadChapterTask : TrangaTask
         if(this.parentTask is not null)
             this.parentTask.state = ExecutionState.Running;
         Connector connector = taskManager.GetConnector(this.connectorName);
+        connector.CopyCoverFromCacheToDownloadLocation(this.publication, taskManager.settings);
         connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
         if(this.parentTask is not null)
             this.parentTask.state = ExecutionState.Waiting;
