@@ -98,7 +98,7 @@ public class MangaDex : Connector
                 {
                     JsonArray relationships = manga["relationships"]!.AsArray();
                     posterId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
-                    foreach (JsonNode node in relationships.Where(relationship =>
+                    foreach (JsonNode? node in relationships.Where(relationship =>
                                  relationship!["type"]!.GetValue<string>() == "author"))
                         authorIds.Add(node!["id"]!.GetValue<string>());
                 }
