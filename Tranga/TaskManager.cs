@@ -207,7 +207,10 @@ public class TaskManager
         logger?.WriteLine(this.GetType().ToString(), $"Removing Task {removeTask}");
         _allTasks.Remove(removeTask);
         if (removeTask.GetType() == typeof(DownloadChapterTask))
+        {
+            _runningDownloadChapterTasks[(DownloadChapterTask)removeTask].Cancel();
             _runningDownloadChapterTasks.Remove((DownloadChapterTask)removeTask);
+        }
     }
 
     public TrangaTask? AddTask(TrangaTask.Task taskType, string? connectorName, string? internalId,
@@ -263,11 +266,12 @@ public class TaskManager
                     _allTasks.RemoveWhere(mTask =>
                         mTask.GetType() == typeof(DownloadNewChaptersTask) &&
                         ((DownloadNewChaptersTask)mTask).publication.internalId == publicationId &&
-                        ((DownloadNewChaptersTask)mTask).connectorName == connectorName!);
-                    _allTasks.RemoveWhere(mTask =>
-                        mTask.GetType() == typeof(DownloadChapterTask) &&
-                        ((DownloadChapterTask)mTask).publication.internalId == publicationId &&
-                        ((DownloadChapterTask)mTask).connectorName == connectorName!);
+                        ((DownloadNewChaptersTask)mTask).connectorName == connectorName);
+                    foreach(TrangaTask rTask in _allTasks.Where(mTask =>
+                                mTask.GetType() == typeof(DownloadChapterTask) &&
+                                ((DownloadChapterTask)mTask).publication.internalId == publicationId &&
+                                ((DownloadChapterTask)mTask).connectorName == connectorName))
+                        DeleteTask(rTask);
                 }
                 break;
         }
