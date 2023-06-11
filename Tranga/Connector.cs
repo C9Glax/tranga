@@ -82,10 +82,13 @@ public abstract class Connector
                                                       Convert.ToInt32(aCh.volumeNumber) >= start &&
                                                       Convert.ToInt32(aCh.volumeNumber) <= end).ToArray();
             }
-            else if(singleResultRegex.IsMatch(volume))
+            else if (singleResultRegex.IsMatch(volume))
+            {
+                string volumeNumber = singleResultRegex.Match(volume).Value;
                 return availableChapters.Where(aCh =>
                     aCh.volumeNumber is not null &&
-                    aCh.volumeNumber.Equals(volume, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                    aCh.volumeNumber.Equals(volumeNumber, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            }
 
         }
         else if (chapterRegex.IsMatch(searchTerm))
@@ -100,10 +103,13 @@ public abstract class Connector
                                                       Convert.ToInt32(aCh.chapterNumber) >= start &&
                                                       Convert.ToInt32(aCh.chapterNumber) <= end).ToArray();
             }
-            else if(singleResultRegex.IsMatch(chapter))
+            else if (singleResultRegex.IsMatch(chapter))
+            {
+                string chapterNumber = singleResultRegex.Match(chapter).Value;
                 return availableChapters.Where(aCh =>
                     aCh.chapterNumber is not null &&
-                    aCh.chapterNumber.Equals(chapter, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                    aCh.chapterNumber.Equals(chapterNumber, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            }
         }
         else
         {
