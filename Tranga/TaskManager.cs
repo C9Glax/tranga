@@ -135,7 +135,7 @@ public class TaskManager
             foreach (DownloadChapterTask taskToRemove in toRemove)
             {
                 DeleteTask(taskToRemove);
-                DownloadChapterTask newTask = new DownloadChapterTask(taskToRemove.task, taskToRemove.connectorName,
+                DownloadChapterTask newTask = new (taskToRemove.task, taskToRemove.connectorName,
                     taskToRemove.publication, taskToRemove.chapter, taskToRemove.language,
                     taskToRemove.parentTask);
                 AddTask(newTask);

@@ -24,8 +24,9 @@ public abstract class TrangaTask
     public string taskId { get; set; }
     [Newtonsoft.Json.JsonIgnore]public ExecutionState state { get; set; }
     [Newtonsoft.Json.JsonIgnore]protected HashSet<TrangaTask> childTasks { get; }
-    [Newtonsoft.Json.JsonIgnore]public double progress => childTasks.Count > 0 ? childTasks.Sum(childTask => childTask.progress) / childTasks.Count : _myProgress;
-    [Newtonsoft.Json.JsonIgnore]private double _myProgress = 0;
+    [Newtonsoft.Json.JsonIgnore]public TrangaTask? parentTask { get; set; }
+    public string? parentTaskId { get; set;  }
+    [Newtonsoft.Json.JsonIgnore]public double progress { get; private set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
 
@@ -39,7 +40,7 @@ public abstract class TrangaTask
 
     public enum ExecutionState { Waiting, Enqueued, Running }
 
-    protected TrangaTask(Task task, TimeSpan reoccurrence)
+    protected TrangaTask(Task task, TimeSpan reoccurrence, TrangaTask? parentTask = null)
     {
         this.reoccurrence = reoccurrence;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
@@ -48,6 +49,8 @@ public abstract class TrangaTask
         this.lastChange = DateTime.MaxValue;
         this.taskId = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(this.executionStarted.ToString(CultureInfo.InvariantCulture)));
         this.childTasks = new();
+        this.parentTask = parentTask;
+        this.parentTaskId = parentTask?.taskId;
     }
     
     /// <summary>
@@ -82,16 +85,24 @@ public abstract class TrangaTask
             throw new ArgumentException($"Task {failed} is not childTask of {this}");
         this.childTasks.Remove(failed);
         this.childTasks.Add(newTask);
+        this.DecrementProgress(failed.progress);
     }
 
     public void AddChildTask(DownloadChapterTask childTask)
     {
         this.childTasks.Add(childTask);
     }
-    
+
     public void IncrementProgress(double amount)
     {
-        this._myProgress += amount;
+        this.progress += amount / (childTasks.Count > 0 ? childTasks.Count : 1);
+        parentTask?.IncrementProgress(amount);
+    }
+
+    public void DecrementProgress(double amount)
+    {
+        this.progress -= amount / childTasks.Count > 0 ? childTasks.Count : 1;
+        parentTask?.DecrementProgress(amount);
     }
 
     public enum Task : byte

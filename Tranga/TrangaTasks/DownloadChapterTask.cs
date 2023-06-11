@@ -9,20 +9,13 @@ public class DownloadChapterTask : TrangaTask
     public Publication publication { get; }
     public string language { get; }
     public Chapter chapter { get; }
-    [JsonIgnore]public DownloadNewChaptersTask? parentTask { get; set; }
-    public string? parentTaskId { get; set; }
-    [JsonIgnore]public new double progress { get; private set; }
 
-    
-    public DownloadChapterTask(Task task, string connectorName, Publication publication, Chapter chapter, string language = "en", DownloadNewChaptersTask? parentTask = null) : base(task, TimeSpan.Zero)
+    public DownloadChapterTask(Task task, string connectorName, Publication publication, Chapter chapter, string language = "en", TrangaTask? parentTask = null) : base(task, TimeSpan.Zero, parentTask)
     {
         this.chapter = chapter;
         this.connectorName = connectorName;
         this.publication = publication;
         this.language = language;
-        this.parentTask = parentTask;
-        this.parentTaskId = parentTask?.taskId;
-        this.progress = 0;
     }
 
     protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
