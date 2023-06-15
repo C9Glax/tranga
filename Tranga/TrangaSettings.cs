@@ -68,13 +68,17 @@ public class TrangaSettings
                 if (values.Length != 2)
                     return;
                 notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(Gotify));
-                notificationManagers.Add(new Gotify(values[0], values[1], logger));
+                Gotify newGotify = new(values[0], values[1], logger);
+                notificationManagers.Add(newGotify);
+                newGotify.SendNotification("Success!", "Gotify was added to Tranga!");
                 break;
             case UpdateField.LunaSea:
                 if(values.Length != 1)
                     return;
                 notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(LunaSea));
-                notificationManagers.Add(new LunaSea(values[0], logger));
+                LunaSea newLunaSea = new(values[0], logger);
+                notificationManagers.Add(newLunaSea);
+                newLunaSea.SendNotification("Success!", "LunaSea was added to Tranga!");
                 break;
         }
     }
