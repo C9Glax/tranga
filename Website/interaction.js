@@ -333,14 +333,16 @@ function GetSettingsClick(){
 }
 
 function UpdateLibrarySettings(){
-    if(settingKomgaUrl.value != "" && settingKomgaUser.value != "" && settingKomgaPass != ""){
+    if(settingKomgaUrl.value != "" && settingKomgaUser.value != "" && settingKomgaPass.value != ""){
         var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
         console.log(auth);
         UpdateKomga(settingKomgaUrl.value, auth);
+        CreateUpdateLibraryTask(libraryUpdateTime.value);
     }
     
     if(settingKavitaUrl.value != "" && settingKavitaUser.value != "" && settingKavitaPass.value != ""){
         UpdateKavita(settingKavitaUrl.value, settingKavitaUser.value, settingKavitaPass.value);
+        CreateUpdateLibraryTask(libraryUpdateTime.value);
     }
     
     if(settingGotifyUrl.value != "" && settingGotifyAppToken.value != ""){
@@ -351,7 +353,6 @@ function UpdateLibrarySettings(){
         UpdateLunaSea(settingLunaseaWebhook.value);
     }
     
-    CreateUpdateLibraryTask(libraryUpdateTime.value);
     setTimeout(() => GetSettingsClick(), 200);
 }
 

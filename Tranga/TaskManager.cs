@@ -144,8 +144,9 @@ public class TaskManager
         {
             case TrangaTask.Task.UpdateLibraries:
                 //Only one UpdateKomgaLibrary Task
-                logger?.WriteLine(this.GetType().ToString(), $"Removing old {newTask.task}-Task.");
+                logger?.WriteLine(this.GetType().ToString(), $"Replacing old {newTask.task}-Task.");
                 _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateLibraries);
+                _allTasks.Add(newTask);
                 break;
             case TrangaTask.Task.DownloadNewChapters:
                 IEnumerable<TrangaTask> matchingdnc =
