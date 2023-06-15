@@ -14,7 +14,7 @@ public class Mangasee : Connector
 {
     public override string name { get; }
     private IBrowser? _browser = null;
-    private const string ChromiumVersion = "1153303";
+    private const string ChromiumVersion = "1154303";
 
     public Mangasee(string downloadLocation, string imageCachePath, Logger? logger) : base(downloadLocation,
         imageCachePath, logger)
