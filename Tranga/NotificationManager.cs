@@ -16,7 +16,7 @@ public abstract class NotificationManager
         this.logger = logger;
     }
     
-    public enum NotificationManagerType : byte { Gotify = 0 }
+    public enum NotificationManagerType : byte { Gotify = 0, LunaSea = 1 }
     
     public abstract void SendNotification(string title, string notificationText);
     
