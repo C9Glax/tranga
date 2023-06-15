@@ -16,15 +16,15 @@ public class TrangaSettings
     public HashSet<LibraryManager> libraryManagers { get; }
     public HashSet<NotificationManager> notificationManagers { get; }
 
-    public TrangaSettings(string downloadLocation, string workingDirectory, HashSet<LibraryManager> libraryManagers,
-        HashSet<NotificationManager> notificationManagers)
+    public TrangaSettings(string downloadLocation, string workingDirectory, HashSet<LibraryManager>? libraryManagers,
+        HashSet<NotificationManager>? notificationManagers)
     {
         if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
             throw new ArgumentException("Download-location and working-directory paths can not be empty!");
         this.workingDirectory = workingDirectory;
         this.downloadLocation = downloadLocation;
-        this.libraryManagers = libraryManagers;
-        this.notificationManagers = notificationManagers;
+        this.libraryManagers = libraryManagers??new();
+        this.notificationManagers = notificationManagers??new();
     }
 
     public static TrangaSettings LoadSettings(string importFilePath, Logger? logger)
