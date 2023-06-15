@@ -76,16 +76,19 @@ public abstract class TrangaTask
 
     public void ReplaceFailedChildTask(DownloadChapterTask failed, DownloadChapterTask newTask)
     {
-        if (!this.childTasks.Contains(failed))
-            throw new ArgumentException($"Task {failed} is not childTask of {this}");
-        this.childTasks.Remove(failed);
-        this.childTasks.Add(newTask);
-        this.DecrementProgress(failed.progress);
+        this.RemoveChildTask(failed);
+        this.AddChildTask(newTask);
     }
 
     public void AddChildTask(TrangaTask childTask)
     {
         this.childTasks.Add(childTask);
+    }
+
+    public void RemoveChildTask(TrangaTask childTask)
+    {
+        this.childTasks.Remove(childTask);
+        this.DecrementProgress(childTask.progress);
     }
 
     public void IncrementProgress(double amount)
