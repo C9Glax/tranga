@@ -193,7 +193,9 @@ public class TaskManager
     {
         logger?.WriteLine(this.GetType().ToString(), $"Removing Task {removeTask}");
         _allTasks.Remove(removeTask);
-        if (removeTask.GetType() == typeof(DownloadChapterTask))
+        if (removeTask.parentTask is not null)
+            removeTask.parentTask.RemoveChildTask(removeTask);
+        if (removeTask.GetType() == typeof(DownloadChapterTask) && _runningDownloadChapterTasks.ContainsKey((DownloadChapterTask)removeTask))
         {
             _runningDownloadChapterTasks[(DownloadChapterTask)removeTask].Cancel();
             _runningDownloadChapterTasks.Remove((DownloadChapterTask)removeTask);
