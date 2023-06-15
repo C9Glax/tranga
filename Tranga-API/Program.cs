@@ -75,21 +75,26 @@ app.MapGet("/Publications/GetFromConnector", (string connectorName, string title
     return taskManager.GetPublicationsFromConnector(connector, title);
 });
 
-app.MapGet("/Publications/GetChapters", (string connectorName, string internalId, bool onlyNew, bool onlyExisting, string? language) =>
-{
-    Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
-    if (connector is null)
-        return Array.Empty<Chapter>();
-    Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId);
-    if (publication is null)
-        return Array.Empty<Chapter>();
-    
-    if(onlyNew)
-        return taskManager.GetNewChaptersList(connector, (Publication)publication, language??"en").ToArray();
-    else if (onlyExisting)
-        return taskManager.GetExistingChaptersList(connector, (Publication)publication, language ?? "en").ToArray();
-    else
-        return connector.GetChapters((Publication)publication, language??"en");
+app.MapGet("/Publications/GetChapters",
+    (string connectorName, string internalId, string? onlyNew, string? onlyExisting, string? language) =>
+    { 
+        string[] yes = { "true", "yes", "1", "y" };
+        bool newOnly = onlyNew is not null && yes.Contains(onlyNew);
+        bool existingOnly = onlyExisting is not null && yes.Contains(onlyExisting);
+        
+        Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
+        if (connector is null)
+            return Array.Empty<Chapter>();
+        Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId);
+        if (publication is null)
+            return Array.Empty<Chapter>();
+        
+        if(newOnly)
+            return taskManager.GetNewChaptersList(connector, (Publication)publication, language??"en").ToArray();
+        else if (existingOnly)
+            return taskManager.GetExistingChaptersList(connector, (Publication)publication, language ?? "en").ToArray();
+        else
+            return connector.GetChapters((Publication)publication, language??"en");
 });
 
 app.MapGet("/Tasks/GetTypes", () => Enum.GetNames(typeof(TrangaTask.Task)));
