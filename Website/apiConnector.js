@@ -66,8 +66,8 @@ async function GetPublication(internalId){
     return json;
 }
 
-async function GetChapters(internalId, connectorName, language){
-    var uri = apiUri + `/Publications/GetChapters?internalId=${internalId}&connectorName=${connectorName}&language=${language}`;
+async function GetChapters(internalId, connectorName, onlyNew, language){
+    var uri = apiUri + `/Publications/GetChapters?internalId=${internalId}&connectorName=${connectorName}&onlyNew=${onlyNew}&language=${language}`;
     let json = await GetData(uri);
     return json;
 }

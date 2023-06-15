@@ -154,7 +154,7 @@ function OpenDownloadChapterTaskPopup(){
     selectedChapters.value = "";
     chapterOutput.replaceChildren();
     createDownloadChaptersTask.style.display = "block";
-    GetChapters(toEditId, connectorSelect.value, "en").then((json) => {
+    GetChapters(toEditId, connectorSelect.value, true, "en").then((json) => {
         var i = 0;
         json.forEach(chapter => {
             var chapterDom = document.createElement("div");

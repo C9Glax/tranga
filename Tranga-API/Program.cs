@@ -75,7 +75,7 @@ app.MapGet("/Publications/GetFromConnector", (string connectorName, string title
     return taskManager.GetPublicationsFromConnector(connector, title);
 });
 
-app.MapGet("/Publications/GetChapters", (string connectorName, string internalId, string? language) =>
+app.MapGet("/Publications/GetChapters", (string connectorName, string internalId, bool onlyNew, bool onlyExisting, string? language) =>
 {
     Connector? connector = taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName).Value;
     if (connector is null)
@@ -83,7 +83,13 @@ app.MapGet("/Publications/GetChapters", (string connectorName, string internalId
     Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId);
     if (publication is null)
         return Array.Empty<Chapter>();
-    return connector.GetChapters((Publication)publication, language??"en");
+    
+    if(onlyNew)
+        return taskManager.GetNewChaptersList(connector, (Publication)publication, language??"en").ToArray();
+    else if (onlyExisting)
+        return taskManager.GetExistingChaptersList(connector, (Publication)publication, language ?? "en").ToArray();
+    else
+        return connector.GetChapters((Publication)publication, language??"en");
 });
 
 app.MapGet("/Tasks/GetTypes", () => Enum.GetNames(typeof(TrangaTask.Task)));
