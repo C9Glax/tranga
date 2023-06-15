@@ -371,6 +371,31 @@ public class TaskManager
     {
         return this.chapterCollection.Keys.ToArray();
     }
+    
+    
+    /// <summary>
+    /// Updates the available Chapters of a Publication
+    /// </summary>
+    /// <param name="connector">Connector to use</param>
+    /// <param name="publication">Publication to check</param>
+    /// <param name="language">Language to receive chapters for</param>
+    /// <returns>List of Chapters that were previously not in collection</returns>
+    public List<Chapter> GetNewChaptersList(Connector connector, Publication publication, string language)
+    {
+        List<Chapter> newChaptersList = new();
+        chapterCollection.TryAdd(publication, newChaptersList); //To ensure publication is actually in collection
+        
+        Chapter[] newChapters = connector.GetChapters(publication, language);
+        newChaptersList = newChapters.Where(nChapter => !connector.CheckChapterIsDownloaded(publication, nChapter)).ToList();
+        
+        return newChaptersList;
+    }
+
+    public List<Chapter> GetExistingChaptersList(Connector connector, Publication publication, string language)
+    {
+        Chapter[] newChapters = connector.GetChapters(publication, language);
+        return newChapters.Where(nChapter => connector.CheckChapterIsDownloaded(publication, nChapter)).ToList();
+    }
 
     /// <summary>
     /// Return Connector with given Name

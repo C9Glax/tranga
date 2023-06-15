@@ -24,7 +24,7 @@ public class DownloadNewChaptersTask : TrangaTask
         
         //Check if Publication already has a Folder
         pub.CreatePublicationFolder(taskManager.settings.downloadLocation);
-        List<Chapter> newChapters = GetNewChaptersList(connector, pub, language!, ref taskManager.chapterCollection);
+        List<Chapter> newChapters = taskManager.GetNewChaptersList(connector, pub, language!);
 
         connector.CopyCoverFromCacheToDownloadLocation(pub, taskManager.settings);
         
@@ -36,25 +36,6 @@ public class DownloadNewChaptersTask : TrangaTask
             taskManager.AddTask(newTask);
             this.childTasks.Add(newTask);
         }
-    }
-    
-    /// <summary>
-    /// Updates the available Chapters of a Publication
-    /// </summary>
-    /// <param name="connector">Connector to use</param>
-    /// <param name="publication">Publication to check</param>
-    /// <param name="language">Language to receive chapters for</param>
-    /// <param name="chapterCollection"></param>
-    /// <returns>List of Chapters that were previously not in collection</returns>
-    private static List<Chapter> GetNewChaptersList(Connector connector, Publication publication, string language, ref Dictionary<Publication, List<Chapter>> chapterCollection)
-    {
-        List<Chapter> newChaptersList = new();
-        chapterCollection.TryAdd(publication, newChaptersList); //To ensure publication is actually in collection
-        
-        Chapter[] newChapters = connector.GetChapters(publication, language);
-        newChaptersList = newChapters.Where(nChapter => !connector.CheckChapterIsDownloaded(publication, nChapter)).ToList();
-        
-        return newChaptersList;
     }
 
     public override string ToString()
