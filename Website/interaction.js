@@ -303,7 +303,6 @@ function GetSettingsClick(){
     settingApiUri.placeholder = apiUri;
     
     GetSettings().then(json => {
-        console.log(json);
         settingDownloadLocation.innerText = json.downloadLocation;
         json.libraryManagers.forEach(lm => {
            if(lm.libraryType == 0){
