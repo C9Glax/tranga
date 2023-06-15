@@ -150,6 +150,12 @@ function UpdateGotify(gotifyUrl, gotifyAppToken){
     PostData(uri);
 }
 
+function UpdateLunaSea(lunaseaWebhook){
+    var uri = apiUri + "/Settings/Update?"
+    uri += `&lunaseaWebhook=${lunaseaWebhook}`;
+    PostData(uri);
+}
+
 function DeleteTask(taskType, connectorName, publicationId){
     var uri = apiUri + `/Tasks/Delete?taskType=${taskType}&connectorName=${connectorName}&publicationId=${publicationId}`;
     DeleteData(uri);

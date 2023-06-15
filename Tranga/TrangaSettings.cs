@@ -70,8 +70,14 @@ public class TrangaSettings
                 notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(Gotify));
                 notificationManagers.Add(new Gotify(values[0], values[1], logger));
                 break;
+            case UpdateField.LunaSea:
+                if(values.Length != 1)
+                    return;
+                notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(LunaSea));
+                notificationManagers.Add(new LunaSea(values[0], logger));
+                break;
         }
     }
     
-    public enum UpdateField { DownloadLocation, Komga, Kavita, Gotify}
+    public enum UpdateField { DownloadLocation, Komga, Kavita, Gotify, LunaSea}
 }

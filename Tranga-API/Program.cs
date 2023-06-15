@@ -244,7 +244,7 @@ app.MapGet("/Settings/Get", () => taskManager.settings);
 
 app.MapPost("/Settings/Update",
     (string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaUsername,
-        string? kavitaPassword, string? gotifyUrl, string? gotifyAppToken) =>
+        string? kavitaPassword, string? gotifyUrl, string? gotifyAppToken, string? lunaseaWebhook) =>
     {
         if (downloadLocation is not null && downloadLocation.Length > 0)
             taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation, logger, downloadLocation);
@@ -256,6 +256,8 @@ app.MapPost("/Settings/Update",
                 kavitaPassword);
         if (gotifyUrl is not null && gotifyAppToken is not null && gotifyUrl.Length > 5 && gotifyAppToken.Length > 0)
             taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Gotify, logger, gotifyUrl, gotifyAppToken);
+        if(lunaseaWebhook is not null && lunaseaWebhook.Length > 5)
+            taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.LunaSea, logger, lunaseaWebhook);
     });
 
 app.Run();

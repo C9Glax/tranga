@@ -35,10 +35,12 @@ const settingKavitaUser = document.querySelector("#kavitaUsername");
 const settingKavitaPass = document.querySelector("#kavitaPassword");
 const settingGotifyUrl = document.querySelector("#gotifyUrl");
 const settingGotifyAppToken = document.querySelector("#gotifyAppToken");
+const settingLunaseaWebhook = document.querySelector("#lunaseaWebhook");
 const libraryUpdateTime = document.querySelector("#libraryUpdateTime");
 const settingKomgaConfigured = document.querySelector("#komgaConfigured");
 const settingKavitaConfigured = document.querySelector("#kavitaConfigured");
 const settingGotifyConfigured = document.querySelector("#gotifyConfigured");
+const settingLunaseaConfigured = document.querySelector("#lunaseaConfigured");
 const settingApiUri = document.querySelector("#settingApiUri");
 const tagTasksRunning = document.querySelector("#tasksRunningTag");
 const tagTasksQueued = document.querySelector("#tasksQueuedTag");
@@ -295,6 +297,8 @@ function GetSettingsClick(){
     settingGotifyUrl.value = "";
     settingGotifyAppToken.value = "";
     settingGotifyConfigured.innerText = "❌";
+    settingLunaseaWebhook.value = "";
+    settingLunaseaConfigured.innerText = "❌";
     
     settingApiUri.placeholder = apiUri;
     
@@ -317,7 +321,9 @@ function GetSettingsClick(){
         json.notificationManagers.forEach(nm => {
            if(nm.notificationManagerType == 0){
                settingGotifyConfigured.innerText = "✅";
-           } 
+           } else if(nm.notificationManagerType == 1){
+               settingLunaseaConfigured.innerText = "✅";
+           }
         });
     });
     
@@ -340,6 +346,10 @@ function UpdateLibrarySettings(){
     
     if(settingGotifyUrl.value != "" && settingGotifyAppToken.value != ""){
         UpdateGotify(settingGotifyUrl.value, settingGotifyAppToken.value);
+    }
+    
+    if(settingLunaseaWebhook.value != ""){
+        UpdateLunaSea(settingLunaseaWebhook.value);
     }
     
     CreateUpdateLibraryTask(libraryUpdateTime.value);
