@@ -43,7 +43,7 @@ public class Gotify : NotificationManager
             this.title = title;
             this.message = message;
             this.extras = new();
-            this.priority = 2;
+            this.priority = 4;
         }
     }
 }
