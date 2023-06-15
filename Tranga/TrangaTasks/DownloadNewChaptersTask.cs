@@ -36,6 +36,9 @@ public class DownloadNewChaptersTask : TrangaTask
             taskManager.AddTask(newTask);
             this.childTasks.Add(newTask);
         }
+        if(newChapters.Count > 0)
+            foreach(NotificationManager nm in taskManager.settings.notificationManagers)
+                nm.SendNotification(pub.sortName, $"Downloading {newChapters.Count} new Chapters.");
     }
 
     public override string ToString()

@@ -1,7 +1,6 @@
 ﻿using Logging;
 using Newtonsoft.Json;
 using Tranga.Connectors;
-using Tranga.LibraryManagers;
 using Tranga.TrangaTasks;
 
 namespace Tranga;
@@ -25,8 +24,9 @@ public class TaskManager
     /// <param name="workingDirectory">Path to the working directory</param>
     /// <param name="imageCachePath">Path to the cover-image cache</param>
     /// <param name="libraryManagers"></param>
+    /// <param name="notificationManagers"></param>
     /// <param name="logger"></param>
-    public TaskManager(string downloadFolderPath, string workingDirectory, string imageCachePath, HashSet<LibraryManager> libraryManagers, Logger? logger = null) : this(new TrangaSettings(downloadFolderPath, workingDirectory, libraryManagers), logger)
+    public TaskManager(string downloadFolderPath, string workingDirectory, string imageCachePath, HashSet<LibraryManager> libraryManagers, HashSet<NotificationManager> notificationManagers, Logger? logger = null) : this(new TrangaSettings(downloadFolderPath, workingDirectory, libraryManagers, notificationManagers), logger)
     {
         
     }
@@ -46,23 +46,6 @@ public class TaskManager
         ExportDataAndSettings();
         Thread taskChecker = new(TaskCheckerThread);
         taskChecker.Start();
-    }
-    
-    public void UpdateSettings(string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaUsername, string? kavitaPassword)
-    {
-        if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 0 && komgaAuth.Length > 0)
-        {
-            settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Komga));
-            settings.libraryManagers.Add(new Komga(komgaUrl, komgaAuth, logger));
-        }
-        if (kavitaUrl is not null && kavitaUsername is not null && kavitaPassword is not null && kavitaUrl.Length > 0 && kavitaUsername.Length > 0 && kavitaPassword.Length > 0)
-        {
-            settings.libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Kavita));
-            settings.libraryManagers.Add(new Kavita(kavitaUrl, kavitaUsername, kavitaPassword, logger));
-        }
-        if (downloadLocation is not null && downloadLocation.Length > 0)
-            settings.downloadLocation = downloadLocation;
-        ExportDataAndSettings();
     }
 
     /// <summary>

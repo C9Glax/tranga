@@ -18,7 +18,7 @@ TrangaSettings settings;
 if (File.Exists(settingsFilePath))
     settings = TrangaSettings.LoadSettings(settingsFilePath, logger);
 else
-    settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, new HashSet<LibraryManager>());
+    settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, new HashSet<LibraryManager>(), new HashSet<NotificationManager>());
 
 Directory.CreateDirectory(settings.workingDirectory);
 Directory.CreateDirectory(settings.downloadLocation);
@@ -243,7 +243,19 @@ app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string?
 app.MapGet("/Settings/Get", () => taskManager.settings);
 
 app.MapPost("/Settings/Update",
-    (string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaUsername, string? kavitaPassword) =>
-        taskManager.UpdateSettings(downloadLocation, komgaUrl, komgaAuth, kavitaUrl, kavitaUsername, kavitaPassword));
+    (string? downloadLocation, string? komgaUrl, string? komgaAuth, string? kavitaUrl, string? kavitaUsername,
+        string? kavitaPassword, string? gotifyUrl, string? gotifyAppToken) =>
+    {
+        if (downloadLocation is not null && downloadLocation.Length > 0)
+            taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation, logger, downloadLocation);
+        if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 5 && komgaAuth.Length > 0)
+            taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Komga, logger, komgaUrl, komgaAuth);
+        if (kavitaUrl is not null && kavitaPassword is not null && kavitaUsername is not null && kavitaUrl.Length > 5 &&
+            kavitaUsername.Length > 0 && kavitaPassword.Length > 0)
+            taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Kavita, logger, kavitaUrl, kavitaUsername,
+                kavitaPassword);
+        if (gotifyUrl is not null && gotifyAppToken is not null && gotifyUrl.Length > 5 && gotifyAppToken.Length > 0)
+            taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Gotify, logger, gotifyUrl, gotifyAppToken);
+    });
 
 app.Run();
