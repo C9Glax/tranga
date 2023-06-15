@@ -33,9 +33,12 @@ const settingKomgaPass = document.querySelector("#komgaPassword");
 const settingKavitaUrl = document.querySelector("#kavitaUrl");
 const settingKavitaUser = document.querySelector("#kavitaUsername");
 const settingKavitaPass = document.querySelector("#kavitaPassword");
+const settingGotifyUrl = document.querySelector("#gotifyUrl");
+const settingGotifyAppToken = document.querySelector("#gotifyAppToken");
 const libraryUpdateTime = document.querySelector("#libraryUpdateTime");
 const settingKomgaConfigured = document.querySelector("#komgaConfigured");
 const settingKavitaConfigured = document.querySelector("#kavitaConfigured");
+const settingGotifyConfigured = document.querySelector("#gotifyConfigured");
 const settingApiUri = document.querySelector("#settingApiUri");
 const tagTasksRunning = document.querySelector("#tasksRunningTag");
 const tagTasksQueued = document.querySelector("#tasksQueuedTag");
@@ -284,15 +287,19 @@ function GetSettingsClick(){
     settingKomgaUrl.value = "";
     settingKomgaUser.value = "";
     settingKomgaPass.value = "";
+    settingKomgaConfigured.innerText = "❌";
     settingKavitaUrl.value = "";
     settingKavitaUser.value = "";
     settingKavitaPass.value = "";
-    settingKomgaConfigured.innerText = "❌";
     settingKavitaConfigured.innerText = "❌";
+    settingGotifyUrl.value = "";
+    settingGotifyAppToken.value = "";
+    settingGotifyConfigured.innerText = "❌";
     
     settingApiUri.placeholder = apiUri;
     
     GetSettings().then(json => {
+        console.log(json);
         settingDownloadLocation.innerText = json.downloadLocation;
         json.libraryManagers.forEach(lm => {
            if(lm.libraryType == 0){
@@ -307,6 +314,11 @@ function GetSettingsClick(){
                settingKavitaConfigured.innerText = "✅";
            }
         });
+        json.notificationManagers.forEach(nm => {
+           if(nm.notificationManagerType == 0){
+               settingGotifyConfigured.innerText = "✅";
+           } 
+        });
     });
     
     GetKomgaTask().then(json => {
@@ -316,19 +328,20 @@ function GetSettingsClick(){
 }
 
 function UpdateLibrarySettings(){
-    if(settingKomgaUser.value != "" && settingKomgaPass != ""){
+    if(settingKomgaUrl.value != "" && settingKomgaUser.value != "" && settingKomgaPass != ""){
         var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
         console.log(auth);
-
-        if(settingKomgaUrl.value != "")
-            UpdateSettings("", settingKomgaUrl.value, auth, "", "");
-        else
-            UpdateSettings("", settingKomgaUrl.placeholder, auth, "", "");
+        UpdateKomga(settingKomgaUrl.value, auth);
     }
     
     if(settingKavitaUrl.value != "" && settingKavitaUser.value != "" && settingKavitaPass.value != ""){
-        UpdateSettings("", "", "", settingKavitaUrl.value, settingKavitaUser.value, settingKavitaPass.value);
+        UpdateKavita(settingKavitaUrl.value, settingKavitaUser.value, settingKavitaPass.value);
     }
+    
+    if(settingGotifyUrl.value != "" && settingGotifyAppToken.value != ""){
+        UpdateGotify(settingGotifyUrl.value, settingGotifyAppToken.value);
+    }
+    
     CreateUpdateLibraryTask(libraryUpdateTime.value);
     setTimeout(() => GetSettingsClick(), 200);
 }

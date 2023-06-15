@@ -126,17 +126,27 @@ function EnqueueTask(taskType, connectorName, publicationId){
     PostData(uri);
 }
 
-function UpdateSettings(downloadLocation, komgaUrl, komgaAuth, kavitaUrl, kavitaUser, kavitaPass){
+function UpdateDownloadLocation(downloadLocation){
     var uri = apiUri + "/Settings/Update?"
-    if(downloadLocation != ""){
-        uri += "&downloadLocation="+downloadLocation;
-    }
-    if(komgaUrl != "" && komgaAuth != ""){
-        uri += `&komgaUrl=${komgaUrl}&komgaAuth=${komgaAuth}`;
-    }
-    if(kavitaUrl != "" && kavitaUser != "" && kavitaPass != ""){
-        uri += `&kavitaUrl=${kavitaUrl}&kavitaUsername=${kavitaUser}&kavitaPassword=${kavitaPass}`;
-    }
+    uri += "&downloadLocation="+downloadLocation;
+    PostData(uri);
+}
+
+function UpdateKomga(komgaUrl, komgaAuth){
+    var uri = apiUri + "/Settings/Update?"
+    uri += `&komgaUrl=${komgaUrl}&komgaAuth=${komgaAuth}`;
+    PostData(uri);
+}
+
+function UpdateKavita(kavitaUrl, kavitaUser, kavitaPass){
+    var uri = apiUri + "/Settings/Update?"
+    uri += `&kavitaUrl=${kavitaUrl}&kavitaUsername=${kavitaUser}&kavitaPassword=${kavitaPass}`;
+    PostData(uri);
+}
+
+function UpdateGotify(gotifyUrl, gotifyAppToken){
+    var uri = apiUri + "/Settings/Update?"
+    uri += `&gotifyUrl=${gotifyUrl}&gotifyAppToken=${gotifyAppToken}`;
     PostData(uri);
 }
 
