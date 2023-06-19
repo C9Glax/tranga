@@ -32,6 +32,8 @@ logger.WriteLine("Tranga",$"Image-Cache-Path: {settings.coverImageCache}");
 
 logger.WriteLine("Tranga", "Loading Taskmanager.");
 TaskManager taskManager = new (settings, logger);
+foreach(NotificationManager nm in taskManager.settings.notificationManagers)
+    nm.SendNotification("Tranga-API", "Started Tranga-API");
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
