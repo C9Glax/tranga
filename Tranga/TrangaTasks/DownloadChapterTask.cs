@@ -30,6 +30,9 @@ public class DownloadChapterTask : TrangaTask
         if(this.parentTask is not null)
             this.parentTask.state = ExecutionState.Waiting;
         taskManager.DeleteTask(this);
+        if(parentTask is not null)
+            foreach(NotificationManager nm in taskManager.settings.notificationManagers)
+                nm.SendNotification("New Chapter downloaded", $"{this.publication.sortName} {this.chapter.chapterNumber} {this.chapter.name}");
     }
 
     public override string ToString()
