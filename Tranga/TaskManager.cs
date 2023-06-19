@@ -55,22 +55,25 @@ public class TaskManager
     private void TaskCheckerThread()
     {
         logger?.WriteLine(this.GetType().ToString(), "Starting TaskCheckerThread.");
-        int allTasksWaitingLength = _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting);
+        int waitingTasksCount = _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting);
         while (_continueRunning)
         {
-            TrangaTask[] tmp = _allTasks.Where(taskQuery =>
-                    taskQuery.nextExecution < DateTime.Now &&
-                    taskQuery.state is TrangaTask.ExecutionState.Waiting or TrangaTask.ExecutionState.Enqueued)
-                .OrderBy(tmpTask => tmpTask.nextExecution).ToArray();
-            foreach (TrangaTask task in tmp)
+            foreach (TrangaTask waitingButExecute in _allTasks.Where(taskQuery =>
+                         taskQuery.nextExecution < DateTime.Now &&
+                         taskQuery.state is TrangaTask.ExecutionState.Waiting))
             {
-                task.state = TrangaTask.ExecutionState.Enqueued;
+                waitingButExecute.state = TrangaTask.ExecutionState.Enqueued;
+            }
+                
+            foreach (TrangaTask task in _allTasks.Where(enqueuedTask => enqueuedTask.state is TrangaTask.ExecutionState.Enqueued))
+            {
                 switch (task.task)
                 {
                     case TrangaTask.Task.DownloadNewChapters:
-                        if (!_allTasks.Any(taskQuery => taskQuery.task == TrangaTask.Task.DownloadNewChapters &&
-                                                        taskQuery.state is TrangaTask.ExecutionState.Running &&
-                                                        ((DownloadNewChaptersTask)taskQuery).connectorName == ((DownloadNewChaptersTask)task).connectorName))
+                        if (!_allTasks.Any(taskQuery =>
+                                taskQuery.task == TrangaTask.Task.DownloadNewChapters &&
+                                taskQuery.state is TrangaTask.ExecutionState.Running &&
+                                ((DownloadNewChaptersTask)taskQuery).connectorName == ((DownloadNewChaptersTask)task).connectorName))
                         {
                             ExecuteTaskNow(task);
                         }
@@ -79,8 +82,7 @@ public class TaskManager
                         if (!_allTasks.Any(taskQuery =>
                                 taskQuery.task == TrangaTask.Task.DownloadChapter &&
                                 taskQuery.state is TrangaTask.ExecutionState.Running &&
-                                ((DownloadChapterTask)taskQuery).connectorName ==
-                                ((DownloadChapterTask)task).connectorName))
+                                ((DownloadChapterTask)taskQuery).connectorName == ((DownloadChapterTask)task).connectorName))
                         {
                             ExecuteTaskNow(task);
                         }
@@ -91,7 +93,7 @@ public class TaskManager
                 }
             }
 
-            HashSet<DownloadChapterTask> toRemove = new();
+            HashSet<DownloadChapterTask> failedToRemove = new();
             foreach (KeyValuePair<DownloadChapterTask, CancellationTokenSource> removeTask in _runningDownloadChapterTasks)
             {
                 if (removeTask.Key.GetType() == typeof(DownloadChapterTask) &&
@@ -99,22 +101,22 @@ public class TaskManager
                 {
                     logger?.WriteLine(this.GetType().ToString(), $"Disposing failed task {removeTask.Key}.");
                     removeTask.Value.Cancel();
-                    toRemove.Add(removeTask.Key);
+                    failedToRemove.Add(removeTask.Key);
                 }
             }
-            foreach (DownloadChapterTask taskToRemove in toRemove)
+            foreach (DownloadChapterTask taskToRestart in failedToRemove)
             {
-                DeleteTask(taskToRemove);
-                DownloadChapterTask newTask = new (taskToRemove.task, taskToRemove.connectorName,
-                    taskToRemove.publication, taskToRemove.chapter, taskToRemove.language,
-                    (DownloadNewChaptersTask?)taskToRemove.parentTask);
+                DeleteTask(taskToRestart);
+                DownloadChapterTask newTask = new (taskToRestart.task, taskToRestart.connectorName,
+                    taskToRestart.publication, taskToRestart.chapter, taskToRestart.language,
+                    (DownloadNewChaptersTask?)taskToRestart.parentTask);
                 AddTask(newTask);
-                taskToRemove.parentTask?.ReplaceFailedChildTask(taskToRemove, newTask);
+                taskToRestart.parentTask?.ReplaceFailedChildTask(taskToRestart, newTask);
             }
             
-            if(allTasksWaitingLength != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))
+            if(waitingTasksCount != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))
                 ExportDataAndSettings();
-            allTasksWaitingLength = _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting);
+            waitingTasksCount = _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting);
             Thread.Sleep(1000);
         }
     }
@@ -131,8 +133,8 @@ public class TaskManager
         {
             task.Execute(this, this.logger, cToken.Token);
         }, cToken.Token);
-        if(task.GetType() == typeof(DownloadChapterTask))
-            _runningDownloadChapterTasks.Add((DownloadChapterTask)task, cToken);
+        if(task is DownloadChapterTask chapterTask)
+            _runningDownloadChapterTasks.Add(chapterTask, cToken);
         t.Start();
     }
 

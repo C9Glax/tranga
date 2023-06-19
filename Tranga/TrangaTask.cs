@@ -69,7 +69,7 @@ public abstract class TrangaTask
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
         ExecuteTask(taskManager, logger, cancellationToken);
-        while(this.childTasks.Any(childTask => childTask.state is ExecutionState.Running or ExecutionState.Enqueued))
+        while(childTasks.Any(ct => ct.state is ExecutionState.Enqueued or ExecutionState.Running))
             Thread.Sleep(1000);
         this.lastExecuted = DateTime.Now;
         this.state = ExecutionState.Waiting;

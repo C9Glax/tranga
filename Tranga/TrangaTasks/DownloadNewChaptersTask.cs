@@ -1,5 +1,4 @@
 ﻿using Logging;
-using Newtonsoft.Json;
 
 namespace Tranga.TrangaTasks;
 
@@ -33,12 +32,10 @@ public class DownloadNewChaptersTask : TrangaTask
         foreach (Chapter newChapter in newChapters)
         {
             DownloadChapterTask newTask = new (Task.DownloadChapter, this.connectorName, pub, newChapter, this.language, this);
-            taskManager.AddTask(newTask);
             this.childTasks.Add(newTask);
+            newTask.state = ExecutionState.Enqueued;
+            taskManager.AddTask(newTask);
         }
-        if(newChapters.Count > 0)
-            foreach(NotificationManager nm in taskManager.settings.notificationManagers)
-                nm.SendNotification(pub.sortName, $"Downloading {newChapters.Count} new Chapters.");
     }
 
     public override string ToString()
