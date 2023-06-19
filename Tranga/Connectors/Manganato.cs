@@ -27,7 +27,7 @@ public class Manganato : Connector
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
-        if (requestResult.statusCode != HttpStatusCode.OK)
+        if (!requestResult.success)
             return Array.Empty<Publication>();
 
         return ParsePublicationsFromHtml(requestResult.result);
@@ -52,7 +52,7 @@ public class Manganato : Connector
         {
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(url, (byte)1);
-            if (requestResult.statusCode != HttpStatusCode.OK)
+            if (!requestResult.success)
                 return Array.Empty<Publication>();
 
             ret.Add(ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]));
@@ -131,7 +131,7 @@ public class Manganato : Connector
         string requestUrl = $"https://chapmanganato.com/{publication.publicationId}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
-        if (requestResult.statusCode != HttpStatusCode.OK)
+        if (!requestResult.success)
             return Array.Empty<Chapter>();
         
         //Return Chapters ordered by Chapter-Number
@@ -169,23 +169,23 @@ public class Manganato : Connector
         return ret;
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
+    public override bool DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested??false)
-            return;
+            return false;
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
-        if (requestResult.statusCode != HttpStatusCode.OK)
-            return;
+        if (!requestResult.success)
+            return false;
 
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.result);
         
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
-        DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
+        return DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
     }
 
     private string[] ParseImageUrlsFromHtml(Stream html)

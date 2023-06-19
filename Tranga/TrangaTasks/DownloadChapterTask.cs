@@ -26,11 +26,11 @@ public class DownloadChapterTask : TrangaTask
             this.parentTask.state = ExecutionState.Running;
         Connector connector = taskManager.GetConnector(this.connectorName);
         connector.CopyCoverFromCacheToDownloadLocation(this.publication, taskManager.settings);
-        connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
+        bool downloadSuccess = connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
         if(this.parentTask is not null)
             this.parentTask.state = ExecutionState.Waiting;
         taskManager.DeleteTask(this);
-        if(parentTask is not null)
+        if(downloadSuccess && parentTask is not null)
             foreach(NotificationManager nm in taskManager.settings.notificationManagers)
                 nm.SendNotification("New Chapter downloaded", $"{this.publication.sortName} {this.chapter.chapterNumber} {this.chapter.name}");
     }

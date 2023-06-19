@@ -134,7 +134,7 @@ public abstract class Connector
     /// <param name="chapter">Chapter with Images to retrieve</param>
     /// <param name="parentTask">Will be used for progress-tracking</param>
     /// <param name="cancellationToken"></param>
-    public abstract void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null);
+    public abstract bool DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Copies the already downloaded cover from cache to downloadLocation
@@ -213,16 +213,15 @@ public abstract class Connector
     /// <param name="fullPath"></param>
     /// <param name="requestType">RequestType for Rate-Limit</param>
     /// <param name="referrer">referrer used in html request header</param>
-    private void DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
+    private bool DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
-        if (requestResult.result != Stream.Null)
-        {
-            byte[] buffer = new byte[requestResult.result.Length];
-            requestResult.result.ReadExactly(buffer, 0, buffer.Length);
-            File.WriteAllBytes(fullPath, buffer);
-        }else
-            logger?.WriteLine(this.GetType().ToString(), "No Stream-Content in result.");
+        if (!requestResult.success || requestResult.result == Stream.Null)
+            return false;
+        byte[] buffer = new byte[requestResult.result.Length];
+        requestResult.result.ReadExactly(buffer, 0, buffer.Length);
+        File.WriteAllBytes(fullPath, buffer);
+        return true;
     }
 
     /// <summary>
@@ -234,10 +233,10 @@ public abstract class Connector
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
     /// <param name="referrer">Used in http request header</param>
-    protected void DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, DownloadChapterTask parentTask, string? comicInfoPath = null, string? referrer = null, CancellationToken? cancellationToken = null)
+    protected bool DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, DownloadChapterTask parentTask, string? comicInfoPath = null, string? referrer = null, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested??false)
-            return;
+            return false;
         logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
@@ -245,7 +244,7 @@ public abstract class Connector
             Directory.CreateDirectory(directoryPath);
 
         if (File.Exists(saveArchiveFilePath)) //Don't download twice.
-            return;
+            return false;
         
         //Create a temporary folder to store images
         string tempFolder = Directory.CreateTempSubdirectory().FullName;
@@ -257,10 +256,11 @@ public abstract class Connector
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
             logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
-            DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
+            if (!DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer))
+                return false;
             parentTask.IncrementProgress(1.0 / imageUrls.Length);
             if (cancellationToken?.IsCancellationRequested??false)
-                return;
+                return false;
         }
         
         if(comicInfoPath is not null)
@@ -272,6 +272,7 @@ public abstract class Connector
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(saveArchiveFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
         Directory.Delete(tempFolder, true); //Cleanup
+        return true;
     }
     
     protected string SaveCoverImageToCache(string url, byte requestType)
@@ -327,7 +328,7 @@ public abstract class Connector
             else
             {
                 logger?.WriteLine(this.GetType().ToString(), "RequestType not configured for rate-limit.");
-                return new RequestResult(HttpStatusCode.NotAcceptable, Stream.Null);
+                return new RequestResult(false, Stream.Null);
             }
 
             TimeSpan rateLimitTimeout = _rateLimit[requestType]
@@ -354,20 +355,22 @@ public abstract class Connector
                     Thread.Sleep(_rateLimit[requestType] * 2);
                 }
             }
-            Stream resultString = response.IsSuccessStatusCode ? response.Content.ReadAsStream() : Stream.Null;
             if (!response.IsSuccessStatusCode)
+            {
                 logger?.WriteLine(this.GetType().ToString(), $"Request-Error {response.StatusCode}: {response.ReasonPhrase}");
-            return new RequestResult(response.StatusCode, resultString);
+                return new RequestResult(false, Stream.Null);
+            }
+            return new RequestResult(true, response.Content.ReadAsStream());
         }
 
         public struct RequestResult
         {
-            public HttpStatusCode statusCode { get; }
+            public bool success { get; }
             public Stream result { get; }
 
-            public RequestResult(HttpStatusCode statusCode, Stream result)
+            public RequestResult(bool success, Stream result)
             {
-                this.statusCode = statusCode;
+                this.success = success;
                 this.result = result;
             }
         }

@@ -80,7 +80,7 @@ public class Mangasee : Connector
         string requestUrl = $"https://mangasee123.com/_search.php";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
-        if (requestResult.statusCode != HttpStatusCode.OK)
+        if (!requestResult.success)
             return Array.Empty<Publication>();
 
         return ParsePublicationsFromHtml(requestResult.result, publicationTitle);
@@ -110,7 +110,7 @@ public class Mangasee : Connector
         {
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest($"https://mangasee123.com/manga/{orderedItem.i}", (byte)1);
-            if (requestResult.statusCode != HttpStatusCode.OK)
+            if (!requestResult.success)
                 return Array.Empty<Publication>();
             ret.Add(ParseSinglePublicationFromHtml(requestResult.result, orderedItem.s, orderedItem.i, orderedItem.a));
         }
@@ -209,17 +209,17 @@ public class Mangasee : Connector
         return ret.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
+    public override bool DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested??false)
-            return;
+        if (cancellationToken?.IsCancellationRequested ?? false)
+            return false;
         while (this._browser is null && !(cancellationToken?.IsCancellationRequested??false))
         {
             logger?.WriteLine(this.GetType().ToString(), "Waiting for headless browser to download...");
             Thread.Sleep(1000);
         }
         if (cancellationToken?.IsCancellationRequested??false)
-            return;
+            return false;
         
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         IPage page = _browser!.NewPageAsync().Result;
@@ -238,7 +238,9 @@ public class Mangasee : Connector
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
-            DownloadChapterImages(urls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
+            return DownloadChapterImages(urls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
         }
+
+        return false;
     }
 }

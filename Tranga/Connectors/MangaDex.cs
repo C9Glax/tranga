@@ -46,7 +46,7 @@ public class MangaDex : Connector
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(
                     $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}", (byte)RequestType.Manga);
-            if (requestResult.statusCode != HttpStatusCode.OK)
+            if (!requestResult.success)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             
@@ -165,7 +165,7 @@ public class MangaDex : Connector
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(
                     $"https://api.mangadex.org/manga/{publication.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}", (byte)RequestType.Feed);
-            if (requestResult.statusCode != HttpStatusCode.OK)
+            if (!requestResult.success)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             
@@ -207,19 +207,19 @@ public class MangaDex : Connector
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override void DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
+    public override bool DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested??false)
-            return;
+            return false;
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
-        if (requestResult.statusCode != HttpStatusCode.OK)
-            return;
+        if (!requestResult.success)
+            return false;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
-            return;
+            return false;
 
         string baseUrl = result["baseUrl"]!.GetValue<string>();
         string hash = result["chapter"]!["hash"]!.GetValue<string>();
@@ -233,7 +233,7 @@ public class MangaDex : Connector
         File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
         
         //Download Chapter-Images
-        DownloadChapterImages(imageUrls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)RequestType.AtHomeServer, parentTask, comicInfoPath, cancellationToken:cancellationToken);
+        return DownloadChapterImages(imageUrls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)RequestType.AtHomeServer, parentTask, comicInfoPath, cancellationToken:cancellationToken);
     }
 
     private string? GetCoverUrl(string publicationId, string? posterId)
@@ -248,7 +248,7 @@ public class MangaDex : Connector
         //Request information where to download Cover
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/cover/{posterId}", (byte)RequestType.CoverUrl);
-        if (requestResult.statusCode != HttpStatusCode.OK)
+        if (!requestResult.success)
             return null;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
@@ -268,7 +268,7 @@ public class MangaDex : Connector
         {
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest($"https://api.mangadex.org/author/{authorId}", (byte)RequestType.Author);
-            if (requestResult.statusCode != HttpStatusCode.OK)
+            if (!requestResult.success)
                 return ret;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             if (result is null)
