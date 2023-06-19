@@ -42,7 +42,7 @@ public abstract class TrangaTask
         this.task = task;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.MaxValue;
-        this.taskId = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(this.executionStarted.ToString(CultureInfo.InvariantCulture)));
+        this.taskId = Convert.ToBase64String(BitConverter.GetBytes(new Random().Next()));
         this.childTasks = new();
         this.parentTask = parentTask;
         this.parentTaskId = parentTask?.taskId;
@@ -69,6 +69,8 @@ public abstract class TrangaTask
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
         ExecuteTask(taskManager, logger, cancellationToken);
+        while(this.childTasks.Any(childTask => childTask.state is ExecutionState.Running or ExecutionState.Enqueued))
+            Thread.Sleep(1000);
         this.lastExecuted = DateTime.Now;
         this.state = ExecutionState.Waiting;
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
