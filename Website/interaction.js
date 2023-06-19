@@ -391,11 +391,11 @@ function ShowTasksQueue(){
             json.forEach(task => {
                 if(task.task == 2 || task.task == 4) {
                     downloadTasksOutput.appendChild(CreateProgressChild(task));
-                    document.querySelector(`#progress${task.taskId.replaceAll('=', '')}`).value = task.progress;
+                    document.querySelector(`#progress${GetValidSelector(task.taskId)}`).value = task.progress;
                     var finishedHours = task.executionApproximatelyRemaining.split(':')[0];
                     var finishedMinutes = task.executionApproximatelyRemaining.split(':')[1];
                     var finishedSeconds = task.executionApproximatelyRemaining.split(':')[2].split('.')[0];
-                    document.querySelector(`#progressStr${task.taskId.replaceAll('=', '')}`).innerText = `${finishedHours}:${finishedMinutes}:${finishedSeconds}`;
+                    document.querySelector(`#progressStr${GetValidSelector(task.taskId)}`).innerText = `${finishedHours}:${finishedMinutes}:${finishedSeconds}`;
                 }
             });
         });
@@ -423,13 +423,13 @@ function CreateProgressChild(task){
 
 
     var progress = document.createElement("progress");
-    progress.id = `progress${task.taskId.replaceAll('=','')}`;
+    progress.id = `progress${GetValidSelector(task.taskId)}`;
     child.appendChild(progress);
     
     var progressStr = document.createElement("span");
     progressStr.innerText = " \t∞";
     progressStr.className = "progressStr";
-    progressStr.id = `progressStr${task.taskId.replaceAll('=','')}`;
+    progressStr.id = `progressStr${GetValidSelector(task.taskId)}`;
     child.appendChild(progressStr);
     
     if(task.chapter != undefined){
@@ -513,12 +513,17 @@ setInterval(() => {
     GetRunningTasks().then((json) => {
         json.forEach(task => {
             if(task.task == 2 || task.task == 4){
-                document.querySelector(`#progress${task.taskId.replaceAll('=','')}`).value = task.progress;
+                document.querySelector(`#progress${GetValidSelector(task.taskId)}`).value = task.progress;
                 var finishedHours = task.executionApproximatelyRemaining.split(':')[0];
                 var finishedMinutes = task.executionApproximatelyRemaining.split(':')[1];
                 var finishedSeconds = task.executionApproximatelyRemaining.split(':')[2].split('.')[0];
-                document.querySelector(`#progressStr${task.taskId.replaceAll('=','')}`).innerText = `${finishedHours}:${finishedMinutes}:${finishedSeconds}`;
+                document.querySelector(`#progressStr${GetValidSelector(task.taskId)}`).innerText = `${finishedHours}:${finishedMinutes}:${finishedSeconds}`;
             }
         });
     });
 },500);
+
+function GetValidSelector(str){
+    var clean = [...str.matchAll(/[a-zA-Z0-9]*-*_*/g)];
+    return clean.join('');
+}
