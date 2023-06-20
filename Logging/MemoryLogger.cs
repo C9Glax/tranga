@@ -14,7 +14,8 @@ public class MemoryLogger : LoggerBase
 
     protected override void Write(LogMessage value)
     {
-        _logMessages.Add(value.logTime, value);
+        while(!_logMessages.TryAdd(value.logTime, value))
+            Thread.Sleep(10);
     }
 
     public string[] GetLogMessage()
