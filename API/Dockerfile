@@ -6,7 +6,7 @@ COPY . /src/
 RUN dotnet restore API/API.csproj
 RUN dotnet publish -c Release -o /publish
 
-FROM glax/tranga-base:dev as runtime
+FROM glax/tranga-base:latest as runtime
 WORKDIR /publish
 COPY --from=build-env /publish .
 EXPOSE 6531
