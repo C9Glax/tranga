@@ -1,4 +1,5 @@
-﻿using Logging;
+﻿using System.Net;
+using Logging;
 
 namespace Tranga.TrangaTasks;
 
@@ -14,10 +15,10 @@ public class MonitorPublicationTask : TrangaTask
         this.language = language;
     }
 
-    protected override bool ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested??false)
-            return false;
+        if (cancellationToken?.IsCancellationRequested ?? false)
+            return HttpStatusCode.RequestTimeout;
         Connector connector = taskManager.GetConnector(this.connectorName);
         
         //Check if Publication already has a Folder
@@ -36,7 +37,7 @@ public class MonitorPublicationTask : TrangaTask
             taskManager.AddTask(newTask);
         }
 
-        return true;
+        return HttpStatusCode.OK;
     }
 
     public override TrangaTask Clone()

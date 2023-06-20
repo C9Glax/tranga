@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Net;
+using System.Text.Json.Serialization;
 using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,7 +33,7 @@ public abstract class TrangaTask
     [Newtonsoft.Json.JsonIgnore]public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
-    public enum ExecutionState { Waiting, Enqueued, Running, Failed }
+    public enum ExecutionState { Waiting, Enqueued, Running, Failed, Success }
 
     protected TrangaTask(Task task, TimeSpan reoccurrence, TrangaTask? parentTask = null)
     {
@@ -53,7 +54,7 @@ public abstract class TrangaTask
     /// <param name="taskManager"></param>
     /// <param name="logger"></param>
     /// <param name="cancellationToken"></param>
-    protected abstract bool ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null);
+    protected abstract HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null);
 
     public abstract TrangaTask Clone();
 
@@ -73,18 +74,24 @@ public abstract class TrangaTask
             this.parentTask.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
-        bool success = ExecuteTask(taskManager, logger, cancellationToken);
+        HttpStatusCode statusCode = ExecuteTask(taskManager, logger, cancellationToken);
         while(childTasks.Any(ct => ct.state is ExecutionState.Enqueued or ExecutionState.Running))
             Thread.Sleep(1000);
-        if (success)
+        if ((int)statusCode >= 200 && (int)statusCode < 300)
         {
             this.lastExecuted = DateTime.Now;
-            this.state = ExecutionState.Waiting;
+            if (this is DownloadChapterTask)
+                this.state = ExecutionState.Success;
+            else
+                this.state = ExecutionState.Waiting;
         }
         else
         {
+            if (this is DownloadChapterTask && statusCode == HttpStatusCode.NotFound)
+                this.state = ExecutionState.Success;
+            else
+                this.state = ExecutionState.Failed;
             this.lastExecuted = DateTime.MaxValue;
-            this.state = ExecutionState.Failed;
         }
         if(this.parentTask is not null)
             this.parentTask.state = ExecutionState.Waiting;

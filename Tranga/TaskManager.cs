@@ -82,18 +82,21 @@ public class TaskManager
                 }
             }
 
-            foreach (TrangaTask failedTask in _allTasks.Where(taskQuery =>
-                         taskQuery.state is TrangaTask.ExecutionState.Failed))
+            TrangaTask[] failedDownloadChapterTasks = _allTasks.Where(taskQuery =>
+                taskQuery.state is TrangaTask.ExecutionState.Failed && taskQuery is DownloadChapterTask).ToArray();
+            foreach (TrangaTask failedDownloadChapterTask in failedDownloadChapterTasks)
             {
-                switch (failedTask.task)
-                {
-                    case TrangaTask.Task.DownloadChapter:
-                        DeleteTask(failedTask);
-                        TrangaTask newTask = failedTask.Clone();
-                        failedTask.parentTask?.AddChildTask(newTask);
-                        AddTask(newTask);
-                        break;
-                }
+                DeleteTask(failedDownloadChapterTask);
+                TrangaTask newTask = failedDownloadChapterTask.Clone();
+                failedDownloadChapterTask.parentTask?.AddChildTask(newTask);
+                AddTask(newTask);
+            }
+
+            TrangaTask[] successfulDownloadChapterTasks = _allTasks.Where(taskQuery =>
+                taskQuery.state is TrangaTask.ExecutionState.Success && taskQuery is DownloadChapterTask).ToArray();
+            foreach(TrangaTask successfulDownloadChapterTask in successfulDownloadChapterTasks)
+            {
+                DeleteTask(successfulDownloadChapterTask);
             }
             
             if(waitingTasksCount != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))

@@ -27,7 +27,7 @@ public class Manganato : Connector
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
-        if (!requestResult.success)
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Publication>();
 
         return ParsePublicationsFromHtml(requestResult.result);
@@ -52,7 +52,7 @@ public class Manganato : Connector
         {
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(url, (byte)1);
-            if (!requestResult.success)
+            if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 return Array.Empty<Publication>();
 
             ret.Add(ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]));
@@ -131,7 +131,7 @@ public class Manganato : Connector
         string requestUrl = $"https://chapmanganato.com/{publication.publicationId}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
-        if (!requestResult.success)
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Chapter>();
         
         //Return Chapters ordered by Chapter-Number
@@ -169,16 +169,16 @@ public class Manganato : Connector
         return ret;
     }
 
-    public override bool DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
+    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested??false)
-            return false;
+        if (cancellationToken?.IsCancellationRequested ?? false)
+            return HttpStatusCode.RequestTimeout;
         logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
-        if (!requestResult.success)
-            return false;
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+            return requestResult.statusCode;
 
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.result);
         

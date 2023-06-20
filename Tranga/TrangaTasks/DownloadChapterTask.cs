@@ -1,4 +1,5 @@
-﻿using Logging;
+﻿using System.Net;
+using Logging;
 
 namespace Tranga.TrangaTasks;
 
@@ -19,15 +20,14 @@ public class DownloadChapterTask : TrangaTask
         this.language = language;
     }
 
-    protected override bool ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested??false)
-            return false;
+        if (cancellationToken?.IsCancellationRequested ?? false)
+            return HttpStatusCode.RequestTimeout;
         Connector connector = taskManager.GetConnector(this.connectorName);
         connector.CopyCoverFromCacheToDownloadLocation(this.publication, taskManager.settings);
-        bool downloadSuccess = connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
-        taskManager.DeleteTask(this);
-        if(downloadSuccess && parentTask is not null)
+        HttpStatusCode downloadSuccess = connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
+        if((int)downloadSuccess >= 200 && (int)downloadSuccess < 300 && parentTask is not null)
             foreach(NotificationManager nm in taskManager.settings.notificationManagers)
                 nm.SendNotification("New Chapter downloaded", $"{this.publication.sortName} {this.chapter.chapterNumber} {this.chapter.name}");
         return downloadSuccess;
