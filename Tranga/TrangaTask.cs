@@ -26,11 +26,11 @@ public abstract class TrangaTask
     [Newtonsoft.Json.JsonIgnore] public TrangaTask? parentTask { get; set; }
     public string? parentTaskId { get; set; }
     [Newtonsoft.Json.JsonIgnore] protected HashSet<TrangaTask> childTasks { get; }
-    [Newtonsoft.Json.JsonIgnore] public double progress => GetProgress();
+    public double progress => GetProgress();
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; private set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime executionApproximatelyFinished => progress != 0 ? lastChange.Add(GetRemainingTime()) : DateTime.MaxValue;
-    [Newtonsoft.Json.JsonIgnore]public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
+    public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
     public enum ExecutionState { Waiting, Enqueued, Running, Failed, Success }
@@ -70,8 +70,6 @@ public abstract class TrangaTask
     {
         logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
-        if(this.parentTask is not null)
-            this.parentTask.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
         HttpStatusCode statusCode = ExecuteTask(taskManager, logger, cancellationToken);
@@ -93,8 +91,6 @@ public abstract class TrangaTask
                 this.state = ExecutionState.Failed;
             this.lastExecuted = DateTime.MaxValue;
         }
-        if(this.parentTask is not null)
-            this.parentTask.state = ExecutionState.Waiting;
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
     }
 

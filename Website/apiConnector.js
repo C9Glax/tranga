@@ -43,60 +43,60 @@ function DeleteData(uri){
 }
 
 async function GetAvailableControllers(){
-    var uri = apiUri + "/Controllers/Get";
+    var uri = apiUri + "/Connectors";
     let json = await GetData(uri);
     return json;
 }
 
 async function GetPublicationFromConnector(connectorName, title){
-    var uri = apiUri + `/Publications/GetFromConnector?connectorName=${connectorName}&title=${title}`;
+    var uri = apiUri + `/Publications/FromConnector?connectorName=${connectorName}&title=${title}`;
     let json = await GetData(uri);
     return json;
 }
 
 async function GetKnownPublications(){
-    var uri = apiUri + "/Publications/GetKnown";
+    var uri = apiUri + "/Publications/Known";
     let json = await GetData(uri);
     return json;
 }
 
 async function GetPublication(internalId){
-    var uri = apiUri + `/Publications/GetKnown?internalId=${internalId}`;
+    var uri = apiUri + `/Publications/Known?internalId=${internalId}`;
     let json = await GetData(uri);
     return json;
 }
 
 async function GetChapters(internalId, connectorName, onlyNew, language){
-    var uri = apiUri + `/Publications/GetChapters?internalId=${internalId}&connectorName=${connectorName}&onlyNew=${onlyNew}&language=${language}`;
+    var uri = apiUri + `/Publications/Chapters?internalId=${internalId}&connectorName=${connectorName}&onlyNew=${onlyNew}&language=${language}`;
     let json = await GetData(uri);
     return json;
 }
 
 async function GetTaskTypes(){
-    var uri = apiUri + "/Tasks/GetTypes";
+    var uri = apiUri + "/Tasks/Types";
     let json = await GetData(uri);
     return json;
 }
 async function GetRunningTasks(){
-    var uri = apiUri + "/Tasks/GetRunningTasks";
+    var uri = apiUri + "/Tasks/RunningTasks";
     let json = await GetData(uri);
     return json;
 }
 
 async function GetDownloadTasks(){
-    var uri = apiUri + "/Tasks/Get?taskType=DownloadNewChapters";
+    var uri = apiUri + "/Tasks?taskType=DownloadNewChapters";
     let json = await GetData(uri);
     return json;
 }
 
 async function GetSettings(){
-    var uri = apiUri + "/Settings/Get";
+    var uri = apiUri + "/Settings";
     let json = await GetData(uri);
     return json;
 }
 
 async function GetKomgaTask(){
-    var uri = apiUri + "/Tasks/Get?taskType=UpdateLibraries";
+    var uri = apiUri + "/Tasks?taskType=UpdateLibraries";
     let json = await GetData(uri);
     return json;
 }
@@ -157,7 +157,7 @@ function UpdateLunaSea(lunaseaWebhook){
 }
 
 function DeleteTask(taskType, connectorName, publicationId){
-    var uri = apiUri + `/Tasks/Delete?taskType=${taskType}&connectorName=${connectorName}&publicationId=${publicationId}`;
+    var uri = apiUri + `/Tasks?taskType=${taskType}&connectorName=${connectorName}&publicationId=${publicationId}`;
     DeleteData(uri);
 }
 
@@ -167,7 +167,7 @@ function DequeueTask(taskType, connectorName, publicationId){
 }
 
 async function GetQueue(){
-    var uri = apiUri + "/Queue/GetList";
+    var uri = apiUri + "/Queue/List";
     let json = await GetData(uri);
     return json;
 }

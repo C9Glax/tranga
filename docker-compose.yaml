@@ -7,7 +7,7 @@ services:
       - ./tranga:/usr/share/Tranga-API #1 when replacing ./tranga replace #2 with same value
       - ./Manga:/Manga
     ports:
-      - 6531:80
+      - "6531:6531"
     restart: unless-stopped
   tranga-website:
     image: glax/tranga-website:latest
@@ -15,7 +15,7 @@ services:
     volumes:
       - ./tranga/imageCache:/usr/share/nginx/html/imageCache:ro #2 when replacing Point to same value as #1/imageCache
     ports:
-      - 9555:80
+      - "9555:80"
     depends_on: 
       - tranga-api
     restart: unless-stopped
