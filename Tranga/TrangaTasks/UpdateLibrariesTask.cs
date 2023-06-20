@@ -4,16 +4,26 @@ namespace Tranga.TrangaTasks;
 
 public class UpdateLibrariesTask : TrangaTask
 {
-    public UpdateLibrariesTask(Task task, TimeSpan reoccurrence) : base(task, reoccurrence)
+    public UpdateLibrariesTask(TimeSpan reoccurrence) : base(Task.UpdateLibraries, reoccurrence)
     {
     }
 
-    protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override bool ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested??false)
-            return;
+            return false;
         foreach(LibraryManager lm in taskManager.settings.libraryManagers)
             lm.UpdateLibrary();
-        IncrementProgress(1);
+        return true;
+    }
+
+    public override TrangaTask Clone()
+    {
+        return new UpdateLibrariesTask(this.reoccurrence);
+    }
+
+    protected override double GetProgress()
+    {
+        return 1;
     }
 }

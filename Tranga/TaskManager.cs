@@ -20,17 +20,6 @@ public class TaskManager
 
     private readonly Dictionary<DownloadChapterTask, CancellationTokenSource> _runningDownloadChapterTasks = new();
 
-    /// <param name="downloadFolderPath">Local path to save data (Manga) to</param>
-    /// <param name="workingDirectory">Path to the working directory</param>
-    /// <param name="imageCachePath">Path to the cover-image cache</param>
-    /// <param name="libraryManagers"></param>
-    /// <param name="notificationManagers"></param>
-    /// <param name="logger"></param>
-    public TaskManager(string downloadFolderPath, string workingDirectory, string imageCachePath, HashSet<LibraryManager> libraryManagers, HashSet<NotificationManager> notificationManagers, Logger? logger = null) : this(new TrangaSettings(downloadFolderPath, workingDirectory, libraryManagers, notificationManagers), logger)
-    {
-        
-    }
-
     public TaskManager(TrangaSettings settings, Logger? logger = null)
     {
         this.logger = logger;
@@ -65,53 +54,46 @@ public class TaskManager
                 waitingButExecute.state = TrangaTask.ExecutionState.Enqueued;
             }
                 
-            foreach (TrangaTask task in _allTasks.Where(enqueuedTask => enqueuedTask.state is TrangaTask.ExecutionState.Enqueued))
+            foreach (TrangaTask enqueuedTask in _allTasks.Where(enqueuedTask => enqueuedTask.state is TrangaTask.ExecutionState.Enqueued))
             {
-                switch (task.task)
+                switch (enqueuedTask.task)
                 {
-                    case TrangaTask.Task.DownloadNewChapters:
-                        if (!_allTasks.Any(taskQuery =>
-                                taskQuery.task == TrangaTask.Task.DownloadNewChapters &&
-                                taskQuery.state is TrangaTask.ExecutionState.Running &&
-                                ((DownloadNewChaptersTask)taskQuery).connectorName == ((DownloadNewChaptersTask)task).connectorName))
-                        {
-                            ExecuteTaskNow(task);
-                        }
-                        break;
                     case TrangaTask.Task.DownloadChapter:
+                    case TrangaTask.Task.MonitorPublication:
                         if (!_allTasks.Any(taskQuery =>
-                                taskQuery.task == TrangaTask.Task.DownloadChapter &&
-                                taskQuery.state is TrangaTask.ExecutionState.Running &&
-                                ((DownloadChapterTask)taskQuery).connectorName == ((DownloadChapterTask)task).connectorName))
+                            {
+                                if (taskQuery.state is not TrangaTask.ExecutionState.Running) return false;
+                                switch (taskQuery)
+                                {
+                                    case DownloadChapterTask dct when enqueuedTask is DownloadChapterTask eDct && dct.connectorName == eDct.connectorName:
+                                    case MonitorPublicationTask mpt when enqueuedTask is MonitorPublicationTask eMpt && mpt.connectorName == eMpt.connectorName:
+                                        return true;
+                                    default:
+                                        return false;
+                                }
+                            }))
                         {
-                            ExecuteTaskNow(task);
+                            ExecuteTaskNow(enqueuedTask);
                         }
                         break;
                     case TrangaTask.Task.UpdateLibraries:
-                        ExecuteTaskNow(task);
+                        ExecuteTaskNow(enqueuedTask);
                         break;
                 }
             }
 
-            HashSet<DownloadChapterTask> failedToRemove = new();
-            foreach (KeyValuePair<DownloadChapterTask, CancellationTokenSource> removeTask in _runningDownloadChapterTasks)
+            foreach (TrangaTask failedTask in _allTasks.Where(taskQuery =>
+                         taskQuery.state is TrangaTask.ExecutionState.Failed))
             {
-                if (removeTask.Key.GetType() == typeof(DownloadChapterTask) &&
-                    DateTime.Now.Subtract(removeTask.Key.lastChange) > TimeSpan.FromMinutes(3))//3 Minutes since last update to task -> remove
+                switch (failedTask.task)
                 {
-                    logger?.WriteLine(this.GetType().ToString(), $"Disposing failed task {removeTask.Key}.");
-                    removeTask.Value.Cancel();
-                    failedToRemove.Add(removeTask.Key);
+                    case TrangaTask.Task.DownloadChapter:
+                        DeleteTask(failedTask);
+                        TrangaTask newTask = failedTask.Clone();
+                        failedTask.parentTask?.AddChildTask(newTask);
+                        AddTask(newTask);
+                        break;
                 }
-            }
-            foreach (DownloadChapterTask taskToRestart in failedToRemove)
-            {
-                DeleteTask(taskToRestart);
-                DownloadChapterTask newTask = new (taskToRestart.task, taskToRestart.connectorName,
-                    taskToRestart.publication, taskToRestart.chapter, taskToRestart.language,
-                    (DownloadNewChaptersTask?)taskToRestart.parentTask);
-                AddTask(newTask);
-                taskToRestart.parentTask?.ReplaceFailedChildTask(taskToRestart, newTask);
             }
             
             if(waitingTasksCount != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))
@@ -150,23 +132,19 @@ public class TaskManager
                 _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateLibraries);
                 _allTasks.Add(newTask);
                 break;
-            case TrangaTask.Task.DownloadNewChapters:
-                IEnumerable<TrangaTask> matchingdnc =
-                    _allTasks.Where(mTask => mTask.GetType() == typeof(DownloadNewChaptersTask));
-                if (!matchingdnc.Any(mTask =>
-                        ((DownloadNewChaptersTask)mTask).publication.internalId == ((DownloadNewChaptersTask)newTask).publication.internalId &&
-                        ((DownloadNewChaptersTask)mTask).connectorName == ((DownloadNewChaptersTask)newTask).connectorName))
+            case TrangaTask.Task.MonitorPublication:
+                if (!_allTasks.Any(mTask => mTask is MonitorPublicationTask mpt && newTask is MonitorPublicationTask nMpt &&
+                                            mpt.publication.internalId == nMpt.publication.internalId &&
+                                            mpt.connectorName == nMpt.connectorName))
                     _allTasks.Add(newTask);
                 else
                     logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
                 break;
             case TrangaTask.Task.DownloadChapter:
-                IEnumerable<TrangaTask> matchingdc =
-                    _allTasks.Where(mTask => mTask.GetType() == typeof(DownloadChapterTask));
-                if (!matchingdc.Any(mTask =>
-                        ((DownloadChapterTask)mTask).publication.internalId == ((DownloadChapterTask)newTask).publication.internalId &&
-                        ((DownloadChapterTask)mTask).connectorName == ((DownloadChapterTask)newTask).connectorName &&
-                        ((DownloadChapterTask)mTask).chapter.sortNumber == ((DownloadChapterTask)newTask).chapter.sortNumber))
+                if (!_allTasks.Any(mTask => mTask is DownloadChapterTask dct && newTask is DownloadChapterTask nDct &&
+                                            dct.publication.internalId == nDct.publication.internalId &&
+                                            dct.connectorName == nDct.connectorName &&
+                                            dct.chapter.sortNumber == nDct.chapter.sortNumber))
                     _allTasks.Add(newTask);
                 else
                     logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
@@ -179,78 +157,12 @@ public class TaskManager
     {
         logger?.WriteLine(this.GetType().ToString(), $"Removing Task {removeTask}");
         _allTasks.Remove(removeTask);
-        if (removeTask.parentTask is not null)
-            removeTask.parentTask.RemoveChildTask(removeTask);
-        if (removeTask.GetType() == typeof(DownloadChapterTask) && _runningDownloadChapterTasks.ContainsKey((DownloadChapterTask)removeTask))
+        removeTask.parentTask?.RemoveChildTask(removeTask);
+        if (removeTask is DownloadChapterTask cRemoveTask && _runningDownloadChapterTasks.ContainsKey(cRemoveTask))
         {
-            _runningDownloadChapterTasks[(DownloadChapterTask)removeTask].Cancel();
-            _runningDownloadChapterTasks.Remove((DownloadChapterTask)removeTask);
+            _runningDownloadChapterTasks[cRemoveTask].Cancel();
+            _runningDownloadChapterTasks.Remove(cRemoveTask);
         }
-    }
-
-    public TrangaTask? AddTask(TrangaTask.Task taskType, string? connectorName, string? internalId,
-        TimeSpan reoccurrenceTime, string? language = "en")
-    {
-        TrangaTask? newTask = null;
-        switch (taskType)
-        {
-            case TrangaTask.Task.UpdateLibraries:
-                newTask = new UpdateLibrariesTask(taskType, reoccurrenceTime);
-                break;
-            case TrangaTask.Task.DownloadNewChapters:
-                if (connectorName is null)
-                    logger?.WriteLine(this.GetType().ToString(), $"Value connectorName can not be null.");
-                if(internalId is null)
-                    logger?.WriteLine(this.GetType().ToString(), $"Value internalId can not be null.");
-                if(language is null)
-                    logger?.WriteLine(this.GetType().ToString(), $"Value language can not be null.");
-                if (connectorName is null || internalId is null || language is null)
-                    return null;
-                GetConnector(connectorName); //Check if connectorName is valid
-                Publication publication = GetAllPublications().First(pub => pub.internalId == internalId);
-                newTask = new DownloadNewChaptersTask(taskType, connectorName!, publication, reoccurrenceTime, language!);
-                break;
-        }
-        if(newTask is not null)
-            AddTask(newTask);
-        return newTask;
-    }
-
-    /// <summary>
-    /// Removes Task from task-collection
-    /// </summary>
-    /// <param name="task">TrangaTask.Task type</param>
-    /// <param name="connectorName">Name of Connector that was used</param>
-    /// <param name="publicationId">Publication that was used</param>
-    public void DeleteTask(TrangaTask.Task task, string? connectorName, string? publicationId)
-    {
-        logger?.WriteLine(this.GetType().ToString(), $"Removing Task {task} {publicationId}");
-        
-        switch (task)
-        {
-            case TrangaTask.Task.UpdateLibraries:
-                //Only one UpdateKomgaLibrary Task
-                logger?.WriteLine(this.GetType().ToString(), $"Removing old {task}-Task.");
-                _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateLibraries);
-                break;
-            case TrangaTask.Task.DownloadNewChapters:
-                if (connectorName is null || publicationId is null)
-                    logger?.WriteLine(this.GetType().ToString(), "connectorName and publication can not be null");
-                else
-                {
-                    _allTasks.RemoveWhere(mTask =>
-                        mTask.GetType() == typeof(DownloadNewChaptersTask) &&
-                        ((DownloadNewChaptersTask)mTask).publication.internalId == publicationId &&
-                        ((DownloadNewChaptersTask)mTask).connectorName == connectorName);
-                    foreach(TrangaTask rTask in _allTasks.Where(mTask =>
-                                mTask.GetType() == typeof(DownloadChapterTask) &&
-                                ((DownloadChapterTask)mTask).publication.internalId == publicationId &&
-                                ((DownloadChapterTask)mTask).connectorName == connectorName))
-                        DeleteTask(rTask);
-                }
-                break;
-        }
-        ExportDataAndSettings();
     }
 
     public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null, string? chapterSortNumber = null)
@@ -259,50 +171,46 @@ public class TaskManager
         {
             case TrangaTask.Task.UpdateLibraries:
                 return _allTasks.Where(tTask => tTask.task == TrangaTask.Task.UpdateLibraries);
-            case TrangaTask.Task.DownloadNewChapters:
+            case TrangaTask.Task.MonitorPublication:
                 if(connectorName is null)
                     return _allTasks.Where(tTask => tTask.task == taskType);
                 GetConnector(connectorName);//Name check
-                IEnumerable<TrangaTask> matchingdnc = _allTasks.Where(tTask => tTask.GetType() == typeof(DownloadNewChaptersTask));
                 if (searchString is not null)
                 {
-                    return matchingdnc.Where(mTask =>
-                        ((DownloadNewChaptersTask)mTask).connectorName == connectorName &&
-                        ((DownloadNewChaptersTask)mTask).ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
+                    return _allTasks.Where(mTask =>
+                        mTask is MonitorPublicationTask mpt && mpt.connectorName == connectorName &&
+                        mpt.ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
                 }
                 else if (internalId is not null)
                 {
-                    return matchingdnc.Where(mTask =>
-                        ((DownloadNewChaptersTask)mTask).connectorName == connectorName &&
-                        ((DownloadNewChaptersTask)mTask).publication.internalId == internalId);
+                    return _allTasks.Where(mTask =>
+                        mTask is MonitorPublicationTask mpt && mpt.connectorName == connectorName &&
+                        mpt.publication.internalId == internalId);
                 }
                 else
                     return _allTasks.Where(tTask =>
-                        tTask.GetType() == typeof(DownloadNewChaptersTask) &&
-                        ((DownloadNewChaptersTask)tTask).connectorName == connectorName);
+                        tTask is MonitorPublicationTask mpt && mpt.connectorName == connectorName);
                 
             case TrangaTask.Task.DownloadChapter:
                 if(connectorName is null)
                     return _allTasks.Where(tTask => tTask.task == taskType);
                 GetConnector(connectorName);//Name check
-                IEnumerable<TrangaTask> matchingdc = _allTasks.Where(tTask => tTask.GetType() == typeof(DownloadChapterTask));
                 if (searchString is not null)
                 {
-                    return matchingdc.Where(mTask =>
-                        ((DownloadChapterTask)mTask).connectorName == connectorName &&
-                        ((DownloadChapterTask)mTask).ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
+                    return _allTasks.Where(mTask =>
+                        mTask is DownloadChapterTask dct && dct.connectorName == connectorName &&
+                        dct.ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
                 }
                 else if (internalId is not null && chapterSortNumber is not null)
                 {
-                    return matchingdc.Where(mTask =>
-                        ((DownloadChapterTask)mTask).connectorName == connectorName &&
-                        ((DownloadChapterTask)mTask).publication.publicationId == internalId &&
-                        ((DownloadChapterTask)mTask).chapter.sortNumber == chapterSortNumber);
+                    return _allTasks.Where(mTask =>
+                        mTask is DownloadChapterTask dct && dct.connectorName == connectorName &&
+                        dct.publication.publicationId == internalId &&
+                        dct.chapter.sortNumber == chapterSortNumber);
                 }
                 else
-                    return _allTasks.Where(tTask =>
-                        tTask.GetType() == typeof(DownloadChapterTask) &&
-                        ((DownloadChapterTask)tTask).connectorName == connectorName);
+                    return _allTasks.Where(mTask =>
+                        mTask is DownloadChapterTask dct && dct.connectorName == connectorName);
                 
             default:
                 return Array.Empty<TrangaTask>();

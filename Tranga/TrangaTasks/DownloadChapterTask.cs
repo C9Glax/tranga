@@ -10,7 +10,9 @@ public class DownloadChapterTask : TrangaTask
     public string language { get; }
     public Chapter chapter { get; }
 
-    public DownloadChapterTask(Task task, string connectorName, Publication publication, Chapter chapter, string language = "en", DownloadNewChaptersTask? parentTask = null) : base(task, TimeSpan.Zero, parentTask)
+    private double _dctProgress = 0;
+
+    public DownloadChapterTask(string connectorName, Publication publication, Chapter chapter, string language = "en", MonitorPublicationTask? parentTask = null) : base(Task.DownloadChapter, TimeSpan.Zero, parentTask)
     {
         this.chapter = chapter;
         this.connectorName = connectorName;
@@ -18,21 +20,34 @@ public class DownloadChapterTask : TrangaTask
         this.language = language;
     }
 
-    protected override void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override bool ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested??false)
-            return;
-        if(this.parentTask is not null)
-            this.parentTask.state = ExecutionState.Running;
+            return false;
         Connector connector = taskManager.GetConnector(this.connectorName);
         connector.CopyCoverFromCacheToDownloadLocation(this.publication, taskManager.settings);
         bool downloadSuccess = connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
-        if(this.parentTask is not null)
-            this.parentTask.state = ExecutionState.Waiting;
         taskManager.DeleteTask(this);
         if(downloadSuccess && parentTask is not null)
             foreach(NotificationManager nm in taskManager.settings.notificationManagers)
                 nm.SendNotification("New Chapter downloaded", $"{this.publication.sortName} {this.chapter.chapterNumber} {this.chapter.name}");
+        return downloadSuccess;
+    }
+
+    public override TrangaTask Clone()
+    {
+        return new DownloadChapterTask(this.connectorName, this.publication, this.chapter,
+            this.language, (MonitorPublicationTask?)this.parentTask);
+    }
+
+    protected override double GetProgress()
+    {
+        return _dctProgress;
+    }
+
+    internal void IncrementProgress(double amount)
+    {
+        this._dctProgress += amount;
     }
 
     public override string ToString()

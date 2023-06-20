@@ -112,14 +112,12 @@ app.MapPost("/Tasks/CreateMonitorTask",
         Publication? publication = taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId);
         if (publication is null)
             return;
-        taskManager.AddTask(new DownloadNewChaptersTask(TrangaTask.Task.DownloadNewChapters, connectorName,
-            (Publication)publication,
-            TimeSpan.Parse(reoccurrenceTime), language ?? "en"));
+        taskManager.AddTask(new MonitorPublicationTask(connectorName, (Publication)publication, TimeSpan.Parse(reoccurrenceTime), language ?? "en"));
     });
 
 app.MapPost("/Tasks/CreateUpdateLibraryTask", (string reoccurrenceTime) =>
 {
-    taskManager.AddTask(new UpdateLibrariesTask(TrangaTask.Task.UpdateLibraries, TimeSpan.Parse(reoccurrenceTime)));
+    taskManager.AddTask(new UpdateLibrariesTask(TimeSpan.Parse(reoccurrenceTime)));
 });
 
 app.MapPost("/Tasks/CreateDownloadChaptersTask", (string connectorName, string internalId, string chapters, string? language) => {
@@ -134,14 +132,14 @@ app.MapPost("/Tasks/CreateDownloadChaptersTask", (string connectorName, string i
     
     IEnumerable<Chapter> toDownload = connector.SearchChapters((Publication)publication, chapters, language ?? "en");
     foreach(Chapter chapter in toDownload)
-        taskManager.AddTask(new DownloadChapterTask(TrangaTask.Task.DownloadChapter, connectorName,
-            (Publication)publication, chapter, "en"));
+        taskManager.AddTask(new DownloadChapterTask(connectorName, (Publication)publication, chapter, "en"));
 });
 
 app.MapDelete("/Tasks/Delete", (string taskType, string? connectorName, string? publicationId) =>
 {
     TrangaTask.Task task = Enum.Parse<TrangaTask.Task>(taskType);
-    taskManager.DeleteTask(task, connectorName, publicationId);
+    foreach(TrangaTask tTask in taskManager.GetTasksMatching(task, connectorName, internalId: publicationId))
+        taskManager.DeleteTask(tTask);
 });
 
 app.MapGet("/Tasks/Get", (string taskType, string? connectorName, string? searchString) =>
@@ -167,7 +165,7 @@ app.MapGet("/Tasks/GetProgress", (string taskType, string connectorName, string 
     {
         TrangaTask? task = null;
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
-        if (pTask is TrangaTask.Task.DownloadNewChapters)
+        if (pTask is TrangaTask.Task.MonitorPublication)
         {
             task = taskManager.GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId).FirstOrDefault();
         }else if (pTask is TrangaTask.Task.DownloadChapter && chapterSortNumber is not null)
@@ -192,7 +190,7 @@ app.MapPost("/Tasks/Start", (string taskType, string? connectorName, string? int
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
         TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, internalId: internalId)?.FirstOrDefault();
+            .GetTasksMatching(pTask, connectorName: connectorName, internalId: internalId).FirstOrDefault();
             
         if (task is null)
             return;
@@ -217,7 +215,7 @@ app.MapPost("/Queue/Enqueue", (string taskType, string? connectorName, string? p
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
         TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId)?.First();
+            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId).FirstOrDefault();
             
         if (task is null)
             return;
@@ -235,7 +233,7 @@ app.MapDelete("/Queue/Dequeue", (string taskType, string? connectorName, string?
     {
         TrangaTask.Task pTask = Enum.Parse<TrangaTask.Task>(taskType);
         TrangaTask? task = taskManager
-            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId)?.First();
+            .GetTasksMatching(pTask, connectorName: connectorName, internalId: publicationId).FirstOrDefault();
             
         if (task is null)
             return;

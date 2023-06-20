@@ -335,8 +335,9 @@ public static class Tranga_Cli
         
         TimeSpan reoccurrence = SelectReoccurrence(logger);
         logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
-        TrangaTask? newTask = taskManager.AddTask(TrangaTask.Task.DownloadNewChapters, connector.name, publication.Value.publicationId, reoccurrence, "en");
-        Console.WriteLine(newTask);
+        TrangaTask nTask = new MonitorPublicationTask(connector.name, (Publication)publication, reoccurrence, "en");
+        taskManager.AddTask(nTask);
+        Console.WriteLine(nTask);
     }
 
     private static void AddTaskToQueue(TaskManager taskManager, Logger logger)
@@ -408,20 +409,19 @@ public static class Tranga_Cli
                 return;
         }
 
-        if (task is TrangaTask.Task.DownloadNewChapters)
+        if (task is TrangaTask.Task.MonitorPublication)
         {
             TimeSpan reoccurrence = SelectReoccurrence(logger);
             logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
 
-            TrangaTask newTask = new DownloadNewChaptersTask(TrangaTask.Task.DownloadNewChapters, connector!.name, (Publication)publication!, reoccurrence, "en");
+            TrangaTask newTask = new MonitorPublicationTask(connector!.name, (Publication)publication!, reoccurrence, "en");
             taskManager.AddTask(newTask);
             Console.WriteLine(newTask);
         }else if (task is TrangaTask.Task.DownloadChapter)
         {
             foreach (Chapter chapter in SelectChapters(connector!, (Publication)publication!, logger))
             {
-                TrangaTask newTask = new DownloadChapterTask(TrangaTask.Task.DownloadChapter, connector!.name,
-                    (Publication)publication!, chapter, "en");
+                TrangaTask newTask = new DownloadChapterTask(connector!.name, (Publication)publication, chapter, "en");
                 taskManager.AddTask(newTask);
                 Console.WriteLine(newTask);
             }

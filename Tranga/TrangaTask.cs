@@ -11,7 +11,7 @@ namespace Tranga;
 /// <summary>
 /// Stores information on Task, when implementing new Tasks also update the serializer
 /// </summary>
-[JsonDerivedType(typeof(DownloadNewChaptersTask), 2)]
+[JsonDerivedType(typeof(MonitorPublicationTask), 2)]
 [JsonDerivedType(typeof(UpdateLibrariesTask), 3)]
 [JsonDerivedType(typeof(DownloadChapterTask), 4)]
 public abstract class TrangaTask
@@ -20,27 +20,27 @@ public abstract class TrangaTask
     // ReSharper disable once MemberCanBePrivate.Global I want it thaaat way
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
-    public Task task { get; }
-    public string taskId { get; set; }
     [Newtonsoft.Json.JsonIgnore] public ExecutionState state { get; set; }
-    [Newtonsoft.Json.JsonIgnore] protected HashSet<TrangaTask> childTasks { get; }
+    public Task task { get; }
+    public string taskId { get; }
     [Newtonsoft.Json.JsonIgnore] public TrangaTask? parentTask { get; set; }
     public string? parentTaskId { get; set; }
-    [Newtonsoft.Json.JsonIgnore]public double progress { get; private set; }
+    [Newtonsoft.Json.JsonIgnore] protected HashSet<TrangaTask> childTasks { get; }
+    [Newtonsoft.Json.JsonIgnore] public double progress => GetProgress();
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; private set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime executionApproximatelyFinished => progress != 0 ? lastChange.Add(GetRemainingTime()) : DateTime.MaxValue;
     [Newtonsoft.Json.JsonIgnore]public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
-    public enum ExecutionState { Waiting, Enqueued, Running }
+    public enum ExecutionState { Waiting, Enqueued, Running, Failed }
 
     protected TrangaTask(Task task, TimeSpan reoccurrence, TrangaTask? parentTask = null)
     {
         this.reoccurrence = reoccurrence;
         this.lastExecuted = DateTime.Now.Subtract(reoccurrence);
         this.task = task;
-        this.executionStarted = DateTime.Now;
+        this.executionStarted = DateTime.UnixEpoch;
         this.lastChange = DateTime.MaxValue;
         this.taskId = Convert.ToBase64String(BitConverter.GetBytes(new Random().Next()));
         this.childTasks = new();
@@ -54,7 +54,11 @@ public abstract class TrangaTask
     /// <param name="taskManager"></param>
     /// <param name="logger"></param>
     /// <param name="cancellationToken"></param>
-    protected abstract void ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null);
+    protected abstract bool ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null);
+
+    public abstract TrangaTask Clone();
+
+    protected abstract double GetProgress();
 
     /// <summary>
     /// Execute the task
@@ -68,18 +72,20 @@ public abstract class TrangaTask
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
-        ExecuteTask(taskManager, logger, cancellationToken);
+        bool success = ExecuteTask(taskManager, logger, cancellationToken);
         while(childTasks.Any(ct => ct.state is ExecutionState.Enqueued or ExecutionState.Running))
             Thread.Sleep(1000);
-        this.lastExecuted = DateTime.Now;
-        this.state = ExecutionState.Waiting;
+        if (success)
+        {
+            this.lastExecuted = DateTime.Now;
+            this.state = ExecutionState.Waiting;
+        }
+        else
+        {
+            this.lastExecuted = DateTime.MaxValue;
+            this.state = ExecutionState.Failed;
+        }
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
-    }
-
-    public void ReplaceFailedChildTask(DownloadChapterTask failed, DownloadChapterTask newTask)
-    {
-        this.RemoveChildTask(failed);
-        this.AddChildTask(newTask);
     }
 
     public void AddChildTask(TrangaTask childTask)
@@ -90,40 +96,22 @@ public abstract class TrangaTask
     public void RemoveChildTask(TrangaTask childTask)
     {
         this.childTasks.Remove(childTask);
-        this.DecrementProgress(childTask.progress);
-    }
-
-    public void IncrementProgress(double amount)
-    {
-        this.lastChange = DateTime.Now;
-        this.progress += amount / (childTasks.Count > 0 ? childTasks.Count : 1);
-        if (parentTask is not null)
-        {
-            parentTask.IncrementProgress(amount);
-            parentTask.state = ExecutionState.Running;
-        }
-    }
-
-    public void DecrementProgress(double amount)
-    {
-        this.lastChange = DateTime.Now;
-        this.progress -= amount / childTasks.Count > 0 ? childTasks.Count : 1;
-        parentTask?.DecrementProgress(amount);
     }
 
     private TimeSpan GetRemainingTime()
     {
-        if(progress == 0)
-            return DateTime.MaxValue.Subtract(DateTime.Now);
+        if(progress == 0 || lastChange > executionStarted)
+            return DateTime.MaxValue.Subtract(DateTime.Now.AddYears(1));
         TimeSpan elapsed = lastChange.Subtract(executionStarted);
         return elapsed.Divide(progress).Subtract(elapsed);
     }
 
     public enum Task : byte
     {
-        DownloadNewChapters = 2,
+        MonitorPublication = 2,
         UpdateLibraries = 3,
-        DownloadChapter = 4
+        DownloadChapter = 4,
+        DownloadNewChapters = 2 //legacy
     }
 
     public override string ToString()
@@ -135,14 +123,14 @@ public abstract class TrangaTask
     {
         public override bool CanConvert(Type objectType)
         {
-            return (objectType == typeof(TrangaTask));
+            return objectType == typeof(TrangaTask);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            if (jo["task"]!.Value<Int64>() == (Int64)Task.DownloadNewChapters)
-                return jo.ToObject<DownloadNewChaptersTask>(serializer)!;
+            if (jo["task"]!.Value<Int64>() == (Int64)Task.MonitorPublication)
+                return jo.ToObject<MonitorPublicationTask>(serializer)!;
 
             if (jo["task"]!.Value<Int64>() == (Int64)Task.UpdateLibraries)
                 return jo.ToObject<UpdateLibrariesTask>(serializer)!;
