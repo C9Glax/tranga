@@ -69,6 +69,8 @@ public abstract class TrangaTask
     {
         logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
+        if(this.parentTask is not null)
+            this.parentTask.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
         bool success = ExecuteTask(taskManager, logger, cancellationToken);
@@ -84,6 +86,8 @@ public abstract class TrangaTask
             this.lastExecuted = DateTime.MaxValue;
             this.state = ExecutionState.Failed;
         }
+        if(this.parentTask is not null)
+            this.parentTask.state = ExecutionState.Waiting;
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
     }
 
@@ -99,8 +103,8 @@ public abstract class TrangaTask
 
     private TimeSpan GetRemainingTime()
     {
-        if(progress == 0 || lastChange > executionStarted)
-            return DateTime.MaxValue.Subtract(DateTime.Now.AddYears(1));
+        if(progress == 0 || lastChange == DateTime.MaxValue || executionStarted == DateTime.UnixEpoch)
+            return TimeSpan.Zero;
         TimeSpan elapsed = lastChange.Subtract(executionStarted);
         return elapsed.Divide(progress).Subtract(elapsed);
     }
