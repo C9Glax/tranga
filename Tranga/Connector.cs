@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -20,7 +19,7 @@ public abstract class Connector
 
     protected readonly Logger? logger;
 
-    protected readonly string imageCachePath;
+    private readonly string _imageCachePath;
 
     protected Connector(string downloadLocation, string imageCachePath, Logger? logger)
     {
@@ -30,9 +29,9 @@ public abstract class Connector
         {
             //RequestTypes for RateLimits
         }, logger);
-        this.imageCachePath = imageCachePath;
+        this._imageCachePath = imageCachePath;
         if (!Directory.Exists(imageCachePath))
-            Directory.CreateDirectory(this.imageCachePath);
+            Directory.CreateDirectory(this._imageCachePath);
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)
@@ -233,6 +232,7 @@ public abstract class Connector
     /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
     /// <param name="requestType">RequestType for RateLimits</param>
     /// <param name="referrer">Used in http request header</param>
+    /// <param name="cancellationToken"></param>
     protected bool DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, DownloadChapterTask parentTask, string? comicInfoPath = null, string? referrer = null, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested??false)
@@ -279,7 +279,7 @@ public abstract class Connector
     {
         string[] split = url.Split('/');
         string filename = split[^1];
-        string saveImagePath = Path.Join(imageCachePath, filename);
+        string saveImagePath = Path.Join(_imageCachePath, filename);
 
         if (File.Exists(saveImagePath))
             return filename;
@@ -301,7 +301,8 @@ public abstract class Connector
 
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
         private readonly Dictionary<byte, TimeSpan> _rateLimit;
-        private Logger? logger;
+        // ReSharper disable once InconsistentNaming
+        private readonly Logger? logger;
 
         /// <summary>
         /// Creates a httpClient

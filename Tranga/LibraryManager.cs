@@ -23,6 +23,7 @@ public abstract class LibraryManager
     /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
     /// <param name="auth">Base64 string of username and password (username):(password)</param>
     /// <param name="logger"></param>
+    /// <param name="libraryType"></param>
     protected LibraryManager(string baseUrl, string auth, Logger? logger, LibraryType libraryType)
     {
         this.baseUrl = baseUrl;

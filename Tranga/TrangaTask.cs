@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

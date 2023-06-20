@@ -7,8 +7,8 @@ namespace Tranga;
 
 public abstract class NotificationManager
 {
-    protected Logger? logger;
-    public NotificationManagerType notificationManagerType { get; }
+    protected readonly Logger? logger;
+    public NotificationManagerType notificationManagerType;
 
     protected NotificationManager(NotificationManagerType notificationManagerType, Logger? logger = null)
     {

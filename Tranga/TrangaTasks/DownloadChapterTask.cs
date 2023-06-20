@@ -1,5 +1,4 @@
 ﻿using Logging;
-using Newtonsoft.Json;
 
 namespace Tranga.TrangaTasks;
 
