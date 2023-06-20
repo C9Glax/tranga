@@ -294,7 +294,10 @@ public abstract class Connector
     
     protected class DownloadClient
     {
-        private static readonly HttpClient Client = new();
+        private static readonly HttpClient Client = new()
+        {
+            Timeout = TimeSpan.FromSeconds(60)
+        };
 
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
         private readonly Dictionary<byte, TimeSpan> _rateLimit;
