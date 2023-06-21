@@ -80,11 +80,11 @@ public class RequestHandler
     private Dictionary<string, string> GetRequestVariables(string query)
     {
         Dictionary<string, string> ret = new();
-        Regex queryRex = new (@"\?{1}([A-z]+=[A-z]+)+(&[A-z]+=[A-z]+)*");
+        Regex queryRex = new (@"\?{1}&?([A-z]+=[A-z]+)+(&[A-z]+=[A-z]+)*");
         if (!queryRex.IsMatch(query))
             return ret;
         query = query.Substring(1);
-        foreach(string kvpair in query.Split('&'))
+        foreach(string kvpair in query.Split('&').Where(str => str.Length>=3 ))
             ret.Add(kvpair.Split('=')[0], kvpair.Split('=')[1]);
         return ret;
     }
