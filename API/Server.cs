@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Logging;
@@ -18,7 +19,10 @@ public class Server
     public Server(int port, TaskManager taskManager, Logger? logger = null)
     {
         this.logger = logger;
-        this._listener.Prefixes.Add($"http://*:{port}/");
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            this._listener.Prefixes.Add($"http://*:{port}/");
+        else
+            this._listener.Prefixes.Add($"http://localhost:{port}/");
         this._requestHandler = new RequestHandler(taskManager, this);
         Listen();
     }
