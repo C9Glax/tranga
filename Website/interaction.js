@@ -195,7 +195,7 @@ function DownloadChapterTaskClick(){
 
 function DeleteTaskClick(){
     taskToDelete = tasks.filter(tTask => tTask.publication.internalId === toEditId)[0];
-    DeleteTask("DownloadNewChapters", taskToDelete.connectorName, toEditId);
+    DeleteTask("MonitorPublication", taskToDelete.connectorName, toEditId);
     HidePublicationPopup();
 }
 
