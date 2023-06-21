@@ -52,14 +52,14 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Tranga can download Chapters and Metadata from Scanlation sites such as 
+Tranga can download Chapters and Metadata from "Scanlation" sites such as 
 
 - [MangaDex.org](https://mangadex.org/)
 - [Manganato.com](https://manganato.com/)
 - [Mangasee](https://mangasee123.com/)
+- ❓ Open an [issue](https://github.com/C9Glax/tranga/issues)
 
-and automatically start updates in [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/) to import them.
-
+and automatically import them with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/). Also Notifications will be sent to your devices using [Gotify](https://gotify.net/) and [LunaSea](https://www.lunasea.app/).
 ### Inspiration:
 
 Because [Kaizoku](https://github.com/oae/kaizoku) was relying on [mangal](https://github.com/metafates/mangal) and mangal
@@ -76,7 +76,7 @@ That is why I wanted to create my own project, in a language I understand, and t
 - Newtonsoft.JSON
 - [PuppeteerSharp](https://www.puppeteersharp.com/)
 - [Html Agility Pack (HAP)](https://html-agility-pack.net/)
-- Love <3 Blåhaj 🦈
+- 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -109,39 +109,42 @@ Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/m
 
 Wherever you are mounting `/usr/share/Tranga-API` you also need to mount that same path + `/imageCache` in the webserver container.
 
-### Usage
+### Docker-Website usage
 
 There is two ways to download Mangas:
 - Downloading everything and monitor for new Chapters
 - Selecting specific Volumes/Chapters
 
 On the website you add new tasks, by selecting the blue '+' field. Next select the connector/site you want to use, and enter a search term.
-After pressing 'Search', the results will be presented below - this might, depending on the result-size, take a while.
-Next select the publication and a new popup will open with two options:
+After clicking 'Search' (or pressing Enter), the results will be presented below - this might, depending on the result-size, take a while because we are already preloading the cover-images.
+Next select the publication (by selecting the cover) and a new popup will open with two options:
 - "Monitor" - Download all chapters and monitor for new ones
 - "Download Chapter" - Download specific chapters only
 
-When selecting `Monitor` you will be presented with a new window and the selection of the interval you want to check for new chapters.
-When selecting `Download Chapter` a list will open with all available chapters from which you can then select a range.
+When selecting `Monitor` you will be presented with a new window and the selection of the interval you want to check for new chapters (Default: Every 3 hours).
+When selecting `Download Chapter` a list will open with all available chapters - that have not yet been downloaded - from which you can then select a range (see below).
 
 The syntax for selecting chapters is as follows:
 - To download a single Chapter enter either the index number (the number at the very start of the line) or its absolute number like so: `c(h)(apter)[number]`, spaces are allowed.
 - To download a range of chapters enter either a range of index numbers (`3-6`) or chapters (`ch 12-23`).
 - For volumes the syntax is as follows: `v(ol)[number](-[number])`, again spaces allowed.
 
-Examples: `2-12`, `c1`, `ch 2`, `chapter 3`, `v 2`, `vol3-4`, `v2c4` (note: you can only specify a single chapter with this syntax).
+Examples: `2-12`, `c1`, `ch 2`, `chapter 3`, `v 2`, `vol3-4`, `v2c4` (note: you can only specify a single chapter with this last syntax).
 
 ### Prerequisites
 
+#### To Build
 [.NET-Core 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+#### To Run
+[.NET-Core 7.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) scroll down a bit, should be on the right the second item.
 
 <!-- ROADMAP -->
 ## Roadmap
 
 - [ ] Docker ARM support
-- [ ] ? 
+- [ ] ❓
 
-See the [open issues](https://git.bernloehr.eu/glax/Tranga/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
