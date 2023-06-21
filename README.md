@@ -83,12 +83,11 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 ## Screenshots
 
-![image](screenshots/overview.png)
+| ![image](screenshots/overview.png) | ![image](screenshots/addtask.png) |
+|-----------------------------------:|:----------------------------------|
 
-![image](screenshots/addtask.png)
-
-| ![image](screenshots/settings.png) | ![image](screenshots/publication-description.png) |
-|-----------------------------------:|:-------------------------------------------------:|
+| ![image](screenshots/settings.png) | ![image](screenshots/publication-description.png) | ![image](screenshots/progress.png) |
+|-----------------------------------:|:-------------------------------------------------:|:-----------------------------------|
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
