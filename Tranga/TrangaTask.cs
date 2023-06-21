@@ -22,7 +22,7 @@ public abstract class TrangaTask
     public DateTime lastExecuted { get; set; }
     [Newtonsoft.Json.JsonIgnore] public ExecutionState state { get; set; }
     public Task task { get; }
-    public string taskId { get; }
+    public string taskId { get; init; }
     [Newtonsoft.Json.JsonIgnore] public TrangaTask? parentTask { get; set; }
     public string? parentTaskId { get; set; }
     [Newtonsoft.Json.JsonIgnore] protected HashSet<TrangaTask> childTasks { get; }
