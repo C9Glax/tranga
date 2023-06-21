@@ -54,8 +54,15 @@ public class Server
             SendResponse(HttpStatusCode.BadRequest, response);
             return;
         }
-        
-        _requestHandler.HandleRequest(request, response);
+
+        if (request.HttpMethod == "OPTIONS")
+        {
+            SendResponse(HttpStatusCode.OK, response);
+        }
+        else
+        {
+            _requestHandler.HandleRequest(request, response);
+        }
     }
 
     internal void SendResponse(HttpStatusCode statusCode, HttpListenerResponse response, object? content = null)
