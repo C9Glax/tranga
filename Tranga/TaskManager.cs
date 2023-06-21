@@ -81,22 +81,14 @@ public class TaskManager
                         break;
                 }
             }
-
-            TrangaTask[] failedDownloadChapterTasks = _allTasks.Where(taskQuery =>
-                taskQuery.state is TrangaTask.ExecutionState.Failed && taskQuery is DownloadChapterTask).ToArray();
-            foreach (TrangaTask failedDownloadChapterTask in failedDownloadChapterTasks)
+            
+            foreach (TrangaTask failedDownloadChapterTask in _allTasks.Where(taskQuery =>
+                         taskQuery.state is TrangaTask.ExecutionState.Failed && taskQuery is DownloadChapterTask).ToArray())
             {
                 DeleteTask(failedDownloadChapterTask);
                 TrangaTask newTask = failedDownloadChapterTask.Clone();
                 failedDownloadChapterTask.parentTask?.AddChildTask(newTask);
                 AddTask(newTask);
-            }
-
-            TrangaTask[] successfulDownloadChapterTasks = _allTasks.Where(taskQuery =>
-                taskQuery.state is TrangaTask.ExecutionState.Success && taskQuery is DownloadChapterTask).ToArray();
-            foreach(TrangaTask successfulDownloadChapterTask in successfulDownloadChapterTasks)
-            {
-                DeleteTask(successfulDownloadChapterTask);
             }
             
             if(waitingTasksCount != _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting))
@@ -166,6 +158,8 @@ public class TaskManager
             _runningDownloadChapterTasks[cRemoveTask].Cancel();
             _runningDownloadChapterTasks.Remove(cRemoveTask);
         }
+        foreach(TrangaTask childTask in removeTask.childTasks)
+            DeleteTask(childTask);
     }
 
     public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null, string? chapterSortNumber = null)

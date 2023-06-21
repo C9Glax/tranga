@@ -75,6 +75,8 @@ public abstract class TrangaTask
         HttpStatusCode statusCode = ExecuteTask(taskManager, logger, cancellationToken);
         while(childTasks.Any(ct => ct.state is ExecutionState.Enqueued or ExecutionState.Running))
             Thread.Sleep(1000);
+        foreach(TrangaTask childTask in this.childTasks.ToArray())
+            taskManager.DeleteTask(childTask);
         if ((int)statusCode >= 200 && (int)statusCode < 300)
         {
             this.lastExecuted = DateTime.Now;
