@@ -43,6 +43,29 @@ public class TrangaSettings
         return settings;
     }
 
+    public void ExportSettings()
+    {
+        if (File.Exists(settingsFilePath))
+        {
+            bool inUse = true;
+            while (inUse)
+            {
+                try
+                {
+                    using FileStream stream = new (settingsFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+                    stream.Close();
+                    inUse = false;
+                }
+                catch (IOException)
+                {
+                    inUse = true;
+                    Thread.Sleep(50);
+                }
+            }
+        }
+        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
+    }
+
     public void UpdateSettings(UpdateField field, Logger? logger = null, params string[] values) 
     {
         switch (field)
@@ -81,6 +104,7 @@ public class TrangaSettings
                 newLunaSea.SendNotification("Success!", "LunaSea was added to Tranga!");
                 break;
         }
+        ExportSettings();
     }
     
     public enum UpdateField { DownloadLocation, Komga, Kavita, Gotify, LunaSea}

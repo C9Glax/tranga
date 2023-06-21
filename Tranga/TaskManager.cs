@@ -363,9 +363,7 @@ public class TaskManager
     private void ExportDataAndSettings()
     {
         logger?.WriteLine(this.GetType().ToString(), $"Exporting settings to {settings.settingsFilePath}");
-        while(IsFileInUse(settings.settingsFilePath))
-            Thread.Sleep(50);
-        File.WriteAllText(settings.settingsFilePath, JsonConvert.SerializeObject(settings));
+        settings.ExportSettings();
         
         logger?.WriteLine(this.GetType().ToString(), $"Exporting tasks to {settings.tasksFilePath}");
         while(IsFileInUse(settings.tasksFilePath))
