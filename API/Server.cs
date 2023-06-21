@@ -67,6 +67,8 @@ public class Server
 
     internal void SendResponse(HttpStatusCode statusCode, HttpListenerResponse response, object? content = null)
     {
+        if (!response.OutputStream.CanWrite)
+            return;
         //logger?.WriteLine(this.GetType().ToString(), $"Sending response: {statusCode}");
         response.StatusCode = (int)statusCode;
         response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
