@@ -47,6 +47,9 @@ public class DownloadChapterTask : TrangaTask
     internal void IncrementProgress(double amount)
     {
         this._dctProgress += amount;
+        this.lastChange = DateTime.Now;
+        if(this.parentTask is not null)
+            this.parentTask.lastChange = DateTime.Now;
     }
 
     public override string ToString()

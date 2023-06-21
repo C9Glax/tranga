@@ -25,11 +25,11 @@ public abstract class TrangaTask
     public string taskId { get; init; }
     [Newtonsoft.Json.JsonIgnore] public TrangaTask? parentTask { get; set; }
     public string? parentTaskId { get; set; }
-    [Newtonsoft.Json.JsonIgnore] protected HashSet<TrangaTask> childTasks { get; }
+    [Newtonsoft.Json.JsonIgnore] internal HashSet<TrangaTask> childTasks { get; }
     public double progress => GetProgress();
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
-    [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; private set; }
-    [Newtonsoft.Json.JsonIgnore]public DateTime executionApproximatelyFinished => progress != 0 ? lastChange.Add(GetRemainingTime()) : DateTime.MaxValue;
+    [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; internal set; }
+    [Newtonsoft.Json.JsonIgnore]public DateTime executionApproximatelyFinished => lastChange.Add(GetRemainingTime());
     public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
@@ -72,11 +72,16 @@ public abstract class TrangaTask
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
+        if(parentTask is not null && parentTask.childTasks.All(ct => ct.state is ExecutionState.Waiting))
+            parentTask.executionStarted = DateTime.Now;
+        
         HttpStatusCode statusCode = ExecuteTask(taskManager, logger, cancellationToken);
+        
         while(childTasks.Any(ct => ct.state is ExecutionState.Enqueued or ExecutionState.Running))
             Thread.Sleep(1000);
         foreach(TrangaTask childTask in this.childTasks.ToArray())
             taskManager.DeleteTask(childTask);
+        
         if ((int)statusCode >= 200 && (int)statusCode < 300)
         {
             this.lastExecuted = DateTime.Now;
@@ -108,10 +113,10 @@ public abstract class TrangaTask
 
     private TimeSpan GetRemainingTime()
     {
-        if(progress == 0 || lastChange == DateTime.MaxValue || executionStarted == DateTime.UnixEpoch)
-            return TimeSpan.Zero;
+        if(progress == 0 || state is ExecutionState.Enqueued or ExecutionState.Waiting or ExecutionState.Failed || lastChange == DateTime.MaxValue)
+            return DateTime.MaxValue.Subtract(lastChange).Subtract(TimeSpan.FromHours(1));
         TimeSpan elapsed = lastChange.Subtract(executionStarted);
-        return elapsed.Divide(progress).Subtract(elapsed);
+        return elapsed.Divide(progress).Multiply(1 - progress);
     }
 
     public enum Task : byte
