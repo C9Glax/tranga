@@ -201,7 +201,7 @@ function DeleteTaskClick(){
 
 function StartTaskClick(){
     var toEditTask = tasks.filter(task => task.publication.internalId == toEditId)[0];
-    StartTask("DownloadNewChapters", toEditTask.connectorName, toEditId);
+    StartTask("MonitorPublication", toEditTask.connectorName, toEditId);
     HidePublicationPopup();
 }
 

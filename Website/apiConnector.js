@@ -84,7 +84,7 @@ async function GetRunningTasks(){
 }
 
 async function GetDownloadTasks(){
-    var uri = apiUri + "/Tasks?taskType=DownloadNewChapters";
+    var uri = apiUri + "/Tasks?taskType=MonitorPublication";
     let json = await GetData(uri);
     return json;
 }
