@@ -128,18 +128,15 @@ public class TaskManager
                 _allTasks.Add(newTask);
                 break;
             case TrangaTask.Task.MonitorPublication:
-                if (!_allTasks.Any(mTask => mTask is MonitorPublicationTask mpt && newTask is MonitorPublicationTask nMpt &&
-                                            mpt.publication.internalId == nMpt.publication.internalId &&
-                                            mpt.connectorName == nMpt.connectorName))
+                MonitorPublicationTask mpt = (MonitorPublicationTask)newTask;
+                if(!GetTasksMatching(mpt.task, mpt.connectorName, internalId:mpt.publication.internalId).Any())
                     _allTasks.Add(newTask);
                 else
                     logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
                 break;
             case TrangaTask.Task.DownloadChapter:
-                if (!_allTasks.Any(mTask => mTask is DownloadChapterTask dct && newTask is DownloadChapterTask nDct &&
-                                            dct.publication.internalId == nDct.publication.internalId &&
-                                            dct.connectorName == nDct.connectorName &&
-                                            dct.chapter.sortNumber == nDct.chapter.sortNumber))
+                DownloadChapterTask dct = (DownloadChapterTask)newTask;
+                if(!GetTasksMatching(dct.task, dct.connectorName, internalId:dct.publication.internalId, chapterSortNumber:dct.chapter.sortNumber).Any())
                     _allTasks.Add(newTask);
                 else
                     logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
@@ -182,7 +179,7 @@ public class TaskManager
                 {
                     return _allTasks.Where(mTask =>
                         mTask is MonitorPublicationTask mpt && mpt.connectorName == connectorName &&
-                        mpt.publication.internalId == internalId);
+                        string.Concat(settings.CleanIdRex.Matches(mpt.publication.internalId)) == string.Concat(settings.CleanIdRex.Matches(internalId)));
                 }
                 else
                     return _allTasks.Where(tTask =>
@@ -202,7 +199,7 @@ public class TaskManager
                 {
                     return _allTasks.Where(mTask =>
                         mTask is DownloadChapterTask dct && dct.connectorName == connectorName &&
-                        dct.publication.publicationId == internalId &&
+                        string.Concat(settings.CleanIdRex.Matches(dct.publication.internalId)) == string.Concat(settings.CleanIdRex.Matches(internalId)) &&
                         dct.chapter.sortNumber == chapterSortNumber);
                 }
                 else
