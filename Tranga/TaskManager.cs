@@ -28,7 +28,7 @@ public class TaskManager
             new MangaDex(settings.downloadLocation, settings.coverImageCache, logger),
             new Manganato(settings.downloadLocation, settings.coverImageCache, logger),
             new Mangasee(settings.downloadLocation, settings.coverImageCache, logger),
-			new MangaKatana(settings.downloadLocation, settings.coverImageCache, logger)
+            new MangaKatana(settings.downloadLocation, settings.coverImageCache, logger)
         };
         
         this.settings = settings;

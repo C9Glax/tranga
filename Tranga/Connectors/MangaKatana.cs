@@ -74,10 +74,7 @@ public class MangaKatana : Connector
 		string[] authors = Array.Empty<string>();
 		string originalLanguage = "";
 
-		//HtmlNode infoNode = document.DocumentNode.Descendants("div").First(d => d.HasClass("story-info-right"));
 		HtmlNode infoNode = document.DocumentNode.SelectSingleNode("//*[@id='single_book']");
-
-		//string sortName = infoNode.Descendants("h1").First().InnerText;
 		string sortName = infoNode.Descendants("h1").First(n => n.HasClass("heading")).InnerText;
 		HtmlNode infoTable = infoNode.SelectSingleNode("//*[@id='single_book']/div[2]/div/ul");
 
@@ -165,7 +162,7 @@ public class MangaKatana : Connector
 				.GetAttributeValue("href", "");
 			ret.Add(new Chapter(chapterName, volumeNumber, chapterNumber, url));
 		}
-		ret.Reverse();
+		
 		return ret;
 	}
 
