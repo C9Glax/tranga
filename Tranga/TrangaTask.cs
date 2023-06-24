@@ -72,7 +72,7 @@ public abstract class TrangaTask
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
-        if(parentTask is not null && parentTask.childTasks.All(ct => ct.state is ExecutionState.Waiting))
+        if(parentTask is not null && parentTask.childTasks.All(ct => ct.state is ExecutionState.Waiting or ExecutionState.Failed))
             parentTask.executionStarted = DateTime.Now;
         
         HttpStatusCode statusCode = ExecuteTask(taskManager, logger, cancellationToken);

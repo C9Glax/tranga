@@ -333,17 +333,16 @@ public class TaskManager
             this._allTasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(buffer, new JsonSerializerSettings() { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
         }
 
-        foreach (TrangaTask task in this._allTasks.Where(tTask => tTask.parentTaskId is not null))
+        foreach (TrangaTask task in this._allTasks.Where(tTask => tTask.parentTaskId is not null).ToArray())
         {
             TrangaTask? parentTask = this._allTasks.FirstOrDefault(pTask => pTask.taskId == task.parentTaskId);
             if (parentTask is not null)
             {
-                task.parentTask = parentTask;
-                parentTask.AddChildTask(task);
+                this.DeleteTask(task);
+                parentTask.lastExecuted = DateTime.UnixEpoch;
             }
         }
-            
-
+        
         if (File.Exists(settings.knownPublicationsPath))
         {
             logger?.WriteLine(this.GetType().ToString(), $"Importing known publications from {settings.knownPublicationsPath}");
