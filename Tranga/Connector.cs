@@ -186,15 +186,21 @@ public abstract class Connector
     /// <returns>true if chapter is present</returns>
     public bool CheckChapterIsDownloaded(Publication publication, Chapter chapter)
     {
-        Regex legalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
-        string oldFilePath = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - V{chapter.volumeNumber}C{chapter.chapterNumber} - {chapter.sortNumber}.cbz");
-        string oldFilePath2 = Path.Join(downloadLocation, publication.folderName, $"{string.Concat(legalCharacters.Matches(chapter.name ?? ""))} - VC{chapter.chapterNumber} - {chapter.chapterNumber}.cbz");
         string newFilePath = GetArchiveFilePath(publication, chapter);
-        if (File.Exists(oldFilePath))
-            File.Move(oldFilePath, newFilePath);
-        else if (File.Exists(oldFilePath2))
-            File.Move(oldFilePath2, newFilePath);
-        return File.Exists(newFilePath);
+        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, publication.folderName)).GetFiles("*.cbz");
+        Regex chapterRex = new(@"(Vol.[0-9]*)*Ch.[0-9]+");
+        
+        if (File.Exists(newFilePath))
+            return true;
+        
+        if (archives.FirstOrDefault(archive =>
+                     chapterRex.Match(archive.Name).Value.Split("Ch.")[^1] == chapter.chapterNumber) is { } path)
+        {
+            logger?.WriteLine(this.GetType().ToString(), "Move existing Chapter to new name.");
+            File.Move(path.FullName, newFilePath);
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
