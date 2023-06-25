@@ -180,7 +180,7 @@ public class TaskManager
                 {
                     return _allTasks.Where(mTask =>
                         mTask is MonitorPublicationTask mpt && mpt.connectorName == connectorName &&
-                        string.Concat(TrangaSettings.CleanIdRex.Matches(mpt.publication.internalId)) == string.Concat(TrangaSettings.CleanIdRex.Matches(internalId)));
+                        mpt.publication.internalId == internalId);
                 }
                 else
                     return _allTasks.Where(tTask =>
@@ -200,7 +200,7 @@ public class TaskManager
                 {
                     return _allTasks.Where(mTask =>
                         mTask is DownloadChapterTask dct && dct.connectorName == connectorName &&
-                        string.Concat(TrangaSettings.CleanIdRex.Matches(dct.publication.internalId)) == string.Concat(TrangaSettings.CleanIdRex.Matches(internalId)) &&
+                        dct.publication.internalId == internalId &&
                         dct.chapter.sortNumber == chapterSortNumber);
                 }
                 else
