@@ -152,7 +152,7 @@ public class RequestHandler
                     _taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName1).Value;
                 if (connector1 is null)
                     return;
-                Publication? publication1 = _taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId1);
+                Publication? publication1 = _taskManager.GetAllPublications().FirstOrDefault(pub => string.Concat(TrangaSettings.CleanIdRex.Matches(pub.internalId)) == string.Concat(TrangaSettings.CleanIdRex.Matches(internalId1)));
                 if (publication1 is null)
                     return;
                 _taskManager.AddTask(new MonitorPublicationTask(connectorName1, (Publication)publication1, TimeSpan.Parse(reoccurrenceTime1), language1 ?? "en"));
@@ -174,7 +174,7 @@ public class RequestHandler
                     _taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName2).Value;
                 if (connector2 is null)
                     return;
-                Publication? publication2 = _taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId2);
+                Publication? publication2 = _taskManager.GetAllPublications().FirstOrDefault(pub => string.Concat(TrangaSettings.CleanIdRex.Matches(pub.internalId)) == string.Concat(TrangaSettings.CleanIdRex.Matches(internalId2)));
                 if (publication2 is null)
                     return;
     
@@ -261,7 +261,7 @@ public class RequestHandler
                 variables.TryGetValue("internalId", out string? internalId1);
                 if(internalId1 is null)
                     return _taskManager.GetAllPublications();
-                return new [] { _taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId1) };
+                return new [] { _taskManager.GetAllPublications().FirstOrDefault(pub => string.Concat(TrangaSettings.CleanIdRex.Matches(pub.internalId)) == string.Concat(TrangaSettings.CleanIdRex.Matches(internalId1))) };
             case "/Publications/FromConnector":
                 variables.TryGetValue("connectorName", out string? connectorName1);
                 variables.TryGetValue("title", out string? title);
@@ -288,7 +288,7 @@ public class RequestHandler
                 Connector? connector2 = _taskManager.GetAvailableConnectors().FirstOrDefault(con => con.Key == connectorName2).Value;
                 if (connector2 is null)
                     return null;
-                Publication? publication = _taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId2);
+                Publication? publication = _taskManager.GetAllPublications().FirstOrDefault(pub => string.Concat(TrangaSettings.CleanIdRex.Matches(pub.internalId)) == string.Concat(TrangaSettings.CleanIdRex.Matches(internalId2)));
                 if (publication is null)
                     return null;
         

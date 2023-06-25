@@ -16,7 +16,7 @@ public class TrangaSettings
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public HashSet<LibraryManager> libraryManagers { get; }
     public HashSet<NotificationManager> notificationManagers { get; }
-    [JsonIgnore]internal Regex CleanIdRex = new (@"[a-zA-Z0-9]*-*_*");
+    [JsonIgnore] public static Regex CleanIdRex = new (@"([a-zA-Z0-9]*-*_*)*");
 
     public TrangaSettings(string downloadLocation, string workingDirectory, HashSet<LibraryManager>? libraryManagers,
         HashSet<NotificationManager>? notificationManagers)
