@@ -187,7 +187,9 @@ public abstract class Connector
     public bool CheckChapterIsDownloaded(Publication publication, Chapter chapter)
     {
         string newFilePath = GetArchiveFilePath(publication, chapter);
-        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, publication.folderName)).GetFiles("*.cbz");
+        if (!Directory.Exists(Path.Join(downloadLocation, publication.folderName)))
+            return false;
+        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, publication.folderName)).GetFiles();
         Regex chapterRex = new(@"(Vol.[0-9]*)*Ch.[0-9]+");
         
         if (File.Exists(newFilePath))
