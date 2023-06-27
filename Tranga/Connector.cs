@@ -159,60 +159,6 @@ public abstract class Connector
     }
 
     /// <summary>
-    /// Creates a string containing XML of publication and chapter.
-    /// See ComicInfo.xml
-    /// </summary>
-    /// <returns>XML-string</returns>
-    internal static string GetComicInfoXmlString(Publication publication, Chapter chapter, Logger? logger)
-    {
-        logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
-        XElement comicInfo = new XElement("ComicInfo",
-            new XElement("Tags", string.Join(',',publication.tags)),
-            new XElement("LanguageISO", publication.originalLanguage),
-            new XElement("Title", chapter.name),
-            new XElement("Writer", string.Join(',', publication.authors)),
-            new XElement("Volume", chapter.volumeNumber),
-            new XElement("Number", chapter.chapterNumber)
-        );
-        return comicInfo.ToString();
-    }
-
-    /// <summary>
-    /// Checks if a chapter-archive is already present
-    /// </summary>
-    /// <returns>true if chapter is present</returns>
-    public bool CheckChapterIsDownloaded(Publication publication, Chapter chapter)
-    {
-        string newFilePath = GetArchiveFilePath(publication, chapter);
-        if (!Directory.Exists(Path.Join(settings.downloadLocation, publication.folderName)))
-            return false;
-        FileInfo[] archives = new DirectoryInfo(Path.Join(settings.downloadLocation, publication.folderName)).GetFiles();
-        Regex infoRex = new(@"(Vol.[0-9]*)?Ch.[0-9]+");
-        Regex chapterInfoRex = new(@"Ch.[0-9]+");
-        Regex chapterRex = new(@"[0-9]+");
-        
-        if (File.Exists(newFilePath))
-            return true;
-        
-        if (archives.FirstOrDefault(archive => chapterRex.Match(chapterInfoRex.Match(infoRex.Match(archive.Name).Value).Value).Value == chapter.chapterNumber) is { } path)
-        {
-            logger?.WriteLine(this.GetType().ToString(), "Move existing Chapter to new name.");
-            File.Move(path.FullName, newFilePath);
-            return true;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Creates full file path of chapter-archive
-    /// </summary>
-    /// <returns>Filepath</returns>
-    protected string GetArchiveFilePath(Publication publication, Chapter chapter)
-    {
-        return Path.Join(settings.downloadLocation, publication.folderName, $"{publication.folderName} - {chapter.fileName}.cbz");
-    }
-
-    /// <summary>
     /// Downloads Image from URL and saves it to the given path(incl. fileName)
     /// </summary>
     /// <param name="imageUrl"></param>

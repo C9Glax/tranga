@@ -139,12 +139,12 @@ public class Manganato : Connector
         {
             NumberDecimalSeparator = "."
         };
-        List<Chapter> chapters = ParseChaptersFromHtml(requestResult.result);
+        List<Chapter> chapters = ParseChaptersFromHtml(publication, requestResult.result);
         logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    private List<Chapter> ParseChaptersFromHtml(Stream html)
+    private List<Chapter> ParseChaptersFromHtml(Publication publication, Stream html)
     {
         StreamReader reader = new (html);
         string htmlString = reader.ReadToEnd();
@@ -163,7 +163,7 @@ public class Manganato : Connector
             string chapterName = string.Concat(fullString.Split(':')[1..]);
             string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
                 .GetAttributeValue("href", "");
-            ret.Add(new Chapter(chapterName, volumeNumber, chapterNumber, url));
+            ret.Add(new Chapter(publication, chapterName, volumeNumber, chapterNumber, url));
         }
         ret.Reverse();
         return ret;
@@ -183,9 +183,9 @@ public class Manganato : Connector
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.result);
         
         string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
+        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
+        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
     }
 
     private string[] ParseImageUrlsFromHtml(Stream html)

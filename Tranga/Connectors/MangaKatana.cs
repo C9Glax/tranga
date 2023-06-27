@@ -136,12 +136,12 @@ public class MangaKatana : Connector
 		{
 			NumberDecimalSeparator = "."
 		};
-		List<Chapter> chapters = ParseChaptersFromHtml(requestUrl);
+		List<Chapter> chapters = ParseChaptersFromHtml(publication, requestUrl);
 		logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
 		return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
 	}
 
-	private List<Chapter> ParseChaptersFromHtml(string mangaUrl)
+	private List<Chapter> ParseChaptersFromHtml(Publication publication, string mangaUrl)
 	{
 		// Using HtmlWeb will include the chapters since they are loaded with js 
 		HtmlWeb web = new();
@@ -160,7 +160,7 @@ public class MangaKatana : Connector
 			string chapterName = string.Concat(fullString.Split(':')[1..]);
 			string url = chapterInfo.Descendants("a").First()
 				.GetAttributeValue("href", "");
-			ret.Add(new Chapter(chapterName, volumeNumber, chapterNumber, url));
+			ret.Add(new Chapter(publication, chapterName, volumeNumber, chapterNumber, url));
 		}
 		
 		return ret;
@@ -181,9 +181,9 @@ public class MangaKatana : Connector
 		string[] imageUrls = ParseImageUrlsFromHtml(requestUrl);
 
 		string comicInfoPath = Path.GetTempFileName();
-		File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
+		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		return DownloadChapterImages(imageUrls, GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, "https://mangakatana.com/", cancellationToken);
+		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), (byte)1, parentTask, comicInfoPath, "https://mangakatana.com/", cancellationToken);
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)

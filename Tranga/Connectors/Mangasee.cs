@@ -196,7 +196,7 @@ public class Mangasee : Connector
 
             string url = chapter.Descendants("link").First().Value;
             url = url.Replace(Regex.Matches(url,"(-page-[0-9])")[0].ToString(),"");
-            ret.Add(new Chapter("", volumeNumber, chapterNumber, url));
+            ret.Add(new Chapter(publication, "", volumeNumber, chapterNumber, url));
         }
 
         //Return Chapters ordered by Chapter-Number
@@ -235,9 +235,9 @@ public class Mangasee : Connector
                 urls.Add(galleryImage.GetAttributeValue("src", ""));
             
             string comicInfoPath = Path.GetTempFileName();
-            File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
+            File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-            return DownloadChapterImages(urls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
+            return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
         }
         return response.Status;
     }

@@ -296,7 +296,7 @@ public class TaskManager
         chapterCollection.TryAdd(publication, newChaptersList); //To ensure publication is actually in collection
         
         Chapter[] newChapters = connector.GetChapters(publication, language);
-        newChaptersList = newChapters.Where(nChapter => !connector.CheckChapterIsDownloaded(publication, nChapter)).ToList();
+        newChaptersList = newChapters.Where(nChapter => !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
         
         return newChaptersList;
     }
@@ -304,7 +304,7 @@ public class TaskManager
     public List<Chapter> GetExistingChaptersList(Connector connector, Publication publication, string language)
     {
         Chapter[] newChapters = connector.GetChapters(publication, language);
-        return newChapters.Where(nChapter => connector.CheckChapterIsDownloaded(publication, nChapter)).ToList();
+        return newChapters.Where(nChapter => nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
     }
 
     /// <summary>

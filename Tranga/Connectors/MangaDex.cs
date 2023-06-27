@@ -194,7 +194,7 @@ public class MangaDex : Connector
                     ? attributes["chapter"]!.GetValue<string>()
                     : null;
                 
-                chapters.Add(new Chapter(title, volume, chapterNum, chapterId));
+                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
             }
         }
 
@@ -230,10 +230,10 @@ public class MangaDex : Connector
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
 
         string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, GetComicInfoXmlString(publication, chapter, logger));
+        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
         //Download Chapter-Images
-        return DownloadChapterImages(imageUrls.ToArray(), GetArchiveFilePath(publication, chapter), (byte)RequestType.AtHomeServer, parentTask, comicInfoPath, cancellationToken:cancellationToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, parentTask, comicInfoPath, cancellationToken:cancellationToken);
     }
 
     private string? GetCoverUrl(string publicationId, string? posterId)
