@@ -514,7 +514,7 @@ public static class Tranga_Cli
         while(selectedChapters is null || selectedChapters.Length < 1)
             selectedChapters = Console.ReadLine();
 
-        return connector.SearchChapters(publication, selectedChapters);
+        return connector.SelectChapters(publication, selectedChapters);
     }
 
     private static Connector? SelectConnector(Connector[] connectors, Logger logger)

@@ -182,7 +182,7 @@ public class RequestHandler
                 if (publication2 is null)
                     return;
     
-                IEnumerable<Chapter> toDownload = connector2.SearchChapters((Publication)publication2, chapters, language2 ?? "en");
+                IEnumerable<Chapter> toDownload = connector2.SelectChapters((Publication)publication2, chapters, language2 ?? "en");
                 foreach(Chapter chapter in toDownload)
                     _taskManager.AddTask(new DownloadChapterTask(connectorName2, (Publication)publication2, chapter, "en"));
                 break;

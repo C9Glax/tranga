@@ -48,13 +48,14 @@ public abstract class Connector
     /// <returns>Array of Chapters matching Publication and Language</returns>
     public abstract Chapter[] GetChapters(Publication publication, string language = "");
 
-    public Chapter[] SearchChapters(Publication publication, string searchTerm, string? language = null)
+    public Chapter[] SelectChapters(Publication publication, string searchTerm, string? language = null)
     {
         Chapter[] availableChapters = this.GetChapters(publication, language??"en");
         Regex volumeRegex = new ("((v(ol)*(olume)*)+ *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
         Regex chapterRegex = new ("((c(h)*(hapter)*)+ *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
         Regex singleResultRegex = new("([0-9]+)", RegexOptions.IgnoreCase);
         Regex rangeResultRegex = new("([0-9]+(-[0-9]+))", RegexOptions.IgnoreCase);
+        Regex allRegex = new("a(ll)?", RegexOptions.IgnoreCase);
         if (volumeRegex.IsMatch(searchTerm) && chapterRegex.IsMatch(searchTerm))
         {
             string volume = singleResultRegex.Match(volumeRegex.Match(searchTerm).Value).Value;
@@ -115,6 +116,8 @@ public abstract class Connector
             }
             else if(singleResultRegex.IsMatch(searchTerm))
                 return new [] { availableChapters[Convert.ToInt32(searchTerm)] };
+            else if (allRegex.IsMatch(searchTerm))
+                return availableChapters;
         }
 
         return Array.Empty<Chapter>();
