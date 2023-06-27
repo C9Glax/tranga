@@ -13,12 +13,11 @@ public class TaskManager
 {
     public Dictionary<Publication, List<Chapter>> chapterCollection = new();
     private HashSet<TrangaTask> _allTasks = new();
+    private readonly Dictionary<TrangaTask, CancellationTokenSource> _runningTasks = new ();
     private bool _continueRunning = true;
     private readonly Connector[] _connectors;
     public TrangaSettings settings { get; }
     private Logger? logger { get; }
-
-    private readonly Dictionary<DownloadChapterTask, CancellationTokenSource> _runningDownloadChapterTasks = new();
 
     public TaskManager(TrangaSettings settings, Logger? logger = null)
     {
@@ -86,17 +85,16 @@ public class TaskManager
             foreach (TrangaTask timedOutTask in _allTasks
                          .Where(taskQuery => taskQuery.lastChange < DateTime.Now.Subtract(TimeSpan.FromMinutes(3))))
             {
-                if(timedOutTask is DownloadChapterTask dct)
-                    _runningDownloadChapterTasks[dct].Cancel();
+                _runningTasks[timedOutTask].Cancel();
                 timedOutTask.state = TrangaTask.ExecutionState.Failed;
             }
             
-            foreach (TrangaTask failedDownloadChapterTask in _allTasks.Where(taskQuery =>
-                         taskQuery.state is TrangaTask.ExecutionState.Failed && taskQuery is DownloadChapterTask).ToArray())
+            foreach (TrangaTask failedTask in _allTasks.Where(taskQuery =>
+                         taskQuery.state is TrangaTask.ExecutionState.Failed).ToArray())
             {
-                DeleteTask(failedDownloadChapterTask);
-                TrangaTask newTask = failedDownloadChapterTask.Clone();
-                failedDownloadChapterTask.parentTask?.AddChildTask(newTask);
+                DeleteTask(failedTask);
+                TrangaTask newTask = failedTask.Clone();
+                failedTask.parentTask?.AddChildTask(newTask);
                 AddTask(newTask);
             }
             
@@ -119,8 +117,7 @@ public class TaskManager
         {
             task.Execute(this, this.logger, cToken.Token);
         }, cToken.Token);
-        if(task is DownloadChapterTask chapterTask)
-            _runningDownloadChapterTasks.Add(chapterTask, cToken);
+        _runningTasks.Add(task, cToken);
         t.Start();
     }
 
@@ -157,12 +154,13 @@ public class TaskManager
     public void DeleteTask(TrangaTask removeTask)
     {
         logger?.WriteLine(this.GetType().ToString(), $"Removing Task {removeTask}");
-        _allTasks.Remove(removeTask);
+        if(_allTasks.Contains(removeTask))
+            _allTasks.Remove(removeTask);
         removeTask.parentTask?.RemoveChildTask(removeTask);
-        if (removeTask is DownloadChapterTask cRemoveTask && _runningDownloadChapterTasks.ContainsKey(cRemoveTask))
+        if (_runningTasks.ContainsKey(removeTask))
         {
-            _runningDownloadChapterTasks[cRemoveTask].Cancel();
-            _runningDownloadChapterTasks.Remove(cRemoveTask);
+            _runningTasks[removeTask].Cancel();
+            _runningTasks.Remove(removeTask);
         }
         foreach(TrangaTask childTask in removeTask.childTasks)
             DeleteTask(childTask);
