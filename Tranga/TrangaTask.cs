@@ -79,6 +79,22 @@ public abstract class TrangaTask
         
         while(childTasks.Any(ct => ct.state is ExecutionState.Enqueued or ExecutionState.Running))
             Thread.Sleep(1000);
+        
+        if((int)statusCode >= 200 && (int)statusCode < 300 && parentTask is null)
+            foreach(NotificationManager nm in taskManager.settings.notificationManagers)
+                switch (this.task)
+                {
+                    case Task.MonitorPublication:
+                        MonitorPublicationTask mpt = (MonitorPublicationTask)this;
+                        nm.SendNotification("Downloaded new chapters",
+                            $"{mpt.publication.sortName}: {this.childTasks.Count(ct => ct.state is ExecutionState.Success)} new chapters.");
+                        break;
+                    case Task.DownloadChapter:
+                        DownloadChapterTask dct = (DownloadChapterTask)this;
+                        nm.SendNotification("Chapter downloaded", $"{dct.publication.sortName} {dct.chapter.chapterNumber} {dct.chapter.name}");
+                        break;
+                }
+        
         foreach(TrangaTask childTask in this.childTasks.ToArray())
             taskManager.DeleteTask(childTask);
         
