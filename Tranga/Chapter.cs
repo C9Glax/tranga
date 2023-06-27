@@ -45,15 +45,14 @@ public struct Chapter
         if (!Directory.Exists(Path.Join(downloadLocation, parentPublication.folderName)))
             return false;
         FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, parentPublication.folderName)).GetFiles();
-        Regex infoRex = new(@"(Vol.[0-9]*)?Ch.[0-9]+");
-        Regex chapterInfoRex = new(@"Ch.[0-9]+");
-        Regex chapterRex = new(@"[0-9]+");
+        Regex chapterInfoRex = new(@"Ch\.[0-9.]+");
+        Regex chapterRex = new(@"[0-9]+(\.[0-9]+)?");
         
         if (File.Exists(newFilePath))
             return true;
 
         string cn = this.chapterNumber;
-        if (archives.FirstOrDefault(archive => chapterRex.Match(chapterInfoRex.Match(infoRex.Match(archive.Name).Value).Value).Value == cn) is { } path)
+        if (archives.FirstOrDefault(archive => chapterRex.Match(chapterInfoRex.Match(archive.Name).Value).Value == cn) is { } path)
         {
             File.Move(path.FullName, newFilePath);
             return true;
