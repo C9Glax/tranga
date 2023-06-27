@@ -60,7 +60,7 @@ public abstract class Connector
         {
             string volume = singleResultRegex.Match(volumeRegex.Match(searchTerm).Value).Value;
             string chapter = singleResultRegex.Match(chapterRegex.Match(searchTerm).Value).Value;
-            return availableChapters.Where(aCh => aCh.volumeNumber is not null && aCh.chapterNumber is not null &&
+            return availableChapters.Where(aCh => aCh.volumeNumber is not null &&
                 aCh.volumeNumber.Equals(volume, StringComparison.InvariantCultureIgnoreCase) &&
                 aCh.chapterNumber.Equals(chapter, StringComparison.InvariantCultureIgnoreCase))
                 .ToArray();
@@ -94,15 +94,13 @@ public abstract class Connector
                 string range = rangeResultRegex.Match(chapter).Value;
                 int start = Convert.ToInt32(range.Split('-')[0]);
                 int end = Convert.ToInt32(range.Split('-')[1]);
-                return availableChapters.Where(aCh => aCh.chapterNumber is not null &&
-                                                      Convert.ToInt32(aCh.chapterNumber) >= start &&
+                return availableChapters.Where(aCh => Convert.ToInt32(aCh.chapterNumber) >= start &&
                                                       Convert.ToInt32(aCh.chapterNumber) <= end).ToArray();
             }
             else if (singleResultRegex.IsMatch(chapter))
             {
                 string chapterNumber = singleResultRegex.Match(chapter).Value;
                 return availableChapters.Where(aCh =>
-                    aCh.chapterNumber is not null &&
                     aCh.chapterNumber.Equals(chapterNumber, StringComparison.InvariantCultureIgnoreCase)).ToArray();
             }
         }
