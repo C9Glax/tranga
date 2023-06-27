@@ -190,9 +190,9 @@ public class MangaDex : Connector
                     ? attributes["volume"]!.GetValue<string>()
                     : null;
                 
-                string? chapterNum = attributes.ContainsKey("chapter") && attributes["chapter"] is not null
+                string chapterNum = attributes.ContainsKey("chapter") && attributes["chapter"] is not null
                     ? attributes["chapter"]!.GetValue<string>()
-                    : null;
+                    : "null";
                 
                 chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
             }
