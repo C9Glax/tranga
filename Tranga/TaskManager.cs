@@ -123,32 +123,27 @@ public class TaskManager
 
     public void AddTask(TrangaTask newTask)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {newTask}");
-
         switch (newTask.task)
         {
             case TrangaTask.Task.UpdateLibraries:
                 //Only one UpdateKomgaLibrary Task
                 logger?.WriteLine(this.GetType().ToString(), $"Replacing old {newTask.task}-Task.");
-                _allTasks.RemoveWhere(trangaTask => trangaTask.task is TrangaTask.Task.UpdateLibraries);
+                if (GetTasksMatching(newTask).FirstOrDefault() is { } exists)
+                    _allTasks.Remove(exists);
                 _allTasks.Add(newTask);
+                ExportDataAndSettings();
                 break;
-            case TrangaTask.Task.MonitorPublication:
-                MonitorPublicationTask mpt = (MonitorPublicationTask)newTask;
-                if(!GetTasksMatching(mpt.task, mpt.connectorName, internalId:mpt.publication.internalId).Any())
+            default:
+                if (!GetTasksMatching(newTask).Any())
+                {
+                    logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {newTask}");
                     _allTasks.Add(newTask);
-                else
-                    logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
-                break;
-            case TrangaTask.Task.DownloadChapter:
-                DownloadChapterTask dct = (DownloadChapterTask)newTask;
-                if(!GetTasksMatching(dct.task, dct.connectorName, internalId:dct.publication.internalId, chapterSortNumber:dct.chapter.sortNumber).Any())
-                    _allTasks.Add(newTask);
+                    ExportDataAndSettings();
+                }
                 else
                     logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
                 break;
         }
-        ExportDataAndSettings();
     }
 
     public void DeleteTask(TrangaTask removeTask)
@@ -164,6 +159,24 @@ public class TaskManager
         }
         foreach(TrangaTask childTask in removeTask.childTasks)
             DeleteTask(childTask);
+    }
+
+    public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask mTask)
+    {
+        switch (mTask.task)
+        {
+            case TrangaTask.Task.UpdateLibraries:
+                return GetTasksMatching(TrangaTask.Task.UpdateLibraries);
+            case TrangaTask.Task.DownloadChapter:
+                DownloadChapterTask dct = (DownloadChapterTask)mTask;
+                return GetTasksMatching(TrangaTask.Task.DownloadChapter, connectorName: dct.connectorName,
+                    internalId: dct.publication.internalId);
+            case TrangaTask.Task.MonitorPublication:
+                MonitorPublicationTask mpt = (MonitorPublicationTask)mTask;
+                return GetTasksMatching(TrangaTask.Task.MonitorPublication, connectorName: mpt.connectorName,
+                    internalId: mpt.publication.internalId);
+        }
+        return Array.Empty<TrangaTask>();
     }
 
     public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null, string? chapterSortNumber = null)
