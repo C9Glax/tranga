@@ -15,7 +15,8 @@ public struct Chapter
     public string url { get; }
     public string fileName { get; }
     
-    private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
+    private static readonly Regex LegalCharacters = new (@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
+    private static readonly Regex IllegalStrings = new(@"Vol(ume)?.?", RegexOptions.IgnoreCase);
     public Chapter(string? name, string? volumeNumber, string? chapterNumber, string url)
     {
         this.name = name;
@@ -27,7 +28,7 @@ public struct Chapter
         string volStr = this.volumeNumber is not null ? $"Vol.{this.volumeNumber} " : "";
         string chNumberStr = this.chapterNumber is not null ? $"Ch.{chapterNumber} " : "";
         string chNameStr = chapterName.Length > 0 ? $"- {chapterName}" : "";
-        chNameStr = chNameStr.Replace("Volume", "").Replace("volume", "");
+        chNameStr = IllegalStrings.Replace(chNameStr, "");
         this.fileName = $"{volStr}{chNumberStr}{chNameStr}";
     }
 }
