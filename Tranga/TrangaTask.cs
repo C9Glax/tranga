@@ -124,7 +124,6 @@ public abstract class TrangaTask
         MonitorPublication = 2,
         UpdateLibraries = 3,
         DownloadChapter = 4,
-        DownloadNewChapters = 2 //legacy
     }
 
     public override string ToString()
