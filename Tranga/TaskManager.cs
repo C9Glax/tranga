@@ -179,7 +179,7 @@ public class TaskManager
         return Array.Empty<TrangaTask>();
     }
 
-    public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null, string? chapterSortNumber = null)
+    public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask.Task taskType, string? connectorName = null, string? searchString = null, string? internalId = null, string? chapterNumber = null)
     {
         switch (taskType)
         {
@@ -215,12 +215,12 @@ public class TaskManager
                         mTask is DownloadChapterTask dct && dct.connectorName == connectorName &&
                         dct.ToString().Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
                 }
-                else if (internalId is not null && chapterSortNumber is not null)
+                else if (internalId is not null && chapterNumber is not null)
                 {
                     return _allTasks.Where(mTask =>
                         mTask is DownloadChapterTask dct && dct.connectorName == connectorName &&
                         dct.publication.internalId == internalId &&
-                        dct.chapter.sortNumber == chapterSortNumber);
+                        dct.chapter.chapterNumber == chapterNumber);
                 }
                 else
                     return _allTasks.Where(mTask =>

@@ -323,7 +323,7 @@ public class RequestHandler
                 variables.TryGetValue("taskType", out string? taskType2);
                 variables.TryGetValue("connectorName", out string? connectorName4);
                 variables.TryGetValue("publicationId", out string? publicationId);
-                variables.TryGetValue("chapterSortNumber", out string? chapterSortNumber);
+                variables.TryGetValue("chapterNumber", out string? chapterNumber);
                 if (taskType2 is null || connectorName4 is null || publicationId is null)
                     return null;
                 Connector? connector =
@@ -337,10 +337,10 @@ public class RequestHandler
                     if (pTask is TrangaTask.Task.MonitorPublication)
                     {
                         task = _taskManager.GetTasksMatching(pTask, connectorName: connectorName4, internalId: publicationId).FirstOrDefault();
-                    }else if (pTask is TrangaTask.Task.DownloadChapter && chapterSortNumber is not null)
+                    }else if (pTask is TrangaTask.Task.DownloadChapter && chapterNumber is not null)
                     {
                         task = _taskManager.GetTasksMatching(pTask, connectorName: connectorName4, internalId: publicationId,
-                            chapterSortNumber: chapterSortNumber).FirstOrDefault();
+                            chapterNumber: chapterNumber).FirstOrDefault();
                     }
                     if (task is null)
                         return null;

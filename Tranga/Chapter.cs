@@ -14,7 +14,6 @@ public struct Chapter
     public string? chapterNumber { get; }
     public string url { get; }
     public string fileName { get; }
-    public string sortNumber { get; }
     
     private static readonly Regex LegalCharacters = new Regex(@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
     public Chapter(string? name, string? volumeNumber, string? chapterNumber, string url)
@@ -23,12 +22,6 @@ public struct Chapter
         this.volumeNumber = volumeNumber;
         this.chapterNumber = chapterNumber;
         this.url = url;
-        NumberFormatInfo nfi = new NumberFormatInfo()
-        {
-            NumberDecimalSeparator = "."
-        };
-        sortNumber = decimal.Round(Convert.ToDecimal(this.volumeNumber ?? "1") * Convert.ToDecimal(this.chapterNumber, nfi), 1)
-            .ToString(nfi);
 
         string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
         string volStr = this.volumeNumber is not null ? $"Vol.{this.volumeNumber} " : "";
