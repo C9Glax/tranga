@@ -11,7 +11,7 @@ public class Manganato : Connector
 {
     public override string name { get; }
     
-    public Manganato(string downloadLocation, string imageCachePath, Logger? logger) : base(downloadLocation, imageCachePath, logger)
+    public Manganato(TrangaSettings settings, Logger? logger = null) : base(settings, logger)
     {
         this.name = "Manganato";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()

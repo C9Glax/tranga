@@ -15,24 +15,18 @@ namespace Tranga;
 /// </summary>
 public abstract class Connector
 {
-    internal string downloadLocation { get; }  //Location of local files
-    protected DownloadClient downloadClient { get; init; }
+    protected TrangaSettings settings { get; }
+    protected DownloadClient downloadClient { get; init; } = null!;
 
     protected readonly Logger? logger;
 
-    private readonly string _imageCachePath;
 
-    protected Connector(string downloadLocation, string imageCachePath, Logger? logger)
+    protected Connector(TrangaSettings settings, Logger? logger = null)
     {
-        this.downloadLocation = downloadLocation;
+        this.settings = settings;
         this.logger = logger;
-        this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
-        {
-            //RequestTypes for RateLimits
-        }, logger);
-        this._imageCachePath = imageCachePath;
-        if (!Directory.Exists(imageCachePath))
-            Directory.CreateDirectory(this._imageCachePath);
+        if (!Directory.Exists(settings.coverImageCache))
+            Directory.CreateDirectory(settings.coverImageCache);
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)
@@ -145,7 +139,7 @@ public abstract class Connector
     {
         logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} -> {publication.internalId}");
         //Check if Publication already has a Folder and cover
-        string publicationFolder = publication.CreatePublicationFolder(downloadLocation);
+        string publicationFolder = publication.CreatePublicationFolder(settings.downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
@@ -187,9 +181,9 @@ public abstract class Connector
     public bool CheckChapterIsDownloaded(Publication publication, Chapter chapter)
     {
         string newFilePath = GetArchiveFilePath(publication, chapter);
-        if (!Directory.Exists(Path.Join(downloadLocation, publication.folderName)))
+        if (!Directory.Exists(Path.Join(settings.downloadLocation, publication.folderName)))
             return false;
-        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, publication.folderName)).GetFiles();
+        FileInfo[] archives = new DirectoryInfo(Path.Join(settings.downloadLocation, publication.folderName)).GetFiles();
         Regex chapterRex = new(@"(Vol.[0-9]*)*Ch.[0-9]+");
         
         if (File.Exists(newFilePath))
@@ -211,7 +205,7 @@ public abstract class Connector
     /// <returns>Filepath</returns>
     protected string GetArchiveFilePath(Publication publication, Chapter chapter)
     {
-        return Path.Join(downloadLocation, publication.folderName, $"{publication.folderName} - {chapter.fileName}.cbz");
+        return Path.Join(settings.downloadLocation, publication.folderName, $"{publication.folderName} - {chapter.fileName}.cbz");
     }
 
     /// <summary>
@@ -289,7 +283,7 @@ public abstract class Connector
     {
         string[] split = url.Split('/');
         string filename = split[^1];
-        string saveImagePath = Path.Join(_imageCachePath, filename);
+        string saveImagePath = Path.Join(settings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))
             return filename;

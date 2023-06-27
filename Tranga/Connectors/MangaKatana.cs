@@ -11,7 +11,7 @@ public class MangaKatana : Connector
 {
 	public override string name { get; }
 
-	public MangaKatana(string downloadLocation, string imageCachePath, Logger? logger) : base(downloadLocation, imageCachePath, logger)
+	public MangaKatana(TrangaSettings settings, Logger? logger = null) : base(settings, logger)
 	{
 		this.name = "MangaKatana";
 		this.downloadClient = new DownloadClient(new Dictionary<byte, int>()

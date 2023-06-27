@@ -25,10 +25,10 @@ public class TaskManager
         this.logger = logger;
         this._connectors = new Connector[]
         {
-            new MangaDex(settings.downloadLocation, settings.coverImageCache, logger),
-            new Manganato(settings.downloadLocation, settings.coverImageCache, logger),
-            new Mangasee(settings.downloadLocation, settings.coverImageCache, logger),
-            new MangaKatana(settings.downloadLocation, settings.coverImageCache, logger)
+            new MangaDex(settings, logger),
+            new Manganato(settings, logger),
+            new Mangasee(settings, logger),
+            new MangaKatana(settings, logger)
         };
         
         this.settings = settings;

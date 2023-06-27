@@ -19,7 +19,7 @@ public class MangaDex : Connector
         Author,
     }
 
-    public MangaDex(string downloadLocation, string imageCachePath, Logger? logger) : base(downloadLocation, imageCachePath, logger)
+    public MangaDex(TrangaSettings settings, Logger? logger = null) : base(settings, logger)
     {
         name = "MangaDex";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()

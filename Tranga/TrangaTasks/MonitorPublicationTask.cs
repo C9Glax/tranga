@@ -27,7 +27,7 @@ public class MonitorPublicationTask : TrangaTask
 
         connector.CopyCoverFromCacheToDownloadLocation(publication, taskManager.settings);
         
-        publication.SaveSeriesInfoJson(connector.downloadLocation);
+        publication.SaveSeriesInfoJson(taskManager.settings.downloadLocation);
 
         foreach (Chapter newChapter in newChapters)
         {

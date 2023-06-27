@@ -16,8 +16,7 @@ public class Mangasee : Connector
     private IBrowser? _browser = null;
     private const string ChromiumVersion = "1154303";
 
-    public Mangasee(string downloadLocation, string imageCachePath, Logger? logger) : base(downloadLocation,
-        imageCachePath, logger)
+    public Mangasee(TrangaSettings settings, Logger? logger = null) : base(settings, logger)
     {
         this.name = "Mangasee";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
