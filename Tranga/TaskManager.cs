@@ -84,7 +84,7 @@ public class TaskManager
             }
 
             foreach (TrangaTask timedOutTask in _allTasks
-                         .Where(taskQuery => taskQuery.lastChange.Add(TimeSpan.FromMinutes(3)) < DateTime.Now))
+                         .Where(taskQuery => taskQuery.lastChange < DateTime.Now.Subtract(TimeSpan.FromMinutes(3))))
             {
                 if(timedOutTask is DownloadChapterTask dct)
                     _runningDownloadChapterTasks[dct].Cancel();
