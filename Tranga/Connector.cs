@@ -163,7 +163,7 @@ public abstract class Connector
     /// See ComicInfo.xml
     /// </summary>
     /// <returns>XML-string</returns>
-    protected static string GetComicInfoXmlString(Publication publication, Chapter chapter, Logger? logger)
+    internal static string GetComicInfoXmlString(Publication publication, Chapter chapter, Logger? logger)
     {
         logger?.WriteLine("Connector", $"Creating ComicInfo.Xml for {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         XElement comicInfo = new XElement("ComicInfo",
