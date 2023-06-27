@@ -94,26 +94,25 @@ public abstract class TrangaTask
                         nm.SendNotification("Chapter downloaded", $"{dct.publication.sortName} {dct.chapter.chapterNumber} {dct.chapter.name}");
                         break;
                 }
-        
-        foreach(TrangaTask childTask in this.childTasks.ToArray())
-            taskManager.DeleteTask(childTask);
+
         
         if ((int)statusCode >= 200 && (int)statusCode < 300)
         {
             this.lastExecuted = DateTime.Now;
-            if (this is DownloadChapterTask)
+            if(this is DownloadChapterTask)
                 this.state = ExecutionState.Success;
             else
                 this.state = ExecutionState.Waiting;
         }
         else
         {
-            if (this is DownloadChapterTask && statusCode == HttpStatusCode.NotFound)
-                this.state = ExecutionState.Success;
-            else
-                this.state = ExecutionState.Failed;
+            this.state = ExecutionState.Failed;
             this.lastExecuted = DateTime.MaxValue;
         }
+
+        foreach (TrangaTask childTask in this.childTasks.Where(ct => ct is DownloadChapterTask).ToArray())
+            taskManager.DeleteTask(childTask);
+        
         logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
     }
 
