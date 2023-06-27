@@ -187,13 +187,14 @@ public abstract class Connector
         if (!Directory.Exists(Path.Join(settings.downloadLocation, publication.folderName)))
             return false;
         FileInfo[] archives = new DirectoryInfo(Path.Join(settings.downloadLocation, publication.folderName)).GetFiles();
-        Regex chapterRex = new(@"(Vol.[0-9]*)*Ch.[0-9]+");
+        Regex infoRex = new(@"(Vol.[0-9]*)?Ch.[0-9]+");
+        Regex chapterInfoRex = new(@"Ch.[0-9]+");
+        Regex chapterRex = new(@"[0-9]+");
         
         if (File.Exists(newFilePath))
             return true;
         
-        if (archives.FirstOrDefault(archive =>
-                     chapterRex.Match(archive.Name).Value.Split("Ch.")[^1] == chapter.chapterNumber) is { } path)
+        if (archives.FirstOrDefault(archive => chapterRex.Match(chapterInfoRex.Match(infoRex.Match(archive.Name).Value).Value).Value == chapter.chapterNumber) is { } path)
         {
             logger?.WriteLine(this.GetType().ToString(), "Move existing Chapter to new name.");
             File.Move(path.FullName, newFilePath);
