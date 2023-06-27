@@ -82,6 +82,14 @@ public class TaskManager
                         break;
                 }
             }
+
+            foreach (TrangaTask timedOutTask in _allTasks
+                         .Where(taskQuery => taskQuery.lastChange.Add(TimeSpan.FromMinutes(3)) < DateTime.Now))
+            {
+                if(timedOutTask is DownloadChapterTask dct)
+                    _runningDownloadChapterTasks[dct].Cancel();
+                timedOutTask.state = TrangaTask.ExecutionState.Failed;
+            }
             
             foreach (TrangaTask failedDownloadChapterTask in _allTasks.Where(taskQuery =>
                          taskQuery.state is TrangaTask.ExecutionState.Failed && taskQuery is DownloadChapterTask).ToArray())
