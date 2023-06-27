@@ -159,6 +159,7 @@ public class TaskManager
         }
         foreach(TrangaTask childTask in removeTask.childTasks)
             DeleteTask(childTask);
+        ExportDataAndSettings();
     }
 
     public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask mTask)
