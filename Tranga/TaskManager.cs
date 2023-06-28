@@ -88,6 +88,21 @@ public class TaskManager
                 _runningTasks[timedOutTask].Cancel();
                 timedOutTask.state = TrangaTask.ExecutionState.Failed;
             }
+
+            foreach (TrangaTask finishedTask in _allTasks
+                         .Where(taskQuery => taskQuery.state is TrangaTask.ExecutionState.Success).ToArray())
+            {
+                if(finishedTask is DownloadChapterTask)
+                {
+                    DeleteTask(finishedTask);
+                    finishedTask.state = TrangaTask.ExecutionState.Success;
+                }
+                else
+                {
+                    finishedTask.state = TrangaTask.ExecutionState.Waiting;
+                    this._runningTasks.Remove(finishedTask);
+                }
+            }
             
             foreach (TrangaTask failedTask in _allTasks.Where(taskQuery =>
                          taskQuery.state is TrangaTask.ExecutionState.Failed).ToArray())

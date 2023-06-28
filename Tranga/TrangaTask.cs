@@ -100,10 +100,7 @@ public abstract class TrangaTask
         if ((int)statusCode >= 200 && (int)statusCode < 300)
         {
             this.lastExecuted = DateTime.Now;
-            if(this is DownloadChapterTask)
-                this.state = ExecutionState.Success;
-            else
-                this.state = ExecutionState.Waiting;
+            this.state = ExecutionState.Success;
         }
         else
         {
