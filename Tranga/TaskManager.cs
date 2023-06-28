@@ -186,7 +186,7 @@ public class TaskManager
             case TrangaTask.Task.DownloadChapter:
                 DownloadChapterTask dct = (DownloadChapterTask)mTask;
                 return GetTasksMatching(TrangaTask.Task.DownloadChapter, connectorName: dct.connectorName,
-                    internalId: dct.publication.internalId);
+                    internalId: dct.publication.internalId, chapterNumber: dct.chapter.chapterNumber);
             case TrangaTask.Task.MonitorPublication:
                 MonitorPublicationTask mpt = (MonitorPublicationTask)mTask;
                 return GetTasksMatching(TrangaTask.Task.MonitorPublication, connectorName: mpt.connectorName,
