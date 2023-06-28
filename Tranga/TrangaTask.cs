@@ -101,6 +101,10 @@ public abstract class TrangaTask
         {
             this.lastExecuted = DateTime.Now;
             this.state = ExecutionState.Success;
+        }else if (statusCode is HttpStatusCode.NotFound)
+        {
+            this.state = ExecutionState.Waiting;
+            this.lastExecuted = DateTime.MaxValue;
         }
         else
         {
