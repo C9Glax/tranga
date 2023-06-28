@@ -194,7 +194,8 @@ public class MangaDex : Connector
                     ? attributes["chapter"]!.GetValue<string>()
                     : "null";
                 
-                chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
+                if(chapterNum is not "null")
+                    chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
             }
         }
 
@@ -203,7 +204,7 @@ public class MangaDex : Connector
         {
             NumberDecimalSeparator = "."
         };
-        logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+        logger?.WriteLine(this.GetType().ToString(), $"Done getting {chapters.Count} Chapters for {publication.internalId}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
