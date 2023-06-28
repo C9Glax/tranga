@@ -11,7 +11,7 @@ namespace Tranga;
 /// </summary>
 public class TaskManager
 {
-    public Dictionary<Publication, List<Chapter>> chapterCollection = new();
+    public HashSet<Publication> collection = new();
     private HashSet<TrangaTask> _allTasks = new();
     private readonly Dictionary<TrangaTask, CancellationTokenSource> _runningTasks = new ();
     private bool _continueRunning = true;
@@ -265,41 +265,11 @@ public class TaskManager
         _allTasks.CopyTo(ret);
         return ret;
     }
-
-    public Publication[] GetPublicationsFromConnector(Connector connector, string? title = null)
-    {
-        Publication[] ret = connector.GetPublications(title ?? "");
-        foreach (Publication publication in ret)
-        {
-            if(chapterCollection.All(pub => pub.Key.internalId != publication.internalId))
-                this.chapterCollection.TryAdd(publication, new List<Chapter>());
-        }
-        return ret;
-    }
     
     /// <returns>All added Publications</returns>
     public Publication[] GetAllPublications()
     {
-        return this.chapterCollection.Keys.ToArray();
-    }
-    
-    
-    /// <summary>
-    /// Updates the available Chapters of a Publication
-    /// </summary>
-    /// <param name="connector">Connector to use</param>
-    /// <param name="publication">Publication to check</param>
-    /// <param name="language">Language to receive chapters for</param>
-    /// <returns>List of Chapters that were previously not in collection</returns>
-    public List<Chapter> GetNewChaptersList(Connector connector, Publication publication, string language)
-    {
-        List<Chapter> newChaptersList = new();
-        chapterCollection.TryAdd(publication, newChaptersList); //To ensure publication is actually in collection
-        
-        Chapter[] newChapters = connector.GetChapters(publication, language);
-        newChaptersList = newChapters.Where(nChapter => !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
-        
-        return newChaptersList;
+        return this.collection.ToArray();
     }
 
     public List<Chapter> GetExistingChaptersList(Connector connector, Publication publication, string language)
@@ -363,15 +333,6 @@ public class TaskManager
                 parentTask.lastExecuted = DateTime.UnixEpoch;
             }
         }
-        
-        if (File.Exists(settings.knownPublicationsPath))
-        {
-            logger?.WriteLine(this.GetType().ToString(), $"Importing known publications from {settings.knownPublicationsPath}");
-            buffer = File.ReadAllText(settings.knownPublicationsPath);
-            Publication[] publications = JsonConvert.DeserializeObject<Publication[]>(buffer)!;
-            foreach (Publication publication in publications)
-                this.chapterCollection.TryAdd(publication, new List<Chapter>());
-        }
     }
 
     /// <summary>
@@ -386,11 +347,6 @@ public class TaskManager
         while(IsFileInUse(settings.tasksFilePath))
             Thread.Sleep(50);
         File.WriteAllText(settings.tasksFilePath, JsonConvert.SerializeObject(this._allTasks));
-        
-        logger?.WriteLine(this.GetType().ToString(), $"Exporting known publications to {settings.knownPublicationsPath}");
-        while(IsFileInUse(settings.knownPublicationsPath))
-            Thread.Sleep(50);
-        File.WriteAllText(settings.knownPublicationsPath, JsonConvert.SerializeObject(this.chapterCollection.Keys.ToArray()));
     }
 
     private bool IsFileInUse(string path)

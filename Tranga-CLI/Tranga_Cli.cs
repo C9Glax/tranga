@@ -565,7 +565,7 @@ public static class Tranga_Cli
         Console.WriteLine("Publication search query (leave empty for all):");
         string? query = Console.ReadLine();
 
-        Publication[] publications = taskManager.GetPublicationsFromConnector(connector, query ?? "");
+        Publication[] publications = connector.GetPublications(query ?? "");
 
         if (publications.Length < 1)
         {

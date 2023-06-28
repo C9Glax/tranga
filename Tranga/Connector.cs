@@ -2,7 +2,6 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Logging;
 using Tranga.TrangaTasks;
 using static System.IO.UnixFileMode;
@@ -47,6 +46,24 @@ public abstract class Connector
     /// <param name="language">Language of the Chapters</param>
     /// <returns>Array of Chapters matching Publication and Language</returns>
     public abstract Chapter[] GetChapters(Publication publication, string language = "");
+
+    /// <summary>
+    /// Updates the available Chapters of a Publication
+    /// </summary>
+    /// <param name="publication">Publication to check</param>
+    /// <param name="language">Language to receive chapters for</param>
+    /// <param name="collection"></param>
+    /// <returns>List of Chapters that were previously not in collection</returns>
+    public List<Chapter> GetNewChaptersList(Publication publication, string language, ref HashSet<Publication> collection)
+    {
+        Chapter[] newChapters = this.GetChapters(publication, language);
+        collection.Add(publication);
+        logger?.WriteLine(this.GetType().ToString(), "Checking for duplicates");
+        List<Chapter> newChaptersList = newChapters.Where(nChapter => !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
+        logger?.WriteLine(this.GetType().ToString(), $"{newChaptersList.Count} new chapters.");
+        
+        return newChaptersList;
+    }
 
     public Chapter[] SelectChapters(Publication publication, string searchTerm, string? language = null)
     {

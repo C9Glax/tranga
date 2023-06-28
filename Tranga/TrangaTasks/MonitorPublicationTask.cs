@@ -23,7 +23,7 @@ public class MonitorPublicationTask : TrangaTask
         
         //Check if Publication already has a Folder
         publication.CreatePublicationFolder(taskManager.settings.downloadLocation);
-        List<Chapter> newChapters = taskManager.GetNewChaptersList(connector, publication, language);
+        List<Chapter> newChapters = connector.GetNewChaptersList(publication, language, ref taskManager.collection);
 
         connector.CopyCoverFromCacheToDownloadLocation(publication, taskManager.settings);
         

@@ -12,7 +12,6 @@ public class TrangaSettings
     public string workingDirectory { get; set; }
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
-    [JsonIgnore] public string knownPublicationsPath => Path.Join(workingDirectory, "knownPublications.json");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public HashSet<LibraryManager> libraryManagers { get; }
     public HashSet<NotificationManager> notificationManagers { get; }

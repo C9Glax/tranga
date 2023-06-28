@@ -276,7 +276,7 @@ public class RequestHandler
                     return null;
                 if(title.Length < 4)
                     return null;
-                return _taskManager.GetPublicationsFromConnector(connector1, title);
+                return connector1.GetPublications(title);
             case "/Publications/Chapters":
                 string[] yes = { "true", "yes", "1", "y" };
                 variables.TryGetValue("connectorName", out string? connectorName2);
@@ -297,7 +297,7 @@ public class RequestHandler
                     return null;
         
                 if(newOnly)
-                    return _taskManager.GetNewChaptersList(connector2, (Publication)publication, language??"en").ToArray();
+                    return connector2.GetNewChaptersList((Publication)publication, language??"en", ref _taskManager.collection).ToArray();
                 else if (existingOnly)
                     return _taskManager.GetExistingChaptersList(connector2, (Publication)publication, language ?? "en").ToArray();
                 else
