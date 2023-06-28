@@ -86,8 +86,9 @@ public abstract class TrangaTask
                 {
                     case Task.MonitorPublication:
                         MonitorPublicationTask mpt = (MonitorPublicationTask)this;
-                        nm.SendNotification("Downloaded new chapters",
-                            $"{mpt.publication.sortName}: {this.childTasks.Count(ct => ct.state is ExecutionState.Success)} new chapters.");
+                        int successfulCount = this.childTasks.Count(ct => ct.state is ExecutionState.Success);
+                        if(successfulCount > 0)
+                            nm.SendNotification("Downloaded new chapters", $"{mpt.publication.sortName}: {successfulCount} new chapters.");
                         break;
                     case Task.DownloadChapter:
                         DownloadChapterTask dct = (DownloadChapterTask)this;
