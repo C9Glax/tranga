@@ -82,7 +82,7 @@ public class TaskManager
                 }
             }
 
-            foreach (TrangaTask timedOutTask in _allTasks
+            foreach (TrangaTask timedOutTask in _runningTasks.Keys
                          .Where(taskQuery => taskQuery.lastChange < DateTime.Now.Subtract(TimeSpan.FromMinutes(3))))
             {
                 _runningTasks[timedOutTask].Cancel();
