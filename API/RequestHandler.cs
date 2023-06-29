@@ -87,7 +87,8 @@ public class RequestHandler
         foreach (string kvpair in query.Split('&').Where(str => str.Length >= 3))
         {
             string var = kvpair.Split('=')[0];
-            string val = kvpair.Substring(var.Length + 1);
+            string val = Regex.Replace(kvpair.Substring(var.Length + 1), "%20", " ");
+            val = Regex.Replace(val, "%[0-9]{2}", "");
             ret.Add(var, val);
         }
         return ret;

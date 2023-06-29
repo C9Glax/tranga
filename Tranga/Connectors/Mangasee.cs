@@ -75,7 +75,6 @@ public class Mangasee : Connector
     public override Publication[] GetPublications(string publicationTitle = "")
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
-        string sanitizedTitle = string.Concat(Regex.Matches(publicationTitle, "[A-z]* *")).ToLower().Replace(' ', '+');
         string requestUrl = $"https://mangasee123.com/_search.php";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);

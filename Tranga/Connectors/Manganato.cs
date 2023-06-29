@@ -23,7 +23,7 @@ public class Manganato : Connector
     public override Publication[] GetPublications(string publicationTitle = "")
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
-        string sanitizedTitle = string.Concat(Regex.Matches(publicationTitle, "[A-z]* *")).ToLower().Replace(' ', '_');
+        string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
