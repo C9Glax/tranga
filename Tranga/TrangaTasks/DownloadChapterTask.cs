@@ -27,6 +27,9 @@ public class DownloadChapterTask : TrangaTask
         Connector connector = taskManager.GetConnector(this.connectorName);
         connector.CopyCoverFromCacheToDownloadLocation(this.publication, taskManager.settings);
         HttpStatusCode downloadSuccess = connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
+        if((int)downloadSuccess >= 200 && (int)downloadSuccess < 300)
+            foreach(NotificationManager nm in taskManager.settings.notificationManagers)
+                nm.SendNotification("Chapter downloaded", $"{this.publication.sortName} {this.chapter.chapterNumber} {this.chapter.name}");
         return downloadSuccess;
     }
 
