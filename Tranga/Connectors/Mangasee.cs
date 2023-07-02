@@ -91,10 +91,9 @@ public class Mangasee : Connector
         Dictionary<SearchResultItem, int> queryFiltered = new();
         foreach (SearchResultItem resultItem in result)
         {
-            foreach (string term in publicationTitle.Split(' '))
-                if (resultItem.i.Contains(term, StringComparison.CurrentCultureIgnoreCase))
-                    if (!queryFiltered.TryAdd(resultItem, 0))
-                        queryFiltered[resultItem]++;
+            int matches = resultItem.GetMatches(publicationTitle);
+            if (matches > 0)
+                queryFiltered.TryAdd(resultItem, matches);
         }
 
         queryFiltered = queryFiltered.Where(item => item.Value >= publicationTitle.Split(' ').Length - 1)
@@ -180,6 +179,30 @@ public class Mangasee : Connector
         public string s { get; set; }
         public string[] a { get; set; }
 #pragma warning restore CS8618
+
+        public int GetMatches(string title)
+        {
+            int ret = 0;
+            Regex cleanRex = new("[A-z0-9]*");
+            string[] badWords = { "a", "so", "as", "and" };
+
+            string[] titleTerms = title.Split(new[] { ' ', '-' }).Where(str => !badWords.Contains(str)).ToArray();
+
+            foreach (Match matchTerm in cleanRex.Matches(this.i))
+                ret += titleTerms.Count(titleTerm =>
+                    titleTerm.Equals(matchTerm.Value, StringComparison.OrdinalIgnoreCase));
+            
+            foreach (Match matchTerm in cleanRex.Matches(this.s))
+                ret += titleTerms.Count(titleTerm =>
+                    titleTerm.Equals(matchTerm.Value, StringComparison.OrdinalIgnoreCase));
+            
+            foreach(string alt in this.a)
+                foreach (Match matchTerm in cleanRex.Matches(alt))
+                    ret += titleTerms.Count(titleTerm =>
+                        titleTerm.Equals(matchTerm.Value, StringComparison.OrdinalIgnoreCase));
+            
+            return ret;
+        }
     }
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
