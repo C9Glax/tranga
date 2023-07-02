@@ -32,7 +32,7 @@ public class MangaDex : Connector
         }, logger);
     }
 
-    public override Publication[] GetPublications(string publicationTitle = "")
+    protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         const int limit = 100; //How many values we want returned at once

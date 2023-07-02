@@ -158,7 +158,7 @@ public class RequestHandler
                 if (connector1 is null)
                     return;
                 Publication? publication1 = _taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId1);
-                if (publication1 is null)
+                if (!publication1.HasValue)
                     return;
                 _taskManager.AddTask(new MonitorPublicationTask(connectorName1, (Publication)publication1, TimeSpan.Parse(reoccurrenceTime1), language1 ?? "en"));
                 break;
@@ -277,7 +277,7 @@ public class RequestHandler
                     return null;
                 if(title.Length < 4)
                     return null;
-                return connector1.GetPublications(title);
+                return connector1.GetPublications(ref _taskManager.collection, title);
             case "/Publications/Chapters":
                 string[] yes = { "true", "yes", "1", "y" };
                 variables.TryGetValue("connectorName", out string? connectorName2);

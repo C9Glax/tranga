@@ -72,7 +72,7 @@ public class Mangasee : Connector
         });
     }
 
-    public override Publication[] GetPublications(string publicationTitle = "")
+    protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
     {
         logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         string requestUrl = $"https://mangasee123.com/_search.php";

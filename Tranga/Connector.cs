@@ -29,6 +29,14 @@ public abstract class Connector
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)
+
+    public Publication[] GetPublications(ref HashSet<Publication> publicationCollection, string publicationTitle = "")
+    {
+        Publication[] ret = GetPublicationsInternal(publicationTitle);
+        foreach (Publication p in ret)
+            publicationCollection.Add(p);
+        return ret;
+    }
     
     /// <summary>
     /// Returns all Publications with the given string.
@@ -36,7 +44,7 @@ public abstract class Connector
     /// </summary>
     /// <param name="publicationTitle">Search-Query</param>
     /// <returns>Publications matching the query</returns>
-    public abstract Publication[] GetPublications(string publicationTitle = "");
+    protected abstract Publication[] GetPublicationsInternal(string publicationTitle = "");
     
     /// <summary>
     /// Returns all Chapters of the publication in the provided language.
