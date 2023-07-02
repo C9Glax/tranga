@@ -54,7 +54,7 @@ public class TaskManager
                 waitingButExecute.state = TrangaTask.ExecutionState.Enqueued;
             }
                 
-            foreach (TrangaTask enqueuedTask in _allTasks.Where(enqueuedTask => enqueuedTask.state is TrangaTask.ExecutionState.Enqueued))
+            foreach (TrangaTask enqueuedTask in _allTasks.Where(enqueuedTask => enqueuedTask.state is TrangaTask.ExecutionState.Enqueued).OrderBy(enqueuedTask => enqueuedTask.nextExecution))
             {
                 switch (enqueuedTask.task)
                 {
