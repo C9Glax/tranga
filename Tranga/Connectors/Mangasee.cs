@@ -184,7 +184,7 @@ public class Mangasee : Connector
         {
             int ret = 0;
             Regex cleanRex = new("[A-z0-9]*");
-            string[] badWords = { "a", "so", "as", "and" };
+            string[] badWords = { "a", "so", "as", "and", "the", "of", "that", "in", "is", "for" };
 
             string[] titleTerms = title.Split(new[] { ' ', '-' }).Where(str => !badWords.Contains(str)).ToArray();
 
