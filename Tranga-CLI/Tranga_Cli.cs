@@ -504,8 +504,30 @@ public static class Tranga_Cli
         Chapter[] availableChapters = connector.GetChapters(publication, "en");
         int cIndex = 0;
         Console.WriteLine("Chapters:");
+        
+        System.Text.StringBuilder sb = new();
         foreach(Chapter chapter in availableChapters)
-            Console.WriteLine($"{cIndex++}: Vol.{chapter.volumeNumber} Ch.{chapter.chapterNumber} - {chapter.name}");
+        {
+            sb.Append($"{cIndex++}: ");
+
+            if(string.IsNullOrWhiteSpace(chapter.volumeNumber) == false)
+            {
+                sb.Append($"Vol.{chapter.volumeNumber} ");
+            }
+
+            if(string.IsNullOrWhiteSpace(chapter.chapterNumber) == false)
+            {
+                sb.Append($"Ch.{chapter.chapterNumber} ");
+            }
+
+            if(string.IsNullOrWhiteSpace(chapter.name) == false)
+            {
+                sb.Append($" - {chapter.name}");
+            }
+
+            Console.WriteLine(sb.ToString());
+            sb.Clear();
+        }
         
         Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Chapter(s):");

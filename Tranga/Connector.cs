@@ -341,6 +341,13 @@ public abstract class Connector
                 logger?.WriteLine(this.GetType().ToString(), $"Request-Error {response.StatusCode}: {response.ReasonPhrase}");
                 return new RequestResult(response.StatusCode, Stream.Null);
             }
+
+            // Request has been redirected to another page. For example, it redirects directly to the results when there is only 1 result
+            if(response.RequestMessage is not null && response.RequestMessage.RequestUri is not null)
+            {
+                return new RequestResult(response.StatusCode, response.Content.ReadAsStream(), true, response.RequestMessage.RequestUri.AbsoluteUri);
+            }
+
             return new RequestResult(response.StatusCode, response.Content.ReadAsStream());
         }
 
@@ -348,11 +355,20 @@ public abstract class Connector
         {
             public HttpStatusCode statusCode { get; }
             public Stream result { get; }
+            public bool HasBeenRedirected { get; }
+            public string? RedirectedToUrl { get; }
 
             public RequestResult(HttpStatusCode statusCode, Stream result)
             {
                 this.statusCode = statusCode;
                 this.result = result;
+            }
+
+            public RequestResult(HttpStatusCode statusCode, Stream result, bool hasBeenRedirected, string redirectedTo)
+                : this(statusCode, result)
+            {
+                this.HasBeenRedirected = hasBeenRedirected;
+                RedirectedToUrl = redirectedTo;
             }
         }
     }

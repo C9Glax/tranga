@@ -30,6 +30,14 @@ public class MangaKatana : Connector
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Publication>();
 
+		// If a single result is found, the user will be redirected to the results directly instead of a result page
+		if(requestResult.HasBeenRedirected
+			&& requestResult.RedirectedToUrl is not null
+			&& requestResult.RedirectedToUrl.Contains("mangakatana.com/manga"))
+		{
+			return new Publication[] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.RedirectedToUrl.Split('/')[^1]) };
+		}
+
 		return ParsePublicationsFromHtml(requestResult.result);
 	}
 
@@ -113,9 +121,14 @@ public class MangaKatana : Connector
 		while (description.StartsWith('\n'))
 			description = description.Substring(1);
 
+		int year = DateTime.Now.Year;
 		string yearString = infoTable.Descendants("div").First(d => d.HasClass("updateAt"))
 			.InnerText.Split('-')[^1];
-		int year = Convert.ToInt32(yearString);
+
+		if(yearString.Contains("ago") == false)
+		{
+			year = Convert.ToInt32(yearString);
+		}
 
 		return new Publication(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
 			year, originalLanguage, status, publicationId);
