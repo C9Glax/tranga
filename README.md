@@ -57,6 +57,7 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [MangaDex.org](https://mangadex.org/)
 - [Manganato.com](https://manganato.com/)
 - [Mangasee](https://mangasee123.com/)
+- [MangaKatana](https://mangakatana.com)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues)
 
 and automatically import them with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/). Also Notifications will be sent to your devices using [Gotify](https://gotify.net/) and [LunaSea](https://www.lunasea.app/).
