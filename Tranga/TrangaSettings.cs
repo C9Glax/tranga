@@ -37,8 +37,12 @@ public class TrangaSettings
         TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(toRead,
             new JsonSerializerSettings { Converters = { new NotificationManager.NotificationManagerJsonConverter(), new LibraryManager.LibraryManagerJsonConverter() } })!;
         if (logger is not null)
+        {
             foreach (LibraryManager lm in settings.libraryManagers)
                 lm.AddLogger(logger);
+            foreach(NotificationManager nm in settings.notificationManagers)
+                nm.AddLogger(logger);
+        }
 
         return settings;
     }

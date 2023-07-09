@@ -7,7 +7,7 @@ namespace Tranga;
 
 public abstract class NotificationManager
 {
-    protected readonly Logger? logger;
+    protected Logger? logger;
     public NotificationManagerType notificationManagerType;
 
     protected NotificationManager(NotificationManagerType notificationManagerType, Logger? logger = null)
@@ -19,6 +19,11 @@ public abstract class NotificationManager
     public enum NotificationManagerType : byte { Gotify = 0, LunaSea = 1 }
     
     public abstract void SendNotification(string title, string notificationText);
+
+    public void AddLogger(Logger pLogger)
+    {
+        this.logger = pLogger;
+    }
     
     public class NotificationManagerJsonConverter : JsonConverter
     {
