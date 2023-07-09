@@ -31,13 +31,11 @@ public class LunaSea : NotificationManager
     {
         public string title { get; }
         public string body { get; }
-        public string image { get; }
 
         public MessageData(string title, string body)
         {
             this.title = title;
             this.body = body;
-            this.image = "";
         }
     }
 }
