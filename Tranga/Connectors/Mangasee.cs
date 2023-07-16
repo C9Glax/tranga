@@ -98,18 +98,23 @@ public class Mangasee : Connector
 
         queryFiltered = queryFiltered.Where(item => item.Value >= publicationTitle.Split(' ').Length - 1)
             .ToDictionary(item => item.Key, item => item.Value);
+        
+        logger?.WriteLine(this.GetType().ToString(), $"Got {queryFiltered.Count} Publications (title={publicationTitle})");
 
         HashSet<Publication> ret = new();
         List<SearchResultItem> orderedFiltered =
             queryFiltered.OrderBy(item => item.Value).ToDictionary(item => item.Key, item => item.Value).Keys.ToList();
 
+        uint index = 1;
         foreach (SearchResultItem orderedItem in orderedFiltered)
         {
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest($"https://mangasee123.com/manga/{orderedItem.i}", (byte)1);
-            if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-                return Array.Empty<Publication>();
-            ret.Add(ParseSinglePublicationFromHtml(requestResult.result, orderedItem.s, orderedItem.i, orderedItem.a));
+            if ((int)requestResult.statusCode >= 200 || (int)requestResult.statusCode < 300)
+            {
+                logger?.WriteLine(this.GetType().ToString(), $"Retrieving Publication info: {orderedItem.s} {index++}/{orderedFiltered.Count}");
+                ret.Add(ParseSinglePublicationFromHtml(requestResult.result, orderedItem.s, orderedItem.i, orderedItem.a));
+            }
         }
         return ret.ToArray();
     }
@@ -118,9 +123,8 @@ public class Mangasee : Connector
     private Publication ParseSinglePublicationFromHtml(Stream html, string sortName, string publicationId, string[] a)
     {
         StreamReader reader = new (html);
-        string htmlString = reader.ReadToEnd();
         HtmlDocument document = new ();
-        document.LoadHtml(htmlString);
+        document.LoadHtml(reader.ReadToEnd());
 
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
