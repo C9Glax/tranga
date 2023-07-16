@@ -169,7 +169,7 @@ public class MangaKatana : Connector
 			string fullString = chapterInfo.Descendants("a").First().InnerText;
 
 			string? volumeNumber = fullString.Contains("Vol.") ? fullString.Replace("Vol.", "").Split(' ')[0] : null;
-			string? chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Replace('-', '.');
+			string? chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Split(" ")[0].Replace('-', '.');
 			string chapterName = string.Concat(fullString.Split(':')[1..]);
 			string url = chapterInfo.Descendants("a").First()
 				.GetAttributeValue("href", "");
