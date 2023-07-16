@@ -4,14 +4,14 @@ namespace Logging;
 
 public class FormattedConsoleLogger : LoggerBase
 {
-    
-    public FormattedConsoleLogger(TextWriter? stdOut, Encoding? encoding = null) : base(stdOut, encoding)
+    private readonly TextWriter _stdOut;
+    public FormattedConsoleLogger(TextWriter stdOut, Encoding? encoding = null) : base(encoding)
     {
-        
+        this._stdOut = stdOut;
     }
 
     protected override void Write(LogMessage message)
     {
-        //Nothing to do yet
+        this._stdOut.Write(message.formattedMessage);
     }
 }

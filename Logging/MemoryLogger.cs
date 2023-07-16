@@ -7,7 +7,7 @@ public class MemoryLogger : LoggerBase
     private readonly SortedList<DateTime, LogMessage> _logMessages = new();
     private int _lastLogMessageIndex = 0;
 
-    public MemoryLogger(TextWriter? stdOut, Encoding? encoding = null) : base(stdOut, encoding)
+    public MemoryLogger(Encoding? encoding = null) : base(encoding)
     {
         
     }

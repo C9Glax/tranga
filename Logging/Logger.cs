@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using System.Text;
+﻿using System.Text;
 
 namespace Logging;
 
@@ -12,24 +11,31 @@ public class Logger : TextWriter
         ConsoleLogger
     }
 
-    private FileLogger? _fileLogger;
-    private FormattedConsoleLogger? _formattedConsoleLogger;
-    private MemoryLogger _memoryLogger;
-    private TextWriter? stdOut;
+    private readonly FileLogger? _fileLogger;
+    private readonly FormattedConsoleLogger? _formattedConsoleLogger;
+    private readonly MemoryLogger _memoryLogger;
 
     public Logger(LoggerType[] enabledLoggers, TextWriter? stdOut, Encoding? encoding, string? logFilePath)
     {
         this.Encoding = encoding ?? Encoding.ASCII;
-        this.stdOut = stdOut ?? null;
         if (enabledLoggers.Contains(LoggerType.FileLogger) && logFilePath is not null)
-            _fileLogger = new FileLogger(logFilePath, null, encoding);
+            _fileLogger = new FileLogger(logFilePath, encoding);
         else
         {
             _fileLogger = null;
             throw new ArgumentException($"logFilePath can not be null for LoggerType {LoggerType.FileLogger}");
         }
-        _formattedConsoleLogger = enabledLoggers.Contains(LoggerType.ConsoleLogger) ? new FormattedConsoleLogger(null, encoding) : null;
-        _memoryLogger = new MemoryLogger(null, encoding);
+
+        if (enabledLoggers.Contains(LoggerType.ConsoleLogger) && stdOut is not null)
+        {
+            _formattedConsoleLogger = new FormattedConsoleLogger(stdOut, encoding);
+        }
+        else
+        {
+            _formattedConsoleLogger = null;
+            throw new ArgumentException($"stdOut can not be null for LoggerType {LoggerType.ConsoleLogger}");
+        }
+        _memoryLogger = new MemoryLogger(encoding);
     }
 
     public void WriteLine(string caller, string? value)
@@ -46,9 +52,7 @@ public class Logger : TextWriter
         
         _fileLogger?.Write(caller, value);
         _formattedConsoleLogger?.Write(caller, value);
-        
         _memoryLogger.Write(caller, value);
-        stdOut?.Write(value);
     }
 
     public string[] Tail(uint? lines)

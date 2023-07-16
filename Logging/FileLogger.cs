@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.Json.Serialization;
 
 namespace Logging;
 
@@ -8,7 +7,7 @@ public class FileLogger : LoggerBase
     private string logFilePath { get; }
     private const int MaxNumberOfLogFiles = 5;
 
-    public FileLogger(string logFilePath, TextWriter? stdOut, Encoding? encoding = null) : base (stdOut, encoding)
+    public FileLogger(string logFilePath, Encoding? encoding = null) : base (encoding)
     {
         this.logFilePath = logFilePath;
         
@@ -22,11 +21,11 @@ public class FileLogger : LoggerBase
     {
         try
         {
-            File.AppendAllText(logFilePath, logMessage.ToString());
+            File.AppendAllText(logFilePath, logMessage.formattedMessage);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            stdOut?.WriteLine(e);
+            // ignored
         }
     }
 }
