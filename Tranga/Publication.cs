@@ -26,22 +26,11 @@ public readonly struct Publication
     public string folderName { get; }
     public string publicationId { get; }
     public string internalId { get; }
+    public uint ignoreChaptersBelow { get; }
 
     private static readonly Regex LegalCharacters = new Regex(@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
-    [JsonConstructor] //Legacy
-    public Publication(string sortName, string? author, string? description, Dictionary<string, string> altTitles,
-        string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string, string>? links, int? year,
-        string? originalLanguage, string status, string publicationId)
-    {
-        List<string> pAuthors = new();
-        if(author is not null)
-            pAuthors.Add(author);
-        this = new Publication(sortName, pAuthors, description, altTitles, tags, posterUrl,
-            coverFileNameInCache, links, year, originalLanguage, status, publicationId);
-    }
-
-    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId)
+    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, uint ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
@@ -55,11 +44,12 @@ public readonly struct Publication
         this.originalLanguage = originalLanguage;
         this.status = status;
         this.publicationId = publicationId;
-        this.folderName = string.Concat(LegalCharacters.Matches(sortName));
+        this.folderName = folderName ?? string.Concat(LegalCharacters.Matches(sortName));
         while (this.folderName.EndsWith('.'))
             this.folderName = this.folderName.Substring(0, this.folderName.Length - 1);
         string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
+        this.ignoreChaptersBelow = ignoreChaptersBelow;
     }
 
     public string CreatePublicationFolder(string downloadDirectory)

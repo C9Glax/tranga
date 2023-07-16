@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Globalization;
+using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -66,8 +67,11 @@ public abstract class Connector
     {
         Chapter[] newChapters = this.GetChapters(publication, language);
         collection.Add(publication);
+        NumberFormatInfo decimalPoint = new (){ NumberDecimalSeparator = "." };
         logger?.WriteLine(this.GetType().ToString(), "Checking for duplicates");
-        List<Chapter> newChaptersList = newChapters.Where(nChapter => !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
+        List<Chapter> newChaptersList = newChapters.Where(nChapter =>
+            float.Parse(nChapter.chapterNumber, decimalPoint) > publication.ignoreChaptersBelow &&
+            !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
         logger?.WriteLine(this.GetType().ToString(), $"{newChaptersList.Count} new chapters.");
         
         return newChaptersList;
