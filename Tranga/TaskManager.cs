@@ -22,6 +22,12 @@ public class TaskManager
     public TaskManager(TrangaSettings settings, Logger? logger = null)
     {
         this.logger = logger;
+        logger?.WriteLine("Tranga", value: "\n"+
+                                           @"-----------------------------------------------------------------"+"\n"+
+                                           @" |¯¯¯¯¯¯|°|¯¯¯¯¯¯\     /¯¯¯¯¯¯| |¯¯¯\|¯¯¯|  /¯¯¯¯¯¯\'   /¯¯¯¯¯¯| "+"\n"+
+                                           @" |      | |   x  <|'  /   !   | |       '| |   (/¯¯¯\° /   !   | "+ "\n"+
+                                           @"  ¯|__|¯  |__|\\__\\ /___/¯|_'| |___|\\__|  \\_____/' /___/¯|_'| "+ "\n"+
+                                           @"-----------------------------------------------------------------");
         this._connectors = new Connector[]
         {
             new MangaDex(settings, logger),

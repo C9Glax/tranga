@@ -17,6 +17,10 @@ public class Program
         Directory.CreateDirectory(logsFolderPath);
         Logger logger = new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath);
 
+        logger.WriteLine("Tranga",value: "\n"+
+            "-------------------------------------------\n"+
+            " Starting Tranga-API\n"+
+            "-------------------------------------------");
         logger.WriteLine("Tranga", "Loading settings.");
 
         TrangaSettings settings;
