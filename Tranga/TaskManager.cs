@@ -37,6 +37,7 @@ public class TaskManager
         };
         
         this.settings = settings;
+        Migrate.Files(settings);
         ImportData();
         ExportDataAndSettings();
         Thread taskChecker = new(TaskCheckerThread);

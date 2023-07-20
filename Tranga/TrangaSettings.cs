@@ -15,6 +15,7 @@ public class TrangaSettings
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public HashSet<LibraryManager> libraryManagers { get; }
     public HashSet<NotificationManager> notificationManagers { get; }
+    public ushort? version { get; set; }
 
     public TrangaSettings(string downloadLocation, string workingDirectory, HashSet<LibraryManager>? libraryManagers,
         HashSet<NotificationManager>? notificationManagers)
