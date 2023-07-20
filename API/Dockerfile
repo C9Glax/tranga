@@ -3,7 +3,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 as build-env
 WORKDIR /src
 COPY . /src/
-RUN dotnet restore API/API.csproj
+RUN dotnet restore /src/API/API.csproj
 RUN dotnet publish -c Release -o /publish
 
 FROM glax/tranga-base:latest as runtime
