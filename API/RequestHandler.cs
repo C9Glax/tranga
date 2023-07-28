@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Text.RegularExpressions;
 using Tranga;
 using Tranga.TrangaTasks;
@@ -20,7 +21,7 @@ public class RequestHandler
             new[] { "connectorName", "internalId", "onlyNew?", "onlyExisting?", "language?" }),
         new(HttpMethod.Get, "/Tasks/Types", Array.Empty<string>()),
         new(HttpMethod.Post, "/Tasks/CreateMonitorTask",
-            new[] { "connectorName", "internalId", "reoccurrenceTime", "language?" }),
+            new[] { "connectorName", "internalId", "reoccurrenceTime", "language?", "ignoreChaptersBelow?" }),
         //DEPRECATED new(HttpMethod.Post, "/Tasks/CreateUpdateLibraryTask", new[] { "reoccurrenceTime" }),
         new(HttpMethod.Post, "/Tasks/CreateDownloadChaptersTask",
             new[] { "connectorName", "internalId", "chapters", "language?" }),
@@ -151,6 +152,7 @@ public class RequestHandler
                 variables.TryGetValue("internalId", out string? internalId1);
                 variables.TryGetValue("reoccurrenceTime", out string? reoccurrenceTime1);
                 variables.TryGetValue("language", out string? language1);
+                variables.TryGetValue("ignoreChaptersBelow", out string? minChapter);
                 if (connectorName1 is null || internalId1 is null || reoccurrenceTime1 is null)
                     return;
                 Connector? connector1 =
@@ -160,7 +162,10 @@ public class RequestHandler
                 Publication? publication1 = _taskManager.GetAllPublications().FirstOrDefault(pub => pub.internalId == internalId1);
                 if (!publication1.HasValue)
                     return;
-                _taskManager.AddTask(new MonitorPublicationTask(connectorName1, (Publication)publication1, TimeSpan.Parse(reoccurrenceTime1), language1 ?? "en"));
+                Publication pPublication1 = (Publication)publication1;
+                if (minChapter is not null)
+                    pPublication1.ignoreChaptersBelow = float.Parse(minChapter,new NumberFormatInfo() { NumberDecimalSeparator = "." });
+                _taskManager.AddTask(new MonitorPublicationTask(connectorName1, pPublication1, TimeSpan.Parse(reoccurrenceTime1), language1 ?? "en"));
                 break;
             case "/Tasks/CreateUpdateLibraryTask": // DEPRECATED
                 /*variables.TryGetValue("reoccurrenceTime", out string? reoccurrenceTime2);

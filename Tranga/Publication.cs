@@ -9,7 +9,7 @@ namespace Tranga;
 /// <summary>
 /// Contains information on a Publication (Manga)
 /// </summary>
-public readonly struct Publication
+public struct Publication
 {
     public string sortName { get; }
     public List<string> authors { get; }
@@ -26,11 +26,11 @@ public readonly struct Publication
     public string folderName { get; }
     public string publicationId { get; }
     public string internalId { get; }
-    public uint ignoreChaptersBelow { get; }
+    public float ignoreChaptersBelow { get; set; }
 
     private static readonly Regex LegalCharacters = new Regex(@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
-    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, uint ignoreChaptersBelow = 0)
+    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
