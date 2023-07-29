@@ -14,11 +14,7 @@ public class UpdateLibrariesTask : TrangaTask
 
     protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested ?? false)
-            return HttpStatusCode.RequestTimeout;
-        foreach(LibraryManager lm in taskManager.settings.libraryManagers)
-            lm.UpdateLibrary();
-        return HttpStatusCode.OK;
+        return HttpStatusCode.BadRequest;
     }
 
     public override TrangaTask Clone()
