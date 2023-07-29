@@ -26,7 +26,8 @@ public static class Migrate
             return;
 
         string tasksJsonString = File.ReadAllText(settings.tasksFilePath);
-        List<TrangaTask> tasks = JsonConvert.DeserializeObject<List<TrangaTask>>(tasksJsonString, new JsonSerializerSettings { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
-        tasks.RemoveAll(t => t.task == TrangaTask.Task.UpdateLibraries);
+        HashSet<TrangaTask> tasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(tasksJsonString, new JsonSerializerSettings { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
+        tasks.RemoveWhere(t => t.task == TrangaTask.Task.UpdateLibraries);
+        File.WriteAllText(settings.tasksFilePath, JsonConvert.SerializeObject(tasks));
     }
 }

@@ -30,7 +30,8 @@ public struct Publication
 
     private static readonly Regex LegalCharacters = new Regex(@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
-    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float ignoreChaptersBelow = 0)
+    [JsonConstructor]
+    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
@@ -49,7 +50,7 @@ public struct Publication
             this.folderName = this.folderName.Substring(0, this.folderName.Length - 1);
         string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
-        this.ignoreChaptersBelow = ignoreChaptersBelow;
+        this.ignoreChaptersBelow = ignoreChaptersBelow ?? 0f;
     }
 
     public string CreatePublicationFolder(string downloadDirectory)
