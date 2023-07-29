@@ -12,6 +12,7 @@ namespace Tranga;
 /// Stores information on Task, when implementing new Tasks also update the serializer
 /// </summary>
 [JsonDerivedType(typeof(MonitorPublicationTask), 2)]
+[JsonDerivedType(typeof(UpdateLibrariesTask), 3)]
 [JsonDerivedType(typeof(DownloadChapterTask), 4)]
 public abstract class TrangaTask
 {
@@ -130,19 +131,19 @@ public abstract class TrangaTask
             return objectType == typeof(TrangaTask);
         }
 
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
             if (jo["task"]!.Value<Int64>() == (Int64)Task.MonitorPublication)
                 return jo.ToObject<MonitorPublicationTask>(serializer)!;
 
             if (jo["task"]!.Value<Int64>() == (Int64)Task.UpdateLibraries)
-                return null;
+                return jo.ToObject<UpdateLibrariesTask>(serializer)!;
             
             if (jo["task"]!.Value<Int64>() == (Int64)Task.DownloadChapter)
                 return jo.ToObject<DownloadChapterTask>(serializer)!;
 
-            throw new Exception($"Deserialization: Unknown type {objectType} for TrangaTask");
+            throw new Exception();
         }
 
         public override bool CanWrite => false;
