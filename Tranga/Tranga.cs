@@ -49,7 +49,8 @@ public static class Tranga
         foreach(NotificationManager nm in taskManager.commonObjects.notificationManagers)
             nm.SendNotification("Tranga-API", "Started Tranga-API");
         
-        TaskMode(taskManager, logger);
+        if(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            TaskMode(taskManager, logger);
     }
     
     private static void TaskMode(TaskManager taskManager, Logger logger)
