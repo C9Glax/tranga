@@ -54,7 +54,7 @@ public class Komga : LibraryManager
         {
             var jObject = (JsonObject?)jsonNode;
             string libraryId = jObject!["id"]!.GetValue<string>();
-            string libraryName = jObject!["name"]!.GetValue<string>();
+            string libraryName = jObject["name"]!.GetValue<string>();
             ret.Add(new KomgaLibrary(libraryId, libraryName));
         }
 
@@ -64,6 +64,7 @@ public class Komga : LibraryManager
     private struct KomgaLibrary
     {
         public string id { get; }
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public string name { get; }
 
         public KomgaLibrary(string id, string name)

@@ -15,7 +15,7 @@ public class MangaKatana : Connector
 		this.name = "MangaKatana";
 		this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
 		{
-			{(byte)1, 60}
+			{1, 60}
 		}, settings.logger);
 	}
 
@@ -25,16 +25,17 @@ public class MangaKatana : Connector
 		string sanitizedTitle = string.Concat(Regex.Matches(publicationTitle, "[A-z]* *")).ToLower().Replace(' ', '_');
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		DownloadClient.RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, (byte)1);
+			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Publication>();
 
+		// ReSharper disable once MergeIntoPattern
 		// If a single result is found, the user will be redirected to the results directly instead of a result page
-		if(requestResult.HasBeenRedirected
-			&& requestResult.RedirectedToUrl is not null
-			&& requestResult.RedirectedToUrl.Contains("mangakatana.com/manga"))
+		if(requestResult.hasBeenRedirected
+		    && requestResult.redirectedToUrl is not null
+			&& requestResult.redirectedToUrl.Contains("mangakatana.com/manga"))
 		{
-			return new Publication[] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.RedirectedToUrl.Split('/')[^1]) };
+			return new [] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.redirectedToUrl.Split('/')[^1]) };
 		}
 
 		return ParsePublicationsFromHtml(requestResult.result);
@@ -58,7 +59,7 @@ public class MangaKatana : Connector
 		foreach (string url in urls)
 		{
 			DownloadClient.RequestResult requestResult =
-				downloadClient.MakeRequest(url, (byte)1);
+				downloadClient.MakeRequest(url, 1);
 			if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 				return Array.Empty<Publication>();
 
@@ -107,7 +108,6 @@ public class MangaKatana : Connector
 				case "genres":
 					tags = row.SelectNodes("div").Last().Descendants("a").Select(a => a.InnerText).ToHashSet();
 					break;
-				default: break;
 			}
 		}
 
@@ -139,7 +139,7 @@ public class MangaKatana : Connector
 		string requestUrl = $"https://mangakatana.com/manga/{publication.publicationId}";
 		// Leaving this in for verification if the page exists
 		DownloadClient.RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, (byte)1);
+			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Chapter>();
 
@@ -168,7 +168,7 @@ public class MangaKatana : Connector
 			string fullString = chapterInfo.Descendants("a").First().InnerText;
 
 			string? volumeNumber = fullString.Contains("Vol.") ? fullString.Replace("Vol.", "").Split(' ')[0] : null;
-			string? chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Split(" ")[0].Replace('-', '.');
+			string chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Split(" ")[0].Replace('-', '.');
 			string chapterName = string.Concat(fullString.Split(':')[1..]);
 			string url = chapterInfo.Descendants("a").First()
 				.GetAttributeValue("href", "");
@@ -186,7 +186,7 @@ public class MangaKatana : Connector
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		DownloadClient.RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, (byte)1);
+			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return requestResult.statusCode;
 
@@ -195,7 +195,7 @@ public class MangaKatana : Connector
 		string comicInfoPath = Path.GetTempFileName();
 		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), (byte)1, parentTask, comicInfoPath, "https://mangakatana.com/", cancellationToken);
+		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, parentTask, comicInfoPath, "https://mangakatana.com/", cancellationToken);
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)
@@ -208,6 +208,8 @@ public class MangaKatana : Connector
 			.Replace("\r", "")
 			.Replace("\n", "")
 			.Replace("\t", "");
+		
+		// ReSharper disable once StringLiteralTypo
 		string regexPat = @"(var thzq=\[')(.*)(,];function)";
 		var group = Regex.Matches(js, regexPat).First().Groups[2].Value.Replace("'", "");
 		var urls = group.Split(',');

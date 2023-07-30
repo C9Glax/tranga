@@ -159,8 +159,7 @@ public abstract class Connector
     /// Copies the already downloaded cover from cache to downloadLocation
     /// </summary>
     /// <param name="publication">Publication to retrieve Cover for</param>
-    /// <param name="settings">TrangaSettings</param>
-    public void CopyCoverFromCacheToDownloadLocation(Publication publication, TrangaSettings settings)
+    public void CopyCoverFromCacheToDownloadLocation(Publication publication)
     {
         settings.logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} -> {publication.internalId}");
         //Check if Publication already has a Folder and cover

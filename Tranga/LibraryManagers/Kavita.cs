@@ -36,7 +36,7 @@ public class Kavita : LibraryManager
         HttpResponseMessage response = client.Send(requestMessage);
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
         if (result is not null)
-            return result!["token"]!.GetValue<string>();
+            return result["token"]!.GetValue<string>();
         else return "";
     }
 
@@ -73,7 +73,7 @@ public class Kavita : LibraryManager
         {
             var jObject = (JsonObject?)jsonNode;
             int libraryId = jObject!["id"]!.GetValue<int>();
-            string libraryName = jObject!["name"]!.GetValue<string>();
+            string libraryName = jObject["name"]!.GetValue<string>();
             ret.Add(new KavitaLibrary(libraryId, libraryName));
         }
 
@@ -83,6 +83,7 @@ public class Kavita : LibraryManager
     private struct KavitaLibrary
     {
         public int id { get; }
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public string name { get; }
 
         public KavitaLibrary(int id, string name)

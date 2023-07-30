@@ -1,5 +1,4 @@
-﻿using Logging;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Tranga.Connectors;
 using Tranga.TrangaTasks;
 
@@ -182,6 +181,7 @@ public class TaskManager
         ExportDataAndSettings();
     }
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public IEnumerable<TrangaTask> GetTasksMatching(TrangaTask mTask)
     {
         switch (mTask.task)
@@ -336,11 +336,10 @@ public class TaskManager
     private void ImportData()
     {
         settings.logger?.WriteLine(this.GetType().ToString(), "Importing Data");
-        string buffer;
         if (File.Exists(settings.tasksFilePath))
         {
             settings.logger?.WriteLine(this.GetType().ToString(), $"Importing tasks from {settings.tasksFilePath}");
-            buffer = File.ReadAllText(settings.tasksFilePath);
+            string buffer = File.ReadAllText(settings.tasksFilePath);
             this._allTasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(buffer, new JsonSerializerSettings() { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
         }
 

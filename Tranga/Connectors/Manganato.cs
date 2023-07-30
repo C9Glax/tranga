@@ -15,7 +15,7 @@ public class Manganato : Connector
         this.name = "Manganato";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
         {
-            {(byte)1, 60}
+            {1, 60}
         }, settings.logger);
     }
 
@@ -25,7 +25,7 @@ public class Manganato : Connector
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
-            downloadClient.MakeRequest(requestUrl, (byte)1);
+            downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Publication>();
 
@@ -50,7 +50,7 @@ public class Manganato : Connector
         foreach (string url in urls)
         {
             DownloadClient.RequestResult requestResult =
-                downloadClient.MakeRequest(url, (byte)1);
+                downloadClient.MakeRequest(url, 1);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 return Array.Empty<Publication>();
 
@@ -102,7 +102,6 @@ public class Manganato : Connector
                     string[] genres = value.Split(" - ");
                     tags = genres.ToHashSet();
                     break;
-                default: break;
             }
         }
 
@@ -129,7 +128,7 @@ public class Manganato : Connector
         settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
         string requestUrl = $"https://chapmanganato.com/{publication.publicationId}";
         DownloadClient.RequestResult requestResult =
-            downloadClient.MakeRequest(requestUrl, (byte)1);
+            downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Chapter>();
         
@@ -158,7 +157,7 @@ public class Manganato : Connector
             string fullString = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name")).InnerText;
 
             string? volumeNumber = fullString.Contains("Vol.") ? fullString.Replace("Vol.", "").Split(' ')[0] : null;
-            string? chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Replace('-','.');
+            string chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Replace('-','.');
             string chapterName = string.Concat(fullString.Split(':')[1..]);
             string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
                 .GetAttributeValue("href", "");
@@ -175,7 +174,7 @@ public class Manganato : Connector
         settings.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
-            downloadClient.MakeRequest(requestUrl, (byte)1);
+            downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return requestResult.statusCode;
 
@@ -184,7 +183,7 @@ public class Manganato : Connector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), (byte)1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
+        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
     }
 
     private string[] ParseImageUrlsFromHtml(Stream html)

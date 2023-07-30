@@ -12,7 +12,7 @@ namespace Tranga.Connectors;
 public class Mangasee : Connector
 {
     public override string name { get; }
-    private IBrowser? _browser = null;
+    private IBrowser? _browser;
     private const string ChromiumVersion = "1154303";
 
     public Mangasee(TrangaSettings settings) : base(settings)
@@ -20,7 +20,7 @@ public class Mangasee : Connector
         this.name = "Mangasee";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
         {
-            { (byte)1, 60 }
+            { 1, 60 }
         }, settings.logger);
 
         Task d = new Task(DownloadBrowser);
@@ -36,7 +36,7 @@ public class Mangasee : Connector
         {
             settings.logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
             DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
-            browserFetcher.DownloadProgressChanged += (sender, args) =>
+            browserFetcher.DownloadProgressChanged += (_, args) =>
             {
                 double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
                 if (args.TotalBytesToReceive == args.BytesReceived)
@@ -76,7 +76,7 @@ public class Mangasee : Connector
         settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         string requestUrl = $"https://mangasee123.com/_search.php";
         DownloadClient.RequestResult requestResult =
-            downloadClient.MakeRequest(requestUrl, (byte)1);
+            downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Publication>();
 
@@ -108,7 +108,7 @@ public class Mangasee : Connector
         foreach (SearchResultItem orderedItem in orderedFiltered)
         {
             DownloadClient.RequestResult requestResult =
-                downloadClient.MakeRequest($"https://mangasee123.com/manga/{orderedItem.i}", (byte)1);
+                downloadClient.MakeRequest($"https://mangasee123.com/manga/{orderedItem.i}", 1);
             if ((int)requestResult.statusCode >= 200 || (int)requestResult.statusCode < 300)
             {
                 settings.logger?.WriteLine(this.GetType().ToString(), $"Retrieving Publication info: {orderedItem.s} {index++}/{orderedFiltered.Count}");
@@ -177,11 +177,17 @@ public class Mangasee : Connector
     // ReSharper disable once ClassNeverInstantiated.Local Will be instantiated during deserialization
     private class SearchResultItem
     {
-#pragma warning disable CS8618 //Will always be set
-        public string i { get; set; }
-        public string s { get; set; }
-        public string[] a { get; set; }
-#pragma warning restore CS8618
+        public string i { get; init; }
+        public string s { get; init; }
+        public string[] a { get; init; }
+
+        [JsonConstructor]
+        public SearchResultItem(string i, string s, string[] a)
+        {
+            this.i = i;
+            this.s = s;
+            this.a = a;
+        }
 
         public int GetMatches(string title)
         {
@@ -215,7 +221,7 @@ public class Mangasee : Connector
         List<Chapter> ret = new();
         foreach (XElement chapter in chapterItems)
         {
-            string? volumeNumber = "1";
+            string volumeNumber = "1";
             string chapterName = chapter.Descendants("title").First().Value;
             string chapterNumber = Regex.Matches(chapterName, "[0-9]+")[^1].ToString();
 
@@ -262,7 +268,7 @@ public class Mangasee : Connector
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-            return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
+            return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
         }
         return response.Status;
     }

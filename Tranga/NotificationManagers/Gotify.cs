@@ -7,9 +7,11 @@ namespace Tranga.NotificationManagers;
 public class Gotify : NotificationManager
 {
     public string endpoint { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
     public string appToken { get; }
     private readonly HttpClient _client = new();
     
+    [JsonConstructor]
     public Gotify(string endpoint, string appToken, Logger? logger = null) : base(NotificationManagerType.Gotify, logger)
     {
         this.endpoint = endpoint;
@@ -33,6 +35,7 @@ public class Gotify : NotificationManager
 
     private class MessageData
     {
+        // ReSharper disable four times UnusedAutoPropertyAccessor.Local
         public string message { get; }
         public long priority { get; }
         public string title { get; }

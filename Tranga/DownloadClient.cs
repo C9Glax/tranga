@@ -89,8 +89,8 @@ internal class DownloadClient
         {
             public HttpStatusCode statusCode { get; }
             public Stream result { get; }
-            public bool HasBeenRedirected { get; }
-            public string? RedirectedToUrl { get; }
+            public bool hasBeenRedirected { get; }
+            public string? redirectedToUrl { get; }
 
             public RequestResult(HttpStatusCode statusCode, Stream result)
             {
@@ -101,8 +101,8 @@ internal class DownloadClient
             public RequestResult(HttpStatusCode statusCode, Stream result, bool hasBeenRedirected, string redirectedTo)
                 : this(statusCode, result)
             {
-                this.HasBeenRedirected = hasBeenRedirected;
-                RedirectedToUrl = redirectedTo;
+                this.hasBeenRedirected = hasBeenRedirected;
+                redirectedToUrl = redirectedTo;
             }
         }
     }

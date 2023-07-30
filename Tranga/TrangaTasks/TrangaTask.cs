@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json.Serialization;
-using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using JsonConverter = Newtonsoft.Json.JsonConverter;
@@ -15,8 +14,7 @@ namespace Tranga.TrangaTasks;
 [JsonDerivedType(typeof(DownloadChapterTask), 4)]
 public abstract class TrangaTask
 {
-    // ReSharper disable once CommentTypo ...Tell me why!
-    // ReSharper disable once MemberCanBePrivate.Global I want it thaaat way
+    // ReSharper disable once MemberCanBeProtected.Global
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
     [Newtonsoft.Json.JsonIgnore] public ExecutionState state { get; set; }
@@ -26,9 +24,12 @@ public abstract class TrangaTask
     public string? parentTaskId { get; set; }
     [Newtonsoft.Json.JsonIgnore] internal HashSet<TrangaTask> childTasks { get; }
     public double progress => GetProgress();
+    // ReSharper disable once MemberCanBePrivate.Global
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; internal set; }
+    // ReSharper disable once MemberCanBePrivate.Global
     [Newtonsoft.Json.JsonIgnore]public DateTime executionApproximatelyFinished => lastChange.Add(GetRemainingTime());
+    // ReSharper disable once MemberCanBePrivate.Global
     public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 

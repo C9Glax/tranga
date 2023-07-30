@@ -9,11 +9,13 @@ namespace Tranga;
 /// </summary>
 public readonly struct Chapter
 {
+    // ReSharper disable once MemberCanBePrivate.Global
     public Publication parentPublication { get; }
     public string? name { get; }
     public string? volumeNumber { get; }
     public string chapterNumber { get; }
     public string url { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
     public string fileName { get; }
     
     private static readonly Regex LegalCharacters = new (@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
