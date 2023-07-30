@@ -53,6 +53,7 @@ public class CommonObjects
     
     public void ExportSettings()
     {
+        TrangaSettings.SettingsJsonObject? settings = null;
         if (File.Exists(settingsFilePath))
         {
             bool inUse = true;
@@ -70,11 +71,17 @@ public class CommonObjects
                     Thread.Sleep(50);
                 }
             }
+            string toRead = File.ReadAllText(settingsFilePath);
+            settings = JsonConvert.DeserializeObject<TrangaSettings.SettingsJsonObject>(toRead,
+                new JsonSerializerSettings
+                {
+                    Converters =
+                    {
+                        new NotificationManager.NotificationManagerJsonConverter(),
+                        new LibraryManager.LibraryManagerJsonConverter()
+                    }
+                });
         }
-        
-        string toRead = File.ReadAllText(settingsFilePath);
-        TrangaSettings.SettingsJsonObject? settings = JsonConvert.DeserializeObject<TrangaSettings.SettingsJsonObject>(toRead,
-            new JsonSerializerSettings { Converters = { new NotificationManager.NotificationManagerJsonConverter(), new LibraryManager.LibraryManagerJsonConverter() } });
         settings = new TrangaSettings.SettingsJsonObject(settings?.ts, this);
         File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(settings));
     }

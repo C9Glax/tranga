@@ -37,6 +37,7 @@ public class TrangaSettings
 
     public void ExportSettings()
     {
+        SettingsJsonObject? settings = null;
         if (File.Exists(settingsFilePath))
         {
             bool inUse = true;
@@ -54,11 +55,17 @@ public class TrangaSettings
                     Thread.Sleep(50);
                 }
             }
+            string toRead = File.ReadAllText(settingsFilePath);
+            settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
+                new JsonSerializerSettings
+                {
+                    Converters =
+                    {
+                        new NotificationManager.NotificationManagerJsonConverter(),
+                        new LibraryManager.LibraryManagerJsonConverter()
+                    }
+                });
         }
-        
-        string toRead = File.ReadAllText(settingsFilePath);
-        SettingsJsonObject? settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
-            new JsonSerializerSettings { Converters = { new NotificationManager.NotificationManagerJsonConverter(), new LibraryManager.LibraryManagerJsonConverter() } });
         settings = new SettingsJsonObject(this, settings?.co);
         File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(settings));
     }
