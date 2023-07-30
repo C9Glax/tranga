@@ -7,7 +7,7 @@ namespace Tranga;
 /// Has to be Part of a publication
 /// Includes the Chapter-Name, -VolumeNumber, -ChapterNumber, the location of the chapter on the internet and the saveName of the local file.
 /// </summary>
-public struct Chapter
+public readonly struct Chapter
 {
     public Publication parentPublication { get; }
     public string? name { get; }
