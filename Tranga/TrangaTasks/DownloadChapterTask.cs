@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Logging;
 using Tranga.Connectors;
 using Tranga.NotificationManagers;
 using Tranga.LibraryManagers;
@@ -23,7 +22,7 @@ public class DownloadChapterTask : TrangaTask
         this.language = language;
     }
 
-    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;

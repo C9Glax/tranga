@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Logging;
 using Tranga.Connectors;
 
 namespace Tranga.TrangaTasks;
@@ -16,7 +15,7 @@ public class MonitorPublicationTask : TrangaTask
         this.language = language;
     }
 
-    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;

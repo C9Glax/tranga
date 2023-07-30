@@ -16,9 +16,10 @@ public class TrangaSettings
     public HashSet<LibraryManager> libraryManagers { get; }
     public HashSet<NotificationManager> notificationManagers { get; }
     public ushort? version { get; set; }
+    [JsonIgnore] public Logger? logger { get; init; }
 
     public TrangaSettings(string downloadLocation, string workingDirectory, HashSet<LibraryManager>? libraryManagers,
-        HashSet<NotificationManager>? notificationManagers)
+        HashSet<NotificationManager>? notificationManagers, Logger? logger)
     {
         if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
             throw new ArgumentException("Download-location and working-directory paths can not be empty!");
@@ -26,13 +27,14 @@ public class TrangaSettings
         this.downloadLocation = downloadLocation;
         this.libraryManagers = libraryManagers??new();
         this.notificationManagers = notificationManagers??new();
+        this.logger = logger;
     }
 
     public static TrangaSettings LoadSettings(string importFilePath, Logger? logger)
     {
         if (!File.Exists(importFilePath))
             return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"),
-                Directory.GetCurrentDirectory(), new HashSet<LibraryManager>(), new HashSet<NotificationManager>());
+                Directory.GetCurrentDirectory(), new HashSet<LibraryManager>(), new HashSet<NotificationManager>(), logger);
 
         string toRead = File.ReadAllText(importFilePath);
         TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(toRead,
@@ -71,7 +73,7 @@ public class TrangaSettings
         File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
     }
 
-    public void UpdateSettings(UpdateField field, Logger? logger = null, params string[] values) 
+    public void UpdateSettings(UpdateField field, params string[] values) 
     {
         switch (field)
         {
@@ -84,19 +86,19 @@ public class TrangaSettings
                 if (values.Length != 2)
                     return;
                 libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Komga));
-                libraryManagers.Add(new Komga(values[0], values[1], logger));
+                libraryManagers.Add(new Komga(values[0], values[1], this.logger));
                 break;
             case UpdateField.Kavita:
                 if (values.Length != 3)
                     return;
                 libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Kavita));
-                libraryManagers.Add(new Kavita(values[0], values[1], values[2], logger));
+                libraryManagers.Add(new Kavita(values[0], values[1], values[2], this.logger));
                 break;
             case UpdateField.Gotify:
                 if (values.Length != 2)
                     return;
                 notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(Gotify));
-                Gotify newGotify = new(values[0], values[1], logger);
+                Gotify newGotify = new(values[0], values[1], this.logger);
                 notificationManagers.Add(newGotify);
                 newGotify.SendNotification("Success!", "Gotify was added to Tranga!");
                 break;
@@ -104,7 +106,7 @@ public class TrangaSettings
                 if(values.Length != 1)
                     return;
                 notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(LunaSea));
-                LunaSea newLunaSea = new(values[0], logger);
+                LunaSea newLunaSea = new(values[0], this.logger);
                 notificationManagers.Add(newLunaSea);
                 newLunaSea.SendNotification("Success!", "LunaSea was added to Tranga!");
                 break;

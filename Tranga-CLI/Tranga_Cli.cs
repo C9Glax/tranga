@@ -32,16 +32,16 @@ public static class Tranga_Cli
         Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, Console.Out.Encoding, logFilePath);
         
         logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
-        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath, logger) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, new HashSet<LibraryManager>(), new HashSet<NotificationManager>());
+        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath, logger) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, new HashSet<LibraryManager>(), new HashSet<NotificationManager>(), logger);
 
             
-        logger.WriteLine("Tranga_CLI", "User Input");
+        settings.logger?.WriteLine("Tranga_CLI", "User Input");
         Console.WriteLine($"Output folder path [{settings.downloadLocation}]:");
         string? tmpPath = Console.ReadLine();
         while(tmpPath is null)
             tmpPath = Console.ReadLine();
         if (tmpPath.Length > 0)
-            settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation, logger, tmpPath);
+            settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation, tmpPath);
 
         Console.WriteLine($"Komga BaseURL [{settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Komga))?.baseUrl}]:");
         string? tmpUrlKomga = Console.ReadLine();
@@ -74,7 +74,7 @@ public static class Tranga_Cli
                 }
             } while (key != ConsoleKey.Enter);
 
-            settings.UpdateSettings(TrangaSettings.UpdateField.Komga, logger, tmpUrlKomga, tmpKomgaUser, tmpKomgaPass);
+            settings.UpdateSettings(TrangaSettings.UpdateField.Komga, tmpUrlKomga, tmpKomgaUser, tmpKomgaPass);
         }
         
         Console.WriteLine($"Kavita BaseURL [{settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Kavita))?.baseUrl}]:");
@@ -108,7 +108,7 @@ public static class Tranga_Cli
                 }
             } while (key != ConsoleKey.Enter);
 
-            settings.UpdateSettings(TrangaSettings.UpdateField.Kavita, logger, tmpUrlKavita, tmpKavitaUser, tmpKavitaPass);
+            settings.UpdateSettings(TrangaSettings.UpdateField.Kavita,  tmpUrlKavita, tmpKavitaUser, tmpKavitaPass);
         }
         
         Console.WriteLine($"Gotify BaseURL [{((Gotify?)settings.notificationManagers.FirstOrDefault(lm => lm.GetType() == typeof(Gotify)))?.endpoint}]:");
@@ -122,7 +122,7 @@ public static class Tranga_Cli
             while (tmpGotifyAppToken is null || tmpGotifyAppToken.Length < 1)
                 tmpGotifyAppToken = Console.ReadLine();
 
-            settings.UpdateSettings(TrangaSettings.UpdateField.Gotify, logger, tmpGotifyUrl, tmpGotifyAppToken);
+            settings.UpdateSettings(TrangaSettings.UpdateField.Gotify,  tmpGotifyUrl, tmpGotifyAppToken);
         }
         
         logger.WriteLine("Tranga_CLI", "Loaded.");
@@ -133,7 +133,7 @@ public static class Tranga_Cli
 
     private static void TaskMode(TrangaSettings settings, Logger logger)
     {
-        TaskManager taskManager = new (settings, logger);
+        TaskManager taskManager = new (settings);
         ConsoleKey selection = ConsoleKey.EraseEndOfFile;
         PrintMenu(taskManager, taskManager.settings.downloadLocation);
         while (selection != ConsoleKey.Q)

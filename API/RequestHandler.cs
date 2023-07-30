@@ -247,17 +247,17 @@ public class RequestHandler
                 variables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook);
                 
                 if (downloadLocation is not null && downloadLocation.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation, _parent.logger, downloadLocation);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation,  downloadLocation);
                 if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 5 && komgaAuth.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Komga, _parent.logger, komgaUrl, komgaAuth);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Komga,  komgaUrl, komgaAuth);
                 if (kavitaUrl is not null && kavitaPassword is not null && kavitaUsername is not null && kavitaUrl.Length > 5 &&
                     kavitaUsername.Length > 0 && kavitaPassword.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Kavita, _parent.logger, kavitaUrl, kavitaUsername,
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Kavita,  kavitaUrl, kavitaUsername,
                         kavitaPassword);
                 if (gotifyUrl is not null && gotifyAppToken is not null && gotifyUrl.Length > 5 && gotifyAppToken.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Gotify, _parent.logger, gotifyUrl, gotifyAppToken);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Gotify,  gotifyUrl, gotifyAppToken);
                 if(lunaseaWebhook is not null && lunaseaWebhook.Length > 5)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.LunaSea, _parent.logger, lunaseaWebhook);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.LunaSea,  lunaseaWebhook);
                 break;
         }
     }

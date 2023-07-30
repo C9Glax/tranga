@@ -51,9 +51,8 @@ public abstract class TrangaTask
     /// BL for concrete Tasks
     /// </summary>
     /// <param name="taskManager"></param>
-    /// <param name="logger"></param>
     /// <param name="cancellationToken"></param>
-    protected abstract HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null);
+    protected abstract HttpStatusCode ExecuteTask(TaskManager taskManager, CancellationToken? cancellationToken = null);
 
     public abstract TrangaTask Clone();
 
@@ -63,18 +62,17 @@ public abstract class TrangaTask
     /// Execute the task
     /// </summary>
     /// <param name="taskManager">Should be the parent taskManager</param>
-    /// <param name="logger"></param>
     /// <param name="cancellationToken"></param>
-    public void Execute(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    public void Execute(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
+        taskManager.settings.logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
         if(parentTask is not null && parentTask.childTasks.All(ct => ct.state is ExecutionState.Waiting or ExecutionState.Failed))
             parentTask.executionStarted = DateTime.Now;
         
-        HttpStatusCode statusCode = ExecuteTask(taskManager, logger, cancellationToken);
+        HttpStatusCode statusCode = ExecuteTask(taskManager, cancellationToken);
         
         if ((int)statusCode >= 200 && (int)statusCode < 300)
         {
@@ -90,7 +88,7 @@ public abstract class TrangaTask
         if (this is DownloadChapterTask)
             taskManager.DeleteTask(this);
         
-        logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
+        taskManager.settings.logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
     }
 
     public void AddChildTask(TrangaTask childTask)

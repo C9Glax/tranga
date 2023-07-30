@@ -3,7 +3,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
-using Logging;
 using Newtonsoft.Json;
 using PuppeteerSharp;
 using Tranga.TrangaTasks;
@@ -16,13 +15,13 @@ public class Mangasee : Connector
     private IBrowser? _browser = null;
     private const string ChromiumVersion = "1154303";
 
-    public Mangasee(TrangaSettings settings, Logger? logger = null) : base(settings, logger)
+    public Mangasee(TrangaSettings settings) : base(settings)
     {
         this.name = "Mangasee";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
         {
             { (byte)1, 60 }
-        }, logger);
+        }, settings.logger);
 
         Task d = new Task(DownloadBrowser);
         d.Start();
@@ -35,31 +34,31 @@ public class Mangasee : Connector
             browserFetcher.Remove(rev);
         if (!browserFetcher.LocalRevisions().Contains(ChromiumVersion))
         {
-            logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
+            settings.logger?.WriteLine(this.GetType().ToString(), "Downloading headless browser");
             DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
             browserFetcher.DownloadProgressChanged += (sender, args) =>
             {
                 double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
                 if (args.TotalBytesToReceive == args.BytesReceived)
                 {
-                    logger?.WriteLine(this.GetType().ToString(), "Browser downloaded.");
+                    settings.logger?.WriteLine(this.GetType().ToString(), "Browser downloaded.");
                 }
                 else if (DateTime.Now > last.AddSeconds(5))
                 {
-                    logger?.WriteLine(this.GetType().ToString(), $"Browser download progress: {currentBytes:P2}");
+                    settings.logger?.WriteLine(this.GetType().ToString(), $"Browser download progress: {currentBytes:P2}");
                     last = DateTime.Now;
                 }
 
             };
             if (!browserFetcher.CanDownloadAsync(ChromiumVersion).Result)
             {
-                logger?.WriteLine(this.GetType().ToString(), $"Can't download browser version {ChromiumVersion}");
+                settings.logger?.WriteLine(this.GetType().ToString(), $"Can't download browser version {ChromiumVersion}");
                 return;
             }
             await browserFetcher.DownloadAsync(ChromiumVersion);
         }
         
-        logger?.WriteLine(this.GetType().ToString(), "Starting browser.");
+        settings.logger?.WriteLine(this.GetType().ToString(), "Starting browser.");
         this._browser = await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
@@ -74,7 +73,7 @@ public class Mangasee : Connector
 
     protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         string requestUrl = $"https://mangasee123.com/_search.php";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, (byte)1);
@@ -99,7 +98,7 @@ public class Mangasee : Connector
         queryFiltered = queryFiltered.Where(item => item.Value >= publicationTitle.Split(' ').Length - 1)
             .ToDictionary(item => item.Key, item => item.Value);
         
-        logger?.WriteLine(this.GetType().ToString(), $"Got {queryFiltered.Count} Publications (title={publicationTitle})");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Got {queryFiltered.Count} Publications (title={publicationTitle})");
 
         HashSet<Publication> ret = new();
         List<SearchResultItem> orderedFiltered =
@@ -112,7 +111,7 @@ public class Mangasee : Connector
                 downloadClient.MakeRequest($"https://mangasee123.com/manga/{orderedItem.i}", (byte)1);
             if ((int)requestResult.statusCode >= 200 || (int)requestResult.statusCode < 300)
             {
-                logger?.WriteLine(this.GetType().ToString(), $"Retrieving Publication info: {orderedItem.s} {index++}/{orderedFiltered.Count}");
+                settings.logger?.WriteLine(this.GetType().ToString(), $"Retrieving Publication info: {orderedItem.s} {index++}/{orderedFiltered.Count}");
                 ret.Add(ParseSinglePublicationFromHtml(requestResult.result, orderedItem.s, orderedItem.i, orderedItem.a));
             }
         }
@@ -230,7 +229,7 @@ public class Mangasee : Connector
         {
             NumberDecimalSeparator = "."
         };
-        logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
         return ret.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
@@ -240,13 +239,13 @@ public class Mangasee : Connector
             return HttpStatusCode.RequestTimeout;
         while (this._browser is null && !(cancellationToken?.IsCancellationRequested??false))
         {
-            logger?.WriteLine(this.GetType().ToString(), "Waiting for headless browser to download...");
+            settings.logger?.WriteLine(this.GetType().ToString(), "Waiting for headless browser to download...");
             Thread.Sleep(1000);
         }
         if (cancellationToken?.IsCancellationRequested??false)
             return HttpStatusCode.RequestTimeout;
         
-        logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         IPage page = _browser!.NewPageAsync().Result;
         IResponse response = page.GoToAsync(chapter.url).Result;
         if (response.Ok)

@@ -2,7 +2,6 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Logging;
 using Tranga.TrangaTasks;
 
 namespace Tranga.Connectors;
@@ -19,7 +18,7 @@ public class MangaDex : Connector
         Author,
     }
 
-    public MangaDex(TrangaSettings settings, Logger? logger = null) : base(settings, logger)
+    public MangaDex(TrangaSettings settings) : base(settings)
     {
         name = "MangaDex";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
@@ -29,12 +28,12 @@ public class MangaDex : Connector
             {(byte)RequestType.AtHomeServer, 40},
             {(byte)RequestType.CoverUrl, 250},
             {(byte)RequestType.Author, 250}
-        }, logger);
+        }, settings.logger);
     }
 
     protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -60,7 +59,7 @@ public class MangaDex : Connector
             //Loop each Manga and extract information from JSON
             foreach (JsonNode? mangeNode in mangaInResult)
             {
-                logger?.WriteLine(this.GetType().ToString(), $"Getting publication data. {++loadedPublicationData}/{total}");
+                settings.logger?.WriteLine(this.GetType().ToString(), $"Getting publication data. {++loadedPublicationData}/{total}");
                 JsonObject manga = (JsonObject)mangeNode!;
                 JsonObject attributes = manga["attributes"]!.AsObject();
                 
@@ -147,13 +146,13 @@ public class MangaDex : Connector
             }
         }
 
-        logger?.WriteLine(this.GetType().ToString(), $"Done getting publications (title={publicationTitle})");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Done getting publications (title={publicationTitle})");
         return publications.ToArray();
     }
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -204,7 +203,7 @@ public class MangaDex : Connector
         {
             NumberDecimalSeparator = "."
         };
-        logger?.WriteLine(this.GetType().ToString(), $"Done getting {chapters.Count} Chapters for {publication.internalId}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Done getting {chapters.Count} Chapters for {publication.internalId}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
@@ -212,7 +211,7 @@ public class MangaDex : Connector
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
@@ -239,10 +238,10 @@ public class MangaDex : Connector
 
     private string? GetCoverUrl(string publicationId, string? posterId)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting CoverUrl for {publicationId}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Getting CoverUrl for {publicationId}");
         if (posterId is null)
         {
-            logger?.WriteLine(this.GetType().ToString(), $"No posterId, aborting");
+            settings.logger?.WriteLine(this.GetType().ToString(), $"No posterId, aborting");
             return null;
         }
         
@@ -258,7 +257,7 @@ public class MangaDex : Connector
         string fileName = result["data"]!["attributes"]!["fileName"]!.GetValue<string>();
 
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
-        logger?.WriteLine(this.GetType().ToString(), $"Got Cover-Url for {publicationId} -> {coverUrl}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Got Cover-Url for {publicationId} -> {coverUrl}");
         return coverUrl;
     }
 
@@ -277,7 +276,7 @@ public class MangaDex : Connector
 
             string authorName = result["data"]!["attributes"]!["name"]!.GetValue<string>();
             ret.Add(authorName);
-            logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {authorName}");
+            settings.logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {authorName}");
         }
         return ret;
     }
