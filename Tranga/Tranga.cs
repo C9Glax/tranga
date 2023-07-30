@@ -12,19 +12,19 @@ public static class Tranga
 {
     public static void Main(string[] args)
     {
-        string applicationFolderPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API");
-        string downloadFolderPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(applicationFolderPath, "Manga");
-        string logsFolderPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/log/Tranga" : Path.Join(applicationFolderPath, "log");
+        bool isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        string applicationFolderPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API"); 
+        
+        string downloadFolderPath = isLinux ? "/Manga" : Path.Join(applicationFolderPath, "Manga");
+        string logsFolderPath = isLinux ? "/var/log/Tranga" : Path.Join(applicationFolderPath, "log");
         string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
         string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");
         
         
         Directory.CreateDirectory(logsFolderPath);
-        Logger logger;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            logger =new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath);
-        else
-            logger = new(new[] { Logger.LoggerType.FileLogger }, Console.Out, Console.Out.Encoding, logFilePath);
+        Logger logger = isLinux
+            ? new Logger(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath)
+            : new Logger(new[] { Logger.LoggerType.FileLogger }, Console.Out, Console.Out.Encoding, logFilePath);
         
         logger.WriteLine("Tranga",value: "\n"+
                                          "-------------------------------------------\n"+
@@ -40,6 +40,7 @@ public static class Tranga
         Directory.CreateDirectory(settings.downloadLocation);
         Directory.CreateDirectory(settings.coverImageCache);
 
+        logger.WriteLine("Tranga", $"Is Linux: {isLinux}");
         logger.WriteLine("Tranga",$"Application-Folder: {settings.workingDirectory}");
         logger.WriteLine("Tranga",$"Settings-File-Path: {settings.settingsFilePath}");
         logger.WriteLine("Tranga",$"Download-Folder-Path: {settings.downloadLocation}");
@@ -53,7 +54,7 @@ public static class Tranga
         foreach(NotificationManager nm in taskManager.commonObjects.notificationManagers)
             nm.SendNotification("Tranga-API", "Started Tranga-API");
         
-        if(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        if(!isLinux)
             TaskMode(taskManager, logger);
     }
     
