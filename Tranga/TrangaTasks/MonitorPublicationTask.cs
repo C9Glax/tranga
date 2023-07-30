@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Logging;
+using Tranga.Connectors;
 
 namespace Tranga.TrangaTasks;
 

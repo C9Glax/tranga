@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using Tranga;
+using Tranga.Connectors;
 using Tranga.TrangaTasks;
 
 namespace API;

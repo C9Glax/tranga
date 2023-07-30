@@ -7,7 +7,7 @@ using Logging;
 using Tranga.TrangaTasks;
 using static System.IO.UnixFileMode;
 
-namespace Tranga;
+namespace Tranga.Connectors;
 
 /// <summary>
 /// Base-Class for all Connectors

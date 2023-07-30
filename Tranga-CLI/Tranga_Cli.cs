@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Logging;
 using Tranga;
+using Tranga.Connectors;
 using Tranga.LibraryManagers;
 using Tranga.NotificationManagers;
 using Tranga.TrangaTasks;
