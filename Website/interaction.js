@@ -70,13 +70,6 @@ createDownloadChapterTaskButton.addEventListener("click", () => {
     OpenDownloadChapterTaskPopup();
 });
 publicationTaskStart.addEventListener("click", () => StartTaskClick());
-settingApiUri.addEventListener("keypress", (event) => {
-    if(event.key === "Enter"){
-        apiUri = settingApiUri.value;
-        setTimeout(() => GetSettingsClick(), 100);
-        document.cookie = `apiUri=${apiUri};`;
-    }
-});
 searchPublicationQuery.addEventListener("keypress", (event) => {
     if(event.key === "Enter"){
         NewSearch();
@@ -351,6 +344,11 @@ function UpdateLibrarySettings(){
     
     if(settingLunaseaWebhook.value != ""){
         UpdateLunaSea(settingLunaseaWebhook.value);
+    }
+
+    if(settingApiUri.value != ""){
+        apiUri = settingApiUri.value;
+        document.cookie = `apiUri=${apiUri};`;
     }
     
     setTimeout(() => GetSettingsClick(), 200);
