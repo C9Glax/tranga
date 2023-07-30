@@ -52,8 +52,8 @@ public static class Migrator
             node["downloadLocation"]!.GetValue<string>(),
             node["workingDirectory"]!.GetValue<string>());
         JsonArray libraryManagers = node["libraryManagers"]!.AsArray();
-        JsonNode? komgaNode = libraryManagers.FirstOrDefault(lm => lm["libraryType"].GetValue<LibraryManager.LibraryType>() == LibraryManager.LibraryType.Komga);
-        JsonNode? kavitaNode = libraryManagers.FirstOrDefault(lm => lm["libraryType"].GetValue<LibraryManager.LibraryType>() == LibraryManager.LibraryType.Kavita);
+        JsonNode? komgaNode = libraryManagers.FirstOrDefault(lm => lm["libraryType"].GetValue<byte>() == (byte)LibraryManager.LibraryType.Komga);
+        JsonNode? kavitaNode = libraryManagers.FirstOrDefault(lm => lm["libraryType"].GetValue<byte>() == (byte)LibraryManager.LibraryType.Kavita);
         HashSet<LibraryManager> lms = new();
         if (komgaNode is not null)
             lms.Add(new Komga(komgaNode["baseUrl"]!.GetValue<string>(), komgaNode["auth"]!.GetValue<string>(), null));
@@ -62,9 +62,9 @@ public static class Migrator
         
         JsonArray notificationManagers = node["libraryManagers"]!.AsArray();
         JsonNode? gotifyNode = notificationManagers.FirstOrDefault(nm =>
-            nm["notificationManagerType"].GetValue<NotificationManager.NotificationManagerType>() == NotificationManager.NotificationManagerType.Gotify);
+            nm["notificationManagerType"].GetValue<byte>() == (byte)NotificationManager.NotificationManagerType.Gotify);
         JsonNode? lunaSeaNode = notificationManagers.FirstOrDefault(nm =>
-            nm["notificationManagerType"].GetValue<NotificationManager.NotificationManagerType>() == NotificationManager.NotificationManagerType.LunaSea);
+            nm["notificationManagerType"].GetValue<byte>() == (byte)NotificationManager.NotificationManagerType.LunaSea);
         HashSet<NotificationManager> nms = new();
         if (gotifyNode is not null)
             nms.Add(new Gotify(gotifyNode["endpoint"]!.GetValue<string>(), gotifyNode["appToken"]!.GetValue<string>()));
