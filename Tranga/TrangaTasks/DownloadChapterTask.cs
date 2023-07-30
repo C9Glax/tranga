@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using Logging;
+using Tranga.NotificationManagers;
+using Tranga.LibraryManagers;
 
 namespace Tranga.TrangaTasks;
 

@@ -1,6 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using Logging;
 using Tranga;
+using Tranga.NotificationManagers;
+using Tranga.LibraryManagers;
 
 namespace API;
 

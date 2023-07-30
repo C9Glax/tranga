@@ -1,9 +1,8 @@
 ﻿using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tranga.NotificationManagers;
 
-namespace Tranga;
+namespace Tranga.NotificationManagers;
 
 public abstract class NotificationManager
 {

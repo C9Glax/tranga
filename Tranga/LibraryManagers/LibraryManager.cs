@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tranga.LibraryManagers;
 
-namespace Tranga;
+namespace Tranga.LibraryManagers;
 
 public abstract class LibraryManager
 {

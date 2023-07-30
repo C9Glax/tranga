@@ -3,10 +3,9 @@ using System.Text.Json.Serialization;
 using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tranga.TrangaTasks;
 using JsonConverter = Newtonsoft.Json.JsonConverter;
 
-namespace Tranga;
+namespace Tranga.TrangaTasks;
 
 /// <summary>
 /// Stores information on Task, when implementing new Tasks also update the serializer
