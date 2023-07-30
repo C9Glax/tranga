@@ -30,11 +30,14 @@ public static class Tranga
                                          "-------------------------------------------\n"+
                                          " Starting Tranga-API\n"+
                                          "-------------------------------------------");
-        logger.WriteLine("Tranga", "Loading settings.");
 
-        TrangaSettings settings = File.Exists(settingsFilePath)
-            ? TrangaSettings.LoadSettings(settingsFilePath)
-            : new TrangaSettings(downloadFolderPath, applicationFolderPath);
+        TrangaSettings settings;
+        if (File.Exists(settingsFilePath))
+        {
+            logger.WriteLine("Tranga", $"Loading settings {settingsFilePath}");
+            settings = TrangaSettings.LoadSettings(settingsFilePath);
+        }else
+            settings = new TrangaSettings(downloadFolderPath, applicationFolderPath);
 
         Directory.CreateDirectory(settings.workingDirectory);
         Directory.CreateDirectory(settings.downloadLocation);
