@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Logging;
+﻿using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryManagers;
 using Tranga.NotificationManagers;
@@ -8,8 +7,8 @@ namespace Tranga;
 
 public class TrangaSettings
 {
-    public string downloadLocation { get; set; }
-    public string workingDirectory { get; set; }
+    public string downloadLocation { get; private set; }
+    public string workingDirectory { get; init; }
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
