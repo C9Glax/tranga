@@ -12,4 +12,4 @@ FROM glax/tranga-base:latest as runtime
 WORKDIR /publish
 COPY --from=build-env /publish .
 EXPOSE 6531
-ENTRYPOINT ["dotnet", "/publish/API.dll"]
+ENTRYPOINT ["dotnet", "/publish/Tranga.exe"]
