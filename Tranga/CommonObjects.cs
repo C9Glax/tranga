@@ -9,7 +9,7 @@ public class CommonObjects
 {
     public HashSet<LibraryManager> libraryManagers { get; init; }
     public HashSet<NotificationManager> notificationManagers { get; init; }
-    public Logger? logger { get; set; }
+    [JsonIgnore]public Logger? logger { get; set; }
     [JsonIgnore]private string settingsFilePath { get; init; }
 
     public CommonObjects(HashSet<LibraryManager>? libraryManagers, HashSet<NotificationManager>? notificationManagers, Logger? logger, string settingsFilePath)
