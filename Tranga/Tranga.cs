@@ -31,7 +31,7 @@ public static class Tranga
                                          " Starting Tranga-API\n"+
                                          "-------------------------------------------");
         logger.WriteLine("Tranga", "Migrating...");
-        Migrator.Migrate(settingsFilePath);
+        Migrator.Migrate(settingsFilePath, logger);
 
         TrangaSettings settings;
         if (File.Exists(settingsFilePath))
