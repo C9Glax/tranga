@@ -51,6 +51,8 @@ public static class Tranga
         
         if(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             TaskMode(taskManager, logger);
+        else
+            taskManager.commonObjects.logger =  new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath);
     }
     
     private static void TaskMode(TaskManager taskManager, Logger logger)
