@@ -87,8 +87,8 @@ public class TrangaSettings
 
     internal class SettingsJsonObject
     {
-        internal TrangaSettings? ts;
-        internal CommonObjects? co;
+        public TrangaSettings? ts { get; }
+        public CommonObjects? co { get; }
 
         public SettingsJsonObject(TrangaSettings? ts, CommonObjects? co)
         {
