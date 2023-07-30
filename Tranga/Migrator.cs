@@ -28,7 +28,18 @@ public static class Migrator
                 MoveToCommonObjects(settingsFilePath, logger);
                 break;
         }
-        TrangaSettings.SettingsJsonObject sjo2 = JsonConvert.DeserializeObject<TrangaSettings.SettingsJsonObject>(File.ReadAllText(settingsFilePath))!;
+
+        TrangaSettings.SettingsJsonObject sjo2 = JsonConvert.DeserializeObject<TrangaSettings.SettingsJsonObject>(
+            File.ReadAllText(settingsFilePath),
+            new JsonSerializerSettings
+            {
+                Converters =
+                {
+                    new TrangaTask.TrangaTaskJsonConverter(),
+                    new NotificationManager.NotificationManagerJsonConverter(),
+                    new LibraryManager.LibraryManagerJsonConverter()
+                }
+            })!;
         sjo2.ts!.version = CurrentVersion;
         sjo2.ts!.ExportSettings();
     }
@@ -40,7 +51,8 @@ public static class Migrator
 
         logger?.WriteLine("Migrator", "Removing old/deprecated UpdateLibraryTasks (v16)");
         string tasksJsonString = File.ReadAllText(settings.tasksFilePath);
-        HashSet<TrangaTask> tasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(tasksJsonString, new JsonSerializerSettings { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
+        HashSet<TrangaTask> tasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(tasksJsonString,
+            new JsonSerializerSettings { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
         tasks.RemoveWhere(t => t.task == TrangaTask.Task.UpdateLibraries);
         File.WriteAllText(settings.tasksFilePath, JsonConvert.SerializeObject(tasks));
     }
