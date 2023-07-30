@@ -60,7 +60,7 @@ public static class Migrator
         if (kavitaNode is not null)
             lms.Add(new Kavita(kavitaNode["baseUrl"]!.GetValue<string>(), kavitaNode["auth"]!.GetValue<string>(), null));
         
-        JsonArray notificationManagers = node["libraryManagers"]!.AsArray();
+        JsonArray notificationManagers = node["notificationManagers"]!.AsArray();
         JsonNode? gotifyNode = notificationManagers.FirstOrDefault(nm =>
             nm["notificationManagerType"].GetValue<byte>() == (byte)NotificationManager.NotificationManagerType.Gotify);
         JsonNode? lunaSeaNode = notificationManagers.FirstOrDefault(nm =>
