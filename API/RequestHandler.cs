@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using Tranga;
+using Tranga.Connectors;
 using Tranga.TrangaTasks;
 
 namespace API;
@@ -22,7 +23,6 @@ public class RequestHandler
         new(HttpMethod.Get, "/Tasks/Types", Array.Empty<string>()),
         new(HttpMethod.Post, "/Tasks/CreateMonitorTask",
             new[] { "connectorName", "internalId", "reoccurrenceTime", "language?", "ignoreChaptersBelow?" }),
-        //DEPRECATED new(HttpMethod.Post, "/Tasks/CreateUpdateLibraryTask", new[] { "reoccurrenceTime" }),
         new(HttpMethod.Post, "/Tasks/CreateDownloadChaptersTask",
             new[] { "connectorName", "internalId", "chapters", "language?" }),
         new(HttpMethod.Get, "/Tasks", new[] { "taskType", "connectorName?", "publicationId?" }),
@@ -167,12 +167,6 @@ public class RequestHandler
                     pPublication1.ignoreChaptersBelow = float.Parse(minChapter,new NumberFormatInfo() { NumberDecimalSeparator = "." });
                 _taskManager.AddTask(new MonitorPublicationTask(connectorName1, pPublication1, TimeSpan.Parse(reoccurrenceTime1), language1 ?? "en"));
                 break;
-            case "/Tasks/CreateUpdateLibraryTask": // DEPRECATED
-                /*variables.TryGetValue("reoccurrenceTime", out string? reoccurrenceTime2);
-                if (reoccurrenceTime2 is null)
-                    return;
-                _taskManager.AddTask(new UpdateLibrariesTask(TimeSpan.Parse(reoccurrenceTime2)));*/
-                break;
             case "/Tasks/CreateDownloadChaptersTask":
                 variables.TryGetValue("connectorName", out string? connectorName2);
                 variables.TryGetValue("internalId", out string? internalId2);
@@ -246,17 +240,17 @@ public class RequestHandler
                 variables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook);
                 
                 if (downloadLocation is not null && downloadLocation.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation, _parent.logger, downloadLocation);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation,  downloadLocation);
                 if (komgaUrl is not null && komgaAuth is not null && komgaUrl.Length > 5 && komgaAuth.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Komga, _parent.logger, komgaUrl, komgaAuth);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Komga,  komgaUrl, komgaAuth);
                 if (kavitaUrl is not null && kavitaPassword is not null && kavitaUsername is not null && kavitaUrl.Length > 5 &&
                     kavitaUsername.Length > 0 && kavitaPassword.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Kavita, _parent.logger, kavitaUrl, kavitaUsername,
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Kavita,  kavitaUrl, kavitaUsername,
                         kavitaPassword);
                 if (gotifyUrl is not null && gotifyAppToken is not null && gotifyUrl.Length > 5 && gotifyAppToken.Length > 0)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Gotify, _parent.logger, gotifyUrl, gotifyAppToken);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.Gotify,  gotifyUrl, gotifyAppToken);
                 if(lunaseaWebhook is not null && lunaseaWebhook.Length > 5)
-                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.LunaSea, _parent.logger, lunaseaWebhook);
+                    _taskManager.settings.UpdateSettings(TrangaSettings.UpdateField.LunaSea,  lunaseaWebhook);
                 break;
         }
     }

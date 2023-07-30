@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Logging;
 
 namespace Tranga.TrangaTasks;
 
@@ -12,7 +11,7 @@ public class UpdateLibrariesTask : TrangaTask
     {
     }
 
-    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
         return HttpStatusCode.BadRequest;
     }

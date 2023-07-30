@@ -1,5 +1,7 @@
 ﻿using System.Net;
-using Logging;
+using Tranga.Connectors;
+using Tranga.NotificationManagers;
+using Tranga.LibraryManagers;
 
 namespace Tranga.TrangaTasks;
 
@@ -7,10 +9,11 @@ public class DownloadChapterTask : TrangaTask
 {
     public string connectorName { get; }
     public Publication publication { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
     public string language { get; }
     public Chapter chapter { get; }
 
-    private double _dctProgress = 0;
+    private double _dctProgress;
 
     public DownloadChapterTask(string connectorName, Publication publication, Chapter chapter, string language = "en", MonitorPublicationTask? parentTask = null) : base(Task.DownloadChapter, TimeSpan.Zero, parentTask)
     {
@@ -20,12 +23,12 @@ public class DownloadChapterTask : TrangaTask
         this.language = language;
     }
 
-    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
         Connector connector = taskManager.GetConnector(this.connectorName);
-        connector.CopyCoverFromCacheToDownloadLocation(this.publication, taskManager.settings);
+        connector.CopyCoverFromCacheToDownloadLocation(this.publication);
         HttpStatusCode downloadSuccess = connector.DownloadChapter(this.publication, this.chapter, this, cancellationToken);
         if ((int)downloadSuccess >= 200 && (int)downloadSuccess < 300)
         {

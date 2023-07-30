@@ -3,9 +3,8 @@ using System.Net.Http.Headers;
 using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tranga.LibraryManagers;
 
-namespace Tranga;
+namespace Tranga.LibraryManagers;
 
 public abstract class LibraryManager
 {
@@ -15,8 +14,10 @@ public abstract class LibraryManager
         Kavita = 1
     }
 
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public LibraryType libraryType { get; }
     public string baseUrl { get; }
+    // ReSharper disable once MemberCanBeProtected.Global
     public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
     protected Logger? logger;
     

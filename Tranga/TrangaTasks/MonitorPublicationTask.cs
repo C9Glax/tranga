@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Logging;
+using Tranga.Connectors;
 
 namespace Tranga.TrangaTasks;
 
@@ -7,6 +7,7 @@ public class MonitorPublicationTask : TrangaTask
 {
     public string connectorName { get; }
     public Publication publication { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
     public string language { get; }
     public MonitorPublicationTask(string connectorName, Publication publication, TimeSpan reoccurrence, string language = "en") : base(Task.MonitorPublication, reoccurrence)
     {
@@ -15,7 +16,7 @@ public class MonitorPublicationTask : TrangaTask
         this.language = language;
     }
 
-    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    protected override HttpStatusCode ExecuteTask(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
@@ -25,7 +26,7 @@ public class MonitorPublicationTask : TrangaTask
         publication.CreatePublicationFolder(taskManager.settings.downloadLocation);
         List<Chapter> newChapters = connector.GetNewChaptersList(publication, language, ref taskManager.collection);
 
-        connector.CopyCoverFromCacheToDownloadLocation(publication, taskManager.settings);
+        connector.CopyCoverFromCacheToDownloadLocation(publication);
         
         publication.SaveSeriesInfoJson(taskManager.settings.downloadLocation);
 

@@ -3,11 +3,10 @@ using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using Logging;
 using Tranga.TrangaTasks;
 using static System.IO.UnixFileMode;
 
-namespace Tranga;
+namespace Tranga.Connectors;
 
 /// <summary>
 /// Base-Class for all Connectors
@@ -16,15 +15,11 @@ namespace Tranga;
 public abstract class Connector
 {
     protected TrangaSettings settings { get; }
-    protected DownloadClient downloadClient { get; init; } = null!;
-
-    protected readonly Logger? logger;
-
-
-    protected Connector(TrangaSettings settings, Logger? logger = null)
+    internal DownloadClient downloadClient { get; init; } = null!;
+    
+    protected Connector(TrangaSettings settings)
     {
         this.settings = settings;
-        this.logger = logger;
         if (!Directory.Exists(settings.coverImageCache))
             Directory.CreateDirectory(settings.coverImageCache);
     }
@@ -68,11 +63,11 @@ public abstract class Connector
         Chapter[] newChapters = this.GetChapters(publication, language);
         collection.Add(publication);
         NumberFormatInfo decimalPoint = new (){ NumberDecimalSeparator = "." };
-        logger?.WriteLine(this.GetType().ToString(), "Checking for duplicates");
+        settings.logger?.WriteLine(this.GetType().ToString(), "Checking for duplicates");
         List<Chapter> newChaptersList = newChapters.Where(nChapter =>
             float.Parse(nChapter.chapterNumber, decimalPoint) > publication.ignoreChaptersBelow &&
             !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
-        logger?.WriteLine(this.GetType().ToString(), $"{newChaptersList.Count} new chapters.");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"{newChaptersList.Count} new chapters.");
         
         return newChaptersList;
     }
@@ -164,22 +159,21 @@ public abstract class Connector
     /// Copies the already downloaded cover from cache to downloadLocation
     /// </summary>
     /// <param name="publication">Publication to retrieve Cover for</param>
-    /// <param name="settings">TrangaSettings</param>
-    public void CopyCoverFromCacheToDownloadLocation(Publication publication, TrangaSettings settings)
+    public void CopyCoverFromCacheToDownloadLocation(Publication publication)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} -> {publication.internalId}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} -> {publication.internalId}");
         //Check if Publication already has a Folder and cover
         string publicationFolder = publication.CreatePublicationFolder(settings.downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
-            logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
+            settings.logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
             return;
         }
 
         string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
-        logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
@@ -217,7 +211,7 @@ public abstract class Connector
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
+        settings.logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
@@ -235,7 +229,7 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
-            logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
+            settings.logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
             if ((int)status < 200 || (int)status >= 300)
                 return status;
@@ -247,7 +241,7 @@ public abstract class Connector
         if(comicInfoPath is not null)
             File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
         
-        logger?.WriteLine("Connector", $"Creating archive {saveArchiveFilePath}");
+        settings.logger?.WriteLine("Connector", $"Creating archive {saveArchiveFilePath}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -269,111 +263,7 @@ public abstract class Connector
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
-        logger?.WriteLine(this.GetType().ToString(), $"Saving image to {saveImagePath}");
+        settings.logger?.WriteLine(this.GetType().ToString(), $"Saving image to {saveImagePath}");
         return filename;
-    }
-    
-    protected class DownloadClient
-    {
-        private static readonly HttpClient Client = new()
-        {
-            Timeout = TimeSpan.FromSeconds(60)
-        };
-
-        private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
-        private readonly Dictionary<byte, TimeSpan> _rateLimit;
-        // ReSharper disable once InconsistentNaming
-        private readonly Logger? logger;
-
-        /// <summary>
-        /// Creates a httpClient
-        /// </summary>
-        /// <param name="rateLimitRequestsPerMinute">Rate limits for requests. byte is RequestType, int maximum requests per minute for RequestType</param>
-        /// <param name="logger"></param>
-        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, Logger? logger)
-        {
-            this.logger = logger;
-            _lastExecutedRateLimit = new();
-            _rateLimit = new();
-            foreach(KeyValuePair<byte, int> limit in rateLimitRequestsPerMinute)
-                _rateLimit.Add(limit.Key, TimeSpan.FromMinutes(1).Divide(limit.Value));
-        }
-
-        /// <summary>
-        /// Request Webpage
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="requestType">For RateLimits: Same Endpoints use same type</param>
-        /// <param name="referrer">Used in http request header</param>
-        /// <returns>RequestResult with StatusCode and Stream of received data</returns>
-        public RequestResult MakeRequest(string url, byte requestType, string? referrer = null)
-        {
-            if (_rateLimit.TryGetValue(requestType, out TimeSpan value))
-                _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(value));
-            else
-            {
-                logger?.WriteLine(this.GetType().ToString(), "RequestType not configured for rate-limit.");
-                return new RequestResult(HttpStatusCode.NotAcceptable, Stream.Null);
-            }
-
-            TimeSpan rateLimitTimeout = _rateLimit[requestType]
-                .Subtract(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]));
-            
-            if(rateLimitTimeout > TimeSpan.Zero)
-                Thread.Sleep(rateLimitTimeout);
-
-            HttpResponseMessage? response = null;
-            while (response is null)
-            {
-                try
-                {
-                    HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
-                    if(referrer is not null)
-                        requestMessage.Headers.Referrer = new Uri(referrer);
-                    _lastExecutedRateLimit[requestType] = DateTime.Now;
-                    response = Client.Send(requestMessage);
-                }
-                catch (HttpRequestException e)
-                {
-                    logger?.WriteLine(this.GetType().ToString(), e.Message);
-                    logger?.WriteLine(this.GetType().ToString(), $"Waiting {_rateLimit[requestType] * 2}... Retrying.");
-                    Thread.Sleep(_rateLimit[requestType] * 2);
-                }
-            }
-            if (!response.IsSuccessStatusCode)
-            {
-                logger?.WriteLine(this.GetType().ToString(), $"Request-Error {response.StatusCode}: {response.ReasonPhrase}");
-                return new RequestResult(response.StatusCode, Stream.Null);
-            }
-
-            // Request has been redirected to another page. For example, it redirects directly to the results when there is only 1 result
-            if(response.RequestMessage is not null && response.RequestMessage.RequestUri is not null)
-            {
-                return new RequestResult(response.StatusCode, response.Content.ReadAsStream(), true, response.RequestMessage.RequestUri.AbsoluteUri);
-            }
-
-            return new RequestResult(response.StatusCode, response.Content.ReadAsStream());
-        }
-
-        public struct RequestResult
-        {
-            public HttpStatusCode statusCode { get; }
-            public Stream result { get; }
-            public bool HasBeenRedirected { get; }
-            public string? RedirectedToUrl { get; }
-
-            public RequestResult(HttpStatusCode statusCode, Stream result)
-            {
-                this.statusCode = statusCode;
-                this.result = result;
-            }
-
-            public RequestResult(HttpStatusCode statusCode, Stream result, bool hasBeenRedirected, string redirectedTo)
-                : this(statusCode, result)
-            {
-                this.HasBeenRedirected = hasBeenRedirected;
-                RedirectedToUrl = redirectedTo;
-            }
-        }
     }
 }

@@ -13,15 +13,20 @@ public struct Publication
 {
     public string sortName { get; }
     public List<string> authors { get; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Dictionary<string,string> altTitles { get; }
-    // ReSharper disable trice MemberCanBePrivate.Global, trust
+    // ReSharper disable once MemberCanBePrivate.Global
     public string? description { get; }
     public string[] tags { get; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string? posterUrl { get; }
     public string? coverFileNameInCache { get; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Dictionary<string,string> links { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
     public int? year { get; }
     public string? originalLanguage { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
     public string status { get; }
     public string folderName { get; }
     public string publicationId { get; }
@@ -74,7 +79,7 @@ public struct Publication
     }
     
     /// <returns>Serialized JSON String for series.json</returns>
-    public string GetSeriesInfoJson()
+    private string GetSeriesInfoJson()
     {
         SeriesInfo si = new (new Metadata(this.sortName, this.year.ToString() ?? string.Empty, this.status, this.description ?? ""));
         return System.Text.Json.JsonSerializer.Serialize(si);

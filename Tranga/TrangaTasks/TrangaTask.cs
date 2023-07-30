@@ -1,12 +1,10 @@
 ﻿using System.Net;
 using System.Text.Json.Serialization;
-using Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Tranga.TrangaTasks;
 using JsonConverter = Newtonsoft.Json.JsonConverter;
 
-namespace Tranga;
+namespace Tranga.TrangaTasks;
 
 /// <summary>
 /// Stores information on Task, when implementing new Tasks also update the serializer
@@ -16,8 +14,7 @@ namespace Tranga;
 [JsonDerivedType(typeof(DownloadChapterTask), 4)]
 public abstract class TrangaTask
 {
-    // ReSharper disable once CommentTypo ...Tell me why!
-    // ReSharper disable once MemberCanBePrivate.Global I want it thaaat way
+    // ReSharper disable once MemberCanBeProtected.Global
     public TimeSpan reoccurrence { get; }
     public DateTime lastExecuted { get; set; }
     [Newtonsoft.Json.JsonIgnore] public ExecutionState state { get; set; }
@@ -27,9 +24,12 @@ public abstract class TrangaTask
     public string? parentTaskId { get; set; }
     [Newtonsoft.Json.JsonIgnore] internal HashSet<TrangaTask> childTasks { get; }
     public double progress => GetProgress();
+    // ReSharper disable once MemberCanBePrivate.Global
     [Newtonsoft.Json.JsonIgnore]public DateTime executionStarted { get; private set; }
     [Newtonsoft.Json.JsonIgnore]public DateTime lastChange { get; internal set; }
+    // ReSharper disable once MemberCanBePrivate.Global
     [Newtonsoft.Json.JsonIgnore]public DateTime executionApproximatelyFinished => lastChange.Add(GetRemainingTime());
+    // ReSharper disable once MemberCanBePrivate.Global
     public TimeSpan executionApproximatelyRemaining => executionApproximatelyFinished.Subtract(DateTime.Now);
     [Newtonsoft.Json.JsonIgnore]public DateTime nextExecution => lastExecuted.Add(reoccurrence);
 
@@ -52,9 +52,8 @@ public abstract class TrangaTask
     /// BL for concrete Tasks
     /// </summary>
     /// <param name="taskManager"></param>
-    /// <param name="logger"></param>
     /// <param name="cancellationToken"></param>
-    protected abstract HttpStatusCode ExecuteTask(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null);
+    protected abstract HttpStatusCode ExecuteTask(TaskManager taskManager, CancellationToken? cancellationToken = null);
 
     public abstract TrangaTask Clone();
 
@@ -64,18 +63,17 @@ public abstract class TrangaTask
     /// Execute the task
     /// </summary>
     /// <param name="taskManager">Should be the parent taskManager</param>
-    /// <param name="logger"></param>
     /// <param name="cancellationToken"></param>
-    public void Execute(TaskManager taskManager, Logger? logger, CancellationToken? cancellationToken = null)
+    public void Execute(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
+        taskManager.settings.logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
         if(parentTask is not null && parentTask.childTasks.All(ct => ct.state is ExecutionState.Waiting or ExecutionState.Failed))
             parentTask.executionStarted = DateTime.Now;
         
-        HttpStatusCode statusCode = ExecuteTask(taskManager, logger, cancellationToken);
+        HttpStatusCode statusCode = ExecuteTask(taskManager, cancellationToken);
         
         if ((int)statusCode >= 200 && (int)statusCode < 300)
         {
@@ -91,7 +89,7 @@ public abstract class TrangaTask
         if (this is DownloadChapterTask)
             taskManager.DeleteTask(this);
         
-        logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
+        taskManager.settings.logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
     }
 
     public void AddChildTask(TrangaTask childTask)

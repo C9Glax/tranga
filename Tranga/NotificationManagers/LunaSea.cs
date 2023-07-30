@@ -6,8 +6,11 @@ namespace Tranga.NotificationManagers;
 
 public class LunaSea : NotificationManager
 {
-    public string id { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
+    public string id { get; init; }
     private readonly HttpClient _client = new();
+    
+    [JsonConstructor]
     public LunaSea(string id, Logger? logger = null) : base(NotificationManagerType.LunaSea, logger)
     {
         this.id = id;
@@ -29,6 +32,7 @@ public class LunaSea : NotificationManager
 
     private class MessageData
     {
+        // ReSharper disable twice UnusedAutoPropertyAccessor.Local
         public string title { get; }
         public string body { get; }
 
