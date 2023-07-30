@@ -13,7 +13,7 @@ public class TaskManager
     public HashSet<Publication> collection = new();
     private HashSet<TrangaTask> _allTasks = new();
     private readonly Dictionary<TrangaTask, CancellationTokenSource> _runningTasks = new ();
-    private bool _continueRunning = true;
+    public bool _continueRunning = true;
     private readonly Connector[] _connectors;
     public TrangaSettings settings { get; }
     public CommonObjects commonObjects { get; init; }
