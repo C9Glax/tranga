@@ -23,7 +23,6 @@ public class RequestHandler
         new(HttpMethod.Get, "/Tasks/Types", Array.Empty<string>()),
         new(HttpMethod.Post, "/Tasks/CreateMonitorTask",
             new[] { "connectorName", "internalId", "reoccurrenceTime", "language?", "ignoreChaptersBelow?" }),
-        //DEPRECATED new(HttpMethod.Post, "/Tasks/CreateUpdateLibraryTask", new[] { "reoccurrenceTime" }),
         new(HttpMethod.Post, "/Tasks/CreateDownloadChaptersTask",
             new[] { "connectorName", "internalId", "chapters", "language?" }),
         new(HttpMethod.Get, "/Tasks", new[] { "taskType", "connectorName?", "publicationId?" }),
@@ -167,12 +166,6 @@ public class RequestHandler
                 if (minChapter is not null)
                     pPublication1.ignoreChaptersBelow = float.Parse(minChapter,new NumberFormatInfo() { NumberDecimalSeparator = "." });
                 _taskManager.AddTask(new MonitorPublicationTask(connectorName1, pPublication1, TimeSpan.Parse(reoccurrenceTime1), language1 ?? "en"));
-                break;
-            case "/Tasks/CreateUpdateLibraryTask": // DEPRECATED
-                /*variables.TryGetValue("reoccurrenceTime", out string? reoccurrenceTime2);
-                if (reoccurrenceTime2 is null)
-                    return;
-                _taskManager.AddTask(new UpdateLibrariesTask(TimeSpan.Parse(reoccurrenceTime2)));*/
                 break;
             case "/Tasks/CreateDownloadChaptersTask":
                 variables.TryGetValue("connectorName", out string? connectorName2);

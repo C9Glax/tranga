@@ -106,11 +106,6 @@ function CreateMonitorTask(connectorName, internalId, reoccurrence, language){
     PostData(uri);
 }
 
-function CreateUpdateLibraryTask(reoccurrence){
-    var uri = apiUri + `/Tasks/CreateUpdateLibraryTask?reoccurrenceTime=${reoccurrence}`;
-    PostData(uri);
-}
-
 function CreateDownloadChaptersTask(connectorName, internalId, chapters, language){
     var uri = apiUri + `/Tasks/CreateDownloadChaptersTask?connectorName=${connectorName}&internalId=${internalId}&chapters=${chapters}&language=${language}`;
     PostData(uri);

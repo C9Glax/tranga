@@ -330,12 +330,10 @@ function UpdateLibrarySettings(){
         var auth = utf8_to_b64(`${settingKomgaUser.value}:${settingKomgaPass.value}`);
         console.log(auth);
         UpdateKomga(settingKomgaUrl.value, auth);
-        CreateUpdateLibraryTask(libraryUpdateTime.value);
     }
     
     if(settingKavitaUrl.value != "" && settingKavitaUser.value != "" && settingKavitaPass.value != ""){
         UpdateKavita(settingKavitaUrl.value, settingKavitaUser.value, settingKavitaPass.value);
-        CreateUpdateLibraryTask(libraryUpdateTime.value);
     }
     
     if(settingGotifyUrl.value != "" && settingGotifyAppToken.value != ""){
