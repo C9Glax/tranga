@@ -15,7 +15,9 @@ public static class Migrator
         if (!File.Exists(settingsFilePath))
             return;
         JsonNode settingsNode = JsonNode.Parse(File.ReadAllText(settingsFilePath))!;
-        ushort version = settingsNode["version"]!.GetValue<ushort>();
+        ushort version = settingsNode["version"] is not null
+            ? settingsNode["version"].GetValue<ushort>()
+            : settingsNode["ts"]["version"].GetValue<ushort>();
         logger?.WriteLine("Migrator", $"Migrating {version} -> {CurrentVersion}");
         switch (version)
         {
