@@ -1,4 +1,5 @@
-﻿using Logging;
+﻿using System.Text.Json.Nodes;
+using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryManagers;
 using Tranga.NotificationManagers;
@@ -12,41 +13,26 @@ public class TrangaSettings
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
-    public HashSet<LibraryManager> libraryManagers { get; }
-    public HashSet<NotificationManager> notificationManagers { get; }
     public ushort? version { get; set; }
-    [JsonIgnore] public Logger? logger { get; init; }
 
-    public TrangaSettings(string downloadLocation, string workingDirectory, HashSet<LibraryManager>? libraryManagers,
-        HashSet<NotificationManager>? notificationManagers, Logger? logger)
+    public TrangaSettings(string downloadLocation, string workingDirectory)
     {
         if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
             throw new ArgumentException("Download-location and working-directory paths can not be empty!");
         this.workingDirectory = workingDirectory;
         this.downloadLocation = downloadLocation;
-        this.libraryManagers = libraryManagers??new();
-        this.notificationManagers = notificationManagers??new();
-        this.logger = logger;
     }
 
-    public static TrangaSettings LoadSettings(string importFilePath, Logger? logger)
+    public static TrangaSettings LoadSettings(string importFilePath)
     {
         if (!File.Exists(importFilePath))
-            return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"),
-                Directory.GetCurrentDirectory(), new HashSet<LibraryManager>(), new HashSet<NotificationManager>(), logger);
+            return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory());
 
         string toRead = File.ReadAllText(importFilePath);
-        TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(toRead,
+        SettingsJsonObject settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
             new JsonSerializerSettings { Converters = { new NotificationManager.NotificationManagerJsonConverter(), new LibraryManager.LibraryManagerJsonConverter() } })!;
-        if (logger is not null)
-        {
-            foreach (LibraryManager lm in settings.libraryManagers)
-                lm.AddLogger(logger);
-            foreach(NotificationManager nm in settings.notificationManagers)
-                nm.AddLogger(logger);
-        }
+        return settings.ts ?? new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory());
 
-        return settings;
     }
 
     public void ExportSettings()
@@ -69,7 +55,12 @@ public class TrangaSettings
                 }
             }
         }
-        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
+        
+        string toRead = File.ReadAllText(settingsFilePath);
+        SettingsJsonObject? settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
+            new JsonSerializerSettings { Converters = { new NotificationManager.NotificationManagerJsonConverter(), new LibraryManager.LibraryManagerJsonConverter() } });
+        settings = new SettingsJsonObject(this, settings?.co);
+        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(settings));
     }
 
     public void UpdateSettings(UpdateField field, params string[] values) 
@@ -81,37 +72,21 @@ public class TrangaSettings
                     return;
                 this.downloadLocation = values[0];
                 break;
-            case UpdateField.Komga:
-                if (values.Length != 2)
-                    return;
-                libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Komga));
-                libraryManagers.Add(new Komga(values[0], values[1], this.logger));
-                break;
-            case UpdateField.Kavita:
-                if (values.Length != 3)
-                    return;
-                libraryManagers.RemoveWhere(lm => lm.GetType() == typeof(Kavita));
-                libraryManagers.Add(new Kavita(values[0], values[1], values[2], this.logger));
-                break;
-            case UpdateField.Gotify:
-                if (values.Length != 2)
-                    return;
-                notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(Gotify));
-                Gotify newGotify = new(values[0], values[1], this.logger);
-                notificationManagers.Add(newGotify);
-                newGotify.SendNotification("Success!", "Gotify was added to Tranga!");
-                break;
-            case UpdateField.LunaSea:
-                if(values.Length != 1)
-                    return;
-                notificationManagers.RemoveWhere(nm => nm.GetType() == typeof(LunaSea));
-                LunaSea newLunaSea = new(values[0], this.logger);
-                notificationManagers.Add(newLunaSea);
-                newLunaSea.SendNotification("Success!", "LunaSea was added to Tranga!");
-                break;
         }
         ExportSettings();
     }
     
     public enum UpdateField { DownloadLocation, Komga, Kavita, Gotify, LunaSea}
+
+    internal class SettingsJsonObject
+    {
+        internal TrangaSettings? ts;
+        internal CommonObjects? co;
+
+        public SettingsJsonObject(TrangaSettings? ts, CommonObjects? co)
+        {
+            this.ts = ts;
+            this.co = co;
+        }
+    }
 }

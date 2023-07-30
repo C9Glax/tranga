@@ -27,25 +27,25 @@ public static class Program
 
         TrangaSettings settings;
         if (File.Exists(settingsFilePath))
-            settings = TrangaSettings.LoadSettings(settingsFilePath, logger);
+            settings = TrangaSettings.LoadSettings(settingsFilePath);
         else
-            settings = new TrangaSettings(downloadFolderPath, applicationFolderPath, new HashSet<LibraryManager>(), new HashSet<NotificationManager>(), logger);
+            settings = new TrangaSettings(downloadFolderPath, applicationFolderPath);
 
         Directory.CreateDirectory(settings.workingDirectory);
         Directory.CreateDirectory(settings.downloadLocation);
         Directory.CreateDirectory(settings.coverImageCache);
 
-        settings.logger?.WriteLine("Tranga",$"Application-Folder: {settings.workingDirectory}");
-        settings.logger?.WriteLine("Tranga",$"Settings-File-Path: {settings.settingsFilePath}");
-        settings.logger?.WriteLine("Tranga",$"Download-Folder-Path: {settings.downloadLocation}");
-        settings.logger?.WriteLine("Tranga",$"Logfile-Path: {logFilePath}");
-        settings.logger?.WriteLine("Tranga",$"Image-Cache-Path: {settings.coverImageCache}");
+        logger.WriteLine("Tranga",$"Application-Folder: {settings.workingDirectory}");
+        logger.WriteLine("Tranga",$"Settings-File-Path: {settings.settingsFilePath}");
+        logger.WriteLine("Tranga",$"Download-Folder-Path: {settings.downloadLocation}");
+        logger.WriteLine("Tranga",$"Logfile-Path: {logFilePath}");
+        logger.WriteLine("Tranga",$"Image-Cache-Path: {settings.coverImageCache}");
 
-        settings.logger?.WriteLine("Tranga", "Loading Taskmanager.");
-        TaskManager taskManager = new (settings);
+        logger.WriteLine("Tranga", "Loading Taskmanager.");
+        TaskManager taskManager = new (settings, logger);
         
         Server server = new (6531, taskManager);
-        foreach(NotificationManager nm in taskManager.settings.notificationManagers)
+        foreach(NotificationManager nm in taskManager.commonObjects.notificationManagers)
             nm.SendNotification("Tranga-API", "Started Tranga-API");
     }
 }

@@ -14,12 +14,14 @@ namespace Tranga.Connectors;
 /// </summary>
 public abstract class Connector
 {
+    protected CommonObjects commonObjects;
     protected TrangaSettings settings { get; }
     internal DownloadClient downloadClient { get; init; } = null!;
     
-    protected Connector(TrangaSettings settings)
+    protected Connector(TrangaSettings settings, CommonObjects commonObjects)
     {
         this.settings = settings;
+        this.commonObjects = commonObjects;
         if (!Directory.Exists(settings.coverImageCache))
             Directory.CreateDirectory(settings.coverImageCache);
     }
@@ -63,11 +65,11 @@ public abstract class Connector
         Chapter[] newChapters = this.GetChapters(publication, language);
         collection.Add(publication);
         NumberFormatInfo decimalPoint = new (){ NumberDecimalSeparator = "." };
-        settings.logger?.WriteLine(this.GetType().ToString(), "Checking for duplicates");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), "Checking for duplicates");
         List<Chapter> newChaptersList = newChapters.Where(nChapter =>
             float.Parse(nChapter.chapterNumber, decimalPoint) > publication.ignoreChaptersBelow &&
             !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
-        settings.logger?.WriteLine(this.GetType().ToString(), $"{newChaptersList.Count} new chapters.");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"{newChaptersList.Count} new chapters.");
         
         return newChaptersList;
     }
@@ -161,19 +163,19 @@ public abstract class Connector
     /// <param name="publication">Publication to retrieve Cover for</param>
     public void CopyCoverFromCacheToDownloadLocation(Publication publication)
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} -> {publication.internalId}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {publication.sortName} -> {publication.internalId}");
         //Check if Publication already has a Folder and cover
         string publicationFolder = publication.CreatePublicationFolder(settings.downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
-            settings.logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
+            commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Cover exists {publication.sortName}");
             return;
         }
 
         string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
@@ -211,7 +213,7 @@ public abstract class Connector
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        settings.logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
+        commonObjects.logger?.WriteLine("Connector", $"Downloading Images for {saveArchiveFilePath}");
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
@@ -229,7 +231,7 @@ public abstract class Connector
         {
             string[] split = imageUrl.Split('.');
             string extension = split[^1];
-            settings.logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
+            commonObjects.logger?.WriteLine("Connector", $"Downloading Image {chapter + 1:000}/{imageUrls.Length:000} {parentTask.publication.sortName} {parentTask.publication.internalId} Vol.{parentTask.chapter.volumeNumber} Ch.{parentTask.chapter.chapterNumber} {parentTask.progress:P2}");
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
             if ((int)status < 200 || (int)status >= 300)
                 return status;
@@ -241,7 +243,7 @@ public abstract class Connector
         if(comicInfoPath is not null)
             File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
         
-        settings.logger?.WriteLine("Connector", $"Creating archive {saveArchiveFilePath}");
+        commonObjects.logger?.WriteLine("Connector", $"Creating archive {saveArchiveFilePath}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -263,7 +265,7 @@ public abstract class Connector
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Saving image to {saveImagePath}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Saving image to {saveImagePath}");
         return filename;
     }
 }
