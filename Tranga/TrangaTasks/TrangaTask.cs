@@ -66,7 +66,7 @@ public abstract class TrangaTask
     /// <param name="cancellationToken"></param>
     public void Execute(TaskManager taskManager, CancellationToken? cancellationToken = null)
     {
-        taskManager.settings.logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
+        taskManager.commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Executing Task {this}");
         this.state = ExecutionState.Running;
         this.executionStarted = DateTime.Now;
         this.lastChange = DateTime.Now;
@@ -89,7 +89,7 @@ public abstract class TrangaTask
         if (this is DownloadChapterTask)
             taskManager.DeleteTask(this);
         
-        taskManager.settings.logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
+        taskManager.commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Finished Executing Task {this}");
     }
 
     public void AddChildTask(TrangaTask childTask)

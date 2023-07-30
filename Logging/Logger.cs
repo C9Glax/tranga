@@ -30,7 +30,7 @@ public class Logger : TextWriter
         {
             _formattedConsoleLogger = new FormattedConsoleLogger(stdOut, encoding);
         }
-        else
+        else if (enabledLoggers.Contains(LoggerType.ConsoleLogger) && stdOut is null)
         {
             _formattedConsoleLogger = null;
             throw new ArgumentException($"stdOut can not be null for LoggerType {LoggerType.ConsoleLogger}");

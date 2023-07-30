@@ -1,139 +1,70 @@
 ﻿using System.Globalization;
+using System.Runtime.InteropServices;
 using Logging;
-using Tranga;
+using Tranga.API;
 using Tranga.Connectors;
-using Tranga.LibraryManagers;
 using Tranga.NotificationManagers;
 using Tranga.TrangaTasks;
 
-namespace Tranga_CLI;
+namespace Tranga;
 
-/*
- * This is written with pure hatred for readability.
- * At some point do this properly.
- * Read at own risk.
- */
-
-public static class Tranga_Cli
+public static class Tranga
 {
     public static void Main(string[] args)
     {
-        string applicationFolderPath =  Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga");
-        string logsFolderPath = Path.Join(applicationFolderPath, "logs");
+        bool isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        string applicationFolderPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Tranga-API"); 
+        
+        string downloadFolderPath = isLinux ? "/Manga" : Path.Join(applicationFolderPath, "Manga");
+        string logsFolderPath = isLinux ? "/var/log/Tranga" : Path.Join(applicationFolderPath, "log");
         string logFilePath = Path.Join(logsFolderPath, $"log-{DateTime.Now:dd-M-yyyy-HH-mm-ss}.txt");
         string settingsFilePath = Path.Join(applicationFolderPath, "settings.json");
-
-        Directory.CreateDirectory(applicationFolderPath);
+        
+        
         Directory.CreateDirectory(logsFolderPath);
+        Logger logger = isLinux
+            ? new Logger(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath)
+            : new Logger(new[] { Logger.LoggerType.FileLogger }, Console.Out, Console.Out.Encoding, logFilePath);
         
-        Console.WriteLine($"Logfile-Path: {logFilePath}");
-        Console.WriteLine($"Settings-File-Path: {settingsFilePath}");
+        logger.WriteLine("Tranga",value: "\n"+
+                                         "-------------------------------------------\n"+
+                                         " Starting Tranga-API\n"+
+                                         "-------------------------------------------");
+        logger.WriteLine("Tranga", "Migrating...");
+        Migrator.Migrate(settingsFilePath, logger);
 
-        Logger logger = new(new[] { Logger.LoggerType.FileLogger }, null, Console.Out.Encoding, logFilePath);
-        
-        logger.WriteLine("Tranga_CLI", "Loading Taskmanager.");
-        TrangaSettings settings = File.Exists(settingsFilePath) ? TrangaSettings.LoadSettings(settingsFilePath, logger) : new TrangaSettings(Directory.GetCurrentDirectory(), applicationFolderPath, new HashSet<LibraryManager>(), new HashSet<NotificationManager>(), logger);
-
-            
-        settings.logger?.WriteLine("Tranga_CLI", "User Input");
-        Console.WriteLine($"Output folder path [{settings.downloadLocation}]:");
-        string? tmpPath = Console.ReadLine();
-        while(tmpPath is null)
-            tmpPath = Console.ReadLine();
-        if (tmpPath.Length > 0)
-            settings.UpdateSettings(TrangaSettings.UpdateField.DownloadLocation, tmpPath);
-
-        Console.WriteLine($"Komga BaseURL [{settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Komga))?.baseUrl}]:");
-        string? tmpUrlKomga = Console.ReadLine();
-        while (tmpUrlKomga is null)
-            tmpUrlKomga = Console.ReadLine();
-        if (tmpUrlKomga.Length > 0)
+        TrangaSettings settings;
+        if (File.Exists(settingsFilePath))
         {
-            Console.WriteLine("Username:");
-            string? tmpKomgaUser = Console.ReadLine();
-            while (tmpKomgaUser is null || tmpKomgaUser.Length < 1)
-                tmpKomgaUser = Console.ReadLine();
-            
-            Console.WriteLine("Password:");
-            string tmpKomgaPass = string.Empty;
-            ConsoleKey key;
-            do
-            {
-                var keyInfo = Console.ReadKey(intercept: true);
-                key = keyInfo.Key;
+            logger.WriteLine("Tranga", $"Loading settings {settingsFilePath}");
+            settings = TrangaSettings.LoadSettings(settingsFilePath);
+        }else
+            settings = new TrangaSettings(downloadFolderPath, applicationFolderPath);
 
-                if (key == ConsoleKey.Backspace && tmpKomgaPass.Length > 0)
-                {
-                    Console.Write("\b \b");
-                    tmpKomgaPass = tmpKomgaPass[0..^1];
-                }
-                else if (!char.IsControl(keyInfo.KeyChar))
-                {
-                    Console.Write("*");
-                    tmpKomgaPass += keyInfo.KeyChar;
-                }
-            } while (key != ConsoleKey.Enter);
+        Directory.CreateDirectory(settings.workingDirectory);
+        Directory.CreateDirectory(settings.downloadLocation);
+        Directory.CreateDirectory(settings.coverImageCache);
 
-            settings.UpdateSettings(TrangaSettings.UpdateField.Komga, tmpUrlKomga, tmpKomgaUser, tmpKomgaPass);
-        }
+        logger.WriteLine("Tranga", $"Is Linux: {isLinux}");
+        logger.WriteLine("Tranga",$"Application-Folder: {settings.workingDirectory}");
+        logger.WriteLine("Tranga",$"Settings-File-Path: {settings.settingsFilePath}");
+        logger.WriteLine("Tranga",$"Download-Folder-Path: {settings.downloadLocation}");
+        logger.WriteLine("Tranga",$"Logfile-Path: {logFilePath}");
+        logger.WriteLine("Tranga",$"Image-Cache-Path: {settings.coverImageCache}");
+
+        logger.WriteLine("Tranga", "Loading Taskmanager.");
+        TaskManager taskManager = new (settings, logger);
         
-        Console.WriteLine($"Kavita BaseURL [{settings.libraryManagers.FirstOrDefault(lm => lm.GetType() == typeof(Kavita))?.baseUrl}]:");
-        string? tmpUrlKavita = Console.ReadLine();
-        while (tmpUrlKavita is null)
-            tmpUrlKavita = Console.ReadLine();
-        if (tmpUrlKavita.Length > 0)
-        {
-            Console.WriteLine("Username:");
-            string? tmpKavitaUser = Console.ReadLine();
-            while (tmpKavitaUser is null || tmpKavitaUser.Length < 1)
-                tmpKavitaUser = Console.ReadLine();
-            
-            Console.WriteLine("Password:");
-            string tmpKavitaPass = string.Empty;
-            ConsoleKey key;
-            do
-            {
-                var keyInfo = Console.ReadKey(intercept: true);
-                key = keyInfo.Key;
-
-                if (key == ConsoleKey.Backspace && tmpKavitaPass.Length > 0)
-                {
-                    Console.Write("\b \b");
-                    tmpKavitaPass = tmpKavitaPass[0..^1];
-                }
-                else if (!char.IsControl(keyInfo.KeyChar))
-                {
-                    Console.Write("*");
-                    tmpKavitaPass += keyInfo.KeyChar;
-                }
-            } while (key != ConsoleKey.Enter);
-
-            settings.UpdateSettings(TrangaSettings.UpdateField.Kavita,  tmpUrlKavita, tmpKavitaUser, tmpKavitaPass);
-        }
+        Server _ = new (6531, taskManager);
+        foreach(NotificationManager nm in taskManager.commonObjects.notificationManagers)
+            nm.SendNotification("Tranga-API", "Started Tranga-API");
         
-        Console.WriteLine($"Gotify BaseURL [{((Gotify?)settings.notificationManagers.FirstOrDefault(lm => lm.GetType() == typeof(Gotify)))?.endpoint}]:");
-        string? tmpGotifyUrl = Console.ReadLine();
-        while (tmpGotifyUrl is null)
-            tmpGotifyUrl = Console.ReadLine();
-        if (tmpGotifyUrl.Length > 0)
-        {
-            Console.WriteLine("AppToken:");
-            string? tmpGotifyAppToken = Console.ReadLine();
-            while (tmpGotifyAppToken is null || tmpGotifyAppToken.Length < 1)
-                tmpGotifyAppToken = Console.ReadLine();
-
-            settings.UpdateSettings(TrangaSettings.UpdateField.Gotify,  tmpGotifyUrl, tmpGotifyAppToken);
-        }
-        
-        logger.WriteLine("Tranga_CLI", "Loaded.");
-        foreach(NotificationManager nm in settings.notificationManagers)
-            nm.SendNotification("Tranga", "Loaded.");
-        TaskMode(settings, logger);
+        if(!isLinux)
+            TaskMode(taskManager, logger);
     }
-
-    private static void TaskMode(TrangaSettings settings, Logger logger)
+    
+    private static void TaskMode(TaskManager taskManager, Logger logger)
     {
-        TaskManager taskManager = new (settings);
         ConsoleKey selection = ConsoleKey.EraseEndOfFile;
         PrintMenu(taskManager, taskManager.settings.downloadLocation);
         while (selection != ConsoleKey.Q)
@@ -160,22 +91,22 @@ public static class Tranga_Cli
                         Console.ReadKey();
                         break;
                     case ConsoleKey.C:
-                        CreateTask(taskManager, logger);
+                        CreateTask(taskManager);
                         Console.WriteLine("Press any key.");
                         Console.ReadKey();
                         break;
                     case ConsoleKey.D:
-                        DeleteTask(taskManager, logger);
+                        DeleteTask(taskManager);
                         Console.WriteLine("Press any key.");
                         Console.ReadKey();
                         break;
                     case ConsoleKey.E:
-                        ExecuteTaskNow(taskManager, logger);
+                        ExecuteTaskNow(taskManager);
                         Console.WriteLine("Press any key.");
                         Console.ReadKey();
                         break;
                     case ConsoleKey.S:
-                        SearchTasks(taskManager, logger);
+                        SearchTasks(taskManager);
                         Console.WriteLine("Press any key.");
                         Console.ReadKey();
                         break;
@@ -241,7 +172,7 @@ public static class Tranga_Cli
             // ReSharper disable once RedundantArgumentDefaultValue Better readability
             taskManager.Shutdown(false);
     }
-
+    
     private static void PrintMenu(TaskManager taskManager, string folderPath)
     {
         int taskCount = taskManager.GetAllTasks().Length;
@@ -258,10 +189,10 @@ public static class Tranga_Cli
         Console.WriteLine($"{"M: New Download Manga Task",-30}{"", -30}{"", -30}");
         Console.WriteLine($"{"",-30}{"F: Show Log",-30}{"Q: Exit",-30}");
     }
-
-    private static void PrintTasks(TrangaTask[] tasks, Logger logger)
+    
+    private static void PrintTasks(TrangaTask[] tasks, Logger? logger)
     {
-        logger.WriteLine("Tranga_CLI", "Printing Tasks");
+        logger?.WriteLine("Tranga_CLI", "Printing Tasks");
         int taskCount = tasks.Length;
         int taskRunningCount = tasks.Count(task => task.state == TrangaTask.ExecutionState.Running);
         int taskEnqueuedCount = tasks.Count(task => task.state == TrangaTask.ExecutionState.Enqueued);
@@ -280,19 +211,19 @@ public static class Tranga_Cli
             
     }
 
-    private static TrangaTask[] SelectTasks(TrangaTask[] tasks, Logger logger)
+    private static TrangaTask[] SelectTasks(TrangaTask[] tasks, Logger? logger)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Select task");
+        logger?.WriteLine("Tranga_CLI", "Menu: Select task");
         if (tasks.Length < 1)
         {
             Console.Clear();
             Console.WriteLine("There are no available Tasks.");
-            logger.WriteLine("Tranga_CLI", "No available Tasks.");
+            logger?.WriteLine("Tranga_CLI", "No available Tasks.");
             return Array.Empty<TrangaTask>();
         }
         PrintTasks(tasks, logger);
         
-        logger.WriteLine("Tranga_CLI", "Selecting Task to Remove (from queue)");
+        logger?.WriteLine("Tranga_CLI", "Selecting Task to Remove (from queue)");
         Console.WriteLine("Enter q to abort");
         Console.WriteLine($"Select Task(s) (0-{tasks.Length - 1}):");
 
@@ -304,7 +235,7 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine("Tranga_CLI", "aborted");
+            logger?.WriteLine("Tranga_CLI", "aborted");
             return Array.Empty<TrangaTask>();
         }
 
@@ -330,7 +261,7 @@ public static class Tranga_Cli
         if (connector is null)
             return;
                     
-        Publication? publication = SelectPublication(taskManager, connector, logger);
+        Publication? publication = SelectPublication(taskManager, connector);
         if (publication is null)
             return;
         
@@ -386,10 +317,10 @@ public static class Tranga_Cli
         }
     }
 
-    private static void CreateTask(TaskManager taskManager, Logger logger)
+    private static void CreateTask(TaskManager taskManager)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Creating Task");
-        TrangaTask.Task? tmpTask = SelectTaskType(logger);
+        taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "Menu: Creating Task");
+        TrangaTask.Task? tmpTask = SelectTaskType(taskManager.commonObjects.logger);
         if (tmpTask is null)
             return;
         TrangaTask.Task task = (TrangaTask.Task)tmpTask;
@@ -397,7 +328,7 @@ public static class Tranga_Cli
         Connector? connector = null;
         if (task != TrangaTask.Task.UpdateLibraries)
         {
-            connector = SelectConnector(taskManager.GetAvailableConnectors().Values.ToArray(), logger);
+            connector = SelectConnector(taskManager.GetAvailableConnectors().Values.ToArray(), taskManager.commonObjects.logger);
             if (connector is null)
                 return;
         }
@@ -405,22 +336,22 @@ public static class Tranga_Cli
         Publication? publication = null;
         if (task != TrangaTask.Task.UpdateLibraries)
         {
-            publication = SelectPublication(taskManager, connector!, logger);
+            publication = SelectPublication(taskManager, connector!);
             if (publication is null)
                 return;
         }
 
         if (task is TrangaTask.Task.MonitorPublication)
         {
-            TimeSpan reoccurrence = SelectReoccurrence(logger);
-            logger.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
+            TimeSpan reoccurrence = SelectReoccurrence(taskManager.commonObjects.logger);
+            taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "Sending Task to TaskManager");
 
             TrangaTask newTask = new MonitorPublicationTask(connector!.name, (Publication)publication!, reoccurrence, "en");
             taskManager.AddTask(newTask);
             Console.WriteLine(newTask);
         }else if (task is TrangaTask.Task.DownloadChapter)
         {
-            foreach (Chapter chapter in SelectChapters(connector!, (Publication)publication!, logger))
+            foreach (Chapter chapter in SelectChapters(connector!, (Publication)publication!, taskManager.commonObjects.logger))
             {
                 TrangaTask newTask = new DownloadChapterTask(connector!.name, (Publication)publication, chapter, "en");
                 taskManager.AddTask(newTask);
@@ -429,31 +360,31 @@ public static class Tranga_Cli
         }
     }
 
-    private static void ExecuteTaskNow(TaskManager taskManager, Logger logger)
+    private static void ExecuteTaskNow(TaskManager taskManager)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Executing Task");
+        taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "Menu: Executing Task");
         TrangaTask[] tasks = taskManager.GetAllTasks().Where(nTask => nTask.state is not TrangaTask.ExecutionState.Running).ToArray();
         
-        TrangaTask[] selectedTasks = SelectTasks(tasks, logger);
-        logger.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
+        TrangaTask[] selectedTasks = SelectTasks(tasks, taskManager.commonObjects.logger);
+        taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
         foreach(TrangaTask task in selectedTasks)
             taskManager.ExecuteTaskNow(task);
     }
 
-    private static void DeleteTask(TaskManager taskManager, Logger logger)
+    private static void DeleteTask(TaskManager taskManager)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Delete Task");
+        taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "Menu: Delete Task");
         TrangaTask[] tasks = taskManager.GetAllTasks();
         
-        TrangaTask[] selectedTasks = SelectTasks(tasks, logger);
-        logger.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
+        TrangaTask[] selectedTasks = SelectTasks(tasks, taskManager.commonObjects.logger);
+        taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", $"Sending {selectedTasks.Length} Tasks to TaskManager");
         foreach(TrangaTask task in selectedTasks)
             taskManager.DeleteTask(task);
     }
 
-    private static TrangaTask.Task? SelectTaskType(Logger logger)
+    private static TrangaTask.Task? SelectTaskType(Logger? logger)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Select TaskType");
+        logger?.WriteLine("Tranga_CLI", "Menu: Select TaskType");
         Console.Clear();
         string[] taskNames = Enum.GetNames<TrangaTask.Task>();
         
@@ -473,7 +404,7 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine("Tranga_CLI", "aborted.");
+            logger?.WriteLine("Tranga_CLI", "aborted.");
             return null;
         }
         
@@ -486,22 +417,22 @@ public static class Tranga_Cli
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine("Tranga_CLI", e.Message);
+            logger?.WriteLine("Tranga_CLI", e.Message);
         }
 
         return null;
     }
 
-    private static TimeSpan SelectReoccurrence(Logger logger)
+    private static TimeSpan SelectReoccurrence(Logger? logger)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Select Reoccurrence");
+        logger?.WriteLine("Tranga_CLI", "Menu: Select Reoccurrence");
         Console.WriteLine("Select reoccurrence Timer (Format hh:mm:ss):");
         return TimeSpan.Parse(Console.ReadLine()!, new CultureInfo("en-US"));
     }
 
-    private static Chapter[] SelectChapters(Connector connector, Publication publication, Logger logger)
+    private static Chapter[] SelectChapters(Connector connector, Publication publication, Logger? logger)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Select Chapters");
+        logger?.WriteLine("Tranga_CLI", "Menu: Select Chapters");
         Chapter[] availableChapters = connector.GetChapters(publication, "en");
         int cIndex = 0;
         Console.WriteLine("Chapters:");
@@ -540,9 +471,9 @@ public static class Tranga_Cli
         return connector.SelectChapters(publication, selectedChapters);
     }
 
-    private static Connector? SelectConnector(Connector[] connectors, Logger logger)
+    private static Connector? SelectConnector(Connector[] connectors, Logger? logger)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Select Connector");
+        logger?.WriteLine("Tranga_CLI", "Menu: Select Connector");
         Console.Clear();
         
         int cIndex = 0;
@@ -561,7 +492,7 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine("Tranga_CLI", "aborted.");
+            logger?.WriteLine("Tranga_CLI", "aborted.");
             return null;
         }
         
@@ -573,15 +504,15 @@ public static class Tranga_Cli
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine("Tranga_CLI", e.Message);
+            logger?.WriteLine("Tranga_CLI", e.Message);
         }
 
         return null;
     }
 
-    private static Publication? SelectPublication(TaskManager taskManager, Connector connector, Logger logger)
+    private static Publication? SelectPublication(TaskManager taskManager, Connector connector)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Select Publication");
+        taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "Menu: Select Publication");
         
         Console.Clear();
         Console.WriteLine($"Connector: {connector.name}");
@@ -592,7 +523,7 @@ public static class Tranga_Cli
 
         if (publications.Length < 1)
         {
-            logger.WriteLine("Tranga_CLI", "No publications returned");
+            taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "No publications returned");
             Console.WriteLine($"No publications for query '{query}' returned;");
             return null;
         }
@@ -613,7 +544,7 @@ public static class Tranga_Cli
         {
             Console.Clear();
             Console.WriteLine("aborted.");
-            logger.WriteLine("Tranga_CLI", "aborted.");
+            taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "aborted.");
             return null;
         }
         
@@ -625,21 +556,21 @@ public static class Tranga_Cli
         catch (Exception e)
         {
             Console.WriteLine($"Exception: {e.Message}");
-            logger.WriteLine("Tranga_CLI", e.Message);
+            taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", e.Message);
         }
 
         return null;
     }
 
-    private static void SearchTasks(TaskManager taskManager, Logger logger)
+    private static void SearchTasks(TaskManager taskManager)
     {
-        logger.WriteLine("Tranga_CLI", "Menu: Search task");
+        taskManager.commonObjects.logger?.WriteLine("Tranga_CLI", "Menu: Search task");
         Console.Clear();
         Console.WriteLine("Enter search query:");
         string? query = Console.ReadLine();
         while (query is null || query.Length < 4)
             query = Console.ReadLine();
         PrintTasks(taskManager.GetAllTasks().Where(qTask =>
-            qTask.ToString().ToLower().Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray(), logger);
+            qTask.ToString().ToLower().Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray(), taskManager.commonObjects.logger);
     }
 }

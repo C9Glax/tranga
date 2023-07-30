@@ -6,12 +6,13 @@ using Logging;
 using Newtonsoft.Json;
 using Tranga;
 
-namespace API;
+namespace Tranga.API;
 
 public class Server
 {
     private readonly HttpListener _listener = new ();
     private readonly RequestHandler _requestHandler;
+    private readonly TaskManager _taskManager;
     internal readonly Logger? logger;
 
     private readonly Regex _validUrl =
@@ -19,12 +20,14 @@ public class Server
     public Server(int port, TaskManager taskManager, Logger? logger = null)
     {
         this.logger = logger;
+        this._taskManager = taskManager;
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             this._listener.Prefixes.Add($"http://*:{port}/");
         else
             this._listener.Prefixes.Add($"http://localhost:{port}/");
         this._requestHandler = new RequestHandler(taskManager, this);
-        Listen();
+        Thread listenThread = new Thread(Listen);
+        listenThread.Start();
     }
 
     private void Listen()
@@ -32,7 +35,7 @@ public class Server
         this._listener.Start();
         foreach (string prefix in this._listener.Prefixes)
             this.logger?.WriteLine(this.GetType().ToString(), $"Listening on {prefix}");
-        while (this._listener.IsListening)
+        while (this._listener.IsListening && _taskManager._continueRunning)
         {
             HttpListenerContext context = this._listener.GetContextAsync().Result;
             Task t = new (() =>

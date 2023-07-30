@@ -5,7 +5,7 @@ using Tranga;
 using Tranga.Connectors;
 using Tranga.TrangaTasks;
 
-namespace API;
+namespace Tranga.API;
 
 public class RequestHandler
 {

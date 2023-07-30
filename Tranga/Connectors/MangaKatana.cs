@@ -10,18 +10,18 @@ public class MangaKatana : Connector
 {
 	public override string name { get; }
 
-	public MangaKatana(TrangaSettings settings) : base(settings)
+	public MangaKatana(TrangaSettings settings, CommonObjects commonObjects) : base(settings, commonObjects)
 	{
 		this.name = "MangaKatana";
 		this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
 		{
 			{1, 60}
-		}, settings.logger);
+		}, commonObjects.logger);
 	}
 
 	protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
 	{
-		settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
+		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
 		string sanitizedTitle = string.Concat(Regex.Matches(publicationTitle, "[A-z]* *")).ToLower().Replace(' ', '_');
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		DownloadClient.RequestResult requestResult =
@@ -135,7 +135,7 @@ public class MangaKatana : Connector
 
 	public override Chapter[] GetChapters(Publication publication, string language = "")
 	{
-		settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
+		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
 		string requestUrl = $"https://mangakatana.com/manga/{publication.publicationId}";
 		// Leaving this in for verification if the page exists
 		DownloadClient.RequestResult requestResult =
@@ -149,7 +149,7 @@ public class MangaKatana : Connector
 			NumberDecimalSeparator = "."
 		};
 		List<Chapter> chapters = ParseChaptersFromHtml(publication, requestUrl);
-		settings.logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
 		return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
 	}
 
@@ -182,7 +182,7 @@ public class MangaKatana : Connector
 	{
 		if (cancellationToken?.IsCancellationRequested ?? false)
 			return HttpStatusCode.RequestTimeout;
-		settings.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
+		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		DownloadClient.RequestResult requestResult =

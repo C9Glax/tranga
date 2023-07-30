@@ -13,28 +13,29 @@ public class TaskManager
     public HashSet<Publication> collection = new();
     private HashSet<TrangaTask> _allTasks = new();
     private readonly Dictionary<TrangaTask, CancellationTokenSource> _runningTasks = new ();
-    private bool _continueRunning = true;
+    public bool _continueRunning = true;
     private readonly Connector[] _connectors;
     public TrangaSettings settings { get; }
+    public CommonObjects commonObjects { get; init; }
 
-    public TaskManager(TrangaSettings settings)
+    public TaskManager(TrangaSettings settings, Logging.Logger? logger)
     {
-        settings.logger?.WriteLine("Tranga", value: "\n"+
-                                                     @"-----------------------------------------------------------------"+"\n"+
-                                                     @" |¯¯¯¯¯¯|°|¯¯¯¯¯¯\     /¯¯¯¯¯¯| |¯¯¯\|¯¯¯|  /¯¯¯¯¯¯\'   /¯¯¯¯¯¯| "+"\n"+
-                                                     @" |      | |   x  <|'  /   !   | |       '| |   (/¯¯¯\° /   !   | "+ "\n"+
-                                                     @"  ¯|__|¯  |__|\\__\\ /___/¯|_'| |___|\\__|  \\_____/' /___/¯|_'| "+ "\n"+
-                                                     @"-----------------------------------------------------------------");
+        commonObjects = CommonObjects.LoadSettings(settings.settingsFilePath, logger);
+        commonObjects.logger?.WriteLine("Tranga", value: "\n"+
+                                                         @"-----------------------------------------------------------------"+"\n"+
+                                                         @" |¯¯¯¯¯¯|°|¯¯¯¯¯¯\     /¯¯¯¯¯¯| |¯¯¯\|¯¯¯|  /¯¯¯¯¯¯\'   /¯¯¯¯¯¯| "+"\n"+
+                                                         @" |      | |   x  <|'  /   !   | |       '| |   (/¯¯¯\° /   !   | "+ "\n"+
+                                                         @"  ¯|__|¯  |__|\\__\\ /___/¯|_'| |___|\\__|  \\_____/' /___/¯|_'| "+ "\n"+
+                                                         @"-----------------------------------------------------------------");
         this._connectors = new Connector[]
         {
-            new MangaDex(settings),
-            new Manganato(settings),
-            new Mangasee(settings),
-            new MangaKatana(settings)
+            new MangaDex(settings, commonObjects),
+            new Manganato(settings, commonObjects),
+            new Mangasee(settings, commonObjects),
+            new MangaKatana(settings, commonObjects)
         };
         
         this.settings = settings;
-        Migrate.Files(settings);
         ImportData();
         ExportDataAndSettings();
         Thread taskChecker = new(TaskCheckerThread);
@@ -47,7 +48,7 @@ public class TaskManager
     /// </summary>
     private void TaskCheckerThread()
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), "Starting TaskCheckerThread.");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), "Starting TaskCheckerThread.");
         int waitingTasksCount = _allTasks.Count(task => task.state is TrangaTask.ExecutionState.Waiting);
         while (_continueRunning)
         {
@@ -146,7 +147,7 @@ public class TaskManager
         {
             case TrangaTask.Task.UpdateLibraries:
                 //Only one UpdateKomgaLibrary Task
-                settings.logger?.WriteLine(this.GetType().ToString(), $"Replacing old {newTask.task}-Task.");
+                commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Replacing old {newTask.task}-Task.");
                 if (GetTasksMatching(newTask).FirstOrDefault() is { } exists)
                     _allTasks.Remove(exists);
                 _allTasks.Add(newTask);
@@ -155,19 +156,19 @@ public class TaskManager
             default:
                 if (!GetTasksMatching(newTask).Any())
                 {
-                    settings.logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {newTask}");
+                    commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Adding new Task {newTask}");
                     _allTasks.Add(newTask);
                     ExportDataAndSettings();
                 }
                 else
-                    settings.logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
+                    commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Task already exists {newTask}");
                 break;
         }
     }
 
     public void DeleteTask(TrangaTask removeTask)
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Removing Task {removeTask}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Removing Task {removeTask}");
         if(_allTasks.Contains(removeTask))
             _allTasks.Remove(removeTask);
         removeTask.parentTask?.RemoveChildTask(removeTask);
@@ -319,7 +320,7 @@ public class TaskManager
     /// <param name="force">If force is true, tasks are aborted.</param>
     public void Shutdown(bool force = false)
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Shutting down (forced={force})");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Shutting down (forced={force})");
         _continueRunning = false;
         ExportDataAndSettings();
         
@@ -329,16 +330,16 @@ public class TaskManager
         //Wait for tasks to finish
         while(_allTasks.Any(task => task.state is TrangaTask.ExecutionState.Running or TrangaTask.ExecutionState.Enqueued))
             Thread.Sleep(10);
-        settings.logger?.WriteLine(this.GetType().ToString(), "Tasks finished. Bye!");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), "Tasks finished. Bye!");
         Environment.Exit(0);
     }
 
     private void ImportData()
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), "Importing Data");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), "Importing Data");
         if (File.Exists(settings.tasksFilePath))
         {
-            settings.logger?.WriteLine(this.GetType().ToString(), $"Importing tasks from {settings.tasksFilePath}");
+            commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Importing tasks from {settings.tasksFilePath}");
             string buffer = File.ReadAllText(settings.tasksFilePath);
             this._allTasks = JsonConvert.DeserializeObject<HashSet<TrangaTask>>(buffer, new JsonSerializerSettings() { Converters = { new TrangaTask.TrangaTaskJsonConverter() } })!;
         }
@@ -359,10 +360,10 @@ public class TaskManager
     /// </summary>
     private void ExportDataAndSettings()
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Exporting settings to {settings.settingsFilePath}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Exporting settings to {settings.settingsFilePath}");
         settings.ExportSettings();
         
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Exporting tasks to {settings.tasksFilePath}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Exporting tasks to {settings.tasksFilePath}");
         while(IsFileInUse(settings.tasksFilePath))
             Thread.Sleep(50);
         File.WriteAllText(settings.tasksFilePath, JsonConvert.SerializeObject(this._allTasks));

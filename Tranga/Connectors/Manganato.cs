@@ -10,18 +10,18 @@ public class Manganato : Connector
 {
     public override string name { get; }
     
-    public Manganato(TrangaSettings settings) : base(settings)
+    public Manganato(TrangaSettings settings, CommonObjects commonObjects) : base(settings, commonObjects)
     {
         this.name = "Manganato";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
         {
             {1, 60}
-        }, settings.logger);
+        }, commonObjects.logger);
     }
 
     protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
@@ -125,7 +125,7 @@ public class Manganato : Connector
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
         string requestUrl = $"https://chapmanganato.com/{publication.publicationId}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
@@ -138,7 +138,7 @@ public class Manganato : Connector
             NumberDecimalSeparator = "."
         };
         List<Chapter> chapters = ParseChaptersFromHtml(publication, requestResult.result);
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
@@ -171,7 +171,7 @@ public class Manganato : Connector
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        settings.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);

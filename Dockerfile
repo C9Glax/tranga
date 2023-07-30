@@ -2,12 +2,14 @@
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 as build-env
 WORKDIR /src
-COPY . /src/
-RUN dotnet restore /src/API/API.csproj
+COPY Tranga /src/Tranga
+COPY Logging /src/Logging
+COPY Tranga.sln /src
+RUN dotnet restore /src/Tranga/Tranga.csproj
 RUN dotnet publish -c Release -o /publish
 
 FROM glax/tranga-base:latest as runtime
 WORKDIR /publish
 COPY --from=build-env /publish .
 EXPOSE 6531
-ENTRYPOINT ["dotnet", "/publish/API.dll"]
+ENTRYPOINT ["dotnet", "/publish/Tranga.dll"]
