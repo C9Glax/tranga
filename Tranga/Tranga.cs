@@ -20,7 +20,11 @@ public static class Tranga
         
         
         Directory.CreateDirectory(logsFolderPath);
-        Logger logger = new(new[] { Logger.LoggerType.FileLogger }, Console.Out, Console.Out.Encoding, logFilePath);
+        Logger logger;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            logger =new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath);
+        else
+            logger = new(new[] { Logger.LoggerType.FileLogger }, Console.Out, Console.Out.Encoding, logFilePath);
         
         logger.WriteLine("Tranga",value: "\n"+
                                          "-------------------------------------------\n"+
@@ -51,8 +55,6 @@ public static class Tranga
         
         if(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             TaskMode(taskManager, logger);
-        else
-            taskManager.commonObjects.logger =  new(new[] { Logger.LoggerType.FileLogger, Logger.LoggerType.ConsoleLogger }, Console.Out, Console.Out.Encoding, logFilePath);
     }
     
     private static void TaskMode(TaskManager taskManager, Logger logger)
