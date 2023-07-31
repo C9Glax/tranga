@@ -77,8 +77,8 @@ public abstract class Connector
     public Chapter[] SelectChapters(Publication publication, string searchTerm, string? language = null)
     {
         Chapter[] availableChapters = this.GetChapters(publication, language??"en");
-        Regex volumeRegex = new ("((v(ol)*(olume)*)+ *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
-        Regex chapterRegex = new ("((c(h)*(hapter)*)+ *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
+        Regex volumeRegex = new ("((v(ol)*(olume)*){1} *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
+        Regex chapterRegex = new ("((c(h)*(hapter)*){1} *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
         Regex singleResultRegex = new("([0-9]+)", RegexOptions.IgnoreCase);
         Regex rangeResultRegex = new("([0-9]+(-[0-9]+))", RegexOptions.IgnoreCase);
         Regex allRegex = new("a(ll)?", RegexOptions.IgnoreCase);
@@ -114,7 +114,7 @@ public abstract class Connector
         }
         else if (chapterRegex.IsMatch(searchTerm))
         {
-            string chapter = volumeRegex.Match(searchTerm).Value;
+            string chapter = chapterRegex.Match(searchTerm).Value;
             if (rangeResultRegex.IsMatch(chapter))
             {
                 string range = rangeResultRegex.Match(chapter).Value;
