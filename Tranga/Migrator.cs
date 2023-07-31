@@ -16,8 +16,8 @@ public static class Migrator
             return;
         JsonNode settingsNode = JsonNode.Parse(File.ReadAllText(settingsFilePath))!;
         ushort version = settingsNode["version"] is not null
-            ? settingsNode["version"].GetValue<ushort>()
-            : settingsNode["ts"]["version"].GetValue<ushort>();
+            ? settingsNode["version"]!.GetValue<ushort>()
+            : settingsNode["ts"]!["version"]!.GetValue<ushort>();
         logger?.WriteLine("Migrator", $"Migrating {version} -> {CurrentVersion}");
         switch (version)
         {
@@ -91,7 +91,7 @@ public static class Migrator
         if (lunaSeaNode is not null)
             nms.Add(new LunaSea(lunaSeaNode["id"]!.GetValue<string>()));
 
-        CommonObjects co = new (lms, nms, null, settingsFilePath);
+        CommonObjects co = new (lms, nms, logger, settingsFilePath);
 
         TrangaSettings.SettingsJsonObject sjo = new(ts, co);
         File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(sjo));

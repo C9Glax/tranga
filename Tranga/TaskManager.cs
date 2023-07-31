@@ -21,7 +21,7 @@ public class TaskManager
     public TaskManager(TrangaSettings settings, Logging.Logger? logger)
     {
         commonObjects = CommonObjects.LoadSettings(settings.settingsFilePath, logger);
-        commonObjects.logger?.WriteLine("Tranga", value: "\n"+
+        commonObjects.logger?.WriteLine(this.GetType().ToString(), value: "\n"+
                                                          @"-----------------------------------------------------------------"+"\n"+
                                                          @" |¯¯¯¯¯¯|°|¯¯¯¯¯¯\     /¯¯¯¯¯¯| |¯¯¯\|¯¯¯|  /¯¯¯¯¯¯\'   /¯¯¯¯¯¯| "+"\n"+
                                                          @" |      | |   x  <|'  /   !   | |       '| |   (/¯¯¯\° /   !   | "+ "\n"+
@@ -205,8 +205,6 @@ public class TaskManager
     {
         switch (taskType)
         {
-            case TrangaTask.Task.UpdateLibraries:
-                return _allTasks.Where(tTask => tTask.task == TrangaTask.Task.UpdateLibraries);
             case TrangaTask.Task.MonitorPublication:
                 if(connectorName is null)
                     return _allTasks.Where(tTask => tTask.task == taskType);
