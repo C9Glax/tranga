@@ -48,6 +48,8 @@ public class MangaKatana : Connector
 		HtmlDocument document = new();
 		document.LoadHtml(htmlString);
 		IEnumerable<HtmlNode> searchResults = document.DocumentNode.SelectNodes("//*[@id='book_list']/div");
+		if (searchResults is null || !searchResults.Any())
+			return Array.Empty<Publication>();
 		List<string> urls = new();
 		foreach (HtmlNode mangaResult in searchResults)
 		{
