@@ -42,6 +42,7 @@ public class CommonObjects
         
         if (logger is not null)
         {
+            settings.co.logger = logger;
             foreach (LibraryManager lm in settings.co.libraryManagers)
                 lm.AddLogger(logger);
             foreach(NotificationManager nm in settings.co.notificationManagers)
