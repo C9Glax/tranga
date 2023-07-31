@@ -38,8 +38,12 @@ public static class Tranga
         {
             logger.WriteLine("Tranga", $"Loading settings {settingsFilePath}");
             settings = TrangaSettings.LoadSettings(settingsFilePath);
-        }else
+        }
+        else
+        {
             settings = new TrangaSettings(downloadFolderPath, applicationFolderPath);
+            settings.version = Migrator.CurrentVersion;
+        }
 
         Directory.CreateDirectory(settings.workingDirectory);
         Directory.CreateDirectory(settings.downloadLocation);
