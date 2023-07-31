@@ -9,7 +9,7 @@ namespace Tranga;
 
 public static class Migrator
 {
-    private static readonly ushort CurrentVersion = 17;
+    internal static readonly ushort CurrentVersion = 17;
     public static void Migrate(string settingsFilePath, Logger? logger)
     {
         if (!File.Exists(settingsFilePath))
