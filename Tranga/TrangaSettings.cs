@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Nodes;
-using Logging;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Tranga.LibraryManagers;
 using Tranga.NotificationManagers;
 
