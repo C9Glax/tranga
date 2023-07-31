@@ -22,7 +22,7 @@ public class MangaKatana : Connector
 	protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
 	{
 		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
-		string sanitizedTitle = string.Concat(Regex.Matches(publicationTitle, "[A-z]* *")).ToLower().Replace(' ', '_');
+		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		DownloadClient.RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
@@ -48,6 +48,8 @@ public class MangaKatana : Connector
 		HtmlDocument document = new();
 		document.LoadHtml(htmlString);
 		IEnumerable<HtmlNode> searchResults = document.DocumentNode.SelectNodes("//*[@id='book_list']/div");
+		if (searchResults is null || !searchResults.Any())
+			return Array.Empty<Publication>();
 		List<string> urls = new();
 		foreach (HtmlNode mangaResult in searchResults)
 		{

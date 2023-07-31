@@ -82,12 +82,11 @@ public class Server
             response.OutputStream.Write(content is not null
                 ? Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
                 : Array.Empty<byte>());
+            response.OutputStream.Close();
         }
         catch (HttpListenerException)
         {
             
         }
-        response.OutputStream.Close();
-        
     }
 }
