@@ -1,10 +1,10 @@
 ﻿namespace Tranga.NotificationConnectors;
 
-public abstract class NotificationConnector : TBaseObject
+public abstract class NotificationConnector : GlobalBase
 {
     public NotificationManagerType notificationManagerType;
 
-    protected NotificationConnector(NotificationManagerType notificationManagerType, TBaseObject clone) : base(clone)
+    protected NotificationConnector(NotificationManagerType notificationManagerType, GlobalBase clone) : base(clone)
     {
         this.notificationManagerType = notificationManagerType;
     }

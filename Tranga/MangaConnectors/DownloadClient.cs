@@ -2,7 +2,7 @@
 
 namespace Tranga.MangaConnectors;
 
-internal class DownloadClient : TBaseObject
+internal class DownloadClient : GlobalBase
     {
         private static readonly HttpClient Client = new()
         {
@@ -12,7 +12,7 @@ internal class DownloadClient : TBaseObject
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
         private readonly Dictionary<byte, TimeSpan> _rateLimit;
 
-        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, TBaseObject clone) : base(clone)
+        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, GlobalBase clone) : base(clone)
         {
             _lastExecutedRateLimit = new();
             _rateLimit = new();

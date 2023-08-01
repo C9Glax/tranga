@@ -4,7 +4,7 @@ using Logging;
 
 namespace Tranga.LibraryConnectors;
 
-public abstract class LibraryConnector : TBaseObject
+public abstract class LibraryConnector : GlobalBase
 {
     public enum LibraryType : byte
     {
@@ -18,7 +18,7 @@ public abstract class LibraryConnector : TBaseObject
     // ReSharper disable once MemberCanBeProtected.Global
     public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
     
-    protected LibraryConnector(string baseUrl, string auth, LibraryType libraryType, TBaseObject clone) : base(clone)
+    protected LibraryConnector(string baseUrl, string auth, LibraryType libraryType, GlobalBase clone) : base(clone)
     {
         this.baseUrl = baseUrl;
         this.auth = auth;

@@ -11,11 +11,11 @@ namespace Tranga.MangaConnectors;
 /// Base-Class for all Connectors
 /// Provides some methods to be used by all Connectors, as well as a DownloadClient
 /// </summary>
-public abstract class Connector : TBaseObject
+public abstract class Connector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
 
-    protected Connector(TBaseObject clone) : base(clone)
+    protected Connector(GlobalBase clone) : base(clone)
     {
         if (!Directory.Exists(settings.coverImageCache))
             Directory.CreateDirectory(settings.coverImageCache);

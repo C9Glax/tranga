@@ -9,7 +9,7 @@ public class Manganato : Connector
 {
     public override string name { get; }
 
-    public Manganato(TBaseObject clone) : base(clone)
+    public Manganato(GlobalBase clone) : base(clone)
     {
         this.name = "Manganato";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()

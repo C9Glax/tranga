@@ -14,7 +14,7 @@ public class Mangasee : Connector
     private IBrowser? _browser;
     private const string ChromiumVersion = "1154303";
 
-    public Mangasee(TBaseObject clone) : base(clone)
+    public Mangasee(GlobalBase clone) : base(clone)
     {
         this.name = "Mangasee";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()

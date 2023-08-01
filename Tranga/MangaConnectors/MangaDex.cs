@@ -17,7 +17,7 @@ public class MangaDex : Connector
         Author,
     }
 
-    public MangaDex(TBaseObject clone) : base(clone)
+    public MangaDex(GlobalBase clone) : base(clone)
     {
         name = "MangaDex";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()

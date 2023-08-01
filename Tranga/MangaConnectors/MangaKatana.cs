@@ -9,7 +9,7 @@ public class MangaKatana : Connector
 {
 	public override string name { get; }
 
-	public MangaKatana(TBaseObject clone) : base(clone)
+	public MangaKatana(GlobalBase clone) : base(clone)
 	{
 		this.name = "MangaKatana";
 		this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
