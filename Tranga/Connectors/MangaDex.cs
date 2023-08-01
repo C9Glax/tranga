@@ -2,7 +2,6 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Tranga.TrangaTasks;
 
 namespace Tranga.Connectors;
 public class MangaDex : Connector
@@ -18,7 +17,7 @@ public class MangaDex : Connector
         Author,
     }
 
-    public MangaDex(TrangaSettings settings, CommonObjects commonObjects) : base(settings, commonObjects)
+    public MangaDex(TBaseObject clone) : base(clone)
     {
         name = "MangaDex";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
@@ -28,12 +27,12 @@ public class MangaDex : Connector
             {(byte)RequestType.AtHomeServer, 40},
             {(byte)RequestType.CoverUrl, 250},
             {(byte)RequestType.Author, 250}
-        }, commonObjects.logger);
+        }, clone);
     }
 
-    protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
+    protected override Publication[] GetPublications(string publicationTitle = "")
     {
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
+        Log($"Searching Publications. Term=\"{publicationTitle}\"");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -59,7 +58,7 @@ public class MangaDex : Connector
             //Loop each Manga and extract information from JSON
             foreach (JsonNode? mangeNode in mangaInResult)
             {
-                commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting publication data. {++loadedPublicationData}/{total}");
+                Log($"Getting publication data. {++loadedPublicationData}/{total}");
                 JsonObject manga = (JsonObject)mangeNode!;
                 JsonObject attributes = manga["attributes"]!.AsObject();
                 
@@ -146,13 +145,13 @@ public class MangaDex : Connector
             }
         }
 
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Done getting publications (title={publicationTitle})");
+        Log($"Retrieved {publications.Count} publications.");
         return publications.ToArray();
     }
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
+        Log($"Getting chapters {publication}");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -199,19 +198,16 @@ public class MangaDex : Connector
         }
 
         //Return Chapters ordered by Chapter-Number
-        NumberFormatInfo chapterNumberFormatInfo = new()
-        {
-            NumberDecimalSeparator = "."
-        };
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Done getting {chapters.Count} Chapters for {publication.internalId}");
+        NumberFormatInfo chapterNumberFormatInfo = new() { NumberDecimalSeparator = "." };
+        Log($"Got {chapters.Count} chapters. {publication}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
+    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
+        Log($"Retrieving chapter-info {chapter} {publication}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
@@ -233,15 +229,15 @@ public class MangaDex : Connector
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
         //Download Chapter-Images
-        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, parentTask, comicInfoPath, cancellationToken:cancellationToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, comicInfoPath, cancellationToken:cancellationToken);
     }
 
     private string? GetCoverUrl(string publicationId, string? posterId)
     {
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting CoverUrl for {publicationId}");
+        Log($"Getting CoverUrl for Publication {publicationId}");
         if (posterId is null)
         {
-            commonObjects.logger?.WriteLine(this.GetType().ToString(), $"No posterId, aborting");
+            Log("No cover.");
             return null;
         }
         
@@ -257,12 +253,13 @@ public class MangaDex : Connector
         string fileName = result["data"]!["attributes"]!["fileName"]!.GetValue<string>();
 
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Got Cover-Url for {publicationId} -> {coverUrl}");
+        Log($"Cover-Url {publicationId} -> {coverUrl}");
         return coverUrl;
     }
 
     private List<string> GetAuthors(IEnumerable<string> authorIds)
     {
+        Log("Retrieving authors.");
         List<string> ret = new();
         foreach (string authorId in authorIds)
         {
@@ -276,7 +273,7 @@ public class MangaDex : Connector
 
             string authorName = result["data"]!["attributes"]!["name"]!.GetValue<string>();
             ret.Add(authorName);
-            commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Got author {authorId} -> {authorName}");
+            Log($"Got author {authorId} -> {authorName}");
         }
         return ret;
     }

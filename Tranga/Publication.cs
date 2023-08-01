@@ -33,7 +33,7 @@ public struct Publication
     public string internalId { get; }
     public float ignoreChaptersBelow { get; set; }
 
-    private static readonly Regex LegalCharacters = new Regex(@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
+    private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
     [JsonConstructor]
     public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)

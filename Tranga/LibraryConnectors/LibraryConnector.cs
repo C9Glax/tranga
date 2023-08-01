@@ -1,12 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace Tranga.LibraryManagers;
+namespace Tranga.LibraryConnectors;
 
-public abstract class LibraryManager
+public abstract class LibraryConnector : TBaseObject
 {
     public enum LibraryType : byte
     {
@@ -19,25 +17,14 @@ public abstract class LibraryManager
     public string baseUrl { get; }
     // ReSharper disable once MemberCanBeProtected.Global
     public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
-    protected Logger? logger;
     
-    /// <param name="baseUrl">Base-URL of Komga instance, no trailing slashes(/)</param>
-    /// <param name="auth">Base64 string of username and password (username):(password)</param>
-    /// <param name="logger"></param>
-    /// <param name="libraryType"></param>
-    protected LibraryManager(string baseUrl, string auth, Logger? logger, LibraryType libraryType)
+    protected LibraryConnector(string baseUrl, string auth, LibraryType libraryType, TBaseObject clone) : base(clone)
     {
         this.baseUrl = baseUrl;
         this.auth = auth;
-        this.logger = logger;
         this.libraryType = libraryType;
     }
     public abstract void UpdateLibrary();
-
-    public void AddLogger(Logger newLogger)
-    {
-        this.logger = newLogger;
-    }
 
     protected static class NetClient
     {
@@ -52,7 +39,7 @@ public abstract class LibraryManager
                 RequestUri = new Uri(url)
             };
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine("LibraryManager", $"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
+            logger?.WriteLine("LibraryManager.NetClient", $"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
                 return MakeRequest(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
@@ -78,7 +65,7 @@ public abstract class LibraryManager
                 RequestUri = new Uri(url)
             };
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine("LibraryManager", $"POST {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
+            logger?.WriteLine("LibraryManager.NetClient", $"POST {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
                 return MakePost(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
@@ -86,36 +73,6 @@ public abstract class LibraryManager
                 return true;
             else 
                 return false;
-        }
-    }
-    
-    public class LibraryManagerJsonConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(LibraryManager));
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-        {
-            JObject jo = JObject.Load(reader);
-            if (jo["libraryType"]!.Value<Int64>() == (Int64)LibraryType.Komga)
-                return jo.ToObject<Komga>(serializer)!;
-
-            if (jo["libraryType"]!.Value<Int64>() == (Int64)LibraryType.Kavita)
-                return jo.ToObject<Kavita>(serializer)!;
-
-            throw new Exception();
-        }
-
-        public override bool CanWrite => false;
-
-        /// <summary>
-        /// Don't call this
-        /// </summary>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-        {
-            throw new Exception("Dont call this");
         }
     }
 }

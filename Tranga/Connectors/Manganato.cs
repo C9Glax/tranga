@@ -2,26 +2,25 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
-using Tranga.TrangaTasks;
 
 namespace Tranga.Connectors;
 
 public class Manganato : Connector
 {
     public override string name { get; }
-    
-    public Manganato(TrangaSettings settings, CommonObjects commonObjects) : base(settings, commonObjects)
+
+    public Manganato(TBaseObject clone) : base(clone)
     {
         this.name = "Manganato";
         this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
         {
             {1, 60}
-        }, commonObjects.logger);
+        }, clone);
     }
 
-    protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
+    protected override Publication[] GetPublications(string publicationTitle = "")
     {
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
+        Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
@@ -29,7 +28,9 @@ public class Manganato : Connector
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Publication>();
 
-        return ParsePublicationsFromHtml(requestResult.result);
+        Publication[] publications = ParsePublicationsFromHtml(requestResult.result);
+        Log($"Retrieved {publications.Length} publications.");
+        return publications;
     }
 
     private Publication[] ParsePublicationsFromHtml(Stream html)
@@ -125,7 +126,7 @@ public class Manganato : Connector
 
     public override Chapter[] GetChapters(Publication publication, string language = "")
     {
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
+        Log($"Getting chapters {publication}");
         string requestUrl = $"https://chapmanganato.com/{publication.publicationId}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
@@ -138,7 +139,7 @@ public class Manganato : Connector
             NumberDecimalSeparator = "."
         };
         List<Chapter> chapters = ParseChaptersFromHtml(publication, requestResult.result);
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+        Log($"Got {chapters.Count} chapters. {publication}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
@@ -167,11 +168,11 @@ public class Manganato : Connector
         return ret;
     }
 
-    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
+    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, CancellationToken? cancellationToken = null)
     {
         if (cancellationToken?.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
+        Log($"Retrieving chapter-info {chapter} {publication}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
@@ -183,7 +184,7 @@ public class Manganato : Connector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, parentTask, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
+        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
     }
 
     private string[] ParseImageUrlsFromHtml(Stream html)

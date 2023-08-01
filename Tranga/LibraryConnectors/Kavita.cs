@@ -1,19 +1,19 @@
 ﻿using System.Text.Json.Nodes;
-using Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Tranga.LibraryManagers;
+namespace Tranga.LibraryConnectors;
 
-public class Kavita : LibraryManager
+public class Kavita : LibraryConnector
 {
 
-    public Kavita(string baseUrl, string username, string password, Logger? logger) : base(baseUrl, GetToken(baseUrl, username, password), logger, LibraryType.Kavita)
+    public Kavita(string baseUrl, string username, string password, TBaseObject clone) : 
+        base(baseUrl, GetToken(baseUrl, username, password), LibraryType.Kavita, clone)
     {
     }
     
     [JsonConstructor]
-    public Kavita(string baseUrl, string auth, Logger? logger) : base(baseUrl, auth, logger, LibraryType.Kavita)
+    public Kavita(string baseUrl, string auth, TBaseObject clone) : base(baseUrl, auth, LibraryType.Kavita, clone)
     {
     }
 
@@ -42,7 +42,7 @@ public class Kavita : LibraryManager
 
     public override void UpdateLibrary()
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Updating Libraries");
+        Log("Updating libraries.");
         foreach (KavitaLibrary lib in GetLibraries())
             NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger);
     }
@@ -53,17 +53,17 @@ public class Kavita : LibraryManager
     /// <returns>Array of KavitaLibrary</returns>
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Libraries");
+        Log("Getting libraries.");
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library", "Bearer", auth, logger);
         if (data == Stream.Null)
         {
-            logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");
+            Log("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");
+            Log("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
 

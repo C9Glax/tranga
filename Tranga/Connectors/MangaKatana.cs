@@ -2,7 +2,6 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
-using Tranga.TrangaTasks;
 
 namespace Tranga.Connectors;
 
@@ -10,18 +9,18 @@ public class MangaKatana : Connector
 {
 	public override string name { get; }
 
-	public MangaKatana(TrangaSettings settings, CommonObjects commonObjects) : base(settings, commonObjects)
+	public MangaKatana(TBaseObject clone) : base(clone)
 	{
 		this.name = "MangaKatana";
 		this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
 		{
 			{1, 60}
-		}, commonObjects.logger);
+		}, clone);
 	}
 
-	protected override Publication[] GetPublicationsInternal(string publicationTitle = "")
+	protected override Publication[] GetPublications(string publicationTitle = "")
 	{
-		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Publications (title={publicationTitle})");
+		Log($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		DownloadClient.RequestResult requestResult =
@@ -38,7 +37,9 @@ public class MangaKatana : Connector
 			return new [] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.redirectedToUrl.Split('/')[^1]) };
 		}
 
-		return ParsePublicationsFromHtml(requestResult.result);
+		Publication[] publications = ParsePublicationsFromHtml(requestResult.result);
+		Log($"Retrieved {publications.Length} publications.");
+		return publications;
 	}
 
 	private Publication[] ParsePublicationsFromHtml(Stream html)
@@ -137,7 +138,7 @@ public class MangaKatana : Connector
 
 	public override Chapter[] GetChapters(Publication publication, string language = "")
 	{
-		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Getting Chapters for {publication.sortName} {publication.internalId} (language={language})");
+		Log($"Getting chapters {publication}");
 		string requestUrl = $"https://mangakatana.com/manga/{publication.publicationId}";
 		// Leaving this in for verification if the page exists
 		DownloadClient.RequestResult requestResult =
@@ -151,7 +152,7 @@ public class MangaKatana : Connector
 			NumberDecimalSeparator = "."
 		};
 		List<Chapter> chapters = ParseChaptersFromHtml(publication, requestUrl);
-		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Done getting Chapters for {publication.internalId}");
+		Log($"Got {chapters.Count} chapters. {publication}");
 		return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
 	}
 
@@ -180,11 +181,11 @@ public class MangaKatana : Connector
 		return ret;
 	}
 
-	public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, DownloadChapterTask parentTask, CancellationToken? cancellationToken = null)
+	public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, CancellationToken? cancellationToken = null)
 	{
 		if (cancellationToken?.IsCancellationRequested ?? false)
 			return HttpStatusCode.RequestTimeout;
-		commonObjects.logger?.WriteLine(this.GetType().ToString(), $"Downloading Chapter-Info {publication.sortName} {publication.internalId} {chapter.volumeNumber}-{chapter.chapterNumber}");
+		Log($"Retrieving chapter-info {chapter} {publication}");
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		DownloadClient.RequestResult requestResult =
@@ -197,7 +198,7 @@ public class MangaKatana : Connector
 		string comicInfoPath = Path.GetTempFileName();
 		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, parentTask, comicInfoPath, "https://mangakatana.com/", cancellationToken);
+		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://mangakatana.com/", cancellationToken);
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)

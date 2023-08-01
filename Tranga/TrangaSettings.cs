@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
-using Tranga.LibraryManagers;
-using Tranga.NotificationManagers;
+﻿using Logging;
+using Newtonsoft.Json;
+using Tranga.LibraryConnectors;
+using Tranga.NotificationConnectors;
 
 namespace Tranga;
 
@@ -13,30 +14,38 @@ public class TrangaSettings
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public ushort? version { get; set; }
 
-    public TrangaSettings(string downloadLocation, string workingDirectory)
+    public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null)
     {
+        downloadLocation ??= Path.Join(Directory.GetCurrentDirectory(), "Downloads");
+        workingDirectory ??= Directory.GetCurrentDirectory();
         if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
             throw new ArgumentException("Download-location and working-directory paths can not be empty!");
         this.workingDirectory = workingDirectory;
         this.downloadLocation = downloadLocation;
     }
 
-    public static TrangaSettings LoadSettings(string importFilePath)
+    public static TrangaSettings LoadSettings(string importFilePath, Logger? logger)
     {
         if (!File.Exists(importFilePath))
-            return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory());
+            return new TrangaSettings();
 
         string toRead = File.ReadAllText(importFilePath);
-        SettingsJsonObject settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
-            new JsonSerializerSettings { Converters = { new NotificationManager.NotificationManagerJsonConverter(), new LibraryManager.LibraryManagerJsonConverter() } })!;
-        return settings.ts ?? new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory());
+        TrangaSettings? settings = JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(importFilePath),
+            new JsonSerializerSettings
+            {
+                Converters =
+                {
+                    new NotificationManagerJsonConverter(),
+                    new LibraryManagerJsonConverter()
+                }
+            });
+        return settings ?? new TrangaSettings();
 
     }
 
     public void ExportSettings()
     {
-        SettingsJsonObject? settings = null;
-        if (File.Exists(settingsFilePath))
+        while (File.Exists(settingsFilePath))
         {
             bool inUse = true;
             while (inUse)
@@ -49,49 +58,10 @@ public class TrangaSettings
                 }
                 catch (IOException)
                 {
-                    inUse = true;
-                    Thread.Sleep(50);
+                    Thread.Sleep(100);
                 }
             }
-            string toRead = File.ReadAllText(settingsFilePath);
-            settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
-                new JsonSerializerSettings
-                {
-                    Converters =
-                    {
-                        new NotificationManager.NotificationManagerJsonConverter(),
-                        new LibraryManager.LibraryManagerJsonConverter()
-                    }
-                });
         }
-        settings = new SettingsJsonObject(this, settings?.co);
-        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(settings));
-    }
-
-    public void UpdateSettings(UpdateField field, params string[] values) 
-    {
-        switch (field)
-        {
-            case UpdateField.DownloadLocation:
-                if (values.Length != 1)
-                    return;
-                this.downloadLocation = values[0];
-                break;
-        }
-        ExportSettings();
-    }
-    
-    public enum UpdateField { DownloadLocation, Komga, Kavita, Gotify, LunaSea}
-
-    internal class SettingsJsonObject
-    {
-        public TrangaSettings? ts { get; }
-        public CommonObjects? co { get; }
-
-        public SettingsJsonObject(TrangaSettings? ts, CommonObjects? co)
-        {
-            this.ts = ts;
-            this.co = co;
-        }
+        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
     }
 }

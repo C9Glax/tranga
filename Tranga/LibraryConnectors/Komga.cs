@@ -1,29 +1,28 @@
 ﻿using System.Text.Json.Nodes;
-using Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Tranga.LibraryManagers;
+namespace Tranga.LibraryConnectors;
 
 /// <summary>
 /// Provides connectivity to Komga-API
 /// Can fetch and update libraries
 /// </summary>
-public class Komga : LibraryManager
+public class Komga : LibraryConnector
 {
-    public Komga(string baseUrl, string username, string password, Logger? logger)
-        : base(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), logger, LibraryType.Komga)
+    public Komga(string baseUrl, string username, string password, TBaseObject clone)
+        : base(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), LibraryType.Komga, clone)
     {
     }
 
     [JsonConstructor]
-    public Komga(string baseUrl, string auth, Logger? logger) : base(baseUrl, auth, logger, LibraryType.Komga)
+    public Komga(string baseUrl, string auth, TBaseObject clone) : base(baseUrl, auth, LibraryType.Komga, clone)
     {
     }
 
     public override void UpdateLibrary()
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Updating Libraries");
+        Log("Updating libraries.");
         foreach (KomgaLibrary lib in GetLibraries())
             NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth, logger);
     }
@@ -34,17 +33,17 @@ public class Komga : LibraryManager
     /// <returns>Array of KomgaLibraries</returns>
     private IEnumerable<KomgaLibrary> GetLibraries()
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Getting Libraries");
+        Log("Getting Libraries");
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", "Basic", auth, logger);
         if (data == Stream.Null)
         {
-            logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");
+            Log("No libraries returned");
             return Array.Empty<KomgaLibrary>();
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            logger?.WriteLine(this.GetType().ToString(), $"No libraries returned");
+            Log("No libraries returned");
             return Array.Empty<KomgaLibrary>();
         }
 

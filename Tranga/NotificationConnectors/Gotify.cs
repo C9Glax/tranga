@@ -1,10 +1,9 @@
 ﻿using System.Text;
-using Logging;
 using Newtonsoft.Json;
 
-namespace Tranga.NotificationManagers;
+namespace Tranga.NotificationConnectors;
 
-public class Gotify : NotificationManager
+public class Gotify : NotificationConnector
 {
     public string endpoint { get; }
     // ReSharper disable once MemberCanBePrivate.Global
@@ -12,7 +11,7 @@ public class Gotify : NotificationManager
     private readonly HttpClient _client = new();
     
     [JsonConstructor]
-    public Gotify(string endpoint, string appToken, Logger? logger = null) : base(NotificationManagerType.Gotify, logger)
+    public Gotify(string endpoint, string appToken, TBaseObject clone) : base(NotificationManagerType.Gotify, clone)
     {
         this.endpoint = endpoint;
         this.appToken = appToken;
@@ -20,7 +19,7 @@ public class Gotify : NotificationManager
     
     public override void SendNotification(string title, string notificationText)
     {
-        logger?.WriteLine(this.GetType().ToString(), $"Sending notification: {title} - {notificationText}");
+        Log($"Sending notification: {title} - {notificationText}");
         MessageData message = new(title, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"{endpoint}/message");
         request.Headers.Add("X-Gotify-Key", this.appToken);

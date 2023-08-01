@@ -1,9 +1,8 @@
 ﻿using System.Net;
-using Logging;
 
-namespace Tranga;
+namespace Tranga.Connectors;
 
-internal class DownloadClient
+internal class DownloadClient : TBaseObject
     {
         private static readonly HttpClient Client = new()
         {
@@ -12,17 +11,9 @@ internal class DownloadClient
 
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
         private readonly Dictionary<byte, TimeSpan> _rateLimit;
-        // ReSharper disable once InconsistentNaming
-        private readonly Logger? logger;
 
-        /// <summary>
-        /// Creates a httpClient
-        /// </summary>
-        /// <param name="rateLimitRequestsPerMinute">Rate limits for requests. byte is RequestType, int maximum requests per minute for RequestType</param>
-        /// <param name="logger"></param>
-        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, Logger? logger)
+        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, TBaseObject clone) : base(clone)
         {
-            this.logger = logger;
             _lastExecutedRateLimit = new();
             _rateLimit = new();
             foreach(KeyValuePair<byte, int> limit in rateLimitRequestsPerMinute)
@@ -42,7 +33,7 @@ internal class DownloadClient
                 _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(value));
             else
             {
-                logger?.WriteLine(this.GetType().ToString(), "RequestType not configured for rate-limit.");
+                Log("RequestType not configured for rate-limit.");
                 return new RequestResult(HttpStatusCode.NotAcceptable, Stream.Null);
             }
 
@@ -65,14 +56,13 @@ internal class DownloadClient
                 }
                 catch (HttpRequestException e)
                 {
-                    logger?.WriteLine(this.GetType().ToString(), e.Message);
-                    logger?.WriteLine(this.GetType().ToString(), $"Waiting {_rateLimit[requestType] * 2}... Retrying.");
+                    Log("Exception:\n\t{0}\n\tWaiting {1} before retrying.", e.Message, _rateLimit[requestType] * 2);
                     Thread.Sleep(_rateLimit[requestType] * 2);
                 }
             }
             if (!response.IsSuccessStatusCode)
             {
-                logger?.WriteLine(this.GetType().ToString(), $"Request-Error {response.StatusCode}: {response.ReasonPhrase}");
+                Log($"Request-Error {response.StatusCode}: {response.ReasonPhrase}");
                 return new RequestResult(response.StatusCode, Stream.Null);
             }
 
