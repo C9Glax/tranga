@@ -6,7 +6,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using PuppeteerSharp;
 
-namespace Tranga.Connectors;
+namespace Tranga.MangaConnectors;
 
 public class Mangasee : Connector
 {

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using static System.IO.UnixFileMode;
 
-namespace Tranga.Connectors;
+namespace Tranga.MangaConnectors;
 
 /// <summary>
 /// Base-Class for all Connectors

@@ -3,7 +3,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace Tranga.Connectors;
+namespace Tranga.MangaConnectors;
 public class MangaDex : Connector
 {
     public override string name { get; }

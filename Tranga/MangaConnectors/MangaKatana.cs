@@ -3,7 +3,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
-namespace Tranga.Connectors;
+namespace Tranga.MangaConnectors;
 
 public class MangaKatana : Connector
 {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Tranga.Connectors;
+namespace Tranga.MangaConnectors;
 
 internal class DownloadClient : TBaseObject
     {
