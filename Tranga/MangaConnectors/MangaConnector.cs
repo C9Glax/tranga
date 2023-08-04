@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Tranga.Jobs;
 using static System.IO.UnixFileMode;
 
 namespace Tranga.MangaConnectors;
@@ -11,11 +12,11 @@ namespace Tranga.MangaConnectors;
 /// Base-Class for all Connectors
 /// Provides some methods to be used by all Connectors, as well as a DownloadClient
 /// </summary>
-public abstract class Connector : GlobalBase
+public abstract class MangaConnector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
 
-    protected Connector(GlobalBase clone) : base(clone)
+    protected MangaConnector(GlobalBase clone) : base(clone)
     {
         if (!Directory.Exists(settings.coverImageCache))
             Directory.CreateDirectory(settings.coverImageCache);
@@ -45,13 +46,11 @@ public abstract class Connector : GlobalBase
     /// </summary>
     /// <param name="publication">Publication to check</param>
     /// <param name="language">Language to receive chapters for</param>
-    /// <param name="collection"></param>
     /// <returns>List of Chapters that were previously not in collection</returns>
-    public List<Chapter> GetNewChaptersList(Publication publication, string language, ref HashSet<Publication> collection)
+    public Chapter[] GetNewChapters(Publication publication, string language = "en")
     {
         Log($"Getting new Chapters for {publication}");
         Chapter[] newChapters = this.GetChapters(publication, language);
-        collection.Add(publication);
         NumberFormatInfo decimalPoint = new (){ NumberDecimalSeparator = "." };
         Log($"Checking for duplicates {publication}");
         List<Chapter> newChaptersList = newChapters.Where(nChapter =>
@@ -59,7 +58,7 @@ public abstract class Connector : GlobalBase
             !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
         Log($"{newChaptersList.Count} new chapters. {publication}");
         
-        return newChaptersList;
+        return newChaptersList.ToArray();
     }
 
     public Chapter[] SelectChapters(Publication publication, string searchTerm, string? language = null)
@@ -135,14 +134,7 @@ public abstract class Connector : GlobalBase
         return Array.Empty<Chapter>();
     }
     
-    /// <summary>
-    /// Retrieves the Chapter (+Images) from the website.
-    /// Should later call DownloadChapterImages to retrieve the individual Images of the Chapter and create .cbz archive.
-    /// </summary>
-    /// <param name="publication">Publication that contains Chapter</param>
-    /// <param name="chapter">Chapter with Images to retrieve</param>
-    /// <param name="cancellationToken"></param>
-    public abstract HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, CancellationToken? cancellationToken = null);
+    public abstract HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null);
 
     /// <summary>
     /// Copies the already downloaded cover from cache to downloadLocation
@@ -186,20 +178,13 @@ public abstract class Connector : GlobalBase
         return requestResult.statusCode;
     }
 
-    /// <summary>
-    /// Downloads all Images from URLs, Compresses to zip(cbz) and saves.
-    /// </summary>
-    /// <param name="imageUrls">List of URLs to download Images from</param>
-    /// <param name="saveArchiveFilePath">Full path to save archive to (without file ending .cbz)</param>
-    /// <param name="comicInfoPath">Path of the generate Chapter ComicInfo.xml, if it was generated</param>
-    /// <param name="requestType">RequestType for RateLimits</param>
-    /// <param name="referrer">Used in http request header</param>
-    /// <param name="cancellationToken"></param>
-    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, string? comicInfoPath = null, string? referrer = null, CancellationToken? cancellationToken = null)
+    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, string? comicInfoPath = null, string? referrer = null, ProgressToken? progressToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested ?? false)
+        if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
         Log($"Downloading Images for {saveArchiveFilePath}");
+        if(progressToken is not null)
+            progressToken.increments = imageUrls.Length;
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
@@ -220,9 +205,16 @@ public abstract class Connector : GlobalBase
             Log($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
             if ((int)status < 200 || (int)status >= 300)
+            {
+                progressToken?.Complete();
                 return status;
-            if (cancellationToken?.IsCancellationRequested ?? false)
+            }
+            if (progressToken?.cancellationRequested ?? false)
+            {
+                progressToken?.Complete();
                 return HttpStatusCode.RequestTimeout;
+            }
+            progressToken?.Increment();
         }
         
         if(comicInfoPath is not null)
@@ -234,6 +226,8 @@ public abstract class Connector : GlobalBase
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(saveArchiveFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
         Directory.Delete(tempFolder, true); //Cleanup
+        
+        progressToken?.Complete();
         return HttpStatusCode.OK;
     }
     

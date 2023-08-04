@@ -5,10 +5,11 @@ using System.Xml.Linq;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using PuppeteerSharp;
+using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
 
-public class Mangasee : Connector
+public class Mangasee : MangaConnector
 {
     public override string name { get; }
     private IBrowser? _browser;
@@ -237,19 +238,19 @@ public class Mangasee : Connector
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, CancellationToken? cancellationToken = null)
+    public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested ?? false)
+        if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        while (this._browser is null && !(cancellationToken?.IsCancellationRequested??false))
+        while (this._browser is null && !(progressToken?.cancellationRequested??false))
         {
             Log("Waiting for headless browser to download...");
             Thread.Sleep(1000);
         }
-        if (cancellationToken?.IsCancellationRequested??false)
+        if (progressToken?.cancellationRequested??false)
             return HttpStatusCode.RequestTimeout;
         
-        Log($"Retrieving chapter-info {chapter} {publication}");
+        Log($"Retrieving chapter-info {chapter} {chapter.parentPublication}");
         IPage page = _browser!.NewPageAsync().Result;
         IResponse response = page.GoToAsync(chapter.url).Result;
         if (response.Ok)
@@ -266,7 +267,7 @@ public class Mangasee : Connector
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-            return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, cancellationToken:cancellationToken);
+            return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
         }
         return response.Status;
     }

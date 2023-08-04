@@ -2,7 +2,7 @@
 
 namespace Tranga;
 
-public class GlobalBase
+public abstract class GlobalBase
 {
     protected Logger? logger { get; init; }
     protected TrangaSettings settings { get; init; }

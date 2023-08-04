@@ -2,10 +2,11 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
 
-public class Manganato : Connector
+public class Manganato : MangaConnector
 {
     public override string name { get; }
 
@@ -168,11 +169,11 @@ public class Manganato : Connector
         return ret;
     }
 
-    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, CancellationToken? cancellationToken = null)
+    public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested ?? false)
+        if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        Log($"Retrieving chapter-info {chapter} {publication}");
+        Log($"Retrieving chapter-info {chapter} {chapter.parentPublication}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
@@ -184,7 +185,7 @@ public class Manganato : Connector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://chapmanganato.com/", cancellationToken);
+        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://chapmanganato.com/", progressToken:progressToken);
     }
 
     private string[] ParseImageUrlsFromHtml(Stream html)

@@ -2,9 +2,10 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
-public class MangaDex : Connector
+public class MangaDex : MangaConnector
 {
     public override string name { get; }
 
@@ -203,11 +204,11 @@ public class MangaDex : Connector
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    public override HttpStatusCode DownloadChapter(Publication publication, Chapter chapter, CancellationToken? cancellationToken = null)
+    public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
-        if (cancellationToken?.IsCancellationRequested ?? false)
+        if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        Log($"Retrieving chapter-info {chapter} {publication}");
+        Log($"Retrieving chapter-info {chapter} {chapter.parentPublication}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
@@ -229,7 +230,7 @@ public class MangaDex : Connector
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
         //Download Chapter-Images
-        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, comicInfoPath, cancellationToken:cancellationToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, comicInfoPath, progressToken:progressToken);
     }
 
     private string? GetCoverUrl(string publicationId, string? posterId)
