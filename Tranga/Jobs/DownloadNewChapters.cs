@@ -6,7 +6,7 @@ public class DownloadNewChapters : Job
 {
     public Publication publication { get; init; }
     
-    public DownloadNewChapters(MangaConnector connector, Publication publication, bool recurring = false) : base (connector, recurring)
+    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Publication publication, bool recurring = false) : base (clone, connector, recurring)
     {
         this.publication = publication;
     }
@@ -18,7 +18,7 @@ public class DownloadNewChapters : Job
         List<Job> subJobs = new();
         foreach (Chapter chapter in chapters)
         {
-            DownloadChapter downloadChapterJob = new(this.mangaConnector, chapter);
+            DownloadChapter downloadChapterJob = new(this, this.mangaConnector, chapter);
             subJobs.Add(downloadChapterJob);
         }
         progressToken.Complete();

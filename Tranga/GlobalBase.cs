@@ -1,4 +1,7 @@
 ﻿using Logging;
+using Newtonsoft.Json;
+using Tranga.LibraryConnectors;
+using Tranga.NotificationConnectors;
 
 namespace Tranga;
 
@@ -6,17 +9,23 @@ public abstract class GlobalBase
 {
     protected Logger? logger { get; init; }
     protected TrangaSettings settings { get; init; }
+    private HashSet<NotificationConnector> notificationConnectors { get; init; }
+    private HashSet<LibraryConnector> libraryConnectors { get; init; }
 
-    public GlobalBase(GlobalBase clone)
+    protected GlobalBase(GlobalBase clone)
     {
         this.logger = clone.logger;
         this.settings = clone.settings;
+        this.notificationConnectors = clone.notificationConnectors;
+        this.libraryConnectors = clone.libraryConnectors;
     }
 
-    public GlobalBase(Logger? logger, TrangaSettings settings)
+    protected GlobalBase(Logger? logger, TrangaSettings settings)
     {
         this.logger = logger;
         this.settings = settings;
+        this.notificationConnectors = settings.LoadNotificationConnectors();
+        this.libraryConnectors = settings.LoadLibraryConnectors();
     }
 
     protected void Log(string message)
@@ -27,6 +36,38 @@ public abstract class GlobalBase
     protected void Log(string fStr, params object?[] replace)
     {
         Log(string.Format(fStr, replace));
+    }
+
+    protected void SendNotifications(string title, string text)
+    {
+        foreach (NotificationConnector nc in notificationConnectors)
+            nc.SendNotification(title, text);
+    }
+
+    protected void AddNotificationConnector(NotificationConnector notificationConnector)
+    {
+        notificationConnectors.RemoveWhere(nc => nc.GetType() == notificationConnector.GetType());
+        notificationConnectors.Add(notificationConnector);
+        
+        while(IsFileInUse(settings.notificationConnectorsFilePath))
+            Thread.Sleep(100);
+        File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
+    }
+
+    protected void UpdateLibraries()
+    {
+        foreach(LibraryConnector lc in libraryConnectors)
+            lc.UpdateLibrary();
+    }
+
+    protected void AddLibraryConnector(LibraryConnector libraryConnector)
+    {
+        libraryConnectors.RemoveWhere(lc => lc.GetType() == libraryConnector.GetType());
+        libraryConnectors.Add(libraryConnector);
+        
+        while(IsFileInUse(settings.libraryConnectorsFilePath))
+            Thread.Sleep(100);
+        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
     }
 
     protected bool IsFileInUse(string filePath)

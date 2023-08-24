@@ -10,6 +10,9 @@ public class TrangaSettings
     public string downloadLocation { get; private set; }
     public string workingDirectory { get; init; }
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
+    [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
+
+    [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public ushort? version { get; set; }
@@ -24,23 +27,32 @@ public class TrangaSettings
         this.downloadLocation = downloadLocation;
     }
 
-    public static TrangaSettings LoadSettings(string importFilePath, Logger? logger)
+    public HashSet<LibraryConnector> LoadLibraryConnectors()
     {
-        if (!File.Exists(importFilePath))
-            return new TrangaSettings();
-
-        string toRead = File.ReadAllText(importFilePath);
-        TrangaSettings? settings = JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(importFilePath),
-            new JsonSerializerSettings
+        if (!File.Exists(libraryConnectorsFilePath))
+            return new HashSet<LibraryConnector>();
+        return JsonConvert.DeserializeObject<HashSet<LibraryConnector>>(File.ReadAllText(libraryConnectorsFilePath),
+            new JsonSerializerSettings()
             {
                 Converters =
                 {
-                    new NotificationManagerJsonConverter(),
                     new LibraryManagerJsonConverter()
                 }
-            });
-        return settings ?? new TrangaSettings();
+            })!;
+    }
 
+    public HashSet<NotificationConnector> LoadNotificationConnectors()
+    {
+        if (!File.Exists(notificationConnectorsFilePath))
+            return new HashSet<NotificationConnector>();
+        return JsonConvert.DeserializeObject<HashSet<NotificationConnector>>(File.ReadAllText(libraryConnectorsFilePath),
+            new JsonSerializerSettings()
+            {
+                Converters =
+                {
+                    new NotificationManagerJsonConverter()
+                }
+            })!;
     }
 
     public void ExportSettings()
