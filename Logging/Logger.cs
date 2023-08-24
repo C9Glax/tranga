@@ -20,7 +20,7 @@ public class Logger : TextWriter
         this.Encoding = encoding ?? Encoding.ASCII;
         if (enabledLoggers.Contains(LoggerType.FileLogger) && logFilePath is not null)
             _fileLogger = new FileLogger(logFilePath, encoding);
-        else
+        else if(enabledLoggers.Contains(LoggerType.FileLogger) && logFilePath is null)
         {
             _fileLogger = null;
             throw new ArgumentException($"logFilePath can not be null for LoggerType {LoggerType.FileLogger}");
