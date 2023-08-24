@@ -2,7 +2,7 @@
 
 namespace Tranga.Jobs;
 
-public abstract class Job
+public abstract class Job : GlobalBase
 {
     public MangaConnector mangaConnector { get; init; }
     public ProgressToken progressToken { get; private set; }
@@ -11,7 +11,7 @@ public abstract class Job
     public DateTime? lastExecution { get; private set; }
     public DateTime nextExecution => NextExecution();
 
-    public Job(MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null)
+    public Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
     {
         this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
@@ -21,7 +21,7 @@ public abstract class Job
         this.recurrenceTime = recurrenceTime;
     }
 
-    public Job(MangaConnector connector, ProgressToken progressToken, bool recurring = false, TimeSpan? recurrenceTime = null)
+    public Job(GlobalBase clone, MangaConnector connector, ProgressToken progressToken, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
     {
         this.mangaConnector = connector;
         this.progressToken = progressToken;
@@ -31,7 +31,7 @@ public abstract class Job
         this.recurrenceTime = recurrenceTime;
     }
 
-    public Job(MangaConnector connector, int taskIncrements, bool recurring = false, TimeSpan? recurrenceTime = null)
+    public Job(GlobalBase clone, MangaConnector connector, int taskIncrements, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
     {
         this.mangaConnector = connector;
         this.progressToken = new ProgressToken(taskIncrements);
