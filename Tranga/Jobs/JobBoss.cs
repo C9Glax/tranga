@@ -14,13 +14,6 @@ public class JobBoss : GlobalBase
         this.mangaConnectorJobQueue = new();
     }
 
-    public void MonitorJobs()
-    {
-        foreach (Job job in jobs.Where(job => job.nextExecution < DateTime.Now && !QueueContainsJob(job)).OrderBy(job => job.nextExecution))
-            AddJobToQueue(job);
-        CheckJobQueue();
-    }
-
     public void AddJob(Job job)
     {
         this.jobs.Add(job);
@@ -53,8 +46,10 @@ public class JobBoss : GlobalBase
             AddJobToQueue(job);
     }
 
-    private void CheckJobQueue()
+    public void CheckJobs()
     {
+        foreach (Job job in jobs.Where(job => job.nextExecution < DateTime.Now && !QueueContainsJob(job)).OrderBy(job => job.nextExecution))
+            AddJobToQueue(job);
         foreach (Queue<Job> jobQueue in mangaConnectorJobQueue.Values)
         {
             Job queueHead = jobQueue.Peek();
