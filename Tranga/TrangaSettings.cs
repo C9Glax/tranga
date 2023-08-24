@@ -9,6 +9,7 @@ public class TrangaSettings
 {
     public string downloadLocation { get; private set; }
     public string workingDirectory { get; init; }
+    public int apiPortNumber { get; init; }
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
 
@@ -17,14 +18,22 @@ public class TrangaSettings
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public ushort? version { get; set; }
 
-    public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null)
+    public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null, int apiPortNumber = 6531)
     {
+        this.apiPortNumber = apiPortNumber;
         downloadLocation ??= Path.Join(Directory.GetCurrentDirectory(), "Downloads");
         workingDirectory ??= Directory.GetCurrentDirectory();
         if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
             throw new ArgumentException("Download-location and working-directory paths can not be empty!");
         this.workingDirectory = workingDirectory;
         this.downloadLocation = downloadLocation;
+        
+        if (File.Exists(settingsFilePath))
+        {
+            TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(settingsFilePath))!;
+            this.downloadLocation = settings.downloadLocation;
+            this.workingDirectory = settings.workingDirectory;
+        }
     }
 
     public HashSet<LibraryConnector> LoadLibraryConnectors()
