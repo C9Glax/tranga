@@ -31,7 +31,7 @@ public class MangaDex : MangaConnector
         }, clone);
     }
 
-    protected override Publication[] GetPublications(string publicationTitle = "")
+    public override Publication[] GetPublications(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         const int limit = 100; //How many values we want returned at once

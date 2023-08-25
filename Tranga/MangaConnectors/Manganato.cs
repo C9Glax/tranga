@@ -19,7 +19,7 @@ public class Manganato : MangaConnector
         }, clone);
     }
 
-    protected override Publication[] GetPublications(string publicationTitle = "")
+    public override Publication[] GetPublications(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();

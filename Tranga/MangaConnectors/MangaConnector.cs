@@ -30,7 +30,7 @@ public abstract class MangaConnector : GlobalBase
     /// </summary>
     /// <param name="publicationTitle">Search-Query</param>
     /// <returns>Publications matching the query</returns>
-    protected abstract Publication[] GetPublications(string publicationTitle = "");
+    public abstract Publication[] GetPublications(string publicationTitle = "");
     
     /// <summary>
     /// Returns all Chapters of the publication in the provided language.

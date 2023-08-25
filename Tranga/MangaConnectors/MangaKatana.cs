@@ -19,7 +19,7 @@ public class MangaKatana : MangaConnector
 		}, clone);
 	}
 
-	protected override Publication[] GetPublications(string publicationTitle = "")
+	public override Publication[] GetPublications(string publicationTitle = "")
 	{
 		Log($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();

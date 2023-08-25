@@ -69,7 +69,7 @@ public class Mangasee : MangaConnector
         });
     }
 
-    protected override Publication[] GetPublications(string publicationTitle = "")
+    public override Publication[] GetPublications(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string requestUrl = $"https://mangasee123.com/_search.php";
