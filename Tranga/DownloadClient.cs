@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using Logging;
 
 namespace Tranga;
@@ -7,7 +8,14 @@ internal class DownloadClient
     {
         private static readonly HttpClient Client = new()
         {
-            Timeout = TimeSpan.FromSeconds(60)
+            Timeout = TimeSpan.FromSeconds(60),
+            DefaultRequestHeaders =
+            {
+                UserAgent =
+                {
+                    new ProductInfoHeaderValue("Tranga", "0.1")
+                }
+            }
         };
 
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
