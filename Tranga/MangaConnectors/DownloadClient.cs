@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 
 namespace Tranga.MangaConnectors;
 
@@ -6,7 +7,14 @@ internal class DownloadClient : GlobalBase
     {
         private static readonly HttpClient Client = new()
         {
-            Timeout = TimeSpan.FromSeconds(60)
+            Timeout = TimeSpan.FromSeconds(60),
+            DefaultRequestHeaders =
+            {
+                UserAgent =
+                {
+                    new ProductInfoHeaderValue("Tranga", "0.1")
+                }
+            }
         };
 
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
