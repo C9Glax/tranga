@@ -397,9 +397,9 @@ public class Server : GlobalBase
                 : Array.Empty<byte>());
             response.OutputStream.Close();
         }
-        catch (HttpListenerException)
+        catch (HttpListenerException e)
         {
-            
+            Log(e.ToString());
         }
     }
 }

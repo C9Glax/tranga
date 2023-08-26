@@ -42,7 +42,7 @@ public class Kavita : LibraryConnector
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
         if (result is not null)
             return result["token"]!.GetValue<string>();
-        else return "";
+        else throw new Exception("Did not receive token.");
     }
 
     public override void UpdateLibrary()

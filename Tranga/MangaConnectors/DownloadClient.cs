@@ -60,6 +60,7 @@ internal class DownloadClient : GlobalBase
                     if(referrer is not null)
                         requestMessage.Headers.Referrer = new Uri(referrer);
                     _lastExecutedRateLimit[requestType] = DateTime.Now;
+                    Log($"Requesting {requestType} {url}");
                     response = Client.Send(requestMessage);
                 }
                 catch (HttpRequestException e)

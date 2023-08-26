@@ -49,6 +49,7 @@ public abstract class GlobalBase
 
     protected void AddNotificationConnector(NotificationConnector notificationConnector)
     {
+        Log($"Adding {notificationConnector}");
         notificationConnectors.RemoveWhere(nc => nc.GetType() == notificationConnector.GetType());
         notificationConnectors.Add(notificationConnector);
         
@@ -59,6 +60,7 @@ public abstract class GlobalBase
 
     protected void DeleteNotificationConnector(NotificationConnector.NotificationManagerType notificationManagerType)
     {
+        Log($"Removing {notificationManagerType}");
         notificationConnectors.RemoveWhere(nc => nc.notificationManagerType == notificationManagerType);
     }
 
@@ -70,6 +72,7 @@ public abstract class GlobalBase
 
     protected void AddLibraryConnector(LibraryConnector libraryConnector)
     {
+        Log($"Adding {libraryConnector}");
         libraryConnectors.RemoveWhere(lc => lc.GetType() == libraryConnector.GetType());
         libraryConnectors.Add(libraryConnector);
         
@@ -80,6 +83,7 @@ public abstract class GlobalBase
 
     protected void DeleteLibraryConnector(LibraryConnector.LibraryType libraryType)
     {
+        Log($"Removing {libraryType}");
         libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryType);
     }
 

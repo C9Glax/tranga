@@ -33,7 +33,7 @@ public class Gotify : NotificationConnector
         if (!response.IsSuccessStatusCode)
         {
             StreamReader sr = new (response.Content.ReadAsStream());
-            logger?.WriteLine(this.GetType().ToString(), $"{response.StatusCode}: {sr.ReadToEnd()}");
+            Log($"{response.StatusCode}: {sr.ReadToEnd()}");
         }
     }
 

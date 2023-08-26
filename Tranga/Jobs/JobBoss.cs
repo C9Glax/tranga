@@ -15,22 +15,22 @@ public class JobBoss : GlobalBase
 
     public void AddJob(Job job)
     {
+        Log($"Added {job}");
         this.jobs.Add(job);
     }
 
     public void RemoveJob(Job job)
     {
+        Log($"Removing {job}");
         job.Cancel();
         this.jobs.Remove(job);
     }
 
-    public void RemoveJobs(IEnumerable<Job> jobs)
+    public void RemoveJobs(IEnumerable<Job> jobsToRemove)
     {
-        foreach (Job job in jobs)
-        {
-            job.Cancel();
-            this.jobs.Remove(job);
-        }
+        Log($"Removing {jobsToRemove.Count()} jobs.");
+        foreach (Job job in jobsToRemove)
+            RemoveJob(job);
     }
 
     public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, string? chapterNumber = null)
