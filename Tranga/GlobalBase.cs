@@ -9,8 +9,9 @@ public abstract class GlobalBase
 {
     protected Logger? logger { get; init; }
     protected TrangaSettings settings { get; init; }
-    private HashSet<NotificationConnector> notificationConnectors { get; init; }
-    private HashSet<LibraryConnector> libraryConnectors { get; init; }
+    protected HashSet<NotificationConnector> notificationConnectors { get; init; }
+    protected HashSet<LibraryConnector> libraryConnectors { get; init; }
+    protected List<Publication> cachedPublications { get; init; }
 
     protected GlobalBase(GlobalBase clone)
     {
@@ -18,6 +19,7 @@ public abstract class GlobalBase
         this.settings = clone.settings;
         this.notificationConnectors = clone.notificationConnectors;
         this.libraryConnectors = clone.libraryConnectors;
+        this.cachedPublications = clone.cachedPublications;
     }
 
     protected GlobalBase(Logger? logger, TrangaSettings settings)
@@ -26,6 +28,7 @@ public abstract class GlobalBase
         this.settings = settings;
         this.notificationConnectors = settings.LoadNotificationConnectors();
         this.libraryConnectors = settings.LoadLibraryConnectors();
+        this.cachedPublications = new();
     }
 
     protected void Log(string message)

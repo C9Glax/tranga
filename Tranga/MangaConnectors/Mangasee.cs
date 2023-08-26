@@ -78,7 +78,10 @@ public class Mangasee : MangaConnector
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Publication>();
 
-        return ParsePublicationsFromHtml(requestResult.result, publicationTitle);
+        Publication[] publications = ParsePublicationsFromHtml(requestResult.result, publicationTitle);
+        cachedPublications.AddRange(publications);
+        Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+        return publications;
     }
 
     private Publication[] ParsePublicationsFromHtml(Stream html, string publicationTitle)

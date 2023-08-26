@@ -39,7 +39,8 @@ public class MangaKatana : MangaConnector
 		}
 
 		Publication[] publications = ParsePublicationsFromHtml(requestResult.result);
-		Log($"Retrieved {publications.Length} publications.");
+		cachedPublications.AddRange(publications);
+		Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
 		return publications;
 	}
 

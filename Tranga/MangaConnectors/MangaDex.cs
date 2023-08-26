@@ -146,7 +146,8 @@ public class MangaDex : MangaConnector
             }
         }
 
-        Log($"Retrieved {publications.Count} publications.");
+        cachedPublications.AddRange(publications);
+        Log($"Retrieved {publications.Count} publications. Term=\"{publicationTitle}\"");
         return publications.ToArray();
     }
 
