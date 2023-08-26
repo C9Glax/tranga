@@ -55,13 +55,13 @@ public class Server : GlobalBase
         switch (request.HttpMethod)
         {
             case "GET":
-                HandleGet(request, request.InputStream, response);
+                HandleGet(request, response);
                 break;
             case "POST":
-                HandlePost(request, request.InputStream, response);
+                HandlePost(request, response);
                 break;
             case "DELETE":
-                HandleDelete(request, request.InputStream, response);
+                HandleDelete(request, response);
                 break;
             default: 
                 SendResponse(HttpStatusCode.BadRequest, response);
@@ -76,32 +76,30 @@ public class Server : GlobalBase
         if (!queryRex.IsMatch(query))
             return ret;
         query = query.Substring(1);
-        foreach (string kvpair in query.Split('&').Where(str => str.Length >= 3))
+        foreach (string keyValuePair in query.Split('&').Where(str => str.Length >= 3))
         {
-            string var = kvpair.Split('=')[0];
-            string val = Regex.Replace(kvpair.Substring(var.Length + 1), "%20", " ");
+            string var = keyValuePair.Split('=')[0];
+            string val = Regex.Replace(keyValuePair.Substring(var.Length + 1), "%20", " ");
             val = Regex.Replace(val, "%[0-9]{2}", "");
             ret.Add(var, val);
         }
         return ret;
     }
 
-    private void HandleGet(HttpListenerRequest request, Stream content, HttpListenerResponse response)
+    private void HandleGet(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, title, internalId, jobId;
+        string? connectorName, jobId;
         MangaConnector connector;
-        Publication publication;
-        Job job;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
             case "Connectors":
-                SendResponse(HttpStatusCode.OK, response, _parent.GetConnectors().Select(connector => connector.name).ToArray());
+                SendResponse(HttpStatusCode.OK, response, _parent.GetConnectors().Select(con => con.name).ToArray());
                 break;
             case "Publications/FromConnector":
                 if (!requestVariables.TryGetValue("connector", out connectorName) ||
-                    !requestVariables.TryGetValue("title", out title) ||
+                    !requestVariables.TryGetValue("title", out string? title) ||
                     _parent.GetConnector(connectorName) is null)
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -112,7 +110,7 @@ public class Server : GlobalBase
                 break;
             case "Publications/Chapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   !requestVariables.TryGetValue("internalId", out string? internalId) ||
                    _parent.GetConnector(connectorName) is null ||
                    _parent.GetPublicationById(internalId) is null)
                 {
@@ -120,7 +118,7 @@ public class Server : GlobalBase
                     break;
                 }
                 connector = _parent.GetConnector(connectorName)!;
-                publication = (Publication)_parent.GetPublicationById(internalId)!;
+                Publication publication = (Publication)_parent.GetPublicationById(internalId)!;
                 SendResponse(HttpStatusCode.OK, response, connector.GetChapters(publication));
                 break;
             case "Tasks":
@@ -158,13 +156,13 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
             case "NotificationsConnectors/Types":
-                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(NotificationConnectors.NotificationConnector.NotificationManagerType)));
+                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(NotificationConnector.NotificationManagerType)));
                 break;
             case "LibraryConnectors":
                 SendResponse(HttpStatusCode.OK, response, libraryConnectors);
                 break;
             case "LibraryConnectors/Types":
-                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(LibraryConnectors.LibraryConnector.LibraryType)));
+                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(LibraryConnector.LibraryType)));
                 break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
@@ -172,7 +170,7 @@ public class Server : GlobalBase
         }
     }
 
-    private void HandlePost(HttpListenerRequest request, Stream content, HttpListenerResponse response)
+    private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
         string? connectorName, internalId;
@@ -267,7 +265,7 @@ public class Server : GlobalBase
             case "LibraryManagers/Update":
                 if (!requestVariables.TryGetValue("libraryManager", out string? libraryManagerStr) ||
                     !Enum.TryParse(libraryManagerStr,
-                        out LibraryConnectors.LibraryConnector.LibraryType libraryManagerType))
+                        out LibraryConnector.LibraryType libraryManagerType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -306,7 +304,7 @@ public class Server : GlobalBase
         }
     }
 
-    private void HandleDelete(HttpListenerRequest request, Stream content, HttpListenerResponse response)
+    private void HandleDelete(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
         string? connectorName, internalId;
@@ -325,18 +323,14 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                connector = _parent.GetConnector(connectorName)!;
-                publication = (Publication)_parent.GetPublicationById(internalId)!;
                 _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connectorName, internalId, chapterNumber));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Tasks/MonitorManga":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
-                   !requestVariables.TryGetValue("interval", out string? intervalStr) ||
                    _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null ||
-                   !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
+                   _parent.GetPublicationById(internalId) is null)
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -373,7 +367,7 @@ public class Server : GlobalBase
             case "LibraryManagers":
                 if (!requestVariables.TryGetValue("libraryManager", out string? libraryManagerStr) ||
                     !Enum.TryParse(libraryManagerStr,
-                        out LibraryConnectors.LibraryConnector.LibraryType libraryManagerType))
+                        out LibraryConnector.LibraryType libraryManagerType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
