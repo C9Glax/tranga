@@ -57,6 +57,11 @@ public abstract class GlobalBase
         File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
+    protected void DeleteNotificationConnector(NotificationConnector.NotificationManagerType notificationManagerType)
+    {
+        notificationConnectors.RemoveWhere(nc => nc.notificationManagerType == notificationManagerType);
+    }
+
     protected void UpdateLibraries()
     {
         foreach(LibraryConnector lc in libraryConnectors)
@@ -71,6 +76,11 @@ public abstract class GlobalBase
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
         File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
+    }
+
+    protected void DeleteLibraryConnector(LibraryConnector.LibraryType libraryType)
+    {
+        libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryType);
     }
 
     protected bool IsFileInUse(string filePath)
