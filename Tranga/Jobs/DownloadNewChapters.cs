@@ -7,7 +7,7 @@ public class DownloadNewChapters : Job
 {
     public Publication publication { get; init; }
     
-    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Publication publication, bool recurring = false) : base (clone, connector, recurring)
+    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Publication publication, bool recurring = false, TimeSpan? recurrence = null) : base (clone, connector, recurring, recurrence)
     {
         this.publication = publication;
     }

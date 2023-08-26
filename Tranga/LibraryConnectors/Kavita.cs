@@ -7,13 +7,13 @@ namespace Tranga.LibraryConnectors;
 public class Kavita : LibraryConnector
 {
 
-    public Kavita(string baseUrl, string username, string password, GlobalBase clone) : 
-        base(baseUrl, GetToken(baseUrl, username, password), LibraryType.Kavita, clone)
+    public Kavita(GlobalBase clone, string baseUrl, string username, string password) : 
+        base(clone, baseUrl, GetToken(baseUrl, username, password), LibraryType.Kavita)
     {
     }
     
     [JsonConstructor]
-    public Kavita(string baseUrl, string auth, GlobalBase clone) : base(baseUrl, auth, LibraryType.Kavita, clone)
+    public Kavita(GlobalBase clone, string baseUrl, string auth) : base(clone, baseUrl, auth, LibraryType.Kavita)
     {
     }
 

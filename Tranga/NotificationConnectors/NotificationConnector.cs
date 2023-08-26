@@ -4,7 +4,7 @@ public abstract class NotificationConnector : GlobalBase
 {
     public NotificationManagerType notificationManagerType;
 
-    protected NotificationConnector(NotificationManagerType notificationManagerType, GlobalBase clone) : base(clone)
+    protected NotificationConnector(GlobalBase clone, NotificationManagerType notificationManagerType) : base(clone)
     {
         this.notificationManagerType = notificationManagerType;
     }

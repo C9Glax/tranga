@@ -18,7 +18,7 @@ public abstract class LibraryConnector : GlobalBase
     // ReSharper disable once MemberCanBeProtected.Global
     public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
     
-    protected LibraryConnector(string baseUrl, string auth, LibraryType libraryType, GlobalBase clone) : base(clone)
+    protected LibraryConnector(GlobalBase clone, string baseUrl, string auth, LibraryType libraryType) : base(clone)
     {
         this.baseUrl = baseUrl;
         this.auth = auth;

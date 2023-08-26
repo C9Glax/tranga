@@ -10,13 +10,13 @@ namespace Tranga.LibraryConnectors;
 /// </summary>
 public class Komga : LibraryConnector
 {
-    public Komga(string baseUrl, string username, string password, GlobalBase clone)
-        : base(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), LibraryType.Komga, clone)
+    public Komga(GlobalBase clone, string baseUrl, string username, string password)
+        : base(clone, baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), LibraryType.Komga)
     {
     }
 
     [JsonConstructor]
-    public Komga(string baseUrl, string auth, GlobalBase clone) : base(baseUrl, auth, LibraryType.Komga, clone)
+    public Komga(GlobalBase clone, string baseUrl, string auth) : base(clone, baseUrl, auth, LibraryType.Komga)
     {
     }
 
