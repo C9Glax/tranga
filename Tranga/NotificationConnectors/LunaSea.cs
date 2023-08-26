@@ -15,6 +15,11 @@ public class LunaSea : NotificationConnector
         this.id = id;
     }
 
+    public override string ToString()
+    {
+        return $"LunaSea {id}";
+    }
+
     public override void SendNotification(string title, string notificationText)
     {
         Log($"Sending notification: {title} - {notificationText}");

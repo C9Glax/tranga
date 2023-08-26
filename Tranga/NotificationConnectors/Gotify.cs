@@ -16,7 +16,12 @@ public class Gotify : NotificationConnector
         this.endpoint = endpoint;
         this.appToken = appToken;
     }
-    
+
+    public override string ToString()
+    {
+        return $"Gotify {endpoint}";
+    }
+
     public override void SendNotification(string title, string notificationText)
     {
         Log($"Sending notification: {title} - {notificationText}");

@@ -58,6 +58,11 @@ public struct Publication
         this.ignoreChaptersBelow = ignoreChaptersBelow ?? 0f;
     }
 
+    public override string ToString()
+    {
+        return $"Publication {sortName} {internalId}";
+    }
+
     public string CreatePublicationFolder(string downloadDirectory)
     {
         string publicationFolder = Path.Join(downloadDirectory, this.folderName);

@@ -17,6 +17,11 @@ public class Kavita : LibraryConnector
     {
     }
 
+    public override string ToString()
+    {
+        return $"Kavita {baseUrl}";
+    }
+
     private static string GetToken(string baseUrl, string username, string password)
     {
         HttpClient client = new()

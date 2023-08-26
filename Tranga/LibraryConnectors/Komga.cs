@@ -20,6 +20,11 @@ public class Komga : LibraryConnector
     {
     }
 
+    public override string ToString()
+    {
+        return $"Komga {baseUrl}";
+    }
+
     public override void UpdateLibrary()
     {
         Log("Updating libraries.");

@@ -35,8 +35,12 @@ public readonly struct Chapter
         chNameStr = IllegalStrings.Replace(chNameStr, "");
         this.fileName = $"{volStr}{chNumberStr}{chNameStr}";
     }
-    
-    
+
+    public override string ToString()
+    {
+        return $"Chapter {parentPublication.sortName} {parentPublication.internalId} {chapterNumber} {name}";
+    }
+
     /// <summary>
     /// Checks if a chapter-archive is already present
     /// </summary>

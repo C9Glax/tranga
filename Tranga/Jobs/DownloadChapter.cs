@@ -17,6 +17,11 @@ public class DownloadChapter : Job
         return Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.GetType().ToString(), chapter.parentPublication.internalId, chapter.chapterNumber)));
     }
 
+    public override string ToString()
+    {
+        return $"DownloadChapter {id} {chapter}";
+    }
+
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal()
     {
         Task downloadTask = new(delegate
