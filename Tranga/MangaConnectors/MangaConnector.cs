@@ -18,8 +18,7 @@ public abstract class MangaConnector : GlobalBase
 
     protected MangaConnector(GlobalBase clone) : base(clone)
     {
-        if (!Directory.Exists(settings.coverImageCache))
-            Directory.CreateDirectory(settings.coverImageCache);
+        Directory.CreateDirectory(settings.coverImageCache);
     }
     
     public abstract string name { get; } //Name of the Connector (e.g. Website)
