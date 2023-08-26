@@ -39,7 +39,7 @@ public abstract class MangaConnector : GlobalBase
     /// <param name="publication">Publication to get Chapters for</param>
     /// <param name="language">Language of the Chapters</param>
     /// <returns>Array of Chapters matching Publication and Language</returns>
-    public abstract Chapter[] GetChapters(Publication publication, string language = "");
+    public abstract Chapter[] GetChapters(Publication publication, string language="en");
 
     /// <summary>
     /// Updates the available Chapters of a Publication

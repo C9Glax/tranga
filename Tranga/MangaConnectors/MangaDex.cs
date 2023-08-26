@@ -150,7 +150,7 @@ public class MangaDex : MangaConnector
         return publications.ToArray();
     }
 
-    public override Chapter[] GetChapters(Publication publication, string language = "")
+    public override Chapter[] GetChapters(Publication publication, string language="en")
     {
         Log($"Getting chapters {publication}");
         const int limit = 100; //How many values we want returned at once

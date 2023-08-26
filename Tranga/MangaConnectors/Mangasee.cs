@@ -212,7 +212,7 @@ public class Mangasee : MangaConnector
         }
     }
 
-    public override Chapter[] GetChapters(Publication publication, string language = "")
+    public override Chapter[] GetChapters(Publication publication, string language="en")
     {
         Log($"Getting chapters {publication}");
         XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{publication.publicationId}.xml");

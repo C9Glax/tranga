@@ -137,7 +137,7 @@ public class MangaKatana : MangaConnector
 			year, originalLanguage, status, publicationId);
 	}
 
-	public override Chapter[] GetChapters(Publication publication, string language = "")
+	public override Chapter[] GetChapters(Publication publication, string language="en")
 	{
 		Log($"Getting chapters {publication}");
 		string requestUrl = $"https://mangakatana.com/manga/{publication.publicationId}";
