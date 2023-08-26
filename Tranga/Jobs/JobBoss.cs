@@ -1,11 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using Tranga.MangaConnectors;
+﻿using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
 public class JobBoss : GlobalBase
 {
-    private HashSet<Job> jobs { get; init; }
+    public HashSet<Job> jobs { get; init; }
     private Dictionary<MangaConnector, Queue<Job>> mangaConnectorJobQueue { get; init; }
 
     public JobBoss(GlobalBase clone) : base(clone)

@@ -7,7 +7,7 @@ namespace Tranga;
 public partial class Tranga : GlobalBase
 {
     public bool keepRunning;
-    private JobBoss _jobBoss;
+    public JobBoss _jobBoss;
     private Server server;
     private HashSet<MangaConnector> connectors;
 
@@ -37,6 +37,13 @@ public partial class Tranga : GlobalBase
     public IEnumerable<MangaConnector> GetConnectors()
     {
         return connectors;
+    }
+
+    public Publication? GetPublicationById(string internalId)
+    {
+        if (cachedPublications.Exists(publication => publication.internalId == internalId))
+            return cachedPublications.First(publication => publication.internalId == internalId);
+        return null;
     }
 
     private void StartJobBoss()

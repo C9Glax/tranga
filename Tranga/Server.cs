@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Tranga.Jobs;
 using Tranga.MangaConnectors;
 
 namespace Tranga;
@@ -86,24 +87,79 @@ public class Server : GlobalBase
     private void HandleGet(HttpListenerRequest request, Stream content, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        switch (request.Url!.LocalPath[1..])
+        string? connectorName, title, internalId, jobId;
+        MangaConnector connector;
+        Publication publication;
+        Job job;
+        string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
+        switch (path)
         {
             case "Connectors":
                 SendResponse(HttpStatusCode.OK, response, _parent.GetConnectors().Select(connector => connector.name).ToArray());
                 break;
             case "Publications/FromConnector":
-                if (requestVariables.TryGetValue("connector", out string? connectorName) &&
-                    requestVariables.TryGetValue("title", out string? title))
+                if (!requestVariables.TryGetValue("connector", out connectorName) ||
+                    !requestVariables.TryGetValue("title", out title) ||
+                    _parent.GetConnector(connectorName) is null)
                 {
-                    MangaConnector? connector = _parent.GetConnector(connectorName);
-                    if (connector is null || title.Length < 4)
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        return;
-                    }
-                    SendResponse(HttpStatusCode.OK, response, connector.GetPublications(title));
-                }else
                     SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector = _parent.GetConnector(connectorName)!;
+                SendResponse(HttpStatusCode.OK, response, connector.GetPublications(title));
+                break;
+            case "Publications/Chapters":
+                if(!requestVariables.TryGetValue("connector", out connectorName) ||
+                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   _parent.GetConnector(connectorName) is null ||
+                   _parent.GetPublicationById(internalId) is null)
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector = _parent.GetConnector(connectorName)!;
+                publication = (Publication)_parent.GetPublicationById(internalId)!;
+                SendResponse(HttpStatusCode.OK, response, connector.GetChapters(publication));
+                break;
+            case "Tasks":
+                if (!requestVariables.TryGetValue("jobId", out jobId))
+                {
+                    if(!_parent._jobBoss.jobs.Any(jjob => jjob.id == jobId))
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                    else
+                        SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.First(jjob => jjob.id == jobId));
+                    break;
+                }
+                SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs);
+                break;
+            case "Tasks/Progress":
+                if (!requestVariables.TryGetValue("jobId", out jobId))
+                {
+                    if(!_parent._jobBoss.jobs.Any(jjob => jjob.id == jobId))
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                    else
+                        SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.First(jjob => jjob.id == jobId).progressToken);
+                    break;
+                }
+                SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Select(jjob => jjob.progressToken));
+                break;
+            case "Tasks/Running":
+                SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Running));
+                break;
+            case "Tasks/Waiting":
+                SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Standby));
+                break;
+            case "Settings":
+                SendResponse(HttpStatusCode.OK, response, settings);
+                break;
+            case "NotificationConnectors":
+                SendResponse(HttpStatusCode.OK, response, notificationConnectors);
+                break;
+            case "LibraryConnectors":
+                SendResponse(HttpStatusCode.OK, response, libraryConnectors);
+                break;
+            default:
+                SendResponse(HttpStatusCode.BadRequest, response);
                 break;
         }
     }
