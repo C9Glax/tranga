@@ -1,14 +1,16 @@
-﻿using Logging;
+﻿using System.Runtime.InteropServices;
+using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.NotificationConnectors;
+using static System.IO.UnixFileMode;
 
 namespace Tranga;
 
 public class TrangaSettings
 {
     public string downloadLocation { get; private set; }
-    public string workingDirectory { get; init; }
+    public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
@@ -34,6 +36,8 @@ public class TrangaSettings
             this.downloadLocation = settings.downloadLocation;
             this.workingDirectory = settings.workingDirectory;
         }
+        
+        UpdateDownloadLocation(this.downloadLocation, false);
     }
 
     public HashSet<LibraryConnector> LoadLibraryConnectors()
@@ -62,6 +66,33 @@ public class TrangaSettings
                     new NotificationManagerJsonConverter()
                 }
             })!;
+    }
+
+    public void UpdateDownloadLocation(string newPath, bool moveFiles = true)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            Directory.CreateDirectory(newPath,
+                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+        else
+            Directory.CreateDirectory(newPath);
+        
+        if (moveFiles && Directory.Exists(this.downloadLocation))
+            Directory.Move(this.downloadLocation, newPath);
+
+        this.downloadLocation = newPath;
+        ExportSettings();
+    }
+
+    public void UpdateWorkingDirectory(string newPath)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            Directory.CreateDirectory(newPath,
+                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+        else
+            Directory.CreateDirectory(newPath);
+        Directory.Move(this.workingDirectory, newPath);
+        this.workingDirectory = newPath;
+        ExportSettings();
     }
 
     public void ExportSettings()
