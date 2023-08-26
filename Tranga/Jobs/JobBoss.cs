@@ -24,6 +24,45 @@ public class JobBoss : GlobalBase
         this.jobs.Remove(job);
     }
 
+    public void RemoveJobs(IEnumerable<Job> jobs)
+    {
+        foreach (Job job in jobs)
+        {
+            job.Cancel();
+            this.jobs.Remove(job);
+        }
+    }
+
+    public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, string? chapterNumber = null)
+    {
+        IEnumerable<Job> ret = this.jobs;
+        if (connectorName is not null)
+            ret = ret.Where(job => job.mangaConnector.name == connectorName);
+        
+        if (internalId is not null && chapterNumber is not null)
+            ret = ret.Where(jjob =>
+            {
+                if (jjob is not DownloadChapter job)
+                    return false;
+                return job.chapter.parentPublication.internalId == internalId &&
+                       job.chapter.chapterNumber == chapterNumber;
+            });
+        else if (internalId is not null)
+            ret = ret.Where(jjob =>
+            {
+                if (jjob is not DownloadNewChapters job)
+                    return false;
+                return job.publication.internalId == internalId;
+            });
+        return ret;
+    }
+
+    public IEnumerable<Job> GetJobsLike(MangaConnector? mangaConnector = null, Publication? publication = null,
+        Chapter? chapter = null)
+    {
+        return GetJobsLike(mangaConnector?.name, publication?.internalId, chapter?.chapterNumber);
+    }
+
     private bool QueueContainsJob(Job job)
     {
         mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>());
