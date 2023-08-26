@@ -18,10 +18,10 @@ public class Mangasee : MangaConnector
     public Mangasee(GlobalBase clone) : base(clone)
     {
         this.name = "Mangasee";
-        this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
+        this.downloadClient = new DownloadClient(clone, new Dictionary<byte, int>()
         {
             { 1, 60 }
-        }, clone);
+        });
 
         Task d = new Task(DownloadBrowser);
         d.Start();

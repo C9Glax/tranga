@@ -21,14 +21,14 @@ public class MangaDex : MangaConnector
     public MangaDex(GlobalBase clone) : base(clone)
     {
         name = "MangaDex";
-        this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
+        this.downloadClient = new DownloadClient(clone, new Dictionary<byte, int>()
         {
             {(byte)RequestType.Manga, 250},
             {(byte)RequestType.Feed, 250},
             {(byte)RequestType.AtHomeServer, 40},
             {(byte)RequestType.CoverUrl, 250},
             {(byte)RequestType.Author, 250}
-        }, clone);
+        });
     }
 
     public override Publication[] GetPublications(string publicationTitle = "")

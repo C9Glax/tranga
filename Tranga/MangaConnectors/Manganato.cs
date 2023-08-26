@@ -13,10 +13,10 @@ public class Manganato : MangaConnector
     public Manganato(GlobalBase clone) : base(clone)
     {
         this.name = "Manganato";
-        this.downloadClient = new DownloadClient(new Dictionary<byte, int>()
+        this.downloadClient = new DownloadClient(clone, new Dictionary<byte, int>()
         {
             {1, 60}
-        }, clone);
+        });
     }
 
     public override Publication[] GetPublications(string publicationTitle = "")

@@ -20,7 +20,7 @@ internal class DownloadClient : GlobalBase
         private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
         private readonly Dictionary<byte, TimeSpan> _rateLimit;
 
-        public DownloadClient(Dictionary<byte, int> rateLimitRequestsPerMinute, GlobalBase clone) : base(clone)
+        public DownloadClient(GlobalBase clone, Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone)
         {
             _lastExecutedRateLimit = new();
             _rateLimit = new();
