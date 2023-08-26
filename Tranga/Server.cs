@@ -4,7 +4,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Tranga.Jobs;
+using Tranga.LibraryConnectors;
 using Tranga.MangaConnectors;
+using Tranga.NotificationConnectors;
 
 namespace Tranga;
 
@@ -155,8 +157,14 @@ public class Server : GlobalBase
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
+            case "NotificationsConnectors/Types":
+                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(NotificationConnectors.NotificationConnector.NotificationManagerType)));
+                break;
             case "LibraryConnectors":
                 SendResponse(HttpStatusCode.OK, response, libraryConnectors);
+                break;
+            case "LibraryConnectors/Types":
+                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(LibraryConnectors.LibraryConnector.LibraryType)));
                 break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
@@ -166,12 +174,217 @@ public class Server : GlobalBase
 
     private void HandlePost(HttpListenerRequest request, Stream content, HttpListenerResponse response)
     {
-        
+        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
+        string? connectorName, internalId;
+        MangaConnector connector;
+        Publication publication;
+        string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
+        switch (path)
+        {
+            case "Tasks/MonitorManga":
+                if(!requestVariables.TryGetValue("connector", out connectorName) ||
+                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   !requestVariables.TryGetValue("interval", out string? intervalStr) ||
+                   _parent.GetConnector(connectorName) is null ||
+                   _parent.GetPublicationById(internalId) is null ||
+                   !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector = _parent.GetConnector(connectorName)!;
+                publication = (Publication)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.AddJob(new DownloadNewChapters(this, connector, publication, true, interval));
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "Tasks/DownloadNewChapters":
+                if(!requestVariables.TryGetValue("connector", out connectorName) ||
+                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   _parent.GetConnector(connectorName) is null ||
+                   _parent.GetPublicationById(internalId) is null)
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector = _parent.GetConnector(connectorName)!;
+                publication = (Publication)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.AddJob(new DownloadNewChapters(this, connector, publication, false));
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "Settings/UpdateDownloadLocation":
+                if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
+                    !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
+                    !Boolean.TryParse(moveFilesStr, out bool moveFiles))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                settings.UpdateDownloadLocation(downloadLocation, moveFiles);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            /*case "Settings/UpdateWorkingDirectory":
+                if (!requestVariables.TryGetValue("workingDirectory", out string? workingDirectory))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                settings.UpdateWorkingDirectory(workingDirectory);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;*/
+            case "NotificationConnectors/Update":
+                if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationManagerType notificationManagerType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+
+                if (notificationManagerType is NotificationConnector.NotificationManagerType.Gotify)
+                {
+                    if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
+                        !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    AddNotificationConnector(new Gotify(this, gotifyUrl, gotifyAppToken));
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                }
+
+                if (notificationManagerType is NotificationConnector.NotificationManagerType.LunaSea)
+                {
+                    if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    AddNotificationConnector(new LunaSea(this, lunaseaWebhook));
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                }
+                break;
+            case "LibraryManagers/Update":
+                if (!requestVariables.TryGetValue("libraryManager", out string? libraryManagerStr) ||
+                    !Enum.TryParse(libraryManagerStr,
+                        out LibraryConnectors.LibraryConnector.LibraryType libraryManagerType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+
+                if (libraryManagerType is LibraryConnector.LibraryType.Kavita)
+                {
+                    if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
+                        !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
+                        !requestVariables.TryGetValue("kavitaPassword", out string? kavitaPassword))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    AddLibraryConnector(new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword));
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                }
+
+                if (libraryManagerType is LibraryConnector.LibraryType.Komga)
+                {
+                    if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
+                        !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    AddLibraryConnector(new Komga(this, komgaUrl, komgaAuth));
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                }
+                break;
+            default:
+                SendResponse(HttpStatusCode.BadRequest, response);
+                break;
+        }
     }
 
     private void HandleDelete(HttpListenerRequest request, Stream content, HttpListenerResponse response)
     {
-        
+        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
+        string? connectorName, internalId;
+        MangaConnector connector;
+        Publication publication;
+        string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
+        switch (path)
+        {
+            case "Tasks/DownloadChapter":
+                if(!requestVariables.TryGetValue("connector", out connectorName) ||
+                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   !requestVariables.TryGetValue("chapterNumber", out string? chapterNumber) ||
+                   _parent.GetConnector(connectorName) is null ||
+                   _parent.GetPublicationById(internalId) is null)
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector = _parent.GetConnector(connectorName)!;
+                publication = (Publication)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connectorName, internalId, chapterNumber));
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "Tasks/MonitorManga":
+                if(!requestVariables.TryGetValue("connector", out connectorName) ||
+                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   !requestVariables.TryGetValue("interval", out string? intervalStr) ||
+                   _parent.GetConnector(connectorName) is null ||
+                   _parent.GetPublicationById(internalId) is null ||
+                   !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector = _parent.GetConnector(connectorName)!;
+                publication = (Publication)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connector, publication));
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "Tasks/DownloadNewChapters":
+                if(!requestVariables.TryGetValue("connector", out connectorName) ||
+                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   _parent.GetConnector(connectorName) is null ||
+                   _parent.GetPublicationById(internalId) is null)
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector = _parent.GetConnector(connectorName)!;
+                publication = (Publication)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connector, publication));
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "NotificationConnectors":
+                if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationManagerType notificationManagerType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                DeleteNotificationConnector(notificationManagerType);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "LibraryManagers":
+                if (!requestVariables.TryGetValue("libraryManager", out string? libraryManagerStr) ||
+                    !Enum.TryParse(libraryManagerStr,
+                        out LibraryConnectors.LibraryConnector.LibraryType libraryManagerType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                DeleteLibraryConnector(libraryManagerType);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            default:
+                SendResponse(HttpStatusCode.BadRequest, response);
+                break;
+        }
     }
 
     private void SendResponse(HttpStatusCode statusCode, HttpListenerResponse response, object? content = null)
