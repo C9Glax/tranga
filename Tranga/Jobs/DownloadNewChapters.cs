@@ -1,4 +1,5 @@
-﻿using Tranga.MangaConnectors;
+﻿using System.Text;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
@@ -9,6 +10,11 @@ public class DownloadNewChapters : Job
     public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Publication publication, bool recurring = false) : base (clone, connector, recurring)
     {
         this.publication = publication;
+    }
+
+    protected override string GetId()
+    {
+        return Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.GetType().ToString(), publication.internalId)));
     }
 
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal()

@@ -10,6 +10,7 @@ public abstract class Job : GlobalBase
     public TimeSpan? recurrenceTime { get; set; }
     public DateTime? lastExecution { get; private set; }
     public DateTime nextExecution => NextExecution();
+    public string id => GetId();
 
     public Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
     {
@@ -20,6 +21,8 @@ public abstract class Job : GlobalBase
             throw new ArgumentException("If recurrence is set to true, a recurrence time has to be provided.");
         this.recurrenceTime = recurrenceTime;
     }
+
+    protected abstract string GetId();
 
     public Job(GlobalBase clone, MangaConnector connector, ProgressToken progressToken, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
     {
