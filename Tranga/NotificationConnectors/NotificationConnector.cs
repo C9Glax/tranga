@@ -2,7 +2,7 @@
 
 public abstract class NotificationConnector : GlobalBase
 {
-    public NotificationManagerType notificationManagerType;
+    public readonly NotificationManagerType notificationManagerType;
 
     protected NotificationConnector(GlobalBase clone, NotificationManagerType notificationManagerType) : base(clone)
     {
