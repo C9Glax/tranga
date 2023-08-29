@@ -20,24 +20,34 @@ public class TrangaSettings
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public ushort? version { get; set; }
 
-    public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null, int apiPortNumber = 6531)
+    public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null, int? apiPortNumber = null)
     {
-        this.apiPortNumber = apiPortNumber;
-        downloadLocation ??= Path.Join(Directory.GetCurrentDirectory(), "Downloads");
-        workingDirectory ??= Directory.GetCurrentDirectory();
-        if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
-            throw new ArgumentException("Download-location and working-directory paths can not be empty!");
-        this.workingDirectory = workingDirectory;
-        this.downloadLocation = downloadLocation;
-        
-        if (File.Exists(settingsFilePath))
-        {
-            TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(settingsFilePath))!;
-            this.downloadLocation = settings.downloadLocation;
-            this.workingDirectory = settings.workingDirectory;
+        string lockFilePath = $"{settingsFilePath}.lock";
+        if (File.Exists(settingsFilePath) && !File.Exists(lockFilePath))
+        {//Load from settings file
+            FileStream lockFile = File.Create(lockFilePath,0, FileOptions.DeleteOnClose);
+            string settingsStr = File.ReadAllText(settingsFilePath);
+            TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(settingsStr)!;
+            this.downloadLocation = downloadLocation ?? settings.downloadLocation;
+            this.workingDirectory = workingDirectory ?? settings.workingDirectory;
+            this.apiPortNumber = apiPortNumber ?? settings.apiPortNumber;
+            lockFile.Close();
         }
-        
-        UpdateDownloadLocation(this.downloadLocation, false);
+        else if(!File.Exists(settingsFilePath))
+        {//No settings file exists
+            if (downloadLocation?.Length < 1 || workingDirectory?.Length < 1)
+                throw new ArgumentException("Download-location and working-directory paths can not be empty!");
+            this.apiPortNumber = apiPortNumber ?? 6531;
+            this.downloadLocation = downloadLocation ?? Path.Join(Directory.GetCurrentDirectory(), "Downloads");
+            this.workingDirectory = workingDirectory ?? Directory.GetCurrentDirectory();
+        }
+        else
+        {//Settingsfile is locked
+            this.apiPortNumber = apiPortNumber!.Value;
+            this.downloadLocation = downloadLocation!;
+            this.workingDirectory = workingDirectory!;
+        }
+        UpdateDownloadLocation(this.downloadLocation!, false);
     }
 
     public HashSet<LibraryConnector> LoadLibraryConnectors()
