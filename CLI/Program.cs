@@ -112,6 +112,7 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
                     if (AnsiConsole.Confirm("Send Request?"))
                         response = client.Send(request);
                     else break;
+                    AnsiConsole.WriteLine($"Response: {(int)response.StatusCode} {response.StatusCode}");
                     AnsiConsole.WriteLine(response.Content.ReadAsStringAsync().Result);
                     break;
                 case "Log":
