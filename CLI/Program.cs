@@ -79,17 +79,15 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
             switch (menuSelect)
             {
                 case "CustomRequest":
-                    string requestType = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
+                    HttpMethod requestMethod = AnsiConsole.Prompt(
+                        new SelectionPrompt<HttpMethod>()
                             .Title("Request Type")
                             .AddChoices(new[]
                             {
-                                "GET",
-                                "POST",
-                                "DELETE"
+                                HttpMethod.Get,
+                                HttpMethod.Delete, 
+                                HttpMethod.Post
                             }));
-                    HttpMethod method = requestType == "GET" ? HttpMethod.Get :
-                        requestType == "DELETE" ? HttpMethod.Delete : HttpMethod.Post;
                     string requestPath = AnsiConsole.Prompt(
                         new TextPrompt<string>("Request Path:"));
                     List<ValueTuple<string, string>> parameters = new();
@@ -108,7 +106,7 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
                             requestString += $"{parameter.Item1}={parameter.Item2}&";
                     }
 
-                    HttpRequestMessage request = new HttpRequestMessage(method, requestString);
+                    HttpRequestMessage request = new (requestMethod, requestString);
                     AnsiConsole.WriteLine($"Request: {request.Method} {request.RequestUri}");
                     HttpResponseMessage response;
                     if (AnsiConsole.Confirm("Send Request?"))
@@ -133,8 +131,11 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
                                 context.UpdateTarget(rows);
                             }
                             Thread.Sleep(100);
-                            if (Console.KeyAvailable)
+                            if (AnsiConsole.Console.Input.IsKeyAvailable())
+                            {
+                                AnsiConsole.Console.Input.ReadKey(true); //Do not process input
                                 running = false;
+                            }
                         }
                     });
                     break;
