@@ -97,7 +97,7 @@ public class TrangaSettings
 
     public void ExportSettings()
     {
-        while (File.Exists(settingsFilePath))
+        if (File.Exists(settingsFilePath))
         {
             bool inUse = true;
             while (inUse)
