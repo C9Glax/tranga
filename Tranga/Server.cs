@@ -22,8 +22,17 @@ public class Server : GlobalBase
             this._listener.Prefixes.Add($"http://*:{settings.apiPortNumber}/");
         else
             this._listener.Prefixes.Add($"http://localhost:{settings.apiPortNumber}/");
-        Thread t = new (Listen);
-        t.Start();
+        Thread listenThread = new (Listen);
+        listenThread.Start();
+        Thread watchThread = new(WatchRunning);
+        watchThread.Start();
+    }
+
+    private void WatchRunning()
+    {
+        while(_parent.keepRunning)
+            Thread.Sleep(1000);
+        this._listener.Close();
     }
 
     private void Listen()
@@ -33,13 +42,20 @@ public class Server : GlobalBase
             Log($"Listening on {prefix}");
         while (this._listener.IsListening && _parent.keepRunning)
         {
-            HttpListenerContext context = this._listener.GetContextAsync().Result;
-            Log($"{context.Request.HttpMethod} {context.Request.Url} {context.Request.UserAgent}");
-            Task t = new(() =>
+            try
             {
-                HandleRequest(context);
-            });
-            t.Start();
+                HttpListenerContext context = this._listener.GetContext();
+                Log($"{context.Request.HttpMethod} {context.Request.Url} {context.Request.UserAgent}");
+                Task t = new(() =>
+                {
+                    HandleRequest(context);
+                });
+                t.Start();
+            }
+            catch (HttpListenerException e)
+            {
+                
+            }
         }
     }
 
