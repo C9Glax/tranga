@@ -133,7 +133,6 @@ public class Mangasee : MangaConnector
         HtmlNode posterNode =
             document.DocumentNode.Descendants("img").First(img => img.HasClass("img-fluid") && img.HasClass("bottom-5"));
         string posterUrl = posterNode.GetAttributeValue("src", "");
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
 
         HtmlNode attributes = document.DocumentNode.Descendants("div")
             .First(div => div.HasClass("col-md-9") && div.HasClass("col-sm-8") && div.HasClass("top-5"))
@@ -171,7 +170,7 @@ public class Mangasee : MangaConnector
         foreach(string at in a)
             altTitles.Add((i++).ToString(), at);
         
-        return new Publication(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+        return new Publication(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, links,
             year, originalLanguage, status, publicationId);
     }
     
@@ -245,6 +244,7 @@ public class Mangasee : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
+        Publication chapterParentPublication = chapter.parentPublication;
         while (this._browser is null && !(progressToken?.cancellationRequested??false))
         {
             Log("Waiting for headless browser to download...");
@@ -253,7 +253,7 @@ public class Mangasee : MangaConnector
         if (progressToken?.cancellationRequested??false)
             return HttpStatusCode.RequestTimeout;
         
-        Log($"Retrieving chapter-info {chapter} {chapter.parentPublication}");
+        Log($"Retrieving chapter-info {chapter} {chapterParentPublication}");
         IPage page = _browser!.NewPageAsync().Result;
         IResponse response = page.GoToAsync(chapter.url).Result;
         if (response.Ok)
@@ -270,6 +270,9 @@ public class Mangasee : MangaConnector
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
+            if (chapterParentPublication.coverUrl is not null)
+                chapterParentPublication.coverFileNameInCache = SaveCoverImageToCache(chapterParentPublication.coverUrl, 1);
+            
             return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
         }
         return response.Status;

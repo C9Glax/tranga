@@ -102,9 +102,6 @@ public class MangaDex : MangaConnector
                         authorIds.Add(node!["id"]!.GetValue<string>());
                 }
                 string? coverUrl = GetCoverUrl(publicationId, posterId);
-                string? coverCacheName = null;
-                if (coverUrl is not null)
-                    coverCacheName = SaveCoverImageToCache(coverUrl, (byte)RequestType.AtHomeServer);
 
                 List<string> authors = GetAuthors(authorIds);
 
@@ -135,7 +132,6 @@ public class MangaDex : MangaConnector
                     altTitlesDict,
                     tags.ToArray(),
                     coverUrl,
-                    coverCacheName,
                     linksDict,
                     year,
                     originalLanguage,
@@ -209,7 +205,8 @@ public class MangaDex : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        Log($"Retrieving chapter-info {chapter} {chapter.parentPublication}");
+        Publication chapterParentPublication = chapter.parentPublication;
+        Log($"Retrieving chapter-info {chapter} {chapterParentPublication}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
@@ -230,6 +227,8 @@ public class MangaDex : MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
+        if (chapterParentPublication.coverUrl is not null)
+            chapterParentPublication.coverFileNameInCache = SaveCoverImageToCache(chapterParentPublication.coverUrl, (byte)RequestType.AtHomeServer);
         //Download Chapter-Images
         return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, comicInfoPath, progressToken:progressToken);
     }

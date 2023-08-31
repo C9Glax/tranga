@@ -19,8 +19,8 @@ public struct Publication
     public string? description { get; }
     public string[] tags { get; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public string? posterUrl { get; }
-    public string? coverFileNameInCache { get; }
+    public string? coverUrl { get; }
+    public string? coverFileNameInCache { get; set; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Dictionary<string,string> links { get; }
     // ReSharper disable once MemberCanBePrivate.Global
@@ -36,15 +36,15 @@ public struct Publication
     private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
     [JsonConstructor]
-    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? posterUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
         this.description = description;
         this.altTitles = altTitles;
         this.tags = tags;
-        this.coverFileNameInCache = coverFileNameInCache;
-        this.posterUrl = posterUrl;
+        this.coverFileNameInCache = null;
+        this.coverUrl = coverUrl;
         this.links = links ?? new Dictionary<string, string>();
         this.year = year;
         this.originalLanguage = originalLanguage;
