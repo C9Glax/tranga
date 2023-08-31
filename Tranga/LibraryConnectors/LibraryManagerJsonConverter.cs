@@ -5,6 +5,13 @@ namespace Tranga.LibraryConnectors;
 
 public class LibraryManagerJsonConverter : JsonConverter
 {
+    private GlobalBase _clone;
+
+    internal LibraryManagerJsonConverter(GlobalBase clone)
+    {
+        this._clone = clone;
+    }
+    
     public override bool CanConvert(Type objectType)
     {
         return (objectType == typeof(LibraryConnector));
@@ -13,11 +20,15 @@ public class LibraryManagerJsonConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         JObject jo = JObject.Load(reader);
-        if (jo["libraryType"]!.Value<Int64>() == (Int64)LibraryConnector.LibraryType.Komga)
-            return jo.ToObject<Komga>(serializer)!;
+        if (jo["libraryType"]!.Value<byte>() == (byte)LibraryConnector.LibraryType.Komga)
+            return new Komga(this._clone, 
+                jo.GetValue("baseUrl")!.Value<string>()!,
+                jo.GetValue("auth")!.Value<string>()!);
 
-        if (jo["libraryType"]!.Value<Int64>() == (Int64)LibraryConnector.LibraryType.Kavita)
-            return jo.ToObject<Kavita>(serializer)!;
+        if (jo["libraryType"]!.Value<byte>() == (byte)LibraryConnector.LibraryType.Kavita)
+            return new Kavita(this._clone,
+                jo.GetValue("baseUrl")!.Value<string>()!,
+                jo.GetValue("auth")!.Value<string>()!);
 
         throw new Exception();
     }

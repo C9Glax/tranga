@@ -5,6 +5,13 @@ namespace Tranga.NotificationConnectors;
 
 public class NotificationManagerJsonConverter : JsonConverter
 {
+    private GlobalBase _clone;
+
+    public NotificationManagerJsonConverter(GlobalBase clone)
+    {
+        this._clone = clone;
+    }
+    
     public override bool CanConvert(Type objectType)
     {
         return (objectType == typeof(NotificationConnector));
@@ -15,9 +22,10 @@ public class NotificationManagerJsonConverter : JsonConverter
     {
         JObject jo = JObject.Load(reader);
         if (jo["notificationManagerType"]!.Value<byte>() == (byte)NotificationConnector.NotificationManagerType.Gotify)
-            return jo.ToObject<Gotify>(serializer)!;
-        else if (jo["notificationManagerType"]!.Value<byte>() == (byte)NotificationConnector.NotificationManagerType.LunaSea)
-            return jo.ToObject<LunaSea>(serializer)!;
+            return new Gotify(this._clone, jo.GetValue("endpoint")!.Value<string>()!, jo.GetValue("appToken")!.Value<string>()!);
+        else if (jo["notificationManagerType"]!.Value<byte>() ==
+                 (byte)NotificationConnector.NotificationManagerType.LunaSea)
+            return new LunaSea(this._clone, jo.GetValue("id")!.Value<string>()!);
 
         throw new Exception();
     }

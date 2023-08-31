@@ -50,7 +50,7 @@ public class TrangaSettings
         UpdateDownloadLocation(this.downloadLocation!, false);
     }
 
-    public HashSet<LibraryConnector> LoadLibraryConnectors()
+    public HashSet<LibraryConnector> LoadLibraryConnectors(GlobalBase clone)
     {
         if (!File.Exists(libraryConnectorsFilePath))
             return new HashSet<LibraryConnector>();
@@ -59,21 +59,21 @@ public class TrangaSettings
             {
                 Converters =
                 {
-                    new LibraryManagerJsonConverter()
+                    new LibraryManagerJsonConverter(clone)
                 }
             })!;
     }
 
-    public HashSet<NotificationConnector> LoadNotificationConnectors()
+    public HashSet<NotificationConnector> LoadNotificationConnectors(GlobalBase clone)
     {
         if (!File.Exists(notificationConnectorsFilePath))
             return new HashSet<NotificationConnector>();
-        return JsonConvert.DeserializeObject<HashSet<NotificationConnector>>(File.ReadAllText(libraryConnectorsFilePath),
+        return JsonConvert.DeserializeObject<HashSet<NotificationConnector>>(File.ReadAllText(notificationConnectorsFilePath),
             new JsonSerializerSettings()
             {
                 Converters =
                 {
-                    new NotificationManagerJsonConverter()
+                    new NotificationManagerJsonConverter(clone)
                 }
             })!;
     }

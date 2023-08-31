@@ -26,8 +26,8 @@ public abstract class GlobalBase
     {
         this.logger = logger;
         this.settings = settings;
-        this.notificationConnectors = settings.LoadNotificationConnectors();
-        this.libraryConnectors = settings.LoadLibraryConnectors();
+        this.notificationConnectors = settings.LoadNotificationConnectors(this);
+        this.libraryConnectors = settings.LoadLibraryConnectors(this);
         this.cachedPublications = new();
     }
 
