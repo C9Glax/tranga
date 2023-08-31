@@ -119,6 +119,8 @@ public class MangaKatana : MangaConnector
 		string posterUrl = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[1]/div").Descendants("img").First()
 			.GetAttributes().First(a => a.Name == "src").Value;
 
+		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
+
 		string description = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[3]/p").InnerText;
 		while (description.StartsWith('\n'))
 			description = description.Substring(1);
@@ -132,7 +134,7 @@ public class MangaKatana : MangaConnector
 			year = Convert.ToInt32(yearString);
 		}
 
-		return new Manga(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, links,
+		return new Manga(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
 			year, originalLanguage, status, publicationId);
 	}
 
@@ -199,9 +201,6 @@ public class MangaKatana : MangaConnector
 		string comicInfoPath = Path.GetTempFileName();
 		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		if (chapterParentManga.coverUrl is not null)
-			chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, 1);
-		
 		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
 	}
 

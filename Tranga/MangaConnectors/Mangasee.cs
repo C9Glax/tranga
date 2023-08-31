@@ -133,6 +133,7 @@ public class Mangasee : MangaConnector
         HtmlNode posterNode =
             document.DocumentNode.Descendants("img").First(img => img.HasClass("img-fluid") && img.HasClass("bottom-5"));
         string posterUrl = posterNode.GetAttributeValue("src", "");
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
 
         HtmlNode attributes = document.DocumentNode.Descendants("div")
             .First(div => div.HasClass("col-md-9") && div.HasClass("col-sm-8") && div.HasClass("top-5"))
@@ -170,7 +171,7 @@ public class Mangasee : MangaConnector
         foreach(string at in a)
             altTitles.Add((i++).ToString(), at);
         
-        return new Manga(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, links,
+        return new Manga(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
     }
     
@@ -270,9 +271,6 @@ public class Mangasee : MangaConnector
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-            if (chapterParentManga.coverUrl is not null)
-                chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, 1);
-            
             return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
         }
         return response.Status;

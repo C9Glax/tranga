@@ -36,14 +36,14 @@ public struct Manga
     private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
     [JsonConstructor]
-    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
         this.description = description;
         this.altTitles = altTitles;
         this.tags = tags;
-        this.coverFileNameInCache = null;
+        this.coverFileNameInCache = coverFileNameInCache;
         this.coverUrl = coverUrl;
         this.links = links ?? new Dictionary<string, string>();
         this.year = year;

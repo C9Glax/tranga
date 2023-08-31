@@ -102,6 +102,9 @@ public class MangaDex : MangaConnector
                         authorIds.Add(node!["id"]!.GetValue<string>());
                 }
                 string? coverUrl = GetCoverUrl(publicationId, posterId);
+                string? coverCacheName = null;
+                if (coverUrl is not null)
+                    coverCacheName = SaveCoverImageToCache(coverUrl, (byte)RequestType.AtHomeServer);
 
                 List<string> authors = GetAuthors(authorIds);
 
@@ -132,6 +135,7 @@ public class MangaDex : MangaConnector
                     altTitlesDict,
                     tags.ToArray(),
                     coverUrl,
+                    coverCacheName,
                     linksDict,
                     year,
                     originalLanguage,
@@ -227,8 +231,6 @@ public class MangaDex : MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        if (chapterParentManga.coverUrl is not null)
-            chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, (byte)RequestType.AtHomeServer);
         //Download Chapter-Images
         return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, comicInfoPath, progressToken:progressToken);
     }

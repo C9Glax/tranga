@@ -111,6 +111,8 @@ public class Manganato : MangaConnector
         string posterUrl = document.DocumentNode.Descendants("span").First(s => s.HasClass("info-image")).Descendants("img").First()
             .GetAttributes().First(a => a.Name == "src").Value;
 
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
+
         string description = document.DocumentNode.Descendants("div").First(d => d.HasClass("panel-story-info-description"))
             .InnerText.Replace("Description :", "");
         while (description.StartsWith('\n'))
@@ -120,7 +122,7 @@ public class Manganato : MangaConnector
             .First(s => s.HasClass("chapter-time")).InnerText;
         int year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
         
-        return new Manga(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, links,
+        return new Manga(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
     }
 
@@ -184,9 +186,6 @@ public class Manganato : MangaConnector
         
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
-        
-        if (chapterParentManga.coverUrl is not null)
-            chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, 1);
         
         return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://chapmanganato.com/", progressToken:progressToken);
     }
