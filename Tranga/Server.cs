@@ -171,14 +171,16 @@ public class Server : GlobalBase
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
-            case "NotificationsConnectors/Types":
-                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(NotificationConnector.NotificationManagerType)));
+            case "NotificationConnectors/Types":
+                SendResponse(HttpStatusCode.OK, response,
+                    Enum.GetValues<NotificationConnector.NotificationManagerType>().Select(nc => new KeyValuePair<byte, string?>((byte)nc, Enum.GetName(nc))));
                 break;
             case "LibraryConnectors":
                 SendResponse(HttpStatusCode.OK, response, libraryConnectors);
                 break;
             case "LibraryConnectors/Types":
-                SendResponse(HttpStatusCode.OK, response, Enum.GetNames(typeof(LibraryConnector.LibraryType)));
+                SendResponse(HttpStatusCode.OK, response, 
+                    Enum.GetValues<LibraryConnector.LibraryType>().Select(lc => new KeyValuePair<byte, string?>((byte)lc, Enum.GetName(lc))));
                 break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
