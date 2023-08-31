@@ -165,6 +165,9 @@ public class Server : GlobalBase
             case "Jobs/Waiting":
                 SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Standby));
                 break;
+            case "Jobs/MonitorJobs":
+                SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Where(jjob => jjob is DownloadNewChapters));
+                break;
             case "Settings":
                 SendResponse(HttpStatusCode.OK, response, settings);
                 break;
