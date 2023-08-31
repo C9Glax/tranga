@@ -58,10 +58,10 @@ public abstract class GlobalBase
         File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
-    protected void DeleteNotificationConnector(NotificationConnector.NotificationManagerType notificationManagerType)
+    protected void DeleteNotificationConnector(NotificationConnector.NotificationConnectorType notificationConnectorType)
     {
-        Log($"Removing {notificationManagerType}");
-        notificationConnectors.RemoveWhere(nc => nc.notificationManagerType == notificationManagerType);
+        Log($"Removing {notificationConnectorType}");
+        notificationConnectors.RemoveWhere(nc => nc.notificationConnectorType == notificationConnectorType);
     }
 
     protected void UpdateLibraries()

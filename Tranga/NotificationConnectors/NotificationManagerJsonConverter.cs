@@ -21,10 +21,10 @@ public class NotificationManagerJsonConverter : JsonConverter
         JsonSerializer serializer)
     {
         JObject jo = JObject.Load(reader);
-        if (jo["notificationManagerType"]!.Value<byte>() == (byte)NotificationConnector.NotificationManagerType.Gotify)
+        if (jo["notificationConnectorType"]!.Value<byte>() == (byte)NotificationConnector.NotificationConnectorType.Gotify)
             return new Gotify(this._clone, jo.GetValue("endpoint")!.Value<string>()!, jo.GetValue("appToken")!.Value<string>()!);
-        else if (jo["notificationManagerType"]!.Value<byte>() ==
-                 (byte)NotificationConnector.NotificationManagerType.LunaSea)
+        else if (jo["notificationConnectorType"]!.Value<byte>() ==
+                 (byte)NotificationConnector.NotificationConnectorType.LunaSea)
             return new LunaSea(this._clone, jo.GetValue("id")!.Value<string>()!);
 
         throw new Exception();

@@ -173,7 +173,7 @@ public class Server : GlobalBase
                 break;
             case "NotificationConnectors/Types":
                 SendResponse(HttpStatusCode.OK, response,
-                    Enum.GetValues<NotificationConnector.NotificationManagerType>().Select(nc => new KeyValuePair<byte, string?>((byte)nc, Enum.GetName(nc))));
+                    Enum.GetValues<NotificationConnector.NotificationConnectorType>().Select(nc => new KeyValuePair<byte, string?>((byte)nc, Enum.GetName(nc))));
                 break;
             case "LibraryConnectors":
                 SendResponse(HttpStatusCode.OK, response, libraryConnectors);
@@ -259,13 +259,13 @@ public class Server : GlobalBase
                 break;*/
             case "NotificationConnectors/Update":
                 if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationManagerType notificationManagerType))
+                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationConnectorType notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
 
-                if (notificationManagerType is NotificationConnector.NotificationManagerType.Gotify)
+                if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
                 {
                     if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
                         !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
@@ -278,7 +278,7 @@ public class Server : GlobalBase
                     break;
                 }
 
-                if (notificationManagerType is NotificationConnector.NotificationManagerType.LunaSea)
+                if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
                 {
                     if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
                     {
@@ -290,16 +290,16 @@ public class Server : GlobalBase
                     break;
                 }
                 break;
-            case "LibraryManagers/Update":
-                if (!requestVariables.TryGetValue("libraryManager", out string? libraryManagerStr) ||
-                    !Enum.TryParse(libraryManagerStr,
-                        out LibraryConnector.LibraryType libraryManagerType))
+            case "LibraryConnectors/Update":
+                if (!requestVariables.TryGetValue("libraryConnector", out string? libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr,
+                        out LibraryConnector.LibraryType libraryConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
 
-                if (libraryManagerType is LibraryConnector.LibraryType.Kavita)
+                if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
                 {
                     if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
                         !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
@@ -313,7 +313,7 @@ public class Server : GlobalBase
                     break;
                 }
 
-                if (libraryManagerType is LibraryConnector.LibraryType.Komga)
+                if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
                 {
                     if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
                         !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
@@ -394,23 +394,23 @@ public class Server : GlobalBase
                 break;
             case "NotificationConnectors":
                 if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationManagerType notificationManagerType))
+                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationConnectorType notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                DeleteNotificationConnector(notificationManagerType);
+                DeleteNotificationConnector(notificationConnectorType);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
-            case "LibraryManagers":
-                if (!requestVariables.TryGetValue("libraryManager", out string? libraryManagerStr) ||
-                    !Enum.TryParse(libraryManagerStr,
-                        out LibraryConnector.LibraryType libraryManagerType))
+            case "LibraryConnectors":
+                if (!requestVariables.TryGetValue("libraryConnectors", out string? libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr,
+                        out LibraryConnector.LibraryType libraryConnectoryType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                DeleteLibraryConnector(libraryManagerType);
+                DeleteLibraryConnector(libraryConnectoryType);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             default:

@@ -2,14 +2,14 @@
 
 public abstract class NotificationConnector : GlobalBase
 {
-    public readonly NotificationManagerType notificationManagerType;
+    public readonly NotificationConnectorType notificationConnectorType;
 
-    protected NotificationConnector(GlobalBase clone, NotificationManagerType notificationManagerType) : base(clone)
+    protected NotificationConnector(GlobalBase clone, NotificationConnectorType notificationConnectorType) : base(clone)
     {
-        this.notificationManagerType = notificationManagerType;
+        this.notificationConnectorType = notificationConnectorType;
     }
     
-    public enum NotificationManagerType : byte { Gotify = 0, LunaSea = 1 }
+    public enum NotificationConnectorType : byte { Gotify = 0, LunaSea = 1 }
     
     public abstract void SendNotification(string title, string notificationText);
 }

@@ -11,7 +11,7 @@ public class Gotify : NotificationConnector
     private readonly HttpClient _client = new();
     
     [JsonConstructor]
-    public Gotify(GlobalBase clone, string endpoint, string appToken) : base(clone, NotificationManagerType.Gotify)
+    public Gotify(GlobalBase clone, string endpoint, string appToken) : base(clone, NotificationConnectorType.Gotify)
     {
         this.endpoint = endpoint;
         this.appToken = appToken;

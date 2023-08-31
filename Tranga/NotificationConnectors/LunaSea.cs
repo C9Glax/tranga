@@ -10,7 +10,7 @@ public class LunaSea : NotificationConnector
     private readonly HttpClient _client = new();
     
     [JsonConstructor]
-    public LunaSea(GlobalBase clone, string id) : base(clone, NotificationManagerType.LunaSea)
+    public LunaSea(GlobalBase clone, string id) : base(clone, NotificationConnectorType.LunaSea)
     {
         this.id = id;
     }
