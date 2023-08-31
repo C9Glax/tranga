@@ -225,6 +225,16 @@ public class Server : GlobalBase
                 _parent._jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, false));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
+            case "Jobs/StartNow":
+                if (!requestVariables.TryGetValue("jobId", out string? jobId) ||
+                    !_parent._jobBoss.TryGetJobById(jobId, out Job? job))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                _parent._jobBoss.AddJobToQueue(job!);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "Settings/UpdateDownloadLocation":
                 if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
                     !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
@@ -329,6 +339,16 @@ public class Server : GlobalBase
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
+            case "Jobs":
+                if (!requestVariables.TryGetValue("jobID", out string? jobId) ||
+                    !_parent._jobBoss.TryGetJobById(jobId, out Job? job))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                _parent._jobBoss.RemoveJob(job!);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "Jobs/DownloadChapter":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||

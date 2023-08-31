@@ -63,13 +63,32 @@ public class JobBoss : GlobalBase
         return GetJobsLike(mangaConnector?.name, publication?.internalId, chapter?.chapterNumber);
     }
 
+    public Job? GetJobById(string jobId)
+    {
+        if (this.jobs.FirstOrDefault(jjob => jjob.id == jobId) is { } job)
+            return job;
+        return null;
+    }
+
+    public bool TryGetJobById(string jobId, out Job? job)
+    {
+        if (this.jobs.FirstOrDefault(jjob => jjob.id == jobId) is { } ret)
+        {
+            job = ret;
+            return true;
+        }
+
+        job = null;
+        return false;
+    }
+
     private bool QueueContainsJob(Job job)
     {
         mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>());
         return mangaConnectorJobQueue[job.mangaConnector].Contains(job);
     }
 
-    private void AddJobToQueue(Job job)
+    public void AddJobToQueue(Job job)
     {
         Log($"Adding Job to Queue. {job}");
         mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>());
