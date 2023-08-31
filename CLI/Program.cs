@@ -41,9 +41,10 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         List<Logger.LoggerType> enabledLoggers = new();
-        if(settings.fileLogger.HasValue && settings.fileLogger.Value == true)
+        if(settings.fileLogger is true)
             enabledLoggers.Add(Logger.LoggerType.FileLogger);
-        string? logFilePath = settings.fileLoggerPath ?? "";//TODO path
+        
+        string? logFilePath = settings.fileLoggerPath ?? "";
         Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, logFilePath);
 
         TrangaSettings trangaSettings = new (settings.downloadLocation, settings.workingDirectory, settings.apiPort);
