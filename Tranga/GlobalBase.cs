@@ -11,7 +11,7 @@ public abstract class GlobalBase
     protected TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
-    protected List<Publication> cachedPublications { get; init; }
+    protected List<Manga> cachedPublications { get; init; }
 
     protected GlobalBase(GlobalBase clone)
     {

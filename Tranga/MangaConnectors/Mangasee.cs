@@ -69,22 +69,22 @@ public class Mangasee : MangaConnector
         });
     }
 
-    public override Publication[] GetPublications(string publicationTitle = "")
+    public override Manga[] GetPublications(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string requestUrl = $"https://mangasee123.com/_search.php";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return Array.Empty<Publication>();
+            return Array.Empty<Manga>();
 
-        Publication[] publications = ParsePublicationsFromHtml(requestResult.result, publicationTitle);
+        Manga[] publications = ParsePublicationsFromHtml(requestResult.result, publicationTitle);
         cachedPublications.AddRange(publications);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
 
-    private Publication[] ParsePublicationsFromHtml(Stream html, string publicationTitle)
+    private Manga[] ParsePublicationsFromHtml(Stream html, string publicationTitle)
     {
         string jsonString = new StreamReader(html).ReadToEnd();
         List<SearchResultItem> result = JsonConvert.DeserializeObject<List<SearchResultItem>>(jsonString)!;
@@ -101,7 +101,7 @@ public class Mangasee : MangaConnector
         
         Log($"Retrieved {queryFiltered.Count} publications.");
 
-        HashSet<Publication> ret = new();
+        HashSet<Manga> ret = new();
         List<SearchResultItem> orderedFiltered =
             queryFiltered.OrderBy(item => item.Value).ToDictionary(item => item.Key, item => item.Value).Keys.ToList();
 
@@ -120,7 +120,7 @@ public class Mangasee : MangaConnector
     }
 
     
-    private Publication ParseSinglePublicationFromHtml(Stream html, string sortName, string publicationId, string[] a)
+    private Manga ParseSinglePublicationFromHtml(Stream html, string sortName, string publicationId, string[] a)
     {
         StreamReader reader = new (html);
         HtmlDocument document = new ();
@@ -170,7 +170,7 @@ public class Mangasee : MangaConnector
         foreach(string at in a)
             altTitles.Add((i++).ToString(), at);
         
-        return new Publication(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, links,
+        return new Manga(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, links,
             year, originalLanguage, status, publicationId);
     }
     
@@ -214,10 +214,10 @@ public class Mangasee : MangaConnector
         }
     }
 
-    public override Chapter[] GetChapters(Publication publication, string language="en")
+    public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {publication}");
-        XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{publication.publicationId}.xml");
+        Log($"Getting chapters {manga}");
+        XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.publicationId}.xml");
         XElement[] chapterItems = doc.Descendants("item").ToArray();
         List<Chapter> chapters = new();
         foreach (XElement chapter in chapterItems)
@@ -228,7 +228,7 @@ public class Mangasee : MangaConnector
 
             string url = chapter.Descendants("link").First().Value;
             url = url.Replace(Regex.Matches(url,"(-page-[0-9])")[0].ToString(),"");
-            chapters.Add(new Chapter(publication, "", volumeNumber, chapterNumber, url));
+            chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, url));
         }
 
         //Return Chapters ordered by Chapter-Number
@@ -236,7 +236,7 @@ public class Mangasee : MangaConnector
         {
             NumberDecimalSeparator = "."
         };
-        Log($"Got {chapters.Count} chapters. {publication}");
+        Log($"Got {chapters.Count} chapters. {manga}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
@@ -244,7 +244,7 @@ public class Mangasee : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        Publication chapterParentPublication = chapter.parentPublication;
+        Manga chapterParentManga = chapter.parentManga;
         while (this._browser is null && !(progressToken?.cancellationRequested??false))
         {
             Log("Waiting for headless browser to download...");
@@ -253,7 +253,7 @@ public class Mangasee : MangaConnector
         if (progressToken?.cancellationRequested??false)
             return HttpStatusCode.RequestTimeout;
         
-        Log($"Retrieving chapter-info {chapter} {chapterParentPublication}");
+        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         IPage page = _browser!.NewPageAsync().Result;
         IResponse response = page.GoToAsync(chapter.url).Result;
         if (response.Ok)
@@ -270,8 +270,8 @@ public class Mangasee : MangaConnector
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-            if (chapterParentPublication.coverUrl is not null)
-                chapterParentPublication.coverFileNameInCache = SaveCoverImageToCache(chapterParentPublication.coverUrl, 1);
+            if (chapterParentManga.coverUrl is not null)
+                chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, 1);
             
             return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
         }

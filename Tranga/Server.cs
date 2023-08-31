@@ -113,7 +113,7 @@ public class Server : GlobalBase
             case "Connectors":
                 SendResponse(HttpStatusCode.OK, response, _parent.GetConnectors().Select(con => con.name).ToArray());
                 break;
-            case "Publications/FromConnector":
+            case "Manga/FromConnector":
                 if (!requestVariables.TryGetValue("connector", out connectorName) ||
                     !requestVariables.TryGetValue("title", out string? title) ||
                     _parent.GetConnector(connectorName) is null)
@@ -124,7 +124,7 @@ public class Server : GlobalBase
                 connector = _parent.GetConnector(connectorName)!;
                 SendResponse(HttpStatusCode.OK, response, connector.GetPublications(title));
                 break;
-            case "Publications/Chapters":
+            case "Manga/Chapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out string? internalId) ||
                    _parent.GetConnector(connectorName) is null ||
@@ -134,10 +134,10 @@ public class Server : GlobalBase
                     break;
                 }
                 connector = _parent.GetConnector(connectorName)!;
-                Publication publication = (Publication)_parent.GetPublicationById(internalId)!;
-                SendResponse(HttpStatusCode.OK, response, connector.GetChapters(publication));
+                Manga manga = (Manga)_parent.GetPublicationById(internalId)!;
+                SendResponse(HttpStatusCode.OK, response, connector.GetChapters(manga));
                 break;
-            case "Tasks":
+            case "Jobs":
                 if (!requestVariables.TryGetValue("jobId", out jobId))
                 {
                     if(!_parent._jobBoss.jobs.Any(jjob => jjob.id == jobId))
@@ -148,7 +148,7 @@ public class Server : GlobalBase
                 }
                 SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs);
                 break;
-            case "Tasks/Progress":
+            case "Jobs/Progress":
                 if (!requestVariables.TryGetValue("jobId", out jobId))
                 {
                     if(!_parent._jobBoss.jobs.Any(jjob => jjob.id == jobId))
@@ -159,10 +159,10 @@ public class Server : GlobalBase
                 }
                 SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Select(jjob => jjob.progressToken));
                 break;
-            case "Tasks/Running":
+            case "Jobs/Running":
                 SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Running));
                 break;
-            case "Tasks/Waiting":
+            case "Jobs/Waiting":
                 SendResponse(HttpStatusCode.OK, response, _parent._jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Standby));
                 break;
             case "Settings":
@@ -191,11 +191,11 @@ public class Server : GlobalBase
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
         string? connectorName, internalId;
         MangaConnector connector;
-        Publication publication;
+        Manga manga;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
-            case "Tasks/MonitorManga":
+            case "Jobs/MonitorManga":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
                    !requestVariables.TryGetValue("interval", out string? intervalStr) ||
@@ -207,11 +207,11 @@ public class Server : GlobalBase
                     break;
                 }
                 connector = _parent.GetConnector(connectorName)!;
-                publication = (Publication)_parent.GetPublicationById(internalId)!;
-                _parent._jobBoss.AddJob(new DownloadNewChapters(this, connector, publication, true, interval));
+                manga = (Manga)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, true, interval));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
-            case "Tasks/DownloadNewChapters":
+            case "Jobs/DownloadNewChapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
                    _parent.GetConnector(connectorName) is null ||
@@ -221,8 +221,8 @@ public class Server : GlobalBase
                     break;
                 }
                 connector = _parent.GetConnector(connectorName)!;
-                publication = (Publication)_parent.GetPublicationById(internalId)!;
-                _parent._jobBoss.AddJob(new DownloadNewChapters(this, connector, publication, false));
+                manga = (Manga)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, false));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/UpdateDownloadLocation":
@@ -325,11 +325,11 @@ public class Server : GlobalBase
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
         string? connectorName, internalId;
         MangaConnector connector;
-        Publication publication;
+        Manga manga;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
-            case "Tasks/DownloadChapter":
+            case "Jobs/DownloadChapter":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
                    !requestVariables.TryGetValue("chapterNumber", out string? chapterNumber) ||
@@ -342,7 +342,7 @@ public class Server : GlobalBase
                 _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connectorName, internalId, chapterNumber));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
-            case "Tasks/MonitorManga":
+            case "Jobs/MonitorManga":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
                    _parent.GetConnector(connectorName) is null ||
@@ -352,11 +352,11 @@ public class Server : GlobalBase
                     break;
                 }
                 connector = _parent.GetConnector(connectorName)!;
-                publication = (Publication)_parent.GetPublicationById(internalId)!;
-                _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connector, publication));
+                manga = (Manga)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connector, manga));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
-            case "Tasks/DownloadNewChapters":
+            case "Jobs/DownloadNewChapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
                    _parent.GetConnector(connectorName) is null ||
@@ -366,8 +366,8 @@ public class Server : GlobalBase
                     break;
                 }
                 connector = _parent.GetConnector(connectorName)!;
-                publication = (Publication)_parent.GetPublicationById(internalId)!;
-                _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connector, publication));
+                manga = (Manga)_parent.GetPublicationById(internalId)!;
+                _parent._jobBoss.RemoveJobs(_parent._jobBoss.GetJobsLike(connector, manga));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "NotificationConnectors":

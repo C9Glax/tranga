@@ -19,7 +19,7 @@ public class MangaKatana : MangaConnector
 		});
 	}
 
-	public override Publication[] GetPublications(string publicationTitle = "")
+	public override Manga[] GetPublications(string publicationTitle = "")
 	{
 		Log($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
@@ -27,7 +27,7 @@ public class MangaKatana : MangaConnector
 		DownloadClient.RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-			return Array.Empty<Publication>();
+			return Array.Empty<Manga>();
 
 		// ReSharper disable once MergeIntoPattern
 		// If a single result is found, the user will be redirected to the results directly instead of a result page
@@ -38,13 +38,13 @@ public class MangaKatana : MangaConnector
 			return new [] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.redirectedToUrl.Split('/')[^1]) };
 		}
 
-		Publication[] publications = ParsePublicationsFromHtml(requestResult.result);
+		Manga[] publications = ParsePublicationsFromHtml(requestResult.result);
 		cachedPublications.AddRange(publications);
 		Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
 		return publications;
 	}
 
-	private Publication[] ParsePublicationsFromHtml(Stream html)
+	private Manga[] ParsePublicationsFromHtml(Stream html)
 	{
 		StreamReader reader = new(html);
 		string htmlString = reader.ReadToEnd();
@@ -52,7 +52,7 @@ public class MangaKatana : MangaConnector
 		document.LoadHtml(htmlString);
 		IEnumerable<HtmlNode> searchResults = document.DocumentNode.SelectNodes("//*[@id='book_list']/div");
 		if (searchResults is null || !searchResults.Any())
-			return Array.Empty<Publication>();
+			return Array.Empty<Manga>();
 		List<string> urls = new();
 		foreach (HtmlNode mangaResult in searchResults)
 		{
@@ -60,13 +60,13 @@ public class MangaKatana : MangaConnector
 				.First(a => a.Name == "href").Value);
 		}
 
-		HashSet<Publication> ret = new();
+		HashSet<Manga> ret = new();
 		foreach (string url in urls)
 		{
 			DownloadClient.RequestResult requestResult =
 				downloadClient.MakeRequest(url, 1);
 			if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-				return Array.Empty<Publication>();
+				return Array.Empty<Manga>();
 
 			ret.Add(ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]));
 		}
@@ -74,7 +74,7 @@ public class MangaKatana : MangaConnector
 		return ret.ToArray();
 	}
 
-	private Publication ParseSinglePublicationFromHtml(Stream html, string publicationId)
+	private Manga ParseSinglePublicationFromHtml(Stream html, string publicationId)
 	{
 		StreamReader reader = new(html);
 		string htmlString = reader.ReadToEnd();
@@ -132,14 +132,14 @@ public class MangaKatana : MangaConnector
 			year = Convert.ToInt32(yearString);
 		}
 
-		return new Publication(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, links,
+		return new Manga(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, links,
 			year, originalLanguage, status, publicationId);
 	}
 
-	public override Chapter[] GetChapters(Publication publication, string language="en")
+	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
-		Log($"Getting chapters {publication}");
-		string requestUrl = $"https://mangakatana.com/manga/{publication.publicationId}";
+		Log($"Getting chapters {manga}");
+		string requestUrl = $"https://mangakatana.com/manga/{manga.publicationId}";
 		// Leaving this in for verification if the page exists
 		DownloadClient.RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
@@ -151,12 +151,12 @@ public class MangaKatana : MangaConnector
 		{
 			NumberDecimalSeparator = "."
 		};
-		List<Chapter> chapters = ParseChaptersFromHtml(publication, requestUrl);
-		Log($"Got {chapters.Count} chapters. {publication}");
+		List<Chapter> chapters = ParseChaptersFromHtml(manga, requestUrl);
+		Log($"Got {chapters.Count} chapters. {manga}");
 		return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
 	}
 
-	private List<Chapter> ParseChaptersFromHtml(Publication publication, string mangaUrl)
+	private List<Chapter> ParseChaptersFromHtml(Manga manga, string mangaUrl)
 	{
 		// Using HtmlWeb will include the chapters since they are loaded with js 
 		HtmlWeb web = new();
@@ -175,7 +175,7 @@ public class MangaKatana : MangaConnector
 			string chapterName = string.Concat(fullString.Split(':')[1..]);
 			string url = chapterInfo.Descendants("a").First()
 				.GetAttributeValue("href", "");
-			ret.Add(new Chapter(publication, chapterName, volumeNumber, chapterNumber, url));
+			ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
 		}
 		
 		return ret;
@@ -185,8 +185,8 @@ public class MangaKatana : MangaConnector
 	{
 		if (progressToken?.cancellationRequested ?? false)
 			return HttpStatusCode.RequestTimeout;
-		Publication chapterParentPublication = chapter.parentPublication;
-		Log($"Retrieving chapter-info {chapter} {chapterParentPublication}");
+		Manga chapterParentManga = chapter.parentManga;
+		Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		DownloadClient.RequestResult requestResult =
@@ -199,8 +199,8 @@ public class MangaKatana : MangaConnector
 		string comicInfoPath = Path.GetTempFileName();
 		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		if (chapterParentPublication.coverUrl is not null)
-			chapterParentPublication.coverFileNameInCache = SaveCoverImageToCache(chapterParentPublication.coverUrl, 1);
+		if (chapterParentManga.coverUrl is not null)
+			chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, 1);
 		
 		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
 	}

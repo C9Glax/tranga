@@ -31,13 +31,13 @@ public class MangaDex : MangaConnector
         });
     }
 
-    public override Publication[] GetPublications(string publicationTitle = "")
+    public override Manga[] GetPublications(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
-        HashSet<Publication> publications = new();
+        HashSet<Manga> publications = new();
         int loadedPublicationData = 0;
         while (offset < total) //As long as we haven't requested all "Pages"
         {
@@ -125,7 +125,7 @@ public class MangaDex : MangaConnector
                 
                 string status = attributes["status"]!.GetValue<string>();
 
-                Publication pub = new (
+                Manga pub = new (
                     title,
                     authors,
                     description,
@@ -147,9 +147,9 @@ public class MangaDex : MangaConnector
         return publications.ToArray();
     }
 
-    public override Chapter[] GetChapters(Publication publication, string language="en")
+    public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {publication}");
+        Log($"Getting chapters {manga}");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -160,7 +160,7 @@ public class MangaDex : MangaConnector
             //Request next "Page"
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga/{publication.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}", (byte)RequestType.Feed);
+                    $"https://api.mangadex.org/manga/{manga.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}", (byte)RequestType.Feed);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -191,13 +191,13 @@ public class MangaDex : MangaConnector
                     : "null";
                 
                 if(chapterNum is not "null")
-                    chapters.Add(new Chapter(publication, title, volume, chapterNum, chapterId));
+                    chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId));
             }
         }
 
         //Return Chapters ordered by Chapter-Number
         NumberFormatInfo chapterNumberFormatInfo = new() { NumberDecimalSeparator = "." };
-        Log($"Got {chapters.Count} chapters. {publication}");
+        Log($"Got {chapters.Count} chapters. {manga}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
@@ -205,8 +205,8 @@ public class MangaDex : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        Publication chapterParentPublication = chapter.parentPublication;
-        Log($"Retrieving chapter-info {chapter} {chapterParentPublication}");
+        Manga chapterParentManga = chapter.parentManga;
+        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
@@ -227,8 +227,8 @@ public class MangaDex : MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        if (chapterParentPublication.coverUrl is not null)
-            chapterParentPublication.coverFileNameInCache = SaveCoverImageToCache(chapterParentPublication.coverUrl, (byte)RequestType.AtHomeServer);
+        if (chapterParentManga.coverUrl is not null)
+            chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, (byte)RequestType.AtHomeServer);
         //Download Chapter-Images
         return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, comicInfoPath, progressToken:progressToken);
     }

@@ -29,40 +29,40 @@ public abstract class MangaConnector : GlobalBase
     /// </summary>
     /// <param name="publicationTitle">Search-Query</param>
     /// <returns>Publications matching the query</returns>
-    public abstract Publication[] GetPublications(string publicationTitle = "");
+    public abstract Manga[] GetPublications(string publicationTitle = "");
     
     /// <summary>
     /// Returns all Chapters of the publication in the provided language.
     /// If the language is empty or null, returns all Chapters in all Languages.
     /// </summary>
-    /// <param name="publication">Publication to get Chapters for</param>
+    /// <param name="manga">Publication to get Chapters for</param>
     /// <param name="language">Language of the Chapters</param>
     /// <returns>Array of Chapters matching Publication and Language</returns>
-    public abstract Chapter[] GetChapters(Publication publication, string language="en");
+    public abstract Chapter[] GetChapters(Manga manga, string language="en");
 
     /// <summary>
     /// Updates the available Chapters of a Publication
     /// </summary>
-    /// <param name="publication">Publication to check</param>
+    /// <param name="manga">Publication to check</param>
     /// <param name="language">Language to receive chapters for</param>
     /// <returns>List of Chapters that were previously not in collection</returns>
-    public Chapter[] GetNewChapters(Publication publication, string language = "en")
+    public Chapter[] GetNewChapters(Manga manga, string language = "en")
     {
-        Log($"Getting new Chapters for {publication}");
-        Chapter[] newChapters = this.GetChapters(publication, language);
+        Log($"Getting new Chapters for {manga}");
+        Chapter[] newChapters = this.GetChapters(manga, language);
         NumberFormatInfo decimalPoint = new (){ NumberDecimalSeparator = "." };
-        Log($"Checking for duplicates {publication}");
+        Log($"Checking for duplicates {manga}");
         List<Chapter> newChaptersList = newChapters.Where(nChapter =>
-            float.Parse(nChapter.chapterNumber, decimalPoint) > publication.ignoreChaptersBelow &&
+            float.Parse(nChapter.chapterNumber, decimalPoint) > manga.ignoreChaptersBelow &&
             !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
-        Log($"{newChaptersList.Count} new chapters. {publication}");
+        Log($"{newChaptersList.Count} new chapters. {manga}");
         
         return newChaptersList.ToArray();
     }
 
-    public Chapter[] SelectChapters(Publication publication, string searchTerm, string? language = null)
+    public Chapter[] SelectChapters(Manga manga, string searchTerm, string? language = null)
     {
-        Chapter[] availableChapters = this.GetChapters(publication, language??"en");
+        Chapter[] availableChapters = this.GetChapters(manga, language??"en");
         Regex volumeRegex = new ("((v(ol)*(olume)*){1} *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
         Regex chapterRegex = new ("((c(h)*(hapter)*){1} *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
         Regex singleResultRegex = new("([0-9]+)", RegexOptions.IgnoreCase);
@@ -138,20 +138,20 @@ public abstract class MangaConnector : GlobalBase
     /// <summary>
     /// Copies the already downloaded cover from cache to downloadLocation
     /// </summary>
-    /// <param name="publication">Publication to retrieve Cover for</param>
-    public void CopyCoverFromCacheToDownloadLocation(Publication publication)
+    /// <param name="manga">Publication to retrieve Cover for</param>
+    public void CopyCoverFromCacheToDownloadLocation(Manga manga)
     {
-        Log($"Copy cover {publication}");
+        Log($"Copy cover {manga}");
         //Check if Publication already has a Folder and cover
-        string publicationFolder = publication.CreatePublicationFolder(settings.downloadLocation);
+        string publicationFolder = manga.CreatePublicationFolder(settings.downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
-            Log($"Cover exists {publication}");
+            Log($"Cover exists {manga}");
             return;
         }
 
-        string fileInCache = Path.Join(settings.coverImageCache, publication.coverFileNameInCache);
+        string fileInCache = Path.Join(settings.coverImageCache, manga.coverFileNameInCache);
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
         Log($"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);

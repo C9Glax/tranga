@@ -44,7 +44,7 @@ public class JobBoss : GlobalBase
             {
                 if (jjob is not DownloadChapter job)
                     return false;
-                return job.chapter.parentPublication.internalId == internalId &&
+                return job.chapter.parentManga.internalId == internalId &&
                        job.chapter.chapterNumber == chapterNumber;
             });
         else if (internalId is not null)
@@ -52,12 +52,12 @@ public class JobBoss : GlobalBase
             {
                 if (jjob is not DownloadNewChapters job)
                     return false;
-                return job.publication.internalId == internalId;
+                return job.manga.internalId == internalId;
             });
         return ret;
     }
 
-    public IEnumerable<Job> GetJobsLike(MangaConnector? mangaConnector = null, Publication? publication = null,
+    public IEnumerable<Job> GetJobsLike(MangaConnector? mangaConnector = null, Manga? publication = null,
         Chapter? chapter = null)
     {
         return GetJobsLike(mangaConnector?.name, publication?.internalId, chapter?.chapterNumber);

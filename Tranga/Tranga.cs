@@ -39,7 +39,7 @@ public partial class Tranga : GlobalBase
         return connectors;
     }
 
-    public Publication? GetPublicationById(string internalId)
+    public Manga? GetPublicationById(string internalId)
     {
         if (cachedPublications.Exists(publication => publication.internalId == internalId))
             return cachedPublications.First(publication => publication.internalId == internalId);

@@ -14,7 +14,7 @@ public class DownloadChapter : Job
     
     protected override string GetId()
     {
-        return Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.GetType().ToString(), chapter.parentPublication.internalId, chapter.chapterNumber)));
+        return Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.GetType().ToString(), chapter.parentManga.internalId, chapter.chapterNumber)));
     }
 
     public override string ToString()
@@ -28,7 +28,7 @@ public class DownloadChapter : Job
         {
             mangaConnector.DownloadChapter(chapter, this.progressToken);
             UpdateLibraries();
-            SendNotifications("Chapter downloaded", $"{chapter.parentPublication.sortName} - {chapter.chapterNumber}");
+            SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}");
         });
         downloadTask.Start();
         return Array.Empty<Job>();

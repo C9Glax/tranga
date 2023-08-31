@@ -9,7 +9,7 @@ namespace Tranga;
 /// <summary>
 /// Contains information on a Publication (Manga)
 /// </summary>
-public struct Publication
+public struct Manga
 {
     public string sortName { get; }
     public List<string> authors { get; }
@@ -36,7 +36,7 @@ public struct Publication
     private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
     [JsonConstructor]
-    public Publication(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;

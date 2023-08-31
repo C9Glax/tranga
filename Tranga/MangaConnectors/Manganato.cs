@@ -19,7 +19,7 @@ public class Manganato : MangaConnector
         });
     }
 
-    public override Publication[] GetPublications(string publicationTitle = "")
+    public override Manga[] GetPublications(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();
@@ -27,15 +27,15 @@ public class Manganato : MangaConnector
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return Array.Empty<Publication>();
+            return Array.Empty<Manga>();
 
-        Publication[] publications = ParsePublicationsFromHtml(requestResult.result);
+        Manga[] publications = ParsePublicationsFromHtml(requestResult.result);
         cachedPublications.AddRange(publications);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
 
-    private Publication[] ParsePublicationsFromHtml(Stream html)
+    private Manga[] ParsePublicationsFromHtml(Stream html)
     {
         StreamReader reader = new (html);
         string htmlString = reader.ReadToEnd();
@@ -49,13 +49,13 @@ public class Manganato : MangaConnector
                 .First(a => a.Name == "href").Value);
         }
 
-        HashSet<Publication> ret = new();
+        HashSet<Manga> ret = new();
         foreach (string url in urls)
         {
             DownloadClient.RequestResult requestResult =
                 downloadClient.MakeRequest(url, 1);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-                return Array.Empty<Publication>();
+                return Array.Empty<Manga>();
 
             ret.Add(ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]));
         }
@@ -63,7 +63,7 @@ public class Manganato : MangaConnector
         return ret.ToArray();
     }
 
-    private Publication ParseSinglePublicationFromHtml(Stream html, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(Stream html, string publicationId)
     {
         StreamReader reader = new (html);
         string htmlString = reader.ReadToEnd();
@@ -120,14 +120,14 @@ public class Manganato : MangaConnector
             .First(s => s.HasClass("chapter-time")).InnerText;
         int year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
         
-        return new Publication(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, links,
+        return new Manga(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, links,
             year, originalLanguage, status, publicationId);
     }
 
-    public override Chapter[] GetChapters(Publication publication, string language="en")
+    public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {publication}");
-        string requestUrl = $"https://chapmanganato.com/{publication.publicationId}";
+        Log($"Getting chapters {manga}");
+        string requestUrl = $"https://chapmanganato.com/{manga.publicationId}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -138,12 +138,12 @@ public class Manganato : MangaConnector
         {
             NumberDecimalSeparator = "."
         };
-        List<Chapter> chapters = ParseChaptersFromHtml(publication, requestResult.result);
-        Log($"Got {chapters.Count} chapters. {publication}");
+        List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.result);
+        Log($"Got {chapters.Count} chapters. {manga}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
     }
 
-    private List<Chapter> ParseChaptersFromHtml(Publication publication, Stream html)
+    private List<Chapter> ParseChaptersFromHtml(Manga manga, Stream html)
     {
         StreamReader reader = new (html);
         string htmlString = reader.ReadToEnd();
@@ -162,7 +162,7 @@ public class Manganato : MangaConnector
             string chapterName = string.Concat(fullString.Split(':')[1..]);
             string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
                 .GetAttributeValue("href", "");
-            ret.Add(new Chapter(publication, chapterName, volumeNumber, chapterNumber, url));
+            ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
         }
         ret.Reverse();
         return ret;
@@ -172,8 +172,8 @@ public class Manganato : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        Publication chapterParentPublication = chapter.parentPublication;
-        Log($"Retrieving chapter-info {chapter} {chapterParentPublication}");
+        Manga chapterParentManga = chapter.parentManga;
+        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
@@ -185,8 +185,8 @@ public class Manganato : MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        if (chapterParentPublication.coverUrl is not null)
-            chapterParentPublication.coverFileNameInCache = SaveCoverImageToCache(chapterParentPublication.coverUrl, 1);
+        if (chapterParentManga.coverUrl is not null)
+            chapterParentManga.coverFileNameInCache = SaveCoverImageToCache(chapterParentManga.coverUrl, 1);
         
         return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://chapmanganato.com/", progressToken:progressToken);
     }
