@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.NotificationConnectors;
@@ -14,7 +13,6 @@ public class TrangaSettings
     public int apiPortNumber { get; init; }
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
-
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
@@ -38,8 +36,9 @@ public class TrangaSettings
             if (downloadLocation?.Length < 1 || workingDirectory?.Length < 1)
                 throw new ArgumentException("Download-location and working-directory paths can not be empty!");
             this.apiPortNumber = apiPortNumber ?? 6531;
-            this.downloadLocation = downloadLocation ?? Path.Join(Directory.GetCurrentDirectory(), "Downloads");
-            this.workingDirectory = workingDirectory ?? Directory.GetCurrentDirectory();
+            this.downloadLocation = downloadLocation ?? (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
+            this.workingDirectory = workingDirectory ?? Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/lib" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+            ExportSettings();
         }
         else
         {//Settingsfile is locked
@@ -114,7 +113,7 @@ public class TrangaSettings
             {
                 try
                 {
-                    using FileStream stream = new (settingsFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+                    using FileStream stream = new(settingsFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
                     stream.Close();
                     inUse = false;
                 }
@@ -124,6 +123,8 @@ public class TrangaSettings
                 }
             }
         }
+        else
+            Directory.CreateDirectory(new FileInfo(settingsFilePath).DirectoryName!);
         File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
     }
 }
