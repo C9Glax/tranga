@@ -7,28 +7,28 @@ namespace Tranga;
 public partial class Tranga : GlobalBase
 {
     public bool keepRunning;
-    public JobBoss _jobBoss;
-    private Server server;
-    private HashSet<MangaConnector> connectors;
+    public JobBoss jobBoss;
+    private Server _server;
+    private HashSet<MangaConnector> _connectors;
 
     public Tranga(Logger? logger, TrangaSettings settings) : base(logger, settings)
     {
         keepRunning = true;
-        _jobBoss = new(this);
-        connectors = new HashSet<MangaConnector>()
+        _connectors = new HashSet<MangaConnector>()
         {  
             new Manganato(this),
             new Mangasee(this),
             new MangaDex(this),
             new MangaKatana(this)
         };
+        jobBoss = new(this, this._connectors);
         StartJobBoss();
-        this.server = new Server(this);
+        this._server = new Server(this);
     }
 
     public MangaConnector? GetConnector(string name)
     {
-        foreach(MangaConnector mc in connectors)
+        foreach(MangaConnector mc in _connectors)
             if (mc.name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return mc;
         return null;
@@ -42,7 +42,7 @@ public partial class Tranga : GlobalBase
 
     public IEnumerable<MangaConnector> GetConnectors()
     {
-        return connectors;
+        return _connectors;
     }
 
     public Manga? GetPublicationById(string internalId)
@@ -64,7 +64,7 @@ public partial class Tranga : GlobalBase
         {
             while (keepRunning)
             {
-                _jobBoss.CheckJobs();
+                jobBoss.CheckJobs();
                 Thread.Sleep(1000);
             }
         });

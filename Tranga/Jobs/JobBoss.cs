@@ -1,4 +1,5 @@
-﻿using Tranga.MangaConnectors;
+﻿using Newtonsoft.Json;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
@@ -7,9 +8,12 @@ public class JobBoss : GlobalBase
     public HashSet<Job> jobs { get; init; }
     private Dictionary<MangaConnector, Queue<Job>> mangaConnectorJobQueue { get; init; }
 
-    public JobBoss(GlobalBase clone) : base(clone)
+    public JobBoss(GlobalBase clone, HashSet<MangaConnector> connectors) : base(clone)
     {
-        this.jobs = new();
+        if (File.Exists(settings.jobsFilePath))
+            this.jobs = JsonConvert.DeserializeObject<HashSet<Job>>(File.ReadAllText(settings.jobsFilePath), new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
+        else
+            this.jobs = new();
         this.mangaConnectorJobQueue = new();
     }
 
@@ -23,6 +27,7 @@ public class JobBoss : GlobalBase
         {
             Log($"Added {job}");
             this.jobs.Add(job);
+            File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
         }
     }
 

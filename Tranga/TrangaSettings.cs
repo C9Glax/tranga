@@ -14,7 +14,7 @@ public class TrangaSettings
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
-    [JsonIgnore] public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
+    [JsonIgnore] public string jobsFilePath => Path.Join(workingDirectory, "jobs.json");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public ushort? version { get; set; }
 
