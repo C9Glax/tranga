@@ -34,6 +34,12 @@ public partial class Tranga : GlobalBase
         return null;
     }
 
+    public bool TryGetConnector(string name, out MangaConnector? connector)
+    {
+        connector = GetConnector(name);
+        return connector is not null;
+    }
+
     public IEnumerable<MangaConnector> GetConnectors()
     {
         return connectors;
@@ -44,6 +50,12 @@ public partial class Tranga : GlobalBase
         if (cachedPublications.Exists(publication => publication.internalId == internalId))
             return cachedPublications.First(publication => publication.internalId == internalId);
         return null;
+    }
+
+    public bool TryGetPublicationById(string internalId, out Manga? manga)
+    {
+        manga = GetPublicationById(internalId);
+        return manga is not null;
     }
 
     private void StartJobBoss()

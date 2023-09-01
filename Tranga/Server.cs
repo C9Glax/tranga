@@ -105,37 +105,54 @@ public class Server : GlobalBase
     private void HandleGet(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, jobId;
-        MangaConnector connector;
+        string? connectorName, jobId, internalId;
+        MangaConnector? connector;
+        Manga? manga;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
             case "Connectors":
                 SendResponse(HttpStatusCode.OK, response, _parent.GetConnectors().Select(con => con.name).ToArray());
                 break;
+            case "Manga/Cover":
+                if (!requestVariables.TryGetValue("internalId", out internalId) ||
+                    !_parent.TryGetPublicationById(internalId, out manga))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+
+                string filePath = settings.GetFullCoverPath((Manga)manga!);
+                if (File.Exists(filePath))
+                {
+                    FileStream coverStream = new(filePath, FileMode.Open);
+                    SendResponse(HttpStatusCode.OK, response, coverStream);
+                }
+                else
+                {
+                    SendResponse(HttpStatusCode.NotFound, response);
+                }
+                break;
             case "Manga/FromConnector":
                 if (!requestVariables.TryGetValue("connector", out connectorName) ||
                     !requestVariables.TryGetValue("title", out string? title) ||
-                    _parent.GetConnector(connectorName) is null)
+                    !_parent.TryGetConnector(connectorName, out connector))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                connector = _parent.GetConnector(connectorName)!;
-                SendResponse(HttpStatusCode.OK, response, connector.GetPublications(title));
+                SendResponse(HttpStatusCode.OK, response, connector!.GetPublications(title));
                 break;
             case "Manga/Chapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out string? internalId) ||
-                   _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null)
+                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                   !_parent.TryGetConnector(connectorName, out connector) ||
+                   !_parent.TryGetPublicationById(internalId, out manga))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                connector = _parent.GetConnector(connectorName)!;
-                Manga manga = (Manga)_parent.GetPublicationById(internalId)!;
-                SendResponse(HttpStatusCode.OK, response, connector.GetChapters(manga));
+                SendResponse(HttpStatusCode.OK, response, connector!.GetChapters((Manga)manga!));
                 break;
             case "Jobs":
                 if (!requestVariables.TryGetValue("jobId", out jobId))
@@ -430,17 +447,27 @@ public class Server : GlobalBase
         response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
         response.AddHeader("Access-Control-Max-Age", "1728000");
         response.AppendHeader("Access-Control-Allow-Origin", "*");
-        response.ContentType = "application/json";
-        try
+
+        if (content is not FileStream stream)
         {
-            response.OutputStream.Write(content is not null
-                ? Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
-                : Array.Empty<byte>());
-            response.OutputStream.Close();
+            response.ContentType = "application/json";
+            try
+            {
+                response.OutputStream.Write(content is not null
+                    ? Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
+                    : Array.Empty<byte>());
+                response.OutputStream.Close();
+            }
+            catch (HttpListenerException e)
+            {
+                Log(e.ToString());
+            }
         }
-        catch (HttpListenerException e)
+        else
         {
-            Log(e.ToString());
+            stream.CopyTo(response.OutputStream);
+            response.OutputStream.Close();
+            stream.Close();
         }
     }
 }

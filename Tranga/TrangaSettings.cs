@@ -127,4 +127,9 @@ public class TrangaSettings
             Directory.CreateDirectory(new FileInfo(settingsFilePath).DirectoryName!);
         File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
     }
+
+    public string GetFullCoverPath(Manga manga)
+    {
+        return Path.Join(this.coverImageCache, manga.coverFileNameInCache);
+    }
 }
