@@ -15,8 +15,28 @@ public class JobBoss : GlobalBase
 
     public void AddJob(Job job)
     {
-        Log($"Added {job}");
-        this.jobs.Add(job);
+        if (ContainsJobLike(job))
+        {
+            Log($"Already Contains Job {job}");
+        }
+        else
+        {
+            Log($"Added {job}");
+            this.jobs.Add(job);
+        }
+    }
+
+    public bool ContainsJobLike(Job job)
+    {
+        if (job is DownloadChapter dcJob)
+        {
+            return this.GetJobsLike(dcJob.mangaConnector, chapter: dcJob.chapter).Any();
+        }else if (job is DownloadNewChapters ncJob)
+        {
+            return this.GetJobsLike(ncJob.mangaConnector, ncJob.manga).Any();
+        }
+
+        return false;
     }
 
     public void RemoveJob(Job job)
