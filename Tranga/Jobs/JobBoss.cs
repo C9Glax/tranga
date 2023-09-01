@@ -14,6 +14,8 @@ public class JobBoss : GlobalBase
             this.jobs = JsonConvert.DeserializeObject<HashSet<Job>>(File.ReadAllText(settings.jobsFilePath), new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
         else
             this.jobs = new();
+        foreach (DownloadNewChapters ncJob in this.jobs.Where(job => job is DownloadNewChapters))
+            cachedPublications.Add(ncJob.manga);
         this.mangaConnectorJobQueue = new();
     }
 
