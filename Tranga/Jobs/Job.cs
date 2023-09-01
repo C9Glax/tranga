@@ -19,6 +19,8 @@ public abstract class Job : GlobalBase
         this.recurring = recurring;
         if (recurring && recurrenceTime is null)
             throw new ArgumentException("If recurrence is set to true, a recurrence time has to be provided.");
+        else if(recurring && recurrenceTime is not null)
+            this.lastExecution = DateTime.Now.Subtract((TimeSpan)recurrenceTime);
         this.recurrenceTime = recurrenceTime;
     }
 

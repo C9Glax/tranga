@@ -130,13 +130,13 @@ public class JobBoss : GlobalBase
         foreach (Queue<Job> jobQueue in mangaConnectorJobQueue.Values)
         {
             Job queueHead = jobQueue.Peek();
-            if (queueHead.progressToken.state == ProgressToken.State.Complete)
+            if (queueHead.progressToken.state is ProgressToken.State.Complete)
             {
                 if(queueHead.recurring)
                     queueHead.Reset();
                 jobQueue.Dequeue();
+            }else if(queueHead.progressToken.state is ProgressToken.State.Standby)
                 AddJobsToQueue(jobQueue.Peek().ExecuteReturnSubTasks());
-            }
         }
     }
  }
