@@ -45,14 +45,22 @@ public class MemoryLogger : LoggerBase
     public string[] GetNewLines()
     {
         int logMessageCount = _logMessages.Count;
-        string[] ret = new string[logMessageCount - _lastLogMessageIndex];
+        List<string> ret = new();
 
-        for (int retIndex = 0; retIndex < ret.Length; retIndex++)
+        int retIndex = 0;
+        for (; retIndex < logMessageCount - _lastLogMessageIndex; retIndex++)
         {
-            ret[retIndex] = _logMessages.GetValueAtIndex(_lastLogMessageIndex + retIndex).ToString();
+            try
+            {
+                ret.Add(_logMessages.GetValueAtIndex(_lastLogMessageIndex + retIndex).ToString());
+            }
+            catch (NullReferenceException e)//Called when LogMessage has not finished writing
+            {
+                break;
+            }
         }
 
-        _lastLogMessageIndex = logMessageCount;
-        return ret;
+        _lastLogMessageIndex = _lastLogMessageIndex + retIndex;
+        return ret.ToArray();
     }
 }
