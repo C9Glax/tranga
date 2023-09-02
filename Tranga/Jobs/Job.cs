@@ -12,8 +12,9 @@ public abstract class Job : GlobalBase
     public DateTime nextExecution => NextExecution();
     public string id => GetId();
     internal IEnumerable<Job>? subJobs { get; private set; }
+    public string? parentJobId { get; init; }
 
-    internal Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
+    internal Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
     {
         this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
@@ -22,11 +23,12 @@ public abstract class Job : GlobalBase
             throw new ArgumentException("If recurrence is set to true, a recurrence time has to be provided.");
         else if(recurring && recurrenceTime is not null)
             this.lastExecution = DateTime.Now.Subtract((TimeSpan)recurrenceTime);
-        this.recurrenceTime = recurrenceTime;
+        this.recurrenceTime = recurrenceTime ?? TimeSpan.Zero;
+        this.parentJobId = parentJobId;
     }
 
     internal Job(GlobalBase clone, MangaConnector connector, DateTime lastExecution, bool recurring = false,
-        TimeSpan? recurrenceTime = null) : base(clone)
+        TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
     {
         this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
@@ -34,37 +36,23 @@ public abstract class Job : GlobalBase
         if (recurring && recurrenceTime is null)
             throw new ArgumentException("If recurrence is set to true, a recurrence time has to be provided.");
         this.lastExecution = lastExecution;
-        this.recurrenceTime = recurrenceTime;
-        
+        this.recurrenceTime = recurrenceTime ?? TimeSpan.Zero;
+        this.parentJobId = parentJobId;
     }
 
     protected abstract string GetId();
 
-    public Job(GlobalBase clone, MangaConnector connector, ProgressToken progressToken, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
+    public void AddSubJob(Job job)
     {
-        this.mangaConnector = connector;
-        this.progressToken = progressToken;
-        this.recurring = recurring;
-        if (recurring && recurrenceTime is null)
-            throw new ArgumentException("If recurrence is set to true, a recurrence time has to be provided.");
-        this.recurrenceTime = recurrenceTime;
-    }
-
-    public Job(GlobalBase clone, MangaConnector connector, int taskIncrements, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
-    {
-        this.mangaConnector = connector;
-        this.progressToken = new ProgressToken(taskIncrements);
-        this.recurring = recurring;
-        if (recurring && recurrenceTime is null)
-            throw new ArgumentException("If recurrence is set to true, a recurrence time has to be provided.");
-        this.recurrenceTime = recurrenceTime;
+        subJobs ??= new List<Job>();
+        subJobs = subJobs.Append(job);
     }
 
     private DateTime NextExecution()
     {
-        if(recurring && recurrenceTime.HasValue && lastExecution.HasValue)
+        if(recurrenceTime.HasValue && lastExecution.HasValue)
             return lastExecution.Value.Add(recurrenceTime.Value);
-        if(recurring && recurrenceTime.HasValue && !lastExecution.HasValue)
+        if(recurrenceTime.HasValue && !lastExecution.HasValue)
             return DateTime.Now;
         return DateTime.MaxValue;
     }

@@ -36,7 +36,8 @@ public class JobJsonConverter : JsonConverter
                 jo.GetValue("manga")!.ToObject<Manga>(),
                 jo.GetValue("lastExecution")!.ToObject<DateTime>(),
                 jo.GetValue("recurring")!.Value<bool>(),
-                jo.GetValue("recurrenceTime")!.ToObject<TimeSpan?>());
+                jo.GetValue("recurrenceTime")!.ToObject<TimeSpan?>(),
+                jo.GetValue("parentJobId")!.Value<string?>());
         }
 
         if (jo.ContainsKey("chapter"))//DownloadChapter
@@ -49,7 +50,9 @@ public class JobJsonConverter : JsonConverter
                         this._mangaConnectorJsonConverter
                     }
                 }))!,
-                jo.GetValue("chapter")!.ToObject<Chapter>());
+                jo.GetValue("chapter")!.ToObject<Chapter>(),
+                DateTime.UnixEpoch,
+                jo.GetValue("parentJobId")!.Value<string?>());
         }
 
         throw new Exception();

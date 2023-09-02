@@ -11,7 +11,11 @@ public class JobBoss : GlobalBase
     public JobBoss(GlobalBase clone, HashSet<MangaConnector> connectors) : base(clone)
     {
         if (File.Exists(settings.jobsFilePath))
+        {
             this.jobs = JsonConvert.DeserializeObject<HashSet<Job>>(File.ReadAllText(settings.jobsFilePath), new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
+            foreach (Job job in this.jobs)
+                this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+        }
         else
             this.jobs = new();
         foreach (DownloadNewChapters ncJob in this.jobs.Where(job => job is DownloadNewChapters))
