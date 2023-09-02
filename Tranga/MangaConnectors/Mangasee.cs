@@ -79,7 +79,6 @@ public class Mangasee : MangaConnector
             return Array.Empty<Manga>();
 
         Manga[] publications = ParsePublicationsFromHtml(requestResult.result, publicationTitle);
-        cachedPublications.AddRange(publications);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
@@ -148,8 +147,8 @@ public class Mangasee : MangaConnector
         string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
-        string title = titleNode.InnerText;
-        string publicationId = title;
+        string sortName = titleNode.InnerText;
+        string publicationId = sortName;
 
         HtmlNode[] authorsNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Author(s):']/..").Descendants("a").ToArray();
         List<string> authors = new();
@@ -171,8 +170,10 @@ public class Mangasee : MangaConnector
         HtmlNode descriptionNode = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Description:']/..").Descendants("div").First();
         string description = descriptionNode.InnerText;
         
-        return new Manga(title, authors, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+        Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
+        cachedPublications.Add(manga);
+        return manga;
     }
     
     // ReSharper disable once ClassNeverInstantiated.Local Will be instantiated during deserialization

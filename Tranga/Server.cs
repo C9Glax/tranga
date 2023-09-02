@@ -134,14 +134,25 @@ public class Server : GlobalBase
                 }
                 break;
             case "Manga/FromConnector":
+                requestVariables.TryGetValue("title", out string? title);
+                requestVariables.TryGetValue("url", out string? url);
                 if (!requestVariables.TryGetValue("connector", out connectorName) ||
-                    !requestVariables.TryGetValue("title", out string? title) ||
-                    !_parent.TryGetConnector(connectorName, out connector))
+                    !_parent.TryGetConnector(connectorName, out connector) ||
+                    (title is null && url is null))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                SendResponse(HttpStatusCode.OK, response, connector!.GetManga(title));
+
+                if (url is not null)
+                {
+                    HashSet<Manga> ret = new();
+                    manga = connector!.GetMangaFromUrl(url);
+                    if (manga is not null)
+                        ret.Add((Manga)manga);
+                    SendResponse(HttpStatusCode.OK, response, ret);
+                }else
+                    SendResponse(HttpStatusCode.OK, response, connector!.GetManga(title!));
                 break;
             case "Manga/Chapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||

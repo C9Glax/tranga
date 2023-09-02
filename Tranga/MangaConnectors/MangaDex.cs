@@ -65,8 +65,6 @@ public class MangaDex : MangaConnector
                 retManga.Add(manga); //Add Publication (Manga) to result
             }
         }
-
-        cachedPublications.AddRange(retManga);
         Log($"Retrieved {retManga.Count} publications. Term=\"{publicationTitle}\"");
         return retManga.ToArray();
     }
@@ -170,6 +168,7 @@ public class MangaDex : MangaConnector
             status,
             publicationId
         );
+        cachedPublications.Add(pub);
         return pub;
     }
 

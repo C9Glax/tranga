@@ -30,7 +30,6 @@ public class Manganato : MangaConnector
             return Array.Empty<Manga>();
 
         Manga[] publications = ParsePublicationsFromHtml(requestResult.result);
-        cachedPublications.AddRange(publications);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
@@ -129,8 +128,10 @@ public class Manganato : MangaConnector
             .First(s => s.HasClass("chapter-time")).InnerText;
         int year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
         
-        return new Manga(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+        Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
+        cachedPublications.Add(manga);
+        return manga;
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
