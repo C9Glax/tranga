@@ -45,7 +45,7 @@ public class Server : GlobalBase
             try
             {
                 HttpListenerContext context = this._listener.GetContext();
-                Log($"{context.Request.HttpMethod} {context.Request.Url} {context.Request.UserAgent}");
+                //Log($"{context.Request.HttpMethod} {context.Request.Url} {context.Request.UserAgent}");
                 Task t = new(() =>
                 {
                     HandleRequest(context);
@@ -441,7 +441,7 @@ public class Server : GlobalBase
 
     private void SendResponse(HttpStatusCode statusCode, HttpListenerResponse response, object? content = null)
     {
-        Log($"Response: {statusCode} {content}");
+        //Log($"Response: {statusCode} {content}");
         response.StatusCode = (int)statusCode;
         response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
         response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");

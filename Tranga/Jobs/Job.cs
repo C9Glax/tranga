@@ -62,6 +62,7 @@ public abstract class Job : GlobalBase
 
     public void Cancel()
     {
+        Log($"Cancelling {this}");
         this.progressToken.cancellationRequested = true;
         this.progressToken.Complete();
     }
