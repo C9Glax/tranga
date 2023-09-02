@@ -13,7 +13,7 @@ public abstract class Job : GlobalBase
     public string id => GetId();
     internal IEnumerable<Job>? subJobs { get; private set; }
 
-    public Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
+    internal Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
     {
         this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
@@ -23,6 +23,19 @@ public abstract class Job : GlobalBase
         else if(recurring && recurrenceTime is not null)
             this.lastExecution = DateTime.Now.Subtract((TimeSpan)recurrenceTime);
         this.recurrenceTime = recurrenceTime;
+    }
+
+    internal Job(GlobalBase clone, MangaConnector connector, DateTime lastExecution, bool recurring = false,
+        TimeSpan? recurrenceTime = null) : base(clone)
+    {
+        this.mangaConnector = connector;
+        this.progressToken = new ProgressToken(0);
+        this.recurring = recurring;
+        if (recurring && recurrenceTime is null)
+            throw new ArgumentException("If recurrence is set to true, a recurrence time has to be provided.");
+        this.lastExecution = lastExecution;
+        this.recurrenceTime = recurrenceTime;
+        
     }
 
     protected abstract string GetId();

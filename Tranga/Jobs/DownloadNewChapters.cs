@@ -6,6 +6,13 @@ namespace Tranga.Jobs;
 public class DownloadNewChapters : Job
 {
     public Manga manga { get; init; }
+
+    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, DateTime lastExecution,
+        bool recurring = false, TimeSpan? recurrence = null) : base(clone, connector, lastExecution, recurring,
+        recurrence)
+    {
+        this.manga = manga;
+    }
     
     public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, bool recurring = false, TimeSpan? recurrence = null) : base (clone, connector, recurring, recurrence)
     {

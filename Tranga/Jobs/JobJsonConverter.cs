@@ -34,6 +34,7 @@ public class JobJsonConverter : JsonConverter
                     }
                 }))!,
                 jo.GetValue("manga")!.ToObject<Manga>(),
+                jo.GetValue("lastExecution")!.ToObject<DateTime>(),
                 jo.GetValue("recurring")!.Value<bool>(),
                 jo.GetValue("recurrenceTime")!.ToObject<TimeSpan?>());
         }

@@ -29,9 +29,7 @@ public class JobBoss : GlobalBase
         {
             Log($"Added {job}");
             this.jobs.Add(job);
-            while(IsFileInUse(settings.jobsFilePath))
-                Thread.Sleep(10);
-            File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
+            ExportJobsList();
         }
     }
 
@@ -55,9 +53,7 @@ public class JobBoss : GlobalBase
         this.jobs.Remove(job);
         if(job.subJobs is not null)
             RemoveJobs(job.subJobs);
-        while(IsFileInUse(settings.jobsFilePath))
-            Thread.Sleep(10);
-        File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
+        ExportJobsList();
     }
 
     public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
@@ -139,6 +135,14 @@ public class JobBoss : GlobalBase
             AddJobToQueue(job);
     }
 
+    public void ExportJobsList()
+    {
+        Log($"Exporting {settings.jobsFilePath}");
+        while(IsFileInUse(settings.jobsFilePath))
+            Thread.Sleep(10);
+        File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
+    }
+
     public void CheckJobs()
     {
         foreach (Job job in jobs.Where(job => job.nextExecution < DateTime.Now && !QueueContainsJob(job)).OrderBy(job => job.nextExecution))
@@ -153,8 +157,10 @@ public class JobBoss : GlobalBase
                 if(queueHead.recurring)
                     queueHead.ResetProgress();
                 jobQueue.Dequeue();
-            }else if(queueHead.progressToken.state is ProgressToken.State.Standby)
+            }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
+            {
                 AddJobsToQueue(jobQueue.Peek().ExecuteReturnSubTasks());
+            }
             else if (queueHead.progressToken.state is ProgressToken.State.Cancelled)
             {
                 switch (queueHead)
