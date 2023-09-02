@@ -56,7 +56,7 @@ public abstract class Job : GlobalBase
         return DateTime.MaxValue;
     }
 
-    public void Reset()
+    public void ResetProgress()
     {
         this.progressToken = new ProgressToken(this.progressToken.increments);
     }

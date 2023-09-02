@@ -142,7 +142,7 @@ public class JobBoss : GlobalBase
             if (queueHead.progressToken.state is ProgressToken.State.Complete)
             {
                 if(queueHead.recurring)
-                    queueHead.Reset();
+                    queueHead.ResetProgress();
                 jobQueue.Dequeue();
             }else if(queueHead.progressToken.state is ProgressToken.State.Standby)
                 AddJobsToQueue(jobQueue.Peek().ExecuteReturnSubTasks());
