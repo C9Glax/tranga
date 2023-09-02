@@ -29,6 +29,8 @@ public class JobBoss : GlobalBase
         {
             Log($"Added {job}");
             this.jobs.Add(job);
+            while(IsFileInUse(settings.jobsFilePath))
+                Thread.Sleep(10);
             File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
         }
     }
@@ -53,6 +55,9 @@ public class JobBoss : GlobalBase
         this.jobs.Remove(job);
         if(job.subJobs is not null)
             RemoveJobs(job.subJobs);
+        while(IsFileInUse(settings.jobsFilePath))
+            Thread.Sleep(10);
+        File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
     }
 
     public void RemoveJobs(IEnumerable<Job> jobsToRemove)
