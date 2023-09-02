@@ -74,7 +74,7 @@ public class MangaDex : MangaConnector
     public override Manga? GetMangaFromUrl(string url)
     {
         Regex idRex = new (@"https:\/\/mangadex.org\/title\/([A-z0-9-]*)\/.*");
-        string id = idRex.Match(url).Value;
+        string id = idRex.Match(url).Groups[1].Value;
         Log($"Got id {id} from {url}");
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/manga/{id}", (byte)RequestType.Manga);
@@ -82,7 +82,7 @@ public class MangaDex : MangaConnector
             return null;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if(result is not null)
-            return MangaFromJsonObject(result);
+            return MangaFromJsonObject(result["data"]!.AsObject());
         return null;
     }
 
