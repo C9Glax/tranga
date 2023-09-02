@@ -101,7 +101,10 @@ public class JobBoss : GlobalBase
     public IEnumerable<Job> GetJobsLike(MangaConnector? mangaConnector = null, Manga? publication = null,
         Chapter? chapter = null)
     {
-        return GetJobsLike(mangaConnector?.name, publication?.internalId, chapter?.chapterNumber);
+        if (chapter is not null)
+            return GetJobsLike(mangaConnector?.name, chapter.Value.parentManga.internalId, chapter?.chapterNumber);
+        else
+            return GetJobsLike(mangaConnector?.name, publication?.internalId);
     }
 
     public Job? GetJobById(string jobId)
