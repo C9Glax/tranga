@@ -59,14 +59,15 @@ public abstract class Job : GlobalBase
 
     public void ResetProgress()
     {
-        this.progressToken = new ProgressToken(this.progressToken.increments);
+        this.progressToken.increments = this.progressToken.increments - this.progressToken.incrementsCompleted;
         this.lastExecution = DateTime.Now;
     }
 
-    public void ExecuteNow()
+    public void ExecutionEnqueue()
     {
-        ResetProgress();
-        this.lastExecution = DateTime.UnixEpoch;
+        this.progressToken.increments = this.progressToken.increments - this.progressToken.incrementsCompleted;
+        this.lastExecution = recurrenceTime is not null ? DateTime.Now.Subtract((TimeSpan)recurrenceTime) : DateTime.UnixEpoch;
+        this.progressToken.Standby();
     }
 
     public void Cancel()
