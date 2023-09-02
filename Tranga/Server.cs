@@ -211,9 +211,10 @@ public class Server : GlobalBase
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId;
+        string? connectorName, internalId, jobId;
         MangaConnector connector;
         Manga manga;
+        Job? job;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
@@ -248,8 +249,8 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/StartNow":
-                if (!requestVariables.TryGetValue("jobId", out string? jobId) ||
-                    !_parent.jobBoss.TryGetJobById(jobId, out Job? job))
+                if (!requestVariables.TryGetValue("jobId", out jobId) ||
+                    !_parent.jobBoss.TryGetJobById(jobId, out job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -362,7 +363,7 @@ public class Server : GlobalBase
         switch (path)
         {
             case "Jobs":
-                if (!requestVariables.TryGetValue("jobID", out string? jobId) ||
+                if (!requestVariables.TryGetValue("jobId", out string? jobId) ||
                     !_parent.jobBoss.TryGetJobById(jobId, out Job? job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
