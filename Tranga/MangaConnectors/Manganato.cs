@@ -19,7 +19,7 @@ public class Manganato : MangaConnector
         });
     }
 
-    public override Manga[] GetPublications(string publicationTitle = "")
+    public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();
@@ -52,15 +52,22 @@ public class Manganato : MangaConnector
         HashSet<Manga> ret = new();
         foreach (string url in urls)
         {
-            DownloadClient.RequestResult requestResult =
-                downloadClient.MakeRequest(url, 1);
-            if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-                return Array.Empty<Manga>();
-
-            ret.Add(ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]));
+            Manga? manga = GetMangaFromUrl(url);
+            if (manga is not null)
+                ret.Add((Manga)manga);
         }
 
         return ret.ToArray();
+    }
+
+    public override Manga? GetMangaFromUrl(string url)
+    {
+        DownloadClient.RequestResult requestResult =
+            downloadClient.MakeRequest(url, 1);
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+            return null;
+
+        return ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]);
     }
 
     private Manga ParseSinglePublicationFromHtml(Stream html, string publicationId)

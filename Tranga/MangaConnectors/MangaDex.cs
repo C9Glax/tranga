@@ -1,8 +1,9 @@
 ﻿using System.Globalization;
 using System.Net;
-using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Tranga.Jobs;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga.MangaConnectors;
 public class MangaDex : MangaConnector
@@ -31,13 +32,13 @@ public class MangaDex : MangaConnector
         });
     }
 
-    public override Manga[] GetPublications(string publicationTitle = "")
+    public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
-        HashSet<Manga> publications = new();
+        HashSet<Manga> retManga = new();
         int loadedPublicationData = 0;
         while (offset < total) //As long as we haven't requested all "Pages"
         {
@@ -57,98 +58,119 @@ public class MangaDex : MangaConnector
             
             JsonArray mangaInResult = result["data"]!.AsArray(); //Manga-data-Array
             //Loop each Manga and extract information from JSON
-            foreach (JsonNode? mangeNode in mangaInResult)
+            foreach (JsonNode? mangaNode in mangaInResult)
             {
                 Log($"Getting publication data. {++loadedPublicationData}/{total}");
-                JsonObject manga = (JsonObject)mangeNode!;
-                JsonObject attributes = manga["attributes"]!.AsObject();
-                
-                string publicationId = manga["id"]!.GetValue<string>();
-                
-                string title = attributes["title"]!.AsObject().ContainsKey("en") && attributes["title"]!["en"] is not null
-                    ? attributes["title"]!["en"]!.GetValue<string>()
-                    : attributes["title"]![((IDictionary<string, JsonNode?>)attributes["title"]!.AsObject()).Keys.First()]!.GetValue<string>();
-
-                string? description = attributes["description"]!.AsObject().ContainsKey("en") && attributes["description"]!["en"] is not null
-                    ? attributes["description"]!["en"]!.GetValue<string?>()
-                    : null;
-
-                JsonArray altTitlesObject = attributes["altTitles"]!.AsArray();
-                Dictionary<string, string> altTitlesDict = new();
-                foreach (JsonNode? altTitleNode in altTitlesObject)
-                {
-                    JsonObject altTitleObject = (JsonObject)altTitleNode!;
-                    string key = ((IDictionary<string, JsonNode?>)altTitleObject).Keys.ToArray()[0];
-                    altTitlesDict.TryAdd(key, altTitleObject[key]!.GetValue<string>());
-                }
-
-                JsonArray tagsObject = attributes["tags"]!.AsArray();
-                HashSet<string> tags = new();
-                foreach (JsonNode? tagNode in tagsObject)
-                {
-                    JsonObject tagObject = (JsonObject)tagNode!;
-                    if(tagObject["attributes"]!["name"]!.AsObject().ContainsKey("en"))
-                        tags.Add(tagObject["attributes"]!["name"]!["en"]!.GetValue<string>());
-                }
-
-                string? posterId = null;
-                HashSet<string> authorIds = new();
-                if (manga.ContainsKey("relationships") && manga["relationships"] is not null)
-                {
-                    JsonArray relationships = manga["relationships"]!.AsArray();
-                    posterId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
-                    foreach (JsonNode? node in relationships.Where(relationship =>
-                                 relationship!["type"]!.GetValue<string>() == "author"))
-                        authorIds.Add(node!["id"]!.GetValue<string>());
-                }
-                string? coverUrl = GetCoverUrl(publicationId, posterId);
-                string? coverCacheName = null;
-                if (coverUrl is not null)
-                    coverCacheName = SaveCoverImageToCache(coverUrl, (byte)RequestType.AtHomeServer);
-
-                List<string> authors = GetAuthors(authorIds);
-
-                Dictionary<string, string> linksDict = new();
-                if (attributes.ContainsKey("links") && attributes["links"] is not null)
-                {
-                    JsonObject linksObject = attributes["links"]!.AsObject();
-                    foreach (string key in ((IDictionary<string, JsonNode?>)linksObject).Keys)
-                    {
-                        linksDict.Add(key, linksObject[key]!.GetValue<string>());
-                    }
-                }
-                
-                int? year = attributes.ContainsKey("year") && attributes["year"] is not null
-                    ? attributes["year"]!.GetValue<int?>()
-                    : null;
-
-                string? originalLanguage = attributes.ContainsKey("originalLanguage") && attributes["originalLanguage"] is not null
-                    ? attributes["originalLanguage"]!.GetValue<string?>()
-                    : null;
-                
-                string status = attributes["status"]!.GetValue<string>();
-
-                Manga pub = new (
-                    title,
-                    authors,
-                    description,
-                    altTitlesDict,
-                    tags.ToArray(),
-                    coverUrl,
-                    coverCacheName,
-                    linksDict,
-                    year,
-                    originalLanguage,
-                    status,
-                    publicationId
-                );
-                publications.Add(pub); //Add Publication (Manga) to result
+                Manga manga = MangaFromJsonObject((JsonObject)mangaNode);
+                retManga.Add(manga); //Add Publication (Manga) to result
             }
         }
 
-        cachedPublications.AddRange(publications);
-        Log($"Retrieved {publications.Count} publications. Term=\"{publicationTitle}\"");
-        return publications.ToArray();
+        cachedPublications.AddRange(retManga);
+        Log($"Retrieved {retManga.Count} publications. Term=\"{publicationTitle}\"");
+        return retManga.ToArray();
+    }
+
+    public override Manga? GetMangaFromUrl(string url)
+    {
+        Regex idRex = new (@"https:\/\/mangadex.org\/title\/([A-z0-9-]*)\/.*");
+        string id = idRex.Match(url).Value;
+        Log($"Got id {id} from {url}");
+        DownloadClient.RequestResult requestResult =
+            downloadClient.MakeRequest($"https://api.mangadex.org/manga/{id}", (byte)RequestType.Manga);
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+            return null;
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+        if(result is not null)
+            return MangaFromJsonObject(result);
+        return null;
+    }
+
+    private Manga MangaFromJsonObject(JsonObject manga)
+    {
+        JsonObject attributes = manga["attributes"]!.AsObject();
+                
+        string publicationId = manga["id"]!.GetValue<string>();
+                
+        string title = attributes["title"]!.AsObject().ContainsKey("en") && attributes["title"]!["en"] is not null
+                    ? attributes["title"]!["en"]!.GetValue<string>()
+                    : attributes["title"]![((IDictionary<string, JsonNode?>)attributes["title"]!.AsObject()).Keys.First()]!.GetValue<string>();
+
+        string? description = attributes["description"]!.AsObject().ContainsKey("en") && attributes["description"]!["en"] is not null
+                    ? attributes["description"]!["en"]!.GetValue<string?>()
+                    : null;
+
+        JsonArray altTitlesObject = attributes["altTitles"]!.AsArray();
+        Dictionary<string, string> altTitlesDict = new();
+        foreach (JsonNode? altTitleNode in altTitlesObject)
+        {
+            JsonObject altTitleObject = (JsonObject)altTitleNode!;
+            string key = ((IDictionary<string, JsonNode?>)altTitleObject).Keys.ToArray()[0];
+            altTitlesDict.TryAdd(key, altTitleObject[key]!.GetValue<string>());
+        }
+
+        JsonArray tagsObject = attributes["tags"]!.AsArray();
+        HashSet<string> tags = new();
+        foreach (JsonNode? tagNode in tagsObject)
+        {
+            JsonObject tagObject = (JsonObject)tagNode!;
+            if(tagObject["attributes"]!["name"]!.AsObject().ContainsKey("en"))
+                tags.Add(tagObject["attributes"]!["name"]!["en"]!.GetValue<string>());
+        }
+
+        string? posterId = null;
+        HashSet<string> authorIds = new();
+        if (manga.ContainsKey("relationships") && manga["relationships"] is not null)
+        {
+            JsonArray relationships = manga["relationships"]!.AsArray();
+            posterId = relationships.FirstOrDefault(relationship => relationship!["type"]!.GetValue<string>() == "cover_art")!["id"]!.GetValue<string>();
+            foreach (JsonNode? node in relationships.Where(relationship =>
+                relationship!["type"]!.GetValue<string>() == "author"))
+                authorIds.Add(node!["id"]!.GetValue<string>());
+        }
+        string? coverUrl = GetCoverUrl(publicationId, posterId);
+        string? coverCacheName = null;
+        if (coverUrl is not null)
+            coverCacheName = SaveCoverImageToCache(coverUrl, (byte)RequestType.AtHomeServer);
+
+        List<string> authors = GetAuthors(authorIds);
+
+        Dictionary<string, string> linksDict = new();
+        if (attributes.ContainsKey("links") && attributes["links"] is not null)
+        {
+            JsonObject linksObject = attributes["links"]!.AsObject();
+            foreach (string key in ((IDictionary<string, JsonNode?>)linksObject).Keys)
+            {
+                linksDict.Add(key, linksObject[key]!.GetValue<string>());
+            }
+        }
+
+        int? year = attributes.ContainsKey("year") && attributes["year"] is not null
+            ? attributes["year"]!.GetValue<int?>()
+            : null;
+
+        string? originalLanguage =
+            attributes.ContainsKey("originalLanguage") && attributes["originalLanguage"] is not null
+                ? attributes["originalLanguage"]!.GetValue<string?>()
+                : null;
+
+        string status = attributes["status"]!.GetValue<string>();
+
+        Manga pub = new(
+            title,
+            authors,
+            description,
+            altTitlesDict,
+            tags.ToArray(),
+            coverUrl,
+            coverCacheName,
+            linksDict,
+            year,
+            originalLanguage,
+            status,
+            publicationId
+        );
+        return pub;
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")

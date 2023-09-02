@@ -69,7 +69,7 @@ public class Mangasee : MangaConnector
         });
     }
 
-    public override Manga[] GetPublications(string publicationTitle = "")
+    public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string requestUrl = $"https://mangasee123.com/_search.php";
@@ -82,6 +82,28 @@ public class Mangasee : MangaConnector
         cachedPublications.AddRange(publications);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
+    }
+
+    public override Manga? GetMangaFromUrl(string url)
+    {
+        while (this._browser is null)
+        {
+            Log("Waiting for headless browser to download...");
+            Thread.Sleep(1000);
+        }
+        
+        
+        IPage page = _browser!.NewPageAsync().Result;
+        IResponse response = page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded).Result;
+        if (response.Ok)
+        {
+            HtmlDocument document = new();
+            document.LoadHtml(page.GetContentAsync().Result);
+            page.CloseAsync();
+            return ParseSinglePublicationFromHtml(document);
+        }
+
+        return null;
     }
 
     private Manga[] ParsePublicationsFromHtml(Stream html, string publicationTitle)
@@ -105,73 +127,51 @@ public class Mangasee : MangaConnector
         List<SearchResultItem> orderedFiltered =
             queryFiltered.OrderBy(item => item.Value).ToDictionary(item => item.Key, item => item.Value).Keys.ToList();
 
-        uint index = 1;
         foreach (SearchResultItem orderedItem in orderedFiltered)
         {
-            DownloadClient.RequestResult requestResult =
-                downloadClient.MakeRequest($"https://mangasee123.com/manga/{orderedItem.i}", 1);
-            if ((int)requestResult.statusCode >= 200 || (int)requestResult.statusCode < 300)
-            {
-                Log($"Retrieving Publication info: {orderedItem.s} {index++}/{orderedFiltered.Count}");
-                ret.Add(ParseSinglePublicationFromHtml(requestResult.result, orderedItem.s, orderedItem.i, orderedItem.a));
-            }
+            Manga? manga = GetMangaFromUrl($"https://mangasee123.com/manga/{orderedItem.i}");
+            if (manga is not null)
+                ret.Add((Manga)manga);
         }
         return ret.ToArray();
     }
 
     
-    private Manga ParseSinglePublicationFromHtml(Stream html, string sortName, string publicationId, string[] a)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document)
     {
-        StreamReader reader = new (html);
-        HtmlDocument document = new ();
-        document.LoadHtml(reader.ReadToEnd());
-
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
         HashSet<string> tags = new();
 
-        HtmlNode posterNode =
-            document.DocumentNode.Descendants("img").First(img => img.HasClass("img-fluid") && img.HasClass("bottom-5"));
+        HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
         string posterUrl = posterNode.GetAttributeValue("src", "");
         string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
 
-        HtmlNode attributes = document.DocumentNode.Descendants("div")
-            .First(div => div.HasClass("col-md-9") && div.HasClass("col-sm-8") && div.HasClass("top-5"))
-            .Descendants("ul").First();
+        HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
+        string title = titleNode.InnerText;
+        string publicationId = title;
 
-        HtmlNode[] authorsNodes = attributes.Descendants("li")
-            .First(node => node.InnerText.Contains("author(s):", StringComparison.CurrentCultureIgnoreCase))
-            .Descendants("a").ToArray();
+        HtmlNode[] authorsNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Author(s):']/..").Descendants("a").ToArray();
         List<string> authors = new();
         foreach(HtmlNode authorNode in authorsNodes)
             authors.Add(authorNode.InnerText);
-
-        HtmlNode[] genreNodes = attributes.Descendants("li")
-            .First(node => node.InnerText.Contains("genre(s):", StringComparison.CurrentCultureIgnoreCase))
-            .Descendants("a").ToArray();
+        
+        HtmlNode[] genreNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Genre(s):']/..").Descendants("a").ToArray();
         foreach (HtmlNode genreNode in genreNodes)
             tags.Add(genreNode.InnerText);
-
-        HtmlNode yearNode = attributes.Descendants("li")
-            .First(node => node.InnerText.Contains("released:", StringComparison.CurrentCultureIgnoreCase))
-            .Descendants("a").First();
+        
+        HtmlNode yearNode = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Released:']/..").Descendants("a").First();
         int year = Convert.ToInt32(yearNode.InnerText);
-
-        HtmlNode[] statusNodes = attributes.Descendants("li")
-            .First(node => node.InnerText.Contains("status:", StringComparison.CurrentCultureIgnoreCase))
-            .Descendants("a").ToArray();
+        
+        HtmlNode[] statusNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Status:']/..").Descendants("a").ToArray();
         foreach(HtmlNode statusNode in statusNodes)
             if (statusNode.InnerText.Contains("publish", StringComparison.CurrentCultureIgnoreCase))
                 status = statusNode.InnerText.Split(' ')[0];
         
-        HtmlNode descriptionNode = attributes.Descendants("li").First(node => node.InnerText.Contains("description:", StringComparison.CurrentCultureIgnoreCase)).Descendants("div").First();
+        HtmlNode descriptionNode = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Description:']/..").Descendants("div").First();
         string description = descriptionNode.InnerText;
         
-        int i = 0;
-        foreach(string at in a)
-            altTitles.Add((i++).ToString(), at);
-        
-        return new Manga(sortName, authors, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+        return new Manga(title, authors, description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
     }
     

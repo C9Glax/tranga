@@ -141,7 +141,7 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                SendResponse(HttpStatusCode.OK, response, connector!.GetPublications(title));
+                SendResponse(HttpStatusCode.OK, response, connector!.GetManga(title));
                 break;
             case "Manga/Chapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
