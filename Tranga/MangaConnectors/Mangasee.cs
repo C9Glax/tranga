@@ -90,8 +90,9 @@ public class Mangasee : MangaConnector
             Log("Waiting for headless browser to download...");
             Thread.Sleep(1000);
         }
-        
-        
+
+        Regex publicationIdRex = new(@"https:\/\/mangasee123.com\/manga\/(.*)(\/.*)*");
+        string publicationId = publicationIdRex.Match(url).Groups[1].Value;
         IPage page = _browser!.NewPageAsync().Result;
         IResponse response = page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded).Result;
         if (response.Ok)
@@ -99,7 +100,7 @@ public class Mangasee : MangaConnector
             HtmlDocument document = new();
             document.LoadHtml(page.GetContentAsync().Result);
             page.CloseAsync();
-            return ParseSinglePublicationFromHtml(document);
+            return ParseSinglePublicationFromHtml(document, publicationId);
         }
 
         page.CloseAsync();
@@ -137,7 +138,7 @@ public class Mangasee : MangaConnector
     }
 
     
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -149,7 +150,6 @@ public class Mangasee : MangaConnector
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
-        string publicationId = sortName;
 
         HtmlNode[] authorsNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Author(s):']/..").Descendants("a").ToArray();
         List<string> authors = new();
