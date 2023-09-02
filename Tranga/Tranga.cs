@@ -65,7 +65,7 @@ public partial class Tranga : GlobalBase
             while (keepRunning)
             {
                 jobBoss.CheckJobs();
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
         });
         t.Start();
