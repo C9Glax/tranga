@@ -51,6 +51,8 @@ public class JobBoss : GlobalBase
         Log($"Removing {job}");
         job.Cancel();
         this.jobs.Remove(job);
+        if(job.subJobs is not null)
+            RemoveJobs(job.subJobs);
     }
 
     public void RemoveJobs(IEnumerable<Job> jobsToRemove)

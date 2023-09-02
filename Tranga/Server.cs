@@ -258,6 +258,16 @@ public class Server : GlobalBase
                 _parent.jobBoss.AddJobToQueue(job!);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
+            case "Jobs/Cancel":
+                if (!requestVariables.TryGetValue("jobId", out jobId) ||
+                    !_parent.jobBoss.TryGetJobById(jobId, out job))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                job!.Cancel();
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "Settings/UpdateDownloadLocation":
                 if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
                     !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
@@ -370,33 +380,6 @@ public class Server : GlobalBase
                     break;
                 }
                 _parent.jobBoss.RemoveJob(job!);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Jobs/DownloadChapter":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   !requestVariables.TryGetValue("chapterNumber", out string? chapterNumber) ||
-                   _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null)
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                _parent.jobBoss.RemoveJobs(_parent.jobBoss.GetJobsLike(connectorName, internalId, chapterNumber));
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Jobs/MonitorManga":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null)
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                connector = _parent.GetConnector(connectorName)!;
-                manga = (Manga)_parent.GetPublicationById(internalId)!;
-                _parent.jobBoss.RemoveJobs(_parent.jobBoss.GetJobsLike(connector, manga));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/DownloadNewChapters":

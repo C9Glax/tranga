@@ -11,6 +11,7 @@ public abstract class Job : GlobalBase
     public DateTime? lastExecution { get; private set; }
     public DateTime nextExecution => NextExecution();
     public string id => GetId();
+    internal IEnumerable<Job>? subJobs { get; private set; }
 
     public Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null) : base(clone)
     {
@@ -65,14 +66,17 @@ public abstract class Job : GlobalBase
         Log($"Cancelling {this}");
         this.progressToken.cancellationRequested = true;
         this.progressToken.Complete();
+        if(subJobs is not null)
+            foreach(Job subJob in subJobs)
+                subJob.Cancel();
     }
 
     public IEnumerable<Job> ExecuteReturnSubTasks()
     {
         progressToken.Start();
-        IEnumerable<Job> ret = ExecuteReturnSubTasksInternal();
+        subJobs = ExecuteReturnSubTasksInternal();
         lastExecution = DateTime.Now;
-        return ret;
+        return subJobs;
     }
 
     protected abstract IEnumerable<Job> ExecuteReturnSubTasksInternal();
