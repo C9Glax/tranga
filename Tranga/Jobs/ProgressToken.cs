@@ -7,7 +7,7 @@ public class ProgressToken
     public int incrementsCompleted { get; set; }
     public float progress => GetProgress();
     
-    public enum State { Running, Complete, Standby }
+    public enum State { Running, Complete, Standby, Cancelled }
     public State state { get; private set; }
 
     public ProgressToken(int increments)
@@ -40,5 +40,10 @@ public class ProgressToken
     public void Complete()
     {
         state = State.Complete;
+    }
+
+    public void Cancel()
+    {
+        state = State.Cancelled;
     }
 }

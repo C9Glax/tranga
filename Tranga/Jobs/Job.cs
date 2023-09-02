@@ -59,13 +59,15 @@ public abstract class Job : GlobalBase
     public void ResetProgress()
     {
         this.progressToken = new ProgressToken(this.progressToken.increments);
+        this.lastExecution = DateTime.Now;
     }
 
     public void Cancel()
     {
         Log($"Cancelling {this}");
         this.progressToken.cancellationRequested = true;
-        this.progressToken.Complete();
+        this.progressToken.Cancel();
+        this.lastExecution = DateTime.Now;
         if(subJobs is not null)
             foreach(Job subJob in subJobs)
                 subJob.Cancel();

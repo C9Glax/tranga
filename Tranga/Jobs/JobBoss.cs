@@ -146,6 +146,20 @@ public class JobBoss : GlobalBase
                 jobQueue.Dequeue();
             }else if(queueHead.progressToken.state is ProgressToken.State.Standby)
                 AddJobsToQueue(jobQueue.Peek().ExecuteReturnSubTasks());
+            else if (queueHead.progressToken.state is ProgressToken.State.Cancelled)
+            {
+                switch (queueHead)
+                {
+                    case DownloadChapter:
+                        RemoveJob(queueHead);
+                        break;
+                    case DownloadNewChapters:
+                        if(queueHead.recurring)
+                            queueHead.progressToken.Complete();
+                        break;
+                }
+                jobQueue.Dequeue();
+            }
         }
     }
  }
