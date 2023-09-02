@@ -4,7 +4,6 @@ services:
     image: glax/tranga-api:latest
     container_name: tranga-api
     volumes:
-      - ./tranga:/usr/share/Tranga-API #1 when replacing ./tranga replace #2 with same value
       - ./Manga:/Manga
     ports:
       - "6531:6531"
@@ -12,8 +11,6 @@ services:
   tranga-website:
     image: glax/tranga-website:latest
     container_name: tranga-website
-    volumes:
-      - ./tranga/imageCache:/usr/share/nginx/html/imageCache:ro #2 when replacing Point to same value as #1/imageCache
     ports:
       - "9555:80"
     depends_on: 

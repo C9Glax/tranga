@@ -1,9 +1,13 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Logging;
 
 public class Logger : TextWriter
 {
+    private static readonly string LogDirectoryPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+        ? "/var/log/tranga-api"
+        : Path.Join(Directory.GetCurrentDirectory(), "logs");
     public override Encoding Encoding { get; }
     public enum LoggerType
     {
@@ -17,13 +21,14 @@ public class Logger : TextWriter
 
     public Logger(LoggerType[] enabledLoggers, TextWriter? stdOut, Encoding? encoding, string? logFilePath)
     {
-        this.Encoding = encoding ?? Encoding.ASCII;
+        this.Encoding = encoding ?? Encoding.UTF8;
         if (enabledLoggers.Contains(LoggerType.FileLogger) && logFilePath is not null)
             _fileLogger = new FileLogger(logFilePath, encoding);
-        else
+        else if(enabledLoggers.Contains(LoggerType.FileLogger) && logFilePath is null)
         {
-            _fileLogger = null;
-            throw new ArgumentException($"logFilePath can not be null for LoggerType {LoggerType.FileLogger}");
+            logFilePath = Path.Join(LogDirectoryPath,
+                $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}.log");
+            _fileLogger = new FileLogger(logFilePath, encoding);
         }
 
         if (enabledLoggers.Contains(LoggerType.ConsoleLogger) && stdOut is not null)

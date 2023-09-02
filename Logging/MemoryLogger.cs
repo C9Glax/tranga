@@ -6,6 +6,7 @@ public class MemoryLogger : LoggerBase
 {
     private readonly SortedList<DateTime, LogMessage> _logMessages = new();
     private int _lastLogMessageIndex = 0;
+    private bool _lockLogMessages = false;
 
     public MemoryLogger(Encoding? encoding = null) : base(encoding)
     {
@@ -14,8 +15,13 @@ public class MemoryLogger : LoggerBase
 
     protected override void Write(LogMessage value)
     {
-        while(!_logMessages.TryAdd(value.logTime, value))
-            Thread.Sleep(10);
+        if (!_lockLogMessages)
+        {
+            _lockLogMessages = true;
+            while(!_logMessages.TryAdd(DateTime.Now, value))
+                Thread.Sleep(10);
+            _lockLogMessages = false;
+        }
     }
 
     public string[] GetLogMessage()
@@ -35,7 +41,12 @@ public class MemoryLogger : LoggerBase
 
         for (int retIndex = 0; retIndex < ret.Length; retIndex++)
         {
-            ret[retIndex] = _logMessages.GetValueAtIndex(_logMessages.Count - retLength + retIndex).ToString();
+            if (!_lockLogMessages)
+            {
+                _lockLogMessages = true;
+                ret[retIndex] = _logMessages.GetValueAtIndex(_logMessages.Count - retLength + retIndex).ToString();
+                _lockLogMessages = false;
+            }
         }
 
         _lastLogMessageIndex = _logMessages.Count - 1;
@@ -45,14 +56,27 @@ public class MemoryLogger : LoggerBase
     public string[] GetNewLines()
     {
         int logMessageCount = _logMessages.Count;
-        string[] ret = new string[logMessageCount - _lastLogMessageIndex];
+        List<string> ret = new();
 
-        for (int retIndex = 0; retIndex < ret.Length; retIndex++)
+        int retIndex = 0;
+        for (; retIndex < logMessageCount - _lastLogMessageIndex; retIndex++)
         {
-            ret[retIndex] = _logMessages.GetValueAtIndex(_lastLogMessageIndex + retIndex).ToString();
+            try
+            {
+                if (!_lockLogMessages)
+                {
+                    _lockLogMessages = true;
+                    ret.Add(_logMessages.GetValueAtIndex(_lastLogMessageIndex + retIndex).ToString());
+                    _lockLogMessages = false;
+                }
+            }
+            catch (NullReferenceException e)//Called when LogMessage has not finished writing
+            {
+                break;
+            }
         }
 
-        _lastLogMessageIndex = logMessageCount;
-        return ret;
+        _lastLogMessageIndex = _lastLogMessageIndex + retIndex;
+        return ret.ToArray();
     }
 }

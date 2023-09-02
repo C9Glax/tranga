@@ -10,7 +10,7 @@ namespace Tranga;
 public readonly struct Chapter
 {
     // ReSharper disable once MemberCanBePrivate.Global
-    public Publication parentPublication { get; }
+    public Manga parentManga { get; }
     public string? name { get; }
     public string? volumeNumber { get; }
     public string chapterNumber { get; }
@@ -20,9 +20,9 @@ public readonly struct Chapter
     
     private static readonly Regex LegalCharacters = new (@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
     private static readonly Regex IllegalStrings = new(@"Vol(ume)?.?", RegexOptions.IgnoreCase);
-    public Chapter(Publication parentPublication, string? name, string? volumeNumber, string chapterNumber, string url)
+    public Chapter(Manga parentManga, string? name, string? volumeNumber, string chapterNumber, string url)
     {
-        this.parentPublication = parentPublication;
+        this.parentManga = parentManga;
         this.name = name;
         this.volumeNumber = volumeNumber;
         this.chapterNumber = chapterNumber;
@@ -35,8 +35,12 @@ public readonly struct Chapter
         chNameStr = IllegalStrings.Replace(chNameStr, "");
         this.fileName = $"{volStr}{chNumberStr}{chNameStr}";
     }
-    
-    
+
+    public override string ToString()
+    {
+        return $"Chapter {parentManga.sortName} {parentManga.internalId} {chapterNumber} {name}";
+    }
+
     /// <summary>
     /// Checks if a chapter-archive is already present
     /// </summary>
@@ -44,9 +48,9 @@ public readonly struct Chapter
     internal bool CheckChapterIsDownloaded(string downloadLocation)
     {
         string newFilePath = GetArchiveFilePath(downloadLocation);
-        if (!Directory.Exists(Path.Join(downloadLocation, parentPublication.folderName)))
+        if (!Directory.Exists(Path.Join(downloadLocation, parentManga.folderName)))
             return false;
-        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, parentPublication.folderName)).GetFiles();
+        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, parentManga.folderName)).GetFiles();
         Regex chapterInfoRex = new(@"Ch\.[0-9.]+");
         Regex chapterRex = new(@"[0-9]+(\.[0-9]+)?");
         
@@ -67,7 +71,7 @@ public readonly struct Chapter
     /// <returns>Filepath</returns>
     internal string GetArchiveFilePath(string downloadLocation)
     {
-        return Path.Join(downloadLocation, parentPublication.folderName, $"{parentPublication.folderName} - {this.fileName}.cbz");
+        return Path.Join(downloadLocation, parentManga.folderName, $"{parentManga.folderName} - {this.fileName}.cbz");
     }
 
     /// <summary>
@@ -78,10 +82,10 @@ public readonly struct Chapter
     internal string GetComicInfoXmlString()
     {
         XElement comicInfo = new XElement("ComicInfo",
-            new XElement("Tags", string.Join(',', parentPublication.tags)),
-            new XElement("LanguageISO", parentPublication.originalLanguage),
+            new XElement("Tags", string.Join(',', parentManga.tags)),
+            new XElement("LanguageISO", parentManga.originalLanguage),
             new XElement("Title", this.name),
-            new XElement("Writer", string.Join(',', parentPublication.authors)),
+            new XElement("Writer", string.Join(',', parentManga.authors)),
             new XElement("Volume", this.volumeNumber),
             new XElement("Number", this.chapterNumber)
         );

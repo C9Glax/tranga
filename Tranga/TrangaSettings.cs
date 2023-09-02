@@ -1,41 +1,111 @@
-﻿using Newtonsoft.Json;
-using Tranga.LibraryManagers;
-using Tranga.NotificationManagers;
+﻿using System.Runtime.InteropServices;
+using Newtonsoft.Json;
+using Tranga.LibraryConnectors;
+using Tranga.NotificationConnectors;
+using static System.IO.UnixFileMode;
 
 namespace Tranga;
 
 public class TrangaSettings
 {
     public string downloadLocation { get; private set; }
-    public string workingDirectory { get; init; }
+    public string workingDirectory { get; private set; }
+    public int apiPortNumber { get; init; }
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
-    [JsonIgnore] public string tasksFilePath => Path.Join(workingDirectory, "tasks.json");
+    [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
+    [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
+    [JsonIgnore] public string jobsFilePath => Path.Join(workingDirectory, "jobs.json");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public ushort? version { get; set; }
 
-    public TrangaSettings(string downloadLocation, string workingDirectory)
+    public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null, int? apiPortNumber = null)
     {
-        if (downloadLocation.Length < 1 || workingDirectory.Length < 1)
-            throw new ArgumentException("Download-location and working-directory paths can not be empty!");
-        this.workingDirectory = workingDirectory;
-        this.downloadLocation = downloadLocation;
+        string lockFilePath = $"{settingsFilePath}.lock";
+        if (File.Exists(settingsFilePath) && !File.Exists(lockFilePath))
+        {//Load from settings file
+            FileStream lockFile = File.Create(lockFilePath,0, FileOptions.DeleteOnClose);
+            string settingsStr = File.ReadAllText(settingsFilePath);
+            TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(settingsStr)!;
+            this.downloadLocation = downloadLocation ?? settings.downloadLocation;
+            this.workingDirectory = workingDirectory ?? settings.workingDirectory;
+            this.apiPortNumber = apiPortNumber ?? settings.apiPortNumber;
+            lockFile.Close();
+        }
+        else if(!File.Exists(settingsFilePath))
+        {//No settings file exists
+            if (downloadLocation?.Length < 1 || workingDirectory?.Length < 1)
+                throw new ArgumentException("Download-location and working-directory paths can not be empty!");
+            this.apiPortNumber = apiPortNumber ?? 6531;
+            this.downloadLocation = downloadLocation ?? (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
+            this.workingDirectory = workingDirectory ?? Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/lib" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+            ExportSettings();
+        }
+        else
+        {//Settingsfile is locked
+            this.apiPortNumber = apiPortNumber!.Value;
+            this.downloadLocation = downloadLocation!;
+            this.workingDirectory = workingDirectory!;
+        }
+        UpdateDownloadLocation(this.downloadLocation!, false);
     }
 
-    public static TrangaSettings LoadSettings(string importFilePath)
+    public HashSet<LibraryConnector> LoadLibraryConnectors(GlobalBase clone)
     {
-        if (!File.Exists(importFilePath))
-            return new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory());
+        if (!File.Exists(libraryConnectorsFilePath))
+            return new HashSet<LibraryConnector>();
+        return JsonConvert.DeserializeObject<HashSet<LibraryConnector>>(File.ReadAllText(libraryConnectorsFilePath),
+            new JsonSerializerSettings()
+            {
+                Converters =
+                {
+                    new LibraryManagerJsonConverter(clone)
+                }
+            })!;
+    }
 
-        string toRead = File.ReadAllText(importFilePath);
-        SettingsJsonObject settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
-            new JsonSerializerSettings { Converters = { new NotificationManager.NotificationManagerJsonConverter(), new LibraryManager.LibraryManagerJsonConverter() } })!;
-        return settings.ts ?? new TrangaSettings(Path.Join(Directory.GetCurrentDirectory(), "Downloads"), Directory.GetCurrentDirectory());
+    public HashSet<NotificationConnector> LoadNotificationConnectors(GlobalBase clone)
+    {
+        if (!File.Exists(notificationConnectorsFilePath))
+            return new HashSet<NotificationConnector>();
+        return JsonConvert.DeserializeObject<HashSet<NotificationConnector>>(File.ReadAllText(notificationConnectorsFilePath),
+            new JsonSerializerSettings()
+            {
+                Converters =
+                {
+                    new NotificationManagerJsonConverter(clone)
+                }
+            })!;
+    }
 
+    public void UpdateDownloadLocation(string newPath, bool moveFiles = true)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            Directory.CreateDirectory(newPath,
+                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+        else
+            Directory.CreateDirectory(newPath);
+        
+        if (moveFiles && Directory.Exists(this.downloadLocation))
+            Directory.Move(this.downloadLocation, newPath);
+
+        this.downloadLocation = newPath;
+        ExportSettings();
+    }
+
+    public void UpdateWorkingDirectory(string newPath)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            Directory.CreateDirectory(newPath,
+                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+        else
+            Directory.CreateDirectory(newPath);
+        Directory.Move(this.workingDirectory, newPath);
+        this.workingDirectory = newPath;
+        ExportSettings();
     }
 
     public void ExportSettings()
     {
-        SettingsJsonObject? settings = null;
         if (File.Exists(settingsFilePath))
         {
             bool inUse = true;
@@ -43,55 +113,23 @@ public class TrangaSettings
             {
                 try
                 {
-                    using FileStream stream = new (settingsFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+                    using FileStream stream = new(settingsFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
                     stream.Close();
                     inUse = false;
                 }
                 catch (IOException)
                 {
-                    inUse = true;
-                    Thread.Sleep(50);
+                    Thread.Sleep(100);
                 }
             }
-            string toRead = File.ReadAllText(settingsFilePath);
-            settings = JsonConvert.DeserializeObject<SettingsJsonObject>(toRead,
-                new JsonSerializerSettings
-                {
-                    Converters =
-                    {
-                        new NotificationManager.NotificationManagerJsonConverter(),
-                        new LibraryManager.LibraryManagerJsonConverter()
-                    }
-                });
         }
-        settings = new SettingsJsonObject(this, settings?.co);
-        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(settings));
+        else
+            Directory.CreateDirectory(new FileInfo(settingsFilePath).DirectoryName!);
+        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
     }
 
-    public void UpdateSettings(UpdateField field, params string[] values) 
+    public string GetFullCoverPath(Manga manga)
     {
-        switch (field)
-        {
-            case UpdateField.DownloadLocation:
-                if (values.Length != 1)
-                    return;
-                this.downloadLocation = values[0];
-                break;
-        }
-        ExportSettings();
-    }
-    
-    public enum UpdateField { DownloadLocation, Komga, Kavita, Gotify, LunaSea}
-
-    internal class SettingsJsonObject
-    {
-        public TrangaSettings? ts { get; }
-        public CommonObjects? co { get; }
-
-        public SettingsJsonObject(TrangaSettings? ts, CommonObjects? co)
-        {
-            this.ts = ts;
-            this.co = co;
-        }
+        return Path.Join(this.coverImageCache, manga.coverFileNameInCache);
     }
 }
