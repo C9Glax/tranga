@@ -60,11 +60,12 @@ public class JobBoss : GlobalBase
         File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
     }
 
-    public void RemoveJobs(IEnumerable<Job> jobsToRemove)
+    public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
     {
         Log($"Removing {jobsToRemove.Count()} jobs.");
-        foreach (Job job in jobsToRemove)
-            RemoveJob(job);
+        foreach (Job? job in jobsToRemove)
+            if(job is not null)
+                RemoveJob(job);
     }
 
     public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, string? chapterNumber = null)
@@ -143,6 +144,8 @@ public class JobBoss : GlobalBase
             AddJobToQueue(job);
         foreach (Queue<Job> jobQueue in mangaConnectorJobQueue.Values)
         {
+            if(jobQueue.Count < 1)
+                continue;
             Job queueHead = jobQueue.Peek();
             if (queueHead.progressToken.state is ProgressToken.State.Complete)
             {
