@@ -130,6 +130,7 @@ public class JobBoss : GlobalBase
         Queue<Job> connectorJobQueue = mangaConnectorJobQueue[job.mangaConnector];
         if(!connectorJobQueue.Contains(job))
             connectorJobQueue.Enqueue(job);
+        job.ExecuteNow();
     }
 
     public void AddJobsToQueue(IEnumerable<Job> jobs)

@@ -62,6 +62,12 @@ public abstract class Job : GlobalBase
         this.lastExecution = DateTime.Now;
     }
 
+    public void ExecuteNow()
+    {
+        ResetProgress();
+        this.lastExecution = DateTime.UnixEpoch;
+    }
+
     public void Cancel()
     {
         Log($"Cancelling {this}");
