@@ -151,9 +151,10 @@ public class JobBoss : GlobalBase
     public void ExportJobsList()
     {
         Log($"Exporting {settings.jobsFilePath}");
+        string content = JsonConvert.SerializeObject(this.jobs);
         while(IsFileInUse(settings.jobsFilePath))
             Thread.Sleep(10);
-        File.WriteAllText(settings.jobsFilePath, JsonConvert.SerializeObject(this.jobs));
+        File.WriteAllText(settings.jobsFilePath, content);
     }
 
     public void CheckJobs()
