@@ -15,7 +15,7 @@ public class ProgressToken
         this.cancellationRequested = false;
         this.increments = increments;
         this.incrementsCompleted = 0;
-        this.state = State.Standby;
+        this.state = State.Complete;
     }
 
     private float GetProgress()
@@ -30,6 +30,11 @@ public class ProgressToken
         this.incrementsCompleted++;
         if (incrementsCompleted > increments)
             state = State.Complete;
+    }
+
+    public void Standby()
+    {
+        state = State.Standby;
     }
 
     public void Start()

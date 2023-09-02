@@ -165,16 +165,7 @@ public class JobBoss : GlobalBase
             if(jobQueue.Count < 1)
                 continue;
             Job queueHead = jobQueue.Peek();
-            if (queueHead.progressToken.state is ProgressToken.State.Complete)
-            {
-                if(queueHead.recurring)
-                    queueHead.ResetProgress();
-                jobQueue.Dequeue();
-            }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
-            {
-                AddJobsToQueue(jobQueue.Peek().ExecuteReturnSubTasks());
-            }
-            else if (queueHead.progressToken.state is ProgressToken.State.Cancelled)
+            if (queueHead.progressToken.state is ProgressToken.State.Complete or ProgressToken.State.Cancelled)
             {
                 switch (queueHead)
                 {
@@ -187,6 +178,11 @@ public class JobBoss : GlobalBase
                         break;
                 }
                 jobQueue.Dequeue();
+            }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
+            {
+                Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();
+                AddJobs(subJobs);
+                AddJobsToQueue(subJobs);
             }
         }
     }
