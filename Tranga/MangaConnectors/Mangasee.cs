@@ -102,6 +102,7 @@ public class Mangasee : MangaConnector
             return ParseSinglePublicationFromHtml(document);
         }
 
+        page.CloseAsync();
         return null;
     }
 
@@ -262,6 +263,7 @@ public class Mangasee : MangaConnector
         {
             HtmlDocument document = new ();
             document.LoadHtml(page.GetContentAsync().Result);
+            page.CloseAsync();
 
             HtmlNode gallery = document.DocumentNode.Descendants("div").First(div => div.HasClass("ImageGallery"));
             HtmlNode[] images = gallery.Descendants("img").Where(img => img.HasClass("img-fluid")).ToArray();
@@ -274,6 +276,8 @@ public class Mangasee : MangaConnector
         
             return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
         }
+
+        page.CloseAsync();
         return response.Status;
     }
 }
