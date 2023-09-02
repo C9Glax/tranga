@@ -37,6 +37,12 @@ public class JobBoss : GlobalBase
         }
     }
 
+    public void AddJobs(IEnumerable<Job> jobsToAdd)
+    {
+        foreach (Job job in jobsToAdd)
+            AddJob(job);
+    }
+
     public bool ContainsJobLike(Job job)
     {
         if (job is DownloadChapter dcJob)
