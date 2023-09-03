@@ -16,6 +16,9 @@
   <p align="center">
     Automatic Manga and Metadata downloader 
   </p>
+  <p align="center">
+    This is the API for <a href="https://github.com/C9Glax/tranga-website">Tranga-Website</a>  
+  </p>
 </div>
 
 
@@ -29,9 +32,6 @@
       <ul>
         <li><a href="#built-with">Built With</a></li>
       </ul>
-    </li>
-    <li>
-      <a href="#screenshots">Screenshots</a>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -60,7 +60,24 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [MangaKatana](https://mangakatana.com)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues)
 
-and automatically import them with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/). Also Notifications will be sent to your devices using [Gotify](https://gotify.net/) and [LunaSea](https://www.lunasea.app/).
+and trigger an scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
+Notifications will can sent to your devices using [Gotify](https://gotify.net/) and [LunaSea](https://www.lunasea.app/).
+
+### What this does and doesn't do
+
+Tranga (this git-repo) will open a port (standard 6531) and listen for requests to add Jobs to Monitor and/or download specific Manga.
+The configuration is all done through HTTP-Requests.
+The frontend in this repo is **CLI**-based.  
+_**For a web-frontend use [tranga-website](https://github.com/C9Glax/tranga-website).**_
+
+This project downloads the images for a Manga from the specified Scanlation-Website and packages them with some metadata - from that same website - in a .cbz-archive (per chapter).  
+It does this on an interval, and checks for any Chapters (.cbz-Archive) not already existing in your specified Download-Location. (If you rename or move files, it will download those again)  
+Tranga can (if configured) trigger a scan in Komga or Kavita, however the directory in which the Manga reside has to be available to both Tranga and Komga/Kavita.
+
+The project doesn't manage metadata, doesn't curate, change or enhance any information that isn't available on the selected Scanlation-Site.  
+It will blindly use whatever is scrapes (yes this is a glorified Web-scraper).
+
+
 ### Inspiration:
 
 Because [Kaizoku](https://github.com/oae/kaizoku) was relying on [mangal](https://github.com/metafates/mangal) and mangal
@@ -75,20 +92,9 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 - .NET-Core
 - Newtonsoft.JSON
-- [PuppeteerSharp](https://www.puppeteersharp.com/)
+- [PuppeteerSharp](https://www.puppeteersharp.com/) for Mangasee
 - [Html Agility Pack (HAP)](https://html-agility-pack.net/)
 - 💙 Blåhaj 🦈
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-## Screenshots
-
-| ![image](screenshots/overview.png) | ![image](screenshots/addtask.png) |
-|-----------------------------------:|:----------------------------------|
-
-| ![image](screenshots/settings.png) | ![image](screenshots/publication-description.png) | ![image](screenshots/progress.png) |
-|-----------------------------------:|:-------------------------------------------------:|:-----------------------------------|
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -102,35 +108,16 @@ There is two release types:
 
 ### CLI
 
-Head over to [releases](https://git.bernloehr.eu/glax/Tranga/releases) and download. The CLI will guide you through setup.
+Head over to [releases](https://git.bernloehr.eu/glax/Tranga/releases) and download.
+
+
+~~The CLI will guide you through setup.~~ Not in the current version.  
+Right now it is barebones with options to view logs and make HTTP-Requests
 
 ### Docker
 
-Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.
-
-Wherever you are mounting `/usr/share/Tranga-API` you also need to mount that same path + `/imageCache` in the webserver container.
-
-### Docker-Website usage
-
-There is two ways to download Mangas:
-- Downloading everything and monitor for new Chapters
-- Selecting specific Volumes/Chapters
-
-On the website you add new tasks, by selecting the blue '+' field. Next select the connector/site you want to use, and enter a search term.
-After clicking 'Search' (or pressing Enter), the results will be presented below - this might, depending on the result-size, take a while because we are already preloading the cover-images.
-Next select the publication (by selecting the cover) and a new popup will open with two options:
-- "Monitor" - Download all chapters and monitor for new ones
-- "Download Chapter" - Download specific chapters only
-
-When selecting `Monitor` you will be presented with a new window and the selection of the interval you want to check for new chapters (Default: Every 3 hours).
-When selecting `Download Chapter` a list will open with all available chapters - that have not yet been downloaded - from which you can then select a range (see below).
-
-The syntax for selecting chapters is as follows:
-- To download a single Chapter enter either the index number (the number at the very start of the line) or its absolute number like so: `c(h)(apter)[number]`, spaces are allowed.
-- To download a range of chapters enter either a range of index numbers (`3-6`) or chapters (`ch 12-23`).
-- For volumes the syntax is as follows: `v(ol)[number](-[number])`, again spaces allowed.
-
-Examples: `2-12`, `c1`, `ch 2`, `chapter 3`, `v 2`, `vol3-4`, `v2c4` (note: you can only specify a single chapter with this last syntax).
+Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.  
+Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives) downloaded (for exampled where Komga/Kavita can access them).
 
 ### Prerequisites
 
