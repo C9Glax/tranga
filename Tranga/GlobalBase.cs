@@ -1,4 +1,5 @@
-﻿using Logging;
+﻿using System.Globalization;
+using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.NotificationConnectors;
@@ -12,6 +13,7 @@ public abstract class GlobalBase
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
     protected List<Manga> cachedPublications { get; init; }
+    protected static readonly NumberFormatInfo numberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
 
     protected GlobalBase(GlobalBase clone)
     {

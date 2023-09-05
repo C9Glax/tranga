@@ -221,9 +221,8 @@ public class MangaDex : MangaConnector
         }
 
         //Return Chapters ordered by Chapter-Number
-        NumberFormatInfo chapterNumberFormatInfo = new() { NumberDecimalSeparator = "." };
         Log($"Got {chapters.Count} chapters. {manga}");
-        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
+        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
     }
 
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)

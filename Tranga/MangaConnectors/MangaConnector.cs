@@ -52,10 +52,9 @@ public abstract class MangaConnector : GlobalBase
     {
         Log($"Getting new Chapters for {manga}");
         Chapter[] newChapters = this.GetChapters(manga, language);
-        NumberFormatInfo decimalPoint = new (){ NumberDecimalSeparator = "." };
         Log($"Checking for duplicates {manga}");
         List<Chapter> newChaptersList = newChapters.Where(nChapter =>
-            float.Parse(nChapter.chapterNumber, decimalPoint) > manga.ignoreChaptersBelow &&
+            float.Parse(nChapter.chapterNumber, numberFormatDecimalPoint) > manga.ignoreChaptersBelow &&
             !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
         Log($"{newChaptersList.Count} new chapters. {manga}");
         

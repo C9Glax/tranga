@@ -144,13 +144,9 @@ public class Manganato : MangaConnector
             return Array.Empty<Chapter>();
         
         //Return Chapters ordered by Chapter-Number
-        NumberFormatInfo chapterNumberFormatInfo = new()
-        {
-            NumberDecimalSeparator = "."
-        };
         List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.result);
         Log($"Got {chapters.Count} chapters. {manga}");
-        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, chapterNumberFormatInfo)).ToArray();
+        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
     }
 
     private List<Chapter> ParseChaptersFromHtml(Manga manga, Stream html)
