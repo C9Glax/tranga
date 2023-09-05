@@ -223,25 +223,37 @@ public class Server : GlobalBase
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
         string? connectorName, internalId, jobId, chapterNumStr, customFolderName;
-        MangaConnector connector;
+        MangaConnector? connector;
+        Manga? tmpManga;
         Manga manga;
         Job? job;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
+            case "Manga":
+                if(!requestVariables.TryGetValue("internalId", out internalId) ||
+                   !_parent.TryGetPublicationById(internalId, out tmpManga))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                manga = (Manga)tmpManga!;
+                SendResponse(HttpStatusCode.OK, response, manga);
+                break;
             case "Jobs/MonitorManga":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
                    !requestVariables.TryGetValue("interval", out string? intervalStr) ||
-                   _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null ||
+                   !_parent.TryGetConnector(connectorName, out connector)||
+                   !_parent.TryGetPublicationById(internalId, out tmpManga) ||
                    !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                connector = _parent.GetConnector(connectorName)!;
-                manga = (Manga)_parent.GetPublicationById(internalId)!;
+
+                manga = (Manga)tmpManga!;
+                
                 if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
                 {
                     if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
@@ -255,20 +267,21 @@ public class Server : GlobalBase
                 if (requestVariables.TryGetValue("customFolderName", out customFolderName))
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
                 
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, true, interval));
+                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/DownloadNewChapters":
                 if(!requestVariables.TryGetValue("connector", out connectorName) ||
                    !requestVariables.TryGetValue("internalId", out internalId) ||
-                   _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null)
+                   !_parent.TryGetConnector(connectorName, out connector)||
+                   !_parent.TryGetPublicationById(internalId, out tmpManga))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                connector = _parent.GetConnector(connectorName)!;
-                manga = (Manga)_parent.GetPublicationById(internalId)!;
+
+                manga = (Manga)tmpManga!;
+                
                 if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
                 {
                     if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
@@ -282,7 +295,7 @@ public class Server : GlobalBase
                 if (requestVariables.TryGetValue("customFolderName", out customFolderName))
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
                 
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, false));
+                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/StartNow":
