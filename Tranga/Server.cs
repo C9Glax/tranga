@@ -222,7 +222,7 @@ public class Server : GlobalBase
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId, jobId, chapterNumStr;
+        string? connectorName, internalId, jobId, chapterNumStr, customFolderName;
         MangaConnector connector;
         Manga manga;
         Job? job;
@@ -251,6 +251,10 @@ public class Server : GlobalBase
                     }
                     manga.ignoreChaptersBelow = chapterNum;
                 }
+                
+                if (requestVariables.TryGetValue("customFolderName", out customFolderName))
+                    manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, true, interval));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
@@ -274,6 +278,10 @@ public class Server : GlobalBase
                     }
                     manga.ignoreChaptersBelow = chapterNum;
                 }
+
+                if (requestVariables.TryGetValue("customFolderName", out customFolderName))
+                    manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, false));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;

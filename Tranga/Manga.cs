@@ -28,7 +28,7 @@ public struct Manga
     public string? originalLanguage { get; }
     // ReSharper disable once MemberCanBePrivate.Global
     public string status { get; }
-    public string folderName { get; }
+    public string folderName { get; private set; }
     public string publicationId { get; }
     public string internalId { get; }
     public float ignoreChaptersBelow { get; set; }
@@ -71,6 +71,15 @@ public struct Manga
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(publicationFolder, GroupRead | GroupWrite | GroupExecute | OtherRead | OtherWrite | OtherExecute | UserRead | UserWrite | UserExecute);
         return publicationFolder;
+    }
+
+    public void MovePublicationFolder(string downloadDirectory, string newFolderName)
+    {
+        string oldPath = Path.Join(downloadDirectory, this.folderName);
+        this.folderName = newFolderName;
+        string newPath = CreatePublicationFolder(downloadDirectory);
+        if(Directory.Exists(oldPath))
+            Directory.Move(oldPath, newPath);
     }
 
     public void SaveSeriesInfoJson(string downloadDirectory)
