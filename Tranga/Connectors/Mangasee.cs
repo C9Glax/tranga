@@ -267,9 +267,12 @@ public class Mangasee : Connector
             
             string comicInfoPath = Path.GetTempFileName();
             File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
-        
+
+            page.CloseAsync();
             return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, parentTask, comicInfoPath, cancellationToken:cancellationToken);
         }
+
+        page.CloseAsync();
         return response.Status;
     }
 }
