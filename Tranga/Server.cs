@@ -222,7 +222,7 @@ public class Server : GlobalBase
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId, jobId;
+        string? connectorName, internalId, jobId, chapterNumStr;
         MangaConnector connector;
         Manga manga;
         Job? job;
@@ -242,6 +242,15 @@ public class Server : GlobalBase
                 }
                 connector = _parent.GetConnector(connectorName)!;
                 manga = (Manga)_parent.GetPublicationById(internalId)!;
+                if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
+                {
+                    if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    manga.ignoreChaptersBelow = chapterNum;
+                }
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, true, interval));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
@@ -256,6 +265,15 @@ public class Server : GlobalBase
                 }
                 connector = _parent.GetConnector(connectorName)!;
                 manga = (Manga)_parent.GetPublicationById(internalId)!;
+                if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
+                {
+                    if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    manga.ignoreChaptersBelow = chapterNum;
+                }
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector, manga, false));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
