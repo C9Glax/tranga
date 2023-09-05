@@ -24,7 +24,7 @@ public class MemoryLogger : LoggerBase
         }
     }
 
-    public string[] GetLogMessage()
+    public string[] GetLogMessages()
     {
         return Tail(Convert.ToUInt32(_logMessages.Count));
     }

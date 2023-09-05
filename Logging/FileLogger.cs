@@ -4,7 +4,7 @@ namespace Logging;
 
 public class FileLogger : LoggerBase
 {
-    private string logFilePath { get; }
+    internal string logFilePath { get; }
     private const int MaxNumberOfLogFiles = 5;
 
     public FileLogger(string logFilePath, Encoding? encoding = null) : base (encoding)

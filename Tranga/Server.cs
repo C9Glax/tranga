@@ -394,6 +394,27 @@ public class Server : GlobalBase
                     break;
                 }
                 break;
+            case "LogMessages":
+                if (logger is null || !File.Exists(logger?.logFilePath))
+                {
+                    SendResponse(HttpStatusCode.NotFound, response);
+                    break;
+                }
+                SendResponse(HttpStatusCode.OK, response, logger.GetLog());
+                break;
+            case "LogFile":
+                if (logger is null || !File.Exists(logger?.logFilePath))
+                {
+                    SendResponse(HttpStatusCode.NotFound, response);
+                    break;
+                }
+
+                string logDir = new FileInfo(logger.logFilePath).DirectoryName!;
+                string tmpFilePath = Path.Join(logDir, "Tranga.log");
+                File.Copy(logger.logFilePath, tmpFilePath);
+                SendResponse(HttpStatusCode.OK, response, new FileStream(tmpFilePath, FileMode.Open));
+                File.Delete(tmpFilePath);
+                break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;

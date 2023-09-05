@@ -8,6 +8,7 @@ public class Logger : TextWriter
     private static readonly string LogDirectoryPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
         ? "/var/log/tranga-api"
         : Path.Join(Directory.GetCurrentDirectory(), "logs");
+    public string? logFilePath => _fileLogger?.logFilePath;
     public override Encoding Encoding { get; }
     public enum LoggerType
     {
@@ -68,5 +69,10 @@ public class Logger : TextWriter
     public string[] GetNewLines()
     {
         return _memoryLogger.GetNewLines();
+    }
+
+    public string[] GetLog()
+    {
+        return _memoryLogger.GetLogMessages();
     }
 }
