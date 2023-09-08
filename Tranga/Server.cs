@@ -177,7 +177,7 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs);
                 break;
             case "Jobs/Progress":
-                if (!requestVariables.TryGetValue("jobId", out jobId))
+                if (requestVariables.TryGetValue("jobId", out jobId))
                 {
                     if(!_parent.jobBoss.jobs.Any(jjob => jjob.id == jobId))
                         SendResponse(HttpStatusCode.BadRequest, response);
