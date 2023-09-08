@@ -213,6 +213,9 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.OK, response, 
                     Enum.GetValues<LibraryConnector.LibraryType>().Select(lc => new KeyValuePair<byte, string?>((byte)lc, Enum.GetName(lc))));
                 break;
+            case "Ping":
+                SendResponse(HttpStatusCode.OK, response, "Pong");
+                break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;
