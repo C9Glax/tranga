@@ -10,11 +10,12 @@ public class FileLogger : LoggerBase
     public FileLogger(string logFilePath, Encoding? encoding = null) : base (encoding)
     {
         this.logFilePath = logFilePath;
+
+        DirectoryInfo dir = Directory.CreateDirectory(new FileInfo(logFilePath).DirectoryName!);
         
         //Remove oldest logfile if more than MaxNumberOfLogFiles
-        string parentFolderPath = Path.GetDirectoryName(logFilePath)!;
-        for (int fileCount = new DirectoryInfo(parentFolderPath).EnumerateFiles().Count(); fileCount > MaxNumberOfLogFiles - 1; fileCount--) //-1 because we create own logfile later
-            File.Delete(new DirectoryInfo(parentFolderPath).EnumerateFiles().MinBy(file => file.LastWriteTime)!.FullName);
+        for (int fileCount = dir.EnumerateFiles().Count(); fileCount > MaxNumberOfLogFiles - 1; fileCount--) //-1 because we create own logfile later
+            File.Delete(dir.EnumerateFiles().MinBy(file => file.LastWriteTime)!.FullName);
     }
     
     protected override void Write(LogMessage logMessage)
