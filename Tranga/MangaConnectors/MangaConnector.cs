@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -16,12 +15,18 @@ public abstract class MangaConnector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
 
-    protected MangaConnector(GlobalBase clone) : base(clone)
+    public void StopDownloadClient()
     {
+        downloadClient.Close();
+    }
+
+    protected MangaConnector(GlobalBase clone, string name) : base(clone)
+    {
+        this.name = name;
         Directory.CreateDirectory(settings.coverImageCache);
     }
     
-    public abstract string name { get; } //Name of the Connector (e.g. Website)
+    public string name { get; } //Name of the Connector (e.g. Website)
 
     /// <summary>
     /// Returns all Publications with the given string.

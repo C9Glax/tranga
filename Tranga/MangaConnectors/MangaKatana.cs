@@ -8,12 +8,9 @@ namespace Tranga.MangaConnectors;
 
 public class MangaKatana : MangaConnector
 {
-	public override string name { get; }
-
-	public MangaKatana(GlobalBase clone) : base(clone)
+	public MangaKatana(GlobalBase clone) : base(clone, "MangaKatana")
 	{
-		this.name = "MangaKatana";
-		this.downloadClient = new DownloadClient(clone, new Dictionary<byte, int>()
+		this.downloadClient = new HttpDownloadClient(clone, new Dictionary<byte, int>()
 		{
 			{1, 60}
 		});

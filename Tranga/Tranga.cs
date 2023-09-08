@@ -67,6 +67,11 @@ public partial class Tranga : GlobalBase
                 jobBoss.CheckJobs();
                 Thread.Sleep(100);
             }
+
+            foreach (MangaConnector connector in _connectors)
+            {
+                
+            }
         });
         t.Start();
     }

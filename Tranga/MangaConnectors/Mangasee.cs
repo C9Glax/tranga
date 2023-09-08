@@ -1,71 +1,19 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using PuppeteerSharp;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
 
 public class Mangasee : MangaConnector
 {
-    public override string name { get; }
-    private IBrowser? _browser;
-    private const string ChromiumVersion = "1154303";
-
-    public Mangasee(GlobalBase clone) : base(clone)
+    public Mangasee(GlobalBase clone) : base(clone, "Mangasee")
     {
-        this.name = "Mangasee";
-        this.downloadClient = new DownloadClient(clone, new Dictionary<byte, int>()
+        this.downloadClient = new ChromiumDownloadClient(clone, new Dictionary<byte, int>()
         {
             { 1, 60 }
-        });
-
-        Task d = new Task(DownloadBrowser);
-        d.Start();
-    }
-
-    private async void DownloadBrowser()
-    {
-        BrowserFetcher browserFetcher = new BrowserFetcher();
-        foreach(string rev in browserFetcher.LocalRevisions().Where(rev => rev != ChromiumVersion))
-            browserFetcher.Remove(rev);
-        if (!browserFetcher.LocalRevisions().Contains(ChromiumVersion))
-        {
-            Log("Downloading headless browser");
-            DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
-            browserFetcher.DownloadProgressChanged += (_, args) =>
-            {
-                double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
-                if (args.TotalBytesToReceive == args.BytesReceived)
-                    Log("Browser downloaded.");
-                else if (DateTime.Now > last.AddSeconds(1))
-                {
-                    Log($"Browser download progress: {currentBytes:P2}");
-                    last = DateTime.Now;
-                }
-
-            };
-            if (!browserFetcher.CanDownloadAsync(ChromiumVersion).Result)
-            {
-                Log($"Can't download browser version {ChromiumVersion}");
-                throw new Exception();
-            }
-            await browserFetcher.DownloadAsync(ChromiumVersion);
-        }
-        
-        Log("Starting Browser.");
-        this._browser = await Puppeteer.LaunchAsync(new LaunchOptions
-        {
-            Headless = true,
-            ExecutablePath = browserFetcher.GetExecutablePath(ChromiumVersion),
-            Args = new [] {
-                "--disable-gpu",
-                "--disable-dev-shm-usage",
-                "--disable-setuid-sandbox",
-                "--no-sandbox"}
         });
     }
 
@@ -78,38 +26,27 @@ public class Mangasee : MangaConnector
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Manga>();
 
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.result, publicationTitle);
+        if (requestResult.htmlDocument is null)
+            return Array.Empty<Manga>();
+        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument, publicationTitle);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
 
     public override Manga? GetMangaFromUrl(string url)
     {
-        while (this._browser is null)
-        {
-            Log("Waiting for headless browser to download...");
-            Thread.Sleep(1000);
-        }
-
         Regex publicationIdRex = new(@"https:\/\/mangasee123.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
-        IPage page = _browser!.NewPageAsync().Result;
-        IResponse response = page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded).Result;
-        if (response.Ok)
-        {
-            HtmlDocument document = new();
-            document.LoadHtml(page.GetContentAsync().Result);
-            page.CloseAsync();
-            return ParseSinglePublicationFromHtml(document, publicationId);
-        }
 
-        page.CloseAsync();
+        DownloadClient.RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
+        if(requestResult.htmlDocument is not null)
+            return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
         return null;
     }
 
-    private Manga[] ParsePublicationsFromHtml(Stream html, string publicationTitle)
+    private Manga[] ParsePublicationsFromHtml(HtmlDocument document, string publicationTitle)
     {
-        string jsonString = new StreamReader(html).ReadToEnd();
+        string jsonString = document.DocumentNode.SelectSingleNode("//body").InnerText;
         List<SearchResultItem> result = JsonConvert.DeserializeObject<List<SearchResultItem>>(jsonString)!;
         Dictionary<SearchResultItem, int> queryFiltered = new();
         foreach (SearchResultItem resultItem in result)
@@ -244,36 +181,25 @@ public class Mangasee : MangaConnector
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
         Manga chapterParentManga = chapter.parentManga;
-        while (this._browser is null && !(progressToken?.cancellationRequested??false))
-        {
-            Log("Waiting for headless browser to download...");
-            Thread.Sleep(1000);
-        }
         if (progressToken?.cancellationRequested??false)
             return HttpStatusCode.RequestTimeout;
         
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
-        IPage page = _browser!.NewPageAsync().Result;
-        IResponse response = page.GoToAsync(chapter.url).Result;
-        if (response.Ok)
-        {
-            HtmlDocument document = new ();
-            document.LoadHtml(page.GetContentAsync().Result);
-            page.CloseAsync();
 
-            HtmlNode gallery = document.DocumentNode.Descendants("div").First(div => div.HasClass("ImageGallery"));
-            HtmlNode[] images = gallery.Descendants("img").Where(img => img.HasClass("img-fluid")).ToArray();
-            List<string> urls = new();
-            foreach(HtmlNode galleryImage in images)
-                urls.Add(galleryImage.GetAttributeValue("src", ""));
-            
-            string comicInfoPath = Path.GetTempFileName();
-            File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
+        DownloadClient.RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
+        if(requestResult.htmlDocument is null)
+            return HttpStatusCode.RequestTimeout;
+        HtmlDocument document = requestResult.htmlDocument;
         
-            return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
-        }
-
-        page.CloseAsync();
-        return response.Status;
+        HtmlNode gallery = document.DocumentNode.Descendants("div").First(div => div.HasClass("ImageGallery"));
+        HtmlNode[] images = gallery.Descendants("img").Where(img => img.HasClass("img-fluid")).ToArray();
+        List<string> urls = new();
+        foreach(HtmlNode galleryImage in images)
+            urls.Add(galleryImage.GetAttributeValue("src", ""));
+            
+        string comicInfoPath = Path.GetTempFileName();
+        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
+        
+        return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
     }
 }

@@ -8,8 +8,6 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Tranga.MangaConnectors;
 public class MangaDex : MangaConnector
 {
-    public override string name { get; }
-
     private enum RequestType : byte
     {
         Manga,
@@ -19,10 +17,9 @@ public class MangaDex : MangaConnector
         Author,
     }
 
-    public MangaDex(GlobalBase clone) : base(clone)
+    public MangaDex(GlobalBase clone) : base(clone, "MangaDex")
     {
-        name = "MangaDex";
-        this.downloadClient = new DownloadClient(clone, new Dictionary<byte, int>()
+        this.downloadClient = new HttpDownloadClient(clone, new Dictionary<byte, int>()
         {
             {(byte)RequestType.Manga, 250},
             {(byte)RequestType.Feed, 250},

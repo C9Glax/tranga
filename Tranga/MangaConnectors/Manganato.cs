@@ -8,12 +8,9 @@ namespace Tranga.MangaConnectors;
 
 public class Manganato : MangaConnector
 {
-    public override string name { get; }
-
-    public Manganato(GlobalBase clone) : base(clone)
+    public Manganato(GlobalBase clone) : base(clone, "Manganato")
     {
-        this.name = "Manganato";
-        this.downloadClient = new DownloadClient(clone, new Dictionary<byte, int>()
+        this.downloadClient = new HttpDownloadClient(clone, new Dictionary<byte, int>()
         {
             {1, 60}
         });
@@ -22,24 +19,22 @@ public class Manganato : MangaConnector
     public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
-        string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*")).ToLower();
+        string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Manga>();
 
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.result);
+        if (requestResult.htmlDocument is null)
+            return Array.Empty<Manga>();
+        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
 
-    private Manga[] ParsePublicationsFromHtml(Stream html)
+    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
-        StreamReader reader = new (html);
-        string htmlString = reader.ReadToEnd();
-        HtmlDocument document = new ();
-        document.LoadHtml(htmlString);
         IEnumerable<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("search-story-item"));
         List<string> urls = new();
         foreach (HtmlNode mangaResult in searchResults)
@@ -65,16 +60,14 @@ public class Manganato : MangaConnector
             downloadClient.MakeRequest(url, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return null;
-
-        return ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]);
+        
+        if (requestResult.htmlDocument is null)
+            return null;
+        return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1]);
     }
 
-    private Manga ParseSinglePublicationFromHtml(Stream html, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
     {
-        StreamReader reader = new (html);
-        string htmlString = reader.ReadToEnd();
-        HtmlDocument document = new ();
-        document.LoadHtml(htmlString);
         string status = "";
         Dictionary<string, string> altTitles = new();
         Dictionary<string, string>? links = null;
@@ -144,17 +137,15 @@ public class Manganato : MangaConnector
             return Array.Empty<Chapter>();
         
         //Return Chapters ordered by Chapter-Number
-        List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.result);
+        if (requestResult.htmlDocument is null)
+            return Array.Empty<Chapter>();
+        List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
         Log($"Got {chapters.Count} chapters. {manga}");
         return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
     }
 
-    private List<Chapter> ParseChaptersFromHtml(Manga manga, Stream html)
+    private List<Chapter> ParseChaptersFromHtml(Manga manga, HtmlDocument document)
     {
-        StreamReader reader = new (html);
-        string htmlString = reader.ReadToEnd();
-        HtmlDocument document = new ();
-        document.LoadHtml(htmlString);
         List<Chapter> ret = new();
 
         HtmlNode chapterList = document.DocumentNode.Descendants("ul").First(l => l.HasClass("row-content-chapter"));
@@ -186,7 +177,7 @@ public class Manganato : MangaConnector
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return requestResult.statusCode;
 
-        string[] imageUrls = ParseImageUrlsFromHtml(requestResult.result);
+        string[] imageUrls = ParseImageUrlsFromHtml(requestResult.htmlDocument);
         
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
@@ -194,12 +185,8 @@ public class Manganato : MangaConnector
         return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://chapmanganato.com/", progressToken:progressToken);
     }
 
-    private string[] ParseImageUrlsFromHtml(Stream html)
+    private string[] ParseImageUrlsFromHtml(HtmlDocument document)
     {
-        StreamReader reader = new (html);
-        string htmlString = reader.ReadToEnd();
-        HtmlDocument document = new ();
-        document.LoadHtml(htmlString);
         List<string> ret = new();
 
         HtmlNode imageContainer =
