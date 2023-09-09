@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
@@ -10,16 +11,8 @@ public class JobBoss : GlobalBase
 
     public JobBoss(GlobalBase clone, HashSet<MangaConnector> connectors) : base(clone)
     {
-        if (File.Exists(settings.jobsFilePath))
-        {
-            this.jobs = JsonConvert.DeserializeObject<HashSet<Job>>(File.ReadAllText(settings.jobsFilePath), new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
-            foreach (Job job in this.jobs)
-                this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
-        }
-        else
-            this.jobs = new();
-        foreach (DownloadNewChapters ncJob in this.jobs.Where(job => job is DownloadNewChapters))
-            cachedPublications.Add(ncJob.manga);
+        this.jobs = new();
+        LoadJobsList(connectors);
         this.mangaConnectorJobQueue = new();
     }
 
@@ -148,13 +141,62 @@ public class JobBoss : GlobalBase
             AddJobToQueue(job);
     }
 
+    public void LoadJobsList(HashSet<MangaConnector> connectors)
+    {
+        Directory.CreateDirectory(settings.jobsFolderPath);
+        Regex idRex = new (@"(.*)\.json");
+
+        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles())
+            if (idRex.IsMatch(file.Name))
+            {
+                Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                    new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
+                this.jobs.Add(job);
+            }
+                
+        foreach (Job job in this.jobs)
+            this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+        
+        foreach (DownloadNewChapters ncJob in this.jobs.Where(job => job is DownloadNewChapters))
+            cachedPublications.Add(ncJob.manga);
+    }
+
     public void ExportJobsList()
     {
-        Log($"Exporting {settings.jobsFilePath}");
-        string content = JsonConvert.SerializeObject(this.jobs);
-        while(IsFileInUse(settings.jobsFilePath))
-            Thread.Sleep(10);
-        File.WriteAllText(settings.jobsFilePath, content);
+        Log("Exporting Jobs");
+        foreach (Job job in this.jobs)
+        {
+            string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
+            if (!File.Exists(jobFilePath))
+            {
+                string jobStr = JsonConvert.SerializeObject(job);
+                while(IsFileInUse(jobFilePath))
+                    Thread.Sleep(10);
+                Log($"Exporting Job {jobFilePath}");
+                File.WriteAllText(jobFilePath, jobStr);
+            }
+        }
+
+        //Remove files with jobs not in this.jobs-list
+        Regex idRex = new (@"(.*)\.json");
+        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles())
+        {
+            if (idRex.IsMatch(file.Name))
+            {
+                string id = idRex.Match(file.Name).Groups[1].Value;
+                if (!this.jobs.Any(job => job.id == id))
+                {
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch (Exception e)
+                    {
+                        Log(e.ToString());
+                    }
+                }
+            }
+        }
     }
 
     public void CheckJobs()
