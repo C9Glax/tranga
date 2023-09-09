@@ -21,7 +21,7 @@ public class DownloadNewChapters : Job
 
     protected override string GetId()
     {
-        return Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.GetType().ToString(), manga.internalId)));
+        return $"{GetType()}-{manga.internalId}";
     }
     
     public override string ToString()

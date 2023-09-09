@@ -19,7 +19,7 @@ public class DownloadChapter : Job
     
     protected override string GetId()
     {
-        return Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.GetType().ToString(), chapter.parentManga.internalId, chapter.chapterNumber)));
+        return $"{GetType()}-{chapter.parentManga.internalId}-{chapter.chapterNumber}";
     }
 
     public override string ToString()
