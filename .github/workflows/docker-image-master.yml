@@ -35,7 +35,7 @@ jobs:
       
       # https://github.com/docker/build-push-action#multi-platform-image
       - name: Build and push API
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v4.2.1
         with:
           context: ./
           file: ./Dockerfile
@@ -48,7 +48,7 @@ jobs:
       
       # https://github.com/docker/build-push-action#multi-platform-image
       - name: Build and push Website
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v4.2.1
         with:
           context: ./Website
           file: ./Website/Dockerfile
