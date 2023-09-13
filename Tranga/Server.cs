@@ -226,7 +226,7 @@ public class Server : GlobalBase
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId, jobId, chapterNumStr, customFolderName;
+        string? connectorName, internalId, jobId, chapterNumStr, customFolderName, translatedLanguage;
         MangaConnector? connector;
         Manga? tmpManga;
         Manga manga;
@@ -270,8 +270,9 @@ public class Server : GlobalBase
                 
                 if (requestVariables.TryGetValue("customFolderName", out customFolderName))
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
                 
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval));
+                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval, translatedLanguage: translatedLanguage??"en"));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/DownloadNewChapters":
@@ -298,8 +299,9 @@ public class Server : GlobalBase
 
                 if (requestVariables.TryGetValue("customFolderName", out customFolderName))
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
                 
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false));
+                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false, translatedLanguage: translatedLanguage??"en"));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/StartNow":
