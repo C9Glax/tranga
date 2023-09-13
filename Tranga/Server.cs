@@ -419,7 +419,20 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.NotFound, response);
                     break;
                 }
-                SendResponse(HttpStatusCode.OK, response, logger.GetLog());
+
+                if (requestVariables.TryGetValue("count", out string? count))
+                {
+                    try
+                    {
+                        uint messageCount = uint.Parse(count);
+                        SendResponse(HttpStatusCode.OK, response, logger.Tail(messageCount));
+                    }
+                    catch (FormatException f)
+                    {
+                        SendResponse(HttpStatusCode.InternalServerError, response, f);
+                    }
+                }else
+                    SendResponse(HttpStatusCode.OK, response, logger.GetLog());
                 break;
             case "LogFile":
                 if (logger is null || !File.Exists(logger?.logFilePath))
