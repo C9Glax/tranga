@@ -181,6 +181,8 @@ public class Manganato : MangaConnector
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return requestResult.statusCode;
 
+        if (requestResult.htmlDocument is null)
+            return HttpStatusCode.InternalServerError;
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.htmlDocument);
         
         string comicInfoPath = Path.GetTempFileName();
