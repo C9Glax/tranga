@@ -163,7 +163,8 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                SendResponse(HttpStatusCode.OK, response, connector!.GetChapters((Manga)manga!));
+                requestVariables.TryGetValue("translatedLanguage", out string? translatedLanguage);
+                SendResponse(HttpStatusCode.OK, response, connector!.GetChapters((Manga)manga!, translatedLanguage??"en"));
                 break;
             case "Jobs":
                 if (!requestVariables.TryGetValue("jobId", out jobId))

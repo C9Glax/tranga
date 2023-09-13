@@ -1,22 +1,24 @@
-﻿using System.Text;
-using Tranga.MangaConnectors;
+﻿using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
 public class DownloadNewChapters : Job
 {
     public Manga manga { get; init; }
+    public string translatedLanguage { get; init; }
 
     public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, DateTime lastExecution,
-        bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null) : base(clone, connector, lastExecution, recurring,
+        bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base(clone, connector, lastExecution, recurring,
         recurrence, parentJobId)
     {
         this.manga = manga;
+        this.translatedLanguage = translatedLanguage;
     }
     
-    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null) : base (clone, connector, recurring, recurrence, parentJobId)
+    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base (clone, connector, recurring, recurrence, parentJobId)
     {
         this.manga = manga;
+        this.translatedLanguage = translatedLanguage;
     }
 
     protected override string GetId()
@@ -31,7 +33,7 @@ public class DownloadNewChapters : Job
 
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal()
     {
-        Chapter[] chapters = mangaConnector.GetNewChapters(manga);
+        Chapter[] chapters = mangaConnector.GetNewChapters(manga, this.translatedLanguage);
         this.progressToken.increments = chapters.Length;
         List<Job> jobs = new();
         foreach (Chapter chapter in chapters)
