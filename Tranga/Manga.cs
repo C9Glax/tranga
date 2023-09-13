@@ -124,14 +124,30 @@ public struct Manga
         [JsonRequired]public string year { get; }
         [JsonRequired]public string status { get; }
         [JsonRequired]public string description_text { get; }
-
+        [JsonIgnore] public static string[] continuing = new[]
+        {
+            "ongoing",
+            "hiatus",
+            "in corso",
+            "in pausa"
+        };
+        [JsonIgnore] public static string[] ended = new[]
+        {
+            "completed",
+            "cancelled",
+            "discontinued",
+            "finito",
+            "cancellato",
+            "droppato"
+        };
+        
         public Metadata(string name, string year, string status, string description_text)
         {
             this.name = name;
             this.year = year;
-            if(status.ToLower() == "ongoing" || status.ToLower() == "hiatus")
+            if(continuing.Contains(status.ToLower()))
                 this.status = "Continuing";
-            else if (status.ToLower() == "completed" || status.ToLower() == "cancelled" || status.ToLower() == "discontinued")
+            else if(ended.Contains(status.ToLower()))
                 this.status = "Ended";
             else
                 this.status = status;
