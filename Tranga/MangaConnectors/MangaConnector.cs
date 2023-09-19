@@ -162,7 +162,7 @@ public abstract class MangaConnector : GlobalBase
         Log($"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
+            File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite);
     }
 
     /// <summary>
