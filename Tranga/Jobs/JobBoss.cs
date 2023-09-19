@@ -167,14 +167,11 @@ public class JobBoss : GlobalBase
         foreach (Job job in this.jobs)
         {
             string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
-            if (!File.Exists(jobFilePath))
-            {
-                string jobStr = JsonConvert.SerializeObject(job);
-                while(IsFileInUse(jobFilePath))
-                    Thread.Sleep(10);
-                Log($"Exporting Job {jobFilePath}");
-                File.WriteAllText(jobFilePath, jobStr);
-            }
+            string jobStr = JsonConvert.SerializeObject(job);
+            while(IsFileInUse(jobFilePath))
+                Thread.Sleep(10);
+            Log($"Exporting Job {jobFilePath}");
+            File.WriteAllText(jobFilePath, jobStr);
         }
 
         //Remove files with jobs not in this.jobs-list
