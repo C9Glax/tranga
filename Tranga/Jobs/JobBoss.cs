@@ -220,12 +220,15 @@ public class JobBoss : GlobalBase
                             queueHead.progressToken.Complete();
                         break;
                 }
+                queueHead.ResetProgress();
                 jobQueue.Dequeue();
+                ExportJobsList();
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
                 Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
+                ExportJobsList();
             }
         }
     }
