@@ -28,7 +28,7 @@ public class DownloadNewChapters : Job
     
     public override string ToString()
     {
-        return $"DownloadChapter {id} {manga}";
+        return $"{id} Manga: {manga}";
     }
 
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal()
