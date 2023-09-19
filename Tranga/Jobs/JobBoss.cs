@@ -27,7 +27,7 @@ public class JobBoss : GlobalBase
         {
             Log($"Added {job}");
             this.jobs.Add(job);
-            ExportJobsList();
+            ExportJob(job);
         }
     }
 
@@ -57,7 +57,7 @@ public class JobBoss : GlobalBase
         this.jobs.Remove(job);
         if(job.subJobs is not null)
             RemoveJobs(job.subJobs);
-        ExportJobsList();
+        ExportJob(job);
     }
 
     public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
