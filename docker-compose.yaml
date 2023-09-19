@@ -5,6 +5,7 @@ services:
     container_name: tranga-api
     volumes:
       - ./Manga:/Manga
+      - ./settings:/usr/share/tranga-api
     ports:
       - "6531:6531"
     restart: unless-stopped

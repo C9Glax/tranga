@@ -37,7 +37,7 @@ public class TrangaSettings
                 throw new ArgumentException("Download-location and working-directory paths can not be empty!");
             this.apiPortNumber = apiPortNumber ?? 6531;
             this.downloadLocation = downloadLocation ?? (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
-            this.workingDirectory = workingDirectory ?? Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/var/lib" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+            this.workingDirectory = workingDirectory ?? Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
             ExportSettings();
         }
         else
