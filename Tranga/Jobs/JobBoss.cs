@@ -165,12 +165,12 @@ public class JobBoss : GlobalBase
     public void ExportJob(Job job)
     {
         string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
-        Log($"Exporting Job {jobFilePath}");
         
         if (!this.jobs.Any(jjob => jjob.id == job.id))
         {
             try
             {
+                Log($"Deleting Job-file {jobFilePath}");
                 while(IsFileInUse(jobFilePath))
                     Thread.Sleep(10);
                 File.Delete(jobFilePath);
@@ -182,6 +182,7 @@ public class JobBoss : GlobalBase
         }
         else
         {
+            Log($"Exporting Job {jobFilePath}");
             string jobStr = JsonConvert.SerializeObject(job);
             while(IsFileInUse(jobFilePath))
                 Thread.Sleep(10);
