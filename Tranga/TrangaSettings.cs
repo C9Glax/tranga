@@ -23,13 +23,13 @@ public class TrangaSettings
         string lockFilePath = $"{settingsFilePath}.lock";
         if (File.Exists(settingsFilePath) && !File.Exists(lockFilePath))
         {//Load from settings file
-            FileStream lockFile = File.Create(lockFilePath,0, FileOptions.DeleteOnClose);
+            FileStream lockFile = File.Create(lockFilePath,0, FileOptions.DeleteOnClose); //lock settingsfile
             string settingsStr = File.ReadAllText(settingsFilePath);
             TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(settingsStr)!;
             this.downloadLocation = downloadLocation ?? settings.downloadLocation;
             this.workingDirectory = workingDirectory ?? settings.workingDirectory;
             this.apiPortNumber = apiPortNumber ?? settings.apiPortNumber;
-            lockFile.Close();
+            lockFile.Close();  //unlock settingsfile
         }
         else if(!File.Exists(settingsFilePath))
         {//No settings file exists
@@ -131,5 +131,16 @@ public class TrangaSettings
     public string GetFullCoverPath(Manga manga)
     {
         return Path.Join(this.coverImageCache, manga.coverFileNameInCache);
+    }
+
+    public override string ToString()
+    {
+        return $"TrangaSettings:\n" +
+               $"\tDownloadLocation: {downloadLocation}\n" +
+               $"\tworkingDirectory: {workingDirectory}\n" +
+               $"\tjobsFolderPath: {jobsFolderPath}\n" +
+               $"\tsettingsFilePath: {settingsFilePath}\n" +
+               $"\t\tnotificationConnectors: {notificationConnectorsFilePath}\n" +
+               $"\t\tlibraryConnectors: {libraryConnectorsFilePath}\n";
     }
 }

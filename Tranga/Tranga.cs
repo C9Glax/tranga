@@ -13,6 +13,8 @@ public partial class Tranga : GlobalBase
 
     public Tranga(Logger? logger, TrangaSettings settings) : base(logger, settings)
     {
+        Log("\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n");
+        Log(settings.ToString());
         keepRunning = true;
         _connectors = new HashSet<MangaConnector>()
         {  
