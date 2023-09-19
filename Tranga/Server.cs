@@ -522,7 +522,7 @@ public class Server : GlobalBase
         response.AddHeader("Access-Control-Max-Age", "1728000");
         response.AppendHeader("Access-Control-Allow-Origin", "*");
 
-        if (content is not FileStream stream)
+        if (content is not Stream)
         {
             response.ContentType = "application/json";
             try
@@ -537,8 +537,25 @@ public class Server : GlobalBase
                 Log(e.ToString());
             }
         }
-        else
+        else if(content is FileStream stream)
         {
+            string contentType = stream.Name.Split('.')[^1];
+            switch (contentType.ToLower())
+            {
+                case "gif":
+                    response.ContentType = "image/gif";
+                    break;
+                case "png":
+                    response.ContentType = "image/png";
+                    break;
+                case "jpg":
+                case "jpeg":
+                    response.ContentType = "image/jpeg";
+                    break;
+                case "log":
+                    response.ContentType = "text/plain";
+                    break;
+            }
             stream.CopyTo(response.OutputStream);
             response.OutputStream.Close();
             stream.Close();
