@@ -14,6 +14,7 @@ public class JobBoss : GlobalBase
         this.jobs = new();
         LoadJobsList(connectors);
         this.mangaConnectorJobQueue = new();
+        Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
     }
 
     public void AddJob(Job job)
