@@ -34,6 +34,9 @@ public class Mangaworld: MangaConnector
 
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
+        if (!document.DocumentNode.SelectSingleNode("//div[@class='comics-grid']").ChildNodes
+                .Any(node => node.HasClass("entry")))
+            return Array.Empty<Manga>();
         
         List<string> urls = document.DocumentNode
             .SelectNodes(
