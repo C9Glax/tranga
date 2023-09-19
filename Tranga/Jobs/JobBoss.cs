@@ -165,11 +165,28 @@ public class JobBoss : GlobalBase
     public void ExportJob(Job job)
     {
         string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
-        string jobStr = JsonConvert.SerializeObject(job);
-        while(IsFileInUse(jobFilePath))
-            Thread.Sleep(10);
         Log($"Exporting Job {jobFilePath}");
-        File.WriteAllText(jobFilePath, jobStr);
+        
+        if (!this.jobs.Any(jjob => jjob.id == job.id))
+        {
+            try
+            {
+                while(IsFileInUse(jobFilePath))
+                    Thread.Sleep(10);
+                File.Delete(jobFilePath);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+            }
+        }
+        else
+        {
+            string jobStr = JsonConvert.SerializeObject(job);
+            while(IsFileInUse(jobFilePath))
+                Thread.Sleep(10);
+            File.WriteAllText(jobFilePath, jobStr);
+        }
     }
 
     public void ExportJobsList()
