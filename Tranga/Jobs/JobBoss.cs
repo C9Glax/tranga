@@ -161,18 +161,21 @@ public class JobBoss : GlobalBase
             cachedPublications.Add(ncJob.manga);
     }
 
+    public void ExportJob(Job job)
+    {
+        string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
+        string jobStr = JsonConvert.SerializeObject(job);
+        while(IsFileInUse(jobFilePath))
+            Thread.Sleep(10);
+        Log($"Exporting Job {jobFilePath}");
+        File.WriteAllText(jobFilePath, jobStr);
+    }
+
     public void ExportJobsList()
     {
         Log("Exporting Jobs");
         foreach (Job job in this.jobs)
-        {
-            string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
-            string jobStr = JsonConvert.SerializeObject(job);
-            while(IsFileInUse(jobFilePath))
-                Thread.Sleep(10);
-            Log($"Exporting Job {jobFilePath}");
-            File.WriteAllText(jobFilePath, jobStr);
-        }
+            ExportJob(job);
 
         //Remove files with jobs not in this.jobs-list
         Regex idRex = new (@"(.*)\.json");
@@ -219,14 +222,13 @@ public class JobBoss : GlobalBase
                 }
                 queueHead.ResetProgress();
                 jobQueue.Dequeue();
-                ExportJobsList();
+                ExportJob(queueHead);
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
                 Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
-                ExportJobsList();
             }
         }
     }
