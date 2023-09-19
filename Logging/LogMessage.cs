@@ -1,6 +1,6 @@
 ﻿namespace Logging;
 
-public class LogMessage
+public readonly struct LogMessage
 {
     public DateTime logTime { get; }
     public string caller { get; }

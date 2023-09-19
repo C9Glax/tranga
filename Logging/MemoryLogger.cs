@@ -14,11 +14,13 @@ public class MemoryLogger : LoggerBase
 
     protected override void Write(LogMessage value)
     {
-        while(!_logMessages.TryAdd(value.logTime, value))
-            Thread.Sleep(10);
+        lock (_logMessages)
+        {
+            _logMessages.Add(DateTime.Now, value);
+        }
     }
 
-    public string[] GetLogMessage()
+    public string[] GetLogMessages()
     {
         return Tail(Convert.ToUInt32(_logMessages.Count));
     }
@@ -35,7 +37,10 @@ public class MemoryLogger : LoggerBase
 
         for (int retIndex = 0; retIndex < ret.Length; retIndex++)
         {
-            ret[retIndex] = _logMessages.GetValueAtIndex(_logMessages.Count - retLength + retIndex).ToString();
+            lock (_logMessages)
+            {
+                ret[retIndex] = _logMessages.GetValueAtIndex(_logMessages.Count - retLength + retIndex).ToString();
+            }
         }
 
         _lastLogMessageIndex = _logMessages.Count - 1;
@@ -45,14 +50,25 @@ public class MemoryLogger : LoggerBase
     public string[] GetNewLines()
     {
         int logMessageCount = _logMessages.Count;
-        string[] ret = new string[logMessageCount - _lastLogMessageIndex];
+        List<string> ret = new();
 
-        for (int retIndex = 0; retIndex < ret.Length; retIndex++)
+        int retIndex = 0;
+        for (; retIndex < logMessageCount - _lastLogMessageIndex; retIndex++)
         {
-            ret[retIndex] = _logMessages.GetValueAtIndex(_lastLogMessageIndex + retIndex).ToString();
+            try
+            {
+                lock(_logMessages)
+                {
+                    ret.Add(_logMessages.GetValueAtIndex(_lastLogMessageIndex + retIndex).ToString());
+                }
+            }
+            catch (NullReferenceException e)//Called when LogMessage has not finished writing
+            {
+                break;
+            }
         }
 
-        _lastLogMessageIndex = logMessageCount;
-        return ret;
+        _lastLogMessageIndex = _lastLogMessageIndex + retIndex;
+        return ret.ToArray();
     }
 }
