@@ -31,6 +31,7 @@ public class DownloadChapter : Job
     {
         Task downloadTask = new(delegate
         {
+            mangaConnector.CopyCoverFromCacheToDownloadLocation(chapter.parentManga);
             mangaConnector.DownloadChapter(chapter, this.progressToken);
             UpdateLibraries();
             SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}");
