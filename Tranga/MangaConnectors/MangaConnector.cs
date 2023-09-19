@@ -193,7 +193,11 @@ public abstract class MangaConnector : GlobalBase
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
-            Directory.CreateDirectory(directoryPath);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                Directory.CreateDirectory(directoryPath,
+                    UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
+            else
+                Directory.CreateDirectory(directoryPath);
 
         if (File.Exists(saveArchiveFilePath)) //Don't download twice.
             return HttpStatusCode.OK;
@@ -229,7 +233,7 @@ public abstract class MangaConnector : GlobalBase
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(saveArchiveFilePath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
+            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute);
         Directory.Delete(tempFolder, true); //Cleanup
         
         progressToken?.Complete();
