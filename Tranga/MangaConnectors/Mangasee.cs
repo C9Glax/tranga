@@ -179,16 +179,27 @@ public class Mangasee : MangaConnector
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
         if (progressToken?.cancellationRequested ?? false)
+        {
+            progressToken?.Cancel();
             return HttpStatusCode.RequestTimeout;
+        }
+
         Manga chapterParentManga = chapter.parentManga;
-        if (progressToken?.cancellationRequested??false)
+        if (progressToken?.cancellationRequested ?? false)
+        {
+            progressToken?.Cancel();
             return HttpStatusCode.RequestTimeout;
-        
+        }
+
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
         DownloadClient.RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
-        if(requestResult.htmlDocument is null)
+        if (requestResult.htmlDocument is null)
+        {
+            progressToken?.Cancel();
             return HttpStatusCode.RequestTimeout;
+        }
+
         HtmlDocument document = requestResult.htmlDocument;
         
         HtmlNode gallery = document.DocumentNode.Descendants("div").First(div => div.HasClass("ImageGallery"));
