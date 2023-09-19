@@ -223,6 +223,7 @@ public class JobBoss : GlobalBase
                 queueHead.ResetProgress();
                 jobQueue.Dequeue();
                 ExportJobsList();
+                Log($"Next job in {jobQueue.Peek().nextExecution.Subtract(DateTime.Now)}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
                 Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();
