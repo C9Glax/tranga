@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using Logging;
 
 namespace Tranga.LibraryConnectors;
@@ -20,7 +21,10 @@ public abstract class LibraryConnector : GlobalBase
     
     protected LibraryConnector(GlobalBase clone, string baseUrl, string auth, LibraryType libraryType) : base(clone)
     {
-        this.baseUrl = baseUrl;
+        Regex urlRex = new(@"https?:\/\/[0-9A-z\.]*");
+        if (!urlRex.IsMatch(baseUrl))
+            throw new ArgumentException("Base url does not match pattern");
+        this.baseUrl = urlRex.Match(baseUrl).Value;
         this.auth = auth;
         this.libraryType = libraryType;
     }
