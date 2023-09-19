@@ -137,8 +137,8 @@ public class Mangaworld: MangaConnector
         foreach (HtmlNode volNode in document.DocumentNode.SelectNodes(
                      "//div[contains(concat(' ',normalize-space(@class),' '),'chapters-wrapper')]//div[contains(concat(' ',normalize-space(@class),' '),'volume-element')]"))
         {
-            string volume = volNode.SelectSingleNode("//p[contains(concat(' ',normalize-space(@class),' '),'volume-name')]").InnerText.Split(' ')[^1];
-            foreach (HtmlNode chNode in volNode.SelectNodes("//div[contains(concat(' ',normalize-space(@class),' '),'volume-chapters')]/div[@class='chapter']"))
+            string volume = volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText.Split(' ')[^1];
+            foreach (HtmlNode chNode in volNode.SelectNodes("div").First(node => node.HasClass("volume-chapters")).SelectNodes("div"))
             {
                 string number = chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText.Split(" ")[^1];
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
