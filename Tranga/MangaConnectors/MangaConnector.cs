@@ -200,7 +200,7 @@ public abstract class MangaConnector : GlobalBase
                 Directory.CreateDirectory(directoryPath);
 
         if (File.Exists(saveArchiveFilePath)) //Don't download twice.
-            return HttpStatusCode.OK;
+            return HttpStatusCode.Created;
         
         //Create a temporary folder to store images
         string tempFolder = Directory.CreateTempSubdirectory().FullName;
