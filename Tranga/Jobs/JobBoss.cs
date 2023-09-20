@@ -55,7 +55,7 @@ public class JobBoss : GlobalBase
         Log($"Removing {job}");
         job.Cancel();
         this.jobs.Remove(job);
-        if(job.subJobs is not null)
+        if(job.subJobs is not null && job.subJobs.Any())
             RemoveJobs(job.subJobs);
         ExportJob(job);
     }
