@@ -22,10 +22,9 @@ public abstract class LibraryConnector : GlobalBase
     protected LibraryConnector(GlobalBase clone, string baseUrl, string auth, LibraryType libraryType) : base(clone)
     {
         Log($"Creating libraryConnector {Enum.GetName(libraryType)}");
-        Regex urlRex = new(@"https?:\/\/[0-9A-z\.]*");
-        if (!urlRex.IsMatch(baseUrl))
+        if (!baseUrlRex.IsMatch(baseUrl))
             throw new ArgumentException("Base url does not match pattern");
-        this.baseUrl = urlRex.Match(baseUrl).Value;
+        this.baseUrl = baseUrlRex.Match(baseUrl).Value;
         this.auth = auth;
         this.libraryType = libraryType;
     }

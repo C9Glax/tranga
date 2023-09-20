@@ -13,7 +13,9 @@ public class Gotify : NotificationConnector
     [JsonConstructor]
     public Gotify(GlobalBase clone, string endpoint, string appToken) : base(clone, NotificationConnectorType.Gotify)
     {
-        this.endpoint = endpoint;
+        if (!baseUrlRex.IsMatch(endpoint))
+            throw new ArgumentException("endpoint does not match pattern");
+        this.endpoint = baseUrlRex.Match(endpoint).Value;;
         this.appToken = appToken;
     }
 

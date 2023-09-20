@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
@@ -14,6 +15,7 @@ public abstract class GlobalBase
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
     protected List<Manga> cachedPublications { get; init; }
     protected static readonly NumberFormatInfo numberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
+    protected static readonly Regex baseUrlRex = new(@"https?:\/\/[0-9A-z\.]*");
 
     protected GlobalBase(GlobalBase clone)
     {
