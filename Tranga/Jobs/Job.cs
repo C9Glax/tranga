@@ -61,12 +61,12 @@ public abstract class Job : GlobalBase
     {
         this.progressToken.increments -= progressToken.incrementsCompleted;
         this.lastExecution = DateTime.Now;
+        this.progressToken.Waiting();
     }
 
     public void ExecutionEnqueue()
     {
         this.progressToken.increments -= progressToken.incrementsCompleted;
-        this.lastExecution = recurrenceTime is not null ? DateTime.Now.Subtract((TimeSpan)recurrenceTime) : DateTime.UnixEpoch;
         this.progressToken.Standby();
     }
 

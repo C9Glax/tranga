@@ -220,8 +220,7 @@ public class JobBoss : GlobalBase
 
     public void CheckJobs()
     {
-        foreach (Job job in jobs.Where(job => job.nextExecution < DateTime.Now && !QueueContainsJob(job)).OrderBy(job => job.nextExecution))
-            AddJobToQueue(job);
+        AddJobsToQueue(jobs.Where(job => job.progressToken.state == ProgressToken.State.Waiting && job.nextExecution < DateTime.Now && !QueueContainsJob(job)).OrderBy(job => job.nextExecution));
         foreach (Queue<Job> jobQueue in mangaConnectorJobQueue.Values)
         {
             if(jobQueue.Count < 1)
@@ -229,19 +228,10 @@ public class JobBoss : GlobalBase
             Job queueHead = jobQueue.Peek();
             if (queueHead.progressToken.state is ProgressToken.State.Complete or ProgressToken.State.Cancelled)
             {
-                switch (queueHead)
-                {
-                    case DownloadChapter:
-                        RemoveJob(queueHead);
-                        break;
-                    case DownloadNewChapters:
-                        if(queueHead.recurring)
-                            queueHead.progressToken.Complete();
-                        break;
-                }
                 queueHead.ResetProgress();
+                if(!queueHead.recurring)
+                    RemoveJob(queueHead);
                 jobQueue.Dequeue();
-                ExportJob(queueHead);
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {

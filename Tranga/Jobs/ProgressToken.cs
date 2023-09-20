@@ -10,7 +10,7 @@ public class ProgressToken
     public DateTime executionStarted { get; private set; }
     public TimeSpan timeRemaining => GetTimeRemaining();
     
-    public enum State { Running, Complete, Standby, Cancelled }
+    public enum State { Running, Complete, Standby, Cancelled, Waiting }
     public State state { get; private set; }
 
     public ProgressToken(int increments)
@@ -18,7 +18,7 @@ public class ProgressToken
         this.cancellationRequested = false;
         this.increments = increments;
         this.incrementsCompleted = 0;
-        this.state = State.Complete;
+        this.state = State.Waiting;
         this.executionStarted = DateTime.UnixEpoch;
     }
 
@@ -62,5 +62,10 @@ public class ProgressToken
     public void Cancel()
     {
         state = State.Cancelled;
+    }
+
+    public void Waiting()
+    {
+        state = State.Waiting;
     }
 }
