@@ -21,6 +21,7 @@ public abstract class LibraryConnector : GlobalBase
     
     protected LibraryConnector(GlobalBase clone, string baseUrl, string auth, LibraryType libraryType) : base(clone)
     {
+        Log($"Creating libraryConnector {Enum.GetName(libraryType)}");
         Regex urlRex = new(@"https?:\/\/[0-9A-z\.]*");
         if (!urlRex.IsMatch(baseUrl))
             throw new ArgumentException("Base url does not match pattern");
