@@ -134,15 +134,30 @@ public class Mangaworld: MangaConnector
     {
         List<Chapter> ret = new();
 
-        foreach (HtmlNode volNode in document.DocumentNode.SelectNodes(
-                     "//div[contains(concat(' ',normalize-space(@class),' '),'chapters-wrapper')]//div[contains(concat(' ',normalize-space(@class),' '),'volume-element')]"))
+        HtmlNode chaptersWrapper =
+            document.DocumentNode.SelectSingleNode(
+                "//div[contains(concat(' ',normalize-space(@class),' '),'chapters-wrapper')]");
+
+        if (chaptersWrapper.Descendants("div").Any(descendant => descendant.HasClass("volume-element")))
         {
-            string volume = volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText.Split(' ')[^1];
-            foreach (HtmlNode chNode in volNode.SelectNodes("div").First(node => node.HasClass("volume-chapters")).SelectNodes("div"))
+            foreach (HtmlNode volNode in document.DocumentNode.SelectNodes("//div[contains(concat(' ',normalize-space(@class),' '),'volume-element')]"))
+            {
+                string volume = volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText.Split(' ')[^1];
+                foreach (HtmlNode chNode in volNode.SelectNodes("div").First(node => node.HasClass("volume-chapters")).SelectNodes("div"))
+                {
+                    string number = chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText.Split(" ")[^1];
+                    string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
+                    ret.Add(new Chapter(manga, null, volume, number, url));
+                }
+            }
+        }
+        else
+        {
+            foreach (HtmlNode chNode in chaptersWrapper.SelectNodes("div").Where(node => node.HasClass("chapter")))
             {
                 string number = chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText.Split(" ")[^1];
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
-                ret.Add(new Chapter(manga, null, volume, number, url));
+                ret.Add(new Chapter(manga, null, null, number, url));
             }
         }
 
