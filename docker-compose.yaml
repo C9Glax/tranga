@@ -1,7 +1,7 @@
 ﻿version: '3'
 services:
   tranga-api:
-    image: glax/tranga-api:cuttingedge
+    image: glax/tranga-api:latest
     container_name: tranga-api
     volumes:
       - ./Manga:/Manga
@@ -10,7 +10,7 @@ services:
       - "6531:6531"
     restart: unless-stopped
   tranga-website:
-    image: glax/tranga-website:cuttingedge
+    image: glax/tranga-website:latest
     container_name: tranga-website
     ports:
       - "9555:80"
