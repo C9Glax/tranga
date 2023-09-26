@@ -23,8 +23,8 @@
 
 # Important for existing users:
 Tranga just had a complete rewrite. Old settings, tasks, etc. will not work.
-For the time being the docker-tag `latest` will be the old, discontinued branch. `cuttingedge` is the active branch and
-will soon be moved to the `latest` branch. There is no migration-tool. Make a backup of old files.
+~~For the time being the docker-tag `latest` will be the old, discontinued branch.~~ `cuttingedge` is the active branch and
+will soon be moved to the `latest` branch (This is now the case). There is no migration-tool. Make a backup of old files.
 
 <!-- TABLE OF CONTENTS -->
 <details>
