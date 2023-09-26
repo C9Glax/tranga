@@ -3,19 +3,19 @@ description: File a bug report
 title: "[It broke]: "
 labels: ["bug"]
 body:
-  - type: textarea
-    attributes:
-      label: What is broken?
-      description: What happened? How did we get here?
-      placeholder: The place where you tell me what you expected to happen, and what happened instead.
-    validations:
-      required: true
-  - type: textarea
-    attributes: 
-      label: Log-output
-      description: The output of `docker logs tranga-api`
-      render: C#
-  - type: textarea
-    attributes: 
-      label: Additional stuff
-      description: Screenshots, anything you think might help
+- type: textarea
+  attributes:
+    label: What is broken?
+    description: What happened? How did we get here?
+    placeholder: The place where you tell me what you expected to happen, and what happened instead.
+  validations:
+    required: true
+- type: textarea
+  attributes: 
+    label: Log-output
+    description: The output of `docker logs tranga-api`
+    render: C#
+- type: textarea
+  attributes: 
+    label: Additional stuff
+    description: Screenshots, anything you think might help
