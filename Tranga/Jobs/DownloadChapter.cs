@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Net;
 using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
@@ -31,9 +31,13 @@ public class DownloadChapter : Job
     {
         Task downloadTask = new(delegate
         {
-            mangaConnector.DownloadChapter(chapter, this.progressToken);
-            UpdateLibraries();
-            SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}");
+            mangaConnector.CopyCoverFromCacheToDownloadLocation(chapter.parentManga);
+            HttpStatusCode success = mangaConnector.DownloadChapter(chapter, this.progressToken);
+            if (success == HttpStatusCode.OK)
+            {
+                UpdateLibraries();
+                SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}");
+            }
         });
         downloadTask.Start();
         return Array.Empty<Job>();

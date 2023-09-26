@@ -36,6 +36,7 @@ public class DownloadNewChapters : Job
         Chapter[] chapters = mangaConnector.GetNewChapters(manga, this.translatedLanguage);
         this.progressToken.increments = chapters.Length;
         List<Job> jobs = new();
+        mangaConnector.CopyCoverFromCacheToDownloadLocation(manga);
         foreach (Chapter chapter in chapters)
         {
             DownloadChapter downloadChapterJob = new(this, this.mangaConnector, chapter, parentJobId: this.id);

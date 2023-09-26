@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
@@ -14,6 +15,7 @@ public abstract class GlobalBase
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
     protected List<Manga> cachedPublications { get; init; }
     protected static readonly NumberFormatInfo numberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
+    protected static readonly Regex baseUrlRex = new(@"https?:\/\/[0-9A-z\.-]*");
 
     protected GlobalBase(GlobalBase clone)
     {
@@ -52,11 +54,12 @@ public abstract class GlobalBase
     protected void AddNotificationConnector(NotificationConnector notificationConnector)
     {
         Log($"Adding {notificationConnector}");
-        notificationConnectors.RemoveWhere(nc => nc.GetType() == notificationConnector.GetType());
+        notificationConnectors.RemoveWhere(nc => nc.notificationConnectorType == notificationConnector.notificationConnectorType);
         notificationConnectors.Add(notificationConnector);
         
         while(IsFileInUse(settings.notificationConnectorsFilePath))
             Thread.Sleep(100);
+        Log("Exporting notificationConnectors");
         File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
@@ -64,6 +67,10 @@ public abstract class GlobalBase
     {
         Log($"Removing {notificationConnectorType}");
         notificationConnectors.RemoveWhere(nc => nc.notificationConnectorType == notificationConnectorType);
+        while(IsFileInUse(settings.notificationConnectorsFilePath))
+            Thread.Sleep(100);
+        Log("Exporting notificationConnectors");
+        File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
     protected void UpdateLibraries()
@@ -75,11 +82,12 @@ public abstract class GlobalBase
     protected void AddLibraryConnector(LibraryConnector libraryConnector)
     {
         Log($"Adding {libraryConnector}");
-        libraryConnectors.RemoveWhere(lc => lc.GetType() == libraryConnector.GetType());
+        libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryConnector.libraryType);
         libraryConnectors.Add(libraryConnector);
         
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
+        Log("Exporting libraryConnectors");
         File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
     }
 
@@ -87,6 +95,10 @@ public abstract class GlobalBase
     {
         Log($"Removing {libraryType}");
         libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryType);
+        while(IsFileInUse(settings.libraryConnectorsFilePath))
+            Thread.Sleep(100);
+        Log("Exporting libraryConnectors");
+        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
     }
 
     protected bool IsFileInUse(string filePath)

@@ -6,6 +6,7 @@ public abstract class NotificationConnector : GlobalBase
 
     protected NotificationConnector(GlobalBase clone, NotificationConnectorType notificationConnectorType) : base(clone)
     {
+        Log($"Creating notificationConnector {Enum.GetName(notificationConnectorType)}");
         this.notificationConnectorType = notificationConnectorType;
     }
     

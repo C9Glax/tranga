@@ -20,7 +20,10 @@ public abstract class LibraryConnector : GlobalBase
     
     protected LibraryConnector(GlobalBase clone, string baseUrl, string auth, LibraryType libraryType) : base(clone)
     {
-        this.baseUrl = baseUrl;
+        Log($"Creating libraryConnector {Enum.GetName(libraryType)}");
+        if (!baseUrlRex.IsMatch(baseUrl))
+            throw new ArgumentException("Base url does not match pattern");
+        this.baseUrl = baseUrlRex.Match(baseUrl).Value;
         this.auth = auth;
         this.libraryType = libraryType;
     }

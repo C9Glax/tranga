@@ -14,6 +14,7 @@ public class JobBoss : GlobalBase
         this.jobs = new();
         LoadJobsList(connectors);
         this.mangaConnectorJobQueue = new();
+        Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
     }
 
     public void AddJob(Job job)
@@ -26,7 +27,7 @@ public class JobBoss : GlobalBase
         {
             Log($"Added {job}");
             this.jobs.Add(job);
-            ExportJobsList();
+            ExportJob(job);
         }
     }
 
@@ -54,9 +55,9 @@ public class JobBoss : GlobalBase
         Log($"Removing {job}");
         job.Cancel();
         this.jobs.Remove(job);
-        if(job.subJobs is not null)
+        if(job.subJobs is not null && job.subJobs.Any())
             RemoveJobs(job.subJobs);
-        ExportJobsList();
+        ExportJob(job);
     }
 
     public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
@@ -161,21 +162,39 @@ public class JobBoss : GlobalBase
             cachedPublications.Add(ncJob.manga);
     }
 
+    public void ExportJob(Job job)
+    {
+        string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
+        
+        if (!this.jobs.Any(jjob => jjob.id == job.id))
+        {
+            try
+            {
+                Log($"Deleting Job-file {jobFilePath}");
+                while(IsFileInUse(jobFilePath))
+                    Thread.Sleep(10);
+                File.Delete(jobFilePath);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+            }
+        }
+        else
+        {
+            Log($"Exporting Job {jobFilePath}");
+            string jobStr = JsonConvert.SerializeObject(job);
+            while(IsFileInUse(jobFilePath))
+                Thread.Sleep(10);
+            File.WriteAllText(jobFilePath, jobStr);
+        }
+    }
+
     public void ExportJobsList()
     {
         Log("Exporting Jobs");
         foreach (Job job in this.jobs)
-        {
-            string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
-            if (!File.Exists(jobFilePath))
-            {
-                string jobStr = JsonConvert.SerializeObject(job);
-                while(IsFileInUse(jobFilePath))
-                    Thread.Sleep(10);
-                Log($"Exporting Job {jobFilePath}");
-                File.WriteAllText(jobFilePath, jobStr);
-            }
-        }
+            ExportJob(job);
 
         //Remove files with jobs not in this.jobs-list
         Regex idRex = new (@"(.*)\.json");
@@ -201,8 +220,7 @@ public class JobBoss : GlobalBase
 
     public void CheckJobs()
     {
-        foreach (Job job in jobs.Where(job => job.nextExecution < DateTime.Now && !QueueContainsJob(job)).OrderBy(job => job.nextExecution))
-            AddJobToQueue(job);
+        AddJobsToQueue(jobs.Where(job => job.progressToken.state == ProgressToken.State.Waiting && job.nextExecution < DateTime.Now && !QueueContainsJob(job)).OrderBy(job => job.nextExecution));
         foreach (Queue<Job> jobQueue in mangaConnectorJobQueue.Values)
         {
             if(jobQueue.Count < 1)
@@ -210,17 +228,11 @@ public class JobBoss : GlobalBase
             Job queueHead = jobQueue.Peek();
             if (queueHead.progressToken.state is ProgressToken.State.Complete or ProgressToken.State.Cancelled)
             {
-                switch (queueHead)
-                {
-                    case DownloadChapter:
-                        RemoveJob(queueHead);
-                        break;
-                    case DownloadNewChapters:
-                        if(queueHead.recurring)
-                            queueHead.progressToken.Complete();
-                        break;
-                }
+                queueHead.ResetProgress();
+                if(!queueHead.recurring)
+                    RemoveJob(queueHead);
                 jobQueue.Dequeue();
+                Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
                 Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();

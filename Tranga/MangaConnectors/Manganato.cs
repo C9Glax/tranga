@@ -172,17 +172,28 @@ public class Manganato : MangaConnector
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
         if (progressToken?.cancellationRequested ?? false)
+        {
+            progressToken?.Cancel();
             return HttpStatusCode.RequestTimeout;
+        }
+
         Manga chapterParentManga = chapter.parentManga;
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         string requestUrl = chapter.url;
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        {
+            progressToken?.Cancel();
             return requestResult.statusCode;
+        }
 
         if (requestResult.htmlDocument is null)
+        {
+            progressToken?.Cancel();
             return HttpStatusCode.InternalServerError;
+        }
+
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.htmlDocument);
         
         string comicInfoPath = Path.GetTempFileName();

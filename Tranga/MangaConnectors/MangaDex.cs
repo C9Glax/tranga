@@ -225,17 +225,27 @@ public class MangaDex : MangaConnector
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
         if (progressToken?.cancellationRequested ?? false)
+        {
+            progressToken?.Cancel();
             return HttpStatusCode.RequestTimeout;
+        }
+
         Manga chapterParentManga = chapter.parentManga;
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        {
+            progressToken?.Cancel();
             return requestResult.statusCode;
+        }
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
+        {
+            progressToken?.Cancel();
             return HttpStatusCode.NoContent;
+        }
 
         string baseUrl = result["baseUrl"]!.GetValue<string>();
         string hash = result["chapter"]!["hash"]!.GetValue<string>();
