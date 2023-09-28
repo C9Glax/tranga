@@ -20,7 +20,8 @@ public class Mangasee : MangaConnector
     public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
-        string requestUrl = $"https://mangasee123.com/_search.php";
+        string sanitizedTitle = string.Join('+', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
+        string requestUrl = $"https://mangasee123.com/search/?name={sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -28,7 +29,7 @@ public class Mangasee : MangaConnector
 
         if (requestResult.htmlDocument is null)
             return Array.Empty<Manga>();
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument, publicationTitle);
+        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
@@ -44,37 +45,25 @@ public class Mangasee : MangaConnector
         return null;
     }
 
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document, string publicationTitle)
+    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
-        string jsonString = document.DocumentNode.SelectSingleNode("//body").InnerText;
-        List<SearchResultItem> result = JsonConvert.DeserializeObject<List<SearchResultItem>>(jsonString)!;
-        Dictionary<SearchResultItem, int> queryFiltered = new();
-        foreach (SearchResultItem resultItem in result)
-        {
-            int matches = resultItem.GetMatches(publicationTitle);
-            if (matches > 0)
-                queryFiltered.TryAdd(resultItem, matches);
-        }
-
-        queryFiltered = queryFiltered.Where(item => item.Value >= publicationTitle.Split(' ').Length - 1)
-            .ToDictionary(item => item.Key, item => item.Value);
-        
-        Log($"Retrieved {queryFiltered.Count} publications.");
+        HtmlNode resultsNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']/div[last()]/div[1]/div");
+        Log($"{resultsNode.SelectNodes("div").Count} items.");
 
         HashSet<Manga> ret = new();
-        List<SearchResultItem> orderedFiltered =
-            queryFiltered.OrderBy(item => item.Value).ToDictionary(item => item.Key, item => item.Value).Keys.ToList();
 
-        foreach (SearchResultItem orderedItem in orderedFiltered)
+        foreach (HtmlNode resultNode in resultsNode.SelectNodes("div"))
         {
-            Manga? manga = GetMangaFromUrl($"https://mangasee123.com/manga/{orderedItem.i}");
+            string url = resultNode.Descendants().First(d => d.HasClass("SeriesName")).GetAttributeValue("href", "");
+            Manga? manga = GetMangaFromUrl($"https://mangasee123.com{url}");
             if (manga is not null)
                 ret.Add((Manga)manga);
         }
+        
         return ret.ToArray();
     }
 
-    
+
     private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
     {
         string originalLanguage = "", status = "";
@@ -88,70 +77,41 @@ public class Mangasee : MangaConnector
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
 
-        HtmlNode[] authorsNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Author(s):']/..").Descendants("a").ToArray();
+        HtmlNode[] authorsNodes = document.DocumentNode
+            .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Author(s):']/..").Descendants("a")
+            .ToArray();
         List<string> authors = new();
-        foreach(HtmlNode authorNode in authorsNodes)
+        foreach (HtmlNode authorNode in authorsNodes)
             authors.Add(authorNode.InnerText);
-        
-        HtmlNode[] genreNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Genre(s):']/..").Descendants("a").ToArray();
+
+        HtmlNode[] genreNodes = document.DocumentNode
+            .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Genre(s):']/..").Descendants("a")
+            .ToArray();
         foreach (HtmlNode genreNode in genreNodes)
             tags.Add(genreNode.InnerText);
-        
-        HtmlNode yearNode = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Released:']/..").Descendants("a").First();
+
+        HtmlNode yearNode = document.DocumentNode
+            .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Released:']/..").Descendants("a")
+            .First();
         int year = Convert.ToInt32(yearNode.InnerText);
-        
-        HtmlNode[] statusNodes = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Status:']/..").Descendants("a").ToArray();
-        foreach(HtmlNode statusNode in statusNodes)
+
+        HtmlNode[] statusNodes = document.DocumentNode
+            .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Status:']/..").Descendants("a")
+            .ToArray();
+        foreach (HtmlNode statusNode in statusNodes)
             if (statusNode.InnerText.Contains("publish", StringComparison.CurrentCultureIgnoreCase))
                 status = statusNode.InnerText.Split(' ')[0];
-        
-        HtmlNode descriptionNode = document.DocumentNode.SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Description:']/..").Descendants("div").First();
+
+        HtmlNode descriptionNode = document.DocumentNode
+            .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Description:']/..")
+            .Descendants("div").First();
         string description = descriptionNode.InnerText;
-        
-        Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+
+        Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
+            coverFileNameInCache, links,
             year, originalLanguage, status, publicationId);
         cachedPublications.Add(manga);
         return manga;
-    }
-    
-    // ReSharper disable once ClassNeverInstantiated.Local Will be instantiated during deserialization
-    private class SearchResultItem
-    {
-        public string i { get; init; }
-        public string s { get; init; }
-        public string[] a { get; init; }
-
-        [JsonConstructor]
-        public SearchResultItem(string i, string s, string[] a)
-        {
-            this.i = i;
-            this.s = s;
-            this.a = a;
-        }
-
-        public int GetMatches(string title)
-        {
-            int ret = 0;
-            Regex cleanRex = new("[A-z0-9]*");
-            string[] badWords = { "a", "an", "no", "ni", "so", "as", "and", "the", "of", "that", "in", "is", "for" };
-
-            string[] titleTerms = title.Split(new[] { ' ', '-' }).Where(str => !badWords.Contains(str)).ToArray();
-
-            foreach (Match matchTerm in cleanRex.Matches(this.i))
-                ret += titleTerms.Count(titleTerm =>
-                    titleTerm.Equals(matchTerm.Value, StringComparison.OrdinalIgnoreCase));
-            
-            foreach (Match matchTerm in cleanRex.Matches(this.s))
-                ret += titleTerms.Count(titleTerm =>
-                    titleTerm.Equals(matchTerm.Value, StringComparison.OrdinalIgnoreCase));
-            
-            foreach(string alt in this.a)
-                foreach (Match matchTerm in cleanRex.Matches(alt))
-                    ret += titleTerms.Count(titleTerm =>
-                        titleTerm.Equals(matchTerm.Value, StringComparison.OrdinalIgnoreCase));
-            
-            return ret;
-        }
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
