@@ -36,6 +36,7 @@ public class Manganato : MangaConnector
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         IEnumerable<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("search-story-item"));
+        Log($"{searchResults.Count()} items.");
         List<string> urls = new();
         foreach (HtmlNode mangaResult in searchResults)
         {
