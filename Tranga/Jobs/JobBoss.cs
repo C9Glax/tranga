@@ -240,6 +240,7 @@ public class JobBoss : GlobalBase
                 AddJobsToQueue(subJobs);
             }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))
             {
+                Log($"{queueHead} inactive for more than 5 minutes. Cancelling.");
                 queueHead.Cancel();
             }
         }
