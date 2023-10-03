@@ -238,6 +238,9 @@ public class JobBoss : GlobalBase
                 Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
+            }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))
+            {
+                queueHead.Cancel();
             }
         }
     }
