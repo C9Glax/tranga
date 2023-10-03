@@ -30,7 +30,10 @@ internal abstract class DownloadClient : GlobalBase
             .Subtract(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]));
 
         if (rateLimitTimeout > TimeSpan.Zero)
+        {
+            Log($"Waiting {rateLimitTimeout.TotalSeconds} seconds");
             Thread.Sleep(rateLimitTimeout);
+        }
 
         RequestResult result = MakeRequestInternal(url, referrer);
         _lastExecutedRateLimit[requestType] = DateTime.Now;

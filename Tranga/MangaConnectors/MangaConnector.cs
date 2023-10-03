@@ -175,11 +175,15 @@ public abstract class MangaConnector : GlobalBase
     private HttpStatusCode DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
-        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 || requestResult.result == Stream.Null)
+        
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return requestResult.statusCode;
-        byte[] buffer = new byte[requestResult.result.Length];
-        requestResult.result.ReadExactly(buffer, 0, buffer.Length);
-        File.WriteAllBytes(fullPath, buffer);
+        if (requestResult.result == Stream.Null)
+            return HttpStatusCode.NotFound;
+
+        FileStream fs = new (fullPath, FileMode.Create);
+        requestResult.result.CopyTo(fs);
+        fs.Close();
         return requestResult.statusCode;
     }
 
