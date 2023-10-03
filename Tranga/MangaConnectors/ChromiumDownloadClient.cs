@@ -61,6 +61,7 @@ internal class ChromiumDownloadClient : DownloadClient
     {
         IPage page = this.browser!.NewPageAsync().Result;
         IResponse response = page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded).Result;
+        Log("Page loaded.");
 
         Stream stream = Stream.Null;
         HtmlDocument? document = null;
@@ -83,7 +84,7 @@ internal class ChromiumDownloadClient : DownloadClient
             page.CloseAsync();
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         }
-
+        
         page.CloseAsync();
         return new RequestResult(response.Status, document, stream, false, "");
     }

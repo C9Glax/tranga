@@ -217,6 +217,7 @@ public abstract class MangaConnector : GlobalBase
             string extension = split[^1];
             Log($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
+            Log($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
             if ((int)status < 200 || (int)status >= 300)
             {
                 progressToken?.Complete();
