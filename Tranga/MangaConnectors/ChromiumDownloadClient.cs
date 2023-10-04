@@ -49,7 +49,7 @@ internal class ChromiumDownloadClient : DownloadClient
                 "--disable-dev-shm-usage",
                 "--disable-setuid-sandbox",
                 "--no-sandbox"},
-            Timeout = 10
+            Timeout = 10000
         });
     }
 
