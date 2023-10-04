@@ -136,9 +136,9 @@ public class JobBoss : GlobalBase
         job.ExecutionEnqueue();
     }
 
-    public void AddJobsToQueue(IEnumerable<Job> jobs)
+    private void AddJobsToQueue(IEnumerable<Job> newJobs)
     {
-        foreach(Job job in jobs)
+        foreach(Job job in newJobs)
             AddJobToQueue(job);
     }
 
