@@ -27,7 +27,7 @@ public class JobBoss : GlobalBase
         {
             Log($"Added {job}");
             this.jobs.Add(job);
-            ExportJob(job);
+            UpdateJobFile(job);
         }
     }
 
@@ -57,7 +57,7 @@ public class JobBoss : GlobalBase
         this.jobs.Remove(job);
         if(job.subJobs is not null && job.subJobs.Any())
             RemoveJobs(job.subJobs);
-        ExportJob(job);
+        UpdateJobFile(job);
     }
 
     public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
@@ -162,7 +162,7 @@ public class JobBoss : GlobalBase
             cachedPublications.Add(ncJob.manga);
     }
 
-    public void ExportJob(Job job)
+    private void UpdateJobFile(Job job)
     {
         string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
         
@@ -190,11 +190,11 @@ public class JobBoss : GlobalBase
         }
     }
 
-    public void ExportJobsList()
+    private void UpdateAllJobFiles()
     {
         Log("Exporting Jobs");
         foreach (Job job in this.jobs)
-            ExportJob(job);
+            UpdateJobFile(job);
 
         //Remove files with jobs not in this.jobs-list
         Regex idRex = new (@"(.*)\.json");
