@@ -142,24 +142,30 @@ public class JobBoss : GlobalBase
             AddJobToQueue(job);
     }
 
-    public void LoadJobsList(HashSet<MangaConnector> connectors)
+    private void LoadJobsList(HashSet<MangaConnector> connectors)
     {
-        Directory.CreateDirectory(settings.jobsFolderPath);
+        if (!Directory.Exists(settings.jobsFolderPath)) //No jobs to load
+        {
+            Directory.CreateDirectory(settings.jobsFolderPath);
+            return;
+        }
         Regex idRex = new (@"(.*)\.json");
 
-        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles())
-            if (idRex.IsMatch(file.Name))
-            {
-                Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
-                    new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
-                this.jobs.Add(job);
-            }
-                
-        foreach (Job job in this.jobs)
-            this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+        //Load json-job-files
+        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
+        {
+            Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
+            this.jobs.Add(job);
+        }
         
-        foreach (DownloadNewChapters ncJob in this.jobs.Where(job => job is DownloadNewChapters))
-            cachedPublications.Add(ncJob.manga);
+        //Connect jobs to parent-jobs and add Publications to cache
+        foreach (Job job in this.jobs)
+        {
+            this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+            if(job is DownloadNewChapters dncJob)
+                cachedPublications.Add(dncJob.manga);
+        }
     }
 
     private void UpdateJobFile(Job job)
