@@ -52,7 +52,7 @@ public class Server : GlobalBase
                 });
                 t.Start();
             }
-            catch (HttpListenerException e)
+            catch (HttpListenerException)
             {
                 
             }

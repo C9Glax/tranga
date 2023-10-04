@@ -225,7 +225,7 @@ public abstract class MangaConnector : GlobalBase
             }
             if (progressToken?.cancellationRequested ?? false)
             {
-                progressToken?.Complete();
+                progressToken.Complete();
                 return HttpStatusCode.RequestTimeout;
             }
             progressToken?.Increment();

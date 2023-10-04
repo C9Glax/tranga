@@ -62,7 +62,7 @@ public class MemoryLogger : LoggerBase
                     ret.Add(_logMessages.GetValueAtIndex(_lastLogMessageIndex + retIndex).ToString());
                 }
             }
-            catch (NullReferenceException e)//Called when LogMessage has not finished writing
+            catch (NullReferenceException)//Called when LogMessage has not finished writing
             {
                 break;
             }
