@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
-using Newtonsoft.Json;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -140,14 +139,14 @@ public class Mangasee : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
         {
-            progressToken?.Cancel();
+            progressToken.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 
         Manga chapterParentManga = chapter.parentManga;
         if (progressToken?.cancellationRequested ?? false)
         {
-            progressToken?.Cancel();
+            progressToken.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

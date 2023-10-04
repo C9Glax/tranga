@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Tranga.Jobs;
@@ -67,7 +66,7 @@ public class MangaDex : MangaConnector
                     if(MangaFromJsonObject((JsonObject) mangaNode) is { } manga)
                         retManga.Add(manga); //Add Publication (Manga) to result
                 }
-            }else continue;
+            }//else continue;
         }
         Log($"Retrieved {retManga.Count} publications. Term=\"{publicationTitle}\"");
         return retManga.ToArray();
@@ -247,7 +246,7 @@ public class MangaDex : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
         {
-            progressToken?.Cancel();
+            progressToken.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

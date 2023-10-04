@@ -101,7 +101,7 @@ public class JobBoss : GlobalBase
         Chapter? chapter = null)
     {
         if (chapter is not null)
-            return GetJobsLike(mangaConnector?.name, chapter.Value.parentManga.internalId, chapter?.chapterNumber);
+            return GetJobsLike(mangaConnector?.name, chapter.Value.parentManga.internalId, chapter.Value.chapterNumber);
         else
             return GetJobsLike(mangaConnector?.name, publication?.internalId);
     }

@@ -60,7 +60,7 @@ internal class ChromiumDownloadClient : DownloadClient
 
     protected override RequestResult MakeRequestInternal(string url, string? referrer = null)
     {
-        IPage page = this.browser!.NewPageAsync().Result;
+        IPage page = this.browser.NewPageAsync().Result;
         page.DefaultTimeout = 10000;
         IResponse response = page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded).Result;
         Log("Page loaded.");

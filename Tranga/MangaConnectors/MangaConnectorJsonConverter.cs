@@ -6,12 +6,12 @@ namespace Tranga.MangaConnectors;
 public class MangaConnectorJsonConverter : JsonConverter
 {
     private GlobalBase _clone;
-    private HashSet<MangaConnector> connectors;
+    private readonly HashSet<MangaConnector> _connectors;
 
     internal MangaConnectorJsonConverter(GlobalBase clone, HashSet<MangaConnector> connectors)
     {
         this._clone = clone;
-        this.connectors = connectors;
+        this._connectors = connectors;
     }
     
     public override bool CanConvert(Type objectType)
@@ -25,15 +25,15 @@ public class MangaConnectorJsonConverter : JsonConverter
         switch (jo.GetValue("name")!.Value<string>()!)
         {
             case "MangaDex":
-                return this.connectors.First(c => c is MangaDex);
+                return this._connectors.First(c => c is MangaDex);
             case "Manganato":
-                return this.connectors.First(c => c is Manganato);
+                return this._connectors.First(c => c is Manganato);
             case "MangaKatana":
-                return this.connectors.First(c => c is MangaKatana);
+                return this._connectors.First(c => c is MangaKatana);
             case "Mangasee":
-                return this.connectors.First(c => c is Mangasee);
+                return this._connectors.First(c => c is Mangasee);
             case "Mangaworld":
-                return this.connectors.First(c => c is Mangaworld);
+                return this._connectors.First(c => c is Mangaworld);
         }
 
         throw new Exception();

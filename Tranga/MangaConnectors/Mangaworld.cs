@@ -69,11 +69,8 @@ public class Mangaworld: MangaConnector
 
     private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
     {
-        string status = "";
         Dictionary<string, string> altTitles = new();
         Dictionary<string, string>? links = null;
-        HashSet<string> tags = new();
-        string[] authors = Array.Empty<string>();
         string originalLanguage = "";
 
         HtmlNode infoNode = document.DocumentNode.Descendants("div").First(d => d.HasClass("info"));
@@ -90,13 +87,13 @@ public class Mangaworld: MangaConnector
 
         HtmlNode genresNode =
             metadata.SelectSingleNode("//span[text()='Generi: ']/..");
-        tags = genresNode.SelectNodes("a").Select(node => node.InnerText).ToHashSet();
+        HashSet<string> tags = genresNode.SelectNodes("a").Select(node => node.InnerText).ToHashSet();
         
         HtmlNode authorsNode =
             metadata.SelectSingleNode("//span[text()='Autore: ']/..");
-        authors = new[] { authorsNode.SelectNodes("a").First().InnerText };
+        string[] authors = new[] { authorsNode.SelectNodes("a").First().InnerText };
 
-        status = metadata.SelectSingleNode("//span[text()='Stato: ']/..").SelectNodes("a").First().InnerText;
+        string status = metadata.SelectSingleNode("//span[text()='Stato: ']/..").SelectNodes("a").First().InnerText;
 
         string posterUrl = document.DocumentNode.SelectSingleNode("//img[@class='rounded']").GetAttributeValue("src", "");
 
@@ -169,7 +166,7 @@ public class Mangaworld: MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
         {
-            progressToken?.Cancel();
+            progressToken.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

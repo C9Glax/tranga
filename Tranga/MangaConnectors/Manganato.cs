@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Tranga.Jobs;
@@ -179,7 +178,7 @@ public class Manganato : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
         {
-            progressToken?.Cancel();
+            progressToken.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

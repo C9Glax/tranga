@@ -5,7 +5,7 @@ namespace Tranga.LibraryConnectors;
 
 public class LibraryManagerJsonConverter : JsonConverter
 {
-    private GlobalBase _clone;
+    private readonly GlobalBase _clone;
 
     internal LibraryManagerJsonConverter(GlobalBase clone)
     {

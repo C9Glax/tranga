@@ -26,7 +26,7 @@ public class ProgressToken
     private float GetProgress()
     {
         if(increments > 0 && incrementsCompleted > 0)
-            return (float)incrementsCompleted / (float)increments;
+            return incrementsCompleted / (float)increments;
         return 0;
     }
 

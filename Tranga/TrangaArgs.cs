@@ -59,7 +59,7 @@ public partial class Tranga : GlobalBase
     private static void PrintHelp()
     {
         Console.WriteLine("Tranga-Help:");
-        foreach (Argument argument in arguments.Values)
+        foreach (Argument argument in Arguments.Values)
         {
             foreach(string name in argument.names)
                 Console.Write("{0} ", name);
@@ -82,14 +82,14 @@ public partial class Tranga : GlobalBase
     {
         List<string> argsList = args.ToList();
         List<string> ret = new();
-        foreach (string name in arguments[arg].names)
+        foreach (string name in Arguments[arg].names)
         {
             int argIndex = argsList.IndexOf(name);
             if (argIndex != -1)
             {
-                if (arguments[arg].parameterCount == 0)
+                if (Arguments[arg].parameterCount == 0)
                     return ret.ToArray();
-                for (int parameterIndex = 1; parameterIndex <= arguments[arg].parameterCount; parameterIndex++)
+                for (int parameterIndex = 1; parameterIndex <= Arguments[arg].parameterCount; parameterIndex++)
                 {
                     if(argIndex + parameterIndex >= argsList.Count || args[argIndex + parameterIndex].Contains('-'))//End of arguments, or no parameter provided, when one is required
                         Console.WriteLine($"No parameter provided for argument {name}. -h for help.");
@@ -100,7 +100,7 @@ public partial class Tranga : GlobalBase
         return ret.Any() ? ret.ToArray() : null;
     }
 
-    private static Dictionary<ArgEnum, Argument> arguments = new()
+    private static readonly Dictionary<ArgEnum, Argument> Arguments = new()
     {
         { ArgEnum.DownloadLocation, new(new []{"-d", "--downloadLocation"}, 1, "Directory to which downloaded Manga are saved") },
         { ArgEnum.WorkingDirectory, new(new []{"-w", "--workingDirectory"}, 1, "Directory in which application-data is saved") },
