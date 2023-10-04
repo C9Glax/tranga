@@ -62,8 +62,9 @@ public class JobBoss : GlobalBase
 
     public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
     {
-        Log($"Removing {jobsToRemove.Count()} jobs.");
-        foreach (Job? job in jobsToRemove)
+        List<Job?> toRemove = jobsToRemove.ToList(); //Prevent multiple enumeration
+        Log($"Removing {toRemove.Count()} jobs.");
+        foreach (Job? job in toRemove)
             if(job is not null)
                 RemoveJob(job);
     }
