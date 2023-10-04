@@ -37,6 +37,10 @@ public class JobBoss : GlobalBase
             AddJob(job);
     }
 
+    /// <summary>
+    /// Compares contents of the provided job and all current jobs
+    /// Does not check if objects are the same
+    /// </summary>
     public bool ContainsJobLike(Job job)
     {
         if (job is DownloadChapter dcJob)
@@ -123,17 +127,16 @@ public class JobBoss : GlobalBase
 
     private bool QueueContainsJob(Job job)
     {
-        mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>());
+        if (mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>()))//If we can add the queue, there is certainly no job in it
+            return true;
         return mangaConnectorJobQueue[job.mangaConnector].Contains(job);
     }
 
     public void AddJobToQueue(Job job)
     {
         Log($"Adding Job to Queue. {job}");
-        mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>());
-        Queue<Job> connectorJobQueue = mangaConnectorJobQueue[job.mangaConnector];
-        if(!connectorJobQueue.Contains(job))
-            connectorJobQueue.Enqueue(job);
+        if(!QueueContainsJob(job))
+            mangaConnectorJobQueue[job.mangaConnector].Enqueue(job);
         job.ExecutionEnqueue();
     }
 
