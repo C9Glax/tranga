@@ -228,9 +228,10 @@ public class JobBoss : GlobalBase
             Job queueHead = jobQueue.Peek();
             if (queueHead.progressToken.state is ProgressToken.State.Complete or ProgressToken.State.Cancelled)
             {
-                queueHead.ResetProgress();
                 if(!queueHead.recurring)
                     RemoveJob(queueHead);
+                else
+                    queueHead.ResetProgress();
                 jobQueue.Dequeue();
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
