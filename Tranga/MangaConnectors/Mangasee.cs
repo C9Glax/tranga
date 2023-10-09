@@ -122,11 +122,10 @@ public class Mangasee : MangaConnector
         foreach (XElement chapter in chapterItems)
         {
             string volumeNumber = "1";
-            string chapterName = chapter.Descendants("title").First().Value;
-            string chapterNumber = Regex.Matches(chapterName, "[0-9]+")[^1].ToString();
-
             string url = chapter.Descendants("link").First().Value;
-            url = url.Replace(Regex.Matches(url,"(-page-[0-9])")[0].ToString(),"");
+            string chapterNumber = Regex.Match(url, @"-chapter-([0-9\.]+)").Groups[1].ToString();
+
+            url = url.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
             chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, url));
         }
 
