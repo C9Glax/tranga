@@ -46,7 +46,7 @@ public class TrangaSettings
             this.downloadLocation = downloadLocation!;
             this.workingDirectory = workingDirectory!;
         }
-        UpdateDownloadLocation(this.downloadLocation!, false);
+        UpdateDownloadLocation(this.downloadLocation, false);
     }
 
     public HashSet<LibraryConnector> LoadLibraryConnectors(GlobalBase clone)

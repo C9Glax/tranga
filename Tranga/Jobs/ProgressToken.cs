@@ -6,7 +6,7 @@ public class ProgressToken
     public int increments { get; set; }
     public int incrementsCompleted { get; set; }
     public float progress => GetProgress();
-    
+    public DateTime lastUpdate { get; private set; }
     public DateTime executionStarted { get; private set; }
     public TimeSpan timeRemaining => GetTimeRemaining();
     
@@ -20,12 +20,13 @@ public class ProgressToken
         this.incrementsCompleted = 0;
         this.state = State.Waiting;
         this.executionStarted = DateTime.UnixEpoch;
+        this.lastUpdate = DateTime.UnixEpoch;
     }
 
     private float GetProgress()
     {
         if(increments > 0 && incrementsCompleted > 0)
-            return (float)incrementsCompleted / (float)increments;
+            return incrementsCompleted / (float)increments;
         return 0;
     }
 
@@ -38,6 +39,7 @@ public class ProgressToken
 
     public void Increment()
     {
+        this.lastUpdate = DateTime.Now;
         this.incrementsCompleted++;
         if (incrementsCompleted > increments)
             state = State.Complete;
@@ -45,27 +47,32 @@ public class ProgressToken
 
     public void Standby()
     {
+        this.lastUpdate = DateTime.Now;
         state = State.Standby;
     }
 
     public void Start()
     {
+        this.lastUpdate = DateTime.Now;
         state = State.Running;
         this.executionStarted = DateTime.Now;
     }
 
     public void Complete()
     {
+        this.lastUpdate = DateTime.Now;
         state = State.Complete;
     }
 
     public void Cancel()
     {
+        this.lastUpdate = DateTime.Now;
         state = State.Cancelled;
     }
 
     public void Waiting()
     {
+        this.lastUpdate = DateTime.Now;
         state = State.Waiting;
     }
 }

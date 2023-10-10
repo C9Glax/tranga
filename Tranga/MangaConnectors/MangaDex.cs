@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Tranga.Jobs;
@@ -51,16 +50,23 @@ public class MangaDex : MangaConnector
             if (result is null)
                 break;
             
-            total = result["total"]!.GetValue<int>(); //Update the total number of Publications
-            
-            JsonArray mangaInResult = result["data"]!.AsArray(); //Manga-data-Array
-            //Loop each Manga and extract information from JSON
-            foreach (JsonNode? mangaNode in mangaInResult)
+            if(result.ContainsKey("total"))
+                total = result["total"]!.GetValue<int>(); //Update the total number of Publications
+            else continue;
+
+            if (result.ContainsKey("data"))
             {
-                Log($"Getting publication data. {++loadedPublicationData}/{total}");
-                Manga manga = MangaFromJsonObject((JsonObject)mangaNode);
-                retManga.Add(manga); //Add Publication (Manga) to result
-            }
+                JsonArray mangaInResult = result["data"]!.AsArray(); //Manga-data-Array
+                //Loop each Manga and extract information from JSON
+                foreach (JsonNode? mangaNode in mangaInResult)
+                {
+                    if(mangaNode is null)
+                        continue;
+                    Log($"Getting publication data. {++loadedPublicationData}/{total}");
+                    if(MangaFromJsonObject((JsonObject) mangaNode) is { } manga)
+                        retManga.Add(manga); //Add Publication (Manga) to result
+                }
+            }//else continue;
         }
         Log($"Retrieved {retManga.Count} publications. Term=\"{publicationTitle}\"");
         return retManga.ToArray();
@@ -81,20 +87,30 @@ public class MangaDex : MangaConnector
         return null;
     }
 
-    private Manga MangaFromJsonObject(JsonObject manga)
+    private Manga? MangaFromJsonObject(JsonObject manga)
     {
+        if (!manga.ContainsKey("attributes"))
+            return null;
         JsonObject attributes = manga["attributes"]!.AsObject();
-                
+        
+        if(!manga.ContainsKey("id"))
+            return null;
         string publicationId = manga["id"]!.GetValue<string>();
                 
+        if(!attributes.ContainsKey("title"))
+            return null;
         string title = attributes["title"]!.AsObject().ContainsKey("en") && attributes["title"]!["en"] is not null
                     ? attributes["title"]!["en"]!.GetValue<string>()
                     : attributes["title"]![((IDictionary<string, JsonNode?>)attributes["title"]!.AsObject()).Keys.First()]!.GetValue<string>();
 
+        if(!attributes.ContainsKey("description"))
+            return null;
         string? description = attributes["description"]!.AsObject().ContainsKey("en") && attributes["description"]!["en"] is not null
                     ? attributes["description"]!["en"]!.GetValue<string?>()
                     : null;
 
+        if(!attributes.ContainsKey("altTitles"))
+            return null;
         JsonArray altTitlesObject = attributes["altTitles"]!.AsArray();
         Dictionary<string, string> altTitlesDict = new();
         foreach (JsonNode? altTitleNode in altTitlesObject)
@@ -104,6 +120,8 @@ public class MangaDex : MangaConnector
             altTitlesDict.TryAdd(key, altTitleObject[key]!.GetValue<string>());
         }
 
+        if(!attributes.ContainsKey("tags"))
+            return null;
         JsonArray tagsObject = attributes["tags"]!.AsArray();
         HashSet<string> tags = new();
         foreach (JsonNode? tagNode in tagsObject)
@@ -149,6 +167,8 @@ public class MangaDex : MangaConnector
                 ? attributes["originalLanguage"]!.GetValue<string?>()
                 : null;
 
+        if(!attributes.ContainsKey("status"))
+            return null;
         string status = attributes["status"]!.GetValue<string>();
 
         Manga pub = new(
@@ -226,7 +246,7 @@ public class MangaDex : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
         {
-            progressToken?.Cancel();
+            progressToken.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

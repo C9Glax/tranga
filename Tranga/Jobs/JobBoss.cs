@@ -27,7 +27,7 @@ public class JobBoss : GlobalBase
         {
             Log($"Added {job}");
             this.jobs.Add(job);
-            ExportJob(job);
+            UpdateJobFile(job);
         }
     }
 
@@ -37,6 +37,10 @@ public class JobBoss : GlobalBase
             AddJob(job);
     }
 
+    /// <summary>
+    /// Compares contents of the provided job and all current jobs
+    /// Does not check if objects are the same
+    /// </summary>
     public bool ContainsJobLike(Job job)
     {
         if (job is DownloadChapter dcJob)
@@ -57,13 +61,14 @@ public class JobBoss : GlobalBase
         this.jobs.Remove(job);
         if(job.subJobs is not null && job.subJobs.Any())
             RemoveJobs(job.subJobs);
-        ExportJob(job);
+        UpdateJobFile(job);
     }
 
     public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
     {
-        Log($"Removing {jobsToRemove.Count()} jobs.");
-        foreach (Job? job in jobsToRemove)
+        List<Job?> toRemove = jobsToRemove.ToList(); //Prevent multiple enumeration
+        Log($"Removing {toRemove.Count()} jobs.");
+        foreach (Job? job in toRemove)
             if(job is not null)
                 RemoveJob(job);
     }
@@ -96,7 +101,7 @@ public class JobBoss : GlobalBase
         Chapter? chapter = null)
     {
         if (chapter is not null)
-            return GetJobsLike(mangaConnector?.name, chapter.Value.parentManga.internalId, chapter?.chapterNumber);
+            return GetJobsLike(mangaConnector?.name, chapter.Value.parentManga.internalId, chapter.Value.chapterNumber);
         else
             return GetJobsLike(mangaConnector?.name, publication?.internalId);
     }
@@ -122,47 +127,52 @@ public class JobBoss : GlobalBase
 
     private bool QueueContainsJob(Job job)
     {
-        mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>());
+        if (mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>()))//If we can add the queue, there is certainly no job in it
+            return true;
         return mangaConnectorJobQueue[job.mangaConnector].Contains(job);
     }
 
     public void AddJobToQueue(Job job)
     {
         Log($"Adding Job to Queue. {job}");
-        mangaConnectorJobQueue.TryAdd(job.mangaConnector, new Queue<Job>());
-        Queue<Job> connectorJobQueue = mangaConnectorJobQueue[job.mangaConnector];
-        if(!connectorJobQueue.Contains(job))
-            connectorJobQueue.Enqueue(job);
+        if(!QueueContainsJob(job))
+            mangaConnectorJobQueue[job.mangaConnector].Enqueue(job);
         job.ExecutionEnqueue();
     }
 
-    public void AddJobsToQueue(IEnumerable<Job> jobs)
+    private void AddJobsToQueue(IEnumerable<Job> newJobs)
     {
-        foreach(Job job in jobs)
+        foreach(Job job in newJobs)
             AddJobToQueue(job);
     }
 
-    public void LoadJobsList(HashSet<MangaConnector> connectors)
+    private void LoadJobsList(HashSet<MangaConnector> connectors)
     {
-        Directory.CreateDirectory(settings.jobsFolderPath);
+        if (!Directory.Exists(settings.jobsFolderPath)) //No jobs to load
+        {
+            Directory.CreateDirectory(settings.jobsFolderPath);
+            return;
+        }
         Regex idRex = new (@"(.*)\.json");
 
-        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles())
-            if (idRex.IsMatch(file.Name))
-            {
-                Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
-                    new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
-                this.jobs.Add(job);
-            }
-                
-        foreach (Job job in this.jobs)
-            this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+        //Load json-job-files
+        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
+        {
+            Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
+            this.jobs.Add(job);
+        }
         
-        foreach (DownloadNewChapters ncJob in this.jobs.Where(job => job is DownloadNewChapters))
-            cachedPublications.Add(ncJob.manga);
+        //Connect jobs to parent-jobs and add Publications to cache
+        foreach (Job job in this.jobs)
+        {
+            this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+            if(job is DownloadNewChapters dncJob)
+                cachedPublications.Add(dncJob.manga);
+        }
     }
 
-    public void ExportJob(Job job)
+    private void UpdateJobFile(Job job)
     {
         string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
         
@@ -190,11 +200,11 @@ public class JobBoss : GlobalBase
         }
     }
 
-    public void ExportJobsList()
+    private void UpdateAllJobFiles()
     {
         Log("Exporting Jobs");
         foreach (Job job in this.jobs)
-            ExportJob(job);
+            UpdateJobFile(job);
 
         //Remove files with jobs not in this.jobs-list
         Regex idRex = new (@"(.*)\.json");
@@ -228,9 +238,10 @@ public class JobBoss : GlobalBase
             Job queueHead = jobQueue.Peek();
             if (queueHead.progressToken.state is ProgressToken.State.Complete or ProgressToken.State.Cancelled)
             {
-                queueHead.ResetProgress();
                 if(!queueHead.recurring)
                     RemoveJob(queueHead);
+                else
+                    queueHead.ResetProgress();
                 jobQueue.Dequeue();
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
@@ -238,6 +249,10 @@ public class JobBoss : GlobalBase
                 Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
+            }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))
+            {
+                Log($"{queueHead} inactive for more than 5 minutes. Cancelling.");
+                queueHead.Cancel();
             }
         }
     }

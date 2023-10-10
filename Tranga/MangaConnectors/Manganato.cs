@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Tranga.Jobs;
@@ -35,7 +34,8 @@ public class Manganato : MangaConnector
 
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
-        IEnumerable<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("search-story-item"));
+        List<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("search-story-item")).ToList();
+        Log($"{searchResults.Count} items.");
         List<string> urls = new();
         foreach (HtmlNode mangaResult in searchResults)
         {
@@ -141,7 +141,12 @@ public class Manganato : MangaConnector
             return Array.Empty<Chapter>();
         List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
         Log($"Got {chapters.Count} chapters. {manga}");
-        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
+        return chapters.OrderBy(chapter =>
+        {
+            if (float.TryParse(chapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber))
+                return chapterNumber;
+            else return 0;
+        }).ToArray();
     }
 
     private List<Chapter> ParseChaptersFromHtml(Manga manga, HtmlDocument document)
@@ -159,7 +164,7 @@ public class Manganato : MangaConnector
             string fullString = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name")).InnerText;
 
             string? volumeNumber = volRex.IsMatch(fullString) ? volRex.Match(fullString).Groups[1].Value : null;
-            string chapterNumber = chapterRex.Match(fullString).Groups[1].Value;
+            string chapterNumber = chapterRex.IsMatch(fullString) ? chapterRex.Match(fullString).Groups[1].Value : fullString;
             string chapterName = nameRex.Match(fullString).Groups[3].Value;
             string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
                 .GetAttributeValue("href", "");
@@ -173,7 +178,7 @@ public class Manganato : MangaConnector
     {
         if (progressToken?.cancellationRequested ?? false)
         {
-            progressToken?.Cancel();
+            progressToken.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

@@ -58,9 +58,9 @@ public abstract class MangaConnector : GlobalBase
         Log($"Getting new Chapters for {manga}");
         Chapter[] newChapters = this.GetChapters(manga, language);
         Log($"Checking for duplicates {manga}");
-        List<Chapter> newChaptersList = newChapters.Where(nChapter =>
-            float.Parse(nChapter.chapterNumber, numberFormatDecimalPoint) > manga.ignoreChaptersBelow &&
-            !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
+        List<Chapter> newChaptersList = newChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
+                                                                      && chapterNumber > manga.ignoreChaptersBelow
+                                                                      && !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
         Log($"{newChaptersList.Count} new chapters. {manga}");
         
         return newChaptersList.ToArray();
@@ -175,11 +175,15 @@ public abstract class MangaConnector : GlobalBase
     private HttpStatusCode DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
     {
         DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
-        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 || requestResult.result == Stream.Null)
+        
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return requestResult.statusCode;
-        byte[] buffer = new byte[requestResult.result.Length];
-        requestResult.result.ReadExactly(buffer, 0, buffer.Length);
-        File.WriteAllBytes(fullPath, buffer);
+        if (requestResult.result == Stream.Null)
+            return HttpStatusCode.NotFound;
+
+        FileStream fs = new (fullPath, FileMode.Create);
+        requestResult.result.CopyTo(fs);
+        fs.Close();
         return requestResult.statusCode;
     }
 
@@ -213,6 +217,7 @@ public abstract class MangaConnector : GlobalBase
             string extension = split[^1];
             Log($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
+            Log($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
             if ((int)status < 200 || (int)status >= 300)
             {
                 progressToken?.Complete();
@@ -220,7 +225,7 @@ public abstract class MangaConnector : GlobalBase
             }
             if (progressToken?.cancellationRequested ?? false)
             {
-                progressToken?.Complete();
+                progressToken.Complete();
                 return HttpStatusCode.RequestTimeout;
             }
             progressToken?.Increment();
