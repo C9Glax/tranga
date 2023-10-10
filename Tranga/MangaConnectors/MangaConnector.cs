@@ -213,8 +213,7 @@ public abstract class MangaConnector : GlobalBase
         //Download all Images to temporary Folder
         foreach (string imageUrl in imageUrls)
         {
-            string[] split = imageUrl.Split('.');
-            string extension = split[^1];
+            string extension = imageUrl.Split('.')[^1].Split('?')[0];
             Log($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
             Log($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
