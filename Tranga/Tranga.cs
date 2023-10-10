@@ -22,7 +22,8 @@ public partial class Tranga : GlobalBase
             new Mangasee(this),
             new MangaDex(this),
             new MangaKatana(this),
-            new Mangaworld(this)
+            new Mangaworld(this),
+            new Bato(this)
         };
         jobBoss = new(this, this._connectors);
         StartJobBoss();
