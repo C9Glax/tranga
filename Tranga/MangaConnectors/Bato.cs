@@ -53,6 +53,8 @@ public class Bato : MangaConnector
 	private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
 	{
 		HtmlNode mangaList = document.DocumentNode.SelectSingleNode("//div[@data-hk='0-0-2']");
+		if (!mangaList.ChildNodes.Any(node => node.Name == "div"))
+			return Array.Empty<Manga>();
 
 		List<string> urls = mangaList.ChildNodes
 			.Select(node => $"https://bato.to{node.Descendants("div").First().FirstChild.GetAttributeValue("href", "")}").ToList();
