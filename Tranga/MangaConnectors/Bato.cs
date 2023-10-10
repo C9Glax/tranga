@@ -90,7 +90,7 @@ public class Bato : MangaConnector
 		string[] tags = genreNodes.Select(node => node.FirstChild.InnerText).ToArray();
 
 		List<HtmlNode> authorsNodes = infoNode.ChildNodes[1].ChildNodes[3].Descendants("a").ToList();
-		List<string> authors = authorsNodes.Select(node => node.InnerText).ToList();
+		List<string> authors = authorsNodes.Select(node => node.InnerText.Replace("amp;", "")).ToList();
 
 		HtmlNode? originalLanguageNode = document.DocumentNode.SelectSingleNode("//span[text()='Tr From']/..");
 		string originalLanguage = originalLanguageNode is not null ? originalLanguageNode.LastChild.InnerText : "";
