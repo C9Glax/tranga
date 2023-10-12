@@ -213,8 +213,7 @@ public abstract class MangaConnector : GlobalBase
         //Download all Images to temporary Folder
         foreach (string imageUrl in imageUrls)
         {
-            string[] split = imageUrl.Split('.');
-            string extension = split[^1];
+            string extension = imageUrl.Split('.')[^1].Split('?')[0];
             Log($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
             Log($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
@@ -247,7 +246,8 @@ public abstract class MangaConnector : GlobalBase
     
     protected string SaveCoverImageToCache(string url, byte requestType)
     {
-        string filename = url.Split('/')[^1].Split('?')[0];
+        string filetype = url.Split('/')[^1].Split('?')[0].Split('.')[^1];
+        string filename = $"{DateTime.Now.Ticks.ToString()}.{filetype}";
         string saveImagePath = Path.Join(settings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))

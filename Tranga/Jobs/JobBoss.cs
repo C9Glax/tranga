@@ -162,13 +162,20 @@ public class JobBoss : GlobalBase
                 new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
             this.jobs.Add(job);
         }
-        
+
         //Connect jobs to parent-jobs and add Publications to cache
         foreach (Job job in this.jobs)
         {
             this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
-            if(job is DownloadNewChapters dncJob)
+            if (job is DownloadNewChapters dncJob)
                 cachedPublications.Add(dncJob.manga);
+        }
+
+        HashSet<string> coverFileNames = cachedPublications.Select(manga => manga.coverFileNameInCache!).ToHashSet();
+        foreach (string fileName in Directory.GetFiles(settings.coverImageCache))
+        {
+            if(!coverFileNames.Any(existingManga => fileName.Contains(existingManga)))
+                File.Delete(fileName);
         }
     }
 

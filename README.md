@@ -21,11 +21,6 @@
   </p>
 </div>
 
-# Important for existing users:
-Tranga just had a complete rewrite. Old settings, tasks, etc. will not work.
-~~For the time being the docker-tag `latest` will be the old, discontinued branch.~~ `cuttingedge` is the active branch and
-will soon be moved to the `latest` branch (This is now the case). There is no migration-tool. Make a backup of old files.
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -57,10 +52,12 @@ will soon be moved to the `latest` branch (This is now the case). There is no mi
 
 Tranga can download Chapters and Metadata from "Scanlation" sites such as 
 
-- [MangaDex.org](https://mangadex.org/)
-- [Manganato.com](https://manganato.com/)
-- [Mangasee](https://mangasee123.com/)
-- [MangaKatana](https://mangakatana.com)
+- [MangaDex.org](https://mangadex.org/) (Multilingual)
+- [Manganato.com](https://manganato.com/) (en)
+- [Mangasee.com](https://mangasee123.com/) (en)
+- [MangaKatana.com](https://mangakatana.com) (en)
+- [Mangaworld.bz](https://www.mangaworld.bz/) (it)
+- [Bato.to](https://bato.to/v3x) (en)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues)
 
 and trigger an scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
