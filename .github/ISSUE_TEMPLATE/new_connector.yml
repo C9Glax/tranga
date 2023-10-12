@@ -1,0 +1,23 @@
+name: New Connector Request
+description: Request a new site to be added
+title: "[New Connector]: "
+labels: ["New Connector"]
+body:
+  - type: input
+    attributes:
+      label: Website-Link
+      placeholder: https://
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Is the Website free to access?
+      description: We can't support pay-to-use sites.
+      options:
+        - label: The Website is freely accessible.
+          required: true
+  - type: textarea
+    attributes:
+      label: Anything else?
+    validations:
+      required: false
