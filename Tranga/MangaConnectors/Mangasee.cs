@@ -47,6 +47,11 @@ public class Mangasee : MangaConnector
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         HtmlNode resultsNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']/div[last()]/div[1]/div");
+        if (resultsNode.Descendants("div").Count() == 1 && resultsNode.Descendants("div").First().HasClass("NoResults"))
+        {
+            Log("No results.");
+            return Array.Empty<Manga>();
+        }
         Log($"{resultsNode.SelectNodes("div").Count} items.");
 
         HashSet<Manga> ret = new();
