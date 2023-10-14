@@ -19,7 +19,7 @@ public class Mangasee : MangaConnector
     public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
-        string sanitizedTitle = string.Join('+', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
+        string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
         string requestUrl = $"https://mangasee123.com/search/?name={sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
@@ -47,6 +47,11 @@ public class Mangasee : MangaConnector
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         HtmlNode resultsNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']/div[last()]/div[1]/div");
+        if (resultsNode.Descendants("div").Count() == 1 && resultsNode.Descendants("div").First().HasClass("NoResults"))
+        {
+            Log("No results.");
+            return Array.Empty<Manga>();
+        }
         Log($"{resultsNode.SelectNodes("div").Count} items.");
 
         HashSet<Manga> ret = new();
