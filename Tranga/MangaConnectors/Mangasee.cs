@@ -19,7 +19,7 @@ public class Mangasee : MangaConnector
     public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
-        string sanitizedTitle = string.Join('+', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
+        string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
         string requestUrl = $"https://mangasee123.com/search/?name={sanitizedTitle}";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
