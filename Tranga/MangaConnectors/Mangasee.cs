@@ -121,22 +121,30 @@ public class Mangasee : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.publicationId}.xml");
-        XElement[] chapterItems = doc.Descendants("item").ToArray();
-        List<Chapter> chapters = new();
-        foreach (XElement chapter in chapterItems)
+        try
         {
-            string volumeNumber = "1";
-            string url = chapter.Descendants("link").First().Value;
-            string chapterNumber = Regex.Match(url, @"-chapter-([0-9\.]+)").Groups[1].ToString();
+            XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.publicationId}.xml");
+            XElement[] chapterItems = doc.Descendants("item").ToArray();
+            List<Chapter> chapters = new();
+            foreach (XElement chapter in chapterItems)
+            {
+                string volumeNumber = "1";
+                string url = chapter.Descendants("link").First().Value;
+                string chapterNumber = Regex.Match(url, @"-chapter-([0-9\.]+)").Groups[1].ToString();
 
-            url = url.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
-            chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, url));
+                url = url.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
+                chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, url));
+            }
+
+            //Return Chapters ordered by Chapter-Number
+            Log($"Got {chapters.Count} chapters. {manga}");
+            return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
         }
-
-        //Return Chapters ordered by Chapter-Number
-        Log($"Got {chapters.Count} chapters. {manga}");
-        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
+        catch (HttpRequestException e)
+        {
+            Log($"Failed to load XML\n\r{e}");
+            return Array.Empty<Chapter>();
+        }
     }
 
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
