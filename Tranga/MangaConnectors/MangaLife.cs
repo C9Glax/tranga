@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using HtmlAgilityPack;
 using Tranga.Jobs;
 
@@ -8,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class MangaLife : MangaConnector
 {
-    public MangaLife(GlobalBase clone) : base(clone, "MangaLife")
+    public MangaLife(GlobalBase clone) : base(clone, "Manga4Life")
     {
         this.downloadClient = new ChromiumDownloadClient(clone, new Dictionary<byte, int>()
         {
