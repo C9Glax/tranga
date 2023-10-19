@@ -120,7 +120,7 @@ public class MangaLife : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        DownloadClient.RequestResult result = downloadClient.MakeRequest($"https://mangasee123.com/rss/{manga.publicationId}.xml", 1);
+        DownloadClient.RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/rss/{manga.publicationId}.xml", 1);
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
         {
             Log("Failed to load chapterinfo");
