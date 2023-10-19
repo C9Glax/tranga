@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using HtmlAgilityPack;
 
 namespace Tranga.MangaConnectors;
@@ -32,7 +33,15 @@ internal class HttpDownloadClient : DownloadClient
             if (referrer is not null)
                 requestMessage.Headers.Referrer = new Uri(referrer);
             //Log($"Requesting {requestType} {url}");
-            response = Client.Send(requestMessage);
+            try
+            {
+                response = Client.Send(requestMessage);
+            }
+            catch (TaskCanceledException e)
+            {
+                Log($"Request timed out.\n\r{e}");
+                return new RequestResult(HttpStatusCode.RequestTimeout, null, Stream.Null);
+            }
         }
 
         if (!response.IsSuccessStatusCode)
