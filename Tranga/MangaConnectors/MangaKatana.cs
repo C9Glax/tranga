@@ -167,15 +167,20 @@ public class MangaKatana : MangaConnector
 
 		HtmlNode chapterList = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'chapters')]/table/tbody");
 
+		Regex volumeRex = new(@"Volume ([0-9]+)");
+		Regex chapterNumRex = new(@"https:\/\/mangakatana\.com\/manga\/.+\/c([0-9\.]+)");
+		Regex chapterNameRex = new(@"Chapter [0-9\.]+: (.*)");
+		
+
 		foreach (HtmlNode chapterInfo in chapterList.Descendants("tr"))
 		{
 			string fullString = chapterInfo.Descendants("a").First().InnerText;
-
-			string? volumeNumber = fullString.Contains("Vol.") ? fullString.Replace("Vol.", "").Split(' ')[0] : null;
-			string chapterNumber = fullString.Split(':')[0].Split("Chapter ")[1].Split(" ")[0].Replace('-', '.');
-			string chapterName = string.Concat(fullString.Split(':')[1..]);
 			string url = chapterInfo.Descendants("a").First()
 				.GetAttributeValue("href", "");
+
+			string? volumeNumber = volumeRex.IsMatch(fullString) ? volumeRex.Match(fullString).Groups[1].Value : null;
+			string chapterNumber = chapterNumRex.Match(url).Groups[1].Value;
+			string chapterName = chapterNameRex.Match(fullString).Groups[1].Value;
 			ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
 		}
 		
