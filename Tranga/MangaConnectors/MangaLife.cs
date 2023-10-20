@@ -58,7 +58,7 @@ public class MangaLife : MangaConnector
         foreach (HtmlNode resultNode in resultsNode.SelectNodes("div"))
         {
             string url = resultNode.Descendants().First(d => d.HasClass("SeriesName")).GetAttributeValue("href", "");
-            Manga? manga = GetMangaFromUrl($"https://mangasee123.com{url}");
+            Manga? manga = GetMangaFromUrl($"https://manga4life.com{url}");
             if (manga is not null)
                 ret.Add((Manga)manga);
         }
@@ -120,23 +120,23 @@ public class MangaLife : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        DownloadClient.RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/rss/{manga.publicationId}.xml", 1);
-        if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
+        DownloadClient.RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", 1);
+        if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
-            Log("Failed to load chapterinfo");
             return Array.Empty<Chapter>();
         }
-
-        StreamReader sr = new (result.result);
-        string unformattedString = sr.ReadToEnd();
-        Regex urlRex = new(@"(https:\/\/manga4life.com/read-online/[A-z0-9\-]+\.html)");
-        string[] urls = urlRex.Matches(unformattedString).Select(match => match.Groups[1].Value).ToArray();
+        
+        HtmlNodeCollection chapterNodes = result.htmlDocument.DocumentNode.SelectNodes(
+            "//a[contains(concat(' ',normalize-space(@class),' '),' ChapterLink ')]");
+        string[] urls = chapterNodes.Select(node => node.GetAttributeValue("href", "")).ToArray();
+        
         List<Chapter> chapters = new();
         foreach (string url in urls)
         {
             string volumeNumber = "1";
             string chapterNumber = Regex.Match(url, @"-chapter-([0-9\.]+)").Groups[1].ToString();
-            string fullUrl = url.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
+            string fullUrl = $"https://manga4life.com{url}";
+            fullUrl = fullUrl.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
             chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
         }
         //Return Chapters ordered by Chapter-Number
