@@ -127,26 +127,29 @@ public class Bato : MangaConnector
 
 	private List<Chapter> ParseChaptersFromHtml(Manga manga, string mangaUrl)
 	{
-		// Using HtmlWeb will include the chapters since they are loaded with js 
-		HtmlWeb web = new();
-		HtmlDocument document = web.Load(mangaUrl);
+		DownloadClient.RequestResult result = downloadClient.MakeRequest(mangaUrl, 1);
+		if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
+		{
+			Log("Failed to load site");
+			return new List<Chapter>();
+		}
 
 		List<Chapter> ret = new();
 
 		HtmlNode chapterList =
-			document.DocumentNode.SelectSingleNode("/html/body/div/main/div[3]/astro-island/div/div[2]/div/div/astro-slot");
+			result.htmlDocument.DocumentNode.SelectSingleNode("/html/body/div/main/div[3]/astro-island/div/div[2]/div/div/astro-slot");
 
-		Regex chapterNumberRex = new(@"Chapter ([0-9\.]+)");
+		Regex chapterNumberRex = new(@"\/title\/.+\/[0-9]+-ch_([0-9\.]+)");
 
 		foreach (HtmlNode chapterInfo in chapterList.SelectNodes("div"))
 		{
 			HtmlNode infoNode = chapterInfo.FirstChild.FirstChild;
-			string fullString = infoNode.InnerText;
+			string chapterUrl = infoNode.GetAttributeValue("href", "");
 
 			string? volumeNumber = null;
-			string chapterNumber = chapterNumberRex.Match(fullString).Groups[1].Value;
+			string chapterNumber = chapterNumberRex.Match(chapterUrl).Groups[1].Value;
 			string chapterName = chapterNumber;
-			string url = $"https://bato.to{infoNode.GetAttributeValue("href", "")}?load=2";
+			string url = $"https://bato.to{chapterUrl}?load=2";
 			ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
 		}
 		
