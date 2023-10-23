@@ -205,7 +205,8 @@ public class Bato : MangaConnector
 
 		string weirdString = images.OuterHtml;
 		string weirdString2 = Regex.Match(weirdString, @"props=\""(.*)}\""").Groups[1].Value;
-		string[] urls = Regex.Matches(weirdString2, @"https:\/\/[A-z\-0-9\.\?\&\;\=\/]*").Select(m => m.Value.Replace("\\&quot;]", "").Replace("amp;", "")).ToArray();
+		string[] urls = Regex.Matches(weirdString2, @"(https:\/\/[A-z\-0-9\.\?\&\;\=\/]+)\\")
+			.Select(match => match.Groups[1].Value.Replace("&amp;", "&")).ToArray();
 		
 		return urls;
 	}
