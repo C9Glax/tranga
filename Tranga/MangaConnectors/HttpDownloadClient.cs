@@ -37,10 +37,17 @@ internal class HttpDownloadClient : DownloadClient
             {
                 response = Client.Send(requestMessage);
             }
-            catch (TaskCanceledException e)
+            catch (Exception e)
             {
-                Log($"Request timed out.\n\r{e}");
-                return new RequestResult(HttpStatusCode.RequestTimeout, null, Stream.Null);
+                switch (e)
+                {
+                    case TaskCanceledException:
+                        Log($"Request timed out.\n\r{e}");
+                        return new RequestResult(HttpStatusCode.RequestTimeout, null, Stream.Null);
+                    case HttpRequestException:
+                        Log($"Request failed\n\r{e}");
+                        return new RequestResult(HttpStatusCode.BadRequest, null, Stream.Null);
+                }
             }
         }
 
