@@ -139,15 +139,16 @@ public class Bato : MangaConnector
 		HtmlNode chapterList =
 			result.htmlDocument.DocumentNode.SelectSingleNode("/html/body/div/main/div[3]/astro-island/div/div[2]/div/div/astro-slot");
 
-		Regex chapterNumberRex = new(@"\/title\/.+\/[0-9]+-ch_([0-9\.]+)");
+		Regex numberRex = new(@"\/title\/.+\/[0-9]+(-vol_([0-9]+))?-ch_([0-9\.]+)");
 
 		foreach (HtmlNode chapterInfo in chapterList.SelectNodes("div"))
 		{
 			HtmlNode infoNode = chapterInfo.FirstChild.FirstChild;
 			string chapterUrl = infoNode.GetAttributeValue("href", "");
 
-			string? volumeNumber = null;
-			string chapterNumber = chapterNumberRex.Match(chapterUrl).Groups[1].Value;
+			Match match = numberRex.Match(chapterUrl);
+			string? volumeNumber = match.Groups[2].Success ? match.Groups[2].Value : null;
+			string chapterNumber = match.Groups[3].Value;
 			string chapterName = chapterNumber;
 			string url = $"https://bato.to{chapterUrl}?load=2";
 			ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
