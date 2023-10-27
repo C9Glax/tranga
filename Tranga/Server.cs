@@ -362,10 +362,7 @@ public class Server : GlobalBase
                     }
                     AddNotificationConnector(new Gotify(this, gotifyUrl, gotifyAppToken));
                     SendResponse(HttpStatusCode.Accepted, response);
-                    break;
-                }
-
-                if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
+                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
                 {
                     if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
                     {
@@ -374,7 +371,20 @@ public class Server : GlobalBase
                     }
                     AddNotificationConnector(new LunaSea(this, lunaseaWebhook));
                     SendResponse(HttpStatusCode.Accepted, response);
-                    break;
+                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
+                {
+                    if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
+                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    AddNotificationConnector(new Ntfy(this, ntfyUrl, ntfyAuth));
+                    SendResponse(HttpStatusCode.Accepted, response);
+                }
+                else
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
                 }
                 break;
             case "LibraryConnectors/Update":
