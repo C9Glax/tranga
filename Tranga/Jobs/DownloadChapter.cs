@@ -33,6 +33,7 @@ public class DownloadChapter : Job
         {
             mangaConnector.CopyCoverFromCacheToDownloadLocation(chapter.parentManga);
             HttpStatusCode success = mangaConnector.DownloadChapter(chapter, this.progressToken);
+            chapter.parentManga.UpdateLatestDownloadedChapter(chapter);
             if (success == HttpStatusCode.OK)
             {
                 UpdateLibraries();

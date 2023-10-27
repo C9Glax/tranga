@@ -56,12 +56,15 @@ public abstract class MangaConnector : GlobalBase
     public Chapter[] GetNewChapters(Manga manga, string language = "en")
     {
         Log($"Getting new Chapters for {manga}");
-        Chapter[] newChapters = this.GetChapters(manga, language);
+        Chapter[] allChapters = this.GetChapters(manga, language);
         Log($"Checking for duplicates {manga}");
-        List<Chapter> newChaptersList = newChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
+        List<Chapter> newChaptersList = allChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
                                                                       && chapterNumber > manga.ignoreChaptersBelow
                                                                       && !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
         Log($"{newChaptersList.Count} new chapters. {manga}");
+        Chapter latestChapterAvailable =
+            allChapters.MaxBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint));
+        manga.latestChapterAvailable = Convert.ToSingle(latestChapterAvailable.chapterNumber, numberFormatDecimalPoint);
         
         return newChaptersList.ToArray();
     }

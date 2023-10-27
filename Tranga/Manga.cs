@@ -26,12 +26,14 @@ public struct Manga
     // ReSharper disable once MemberCanBePrivate.Global
     public int? year { get; }
     public string? originalLanguage { get; }
-    // ReSharper disable once MemberCanBePrivate.Global
+    // ReSharper disable twice MemberCanBePrivate.Global
     public string status { get; }
     public string folderName { get; private set; }
     public string publicationId { get; }
     public string internalId { get; }
     public float ignoreChaptersBelow { get; set; }
+    public float latestChapterDownloaded { get; set; }
+    public float latestChapterAvailable { get; set; }
 
     private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
@@ -56,6 +58,8 @@ public struct Manga
         string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
         this.internalId = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{onlyLowerLetters}{this.year}"));
         this.ignoreChaptersBelow = ignoreChaptersBelow ?? 0f;
+        this.latestChapterDownloaded = 0;
+        this.latestChapterAvailable = 0;
     }
 
     public override string ToString()
@@ -80,6 +84,12 @@ public struct Manga
         string newPath = CreatePublicationFolder(downloadDirectory);
         if(Directory.Exists(oldPath))
             Directory.Move(oldPath, newPath);
+    }
+
+    public void UpdateLatestDownloadedChapter(Chapter chapter)//TODO check files if chapters are all downloaded
+    {
+        float chapterNumber = Convert.ToSingle(chapter.chapterNumber, GlobalBase.numberFormatDecimalPoint);
+        latestChapterDownloaded = latestChapterDownloaded < chapterNumber ? chapterNumber : latestChapterDownloaded;
     }
 
     public void SaveSeriesInfoJson(string downloadDirectory)
