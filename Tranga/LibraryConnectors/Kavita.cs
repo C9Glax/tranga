@@ -37,12 +37,19 @@ public class Kavita : LibraryConnector
             RequestUri = new Uri($"{baseUrl}/api/Account/login"),
             Content = new StringContent($"{{\"username\":\"{username}\",\"password\":\"{password}\"}}", System.Text.Encoding.UTF8, "application/json")
         };
-        
-        HttpResponseMessage response = client.Send(requestMessage);
-        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
-        if (result is not null)
-            return result["token"]!.GetValue<string>();
-        else throw new Exception("Did not receive token.");
+        try
+        {
+            HttpResponseMessage response = client.Send(requestMessage);
+            JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
+            if (result is not null)
+                return result["token"]!.GetValue<string>();
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Unable to retrieve token:\n\r{e}");
+        }
+        Console.WriteLine("Kavita: Did not receive token.");
+        throw new Exception("Kavita: Did not receive token.");
     }
 
     public override void UpdateLibrary()
