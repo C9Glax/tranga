@@ -401,8 +401,7 @@ public class Server : GlobalBase
                 break;
             case "LibraryConnectors/Update":
                 if (!requestVariables.TryGetValue("libraryConnector", out string? libraryConnectorStr) ||
-                    !Enum.TryParse(libraryConnectorStr,
-                        out LibraryConnector.LibraryType libraryConnectorType))
+                    !Enum.TryParse(libraryConnectorStr, out LibraryConnector.LibraryType libraryConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -419,10 +418,7 @@ public class Server : GlobalBase
                     }
                     AddLibraryConnector(new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword));
                     SendResponse(HttpStatusCode.Accepted, response);
-                    break;
-                }
-
-                if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
+                }else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
                 {
                     if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
                         !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
@@ -432,7 +428,10 @@ public class Server : GlobalBase
                     }
                     AddLibraryConnector(new Komga(this, komgaUrl, komgaAuth));
                     SendResponse(HttpStatusCode.Accepted, response);
-                    break;
+                }
+                else
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
                 }
                 break;
             case "LogMessages":
