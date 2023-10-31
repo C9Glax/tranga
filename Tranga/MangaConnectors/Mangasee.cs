@@ -196,7 +196,7 @@ public class Mangasee : MangaConnector
         }
         catch (HttpRequestException e)
         {
-            Log($"Failed to load XML\n\r{e}");
+            Log($"Failed to load https://mangasee123.com/rss/{manga.publicationId}.xml \n\r{e}");
             return Array.Empty<Chapter>();
         }
     }
