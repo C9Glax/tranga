@@ -1,7 +1,9 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -16,23 +18,99 @@ public class Mangasee : MangaConnector
         });
     }
 
+    private struct SearchResult
+    {
+        public string i { get; set; }
+        public string s { get; set; }
+        public string[] a { get; set; }
+    }
+
     public override Manga[] GetManga(string publicationTitle = "")
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
-        string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
-        string requestUrl = $"https://mangasee123.com/search/?name={sanitizedTitle}";
+        string requestUrl = "https://mangasee123.com/_search.php";
         DownloadClient.RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        {
+            Log($"Failed to retrieve search: {requestResult.statusCode}");
             return Array.Empty<Manga>();
+        }
+        
+        try
+        {
+            SearchResult[] searchResults = JsonConvert.DeserializeObject<SearchResult[]>(requestResult.htmlDocument!.DocumentNode.InnerText) ??
+                                           throw new NoNullAllowedException();
+            SearchResult[] filteredResults = FilteredResults(publicationTitle, searchResults);
+            Log($"Total available manga: {searchResults.Length} Filtered down to: {filteredResults.Length}");
+            
+            /*
+            Dictionary<SearchResult, int> levenshteinRelation = filteredResults.ToDictionary(result => result,
+                result =>
+                {
+                    Log($"Levenshtein {result.s}");
+                    return LevenshteinDistance(publicationTitle.Replace(" ", "").ToLower(), result.s.Replace(" ", "").ToLower());
+                });
+            Log($"After levenshtein: {levenshteinRelation.Count}");*/
 
-        if (requestResult.htmlDocument is null)
+            string[] urls = filteredResults.Select(result => $"https://mangasee123.com/manga/{result.i}").ToArray();
+            List<Manga> searchResultManga = new();
+            foreach (string url in urls)
+            {
+                Manga? newManga = GetMangaFromUrl(url);
+                if(newManga is { } manga)
+                    searchResultManga.Add(manga);
+            }
+            Log($"Retrieved {searchResultManga.Count} publications. Term=\"{publicationTitle}\"");
+            return searchResultManga.ToArray();
+        }
+        catch (NoNullAllowedException)
+        {
+            Log("Failed to retrieve search");
             return Array.Empty<Manga>();
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-        Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
-        return publications;
+        }
     }
 
+    private SearchResult[] FilteredResults(string publicationTitle, SearchResult[] unfilteredSearchResults)
+    {
+        string[] bannedStrings = {"a", "the", "of", "as", "to", "no", "for", "on", "with", "be", "and", "in", "wa", "at"};
+        string[] cleanSplitPublicationTitle = publicationTitle.Split(' ')
+            .Where(part => part.Length > 0 && !bannedStrings.Contains(part.ToLower())).ToArray();
+        
+        return unfilteredSearchResults.Where(usr =>
+        {
+            string cleanSearchResultString = string.Join(' ', usr.s.Split(' ').Where(part => part.Length > 0 && !bannedStrings.Contains(part.ToLower())));
+            foreach(string splitPublicationTitlePart in cleanSplitPublicationTitle)
+                if (cleanSearchResultString.Contains(splitPublicationTitlePart, StringComparison.InvariantCultureIgnoreCase) ||
+                    cleanSearchResultString.Contains(splitPublicationTitlePart, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            return false;
+        }).ToArray();
+    }
+
+    private int LevenshteinDistance(string a, string b)
+    {
+        if (b.Length == 0)
+            return a.Length;
+        if (a.Length == 0)
+            return b.Length;
+        if (a[0] == b[0])
+            return LevenshteinDistance(a[1..], b[1..]);
+
+        int case1 = LevenshteinDistance(a, b[1..]);
+        int case2 = LevenshteinDistance(a[1..], b[1..]);
+        int case3 = LevenshteinDistance(a[1..], b);
+
+        if (case1 < case2)
+        {
+            return 1 + (case1 < case3 ? case1 : case3);
+        }
+        else
+        {
+            return 1 + (case2 < case3 ? case2 : case3);
+        }
+    }
+    
     public override Manga? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/mangasee123.com\/manga\/(.*)(\/.*)*");
@@ -43,30 +121,6 @@ public class Mangasee : MangaConnector
             return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
         return null;
     }
-
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
-    {
-        HtmlNode resultsNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']/div[last()]/div[1]/div");
-        if (resultsNode.Descendants("div").Count() == 1 && resultsNode.Descendants("div").First().HasClass("NoResults"))
-        {
-            Log("No results.");
-            return Array.Empty<Manga>();
-        }
-        Log($"{resultsNode.SelectNodes("div").Count} items.");
-
-        HashSet<Manga> ret = new();
-
-        foreach (HtmlNode resultNode in resultsNode.SelectNodes("div"))
-        {
-            string url = resultNode.Descendants().First(d => d.HasClass("SeriesName")).GetAttributeValue("href", "");
-            Manga? manga = GetMangaFromUrl($"https://mangasee123.com{url}");
-            if (manga is not null)
-                ret.Add((Manga)manga);
-        }
-        
-        return ret.ToArray();
-    }
-
 
     private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
     {
