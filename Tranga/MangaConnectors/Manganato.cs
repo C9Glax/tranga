@@ -156,18 +156,18 @@ public class Manganato : MangaConnector
         HtmlNode chapterList = document.DocumentNode.Descendants("ul").First(l => l.HasClass("row-content-chapter"));
 
         Regex volRex = new(@"Vol\.([0-9]+).*");
-        Regex chapterRex = new(@"Chapter ([0-9]+(\.[0-9]+)*){1}.*");
+        Regex chapterRex = new(@"https:\/\/chapmanganato.com/manga-[A-z0-9]+\/chapter-([0-9\.]+)");
         Regex nameRex = new(@"Chapter ([0-9]+(\.[0-9]+)*){1}:? (.*)");
 
         foreach (HtmlNode chapterInfo in chapterList.Descendants("li"))
         {
             string fullString = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name")).InnerText;
 
-            string? volumeNumber = volRex.IsMatch(fullString) ? volRex.Match(fullString).Groups[1].Value : null;
-            string chapterNumber = chapterRex.IsMatch(fullString) ? chapterRex.Match(fullString).Groups[1].Value : fullString;
-            string chapterName = nameRex.Match(fullString).Groups[3].Value;
             string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
                 .GetAttributeValue("href", "");
+            string? volumeNumber = volRex.IsMatch(fullString) ? volRex.Match(fullString).Groups[1].Value : null;
+            string chapterNumber = chapterRex.Match(url).Groups[1].Value;
+            string chapterName = nameRex.Match(fullString).Groups[3].Value;
             ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
         }
         ret.Reverse();
