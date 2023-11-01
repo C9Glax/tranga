@@ -87,6 +87,7 @@ public class MangaKatana : MangaConnector
 		HashSet<string> tags = new();
 		string[] authors = Array.Empty<string>();
 		string originalLanguage = "";
+		Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
 
 		HtmlNode infoNode = document.DocumentNode.SelectSingleNode("//*[@id='single_book']");
 		string sortName = infoNode.Descendants("h1").First(n => n.HasClass("heading")).InnerText;
@@ -110,6 +111,11 @@ public class MangaKatana : MangaConnector
 					break;
 				case "status":
 					status = value;
+					switch (status.ToLower())
+					{
+						case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+						case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
+					}
 					break;
 				case "genres":
 					tags = row.SelectNodes("div").Last().Descendants("a").Select(a => a.InnerText).ToHashSet();
@@ -136,7 +142,7 @@ public class MangaKatana : MangaConnector
 		}
 
 		Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-			year, originalLanguage, status, publicationId);
+			year, originalLanguage, status, publicationId, releaseStatus);
 		cachedPublications.Add(manga);
 		return manga;
 	}

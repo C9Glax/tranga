@@ -102,9 +102,18 @@ public class Bato : MangaConnector
 
 		string status = document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..")
 			.ChildNodes[2].InnerText;
+		Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
+		switch (status.ToLower())
+		{
+			case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+			case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
+			case "hiatus": releaseStatus = Manga.ReleaseStatusByte.OnHiatus; break;
+			case "cancelled": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
+			case "pending": releaseStatus = Manga.ReleaseStatusByte.Unreleased; break;
+		}
 
 		Manga manga = new (sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
-			year, originalLanguage, status, publicationId);
+			year, originalLanguage, status, publicationId, releaseStatus);
 		cachedPublications.Add(manga);
 		return manga;
 	}

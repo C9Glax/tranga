@@ -170,6 +170,14 @@ public class MangaDex : MangaConnector
         if(!attributes.ContainsKey("status"))
             return null;
         string status = attributes["status"]!.GetValue<string>();
+        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
+        switch (status.ToLower())
+        {
+            case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+            case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
+            case "hiatus": releaseStatus = Manga.ReleaseStatusByte.OnHiatus; break;
+            case "cancelled": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
+        }
 
         Manga pub = new(
             title,
@@ -183,7 +191,8 @@ public class MangaDex : MangaConnector
             year,
             originalLanguage,
             status,
-            publicationId
+            publicationId,
+            releaseStatus
         );
         cachedPublications.Add(pub);
         return pub;

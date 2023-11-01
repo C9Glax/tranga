@@ -127,6 +127,7 @@ public class Mangasee : MangaConnector
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
         HashSet<string> tags = new();
+        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
         string posterUrl = posterNode.GetAttributeValue("src", "");
@@ -159,6 +160,14 @@ public class Mangasee : MangaConnector
         foreach (HtmlNode statusNode in statusNodes)
             if (statusNode.InnerText.Contains("publish", StringComparison.CurrentCultureIgnoreCase))
                 status = statusNode.InnerText.Split(' ')[0];
+        switch (status.ToLower())
+        {
+            case "cancelled": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
+            case "hiatus": releaseStatus = Manga.ReleaseStatusByte.OnHiatus; break;
+            case "discontinued": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
+            case "complete": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
+            case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+        }
 
         HtmlNode descriptionNode = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Description:']/..")
@@ -167,7 +176,7 @@ public class Mangasee : MangaConnector
 
         Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
             coverFileNameInCache, links,
-            year, originalLanguage, status, publicationId);
+            year, originalLanguage, status, publicationId, releaseStatus);
         cachedPublications.Add(manga);
         return manga;
     }

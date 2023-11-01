@@ -74,6 +74,7 @@ public class Manganato : MangaConnector
         HashSet<string> tags = new();
         string[] authors = Array.Empty<string>();
         string originalLanguage = "";
+        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
 
         HtmlNode infoNode = document.DocumentNode.Descendants("div").First(d => d.HasClass("story-info-right"));
 
@@ -99,6 +100,11 @@ public class Manganato : MangaConnector
                     break;
                 case "status":
                     status = value;
+                    switch (status.ToLower())
+                    {
+                        case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+                        case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
+                    }
                     break;
                 case "genres":
                     string[] genres = value.Split(" - ");
@@ -122,7 +128,7 @@ public class Manganato : MangaConnector
         int year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
         
         Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, status, publicationId);
+            year, originalLanguage,  status, publicationId, releaseStatus);
         cachedPublications.Add(manga);
         return manga;
     }

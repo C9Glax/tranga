@@ -72,6 +72,7 @@ public class Mangaworld: MangaConnector
         Dictionary<string, string> altTitles = new();
         Dictionary<string, string>? links = null;
         string originalLanguage = "";
+        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
 
         HtmlNode infoNode = document.DocumentNode.Descendants("div").First(d => d.HasClass("info"));
 
@@ -94,6 +95,15 @@ public class Mangaworld: MangaConnector
         string[] authors = new[] { authorsNode.SelectNodes("a").First().InnerText };
 
         string status = metadata.SelectSingleNode("//span[text()='Stato: ']/..").SelectNodes("a").First().InnerText;
+        // ReSharper disable 5 times StringLiteralTypo
+        switch (status.ToLower())
+        {
+            case "cancellato": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
+            case "in pausa": releaseStatus = Manga.ReleaseStatusByte.OnHiatus; break;
+            case "droppato": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
+            case "finito": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
+            case "in corso": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+        }
 
         string posterUrl = document.DocumentNode.SelectSingleNode("//img[@class='rounded']").GetAttributeValue("src", "");
 
@@ -105,7 +115,7 @@ public class Mangaworld: MangaConnector
         int year = Convert.ToInt32(yearString);
         
         Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, status, publicationId);
+            year, originalLanguage, status, publicationId, releaseStatus);
         cachedPublications.Add(manga);
         return manga;
     }

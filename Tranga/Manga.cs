@@ -28,6 +28,15 @@ public struct Manga
     public string? originalLanguage { get; }
     // ReSharper disable twice MemberCanBePrivate.Global
     public string status { get; }
+    public ReleaseStatusByte releaseStatus { get; }
+    public enum ReleaseStatusByte : byte
+    {
+        Continuing = 0,
+        Completed = 1,
+        OnHiatus = 2,
+        Cancelled = 3,
+        Unreleased = 4
+    };
     public string folderName { get; private set; }
     public string publicationId { get; }
     public string internalId { get; }
@@ -38,7 +47,7 @@ public struct Manga
     private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
     [JsonConstructor]
-    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, ReleaseStatusByte releaseStatus = 0, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
@@ -60,6 +69,7 @@ public struct Manga
         this.ignoreChaptersBelow = ignoreChaptersBelow ?? 0f;
         this.latestChapterDownloaded = 0;
         this.latestChapterAvailable = 0;
+        this.releaseStatus = releaseStatus;
     }
 
     public override string ToString()
