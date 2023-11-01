@@ -105,7 +105,7 @@ public struct Manga
     /// <returns>Serialized JSON String for series.json</returns>
     private string GetSeriesInfoJson()
     {
-        SeriesInfo si = new (new Metadata(this.sortName, this.year.ToString() ?? string.Empty, this.status, this.description ?? ""));
+        SeriesInfo si = new (new Metadata(this));
         return System.Text.Json.JsonSerializer.Serialize(si);
     }
 
@@ -150,6 +150,11 @@ public struct Manga
             "cancellato",
             "droppato"
         };
+
+        public Metadata(Manga manga) : this(manga.sortName, manga.year.ToString() ?? string.Empty, manga.status, manga.description ?? "")
+        {
+            
+        }
         
         public Metadata(string name, string year, string status, string description_text)
         {
