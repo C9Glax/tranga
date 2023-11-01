@@ -43,11 +43,12 @@ public struct Manga
     public float ignoreChaptersBelow { get; set; }
     public float latestChapterDownloaded { get; set; }
     public float latestChapterAvailable { get; set; }
+    public string? websiteUrl { get; }
 
     private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
     [JsonConstructor]
-    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, ReleaseStatusByte releaseStatus = 0, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, ReleaseStatusByte releaseStatus = 0, string? websiteUrl = null, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
@@ -70,6 +71,7 @@ public struct Manga
         this.latestChapterDownloaded = 0;
         this.latestChapterAvailable = 0;
         this.releaseStatus = releaseStatus;
+        this.websiteUrl = websiteUrl;
     }
 
     public override string ToString()
