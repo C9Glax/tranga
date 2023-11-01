@@ -102,11 +102,11 @@ public struct Manga
         latestChapterDownloaded = latestChapterDownloaded < chapterNumber ? chapterNumber : latestChapterDownloaded;
     }
 
-    public void SaveSeriesInfoJson(string downloadDirectory)
+    public void SaveSeriesInfoJson(string downloadDirectory, bool overwrite = false)
     {
         string publicationFolder = CreatePublicationFolder(downloadDirectory);
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
-        if(!File.Exists(seriesInfoPath))
+        if(overwrite || (!overwrite && !File.Exists(seriesInfoPath)))
             File.WriteAllText(seriesInfoPath,this.GetSeriesInfoJson());
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(seriesInfoPath, GroupRead | GroupWrite | OtherRead | OtherWrite | UserRead | UserWrite);
