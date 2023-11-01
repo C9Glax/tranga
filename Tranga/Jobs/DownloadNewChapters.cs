@@ -4,7 +4,7 @@ namespace Tranga.Jobs;
 
 public class DownloadNewChapters : Job
 {
-    public Manga manga { get; init; }
+    public Manga manga { get; set; }
     public string translatedLanguage { get; init; }
 
     public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, DateTime lastExecution,
