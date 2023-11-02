@@ -72,6 +72,19 @@ public struct Manga
         this.releaseStatus = releaseStatus;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Manga compareManga)
+            return false;
+        return this.description == compareManga.description &&
+               this.year == compareManga.year &&
+               this.status == compareManga.status &&
+               this.releaseStatus == compareManga.releaseStatus &&
+               this.sortName == compareManga.sortName &&
+               this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&
+               this.tags.Equals(compareManga.tags);
+    }
+
     public override string ToString()
     {
         return $"Publication {sortName} {internalId}";
