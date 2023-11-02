@@ -43,6 +43,8 @@ public class DownloadNewChapters : Job
             DownloadChapter downloadChapterJob = new(this, this.mangaConnector, chapter, parentJobId: this.id);
             jobs.Add(downloadChapterJob);
         }
+        UpdateMetadata updateMetadataJob = new(this, this.mangaConnector, this.manga, parentJobId: this.id);
+        jobs.Add(updateMetadataJob);
         progressToken.Complete();
         return jobs;
     }
