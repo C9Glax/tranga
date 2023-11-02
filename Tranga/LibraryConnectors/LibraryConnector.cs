@@ -41,15 +41,33 @@ public abstract class LibraryConnector : GlobalBase
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(url)
             };
-            HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine("LibraryManager.NetClient", $"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
-            
-            if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
-                return MakeRequest(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
-            else if (response.IsSuccessStatusCode)
-                return response.Content.ReadAsStream();
-            else
+            try
+            {
+
+                HttpResponseMessage response = client.Send(requestMessage);
+                logger?.WriteLine("LibraryManager.NetClient",
+                    $"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
+
+                if (response.StatusCode is HttpStatusCode.Unauthorized &&
+                    response.RequestMessage!.RequestUri!.AbsoluteUri != url)
+                    return MakeRequest(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);
+                else if (response.IsSuccessStatusCode)
+                    return response.Content.ReadAsStream();
+                else
+                    return Stream.Null;
+            }
+            catch (Exception e)
+            {
+                switch (e)
+                {
+                    case HttpRequestException:
+                        logger?.WriteLine("LibraryManager.NetClient", $"Failed to make Request:\n\r{e}");
+                        break;
+                    default:
+                        throw;
+                }
                 return Stream.Null;
+            }
         }
 
         public static bool MakePost(string url, string authScheme, string auth, Logger? logger)
