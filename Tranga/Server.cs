@@ -304,6 +304,32 @@ public class Server : GlobalBase
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false, translatedLanguage: translatedLanguage??"en"));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
+            case "Jobs/UpdateMetadata":
+                if (!requestVariables.TryGetValue("internalId", out internalId))
+                {
+                    foreach (DownloadNewChapters dncJob in (_parent.jobBoss.jobs.Where(possibleDncJob =>
+                                 possibleDncJob is DownloadNewChapters) as IEnumerable<DownloadNewChapters>)!)
+                    {
+                        _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
+                    }
+                    SendResponse(HttpStatusCode.Accepted, response);
+                }
+                else
+                {
+                    Job[] possibleDncJobs = _parent.jobBoss.GetJobsLike(internalId: internalId).ToArray();
+                    switch (possibleDncJobs.Length)
+                    {
+                        case <1: SendResponse(HttpStatusCode.BadRequest, response, "Could not find matching release"); break;
+                        case >1: SendResponse(HttpStatusCode.BadRequest, response, "Multiple releases??"); break;
+                        default:
+                            DownloadNewChapters dncJob = possibleDncJobs[0] as DownloadNewChapters ??
+                                                         throw new Exception("Has to be DownloadNewChapters Job");
+                            _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
+                            SendResponse(HttpStatusCode.Accepted, response);
+                            break;
+                    }
+                }
+                break;
             case "Jobs/StartNow":
                 if (!requestVariables.TryGetValue("jobId", out jobId) ||
                     !_parent.jobBoss.TryGetJobById(jobId, out job))
