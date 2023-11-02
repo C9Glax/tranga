@@ -39,6 +39,11 @@ public class MangaKatana : MangaConnector
 		return publications;
 	}
 
+	public override Manga? GetMangaFromId(string publicationId)
+	{
+		return GetMangaFromUrl($"https://mangakatana.com/manga/{publicationId}");
+	}
+
 	public override Manga? GetMangaFromUrl(string url)
 	{
 		DownloadClient.RequestResult requestResult =

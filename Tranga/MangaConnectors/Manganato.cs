@@ -54,6 +54,11 @@ public class Manganato : MangaConnector
         return ret.ToArray();
     }
 
+    public override Manga? GetMangaFromId(string publicationId)
+    {
+        return GetMangaFromUrl($"https://chapmanganato.com/{publicationId}");
+    }
+
     public override Manga? GetMangaFromUrl(string url)
     {
         DownloadClient.RequestResult requestResult =

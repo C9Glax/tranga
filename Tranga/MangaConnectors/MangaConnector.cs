@@ -37,6 +37,8 @@ public abstract class MangaConnector : GlobalBase
     public abstract Manga[] GetManga(string publicationTitle = "");
 
     public abstract Manga? GetMangaFromUrl(string url);
+
+    public abstract Manga? GetMangaFromId(string publicationId);
     
     /// <summary>
     /// Returns all Chapters of the publication in the provided language.

@@ -32,6 +32,11 @@ public class MangaLife : MangaConnector
         return publications;
     }
 
+    public override Manga? GetMangaFromId(string publicationId)
+    {
+        return GetMangaFromUrl($"https://manga4life.com/manga/{publicationId}");
+    }
+
     public override Manga? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/manga4life.com\/manga\/(.*)(\/.*)*");

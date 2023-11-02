@@ -23,12 +23,7 @@ public class UpdateMetadata : Job
 
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
     {
-        if(manga.websiteUrl is null)
-        {
-            Log($"Legacy manga {manga}");
-            return Array.Empty<Job>();
-        }
-        Manga? possibleUpdatedManga = mangaConnector.GetMangaFromUrl(manga.websiteUrl);
+        Manga? possibleUpdatedManga = mangaConnector.GetMangaFromId(manga.publicationId);
         if (possibleUpdatedManga is { } updatedManga)
         {
             cachedPublications.Remove(this.manga);

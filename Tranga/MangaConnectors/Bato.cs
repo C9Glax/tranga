@@ -36,6 +36,11 @@ public class Bato : MangaConnector
 		return publications;
 	}
 
+	public override Manga? GetMangaFromId(string publicationId)
+	{
+		return GetMangaFromUrl($"https://bato.to/title/{publicationId}");
+	}
+
 	public override Manga? GetMangaFromUrl(string url)
 	{
 		DownloadClient.RequestResult requestResult =

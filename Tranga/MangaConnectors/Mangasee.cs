@@ -110,7 +110,12 @@ public class Mangasee : MangaConnector
             return 1 + (case2 < case3 ? case2 : case3);
         }
     }
-    
+
+    public override Manga? GetMangaFromId(string publicationId)
+    {
+        return GetMangaFromUrl($"https://mangasee123.com/manga/{publicationId}");
+    }
+
     public override Manga? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/mangasee123.com\/manga\/(.*)(\/.*)*");

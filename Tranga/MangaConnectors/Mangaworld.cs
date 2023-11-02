@@ -54,6 +54,11 @@ public class Mangaworld: MangaConnector
         return ret.ToArray();
     }
 
+    public override Manga? GetMangaFromId(string publicationId)
+    {
+        throw new NotImplementedException();
+    }
+
     public override Manga? GetMangaFromUrl(string url)
     {
         DownloadClient.RequestResult requestResult =
