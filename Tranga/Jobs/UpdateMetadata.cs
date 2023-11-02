@@ -26,6 +26,9 @@ public class UpdateMetadata : Job
         Manga? possibleUpdatedManga = mangaConnector.GetMangaFromId(manga.publicationId);
         if (possibleUpdatedManga is { } updatedManga)
         {
+            if(updatedManga.Equals(this.manga))
+                return Array.Empty<Job>();
+            
             cachedPublications.Remove(this.manga);
             this.manga = updatedManga;
             cachedPublications.Add(updatedManga);
@@ -38,12 +41,15 @@ public class UpdateMetadata : Job
                                              throw new Exception("Jobtype has to be DownloadNewChapters");
                 dncJob.manga = updatedManga;
             }
+            this.progressToken.Complete();
         }
         else
         {
             Log($"Could not find Manga {manga}");
+            this.progressToken.Cancel();
             return Array.Empty<Job>();
         }
+        this.progressToken.Cancel();
         return Array.Empty<Job>();
     }
 }
