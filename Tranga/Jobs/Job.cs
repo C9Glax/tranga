@@ -13,9 +13,13 @@ public abstract class Job : GlobalBase
     public string id => GetId();
     internal IEnumerable<Job>? subJobs { get; private set; }
     public string? parentJobId { get; init; }
+    public enum JobType : byte { DownloadChapterJob, DownloadNewChaptersJob, UpdateMetaDataJob }
 
-    internal Job(GlobalBase clone, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
+    public JobType jobType;
+
+    internal Job(GlobalBase clone, JobType jobType, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
     {
+        this.jobType = jobType;
         this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
         this.recurring = recurring;
@@ -27,9 +31,10 @@ public abstract class Job : GlobalBase
         this.parentJobId = parentJobId;
     }
 
-    internal Job(GlobalBase clone, MangaConnector connector, DateTime lastExecution, bool recurring = false,
+    internal Job(GlobalBase clone, JobType jobType, MangaConnector connector, DateTime lastExecution, bool recurring = false,
         TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
     {
+        this.jobType = jobType;
         this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
         this.recurring = recurring;

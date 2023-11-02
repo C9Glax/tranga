@@ -8,14 +8,14 @@ public class DownloadNewChapters : Job
     public string translatedLanguage { get; init; }
 
     public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, DateTime lastExecution,
-        bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base(clone, connector, lastExecution, recurring,
+        bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base(clone, JobType.DownloadNewChaptersJob, connector, lastExecution, recurring,
         recurrence, parentJobId)
     {
         this.manga = manga;
         this.translatedLanguage = translatedLanguage;
     }
     
-    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base (clone, connector, recurring, recurrence, parentJobId)
+    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base (clone, JobType.DownloadNewChaptersJob, connector, recurring, recurrence, parentJobId)
     {
         this.manga = manga;
         this.translatedLanguage = translatedLanguage;

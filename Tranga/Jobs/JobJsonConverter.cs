@@ -23,7 +23,20 @@ public class JobJsonConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         JObject jo = JObject.Load(reader);
-        if (jo.ContainsKey("manga"))//DownloadNewChapters
+
+        if (jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.UpdateMetaDataJob)
+        {
+            return new UpdateMetadata(this._clone,
+                jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
+                {
+                    Converters =
+                    {
+                        this._mangaConnectorJsonConverter
+                    }
+                }))!,
+                jo.GetValue("manga")!.ToObject<Manga>(),
+                jo.GetValue("parentJobId")!.Value<string?>());
+        }else if ((jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.DownloadNewChaptersJob) || jo.ContainsKey("translatedLanguage"))//TODO change to jobType
         {
             return new DownloadNewChapters(this._clone,
                 jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
@@ -38,9 +51,7 @@ public class JobJsonConverter : JsonConverter
                 jo.GetValue("recurring")!.Value<bool>(),
                 jo.GetValue("recurrenceTime")!.ToObject<TimeSpan?>(),
                 jo.GetValue("parentJobId")!.Value<string?>());
-        }
-
-        if (jo.ContainsKey("chapter"))//DownloadChapter
+        }else if ((jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.DownloadChapterJob) || jo.ContainsKey("chapter"))//TODO change to jobType
         {
             return new DownloadChapter(this._clone,
                 jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
