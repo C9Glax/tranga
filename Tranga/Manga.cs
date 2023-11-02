@@ -43,7 +43,6 @@ public struct Manga
     public float ignoreChaptersBelow { get; set; }
     public float latestChapterDownloaded { get; set; }
     public float latestChapterAvailable { get; set; }
-    public string? websiteUrl { get; }
 
     private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
 
@@ -71,7 +70,6 @@ public struct Manga
         this.latestChapterDownloaded = 0;
         this.latestChapterAvailable = 0;
         this.releaseStatus = releaseStatus;
-        this.websiteUrl = websiteUrl;
     }
 
     public override string ToString()
