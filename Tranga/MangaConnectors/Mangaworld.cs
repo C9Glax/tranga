@@ -56,7 +56,7 @@ public class Mangaworld: MangaConnector
 
     public override Manga? GetMangaFromId(string publicationId)
     {
-        throw new NotImplementedException();
+        return GetMangaFromUrl($"https://www.mangaworld.bz/manga/{publicationId}");
     }
 
     public override Manga? GetMangaFromUrl(string url)
