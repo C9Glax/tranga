@@ -4,20 +4,11 @@ namespace Tranga.Jobs;
 
 public class UpdateMetadata : Job
 {
-    private Manga manga { get; set; }
-    private JobBoss jobBoss { get; init; }
-
-    public UpdateMetadata(GlobalBase clone, MangaConnector connector, Manga manga, JobBoss jobBoss, DateTime lastExecution, string? parentJobId = null) : base(clone, connector, lastExecution, parentJobId: parentJobId)
-    {
-        this.manga = manga;
-        this.jobBoss = jobBoss;
-    }
+    public Manga manga { get; set; }
     
-    public UpdateMetadata(GlobalBase clone, MangaConnector connector, Manga manga, JobBoss jobBoss, string? parentJobId = null) : base(clone, connector, parentJobId: parentJobId)
     public UpdateMetadata(GlobalBase clone, MangaConnector connector, Manga manga, string? parentJobId = null) : base(clone, JobType.UpdateMetaDataJob, connector, parentJobId: parentJobId)
     {
         this.manga = manga;
-        this.jobBoss = jobBoss;
     }
     
     protected override string GetId()
@@ -30,16 +21,11 @@ public class UpdateMetadata : Job
         return $"{id} Manga: {manga}";
     }
 
-    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal()
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
     {
         if(manga.websiteUrl is null)
         {
             Log($"Legacy manga {manga}");
-            return Array.Empty<Job>();
-        }
-        if (parentJobId is null)
-        {
-            Log($"Missing parentJob {this}");
             return Array.Empty<Job>();
         }
         Manga? possibleUpdatedManga = mangaConnector.GetMangaFromUrl(manga.websiteUrl);
@@ -50,9 +36,13 @@ public class UpdateMetadata : Job
             cachedPublications.Add(updatedManga);
             this.manga.SaveSeriesInfoJson(settings.downloadLocation, true);
 
-            DownloadNewChapters dncJob = this.jobBoss.GetJobById(this.parentJobId) as DownloadNewChapters ??
-                                         throw new Exception("Jobtype has to be DownloadNewChapters");
-            dncJob.manga = updatedManga;
+            if (parentJobId is not null)
+            {
+                
+                DownloadNewChapters dncJob = jobBoss.GetJobById(this.parentJobId) as DownloadNewChapters ??
+                                             throw new Exception("Jobtype has to be DownloadNewChapters");
+                dncJob.manga = updatedManga;
+            }
         }
         else
         {
