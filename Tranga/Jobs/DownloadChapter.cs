@@ -27,7 +27,7 @@ public class DownloadChapter : Job
         return $"{id} Chapter: {chapter}";
     }
 
-    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal()
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
     {
         Task downloadTask = new(delegate
         {

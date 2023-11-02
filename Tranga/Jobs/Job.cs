@@ -86,13 +86,13 @@ public abstract class Job : GlobalBase
                 subJob.Cancel();
     }
 
-    public IEnumerable<Job> ExecuteReturnSubTasks()
+    public IEnumerable<Job> ExecuteReturnSubTasks(JobBoss jobBoss)
     {
         progressToken.Start();
-        subJobs = ExecuteReturnSubTasksInternal();
+        subJobs = ExecuteReturnSubTasksInternal(jobBoss);
         lastExecution = DateTime.Now;
         return subJobs;
     }
 
-    protected abstract IEnumerable<Job> ExecuteReturnSubTasksInternal();
+    protected abstract IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss);
 }

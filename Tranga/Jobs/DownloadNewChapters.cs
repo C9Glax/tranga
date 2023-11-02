@@ -31,7 +31,7 @@ public class DownloadNewChapters : Job
         return $"{id} Manga: {manga}";
     }
 
-    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal()
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
     {
         manga.SaveSeriesInfoJson(settings.downloadLocation);
         Chapter[] chapters = mangaConnector.GetNewChapters(manga, this.translatedLanguage);

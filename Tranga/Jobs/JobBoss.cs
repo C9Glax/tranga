@@ -253,7 +253,7 @@ public class JobBoss : GlobalBase
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
-                Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks().ToArray();
+                Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks(this).ToArray();
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
             }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))
