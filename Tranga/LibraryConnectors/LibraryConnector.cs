@@ -61,7 +61,7 @@ public abstract class LibraryConnector : GlobalBase
                 switch (e)
                 {
                     case HttpRequestException:
-                        logger?.WriteLine("LibraryManager.NetClient", $"Failed to make Request:\n\r{e}");
+                        logger?.WriteLine("LibraryManager.NetClient", $"Failed to make Request:\n\r{e}\n\rContinuing.");
                         break;
                     default:
                         throw;
