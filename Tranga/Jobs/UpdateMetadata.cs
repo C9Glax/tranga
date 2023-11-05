@@ -29,9 +29,7 @@ public class UpdateMetadata : Job
             if(updatedManga.Equals(this.manga))
                 return Array.Empty<Job>();
             
-            cachedPublications.Remove(this.manga);
-            this.manga = updatedManga;
-            cachedPublications.Add(updatedManga);
+            this.manga.UpdateMetadata(updatedManga);
             this.manga.SaveSeriesInfoJson(settings.downloadLocation, true);
 
             if (parentJobId is not null)

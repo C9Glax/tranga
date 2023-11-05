@@ -11,23 +11,23 @@ namespace Tranga;
 /// </summary>
 public struct Manga
 {
-    public string sortName { get; }
+    public string sortName { get; private set; }
     public List<string> authors { get; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Dictionary<string,string> altTitles { get; }
     // ReSharper disable once MemberCanBePrivate.Global
-    public string? description { get; }
+    public string? description { get; private set; }
     public string[] tags { get; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string? coverUrl { get; }
-    public string? coverFileNameInCache { get; set; }
+    public string? coverFileNameInCache { get; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Dictionary<string,string> links { get; }
     // ReSharper disable once MemberCanBePrivate.Global
-    public int? year { get; }
+    public int? year { get; private set; }
     public string? originalLanguage { get; }
     // ReSharper disable twice MemberCanBePrivate.Global
-    public string status { get; }
+    public string status { get; private set; }
     public ReleaseStatusByte releaseStatus { get; }
     public enum ReleaseStatusByte : byte
     {
@@ -70,6 +70,17 @@ public struct Manga
         this.latestChapterDownloaded = 0;
         this.latestChapterAvailable = 0;
         this.releaseStatus = releaseStatus;
+    }
+
+    public void UpdateMetadata(Manga newManga)
+    {
+        this.sortName = newManga.sortName;
+        this.description = newManga.description;
+        foreach (string author in newManga.authors)
+            if(this.authors.Contains(author))
+                this.authors.Add(author);
+        this.status = newManga.status;
+        this.year = newManga.year;
     }
 
     public override bool Equals(object? obj)
