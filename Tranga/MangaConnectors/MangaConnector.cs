@@ -150,7 +150,8 @@ public abstract class MangaConnector : GlobalBase
     /// Copies the already downloaded cover from cache to downloadLocation
     /// </summary>
     /// <param name="manga">Publication to retrieve Cover for</param>
-    public void CopyCoverFromCacheToDownloadLocation(Manga manga)
+    /// <param name="retries">Number of times to retry to copy the cover (or download it first)</param>
+    public void CopyCoverFromCacheToDownloadLocation(Manga manga, int? retries = 1)
     {
         Log($"Copy cover {manga}");
         //Check if Publication already has a Folder and cover
@@ -163,6 +164,18 @@ public abstract class MangaConnector : GlobalBase
         }
 
         string fileInCache = Path.Join(settings.coverImageCache, manga.coverFileNameInCache);
+        if (!File.Exists(fileInCache))
+        {
+            Log($"Cloníng cover failed: File missing {fileInCache}.");
+            if (retries > 0 && manga.coverUrl is not null)
+            {
+                Log($"Trying {retries} more times");
+                SaveCoverImageToCache(manga.coverUrl, 0);
+                CopyCoverFromCacheToDownloadLocation(manga, --retries);
+            }
+
+            return;
+        }
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
         Log($"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);
