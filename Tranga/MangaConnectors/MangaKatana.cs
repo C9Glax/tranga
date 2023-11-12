@@ -154,7 +154,7 @@ public class MangaKatana : MangaConnector
 		//Return Chapters ordered by Chapter-Number
 		List<Chapter> chapters = ParseChaptersFromHtml(manga, requestUrl);
 		Log($"Got {chapters.Count} chapters. {manga}");
-		return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
+		return chapters.OrderBy(chapter => chapter.chapterNumber ?? chapter.volumeNumber).ToArray();
 	}
 
 	private List<Chapter> ParseChaptersFromHtml(Manga manga, string mangaUrl)
@@ -167,9 +167,9 @@ public class MangaKatana : MangaConnector
 
 		HtmlNode chapterList = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'chapters')]/table/tbody");
 
-		Regex volumeRex = new(@"Volume ([0-9]+)");
-		Regex chapterNumRex = new(@"https:\/\/mangakatana\.com\/manga\/.+\/c([0-9\.]+)");
-		Regex chapterNameRex = new(@"Chapter [0-9\.]+: (.*)");
+		Regex volumeRex = new(@"(Volume ([0-9]+))|(Vol\.[0-9]+)");
+		Regex chapterNumRex = new(@"https:\/\/mangakatana\.com\/manga\/.+\/(c([0-9\.]+))|(v[0-9]+c[0-9]+)");
+		Regex chapterNameRex = new(@"Chapter [0-9\.]+:? (.*)");
 		
 
 		foreach (HtmlNode chapterInfo in chapterList.Descendants("tr"))
