@@ -307,9 +307,11 @@ public class Server : GlobalBase
             case "Jobs/UpdateMetadata":
                 if (!requestVariables.TryGetValue("internalId", out internalId))
                 {
-                    foreach (DownloadNewChapters dncJob in (_parent.jobBoss.jobs.Where(possibleDncJob =>
-                                 possibleDncJob is DownloadNewChapters) as IEnumerable<DownloadNewChapters>)!)
+                    foreach (Job pJob in _parent.jobBoss.jobs.Where(possibleDncJob =>
+                                 possibleDncJob.jobType is Job.JobType.DownloadNewChaptersJob).ToArray())//ToArray to avoid modyifying while adding new jobs
                     {
+                        DownloadNewChapters dncJob = pJob as DownloadNewChapters ??
+                                                     throw new Exception("Has to be DownloadNewChapters Job");
                         _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
                     }
                     SendResponse(HttpStatusCode.Accepted, response);
