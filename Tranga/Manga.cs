@@ -77,7 +77,7 @@ public struct Manga
         this.sortName = newManga.sortName;
         this.description = newManga.description;
         foreach (string author in newManga.authors)
-            if(this.authors.Contains(author))
+            if(!this.authors.Contains(author))
                 this.authors.Add(author);
         this.status = newManga.status;
         this.year = newManga.year;
@@ -93,7 +93,7 @@ public struct Manga
                this.releaseStatus == compareManga.releaseStatus &&
                this.sortName == compareManga.sortName &&
                this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&
-               this.tags.Equals(compareManga.tags);
+               this.tags.SequenceEqual(compareManga.tags);
     }
 
     public override string ToString()

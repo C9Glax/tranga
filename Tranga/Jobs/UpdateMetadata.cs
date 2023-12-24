@@ -23,10 +23,11 @@ public class UpdateMetadata : Job
 
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
     {
+        //Retrieve new Metadata
         Manga? possibleUpdatedManga = mangaConnector.GetMangaFromId(manga.publicationId);
         if (possibleUpdatedManga is { } updatedManga)
         {
-            if(updatedManga.Equals(this.manga))
+            if(updatedManga.Equals(this.manga))//Check if anything changed
                 return Array.Empty<Job>();
             
             this.manga.UpdateMetadata(updatedManga);
