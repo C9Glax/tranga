@@ -59,6 +59,9 @@ public abstract class MangaConnector : GlobalBase
     {
         Log($"Getting new Chapters for {manga}");
         Chapter[] allChapters = this.GetChapters(manga, language);
+        if (allChapters.Length < 1)
+            return Array.Empty<Chapter>();
+        
         Log($"Checking for duplicates {manga}");
         List<Chapter> newChaptersList = allChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
                                                                       && chapterNumber > manga.ignoreChaptersBelow
@@ -71,11 +74,10 @@ public abstract class MangaConnector : GlobalBase
             manga.latestChapterAvailable =
                 Convert.ToSingle(latestChapterAvailable.chapterNumber, numberFormatDecimalPoint);
         }
-        catch (FormatException f)
+        catch (Exception e)
         {
-            Log(f.ToString());
+            Log(e.ToString());
             Log($"Failed getting new Chapters for {manga}");
-            return Array.Empty<Chapter>();
         }
         
         return newChaptersList.ToArray();
