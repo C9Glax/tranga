@@ -64,9 +64,19 @@ public abstract class MangaConnector : GlobalBase
                                                                       && chapterNumber > manga.ignoreChaptersBelow
                                                                       && !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
         Log($"{newChaptersList.Count} new chapters. {manga}");
-        Chapter latestChapterAvailable =
-            allChapters.MaxBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint));
-        manga.latestChapterAvailable = Convert.ToSingle(latestChapterAvailable.chapterNumber, numberFormatDecimalPoint);
+        try
+        {
+            Chapter latestChapterAvailable =
+                allChapters.MaxBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint));
+            manga.latestChapterAvailable =
+                Convert.ToSingle(latestChapterAvailable.chapterNumber, numberFormatDecimalPoint);
+        }
+        catch (FormatException f)
+        {
+            Log(f.ToString());
+            Log($"Failed getting new Chapters for {manga}");
+            return Array.Empty<Chapter>();
+        }
         
         return newChaptersList.ToArray();
     }
