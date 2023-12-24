@@ -44,7 +44,7 @@ public struct Manga
     public float latestChapterDownloaded { get; set; }
     public float latestChapterAvailable { get; set; }
 
-    private static readonly Regex LegalCharacters = new (@"[A-Z]*[a-z]*[0-9]* *\.*-*,*'*\'*\)*\(*~*!*");
+    private static readonly Regex LegalCharacters = new (@"[A-Za-zÀ-ÖØ-öø-ÿ0-9 \.\-,'\'\)\(~!\+]*");
 
     [JsonConstructor]
     public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, ReleaseStatusByte releaseStatus = 0, string? websiteUrl = null, string? folderName = null, float? ignoreChaptersBelow = 0)
