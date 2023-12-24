@@ -167,7 +167,7 @@ public class Manganato : MangaConnector
         HtmlNode chapterList = document.DocumentNode.Descendants("ul").First(l => l.HasClass("row-content-chapter"));
 
         Regex volRex = new(@"Vol\.([0-9]+).*");
-        Regex chapterRex = new(@"https:\/\/chapmanganato.com/manga-[A-z0-9]+\/chapter-([0-9\.]+)");
+        Regex chapterRex = new(@"https:\/\/chapmanganato.[A-z]+\/manga-[A-z0-9]+\/chapter-([0-9\.]+)");
         Regex nameRex = new(@"Chapter ([0-9]+(\.[0-9]+)*){1}:? (.*)");
 
         foreach (HtmlNode chapterInfo in chapterList.Descendants("li"))
