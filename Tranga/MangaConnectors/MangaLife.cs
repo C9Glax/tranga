@@ -142,12 +142,17 @@ public class MangaLife : MangaConnector
         HtmlNodeCollection chapterNodes = result.htmlDocument.DocumentNode.SelectNodes(
             "//a[contains(concat(' ',normalize-space(@class),' '),' ChapterLink ')]");
         string[] urls = chapterNodes.Select(node => node.GetAttributeValue("href", "")).ToArray();
+        Regex urlRex = new Regex(@"-chapter-([0-9\\.]+)(-index-([0-9\\.]+))?");
         
         List<Chapter> chapters = new();
         foreach (string url in urls)
         {
+            Match rexMatch = urlRex.Match(url);
+
             string volumeNumber = "1";
-            string chapterNumber = Regex.Match(url, @"-chapter-([0-9\.]+)").Groups[1].ToString();
+            if (rexMatch.Groups.Count == 4)
+                volumeNumber = rexMatch.Groups[3].ToString();
+            string chapterNumber = rexMatch.Groups[1].ToString();
             string fullUrl = $"https://manga4life.com{url}";
             fullUrl = fullUrl.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
             chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
