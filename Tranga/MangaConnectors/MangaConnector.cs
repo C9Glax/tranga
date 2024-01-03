@@ -204,7 +204,7 @@ public abstract class MangaConnector : GlobalBase
     /// <param name="referrer">referrer used in html request header</param>
     private HttpStatusCode DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
     {
-        DownloadClient.RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
+        RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
         
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return requestResult.statusCode;
@@ -283,7 +283,7 @@ public abstract class MangaConnector : GlobalBase
         if (File.Exists(saveImagePath))
             return filename;
         
-        DownloadClient.RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
+        RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
         File.WriteAllBytes(saveImagePath, ms.ToArray());

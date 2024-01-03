@@ -39,7 +39,7 @@ public class MangaDex : MangaConnector
         while (offset < total) //As long as we haven't requested all "Pages"
         {
             //Request next Page
-            DownloadClient.RequestResult requestResult =
+            RequestResult requestResult =
                 downloadClient.MakeRequest(
                     $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}", (byte)RequestType.Manga);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -74,7 +74,7 @@ public class MangaDex : MangaConnector
 
     public override Manga? GetMangaFromId(string publicationId)
     {
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}", (byte)RequestType.Manga);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return null;
@@ -214,7 +214,7 @@ public class MangaDex : MangaConnector
         while (offset < total)
         {
             //Request next "Page"
-            DownloadClient.RequestResult requestResult =
+            RequestResult requestResult =
                 downloadClient.MakeRequest(
                     $"https://api.mangadex.org/manga/{manga.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}", (byte)RequestType.Feed);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -267,7 +267,7 @@ public class MangaDex : MangaConnector
         Manga chapterParentManga = chapter.parentManga;
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
@@ -306,7 +306,7 @@ public class MangaDex : MangaConnector
         }
         
         //Request information where to download Cover
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/cover/{posterId}", (byte)RequestType.CoverUrl);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return null;
@@ -327,7 +327,7 @@ public class MangaDex : MangaConnector
         List<string> ret = new();
         foreach (string authorId in authorIds)
         {
-            DownloadClient.RequestResult requestResult =
+            RequestResult requestResult =
                 downloadClient.MakeRequest($"https://api.mangadex.org/author/{authorId}", (byte)RequestType.Author);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 return ret;

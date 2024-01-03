@@ -29,7 +29,7 @@ public class Mangasee : MangaConnector
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string requestUrl = "https://mangasee123.com/_search.php";
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
@@ -121,7 +121,7 @@ public class Mangasee : MangaConnector
         Regex publicationIdRex = new(@"https:\/\/mangasee123.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
 
-        DownloadClient.RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
+        RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
         if(requestResult.htmlDocument is not null)
             return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
         return null;
@@ -232,7 +232,7 @@ public class Mangasee : MangaConnector
 
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
-        DownloadClient.RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
+        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
         if (requestResult.htmlDocument is null)
         {
             progressToken?.Cancel();

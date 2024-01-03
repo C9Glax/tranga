@@ -20,7 +20,7 @@ public class Manganato : MangaConnector
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Manga>();
@@ -61,7 +61,7 @@ public class Manganato : MangaConnector
 
     public override Manga? GetMangaFromUrl(string url)
     {
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest(url, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return null;
@@ -142,7 +142,7 @@ public class Manganato : MangaConnector
     {
         Log($"Getting chapters {manga}");
         string requestUrl = $"https://chapmanganato.com/{manga.publicationId}";
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Chapter>();
@@ -196,7 +196,7 @@ public class Manganato : MangaConnector
         Manga chapterParentManga = chapter.parentManga;
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         string requestUrl = chapter.url;
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {

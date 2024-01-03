@@ -20,7 +20,7 @@ public class MangaLife : MangaConnector
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
         string requestUrl = $"https://manga4life.com/search/?name={sanitizedTitle}";
-        DownloadClient.RequestResult requestResult =
+        RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Manga>();
@@ -42,7 +42,7 @@ public class MangaLife : MangaConnector
         Regex publicationIdRex = new(@"https:\/\/manga4life.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
 
-        DownloadClient.RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
+        RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
         if(requestResult.htmlDocument is not null)
             return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
         return null;
@@ -133,7 +133,7 @@ public class MangaLife : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        DownloadClient.RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", 1);
+        RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", 1);
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
             return Array.Empty<Chapter>();
@@ -179,7 +179,7 @@ public class MangaLife : MangaConnector
 
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
-        DownloadClient.RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
+        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
         if (requestResult.htmlDocument is null)
         {
             progressToken?.Cancel();

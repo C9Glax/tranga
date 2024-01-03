@@ -20,7 +20,7 @@ public class Bato : MangaConnector
 		Log($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://bato.to/v3x-search?word={sanitizedTitle}&lang=en";
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Manga>();
@@ -43,7 +43,7 @@ public class Bato : MangaConnector
 
 	public override Manga? GetMangaFromUrl(string url)
 	{
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(url, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return null;
@@ -128,7 +128,7 @@ public class Bato : MangaConnector
 		Log($"Getting chapters {manga}");
 		string requestUrl = $"https://bato.to/title/{manga.publicationId}";
 		// Leaving this in for verification if the page exists
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Chapter>();
@@ -141,7 +141,7 @@ public class Bato : MangaConnector
 
 	private List<Chapter> ParseChaptersFromHtml(Manga manga, string mangaUrl)
 	{
-		DownloadClient.RequestResult result = downloadClient.MakeRequest(mangaUrl, 1);
+		RequestResult result = downloadClient.MakeRequest(mangaUrl, 1);
 		if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
 		{
 			Log("Failed to load site");
@@ -183,7 +183,7 @@ public class Bato : MangaConnector
 		Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
@@ -201,7 +201,7 @@ public class Bato : MangaConnector
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)
 	{
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(mangaUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{

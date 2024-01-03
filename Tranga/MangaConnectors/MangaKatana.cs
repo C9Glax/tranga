@@ -20,7 +20,7 @@ public class MangaKatana : MangaConnector
 		Log($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Manga>();
@@ -46,7 +46,7 @@ public class MangaKatana : MangaConnector
 
 	public override Manga? GetMangaFromUrl(string url)
 	{
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(url, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return null;
@@ -157,7 +157,7 @@ public class MangaKatana : MangaConnector
 		Log($"Getting chapters {manga}");
 		string requestUrl = $"https://mangakatana.com/manga/{manga.publicationId}";
 		// Leaving this in for verification if the page exists
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Chapter>();
@@ -209,7 +209,7 @@ public class MangaKatana : MangaConnector
 		Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
-		DownloadClient.RequestResult requestResult =
+		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, 1);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
