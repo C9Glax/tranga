@@ -133,7 +133,7 @@ public class MangaLife : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", 1);
+        RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", 1, clickButton:"[class*='ShowAllChapters']");
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
             return Array.Empty<Chapter>();
@@ -150,9 +150,9 @@ public class MangaLife : MangaConnector
             Match rexMatch = urlRex.Match(url);
 
             string volumeNumber = "1";
-            if (rexMatch.Groups.Count == 4)
-                volumeNumber = rexMatch.Groups[3].ToString();
-            string chapterNumber = rexMatch.Groups[1].ToString();
+            if (rexMatch.Groups[3].Value.Length > 1)
+                volumeNumber = rexMatch.Groups[3].Value;
+            string chapterNumber = rexMatch.Groups[1].Value;
             string fullUrl = $"https://manga4life.com{url}";
             fullUrl = fullUrl.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
             chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));

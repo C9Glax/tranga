@@ -24,8 +24,10 @@ internal class HttpDownloadClient : DownloadClient
         
     }
     
-    protected override RequestResult MakeRequestInternal(string url, string? referrer = null)
+    protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
+        if(clickButton is not null)
+            Log("Can not click button on static site.");
         HttpResponseMessage? response = null;
         while (response is null)
         {

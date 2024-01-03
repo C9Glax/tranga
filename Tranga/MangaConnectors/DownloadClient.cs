@@ -16,7 +16,7 @@ internal abstract class DownloadClient : GlobalBase
             _rateLimit.Add(limit.Key, TimeSpan.FromMinutes(1).Divide(limit.Value));
     }
     
-    public RequestResult MakeRequest(string url, byte requestType, string? referrer = null)
+    public RequestResult MakeRequest(string url, byte requestType, string? referrer = null, string? clickButton = null)
     {
         if (_rateLimit.TryGetValue(requestType, out TimeSpan value))
             _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(value));
@@ -35,11 +35,11 @@ internal abstract class DownloadClient : GlobalBase
             Thread.Sleep(rateLimitTimeout);
         }
 
-        RequestResult result = MakeRequestInternal(url, referrer);
+        RequestResult result = MakeRequestInternal(url, referrer, clickButton);
         _lastExecutedRateLimit[requestType] = DateTime.Now;
         return result;
     }
 
-    protected abstract RequestResult MakeRequestInternal(string url, string? referrer = null);
+    protected abstract RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null);
     public abstract void Close();
 }

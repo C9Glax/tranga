@@ -58,7 +58,7 @@ internal class ChromiumDownloadClient : DownloadClient
         this.browser = DownloadBrowser().Result;
     }
 
-    protected override RequestResult MakeRequestInternal(string url, string? referrer = null)
+    protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         IPage page = this.browser.NewPageAsync().Result;
         page.DefaultTimeout = 10000;
@@ -72,6 +72,8 @@ internal class ChromiumDownloadClient : DownloadClient
         {
             if (content.Contains("text/html"))
             {
+                if(clickButton is not null)
+                    page.ClickAsync(clickButton).Wait();
                 string htmlString = page.GetContentAsync().Result;
                 stream = new MemoryStream(Encoding.Default.GetBytes(htmlString));
                 document = new ();
