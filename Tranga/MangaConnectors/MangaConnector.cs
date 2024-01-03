@@ -70,7 +70,7 @@ public abstract class MangaConnector : GlobalBase
         try
         {
             Chapter latestChapterAvailable =
-                allChapters.MaxBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint));
+                allChapters.Max();
             manga.latestChapterAvailable =
                 Convert.ToSingle(latestChapterAvailable.chapterNumber, numberFormatDecimalPoint);
         }

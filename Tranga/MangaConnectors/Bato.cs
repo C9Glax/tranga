@@ -136,7 +136,7 @@ public class Bato : MangaConnector
 		//Return Chapters ordered by Chapter-Number
 		List<Chapter> chapters = ParseChaptersFromHtml(manga, requestUrl);
 		Log($"Got {chapters.Count} chapters. {manga}");
-		return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
+		return chapters.Order().ToArray();
 	}
 
 	private List<Chapter> ParseChaptersFromHtml(Manga manga, string mangaUrl)

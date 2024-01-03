@@ -7,7 +7,7 @@ namespace Tranga;
 /// Has to be Part of a publication
 /// Includes the Chapter-Name, -VolumeNumber, -ChapterNumber, the location of the chapter on the internet and the saveName of the local file.
 /// </summary>
-public readonly struct Chapter
+public readonly struct Chapter : IComparable
 {
     // ReSharper disable once MemberCanBePrivate.Global
     public Manga parentManga { get; }
@@ -39,6 +39,33 @@ public readonly struct Chapter
     public override string ToString()
     {
         return $"Chapter {parentManga.sortName} {parentManga.internalId} {chapterNumber} {name}";
+    }
+
+    public int CompareTo(object? obj)
+    {
+        if (obj is Chapter otherChapter)
+        {
+            if (float.TryParse(volumeNumber, GlobalBase.numberFormatDecimalPoint, out float volumeNumberFloat) &&
+                float.TryParse(chapterNumber, GlobalBase.numberFormatDecimalPoint, out float chapterNumberFloat) &&
+                float.TryParse(otherChapter.volumeNumber, GlobalBase.numberFormatDecimalPoint,
+                    out float otherVolumeNumberFloat) &&
+                float.TryParse(otherChapter.chapterNumber, GlobalBase.numberFormatDecimalPoint,
+                    out float otherChapterNumberFloat))
+            {
+
+                switch (volumeNumberFloat.CompareTo(otherVolumeNumberFloat))
+                {
+                    case < 0:
+                        return -1;
+                    case > 0:
+                        return 1;
+                    default:
+                        return chapterNumberFloat.CompareTo(otherChapterNumberFloat);
+                }
+            }
+            else throw new FormatException($"Value could not be parsed");
+        }
+        throw new ArgumentException($"{obj} can not be compared to {this}");
     }
 
     /// <summary>

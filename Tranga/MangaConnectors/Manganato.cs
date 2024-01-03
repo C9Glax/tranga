@@ -152,12 +152,7 @@ public class Manganato : MangaConnector
             return Array.Empty<Chapter>();
         List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
         Log($"Got {chapters.Count} chapters. {manga}");
-        return chapters.OrderBy(chapter =>
-        {
-            if (float.TryParse(chapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber))
-                return chapterNumber;
-            else return 0;
-        }).ToArray();
+        return chapters.Order().ToArray();
     }
 
     private List<Chapter> ParseChaptersFromHtml(Manga manga, HtmlDocument document)

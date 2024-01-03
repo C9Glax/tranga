@@ -159,7 +159,7 @@ public class MangaLife : MangaConnector
         }
         //Return Chapters ordered by Chapter-Number
         Log($"Got {chapters.Count} chapters. {manga}");
-        return chapters.OrderBy(chapter => Convert.ToSingle(chapter.chapterNumber, numberFormatDecimalPoint)).ToArray();
+        return chapters.Order().ToArray();
     }
 
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
