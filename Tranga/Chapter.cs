@@ -12,7 +12,7 @@ public readonly struct Chapter : IComparable
     // ReSharper disable once MemberCanBePrivate.Global
     public Manga parentManga { get; }
     public string? name { get; }
-    public string? volumeNumber { get; }
+    public string volumeNumber { get; }
     public string chapterNumber { get; }
     public string url { get; }
     // ReSharper disable once MemberCanBePrivate.Global
@@ -24,12 +24,12 @@ public readonly struct Chapter : IComparable
     {
         this.parentManga = parentManga;
         this.name = name;
-        this.volumeNumber = volumeNumber;
+        this.volumeNumber = volumeNumber ?? "0";
         this.chapterNumber = chapterNumber;
         this.url = url;
 
         string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
-        string volStr = this.volumeNumber is not null ? $"Vol.{this.volumeNumber} " : "";
+        string volStr = volumeNumber is not null ? $"Vol.{volumeNumber} " : "";
         string chNumberStr = $"Ch.{chapterNumber} ";
         string chNameStr = chapterName.Length > 0 ? $"- {chapterName}" : "";
         chNameStr = IllegalStrings.Replace(chNameStr, "");
