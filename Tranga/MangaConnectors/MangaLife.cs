@@ -150,7 +150,7 @@ public class MangaLife : MangaConnector
             Match rexMatch = urlRex.Match(url);
 
             string volumeNumber = "1";
-            if (rexMatch.Groups[3].Value.Length > 1)
+            if (rexMatch.Groups[3].Value.Length > 0)
                 volumeNumber = rexMatch.Groups[3].Value;
             string chapterNumber = rexMatch.Groups[1].Value;
             string fullUrl = $"https://manga4life.com{url}";
