@@ -48,4 +48,12 @@ public class DownloadNewChapters : Job
         progressToken.Complete();
         return jobs;
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not DownloadNewChapters otherJob)
+            return false;
+        return otherJob.mangaConnector == this.mangaConnector &&
+               otherJob.manga.Equals(this.manga);
+    }
 }

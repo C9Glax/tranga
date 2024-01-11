@@ -43,15 +43,7 @@ public class JobBoss : GlobalBase
     /// </summary>
     public bool ContainsJobLike(Job job)
     {
-        if (job is DownloadChapter dcJob)
-        {
-            return this.GetJobsLike(dcJob.mangaConnector, chapter: dcJob.chapter).Any();
-        }else if (job is DownloadNewChapters ncJob)
-        {
-            return this.GetJobsLike(ncJob.mangaConnector, ncJob.manga).Any();
-        }
-
-        return false;
+        return this.jobs.Any(existingJob => existingJob.Equals(job));
     }
 
     public void RemoveJob(Job job)

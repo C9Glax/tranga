@@ -41,6 +41,13 @@ public readonly struct Chapter : IComparable
         return $"Chapter {parentManga.sortName} {parentManga.internalId} {chapterNumber} {name}";
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Chapter)
+            return false;
+        return CompareTo(obj) == 0;
+    }
+
     public int CompareTo(object? obj)
     {
         if (obj is Chapter otherChapter)

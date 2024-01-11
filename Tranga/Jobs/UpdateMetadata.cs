@@ -48,4 +48,13 @@ public class UpdateMetadata : Job
         this.progressToken.Cancel();
         return Array.Empty<Job>();
     }
+
+    public override bool Equals(object? obj)
+    {
+        
+        if (obj is not UpdateMetadata otherJob)
+            return false;
+        return otherJob.mangaConnector == this.mangaConnector &&
+               otherJob.manga.Equals(this.manga);
+    }
 }

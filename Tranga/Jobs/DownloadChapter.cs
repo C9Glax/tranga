@@ -43,4 +43,12 @@ public class DownloadChapter : Job
         downloadTask.Start();
         return Array.Empty<Job>();
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not DownloadChapter otherJob)
+            return false;
+        return otherJob.mangaConnector == this.mangaConnector &&
+               otherJob.chapter.Equals(this.chapter);
+    }
 }
