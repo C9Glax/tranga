@@ -69,7 +69,7 @@ public class Mangaworld: MangaConnector
         if (requestResult.htmlDocument is null)
             return null;
         
-        Regex idRex = new (@"https:\/\/www\.mangaworld\.bz\/manga\/([0-9]+\/[0-9A-z\-]+)");
+        Regex idRex = new (@"https:\/\/www\.mangaworld\.[a-z]{0,63}\/manga\/([0-9]+\/[0-9A-z\-]+)");
         string id = idRex.Match(url).Groups[1].Value;
         return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id);
     }
