@@ -19,7 +19,7 @@ public class Mangaworld: MangaConnector
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
-        string requestUrl = $"https://www.mangaworld.bz/archive?keyword={sanitizedTitle}";
+        string requestUrl = $"https://www.mangaworld.ac/archive?keyword={sanitizedTitle}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -56,7 +56,7 @@ public class Mangaworld: MangaConnector
 
     public override Manga? GetMangaFromId(string publicationId)
     {
-        return GetMangaFromUrl($"https://www.mangaworld.bz/manga/{publicationId}");
+        return GetMangaFromUrl($"https://www.mangaworld.ac/manga/{publicationId}");
     }
 
     public override Manga? GetMangaFromUrl(string url)
@@ -130,7 +130,7 @@ public class Mangaworld: MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        string requestUrl = $"https://www.mangaworld.bz/manga/{manga.publicationId}";
+        string requestUrl = $"https://www.mangaworld.ac/manga/{manga.publicationId}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, 1);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
