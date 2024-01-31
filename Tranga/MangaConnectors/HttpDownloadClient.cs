@@ -14,7 +14,7 @@ internal class HttpDownloadClient : DownloadClient
 
     public HttpDownloadClient(GlobalBase clone, Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone, rateLimitRequestsPerMinute)
     {
-        Client.DefaultRequestHeaders.UserAgent.Add(settings.userAgent);
+        Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", settings.userAgent);
     }
     
     protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)

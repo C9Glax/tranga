@@ -13,7 +13,9 @@ public class TrangaSettings
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
     public string styleSheet { get; private set; }
-    public ProductInfoHeaderValue userAgent { get; set; } = new ("Tranga", "1.0");
+
+    public string userAgent { get; set; } =
+        $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
@@ -123,7 +125,8 @@ public class TrangaSettings
 
     public void UpdateUserAgent(string customUserAgent)
     {
-        this.userAgent = new ProductInfoHeaderValue(ProductHeaderValue.Parse(customUserAgent));
+        this.userAgent = customUserAgent;
+        ExportSettings();
     }
 
     public void ExportSettings()
