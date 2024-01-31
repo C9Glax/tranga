@@ -27,8 +27,11 @@ public class UpdateMetadata : Job
         Manga? possibleUpdatedManga = mangaConnector.GetMangaFromId(manga.publicationId);
         if (possibleUpdatedManga is { } updatedManga)
         {
-            if(updatedManga.Equals(this.manga))//Check if anything changed
+            if (updatedManga.Equals(this.manga)) //Check if anything changed
+            {
+                this.progressToken.Complete();
                 return Array.Empty<Job>();
+            }
             
             this.manga.UpdateMetadata(updatedManga);
             this.manga.SaveSeriesInfoJson(settings.downloadLocation, true);
