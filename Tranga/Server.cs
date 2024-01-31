@@ -200,6 +200,9 @@ public class Server : GlobalBase
             case "Settings":
                 SendResponse(HttpStatusCode.OK, response, settings);
                 break;
+            case "Settings/userAgent":
+                SendResponse(HttpStatusCode.OK, response, settings.userAgent);
+                break;
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
@@ -384,13 +387,13 @@ public class Server : GlobalBase
                 settings.UpdateWorkingDirectory(workingDirectory);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;*/
-            case "Settings/customUserAgent":
+            case "Settings/userAgent":
                 if(!requestVariables.TryGetValue("userAgent", out string? customUserAgent))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                settings.customUserAgent = customUserAgent;
+                settings.UpdateUserAgent(customUserAgent);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/customRequestLimit":

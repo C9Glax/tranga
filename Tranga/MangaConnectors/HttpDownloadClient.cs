@@ -14,10 +14,7 @@ internal class HttpDownloadClient : DownloadClient
 
     public HttpDownloadClient(GlobalBase clone, Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone, rateLimitRequestsPerMinute)
     {
-        if (settings.customUserAgent is null || settings.customUserAgent.Length < 1)
-            Client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Tranga", "1.0"));
-        else
-            Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", settings.customUserAgent);
+        Client.DefaultRequestHeaders.UserAgent.Add(settings.userAgent);
     }
     
     protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
