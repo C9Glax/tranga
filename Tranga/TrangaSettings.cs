@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.NotificationConnectors;
@@ -12,6 +13,9 @@ public class TrangaSettings
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
     public string styleSheet { get; private set; }
+
+    public string userAgent { get; set; } =
+        $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
@@ -116,6 +120,12 @@ public class TrangaSettings
             Directory.CreateDirectory(newPath);
         Directory.Move(this.workingDirectory, newPath);
         this.workingDirectory = newPath;
+        ExportSettings();
+    }
+
+    public void UpdateUserAgent(string customUserAgent)
+    {
+        this.userAgent = customUserAgent;
         ExportSettings();
     }
 

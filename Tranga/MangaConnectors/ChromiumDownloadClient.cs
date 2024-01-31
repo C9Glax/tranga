@@ -62,8 +62,17 @@ internal class ChromiumDownloadClient : DownloadClient
     {
         IPage page = this.browser.NewPageAsync().Result;
         page.DefaultTimeout = 10000;
-        IResponse response = page.GoToAsync(url, WaitUntilNavigation.Networkidle0).Result;
-        Log("Page loaded.");
+        IResponse response;
+        try
+        {
+            response = page.GoToAsync(url, WaitUntilNavigation.Networkidle0).Result;
+            Log("Page loaded.");
+        }
+        catch (Exception e)
+        {
+            Log($"Could not load Page:\n{e.Message}");
+            return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
+        }
 
         Stream stream = Stream.Null;
         HtmlDocument? document = null;

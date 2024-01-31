@@ -8,20 +8,13 @@ internal class HttpDownloadClient : DownloadClient
 {
     private static readonly HttpClient Client = new()
     {
-        Timeout = TimeSpan.FromSeconds(60),
-        DefaultRequestHeaders =
-        {
-            UserAgent =
-            {
-                new ProductInfoHeaderValue("Tranga", "0.1")
-            }
-        }
+        Timeout = TimeSpan.FromSeconds(10)
     };
 
 
     public HttpDownloadClient(GlobalBase clone, Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone, rateLimitRequestsPerMinute)
     {
-        
+        Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", settings.userAgent);
     }
     
     protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
@@ -44,10 +37,10 @@ internal class HttpDownloadClient : DownloadClient
                 switch (e)
                 {
                     case TaskCanceledException:
-                        Log($"Request timed out.\n\r{e}");
+                        Log($"Request timed out {url}.\n\r{e}");
                         return new RequestResult(HttpStatusCode.RequestTimeout, null, Stream.Null);
                     case HttpRequestException:
-                        Log($"Request failed\n\r{e}");
+                        Log($"Request failed {url}\n\r{e}");
                         return new RequestResult(HttpStatusCode.BadRequest, null, Stream.Null);
                 }
             }
@@ -55,7 +48,7 @@ internal class HttpDownloadClient : DownloadClient
 
         if (!response.IsSuccessStatusCode)
         {
-            Log($"Request-Error {response.StatusCode}: {response.ReasonPhrase}");
+            Log($"Request-Error {response.StatusCode}: {url}");
             return new RequestResult(response.StatusCode,  null, Stream.Null);
         }
         

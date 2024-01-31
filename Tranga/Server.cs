@@ -200,6 +200,9 @@ public class Server : GlobalBase
             case "Settings":
                 SendResponse(HttpStatusCode.OK, response, settings);
                 break;
+            case "Settings/userAgent":
+                SendResponse(HttpStatusCode.OK, response, settings.userAgent);
+                break;
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
@@ -384,6 +387,29 @@ public class Server : GlobalBase
                 settings.UpdateWorkingDirectory(workingDirectory);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;*/
+            case "Settings/userAgent":
+                if(!requestVariables.TryGetValue("userAgent", out string? customUserAgent))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                settings.UpdateUserAgent(customUserAgent);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "Settings/customRequestLimit":
+                if (!requestVariables.TryGetValue("requestType", out string? requestTypeStr) ||
+                    !requestVariables.TryGetValue("requestsPerMinute", out string? requestsPerMinuteStr) ||
+                    !requestVariables.TryGetValue("connector", out connectorName) ||
+                    !byte.TryParse(requestTypeStr, out byte requestType) ||
+                    !int.TryParse(requestsPerMinuteStr, out int requestsPerMinute) ||
+                    !_parent.TryGetConnector(connectorName, out connector))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                connector!.downloadClient.SetCustomRequestLimit(requestType, requestsPerMinute);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "NotificationConnectors/Update":
                 if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
                     !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationConnectorType notificationConnectorType))
