@@ -32,12 +32,6 @@ public class UpdateMetadata : Job
             
             this.manga.UpdateMetadata(updatedManga);
             this.manga.SaveSeriesInfoJson(settings.downloadLocation, true);
-
-            /* //TODO remove if this fixes #90
-            if (parentJobId is not null && jobBoss.GetJobById(this.parentJobId) is DownloadNewChapters dncJob)
-            {
-                dncJob.manga = updatedManga;
-            }*/
             this.progressToken.Complete();
         }
         else
