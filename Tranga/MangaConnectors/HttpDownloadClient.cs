@@ -8,20 +8,16 @@ internal class HttpDownloadClient : DownloadClient
 {
     private static readonly HttpClient Client = new()
     {
-        Timeout = TimeSpan.FromSeconds(60),
-        DefaultRequestHeaders =
-        {
-            UserAgent =
-            {
-                new ProductInfoHeaderValue("Tranga", "0.1")
-            }
-        }
+        Timeout = TimeSpan.FromSeconds(10)
     };
 
 
     public HttpDownloadClient(GlobalBase clone, Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone, rateLimitRequestsPerMinute)
     {
-        
+        if (settings.customUserAgent is null || settings.customUserAgent.Length < 1)
+            Client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Tranga", "1.0"));
+        else
+            Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", settings.customUserAgent);
     }
     
     protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)

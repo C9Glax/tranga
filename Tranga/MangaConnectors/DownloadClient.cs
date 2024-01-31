@@ -15,6 +15,14 @@ internal abstract class DownloadClient : GlobalBase
         foreach (KeyValuePair<byte, int> limit in rateLimitRequestsPerMinute)
             _rateLimit.Add(limit.Key, TimeSpan.FromMinutes(1).Divide(limit.Value));
     }
+
+    internal void SetCustomRequestLimit(byte requestType, int limit)
+    {
+        if (_rateLimit.ContainsKey(requestType))
+            _rateLimit[requestType] = TimeSpan.FromMinutes(1).Divide(limit);
+        else
+            _rateLimit.Add(requestType, TimeSpan.FromMinutes(1).Divide(limit));
+    }
     
     public RequestResult MakeRequest(string url, byte requestType, string? referrer = null, string? clickButton = null)
     {
