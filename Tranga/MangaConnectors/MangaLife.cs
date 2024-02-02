@@ -39,8 +39,8 @@ public class MangaLife : MangaConnector
 
     public override Manga? GetMangaFromUrl(string url)
     {
-        Regex publicationIdRex = new(@"https:\/\/manga4life.com\/manga\/(.*)(\/.*)*");
-        string publicationId = publicationIdRex.Match(url).Groups[1].Value;
+        Regex publicationIdRex = new(@"https:\/\/(www\.)?manga4life.com\/manga\/(.*)(\/.*)*");
+        string publicationId = publicationIdRex.Match(url).Groups[2].Value;
 
         RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
         if(requestResult.htmlDocument is not null)
@@ -142,7 +142,7 @@ public class MangaLife : MangaConnector
         HtmlNodeCollection chapterNodes = result.htmlDocument.DocumentNode.SelectNodes(
             "//a[contains(concat(' ',normalize-space(@class),' '),' ChapterLink ')]");
         string[] urls = chapterNodes.Select(node => node.GetAttributeValue("href", "")).ToArray();
-        Regex urlRex = new Regex(@"-chapter-([0-9\\.]+)(-index-([0-9\\.]+))?");
+        Regex urlRex = new (@"-chapter-([0-9\\.]+)(-index-([0-9\\.]+))?");
         
         List<Chapter> chapters = new();
         foreach (string url in urls)
