@@ -40,7 +40,7 @@ public class JobJsonConverter : JsonConverter
         {
             DateTime lastExecution = jo.GetValue("lastExecution") is {} le 
                 ? le.ToObject<DateTime>()
-                : DateTime.UnixEpoch;
+                : DateTime.UnixEpoch; //TODO do null checks on all variables
             return new DownloadNewChapters(this._clone,
                 jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
                 {
