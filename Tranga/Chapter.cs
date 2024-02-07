@@ -91,13 +91,13 @@ public readonly struct Chapter : IComparable
         if (!Directory.Exists(Path.Join(downloadLocation, parentManga.folderName)))
             return false;
         FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, parentManga.folderName)).GetFiles();
-        Regex volChRex = new(@".*Vol(?:ume)?\.?([0-9]+).*Ch(?:apter)?\.?([0-9]+[\.0-9]*).*");
+        Regex volChRex = new(@"(?:Vol(?:ume)?.*([0-9]+).*)?Ch(?:apter)?.*([0-9]+[\.0-9]*)");
 
         Chapter t = this;
         return archives.Select(archive => archive.Name).Any(archiveFileName =>
         {
             Match m = volChRex.Match(archiveFileName);
-            string archiveVolNum = m.Groups[1].Value;
+            string archiveVolNum = m.Groups[1].Success ? m.Groups[1].Value : "0";
             string archiveChNum = m.Groups[2].Value;
             return archiveVolNum == t.volumeNumber &&
                    archiveChNum == t.chapterNumber;
