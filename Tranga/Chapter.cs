@@ -28,12 +28,14 @@ public readonly struct Chapter : IComparable
         this.chapterNumber = chapterNumber;
         this.url = url;
 
-        string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
-        string volStr = volumeNumber is not null ? $"Vol.{volumeNumber} " : "";
-        string chNumberStr = $"Ch.{chapterNumber} ";
-        string chNameStr = chapterName.Length > 0 ? $"- {chapterName}" : "";
-        chNameStr = IllegalStrings.Replace(chNameStr, "");
-        this.fileName = $"{volStr}{chNumberStr}{chNameStr}";
+        List<string> chapterNameStrings = new();
+
+        if(volumeNumber is not null && volumeNumber.Length > 0)
+            chapterNameStrings.Add($"Vol.{volumeNumber}");
+        chapterNameStrings.Add($"Ch.{chapterNumber}");
+        if(name is not null && name.Length > 0) //chapterName
+            chapterNameStrings.Add(IllegalStrings.Replace(string.Concat(LegalCharacters.Matches(name)), ""));
+        this.fileName = string.Join(' ', chapterNameStrings);
     }
 
     public override string ToString()
