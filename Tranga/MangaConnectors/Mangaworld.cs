@@ -69,7 +69,7 @@ public class Mangaworld: MangaConnector
         if (requestResult.htmlDocument is null)
             return null;
         
-        Regex idRex = new (@"https:\/\/www\.mangaworld\.[a-z]{0,63}\/manga\/([0-9]+\/[0-9A-z\-]+)");
+        Regex idRex = new (@"https:\/\/www\.mangaworld\.[a-z]{0,63}\/manga\/([0-9]+\/[0-9A-z\-]+)\/.*");
         string id = idRex.Match(url).Groups[1].Value;
         return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id);
     }
@@ -87,19 +87,19 @@ public class Mangaworld: MangaConnector
 
         HtmlNode metadata = infoNode.Descendants().First(d => d.HasClass("meta-data"));
 
-        HtmlNode altTitlesNode = metadata.SelectSingleNode("//span[text()='Titoli alternativi: ']/..").ChildNodes[1];
+        HtmlNode altTitlesNode = metadata.SelectSingleNode("//span[text()='Titoli alternativi: ' or text()='Titolo alternativo: ']/..").ChildNodes[1];
 
         string[] alts = altTitlesNode.InnerText.Split(", ");
         for(int i = 0; i < alts.Length; i++)
             altTitles.Add(i.ToString(), alts[i]);
 
         HtmlNode genresNode =
-            metadata.SelectSingleNode("//span[text()='Generi: ']/..");
+            metadata.SelectSingleNode("//span[text()='Generi: ' or text()='Genero: ']/..");
         HashSet<string> tags = genresNode.SelectNodes("a").Select(node => node.InnerText).ToHashSet();
         
         HtmlNode authorsNode =
-            metadata.SelectSingleNode("//span[text()='Autore: ']/..");
-        string[] authors = new[] { authorsNode.SelectNodes("a").First().InnerText };
+            metadata.SelectSingleNode("//span[text()='Autore: ' or text()='Autori: ']/..");
+        string[] authors = authorsNode.SelectNodes("a").Select(node => node.InnerText).ToArray();
 
         string status = metadata.SelectSingleNode("//span[text()='Stato: ']/..").SelectNodes("a").First().InnerText;
         // ReSharper disable 5 times StringLiteralTypo
