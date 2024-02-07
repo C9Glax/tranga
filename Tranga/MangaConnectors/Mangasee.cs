@@ -122,7 +122,7 @@ public class Mangasee : MangaConnector
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
 
         RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
-        if(requestResult.htmlDocument is not null)
+        if((int)requestResult.statusCode < 300 && (int)requestResult.statusCode >= 200 && requestResult.htmlDocument is not null)
             return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
         return null;
     }
