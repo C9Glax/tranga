@@ -203,6 +203,9 @@ public class Server : GlobalBase
             case "Settings/userAgent":
                 SendResponse(HttpStatusCode.OK, response, settings.userAgent);
                 break;
+            case "Settings/customRequestLimit":
+                SendResponse(HttpStatusCode.OK, response, settings.requestLimits);
+                break;
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
