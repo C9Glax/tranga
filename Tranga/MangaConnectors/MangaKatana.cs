@@ -9,10 +9,7 @@ public class MangaKatana : MangaConnector
 {
 	public MangaKatana(GlobalBase clone) : base(clone, "MangaKatana")
 	{
-		this.downloadClient = new HttpDownloadClient(clone, new Dictionary<byte, int>()
-		{
-			{1, 60}
-		});
+		this.downloadClient = new HttpDownloadClient(clone);
 	}
 
 	public override Manga[] GetManga(string publicationTitle = "")
@@ -21,7 +18,7 @@ public class MangaKatana : MangaConnector
 		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, 1);
+			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Manga>();
 
@@ -47,7 +44,7 @@ public class MangaKatana : MangaConnector
 	public override Manga? GetMangaFromUrl(string url)
 	{
 		RequestResult requestResult =
-			downloadClient.MakeRequest(url, 1);
+			downloadClient.MakeRequest(url, RequestType.MangaInfo);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return null;
 		return ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]);
@@ -131,7 +128,7 @@ public class MangaKatana : MangaConnector
 		string posterUrl = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[1]/div").Descendants("img").First()
 			.GetAttributes().First(a => a.Name == "src").Value;
 
-		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
+		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
 
 		string description = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[3]/p").InnerText;
 		while (description.StartsWith('\n'))
@@ -158,7 +155,7 @@ public class MangaKatana : MangaConnector
 		string requestUrl = $"https://mangakatana.com/manga/{manga.publicationId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, 1);
+			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Chapter>();
 
@@ -210,7 +207,7 @@ public class MangaKatana : MangaConnector
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, 1);
+			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
 			progressToken?.Cancel();
@@ -222,7 +219,7 @@ public class MangaKatana : MangaConnector
 		string comicInfoPath = Path.GetTempFileName();
 		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
+		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)

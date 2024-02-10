@@ -9,10 +9,7 @@ public class MangaLife : MangaConnector
 {
     public MangaLife(GlobalBase clone) : base(clone, "Manga4Life")
     {
-        this.downloadClient = new ChromiumDownloadClient(clone, new Dictionary<byte, int>()
-        {
-            { 1, 60 }
-        });
+        this.downloadClient = new ChromiumDownloadClient(clone);
     }
 
     public override Manga[] GetManga(string publicationTitle = "")
@@ -21,7 +18,7 @@ public class MangaLife : MangaConnector
         string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
         string requestUrl = $"https://manga4life.com/search/?name={sanitizedTitle}";
         RequestResult requestResult =
-            downloadClient.MakeRequest(requestUrl, 1);
+            downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Manga>();
 
@@ -42,7 +39,7 @@ public class MangaLife : MangaConnector
         Regex publicationIdRex = new(@"https:\/\/(www\.)?manga4life.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[2].Value;
 
-        RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
+        RequestResult requestResult = this.downloadClient.MakeRequest(url, RequestType.MangaInfo);
         if(requestResult.htmlDocument is not null)
             return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
         return null;
@@ -81,7 +78,7 @@ public class MangaLife : MangaConnector
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
         string posterUrl = posterNode.GetAttributeValue("src", "");
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
@@ -133,7 +130,7 @@ public class MangaLife : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", 1, clickButton:"[class*='ShowAllChapters']");
+        RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", RequestType.Default, clickButton:"[class*='ShowAllChapters']");
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
             return Array.Empty<Chapter>();
@@ -179,7 +176,7 @@ public class MangaLife : MangaConnector
 
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
-        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
+        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, RequestType.Default);
         if (requestResult.htmlDocument is null)
         {
             progressToken?.Cancel();
@@ -197,6 +194,6 @@ public class MangaLife : MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
     }
 }

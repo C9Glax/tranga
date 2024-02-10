@@ -11,8 +11,7 @@ internal class HttpDownloadClient : DownloadClient
         Timeout = TimeSpan.FromSeconds(10)
     };
 
-
-    public HttpDownloadClient(GlobalBase clone, Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone, rateLimitRequestsPerMinute)
+    public HttpDownloadClient(GlobalBase clone) : base(clone)
     {
         Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", settings.userAgent);
     }

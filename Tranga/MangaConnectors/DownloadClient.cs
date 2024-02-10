@@ -5,37 +5,29 @@ namespace Tranga.MangaConnectors;
 
 internal abstract class DownloadClient : GlobalBase
 {
-    private readonly Dictionary<byte, DateTime> _lastExecutedRateLimit;
-    private readonly Dictionary<byte, TimeSpan> _rateLimit;
+    private readonly Dictionary<RequestType, DateTime> _lastExecutedRateLimit;
 
-    protected DownloadClient(GlobalBase clone,  Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone)
+    protected DownloadClient(GlobalBase clone) : base(clone)
     {
         this._lastExecutedRateLimit = new();
-        _rateLimit = new();
-        foreach (KeyValuePair<byte, int> limit in rateLimitRequestsPerMinute)
-            _rateLimit.Add(limit.Key, TimeSpan.FromMinutes(1).Divide(limit.Value));
-    }
-
-    internal void SetCustomRequestLimit(byte requestType, int limit)
-    {
-        if (_rateLimit.ContainsKey(requestType))
-            _rateLimit[requestType] = TimeSpan.FromMinutes(1).Divide(limit);
-        else
-            _rateLimit.Add(requestType, TimeSpan.FromMinutes(1).Divide(limit));
     }
     
-    public RequestResult MakeRequest(string url, byte requestType, string? referrer = null, string? clickButton = null)
+    public RequestResult MakeRequest(string url, RequestType requestType, string? referrer = null, string? clickButton = null)
     {
-        if (_rateLimit.TryGetValue(requestType, out TimeSpan value))
-            _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(value));
-        else
+        if (!settings.requestLimits.ContainsKey(requestType))
         {
             Log("RequestType not configured for rate-limit.");
             return new RequestResult(HttpStatusCode.NotAcceptable, null, Stream.Null);
         }
 
-        TimeSpan rateLimitTimeout = _rateLimit[requestType]
-            .Subtract(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]));
+        int rateLimit = settings.userAgent == TrangaSettings.DefaultUserAgent
+            ? TrangaSettings.DefaultRequestLimits[requestType]
+            : settings.requestLimits[requestType];
+        
+        TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
+        _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(timeBetweenRequests));
+
+        TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]));
 
         if (rateLimitTimeout > TimeSpan.Zero)
         {

@@ -20,12 +20,13 @@ public readonly struct Chapter : IComparable
     
     private static readonly Regex LegalCharacters = new (@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
     private static readonly Regex IllegalStrings = new(@"Vol(ume)?.?", RegexOptions.IgnoreCase);
+    private static readonly Regex Digits = new(@"[0-9]*");
     public Chapter(Manga parentManga, string? name, string? volumeNumber, string chapterNumber, string url)
     {
         this.parentManga = parentManga;
         this.name = name;
-        this.volumeNumber = volumeNumber ?? "0";
-        this.chapterNumber = chapterNumber;
+        this.volumeNumber = volumeNumber is not null ? string.Concat(Digits.Matches(volumeNumber).Select(x => x.Value)) : "0";
+        this.chapterNumber = string.Concat(Digits.Matches(chapterNumber).Select(x => x.Value));
         this.url = url;
         
         string chapterVolNumStr;
