@@ -366,18 +366,6 @@ public class Server : GlobalBase
                 settings.UpdateDownloadLocation(downloadLocation, moveFiles);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
-            case "Settings/ChangeStyleSheet":
-                if (!requestVariables.TryGetValue("styleSheet", out string? styleSheet))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-
-                if (settings.UpdateStyleSheet(styleSheet))
-                    SendResponse(HttpStatusCode.Accepted, response);
-                else
-                    SendResponse(HttpStatusCode.BadRequest, response, "Invalid parameter for styleSheet");
-                break;
             /*case "Settings/UpdateWorkingDirectory":
                 if (!requestVariables.TryGetValue("workingDirectory", out string? workingDirectory))
                 {

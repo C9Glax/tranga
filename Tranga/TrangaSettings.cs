@@ -13,7 +13,6 @@ public class TrangaSettings
     public string downloadLocation { get; private set; }
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
-    public string styleSheet { get; private set; }
     public string userAgent { get; set; } = DefaultUserAgent;
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
@@ -46,7 +45,6 @@ public class TrangaSettings
             this.downloadLocation = downloadLocation ?? settings.downloadLocation;
             this.workingDirectory = workingDirectory ?? settings.workingDirectory;
             this.apiPortNumber = apiPortNumber ?? settings.apiPortNumber;
-            this.styleSheet = "default" ?? settings.styleSheet;
             lockFile.Close();  //unlock settingsfile
         }
         else if(!File.Exists(settingsFilePath))
@@ -56,7 +54,6 @@ public class TrangaSettings
             this.apiPortNumber = apiPortNumber ?? 6531;
             this.downloadLocation = downloadLocation ?? (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
             this.workingDirectory = workingDirectory ?? Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
-            this.styleSheet = "default";
             ExportSettings();
         }
         else
@@ -64,7 +61,6 @@ public class TrangaSettings
             this.apiPortNumber = apiPortNumber!.Value;
             this.downloadLocation = downloadLocation!;
             this.workingDirectory = workingDirectory!;
-            this.styleSheet = "default";
         }
         UpdateDownloadLocation(this.downloadLocation, false);
     }
@@ -95,17 +91,6 @@ public class TrangaSettings
                     new NotificationManagerJsonConverter(clone)
                 }
             })!;
-    }
-
-    public bool UpdateStyleSheet(string newStyleSheet)
-    {
-        string[] validStyleSheets = { "default", "hover" };
-        if (validStyleSheets.Contains(newStyleSheet))
-        {
-            this.styleSheet = newStyleSheet;
-            return true;
-        }
-        return false;
     }
 
     public void UpdateDownloadLocation(string newPath, bool moveFiles = true)
