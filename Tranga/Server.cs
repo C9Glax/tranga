@@ -528,6 +528,16 @@ public class Server : GlobalBase
                 notificationConnector.SendNotification("Tranga Test", "This is Test-Notification.");
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
+            case "NotificationConnectors/Reset":
+                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                DeleteNotificationConnector(notificationConnectorType);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "LibraryConnectors/Update":
                 if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
                     !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
@@ -598,6 +608,16 @@ public class Server : GlobalBase
                     break;
                 }
                 libraryConnector.UpdateLibrary();
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "LibraryConnectors/Reset":
+                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                DeleteLibraryConnector(libraryConnectorType);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             default:
