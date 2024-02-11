@@ -266,11 +266,13 @@ public class Server : GlobalBase
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId, jobId, chapterNumStr, customFolderName, translatedLanguage;
+        string? connectorName, internalId, jobId, chapterNumStr, customFolderName, translatedLanguage, notificationConnectorStr, libraryConnectorStr;
         MangaConnector? connector;
         Manga? tmpManga;
         Manga manga;
         Job? job;
+        NotificationConnector.NotificationConnectorType notificationConnectorType;
+        LibraryConnector.LibraryType libraryConnectorType;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
@@ -439,8 +441,8 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                 break;
             case "NotificationConnectors/Update":
-                if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationConnectorType notificationConnectorType))
+                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -481,9 +483,54 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                 }
                 break;
+            case "NotificationConnectors/Test":
+                NotificationConnector notificationConnector;
+                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+
+                if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
+                {
+                    if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
+                        !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    notificationConnector = new Gotify(this, gotifyUrl, gotifyAppToken);
+                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
+                {
+                    if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    notificationConnector = new LunaSea(this, lunaseaWebhook);
+                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
+                {
+                    if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
+                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    notificationConnector = new Ntfy(this, ntfyUrl, ntfyAuth);
+                }
+                else
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                
+                notificationConnector.SendNotification("Tranga Test", "This is Test-Notification.");
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "LibraryConnectors/Update":
-                if (!requestVariables.TryGetValue("libraryConnector", out string? libraryConnectorStr) ||
-                    !Enum.TryParse(libraryConnectorStr, out LibraryConnector.LibraryType libraryConnectorType))
+                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -515,6 +562,43 @@ public class Server : GlobalBase
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                 }
+                break;
+            case "LibraryConnectors/Test":
+                LibraryConnector libraryConnector;
+                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+
+                if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
+                {
+                    if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
+                        !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
+                        !requestVariables.TryGetValue("kavitaPassword", out string? kavitaPassword))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    libraryConnector = new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword);
+                }else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
+                {
+                    if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
+                        !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    libraryConnector = new Komga(this, komgaUrl, komgaAuth);
+                }
+                else
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                libraryConnector.UpdateLibrary();
+                SendResponse(HttpStatusCode.Accepted, response);
                 break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
