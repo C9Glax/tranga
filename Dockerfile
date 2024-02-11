@@ -26,4 +26,4 @@ WORKDIR /publish
 COPY --from=build-env /publish .
 USER 0
 RUN chown 1000:1000 /publish
-ENTRYPOINT ["dotnet", "/publish/Tranga.dll", "-c"]
+ENTRYPOINT ["dotnet", "/publish/Tranga.dll", "-f -c"]
