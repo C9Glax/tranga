@@ -197,7 +197,7 @@ public class Mangasee : MangaConnector
                 string url = chapter.Descendants("link").First().Value;
                 Match m = chVolRex.Match(url);
                 string volumeNumber = m.Groups[2].Success ? m.Groups[2].Value : "0";
-                string chapterNumber = m.Groups[2].Value;
+                string chapterNumber = m.Groups[1].Value;
 
                 url = string.Concat(Regex.Match(url, @"(.*)-page-[0-9]+(\.html)").Groups.Values.Select(v => v.Value));
                 chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, url));
