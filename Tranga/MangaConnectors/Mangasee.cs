@@ -191,13 +191,15 @@ public class Mangasee : MangaConnector
             XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.publicationId}.xml");
             XElement[] chapterItems = doc.Descendants("item").ToArray();
             List<Chapter> chapters = new();
+            Regex chVolRex = new(@".*chapter-([0-9\.]+)(?:-index-([0-9\.]+))?.*");
             foreach (XElement chapter in chapterItems)
             {
-                string volumeNumber = "1";
                 string url = chapter.Descendants("link").First().Value;
-                string chapterNumber = Regex.Match(url, @"-chapter-([0-9\.]+)").Groups[1].ToString();
+                Match m = chVolRex.Match(url);
+                string volumeNumber = m.Groups[2].Success ? m.Groups[2].Value : "0";
+                string chapterNumber = m.Groups[2].Value;
 
-                url = url.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
+                url = string.Concat(Regex.Match(url, @"(.*)-page-[0-9]+(\.html)").Groups.Values.Select(v => v.Value));
                 chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, url));
             }
 
