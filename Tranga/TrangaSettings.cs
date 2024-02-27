@@ -13,6 +13,7 @@ public class TrangaSettings
     public string downloadLocation { get; private set; }
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
+    public int jobTimeout { get; init; } = 180;
     public string styleSheet { get; private set; }
     public string userAgent { get; set; } = DefaultUserAgent;
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");

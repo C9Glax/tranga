@@ -2,6 +2,7 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using JobQueue;
 using Tranga.Jobs;
 using static System.IO.UnixFileMode;
 
@@ -219,11 +220,11 @@ public abstract class MangaConnector : GlobalBase
 
     protected HttpStatusCode DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, RequestType requestType, string? comicInfoPath = null, string? referrer = null, ProgressToken? progressToken = null)
     {
-        if (progressToken?.cancellationRequested ?? false)
+        if (progressToken?.CancellationTokenSource.IsCancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
         Log($"Downloading Images for {saveArchiveFilePath}");
         if(progressToken is not null)
-            progressToken.increments = imageUrls.Length;
+            progressToken.Value.SetSteps(imageUrls.Length);
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
@@ -249,15 +250,15 @@ public abstract class MangaConnector : GlobalBase
             Log($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
             if ((int)status < 200 || (int)status >= 300)
             {
-                progressToken?.Complete();
+                progressToken?.MarkFinished();
                 return status;
             }
-            if (progressToken?.cancellationRequested ?? false)
+            if (progressToken?.CancellationTokenSource.IsCancellationRequested ?? false)
             {
-                progressToken.Complete();
+                progressToken.Value.MarkFinished();
                 return HttpStatusCode.RequestTimeout;
             }
-            progressToken?.Increment();
+            progressToken?.UpdateProgress(1);
         }
         
         if(comicInfoPath is not null)
@@ -270,7 +271,7 @@ public abstract class MangaConnector : GlobalBase
             File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute);
         Directory.Delete(tempFolder, true); //Cleanup
         
-        progressToken?.Complete();
+        progressToken?.MarkFinished();
         return HttpStatusCode.OK;
     }
     

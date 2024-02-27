@@ -1,4 +1,5 @@
-﻿using Logging;
+﻿using GlaxLogger;
+using Microsoft.Extensions.Logging;
 
 namespace Tranga;
 
@@ -14,17 +15,11 @@ public partial class Tranga : GlobalBase
             return;
         }
         
-        string[]? consoleLogger = GetArg(args, ArgEnum.ConsoleLogger);
         string[]? fileLogger = GetArg(args, ArgEnum.FileLogger);
         string? filePath = fileLogger?[0];//TODO validate path
+        string[]? logLevel = GetArg(args, ArgEnum.LogLevel);
+        LogLevel? level = logLevel is null || logLevel.Length < 1 ? null : Enum.Parse<LogLevel>(logLevel[0]);
         
-        List<Logger.LoggerType> enabledLoggers = new();
-        if(consoleLogger is not null)
-            enabledLoggers.Add(Logger.LoggerType.ConsoleLogger);
-        if (fileLogger is not null)
-            enabledLoggers.Add(Logger.LoggerType.FileLogger);
-        Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, filePath);
-
         TrangaSettings? settings = null;
         string[]? downloadLocationPath = GetArg(args, ArgEnum.DownloadLocation);
         string[]? workingDirectory = GetArg(args, ArgEnum.WorkingDirectory);
@@ -53,7 +48,7 @@ public partial class Tranga : GlobalBase
         Directory.CreateDirectory(settings.downloadLocation);//TODO validate path
         Directory.CreateDirectory(settings.workingDirectory);//TODO validate path
 
-        Tranga _ = new (logger, settings);
+        Tranga _ = new (new Logger(outputFolderPath: filePath, consoleOut: Console.Out), settings);
     }
 
     private static void PrintHelp()
@@ -104,18 +99,17 @@ public partial class Tranga : GlobalBase
     {
         { ArgEnum.DownloadLocation, new(new []{"-d", "--downloadLocation"}, 1, "Directory to which downloaded Manga are saved") },
         { ArgEnum.WorkingDirectory, new(new []{"-w", "--workingDirectory"}, 1, "Directory in which application-data is saved") },
-        { ArgEnum.ConsoleLogger, new(new []{"-c", "--consoleLogger"}, 0, "Enables the consoleLogger") },
-        { ArgEnum.FileLogger, new(new []{"-f", "--fileLogger"}, 1, "Enables the fileLogger, Directory where logfiles are saved") },
+        { ArgEnum.FileLogger, new(new []{"-f", "--fileLogger"}, 1, "Directory where logfiles are saved") },
+        { ArgEnum.LogLevel, new(new []{"-l", "--loglevel"}, 1, "Log-Level") },
         { ArgEnum.Help, new(new []{"-h", "--help"}, 0, "Print this") }
         //{ ArgEnum., new(new []{""}, 1, "") }
     };
 
     internal enum ArgEnum
     {
-        TrangaSettings,
+        LogLevel,
         DownloadLocation,
         WorkingDirectory,
-        ConsoleLogger,
         FileLogger,
         Help
     }

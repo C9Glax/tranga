@@ -1,4 +1,7 @@
-﻿using Tranga.MangaConnectors;
+﻿using System.Runtime.CompilerServices;
+using JobQueue;
+using Microsoft.Extensions.Logging;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
@@ -6,22 +9,17 @@ public class UpdateMetadata : Job
 {
     public Manga manga { get; set; }
     
-    public UpdateMetadata(GlobalBase clone, MangaConnector connector, Manga manga, string? parentJobId = null) : base(clone, JobType.UpdateMetaDataJob, connector, parentJobId: parentJobId)
+    public UpdateMetadata(GlobalBase clone, JobQueue<MangaConnector> queue, MangaConnector connector, Manga manga, string? jobId = null, string? parentJobId = null, ILogger? logger = null) : base (clone, queue, connector, JobType.UpdateMetaDataJob, TimeSpan.Zero, TimeSpan.FromSeconds(clone.settings.jobTimeout), 1, jobId, parentJobId, logger)
     {
         this.manga = manga;
-    }
-    
-    protected override string GetId()
-    {
-        return $"{GetType()}-{manga.internalId}";
-    }
-
-    public override string ToString()
-    {
-        return $"{id} Manga: {manga}";
+        if (jobId is null)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            this.JobId = $"{this.GetType().Name}-{connector.name}-{manga.sortName}-{new string(Enumerable.Repeat(chars, 4).Select(s => s[Random.Shared.Next(s.Length)]).ToArray())}";
+        }
     }
 
-    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
+    protected override void Execute(CancellationToken cancellationToken)
     {
         //Retrieve new Metadata
         Manga? possibleUpdatedManga = mangaConnector.GetMangaFromId(manga.publicationId);
@@ -29,30 +27,19 @@ public class UpdateMetadata : Job
         {
             if (updatedManga.Equals(this.manga)) //Check if anything changed
             {
-                this.progressToken.Complete();
-                return Array.Empty<Job>();
+                this.ProgressToken.MarkFinished();
             }
             
             this.manga.UpdateMetadata(updatedManga);
-            this.manga.SaveSeriesInfoJson(settings.downloadLocation, true);
-            this.progressToken.Complete();
+            this.manga.SaveSeriesInfoJson(this.GlobalBase.settings.downloadLocation, true);
+            this.ProgressToken.MarkFinished();
         }
         else
         {
-            Log($"Could not find Manga {manga}");
-            this.progressToken.Cancel();
-            return Array.Empty<Job>();
+            this.GlobalBase.Log($"Could not find Manga {manga}");
+            this.ProgressToken.MarkFailed();
         }
-        this.progressToken.Cancel();
-        return Array.Empty<Job>();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        
-        if (obj is not UpdateMetadata otherJob)
-            return false;
-        return otherJob.mangaConnector == this.mangaConnector &&
-               otherJob.manga.Equals(this.manga);
+        this.ProgressToken.Cancel();
+        return ;
     }
 }

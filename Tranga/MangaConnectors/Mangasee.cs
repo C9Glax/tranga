@@ -3,6 +3,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
+using JobQueue;
 using Newtonsoft.Json;
 using Tranga.Jobs;
 
@@ -216,16 +217,16 @@ public class Mangasee : MangaConnector
 
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
-        if (progressToken?.cancellationRequested ?? false)
+        if (progressToken?.CancellationTokenSource.IsCancellationRequested ?? false)
         {
-            progressToken.Cancel();
+            progressToken.Value.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 
         Manga chapterParentManga = chapter.parentManga;
-        if (progressToken?.cancellationRequested ?? false)
+        if (progressToken?.CancellationTokenSource.IsCancellationRequested ?? false)
         {
-            progressToken.Cancel();
+            progressToken.Value.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

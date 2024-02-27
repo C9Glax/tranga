@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using Tranga.Jobs;
+using JobQueue;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga.MangaConnectors;
@@ -242,9 +242,9 @@ public class MangaDex : MangaConnector
 
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
     {
-        if (progressToken?.cancellationRequested ?? false)
+        if (progressToken?.CancellationTokenSource.IsCancellationRequested ?? false)
         {
-            progressToken.Cancel();
+            progressToken.Value.Cancel();
             return HttpStatusCode.RequestTimeout;
         }
 

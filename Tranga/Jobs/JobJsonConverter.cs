@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using JobQueue;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tranga.MangaConnectors;
 
@@ -8,11 +10,15 @@ public class JobJsonConverter : JsonConverter
 {
     private GlobalBase _clone;
     private MangaConnectorJsonConverter _mangaConnectorJsonConverter;
+    private JobQueue<MangaConnector> queue;
+    private ILogger? logger;
 
-    internal JobJsonConverter(GlobalBase clone, MangaConnectorJsonConverter mangaConnectorJsonConverter)
+    internal JobJsonConverter(GlobalBase clone, MangaConnectorJsonConverter mangaConnectorJsonConverter, JobQueue<MangaConnector> queue, ILogger? logger = null)
     {
         this._clone = clone;
         this._mangaConnectorJsonConverter = mangaConnectorJsonConverter;
+        this.queue = queue;
+        this.logger = logger;
     }
     
     public override bool CanConvert(Type objectType)
@@ -23,53 +29,52 @@ public class JobJsonConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         JObject jo = JObject.Load(reader);
-
-        if (jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.UpdateMetaDataJob)
-        {
-            return new UpdateMetadata(this._clone,
-                jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
+        Job.JobType? jobType = (Job.JobType?)jo["jobType"]?.Value<byte>();
+        MangaConnector? mangaConnector = jo.GetValue("mangaConnector")?.ToObject<MangaConnector>(JsonSerializer.Create(
+            new JsonSerializerSettings()
+            {
+                Converters =
                 {
-                    Converters =
-                    {
-                        this._mangaConnectorJsonConverter
-                    }
-                }))!,
-                jo.GetValue("manga")!.ToObject<Manga>(),
-                jo.GetValue("parentJobId")!.Value<string?>());
-        }else if ((jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.DownloadNewChaptersJob) || jo.ContainsKey("translatedLanguage"))//TODO change to jobType
+                    this._mangaConnectorJsonConverter
+                }
+            }));
+        if(mangaConnector is null)
+            throw new JsonException("Could not deserialize this type");
+        
+        switch (jobType)
         {
-            DateTime lastExecution = jo.GetValue("lastExecution") is {} le 
-                ? le.ToObject<DateTime>()
-                : DateTime.UnixEpoch; //TODO do null checks on all variables
-            return new DownloadNewChapters(this._clone,
-                jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
-                {
-                    Converters =
-                    {
-                        this._mangaConnectorJsonConverter
-                    }
-                }))!,
-                jo.GetValue("manga")!.ToObject<Manga>(),
-                lastExecution,
-                jo.GetValue("recurring")!.Value<bool>(),
-                jo.GetValue("recurrenceTime")!.ToObject<TimeSpan?>(),
-                jo.GetValue("parentJobId")!.Value<string?>());
-        }else if ((jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.DownloadChapterJob) || jo.ContainsKey("chapter"))//TODO change to jobType
-        {
-            return new DownloadChapter(this._clone,
-                jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
-                {
-                    Converters =
-                    {
-                        this._mangaConnectorJsonConverter
-                    }
-                }))!,
-                jo.GetValue("chapter")!.ToObject<Chapter>(),
-                DateTime.UnixEpoch,
-                jo.GetValue("parentJobId")!.Value<string?>());
+            case Job.JobType.UpdateMetaDataJob:
+                return new UpdateMetadata(_clone,
+                    queue,
+                    mangaConnector,
+                    jo.GetValue("manga")!.ToObject<Manga>(),
+                    jo.GetValue("jobId")!.Value<string>(),
+                    jo.GetValue("parentJobId")!.Value<string?>(),
+                    logger);    
+            case Job.JobType.DownloadChapterJob:
+                return new DownloadChapter(_clone,
+                    queue,
+                    mangaConnector,
+                    jo.GetValue("chapter")!.ToObject<Chapter>(),
+                    jo.GetValue("steps")!.Value<int>(),
+                    jo.GetValue("jobId")!.Value<string>(),
+                    jo.GetValue("parentJobId")!.Value<string?>(),
+                    logger);
+                break;
+            case Job.JobType.DownloadNewChaptersJob:
+                return new DownloadNewChapter(_clone,
+                    queue,
+                    mangaConnector,
+                    jo.GetValue("manga")!.ToObject<Manga>(),
+                    jo.GetValue("interval")!.ToObject<TimeSpan>(),
+                    jo.GetValue("steps")!.Value<int>(),
+                    jo.GetValue("jobId")!.Value<string>(),
+                    jo.GetValue("parentJobId")!.Value<string?>(),
+                    logger);
+                break;
+            default:
+                throw new JsonException("Could not deserialize this type");
         }
-
-        throw new Exception();
     }
 
     public override bool CanWrite => false;

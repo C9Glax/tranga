@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using JobQueue;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -196,9 +197,9 @@ public class MangaKatana : MangaConnector
 
 	public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
 	{
-		if (progressToken?.cancellationRequested ?? false)
+		if (progressToken?.CancellationTokenSource.IsCancellationRequested ?? false)
 		{
-			progressToken.Cancel();
+			progressToken.Value.Cancel();
 			return HttpStatusCode.RequestTimeout;
 		}
 

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
-using Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Tranga.LibraryConnectors;
 
@@ -31,7 +31,7 @@ public abstract class LibraryConnector : GlobalBase
 
     protected static class NetClient
     {
-        public static Stream MakeRequest(string url, string authScheme, string auth, Logger? logger)
+        public static Stream MakeRequest(string url, string authScheme, string auth, ILogger? logger)
         {
             HttpClient client = new();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authScheme, auth);
@@ -45,8 +45,7 @@ public abstract class LibraryConnector : GlobalBase
             {
 
                 HttpResponseMessage response = client.Send(requestMessage);
-                logger?.WriteLine("LibraryManager.NetClient",
-                    $"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
+                logger?.LogInformation($"LibraryManager.NetClient | GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
 
                 if (response.StatusCode is HttpStatusCode.Unauthorized &&
                     response.RequestMessage!.RequestUri!.AbsoluteUri != url)
@@ -61,7 +60,7 @@ public abstract class LibraryConnector : GlobalBase
                 switch (e)
                 {
                     case HttpRequestException:
-                        logger?.WriteLine("LibraryManager.NetClient", $"Failed to make Request:\n\r{e}\n\rContinuing.");
+                        logger?.LogInformation($"LibraryManager.NetClient | Failed to make Request:\n\r{e}\n\rContinuing.");
                         break;
                     default:
                         throw;
@@ -70,7 +69,7 @@ public abstract class LibraryConnector : GlobalBase
             }
         }
 
-        public static bool MakePost(string url, string authScheme, string auth, Logger? logger)
+        public static bool MakePost(string url, string authScheme, string auth, ILogger? logger)
         {
             HttpClient client = new()
             {
@@ -86,7 +85,7 @@ public abstract class LibraryConnector : GlobalBase
                 RequestUri = new Uri(url)
             };
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine("LibraryManager.NetClient", $"POST {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
+            logger?.LogInformation($"LibraryManager.NetClient | POST {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
                 return MakePost(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);

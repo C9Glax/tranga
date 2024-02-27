@@ -2,6 +2,8 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using JobQueue;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Tranga.Jobs;
 using Tranga.LibraryConnectors;
@@ -167,35 +169,47 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.OK, response, connector!.GetChapters((Manga)manga!, translatedLanguage??"en"));
                 break;
             case "Jobs":
-                if (!requestVariables.TryGetValue("jobId", out jobId))
+                if (requestVariables.TryGetValue("jobId", out jobId))
                 {
-                    if(!_parent.jobBoss.jobs.Any(jjob => jjob.id == jobId))
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                    Job<MangaConnector>? job = _parent.JobQueue.JobWithId(jobId);
+                    if (job is null)
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response);
+                        break;
+                    }
                     else
-                        SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.First(jjob => jjob.id == jobId));
-                    break;
+                    {
+                        SendResponse(HttpStatusCode.OK, response, job);
+                        break;
+                    }
                 }
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs);
+                SendResponse(HttpStatusCode.OK, response, _parent.JobQueue.AllJobs());
                 break;
             case "Jobs/Progress":
                 if (requestVariables.TryGetValue("jobId", out jobId))
                 {
-                    if(!_parent.jobBoss.jobs.Any(jjob => jjob.id == jobId))
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                    Job<MangaConnector>? job = _parent.JobQueue.JobWithId(jobId);
+                    if (job is null)
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response);
+                        break;
+                    }
                     else
-                        SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.First(jjob => jjob.id == jobId).progressToken);
-                    break;
+                    {
+                        SendResponse(HttpStatusCode.OK, response, job.ProgressToken);
+                        break;
+                    }
                 }
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Select(jjob => jjob.progressToken));
+                SendResponse(HttpStatusCode.OK, response, _parent.JobQueue.AllJobs().Select(jjob => jjob.ProgressToken));
                 break;
             case "Jobs/Running":
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Running));
+                SendResponse(HttpStatusCode.OK, response, _parent.JobQueue.RunningJobs());
                 break;
             case "Jobs/Waiting":
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Standby).OrderBy(jjob => jjob.nextExecution));
+                SendResponse(HttpStatusCode.OK, response, _parent.JobQueue.WaitingJobs().Order());
                 break;
             case "Jobs/MonitorJobs":
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob is DownloadNewChapters).OrderBy(jjob => ((DownloadNewChapters)jjob).manga.sortName));
+                SendResponse(HttpStatusCode.OK, response, _parent.JobQueue.AllJobs().Cast<Job>().Where(job => job.jobType is Job.JobType.DownloadNewChaptersJob));
                 break;
             case "Settings":
                 SendResponse(HttpStatusCode.OK, response, settings);
@@ -233,7 +247,7 @@ public class Server : GlobalBase
         MangaConnector? connector;
         Manga? tmpManga;
         Manga manga;
-        Job? job;
+        Job<MangaConnector>? job;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
@@ -275,7 +289,8 @@ public class Server : GlobalBase
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
                 requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
                 
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval, translatedLanguage: translatedLanguage??"en"));
+                _parent.JobQueue.AddJob(connector!, new DownloadNewChapter(this, _parent.JobQueue, connector!, manga, interval, 1, null, null, this.logger, translatedLanguage??"en"));
+                
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/DownloadNewChapters":
@@ -304,32 +319,33 @@ public class Server : GlobalBase
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
                 requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
                 
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false, translatedLanguage: translatedLanguage??"en"));
+                _parent.JobQueue.AddJob(connector!, new DownloadNewChapter(this, _parent.JobQueue, connector!, manga, TimeSpan.FromHours(1), 1, null, null, this.logger, translatedLanguage??"en"));
+
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/UpdateMetadata":
                 if (!requestVariables.TryGetValue("internalId", out internalId))
                 {
-                    foreach (Job pJob in _parent.jobBoss.jobs.Where(possibleDncJob =>
-                                 possibleDncJob.jobType is Job.JobType.DownloadNewChaptersJob).ToArray())//ToArray to avoid modyifying while adding new jobs
+                    foreach (DownloadNewChapter dncJob in _parent.JobQueue.AllJobs().Cast<Job>().Where(j => j.jobType is Job.JobType.DownloadNewChaptersJob).Cast<DownloadNewChapter>().ToArray())//ToArray to avoid modyifying while adding new jobs
                     {
-                        DownloadNewChapters dncJob = pJob as DownloadNewChapters ??
-                                                     throw new Exception("Has to be DownloadNewChapters Job");
-                        _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
+                        _parent.JobQueue.AddJob(dncJob.mangaConnector, new UpdateMetadata(this, _parent.JobQueue, dncJob.mangaConnector, dncJob.manga, null, dncJob.JobId, logger));
                     }
                     SendResponse(HttpStatusCode.Accepted, response);
                 }
                 else
                 {
-                    Job[] possibleDncJobs = _parent.jobBoss.GetJobsLike(internalId: internalId).ToArray();
+                    Job[] possibleDncJobs = _parent.JobQueue.AllJobs().Cast<Job>()
+                        .Where(j => j.jobType is Job.JobType.DownloadNewChaptersJob).Cast<DownloadNewChapter>()
+                        .ToArray();
                     switch (possibleDncJobs.Length)
                     {
                         case <1: SendResponse(HttpStatusCode.BadRequest, response, "Could not find matching release"); break;
                         case >1: SendResponse(HttpStatusCode.BadRequest, response, "Multiple releases??"); break;
                         default:
-                            DownloadNewChapters dncJob = possibleDncJobs[0] as DownloadNewChapters ??
+                            DownloadNewChapter dncJob = possibleDncJobs[0] as DownloadNewChapter ??
                                                          throw new Exception("Has to be DownloadNewChapters Job");
-                            _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
+                            
+                            _parent.JobQueue.AddJob(dncJob.mangaConnector, new UpdateMetadata(this, _parent.JobQueue, dncJob.mangaConnector, dncJob.manga, null, dncJob.JobId, logger));
                             SendResponse(HttpStatusCode.Accepted, response);
                             break;
                     }
@@ -337,17 +353,17 @@ public class Server : GlobalBase
                 break;
             case "Jobs/StartNow":
                 if (!requestVariables.TryGetValue("jobId", out jobId) ||
-                    !_parent.jobBoss.TryGetJobById(jobId, out job))
+                    !_parent.JobQueue.TryJobWithId(jobId, out job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                _parent.jobBoss.AddJobToQueue(job!);
+                job!.Start();
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/Cancel":
                 if (!requestVariables.TryGetValue("jobId", out jobId) ||
-                    !_parent.jobBoss.TryGetJobById(jobId, out job))
+                    !_parent.JobQueue.TryJobWithId(jobId, out job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -491,37 +507,16 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                 }
                 break;
-            case "LogMessages":
-                if (logger is null || !File.Exists(logger?.logFilePath))
-                {
-                    SendResponse(HttpStatusCode.NotFound, response);
-                    break;
-                }
-
-                if (requestVariables.TryGetValue("count", out string? count))
-                {
-                    try
-                    {
-                        uint messageCount = uint.Parse(count);
-                        SendResponse(HttpStatusCode.OK, response, logger.Tail(messageCount));
-                    }
-                    catch (FormatException f)
-                    {
-                        SendResponse(HttpStatusCode.InternalServerError, response, f);
-                    }
-                }else
-                    SendResponse(HttpStatusCode.OK, response, logger.GetLog());
-                break;
             case "LogFile":
-                if (logger is null || !File.Exists(logger?.logFilePath))
+                if (logger is null || !File.Exists(logger.LogFilePath))
                 {
                     SendResponse(HttpStatusCode.NotFound, response);
                     break;
                 }
 
-                string logDir = new FileInfo(logger.logFilePath).DirectoryName!;
+                string logDir = new FileInfo(logger.LogFilePath).DirectoryName!;
                 string tmpFilePath = Path.Join(logDir, "Tranga.log");
-                File.Copy(logger.logFilePath, tmpFilePath);
+                File.Copy(logger.LogFilePath, tmpFilePath);
                 SendResponse(HttpStatusCode.OK, response, new FileStream(tmpFilePath, FileMode.Open));
                 File.Delete(tmpFilePath);
                 break;
@@ -542,26 +537,12 @@ public class Server : GlobalBase
         {
             case "Jobs":
                 if (!requestVariables.TryGetValue("jobId", out string? jobId) ||
-                    !_parent.jobBoss.TryGetJobById(jobId, out Job? job))
+                    !_parent.JobQueue.TryJobWithId(jobId, out Job<MangaConnector>? job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                _parent.jobBoss.RemoveJob(job!);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Jobs/DownloadNewChapters":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null)
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                connector = _parent.GetConnector(connectorName)!;
-                manga = (Manga)_parent.GetPublicationById(internalId)!;
-                _parent.jobBoss.RemoveJobs(_parent.jobBoss.GetJobsLike(connector, manga));
+                _parent.JobQueue.RemoveJob(job!);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "NotificationConnectors":
