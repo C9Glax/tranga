@@ -9,7 +9,8 @@ namespace Tranga;
 
 public abstract class GlobalBase
 {
-    protected Logger? logger { get; init; }
+    [JsonIgnore]
+    public Logger? logger { get; init; }
     protected TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
