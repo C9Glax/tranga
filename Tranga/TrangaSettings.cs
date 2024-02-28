@@ -131,7 +131,7 @@ public class TrangaSettings
 
     public void UpdateUserAgent(string customUserAgent)
     {
-        this.userAgent = customUserAgent;
+        this.userAgent = customUserAgent.Length < 1 ? DefaultUserAgent : customUserAgent;
         ExportSettings();
     }
 
