@@ -23,6 +23,8 @@ public abstract class LibraryConnector : GlobalBase
         Log($"Creating libraryConnector {Enum.GetName(libraryType)}");
         if (!baseUrlRex.IsMatch(baseUrl))
             throw new ArgumentException("Base url does not match pattern");
+        if(auth == "")
+            throw new ArgumentNullException(nameof(auth), "Auth can not be empty");
         this.baseUrl = baseUrlRex.Match(baseUrl).Value;
         this.auth = auth;
         this.libraryType = libraryType;
