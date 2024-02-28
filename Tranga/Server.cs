@@ -423,6 +423,10 @@ public class Server : GlobalBase
                 settings.UpdateUserAgent(customUserAgent);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
+            case "Settings/userAgent/Reset":
+                settings.UpdateUserAgent(null);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "Settings/customRequestLimit":
                 if (!requestVariables.TryGetValue("requestType", out string? requestTypeStr) ||
                     !requestVariables.TryGetValue("requestsPerMinute", out string? requestsPerMinuteStr) ||
