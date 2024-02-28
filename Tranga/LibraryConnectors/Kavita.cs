@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -8,7 +9,7 @@ public class Kavita : LibraryConnector
 {
 
     public Kavita(GlobalBase clone, string baseUrl, string username, string password) : 
-        base(clone, baseUrl, GetToken(baseUrl, username, password), LibraryType.Kavita)
+        base(clone, baseUrl, GetToken(baseUrl, username, password, clone.logger), LibraryType.Kavita)
     {
     }
     
@@ -22,7 +23,7 @@ public class Kavita : LibraryConnector
         return $"Kavita {baseUrl}";
     }
 
-    private static string GetToken(string baseUrl, string username, string password)
+    private static string GetToken(string baseUrl, string username, string password, Logger? logger = null)
     {
         HttpClient client = new()
         {
@@ -40,16 +41,24 @@ public class Kavita : LibraryConnector
         try
         {
             HttpResponseMessage response = client.Send(requestMessage);
-            JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
-            if (result is not null)
-                return result["token"]!.GetValue<string>();
+            logger?.WriteLine($"Kavita | GetToken {requestMessage.RequestUri} -> {response.StatusCode}");
+            if (response.IsSuccessStatusCode)
+            {
+                JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
+                if (result is not null)
+                    return result["token"]!.GetValue<string>();
+            }
+            else
+            {
+                logger?.WriteLine($"Kavita | {response.Content}");
+            }
         }
         catch (HttpRequestException e)
         {
-            Console.WriteLine($"Unable to retrieve token:\n\r{e}");
+            logger?.WriteLine($"Kavita | Unable to retrieve token:\n\r{e}");
         }
-        Console.WriteLine("Kavita: Did not receive token.");
-        throw new Exception("Kavita: Did not receive token.");
+        logger?.WriteLine("Kavita | Did not receive token.");
+        return "";
     }
 
     public override void UpdateLibrary()

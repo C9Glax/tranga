@@ -9,7 +9,8 @@ namespace Tranga;
 
 public abstract class GlobalBase
 {
-    protected Logger? logger { get; init; }
+    [JsonIgnore]
+    public Logger? logger { get; init; }
     protected TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
@@ -88,7 +89,7 @@ public abstract class GlobalBase
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting libraryConnectors");
-        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
+        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
     protected void DeleteLibraryConnector(LibraryConnector.LibraryType libraryType)
@@ -98,10 +99,12 @@ public abstract class GlobalBase
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting libraryConnectors");
-        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
+        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
-    protected bool IsFileInUse(string filePath)
+    protected bool IsFileInUse(string filePath) => IsFileInUse(filePath, this.logger);
+
+    public static bool IsFileInUse(string filePath, Logger? logger)
     {
         if (!File.Exists(filePath))
             return false;
@@ -113,7 +116,7 @@ public abstract class GlobalBase
         }
         catch (IOException)
         {
-            Log($"File is in use {filePath}");
+            logger?.WriteLine($"File is in use {filePath}");
             return true;
         }
     }
