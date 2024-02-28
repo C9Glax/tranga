@@ -89,7 +89,7 @@ public abstract class GlobalBase
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting libraryConnectors");
-        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
+        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
     protected void DeleteLibraryConnector(LibraryConnector.LibraryType libraryType)
@@ -99,7 +99,7 @@ public abstract class GlobalBase
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting libraryConnectors");
-        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
+        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
     protected bool IsFileInUse(string filePath) => IsFileInUse(filePath, this.logger);
