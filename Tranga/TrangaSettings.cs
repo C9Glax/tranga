@@ -139,7 +139,7 @@ public class TrangaSettings
     {
         if (File.Exists(settingsFilePath))
         {
-            while(GlobalBase.IsFileInUse(settingsFilePath))
+            while(GlobalBase.IsFileInUse(settingsFilePath, null))
                 Thread.Sleep(100);
         }
         else
