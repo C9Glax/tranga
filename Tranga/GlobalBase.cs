@@ -102,7 +102,9 @@ public abstract class GlobalBase
         File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors));
     }
 
-    protected bool IsFileInUse(string filePath)
+    protected bool IsFileInUse(string filePath) => IsFileInUse(filePath, this.logger);
+
+    public static bool IsFileInUse(string filePath, Logger? logger)
     {
         if (!File.Exists(filePath))
             return false;
@@ -114,7 +116,7 @@ public abstract class GlobalBase
         }
         catch (IOException)
         {
-            Log($"File is in use {filePath}");
+            logger?.WriteLine($"File is in use {filePath}");
             return true;
         }
     }
