@@ -439,6 +439,7 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.Accepted, response);
                 }else
                     SendResponse(HttpStatusCode.BadRequest, response);
+                settings.ExportSettings();
                 break;
             case "NotificationConnectors/Update":
                 if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
