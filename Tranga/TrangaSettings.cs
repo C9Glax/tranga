@@ -36,21 +36,28 @@ public class TrangaSettings
 
     public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null, int? apiPortNumber = null)
     {
-        string lockFilePath = $"{settingsFilePath}.lock";
-        if (File.Exists(settingsFilePath) && !File.Exists(lockFilePath))
+        string wd = workingDirectory ?? Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+        string sfp = Path.Join(wd, "settings.json");
+        
+        string lockFilePath = $"{sfp}.lock";
+        if (File.Exists(sfp) && !File.Exists(lockFilePath))
         {//Load from settings file
             FileStream lockFile = File.Create(lockFilePath,0, FileOptions.DeleteOnClose); //lock settingsfile
-            string settingsStr = File.ReadAllText(settingsFilePath);
+            string settingsStr = File.ReadAllText(sfp);
             TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(settingsStr)!;
+            this.requestLimits = settings.requestLimits;
+            this.userAgent = settings.userAgent;
             this.downloadLocation = downloadLocation ?? settings.downloadLocation;
             this.workingDirectory = workingDirectory ?? settings.workingDirectory;
             this.apiPortNumber = apiPortNumber ?? settings.apiPortNumber;
             lockFile.Close();  //unlock settingsfile
         }
-        else if(!File.Exists(settingsFilePath))
+        else if(!File.Exists(sfp))
         {//No settings file exists
             if (downloadLocation?.Length < 1 || workingDirectory?.Length < 1)
                 throw new ArgumentException("Download-location and working-directory paths can not be empty!");
+            this.requestLimits = DefaultRequestLimits;
+            this.userAgent = DefaultUserAgent;
             this.apiPortNumber = apiPortNumber ?? 6531;
             this.downloadLocation = downloadLocation ?? (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
             this.workingDirectory = workingDirectory ?? Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
@@ -58,6 +65,8 @@ public class TrangaSettings
         }
         else
         {//Settingsfile is locked
+            this.requestLimits = DefaultRequestLimits;
+            this.userAgent = DefaultUserAgent;
             this.apiPortNumber = apiPortNumber!.Value;
             this.downloadLocation = downloadLocation!;
             this.workingDirectory = workingDirectory!;
@@ -130,24 +139,12 @@ public class TrangaSettings
     {
         if (File.Exists(settingsFilePath))
         {
-            bool inUse = true;
-            while (inUse)
-            {
-                try
-                {
-                    using FileStream stream = new(settingsFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
-                    stream.Close();
-                    inUse = false;
-                }
-                catch (IOException)
-                {
-                    Thread.Sleep(100);
-                }
-            }
+            while(GlobalBase.IsFileInUse(settingsFilePath))
+                Thread.Sleep(100);
         }
         else
             Directory.CreateDirectory(new FileInfo(settingsFilePath).DirectoryName!);
-        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
+        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented));
     }
 
     public string GetFullCoverPath(Manga manga)

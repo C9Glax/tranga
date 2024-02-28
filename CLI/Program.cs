@@ -46,8 +46,29 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
         
         string? logFilePath = settings.fileLoggerPath ?? "";
         Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, logFilePath);
+        
+        TrangaSettings? trangaSettings = null;
 
-        TrangaSettings trangaSettings = new (settings.downloadLocation, settings.workingDirectory, settings.apiPort);
+        if (settings.downloadLocation is not null && settings.workingDirectory is not null)
+        {
+            trangaSettings = new TrangaSettings(settings.downloadLocation, settings.workingDirectory);
+        }else if (settings.downloadLocation is not null)
+        {
+            if (trangaSettings is null)
+                trangaSettings = new TrangaSettings(downloadLocation: settings.downloadLocation);
+            else
+                trangaSettings = new TrangaSettings(downloadLocation: settings.downloadLocation, settings.workingDirectory);
+        }else if (settings.workingDirectory is not null)
+        {
+            if (trangaSettings is null)
+                trangaSettings = new TrangaSettings(downloadLocation: settings.workingDirectory);
+            else
+                trangaSettings = new TrangaSettings(settings.downloadLocation, settings.workingDirectory);
+        }
+        else
+        {
+            trangaSettings = new TrangaSettings();
+        }
 
         Directory.CreateDirectory(trangaSettings.downloadLocation);
         Directory.CreateDirectory(trangaSettings.workingDirectory);
