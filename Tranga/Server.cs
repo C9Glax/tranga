@@ -445,6 +445,10 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                 settings.ExportSettings();
                 break;
+            case "Settings/customRequestLimit/Reset":
+                settings.requestLimits = TrangaSettings.DefaultRequestLimits;
+                settings.ExportSettings();
+                break;
             case "NotificationConnectors/Update":
                 if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
                     !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
