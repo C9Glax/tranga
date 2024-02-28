@@ -53,7 +53,7 @@ internal class ChromiumDownloadClient : DownloadClient
         });
     }
 
-    public ChromiumDownloadClient(GlobalBase clone, Dictionary<byte, int> rateLimitRequestsPerMinute) : base(clone, rateLimitRequestsPerMinute)
+    public ChromiumDownloadClient(GlobalBase clone) : base(clone)
     {
         this.browser = DownloadBrowser().Result;
     }

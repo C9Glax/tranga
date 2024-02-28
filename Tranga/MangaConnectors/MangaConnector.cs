@@ -202,7 +202,7 @@ public abstract class MangaConnector : GlobalBase
     /// <param name="fullPath"></param>
     /// <param name="requestType">RequestType for Rate-Limit</param>
     /// <param name="referrer">referrer used in html request header</param>
-    private HttpStatusCode DownloadImage(string imageUrl, string fullPath, byte requestType, string? referrer = null)
+    private HttpStatusCode DownloadImage(string imageUrl, string fullPath, RequestType requestType, string? referrer = null)
     {
         RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
         
@@ -217,7 +217,7 @@ public abstract class MangaConnector : GlobalBase
         return requestResult.statusCode;
     }
 
-    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, byte requestType, string? comicInfoPath = null, string? referrer = null, ProgressToken? progressToken = null)
+    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, RequestType requestType, string? comicInfoPath = null, string? referrer = null, ProgressToken? progressToken = null)
     {
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
@@ -274,7 +274,7 @@ public abstract class MangaConnector : GlobalBase
         return HttpStatusCode.OK;
     }
     
-    protected string SaveCoverImageToCache(string url, byte requestType)
+    protected string SaveCoverImageToCache(string url, RequestType requestType)
     {
         string filetype = url.Split('/')[^1].Split('?')[0].Split('.')[^1];
         string filename = $"{DateTime.Now.Ticks.ToString()}.{filetype}";

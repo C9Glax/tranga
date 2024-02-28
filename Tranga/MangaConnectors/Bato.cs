@@ -7,12 +7,10 @@ namespace Tranga.MangaConnectors;
 
 public class Bato : MangaConnector
 {
+	
 	public Bato(GlobalBase clone) : base(clone, "Bato")
 	{
-		this.downloadClient = new HttpDownloadClient(clone, new Dictionary<byte, int>()
-		{
-			{1, 60}
-		});
+		this.downloadClient = new HttpDownloadClient(clone);
 	}
 
 	public override Manga[] GetManga(string publicationTitle = "")
@@ -21,7 +19,7 @@ public class Bato : MangaConnector
 		string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://bato.to/v3x-search?word={sanitizedTitle}&lang=en";
 		RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, 1);
+			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Manga>();
 
@@ -43,8 +41,7 @@ public class Bato : MangaConnector
 
 	public override Manga? GetMangaFromUrl(string url)
 	{
-		RequestResult requestResult =
-			downloadClient.MakeRequest(url, 1);
+		RequestResult requestResult = downloadClient.MakeRequest(url, RequestType.MangaInfo);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return null;
 		if (requestResult.htmlDocument is null)
@@ -89,7 +86,7 @@ public class Bato : MangaConnector
 
 		string posterUrl = document.DocumentNode.SelectNodes("//img")
 			.First(child => child.GetAttributeValue("data-hk", "") == "0-1-0").GetAttributeValue("src", "").Replace("&amp;", "&");
-		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
+		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
 
 		List<HtmlNode> genreNodes = document.DocumentNode.SelectSingleNode("//b[text()='Genres:']/..").SelectNodes("span").ToList();
 		string[] tags = genreNodes.Select(node => node.FirstChild.InnerText).ToArray();
@@ -129,7 +126,7 @@ public class Bato : MangaConnector
 		string requestUrl = $"https://bato.to/title/{manga.publicationId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, 1);
+			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return Array.Empty<Chapter>();
 
@@ -141,7 +138,7 @@ public class Bato : MangaConnector
 
 	private List<Chapter> ParseChaptersFromHtml(Manga manga, string mangaUrl)
 	{
-		RequestResult result = downloadClient.MakeRequest(mangaUrl, 1);
+		RequestResult result = downloadClient.MakeRequest(mangaUrl, RequestType.Default);
 		if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
 		{
 			Log("Failed to load site");
@@ -184,7 +181,7 @@ public class Bato : MangaConnector
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		RequestResult requestResult =
-			downloadClient.MakeRequest(requestUrl, 1);
+			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
 			progressToken?.Cancel();
@@ -196,13 +193,13 @@ public class Bato : MangaConnector
 		string comicInfoPath = Path.GetTempFileName();
 		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
+		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)
 	{
 		RequestResult requestResult =
-			downloadClient.MakeRequest(mangaUrl, 1);
+			downloadClient.MakeRequest(mangaUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
 			return Array.Empty<string>();

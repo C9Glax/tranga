@@ -7,25 +7,9 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Tranga.MangaConnectors;
 public class MangaDex : MangaConnector
 {
-    private enum RequestType : byte
-    {
-        Manga,
-        Feed,
-        AtHomeServer,
-        CoverUrl,
-        Author,
-    }
-
     public MangaDex(GlobalBase clone) : base(clone, "MangaDex")
     {
-        this.downloadClient = new HttpDownloadClient(clone, new Dictionary<byte, int>()
-        {
-            {(byte)RequestType.Manga, 250},
-            {(byte)RequestType.Feed, 250},
-            {(byte)RequestType.AtHomeServer, 40},
-            {(byte)RequestType.CoverUrl, 250},
-            {(byte)RequestType.Author, 250}
-        });
+        this.downloadClient = new HttpDownloadClient(clone);
     }
 
     public override Manga[] GetManga(string publicationTitle = "")
@@ -41,7 +25,7 @@ public class MangaDex : MangaConnector
             //Request next Page
             RequestResult requestResult =
                 downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}", (byte)RequestType.Manga);
+                    $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}", RequestType.MangaInfo);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -75,7 +59,7 @@ public class MangaDex : MangaConnector
     public override Manga? GetMangaFromId(string publicationId)
     {
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}", (byte)RequestType.Manga);
+            downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}", RequestType.MangaInfo);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return null;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -149,7 +133,7 @@ public class MangaDex : MangaConnector
         string? coverUrl = GetCoverUrl(publicationId, posterId);
         string? coverCacheName = null;
         if (coverUrl is not null)
-            coverCacheName = SaveCoverImageToCache(coverUrl, (byte)RequestType.AtHomeServer);
+            coverCacheName = SaveCoverImageToCache(coverUrl, RequestType.MangaCover);
 
         List<string> authors = GetAuthors(authorIds);
 
@@ -216,7 +200,7 @@ public class MangaDex : MangaConnector
             //Request next "Page"
             RequestResult requestResult =
                 downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga/{manga.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}", (byte)RequestType.Feed);
+                    $"https://api.mangadex.org/manga/{manga.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}", RequestType.MangaDexFeed);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -268,7 +252,7 @@ public class MangaDex : MangaConnector
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", (byte)RequestType.AtHomeServer);
+            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", RequestType.MangaDexImage);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
             progressToken?.Cancel();
@@ -293,7 +277,7 @@ public class MangaDex : MangaConnector
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
         //Download Chapter-Images
-        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), (byte)RequestType.AtHomeServer, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
     }
 
     private string? GetCoverUrl(string publicationId, string? posterId)
@@ -307,7 +291,7 @@ public class MangaDex : MangaConnector
         
         //Request information where to download Cover
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/cover/{posterId}", (byte)RequestType.CoverUrl);
+            downloadClient.MakeRequest($"https://api.mangadex.org/cover/{posterId}", RequestType.MangaCover);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return null;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -328,7 +312,7 @@ public class MangaDex : MangaConnector
         foreach (string authorId in authorIds)
         {
             RequestResult requestResult =
-                downloadClient.MakeRequest($"https://api.mangadex.org/author/{authorId}", (byte)RequestType.Author);
+                downloadClient.MakeRequest($"https://api.mangadex.org/author/{authorId}", RequestType.MangaDexAuthor);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 return ret;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);

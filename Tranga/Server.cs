@@ -399,16 +399,19 @@ public class Server : GlobalBase
             case "Settings/customRequestLimit":
                 if (!requestVariables.TryGetValue("requestType", out string? requestTypeStr) ||
                     !requestVariables.TryGetValue("requestsPerMinute", out string? requestsPerMinuteStr) ||
-                    !requestVariables.TryGetValue("connector", out connectorName) ||
-                    !byte.TryParse(requestTypeStr, out byte requestType) ||
-                    !int.TryParse(requestsPerMinuteStr, out int requestsPerMinute) ||
-                    !_parent.TryGetConnector(connectorName, out connector))
+                    !Enum.TryParse(requestTypeStr, out RequestType requestType) ||
+                    !int.TryParse(requestsPerMinuteStr, out int requestsPerMinute))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                connector!.downloadClient.SetCustomRequestLimit(requestType, requestsPerMinute);
-                SendResponse(HttpStatusCode.Accepted, response);
+
+                if (settings.requestLimits.ContainsKey(requestType))
+                {
+                    settings.requestLimits[requestType] = requestsPerMinute;
+                    SendResponse(HttpStatusCode.Accepted, response);
+                }else
+                    SendResponse(HttpStatusCode.BadRequest, response);
                 break;
             case "NotificationConnectors/Update":
                 if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||

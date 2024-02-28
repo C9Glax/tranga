@@ -20,20 +20,28 @@ public readonly struct Chapter : IComparable
     
     private static readonly Regex LegalCharacters = new (@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
     private static readonly Regex IllegalStrings = new(@"Vol(ume)?.?", RegexOptions.IgnoreCase);
+    private static readonly Regex Digits = new(@"[0-9\.]*");
     public Chapter(Manga parentManga, string? name, string? volumeNumber, string chapterNumber, string url)
     {
         this.parentManga = parentManga;
         this.name = name;
-        this.volumeNumber = volumeNumber ?? "0";
-        this.chapterNumber = chapterNumber;
+        this.volumeNumber = volumeNumber is not null ? string.Concat(Digits.Matches(volumeNumber).Select(x => x.Value)) : "0";
+        this.chapterNumber = string.Concat(Digits.Matches(chapterNumber).Select(x => x.Value));
         this.url = url;
+        
+        string chapterVolNumStr;
+        if (volumeNumber is not null && volumeNumber.Length > 0)
+            chapterVolNumStr = $"Vol.{volumeNumber} Ch.{chapterNumber}";
+        else
+            chapterVolNumStr = $"Ch.{chapterNumber}";
 
-        string chapterName = string.Concat(LegalCharacters.Matches(name ?? ""));
-        string volStr = volumeNumber is not null ? $"Vol.{volumeNumber} " : "";
-        string chNumberStr = $"Ch.{chapterNumber} ";
-        string chNameStr = chapterName.Length > 0 ? $"- {chapterName}" : "";
-        chNameStr = IllegalStrings.Replace(chNameStr, "");
-        this.fileName = $"{volStr}{chNumberStr}{chNameStr}";
+        if (name is not null && name.Length > 0)
+        {
+            string chapterName = IllegalStrings.Replace(string.Concat(LegalCharacters.Matches(name)), "");
+            this.fileName = $"{chapterVolNumStr} - {chapterName}";
+        }
+        else
+            this.fileName = chapterVolNumStr;
     }
 
     public override string ToString()
@@ -81,23 +89,20 @@ public readonly struct Chapter : IComparable
     /// <returns>true if chapter is present</returns>
     internal bool CheckChapterIsDownloaded(string downloadLocation)
     {
-        string newFilePath = GetArchiveFilePath(downloadLocation);
         if (!Directory.Exists(Path.Join(downloadLocation, parentManga.folderName)))
             return false;
         FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, parentManga.folderName)).GetFiles();
-        Regex chapterInfoRex = new(@"Ch\.[0-9.]+");
-        Regex chapterRex = new(@"[0-9]+(\.[0-9]+)?");
-        
-        if (File.Exists(newFilePath))
-            return true;
+        Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
 
-        string cn = this.chapterNumber;
-        if (archives.FirstOrDefault(archive => chapterRex.Match(chapterInfoRex.Match(archive.Name).Value).Value == cn) is { } path)
+        Chapter t = this;
+        return archives.Select(archive => archive.Name).Any(archiveFileName =>
         {
-            File.Move(path.FullName, newFilePath);
-            return true;
-        }
-        return false;
+            Match m = volChRex.Match(archiveFileName);
+            string archiveVolNum = m.Groups[1].Success ? m.Groups[1].Value : "0";
+            string archiveChNum = m.Groups[2].Value;
+            return archiveVolNum == t.volumeNumber &&
+                   archiveChNum == t.chapterNumber;
+        });
     }
     /// <summary>
     /// Creates full file path of chapter-archive

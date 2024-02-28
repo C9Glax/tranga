@@ -12,10 +12,7 @@ public class Mangasee : MangaConnector
 {
     public Mangasee(GlobalBase clone) : base(clone, "Mangasee")
     {
-        this.downloadClient = new ChromiumDownloadClient(clone, new Dictionary<byte, int>()
-        {
-            { 1, 60 }
-        });
+        this.downloadClient = new ChromiumDownloadClient(clone);
     }
 
     private struct SearchResult
@@ -30,7 +27,7 @@ public class Mangasee : MangaConnector
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string requestUrl = "https://mangasee123.com/_search.php";
         RequestResult requestResult =
-            downloadClient.MakeRequest(requestUrl, 1);
+            downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
             Log($"Failed to retrieve search: {requestResult.statusCode}");
@@ -121,8 +118,8 @@ public class Mangasee : MangaConnector
         Regex publicationIdRex = new(@"https:\/\/mangasee123.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
 
-        RequestResult requestResult = this.downloadClient.MakeRequest(url, 1);
-        if(requestResult.htmlDocument is not null)
+        RequestResult requestResult = this.downloadClient.MakeRequest(url, RequestType.MangaInfo);
+        if((int)requestResult.statusCode < 300 && (int)requestResult.statusCode >= 200 && requestResult.htmlDocument is not null)
             return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
         return null;
     }
@@ -136,7 +133,7 @@ public class Mangasee : MangaConnector
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
         string posterUrl = posterNode.GetAttributeValue("src", "");
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, 1);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
@@ -194,13 +191,15 @@ public class Mangasee : MangaConnector
             XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.publicationId}.xml");
             XElement[] chapterItems = doc.Descendants("item").ToArray();
             List<Chapter> chapters = new();
+            Regex chVolRex = new(@".*chapter-([0-9\.]+)(?:-index-([0-9\.]+))?.*");
             foreach (XElement chapter in chapterItems)
             {
-                string volumeNumber = "1";
                 string url = chapter.Descendants("link").First().Value;
-                string chapterNumber = Regex.Match(url, @"-chapter-([0-9\.]+)").Groups[1].ToString();
+                Match m = chVolRex.Match(url);
+                string? volumeNumber = m.Groups[2].Success ? m.Groups[2].Value : "1";
+                string chapterNumber = m.Groups[1].Value;
 
-                url = url.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
+                url = string.Concat(Regex.Match(url, @"(.*)-page-[0-9]+(\.html)").Groups.Values.Select(v => v.Value));
                 chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, url));
             }
 
@@ -232,7 +231,7 @@ public class Mangasee : MangaConnector
 
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
-        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, 1);
+        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, RequestType.Default);
         if (requestResult.htmlDocument is null)
         {
             progressToken?.Cancel();
@@ -250,6 +249,6 @@ public class Mangasee : MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), 1, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
     }
 }

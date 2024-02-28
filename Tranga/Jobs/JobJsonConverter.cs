@@ -38,6 +38,9 @@ public class JobJsonConverter : JsonConverter
                 jo.GetValue("parentJobId")!.Value<string?>());
         }else if ((jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.DownloadNewChaptersJob) || jo.ContainsKey("translatedLanguage"))//TODO change to jobType
         {
+            DateTime lastExecution = jo.GetValue("lastExecution") is {} le 
+                ? le.ToObject<DateTime>()
+                : DateTime.UnixEpoch; //TODO do null checks on all variables
             return new DownloadNewChapters(this._clone,
                 jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
                 {
@@ -47,7 +50,7 @@ public class JobJsonConverter : JsonConverter
                     }
                 }))!,
                 jo.GetValue("manga")!.ToObject<Manga>(),
-                jo.GetValue("lastExecution")!.ToObject<DateTime>(),
+                lastExecution,
                 jo.GetValue("recurring")!.Value<bool>(),
                 jo.GetValue("recurrenceTime")!.ToObject<TimeSpan?>(),
                 jo.GetValue("parentJobId")!.Value<string?>());

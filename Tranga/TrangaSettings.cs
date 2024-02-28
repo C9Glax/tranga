@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
+using Tranga.MangaConnectors;
 using Tranga.NotificationConnectors;
 using static System.IO.UnixFileMode;
 
@@ -13,15 +14,26 @@ public class TrangaSettings
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
     public string styleSheet { get; private set; }
-
-    public string userAgent { get; set; } =
-        $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
+    public string userAgent { get; set; } = DefaultUserAgent;
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public string jobsFolderPath => Path.Join(workingDirectory, "jobs");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
-    public ushort? version { get; set; }
+    [JsonIgnore] internal static readonly string DefaultUserAgent = $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
+    public ushort? version { get; set; } = 1;
+    [JsonIgnore]internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
+    {
+        {RequestType.MangaInfo, 250},
+        {RequestType.MangaDexFeed, 250},
+        {RequestType.MangaDexImage, 40},
+        {RequestType.MangaImage, 60},
+        {RequestType.MangaCover, 250},
+        {RequestType.MangaDexAuthor, 250},
+        {RequestType.Default, 60}
+    };
+
+    public Dictionary<RequestType, int> requestLimits { get; set; } = DefaultRequestLimits;
 
     public TrangaSettings(string? downloadLocation = null, string? workingDirectory = null, int? apiPortNumber = null)
     {
