@@ -43,6 +43,7 @@ public class Logger : TextWriter
             throw new ArgumentException($"stdOut can not be null for LoggerType {LoggerType.ConsoleLogger}");
         }
         _memoryLogger = new MemoryLogger(encoding);
+        WriteLine(GetType().ToString(), $"Logfile: {logFilePath}");
     }
 
     public void WriteLine(string caller, string? value)
