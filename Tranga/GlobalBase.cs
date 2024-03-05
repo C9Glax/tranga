@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using Logging;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.NotificationConnectors;
@@ -36,16 +37,6 @@ public abstract class GlobalBase
         this.cachedPublications = new();
     }
 
-    protected void Log(string message)
-    {
-        logger?.WriteLine(this.GetType().Name, message);
-    }
-
-    protected void Log(string fStr, params object?[] replace)
-    {
-        Log(string.Format(fStr, replace));
-    }
-
     protected void SendNotifications(string title, string text)
     {
         foreach (NotificationConnector nc in notificationConnectors)
@@ -54,23 +45,23 @@ public abstract class GlobalBase
 
     protected void AddNotificationConnector(NotificationConnector notificationConnector)
     {
-        Log($"Adding {notificationConnector}");
+        logger?.LogInformation($"Adding {notificationConnector}");
         notificationConnectors.RemoveWhere(nc => nc.notificationConnectorType == notificationConnector.notificationConnectorType);
         notificationConnectors.Add(notificationConnector);
         
         while(IsFileInUse(settings.notificationConnectorsFilePath))
             Thread.Sleep(100);
-        Log("Exporting notificationConnectors");
+        logger?.LogDebug("Exporting notificationConnectors");
         File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
     protected void DeleteNotificationConnector(NotificationConnector.NotificationConnectorType notificationConnectorType)
     {
-        Log($"Removing {notificationConnectorType}");
+        logger?.LogInformation($"Removing {notificationConnectorType}");
         notificationConnectors.RemoveWhere(nc => nc.notificationConnectorType == notificationConnectorType);
         while(IsFileInUse(settings.notificationConnectorsFilePath))
             Thread.Sleep(100);
-        Log("Exporting notificationConnectors");
+        logger?.LogDebug("Exporting notificationConnectors");
         File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
@@ -82,29 +73,29 @@ public abstract class GlobalBase
 
     protected void AddLibraryConnector(LibraryConnector libraryConnector)
     {
-        Log($"Adding {libraryConnector}");
+        logger?.LogInformation($"Adding {libraryConnector}");
         libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryConnector.libraryType);
         libraryConnectors.Add(libraryConnector);
         
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
-        Log("Exporting libraryConnectors");
+        logger?.LogDebug("Exporting libraryConnectors");
         File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
     protected void DeleteLibraryConnector(LibraryConnector.LibraryType libraryType)
     {
-        Log($"Removing {libraryType}");
+        logger?.LogInformation($"Removing {libraryType}");
         libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryType);
         while(IsFileInUse(settings.libraryConnectorsFilePath))
             Thread.Sleep(100);
-        Log("Exporting libraryConnectors");
+        logger?.LogDebug("Exporting libraryConnectors");
         File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
     protected bool IsFileInUse(string filePath) => IsFileInUse(filePath, this.logger);
 
-    public static bool IsFileInUse(string filePath, Logger? logger)
+    public static bool IsFileInUse(string filePath, ILogger? logger)
     {
         if (!File.Exists(filePath))
             return false;
@@ -116,7 +107,7 @@ public abstract class GlobalBase
         }
         catch (IOException)
         {
-            logger?.WriteLine($"File is in use {filePath}");
+            logger?.LogDebug($"File is in use {filePath}");
             return true;
         }
     }

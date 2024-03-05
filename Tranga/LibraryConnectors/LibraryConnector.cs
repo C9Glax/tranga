@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Tranga.LibraryConnectors;
 
@@ -20,7 +21,7 @@ public abstract class LibraryConnector : GlobalBase
     
     protected LibraryConnector(GlobalBase clone, string baseUrl, string auth, LibraryType libraryType) : base(clone)
     {
-        Log($"Creating libraryConnector {Enum.GetName(libraryType)}");
+        logger?.LogInformation($"Creating libraryConnector {Enum.GetName(libraryType)}");
         if (!baseUrlRex.IsMatch(baseUrl))
             throw new ArgumentException("Base url does not match pattern");
         if(auth == "")
@@ -47,8 +48,7 @@ public abstract class LibraryConnector : GlobalBase
             {
 
                 HttpResponseMessage response = client.Send(requestMessage);
-                logger?.WriteLine("LibraryManager.NetClient",
-                    $"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
+                logger?.LogDebug($"GET {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
 
                 if (response.StatusCode is HttpStatusCode.Unauthorized &&
                     response.RequestMessage!.RequestUri!.AbsoluteUri != url)
@@ -63,7 +63,7 @@ public abstract class LibraryConnector : GlobalBase
                 switch (e)
                 {
                     case HttpRequestException:
-                        logger?.WriteLine("LibraryManager.NetClient", $"Failed to make Request:\n\r{e}\n\rContinuing.");
+                        logger?.LogError(e, $"Failed to make Request:\n\rContinuing.");
                         break;
                     default:
                         throw;
@@ -88,7 +88,7 @@ public abstract class LibraryConnector : GlobalBase
                 RequestUri = new Uri(url)
             };
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine("LibraryManager.NetClient", $"POST {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
+            logger?.LogDebug($"POST {url} -> {(int)response.StatusCode}: {response.ReasonPhrase}");
             
             if(response.StatusCode is HttpStatusCode.Unauthorized && response.RequestMessage!.RequestUri!.AbsoluteUri != url)
                 return MakePost(response.RequestMessage!.RequestUri!.AbsoluteUri, authScheme, auth, logger);

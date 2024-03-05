@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Tranga.NotificationConnectors;
@@ -26,7 +27,7 @@ public class Gotify : NotificationConnector
 
     public override void SendNotification(string title, string notificationText)
     {
-        Log($"Sending notification: {title} - {notificationText}");
+        logger?.LogInformation($"Sending notification: {title} - {notificationText}");
         MessageData message = new(title, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"{endpoint}/message");
         request.Headers.Add("X-Gotify-Key", this.appToken);
@@ -35,7 +36,7 @@ public class Gotify : NotificationConnector
         if (!response.IsSuccessStatusCode)
         {
             StreamReader sr = new (response.Content.ReadAsStream());
-            Log($"{response.StatusCode}: {sr.ReadToEnd()}");
+            logger?.LogDebug($"{response.StatusCode}: {sr.ReadToEnd()}");
         }
     }
 

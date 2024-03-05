@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Tranga.NotificationConnectors;
@@ -22,7 +23,7 @@ public class LunaSea : NotificationConnector
 
     public override void SendNotification(string title, string notificationText)
     {
-        Log($"Sending notification: {title} - {notificationText}");
+        logger?.LogInformation($"Sending notification: {title} - {notificationText}");
         MessageData message = new(title, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"https://notify.lunasea.app/v1/custom/{id}");
         request.Content = new StringContent(JsonConvert.SerializeObject(message, Formatting.None), Encoding.UTF8, "application/json");
@@ -30,7 +31,7 @@ public class LunaSea : NotificationConnector
         if (!response.IsSuccessStatusCode)
         {
             StreamReader sr = new (response.Content.ReadAsStream());
-            Log($"{response.StatusCode}: {sr.ReadToEnd()}");
+            logger?.LogDebug($"{response.StatusCode}: {sr.ReadToEnd()}");
         }
     }
 

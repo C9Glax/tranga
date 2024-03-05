@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Tranga.Jobs;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -14,7 +15,7 @@ public class MangaDex : MangaConnector
 
     public override Manga[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
+        logger?.LogInformation($"Searching Publications. Term=\"{publicationTitle}\"");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -46,13 +47,13 @@ public class MangaDex : MangaConnector
                 {
                     if(mangaNode is null)
                         continue;
-                    Log($"Getting publication data. {++loadedPublicationData}/{total}");
+                    logger?.LogDebug($"Getting publication data. {++loadedPublicationData}/{total}");
                     if(MangaFromJsonObject((JsonObject) mangaNode) is { } manga)
                         retManga.Add(manga); //Add Publication (Manga) to result
                 }
             }//else continue;
         }
-        Log($"Retrieved {retManga.Count} publications. Term=\"{publicationTitle}\"");
+        logger?.LogDebug($"Retrieved {retManga.Count} publications. Term=\"{publicationTitle}\"");
         return retManga.ToArray();
     }
 
@@ -72,7 +73,7 @@ public class MangaDex : MangaConnector
     {
         Regex idRex = new (@"https:\/\/mangadex.org\/title\/([A-z0-9-]*)\/.*");
         string id = idRex.Match(url).Groups[1].Value;
-        Log($"Got id {id} from {url}");
+        logger?.LogDebug($"Got id {id} from {url}");
         return GetMangaFromId(id);
     }
 
@@ -189,7 +190,7 @@ public class MangaDex : MangaConnector
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {manga}");
+        logger?.LogInformation($"Getting chapters {manga}");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -236,7 +237,7 @@ public class MangaDex : MangaConnector
         }
 
         //Return Chapters ordered by Chapter-Number
-        Log($"Got {chapters.Count} chapters. {manga}");
+        logger?.LogDebug($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
 
@@ -249,7 +250,7 @@ public class MangaDex : MangaConnector
         }
 
         Manga chapterParentManga = chapter.parentManga;
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
+        logger?.LogInformation($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
         RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", RequestType.MangaDexImage);
@@ -282,10 +283,10 @@ public class MangaDex : MangaConnector
 
     private string? GetCoverUrl(string publicationId, string? posterId)
     {
-        Log($"Getting CoverUrl for Publication {publicationId}");
+        logger?.LogInformation($"Getting CoverUrl for Publication {publicationId}");
         if (posterId is null)
         {
-            Log("No cover.");
+            logger?.LogError("No cover.");
             return null;
         }
         
@@ -301,13 +302,13 @@ public class MangaDex : MangaConnector
         string fileName = result["data"]!["attributes"]!["fileName"]!.GetValue<string>();
 
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
-        Log($"Cover-Url {publicationId} -> {coverUrl}");
+        logger?.LogDebug($"Cover-Url {publicationId} -> {coverUrl}");
         return coverUrl;
     }
 
     private List<string> GetAuthors(IEnumerable<string> authorIds)
     {
-        Log("Retrieving authors.");
+        logger?.LogInformation("Retrieving authors.");
         List<string> ret = new();
         foreach (string authorId in authorIds)
         {
@@ -321,7 +322,7 @@ public class MangaDex : MangaConnector
 
             string authorName = result["data"]!["attributes"]!["name"]!.GetValue<string>();
             ret.Add(authorName);
-            Log($"Got author {authorId} -> {authorName}");
+            logger?.LogDebug($"Got author {authorId} -> {authorName}");
         }
         return ret;
     }

@@ -1,4 +1,5 @@
-﻿using Tranga.MangaConnectors;
+﻿using Microsoft.Extensions.Logging;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
@@ -77,7 +78,7 @@ public abstract class Job : GlobalBase
 
     public void Cancel()
     {
-        Log($"Cancelling {this}");
+        logger?.LogInformation($"Cancelling {this}");
         this.progressToken.cancellationRequested = true;
         this.progressToken.Cancel();
         this.lastExecution = DateTime.Now;

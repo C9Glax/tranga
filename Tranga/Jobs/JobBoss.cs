@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Tranga.MangaConnectors;
 
@@ -14,18 +15,18 @@ public class JobBoss : GlobalBase
         this.jobs = new();
         LoadJobsList(connectors);
         this.mangaConnectorJobQueue = new();
-        Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
+        logger?.LogInformation($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
     }
 
     public void AddJob(Job job)
     {
         if (ContainsJobLike(job))
         {
-            Log($"Already Contains Job {job}");
+            logger?.LogError($"Already Contains Job {job}");
         }
         else
         {
-            Log($"Added {job}");
+            logger?.LogInformation($"Added {job}");
             this.jobs.Add(job);
             UpdateJobFile(job);
         }
@@ -48,7 +49,7 @@ public class JobBoss : GlobalBase
 
     public void RemoveJob(Job job)
     {
-        Log($"Removing {job}");
+        logger?.LogInformation($"Removing {job}");
         job.Cancel();
         this.jobs.Remove(job);
         if(job.subJobs is not null && job.subJobs.Any())
@@ -59,7 +60,7 @@ public class JobBoss : GlobalBase
     public void RemoveJobs(IEnumerable<Job?> jobsToRemove)
     {
         List<Job?> toRemove = jobsToRemove.ToList(); //Prevent multiple enumeration
-        Log($"Removing {toRemove.Count()} jobs.");
+        logger?.LogInformation($"Removing {toRemove.Count()} jobs.");
         foreach (Job? job in toRemove)
             if(job is not null)
                 RemoveJob(job);
@@ -126,7 +127,7 @@ public class JobBoss : GlobalBase
 
     public void AddJobToQueue(Job job)
     {
-        Log($"Adding Job to Queue. {job}");
+        logger?.LogInformation($"Adding Job to Queue. {job}");
         if(!QueueContainsJob(job))
             mangaConnectorJobQueue[job.mangaConnector].Enqueue(job);
         job.ExecutionEnqueue();
@@ -179,19 +180,19 @@ public class JobBoss : GlobalBase
         {
             try
             {
-                Log($"Deleting Job-file {jobFilePath}");
+                logger?.LogDebug($"Deleting Job-file {jobFilePath}");
                 while(IsFileInUse(jobFilePath))
                     Thread.Sleep(10);
                 File.Delete(jobFilePath);
             }
             catch (Exception e)
             {
-                Log(e.ToString());
+                logger?.LogError(e, "No jobfile");
             }
         }
         else
         {
-            Log($"Exporting Job {jobFilePath}");
+            logger?.LogDebug($"Exporting Job {jobFilePath}");
             string jobStr = JsonConvert.SerializeObject(job);
             while(IsFileInUse(jobFilePath))
                 Thread.Sleep(10);
@@ -201,7 +202,7 @@ public class JobBoss : GlobalBase
 
     private void UpdateAllJobFiles()
     {
-        Log("Exporting Jobs");
+        logger?.LogDebug("Exporting Jobs");
         foreach (Job job in this.jobs)
             UpdateJobFile(job);
 
@@ -220,7 +221,7 @@ public class JobBoss : GlobalBase
                     }
                     catch (Exception e)
                     {
-                        Log(e.ToString());
+                        logger?.LogError(e, "No jobfile");
                     }
                 }
             }
@@ -242,7 +243,7 @@ public class JobBoss : GlobalBase
                 else
                     queueHead.ResetProgress();
                 jobQueue.Dequeue();
-                Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
+                logger?.LogInformation($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
                 Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks(this).ToArray();
@@ -250,7 +251,7 @@ public class JobBoss : GlobalBase
                 AddJobsToQueue(subJobs);
             }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))
             {
-                Log($"{queueHead} inactive for more than 5 minutes. Cancelling.");
+                logger?.LogInformation($"{queueHead} inactive for more than 5 minutes. Cancelling.");
                 queueHead.Cancel();
             }
         }

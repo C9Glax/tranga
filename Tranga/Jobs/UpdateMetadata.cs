@@ -1,4 +1,5 @@
-﻿using Tranga.MangaConnectors;
+﻿using Microsoft.Extensions.Logging;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
@@ -39,7 +40,7 @@ public class UpdateMetadata : Job
         }
         else
         {
-            Log($"Could not find Manga {manga}");
+            logger?.LogError($"Could not find Manga {manga}");
             this.progressToken.Cancel();
             return Array.Empty<Job>();
         }

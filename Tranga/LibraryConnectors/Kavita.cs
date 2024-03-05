@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 using Logging;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -41,7 +42,7 @@ public class Kavita : LibraryConnector
         try
         {
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine($"Kavita | GetToken {requestMessage.RequestUri} -> {response.StatusCode}");
+            logger?.LogDebug($"GetToken {requestMessage.RequestUri} -> {response.StatusCode}");
             if (response.IsSuccessStatusCode)
             {
                 JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
@@ -50,20 +51,20 @@ public class Kavita : LibraryConnector
             }
             else
             {
-                logger?.WriteLine($"Kavita | {response.Content}");
+                logger?.LogDebug($"{response.Content}");
             }
         }
         catch (HttpRequestException e)
         {
-            logger?.WriteLine($"Kavita | Unable to retrieve token:\n\r{e}");
+            logger?.LogError(e, "Unable to retrieve token");
         }
-        logger?.WriteLine("Kavita | Did not receive token.");
+        logger?.LogDebug("Did not receive token.");
         return "";
     }
 
     public override void UpdateLibrary()
     {
-        Log("Updating libraries.");
+        logger?.LogInformation("Updating libraries.");
         foreach (KavitaLibrary lib in GetLibraries())
             NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger);
     }
@@ -74,17 +75,17 @@ public class Kavita : LibraryConnector
     /// <returns>Array of KavitaLibrary</returns>
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
-        Log("Getting libraries.");
+        logger?.LogDebug("Getting libraries.");
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library", "Bearer", auth, logger);
         if (data == Stream.Null)
         {
-            Log("No libraries returned");
+            logger?.LogDebug("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            Log("No libraries returned");
+            logger?.LogDebug("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
 

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -14,7 +15,7 @@ public class MangaLife : MangaConnector
 
     public override Manga[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
+        logger?.LogInformation($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
         string requestUrl = $"https://manga4life.com/search/?name={sanitizedTitle}";
         RequestResult requestResult =
@@ -25,7 +26,7 @@ public class MangaLife : MangaConnector
         if (requestResult.htmlDocument is null)
             return Array.Empty<Manga>();
         Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-        Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+        logger?.LogDebug($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
 
@@ -50,10 +51,10 @@ public class MangaLife : MangaConnector
         HtmlNode resultsNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']/div[last()]/div[1]/div");
         if (resultsNode.Descendants("div").Count() == 1 && resultsNode.Descendants("div").First().HasClass("NoResults"))
         {
-            Log("No results.");
+            logger?.LogError("No results.");
             return Array.Empty<Manga>();
         }
-        Log($"{resultsNode.SelectNodes("div").Count} items.");
+        logger?.LogDebug($"{resultsNode.SelectNodes("div").Count} items.");
 
         HashSet<Manga> ret = new();
 
@@ -129,7 +130,7 @@ public class MangaLife : MangaConnector
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {manga}");
+        logger?.LogDebug($"Getting chapters {manga}");
         RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.publicationId}", RequestType.Default, clickButton:"[class*='ShowAllChapters']");
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
@@ -155,7 +156,7 @@ public class MangaLife : MangaConnector
             chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
         }
         //Return Chapters ordered by Chapter-Number
-        Log($"Got {chapters.Count} chapters. {manga}");
+        logger?.LogInformation($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
 
@@ -174,7 +175,7 @@ public class MangaLife : MangaConnector
             return HttpStatusCode.RequestTimeout;
         }
 
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
+        logger?.LogInformation($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
         RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, RequestType.Default);
         if (requestResult.htmlDocument is null)

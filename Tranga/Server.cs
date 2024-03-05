@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Tranga.Jobs;
 using Tranga.LibraryConnectors;
@@ -39,7 +40,7 @@ public class Server : GlobalBase
     {
         this._listener.Start();
         foreach(string prefix in this._listener.Prefixes)
-            Log($"Listening on {prefix}");
+            logger?.LogInformation($"Listening on {prefix}");
         while (this._listener.IsListening && _parent.keepRunning)
         {
             try
@@ -716,7 +717,7 @@ public class Server : GlobalBase
             }
             catch (HttpListenerException e)
             {
-                Log(e.ToString());
+                logger.LogError(e.ToString());
             }
         }
         else if(content is FileStream stream)

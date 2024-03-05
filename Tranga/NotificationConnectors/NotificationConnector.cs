@@ -1,4 +1,6 @@
-﻿namespace Tranga.NotificationConnectors;
+﻿using Microsoft.Extensions.Logging;
+
+namespace Tranga.NotificationConnectors;
 
 public abstract class NotificationConnector : GlobalBase
 {
@@ -6,7 +8,7 @@ public abstract class NotificationConnector : GlobalBase
 
     protected NotificationConnector(GlobalBase clone, NotificationConnectorType notificationConnectorType) : base(clone)
     {
-        Log($"Creating notificationConnector {Enum.GetName(notificationConnectorType)}");
+        logger?.LogInformation($"Creating notificationConnector {Enum.GetName(notificationConnectorType)}");
         this.notificationConnectorType = notificationConnectorType;
     }
     

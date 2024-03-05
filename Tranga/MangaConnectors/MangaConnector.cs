@@ -2,6 +2,7 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Tranga.Jobs;
 using static System.IO.UnixFileMode;
 
@@ -57,16 +58,16 @@ public abstract class MangaConnector : GlobalBase
     /// <returns>List of Chapters that were previously not in collection</returns>
     public Chapter[] GetNewChapters(Manga manga, string language = "en")
     {
-        Log($"Getting new Chapters for {manga}");
+        logger?.LogInformation($"Getting new Chapters for {manga}");
         Chapter[] allChapters = this.GetChapters(manga, language);
         if (allChapters.Length < 1)
             return Array.Empty<Chapter>();
         
-        Log($"Checking for duplicates {manga}");
+        logger?.LogDebug($"Checking for duplicates {manga}");
         List<Chapter> newChaptersList = allChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
                                                                       && chapterNumber > manga.ignoreChaptersBelow
                                                                       && !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
-        Log($"{newChaptersList.Count} new chapters. {manga}");
+        logger?.LogInformation($"{newChaptersList.Count} new chapters. {manga}");
         try
         {
             Chapter latestChapterAvailable =
@@ -76,8 +77,7 @@ public abstract class MangaConnector : GlobalBase
         }
         catch (Exception e)
         {
-            Log(e.ToString());
-            Log($"Failed getting new Chapters for {manga}");
+            logger?.LogError(e , $"Failed getting new Chapters for {manga}");
         }
         
         return newChaptersList.ToArray();
@@ -165,23 +165,23 @@ public abstract class MangaConnector : GlobalBase
     /// <param name="retries">Number of times to retry to copy the cover (or download it first)</param>
     public void CopyCoverFromCacheToDownloadLocation(Manga manga, int? retries = 1)
     {
-        Log($"Copy cover {manga}");
+        logger?.LogDebug($"Copy cover {manga}");
         //Check if Publication already has a Folder and cover
         string publicationFolder = manga.CreatePublicationFolder(settings.downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
-            Log($"Cover exists {manga}");
+            logger?.LogDebug($"Cover exists {manga}");
             return;
         }
 
         string fileInCache = Path.Join(settings.coverImageCache, manga.coverFileNameInCache);
         if (!File.Exists(fileInCache))
         {
-            Log($"Cloning cover failed: File missing {fileInCache}.");
+            logger?.LogError($"Cloning cover failed: File missing {fileInCache}.");
             if (retries > 0 && manga.coverUrl is not null)
             {
-                Log($"Trying {retries} more times");
+                logger?.LogError($"Trying {retries} more times");
                 SaveCoverImageToCache(manga.coverUrl, 0);
                 CopyCoverFromCacheToDownloadLocation(manga, --retries);
             }
@@ -189,7 +189,7 @@ public abstract class MangaConnector : GlobalBase
             return;
         }
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
-        Log($"Cloning cover {fileInCache} -> {newFilePath}");
+        logger?.LogDebug($"Cloning cover {fileInCache} -> {newFilePath}");
         File.Copy(fileInCache, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite);
@@ -221,7 +221,7 @@ public abstract class MangaConnector : GlobalBase
     {
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
-        Log($"Downloading Images for {saveArchiveFilePath}");
+        logger?.LogInformation($"Downloading Images for {saveArchiveFilePath}");
         if(progressToken is not null)
             progressToken.increments = imageUrls.Length;
         //Check if Publication Directory already exists
@@ -244,9 +244,9 @@ public abstract class MangaConnector : GlobalBase
         foreach (string imageUrl in imageUrls)
         {
             string extension = imageUrl.Split('.')[^1].Split('?')[0];
-            Log($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
+            logger?.LogDebug($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
             HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
-            Log($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
+            logger?.LogDebug($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
             if ((int)status < 200 || (int)status >= 300)
             {
                 progressToken?.Complete();
@@ -263,7 +263,7 @@ public abstract class MangaConnector : GlobalBase
         if(comicInfoPath is not null)
             File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
         
-        Log($"Creating archive {saveArchiveFilePath}");
+        logger?.LogInformation($"Creating archive {saveArchiveFilePath}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -287,7 +287,7 @@ public abstract class MangaConnector : GlobalBase
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
-        Log($"Saving cover to {saveImagePath}");
+        logger?.LogDebug($"Saving cover to {saveImagePath}");
         return filename;
     }
 }
