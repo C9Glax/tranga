@@ -241,6 +241,15 @@ public abstract class MangaConnector : GlobalBase
 
         int chapter = 0;
         //Download all Images to temporary Folder
+        if (imageUrls.Length == 0)
+        {
+            Log("No images found");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute);
+            Directory.Delete(tempFolder, true);
+            progressToken?.Complete();
+            return HttpStatusCode.NoContent;
+        }
         foreach (string imageUrl in imageUrls)
         {
             string extension = imageUrl.Split('.')[^1].Split('?')[0];
