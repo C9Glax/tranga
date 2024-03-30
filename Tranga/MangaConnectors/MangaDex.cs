@@ -252,7 +252,7 @@ public class MangaDex : MangaConnector
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", RequestType.MangaDexImage);
+            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false", RequestType.MangaDexImage);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
             progressToken?.Cancel();
