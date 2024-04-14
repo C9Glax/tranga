@@ -164,7 +164,7 @@ public class JobBoss : GlobalBase
         }
 
         HashSet<string> coverFileNames = cachedPublications.Select(manga => manga.coverFileNameInCache!).ToHashSet();
-        foreach (string fileName in Directory.GetFiles(settings.coverImageCache))
+        foreach (string fileName in Directory.GetFiles(settings.coverImageCache)) //Cleanup Unused Covers
         {
             if(!coverFileNames.Any(existingManga => fileName.Contains(existingManga)))
                 File.Delete(fileName);
