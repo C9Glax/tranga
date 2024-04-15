@@ -400,7 +400,7 @@ public class Server : GlobalBase
             case "Settings/UpdateDownloadLocation":
                 if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
                     !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
-                    !Boolean.TryParse(moveFilesStr, out bool moveFiles))
+                    !bool.TryParse(moveFilesStr, out bool moveFiles))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;

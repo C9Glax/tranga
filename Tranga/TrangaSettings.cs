@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.MangaConnectors;
