@@ -73,10 +73,23 @@ public partial class Tranga : GlobalBase
         {
             while (keepRunning)
             {
-                jobBoss.CheckJobs();
+                if(!settings.aprilFoolsMode & !IsAprilFirst())
+                    jobBoss.CheckJobs();
+                else
+                    Log("April Fools Mode in Effect");
                 Thread.Sleep(100);
             }
         });
         t.Start();
+    }
+
+    private bool IsAprilFirst()
+    {
+        //UTC 01 Apr +-12hrs
+        DateTime start = new DateTime(DateTime.Now.Year, 03, 31, 12, 0, 0, DateTimeKind.Utc);
+        DateTime end = new DateTime(DateTime.Now.Year, 04, 02, 12, 0, 0, DateTimeKind.Utc);
+        if (DateTime.UtcNow > start && DateTime.UtcNow < end)
+            return true;
+        return false;
     }
 }
