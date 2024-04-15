@@ -206,6 +206,9 @@ public class Server : GlobalBase
             case "Settings/customRequestLimit":
                 SendResponse(HttpStatusCode.OK, response, settings.requestLimits);
                 break;
+            case "Settings/AprilFoolsMode":
+                SendResponse(HttpStatusCode.OK, response, settings.aprilFoolsMode);
+                break;
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
@@ -397,12 +400,22 @@ public class Server : GlobalBase
             case "Settings/UpdateDownloadLocation":
                 if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
                     !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
-                    !Boolean.TryParse(moveFilesStr, out bool moveFiles))
+                    !bool.TryParse(moveFilesStr, out bool moveFiles))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
                 settings.UpdateDownloadLocation(downloadLocation, moveFiles);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "Settings/AprilFoolsMode":
+                if (!requestVariables.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
+                    bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                settings.UpdateAprilFoolsMode(aprilFoolsModeEnabled);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             /*case "Settings/UpdateWorkingDirectory":

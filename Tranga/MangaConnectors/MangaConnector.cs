@@ -237,7 +237,7 @@ public abstract class MangaConnector : GlobalBase
             return HttpStatusCode.Created;
         
         //Create a temporary folder to store images
-        string tempFolder = Directory.CreateTempSubdirectory().FullName;
+        string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
 
         int chapter = 0;
         //Download all Images to temporary Folder
@@ -260,8 +260,10 @@ public abstract class MangaConnector : GlobalBase
             progressToken?.Increment();
         }
         
-        if(comicInfoPath is not null)
+        if(comicInfoPath is not null){
             File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
+            File.Delete(comicInfoPath); //Delete tmp-file
+        }
         
         Log($"Creating archive {saveArchiveFilePath}");
         //ZIP-it and ship-it

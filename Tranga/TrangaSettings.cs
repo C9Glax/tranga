@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.MangaConnectors;
@@ -13,14 +12,15 @@ public class TrangaSettings
     public string downloadLocation { get; private set; }
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
-    public string userAgent { get; set; } = DefaultUserAgent;
+    public string userAgent { get; private set; } = DefaultUserAgent;
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public string jobsFolderPath => Path.Join(workingDirectory, "jobs");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     [JsonIgnore] internal static readonly string DefaultUserAgent = $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
-    public ushort? version { get; set; } = 1;
+    public ushort? version { get; } = 1;
+    public bool aprilFoolsMode { get; private set; } = true;
     [JsonIgnore]internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
         {RequestType.MangaInfo, 250},
@@ -100,6 +100,12 @@ public class TrangaSettings
                     new NotificationManagerJsonConverter(clone)
                 }
             })!;
+    }
+
+    public void UpdateAprilFoolsMode(bool enabled)
+    {
+        this.aprilFoolsMode = enabled;
+        ExportSettings();
     }
 
     public void UpdateDownloadLocation(string newPath, bool moveFiles = true)

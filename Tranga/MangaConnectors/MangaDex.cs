@@ -216,6 +216,7 @@ public class MangaDex : MangaConnector
             {
                 JsonObject chapter = (JsonObject)jsonNode!;
                 JsonObject attributes = chapter["attributes"]!.AsObject();
+                
                 string chapterId = chapter["id"]!.GetValue<string>();
                 
                 string? title = attributes.ContainsKey("title") && attributes["title"] is not null
@@ -229,6 +230,14 @@ public class MangaDex : MangaConnector
                 string chapterNum = attributes.ContainsKey("chapter") && attributes["chapter"] is not null
                     ? attributes["chapter"]!.GetValue<string>()
                     : "null";
+                
+                
+                if (attributes.ContainsKey("pages") && attributes["pages"] is not null &&
+                    attributes["pages"]!.GetValue<int>() < 1)
+                {
+                    Log($"Skipping {chapterId} Vol.{volume} Ch.{chapterNum} {title} because it has no pages or is externally linked.");
+                    continue;
+                }
                 
                 if(chapterNum is not "null")
                     chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId));
@@ -252,7 +261,7 @@ public class MangaDex : MangaConnector
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false'", RequestType.MangaDexImage);
+            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false", RequestType.MangaDexImage);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
             progressToken?.Cancel();

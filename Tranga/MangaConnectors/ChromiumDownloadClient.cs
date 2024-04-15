@@ -2,6 +2,7 @@
 using System.Text;
 using HtmlAgilityPack;
 using PuppeteerSharp;
+using PuppeteerSharp.Input;
 
 namespace Tranga.MangaConnectors;
 
@@ -81,7 +82,7 @@ internal class ChromiumDownloadClient : DownloadClient
         {
             if (content.Contains("text/html"))
             {
-                if(clickButton is not null)
+                if (clickButton is not null && page.QuerySelectorAsync(clickButton).Result is not null)
                     page.ClickAsync(clickButton).Wait();
                 string htmlString = page.GetContentAsync().Result;
                 stream = new MemoryStream(Encoding.Default.GetBytes(htmlString));
