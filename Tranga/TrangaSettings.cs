@@ -13,7 +13,7 @@ public class TrangaSettings
     public string downloadLocation { get; private set; }
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
-    public string userAgent { get; set; } = DefaultUserAgent;
+    public string userAgent { get; private set; } = DefaultUserAgent;
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
