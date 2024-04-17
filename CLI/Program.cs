@@ -44,8 +44,8 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
         if(settings.fileLogger is true)
             enabledLoggers.Add(Logger.LoggerType.FileLogger);
         
-        string? logFilePath = settings.fileLoggerPath ?? "";
-        Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, logFilePath);
+        string? logFolderPath = settings.fileLoggerPath ?? "";
+        Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, logFolderPath);
         
         TrangaSettings? trangaSettings = null;
 
