@@ -731,6 +731,9 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             default:
+                Log("Invalid Request:");
+                Log(request.Url!.Query);
+                Log(requestParams);
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;
         }
