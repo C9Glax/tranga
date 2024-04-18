@@ -111,7 +111,7 @@ public class MangaDex : MangaConnector
         string description = descriptionNode!.AsObject().ContainsKey("en") switch
         {
             true => descriptionNode.AsObject()["en"]!.GetValue<string>(),
-            false => descriptionNode.AsObject().First().Value!.GetValue<string>()
+            false => descriptionNode.AsObject().FirstOrDefault().Value?.GetValue<string>() ?? ""
         };
 
         Dictionary<string, string> linksDict = new();
@@ -122,14 +122,14 @@ public class MangaDex : MangaConnector
         string? originalLanguage =
             attributes.TryGetPropertyValue("originalLanguage", out JsonNode? originalLanguageNode) switch
             {
-                true => originalLanguageNode!.GetValue<string>(),
+                true => originalLanguageNode?.GetValue<string>(),
                 false => null
             };
         
         Manga.ReleaseStatusByte status = Manga.ReleaseStatusByte.Unreleased;
         if (attributes.TryGetPropertyValue("status", out JsonNode? statusNode))
         {
-            status = statusNode!.GetValue<string>().ToLower() switch
+            status = statusNode?.GetValue<string>().ToLower() switch
             {
                 "ongoing" => Manga.ReleaseStatusByte.Continuing,
                 "completed" => Manga.ReleaseStatusByte.Completed,
@@ -141,7 +141,7 @@ public class MangaDex : MangaConnector
 
         int? year = attributes.TryGetPropertyValue("year", out JsonNode? yearNode) switch
         {
-            true => yearNode!.GetValue<int>(),
+            true => yearNode?.GetValue<int>(),
             false => null
         };
         
