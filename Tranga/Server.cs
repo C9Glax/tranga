@@ -431,7 +431,7 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/AprilFoolsMode":
-                if (!requestVariables.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
+                if (!requestParams.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
                     bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
