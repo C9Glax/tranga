@@ -77,7 +77,7 @@ public partial class Tranga : GlobalBase
                 if(!settings.aprilFoolsMode || !IsAprilFirst())
                     jobBoss.CheckJobs();
                 else
-                    Log("April Fools Mode in Effect");
+                    logger?.LogInformation("April Fools Mode in Effect");
                 Thread.Sleep(100);
             }
         });
