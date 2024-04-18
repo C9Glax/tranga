@@ -733,7 +733,10 @@ public class Server : GlobalBase
             default:
                 Log("Invalid Request:");
                 Log(request.Url!.Query);
-                Log(requestParams);
+                foreach (KeyValuePair<string, string> kvp in requestParams)
+                {
+                    Log("Request variable = {0}, Variable Value = {1}", kvp.Key, kvp.Value);
+                }
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;
         }
