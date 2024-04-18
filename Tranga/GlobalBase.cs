@@ -12,7 +12,7 @@ public abstract class GlobalBase
 {
     [JsonIgnore]
     public Logger? logger { get; init; }
-    protected TrangaSettings settings { get; init; }
+    internal TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
     protected List<Manga> cachedPublications { get; init; }
@@ -37,7 +37,7 @@ public abstract class GlobalBase
         this.cachedPublications = new();
     }
 
-    protected void SendNotifications(string title, string text)
+    internal void SendNotifications(string title, string text)
     {
         foreach (NotificationConnector nc in notificationConnectors)
             nc.SendNotification(title, text);

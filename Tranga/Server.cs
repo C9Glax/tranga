@@ -240,37 +240,16 @@ public class Server : GlobalBase
             case "Ping":
                 SendResponse(HttpStatusCode.OK, response, "Pong");
                 break;
-            case "LogMessages":
-                if (logger is null || !File.Exists(logger?.logFilePath))
-                {
-                    SendResponse(HttpStatusCode.NotFound, response);
-                    break;
-                }
-
-                if (requestVariables.TryGetValue("count", out string? count))
-                {
-                    try
-                    {
-                        uint messageCount = uint.Parse(count);
-                        SendResponse(HttpStatusCode.OK, response, logger.Tail(messageCount));
-                    }
-                    catch (FormatException f)
-                    {
-                        SendResponse(HttpStatusCode.InternalServerError, response, f);
-                    }
-                }else
-                    SendResponse(HttpStatusCode.OK, response, logger.GetLog());
-                break;
             case "LogFile":
-                if (logger is null || !File.Exists(logger?.logFilePath))
+                if (logger is null || !File.Exists(logger?.LogFilePath))
                 {
                     SendResponse(HttpStatusCode.NotFound, response);
                     break;
                 }
 
-                string logDir = new FileInfo(logger.logFilePath).DirectoryName!;
+                string logDir = new FileInfo(logger.LogFilePath).DirectoryName!;
                 string tmpFilePath = Path.Join(logDir, "Tranga.log");
-                File.Copy(logger.logFilePath, tmpFilePath);
+                File.Copy(logger.LogFilePath, tmpFilePath);
                 SendResponse(HttpStatusCode.OK, response, new FileStream(tmpFilePath, FileMode.Open));
                 File.Delete(tmpFilePath);
                 break;

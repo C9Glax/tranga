@@ -124,7 +124,7 @@ public class Bato : MangaConnector
 
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
-		Log($"Getting chapters {manga}");
+		logger?.LogInformation($"Getting chapters {manga}");
 		string requestUrl = $"https://bato.to/title/{manga.publicationId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =

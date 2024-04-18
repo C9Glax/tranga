@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Nodes;
-using Logging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -24,7 +23,7 @@ public class Kavita : LibraryConnector
         return $"Kavita {baseUrl}";
     }
 
-    private static string GetToken(string baseUrl, string username, string password, Logger? logger = null)
+    private static string GetToken(string baseUrl, string username, string password, ILogger? logger = null)
     {
         HttpClient client = new()
         {
