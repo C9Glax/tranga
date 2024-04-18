@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using JobQueue;
+using Microsoft.Extensions.Logging;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -15,7 +16,7 @@ public class MangaKatana : MangaConnector
 
 	public override Manga[] GetManga(string publicationTitle = "")
 	{
-		Log($"Searching Publications. Term=\"{publicationTitle}\"");
+		logger?.LogInformation($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		RequestResult requestResult =
@@ -33,7 +34,7 @@ public class MangaKatana : MangaConnector
 		}
 
 		Manga[] publications = ParsePublicationsFromHtml(requestResult.result);
-		Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+		logger?.LogDebug($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
 		return publications;
 	}
 
@@ -152,7 +153,7 @@ public class MangaKatana : MangaConnector
 
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
-		Log($"Getting chapters {manga}");
+		logger?.LogDebug($"Getting chapters {manga}");
 		string requestUrl = $"https://mangakatana.com/manga/{manga.publicationId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
@@ -162,7 +163,7 @@ public class MangaKatana : MangaConnector
 
 		//Return Chapters ordered by Chapter-Number
 		List<Chapter> chapters = ParseChaptersFromHtml(manga, requestUrl);
-		Log($"Got {chapters.Count} chapters. {manga}");
+		logger?.LogInformation($"Got {chapters.Count} chapters. {manga}");
 		return chapters.Order().ToArray();
 	}
 
@@ -204,7 +205,7 @@ public class MangaKatana : MangaConnector
 		}
 
 		Manga chapterParentManga = chapter.parentManga;
-		Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
+		logger?.LogInformation($"Retrieving chapter-info {chapter} {chapterParentManga}");
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		RequestResult requestResult =

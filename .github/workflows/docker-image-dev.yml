@@ -1,8 +1,10 @@
 name: Docker Image CI
 
 on:
+  push:
+    branches: [ "dev" ]
   workflow_dispatch:
-    
+
 jobs:
 
   build:
@@ -30,14 +32,14 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       # https://github.com/docker/build-push-action#multi-platform-image
-      - name: Build and push base
+      - name: Build and push API
         uses: docker/build-push-action@v4.1.1
         with:
           context: ./
-          file: ./Dockerfile-base
+          file: ./Dockerfile
           #platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/arm/v7,linux/arm/v6
           platforms: linux/amd64
           pull: true
           push: true
           tags: |
-            glax/tranga-base:latest
+            glax/tranga-api:dev

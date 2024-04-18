@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using JobQueue;
 using Microsoft.Extensions.Logging;
 using Tranga.MangaConnectors;
@@ -36,7 +36,7 @@ public class UpdateMetadata : Job
         }
         else
         {
-            this.GlobalBase.Log($"Could not find Manga {manga}");
+            logger?.LogError($"Could not find Manga {manga}");
             this.ProgressToken.MarkFailed();
         }
         this.ProgressToken.Cancel();

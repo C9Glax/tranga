@@ -41,7 +41,7 @@ public class Server : GlobalBase
     {
         this._listener.Start();
         foreach(string prefix in this._listener.Prefixes)
-            Log($"Listening on {prefix}");
+            logger?.LogInformation($"Listening on {prefix}");
         while (this._listener.IsListening && _parent.keepRunning)
         {
             try
@@ -217,6 +217,12 @@ public class Server : GlobalBase
             case "Settings/userAgent":
                 SendResponse(HttpStatusCode.OK, response, settings.userAgent);
                 break;
+            case "Settings/customRequestLimit":
+                SendResponse(HttpStatusCode.OK, response, settings.requestLimits);
+                break;
+            case "Settings/AprilFoolsMode":
+                SendResponse(HttpStatusCode.OK, response, settings.aprilFoolsMode);
+                break;
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
                 break;
@@ -234,6 +240,40 @@ public class Server : GlobalBase
             case "Ping":
                 SendResponse(HttpStatusCode.OK, response, "Pong");
                 break;
+            case "LogMessages":
+                if (logger is null || !File.Exists(logger?.logFilePath))
+                {
+                    SendResponse(HttpStatusCode.NotFound, response);
+                    break;
+                }
+
+                if (requestVariables.TryGetValue("count", out string? count))
+                {
+                    try
+                    {
+                        uint messageCount = uint.Parse(count);
+                        SendResponse(HttpStatusCode.OK, response, logger.Tail(messageCount));
+                    }
+                    catch (FormatException f)
+                    {
+                        SendResponse(HttpStatusCode.InternalServerError, response, f);
+                    }
+                }else
+                    SendResponse(HttpStatusCode.OK, response, logger.GetLog());
+                break;
+            case "LogFile":
+                if (logger is null || !File.Exists(logger?.logFilePath))
+                {
+                    SendResponse(HttpStatusCode.NotFound, response);
+                    break;
+                }
+
+                string logDir = new FileInfo(logger.logFilePath).DirectoryName!;
+                string tmpFilePath = Path.Join(logDir, "Tranga.log");
+                File.Copy(logger.logFilePath, tmpFilePath);
+                SendResponse(HttpStatusCode.OK, response, new FileStream(tmpFilePath, FileMode.Open));
+                File.Delete(tmpFilePath);
+                break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;
@@ -243,11 +283,13 @@ public class Server : GlobalBase
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId, jobId, chapterNumStr, customFolderName, translatedLanguage;
+        string? connectorName, internalId, jobId, chapterNumStr, customFolderName, translatedLanguage, notificationConnectorStr, libraryConnectorStr;
         MangaConnector? connector;
         Manga? tmpManga;
         Manga manga;
         Job<MangaConnector>? job;
+        NotificationConnector.NotificationConnectorType notificationConnectorType;
+        LibraryConnector.LibraryType libraryConnectorType;
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
         switch (path)
         {
@@ -374,7 +416,7 @@ public class Server : GlobalBase
             case "Settings/UpdateDownloadLocation":
                 if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
                     !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
-                    !Boolean.TryParse(moveFilesStr, out bool moveFiles))
+                    !bool.TryParse(moveFilesStr, out bool moveFiles))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -382,17 +424,15 @@ public class Server : GlobalBase
                 settings.UpdateDownloadLocation(downloadLocation, moveFiles);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
-            case "Settings/ChangeStyleSheet":
-                if (!requestVariables.TryGetValue("styleSheet", out string? styleSheet))
+            case "Settings/AprilFoolsMode":
+                if (!requestVariables.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
+                    bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-
-                if (settings.UpdateStyleSheet(styleSheet))
-                    SendResponse(HttpStatusCode.Accepted, response);
-                else
-                    SendResponse(HttpStatusCode.BadRequest, response, "Invalid parameter for styleSheet");
+                settings.UpdateAprilFoolsMode(aprilFoolsModeEnabled);
+                SendResponse(HttpStatusCode.Accepted, response);
                 break;
             /*case "Settings/UpdateWorkingDirectory":
                 if (!requestVariables.TryGetValue("workingDirectory", out string? workingDirectory))
@@ -412,6 +452,10 @@ public class Server : GlobalBase
                 settings.UpdateUserAgent(customUserAgent);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
+            case "Settings/userAgent/Reset":
+                settings.UpdateUserAgent(null);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "Settings/customRequestLimit":
                 if (!requestVariables.TryGetValue("requestType", out string? requestTypeStr) ||
                     !requestVariables.TryGetValue("requestsPerMinute", out string? requestsPerMinuteStr) ||
@@ -428,10 +472,15 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.Accepted, response);
                 }else
                     SendResponse(HttpStatusCode.BadRequest, response);
+                settings.ExportSettings();
+                break;
+            case "Settings/customRequestLimit/Reset":
+                settings.requestLimits = TrangaSettings.DefaultRequestLimits;
+                settings.ExportSettings();
                 break;
             case "NotificationConnectors/Update":
-                if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationConnectorType notificationConnectorType))
+                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -472,9 +521,64 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                 }
                 break;
+            case "NotificationConnectors/Test":
+                NotificationConnector notificationConnector;
+                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+
+                if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
+                {
+                    if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
+                        !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    notificationConnector = new Gotify(this, gotifyUrl, gotifyAppToken);
+                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
+                {
+                    if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    notificationConnector = new LunaSea(this, lunaseaWebhook);
+                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
+                {
+                    if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
+                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    notificationConnector = new Ntfy(this, ntfyUrl, ntfyAuth);
+                }
+                else
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                
+                notificationConnector.SendNotification("Tranga Test", "This is Test-Notification.");
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "NotificationConnectors/Reset":
+                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                DeleteNotificationConnector(notificationConnectorType);
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
             case "LibraryConnectors/Update":
-                if (!requestVariables.TryGetValue("libraryConnector", out string? libraryConnectorStr) ||
-                    !Enum.TryParse(libraryConnectorStr, out LibraryConnector.LibraryType libraryConnectorType))
+                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -507,18 +611,52 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                 }
                 break;
-            case "LogFile":
-                if (logger is null || !File.Exists(logger.LogFilePath))
+            case "LibraryConnectors/Test":
+                LibraryConnector libraryConnector;
+                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
                 {
-                    SendResponse(HttpStatusCode.NotFound, response);
+                    SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
 
-                string logDir = new FileInfo(logger.LogFilePath).DirectoryName!;
-                string tmpFilePath = Path.Join(logDir, "Tranga.log");
-                File.Copy(logger.LogFilePath, tmpFilePath);
-                SendResponse(HttpStatusCode.OK, response, new FileStream(tmpFilePath, FileMode.Open));
-                File.Delete(tmpFilePath);
+                if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
+                {
+                    if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
+                        !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
+                        !requestVariables.TryGetValue("kavitaPassword", out string? kavitaPassword))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    libraryConnector = new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword);
+                }else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
+                {
+                    if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
+                        !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response);
+                        break;
+                    }
+                    libraryConnector = new Komga(this, komgaUrl, komgaAuth);
+                }
+                else
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                libraryConnector.UpdateLibrary();
+                SendResponse(HttpStatusCode.Accepted, response);
+                break;
+            case "LibraryConnectors/Reset":
+                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                DeleteLibraryConnector(libraryConnectorType);
+                SendResponse(HttpStatusCode.Accepted, response);
                 break;
             default:
                 SendResponse(HttpStatusCode.BadRequest, response);
@@ -593,7 +731,7 @@ public class Server : GlobalBase
             }
             catch (HttpListenerException e)
             {
-                Log(e.ToString());
+                logger.LogError(e.ToString());
             }
         }
         else if(content is FileStream stream)

@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Nodes;
+using Logging;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -8,7 +10,7 @@ public class Kavita : LibraryConnector
 {
 
     public Kavita(GlobalBase clone, string baseUrl, string username, string password) : 
-        base(clone, baseUrl, GetToken(baseUrl, username, password), LibraryType.Kavita)
+        base(clone, baseUrl, GetToken(baseUrl, username, password, clone.logger), LibraryType.Kavita)
     {
     }
     
@@ -22,7 +24,7 @@ public class Kavita : LibraryConnector
         return $"Kavita {baseUrl}";
     }
 
-    private static string GetToken(string baseUrl, string username, string password)
+    private static string GetToken(string baseUrl, string username, string password, Logger? logger = null)
     {
         HttpClient client = new()
         {
@@ -40,21 +42,29 @@ public class Kavita : LibraryConnector
         try
         {
             HttpResponseMessage response = client.Send(requestMessage);
-            JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
-            if (result is not null)
-                return result["token"]!.GetValue<string>();
+            logger?.LogDebug($"GetToken {requestMessage.RequestUri} -> {response.StatusCode}");
+            if (response.IsSuccessStatusCode)
+            {
+                JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
+                if (result is not null)
+                    return result["token"]!.GetValue<string>();
+            }
+            else
+            {
+                logger?.LogDebug($"{response.Content}");
+            }
         }
         catch (HttpRequestException e)
         {
-            Console.WriteLine($"Unable to retrieve token:\n\r{e}");
+            logger?.LogError(e, "Unable to retrieve token");
         }
-        Console.WriteLine("Kavita: Did not receive token.");
-        throw new Exception("Kavita: Did not receive token.");
+        logger?.LogDebug("Did not receive token.");
+        return "";
     }
 
     public override void UpdateLibrary()
     {
-        Log("Updating libraries.");
+        logger?.LogInformation("Updating libraries.");
         foreach (KavitaLibrary lib in GetLibraries())
             NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger);
     }
@@ -65,17 +75,17 @@ public class Kavita : LibraryConnector
     /// <returns>Array of KavitaLibrary</returns>
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
-        Log("Getting libraries.");
+        logger?.LogDebug("Getting libraries.");
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library", "Bearer", auth, logger);
         if (data == Stream.Null)
         {
-            Log("No libraries returned");
+            logger?.LogDebug("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            Log("No libraries returned");
+            logger?.LogDebug("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
 

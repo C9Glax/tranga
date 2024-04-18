@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
 using JobQueue;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Tranga.Jobs;
 
@@ -25,13 +26,13 @@ public class Mangasee : MangaConnector
 
     public override Manga[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
+        logger?.LogInformation($"Searching Publications. Term=\"{publicationTitle}\"");
         string requestUrl = "https://mangasee123.com/_search.php";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
-            Log($"Failed to retrieve search: {requestResult.statusCode}");
+            logger?.LogError($"Failed to retrieve search: {requestResult.statusCode}");
             return Array.Empty<Manga>();
         }
         
@@ -40,7 +41,7 @@ public class Mangasee : MangaConnector
             SearchResult[] searchResults = JsonConvert.DeserializeObject<SearchResult[]>(requestResult.htmlDocument!.DocumentNode.InnerText) ??
                                            throw new NoNullAllowedException();
             SearchResult[] filteredResults = FilteredResults(publicationTitle, searchResults);
-            Log($"Total available manga: {searchResults.Length} Filtered down to: {filteredResults.Length}");
+            logger?.LogInformation($"Total available manga: {searchResults.Length} Filtered down to: {filteredResults.Length}");
             
             /*
             Dictionary<SearchResult, int> levenshteinRelation = filteredResults.ToDictionary(result => result,
@@ -59,12 +60,12 @@ public class Mangasee : MangaConnector
                 if(newManga is { } manga)
                     searchResultManga.Add(manga);
             }
-            Log($"Retrieved {searchResultManga.Count} publications. Term=\"{publicationTitle}\"");
+            logger?.LogInformation($"Retrieved {searchResultManga.Count} publications. Term=\"{publicationTitle}\"");
             return searchResultManga.ToArray();
         }
         catch (NoNullAllowedException)
         {
-            Log("Failed to retrieve search");
+            logger?.LogError("Failed to retrieve search");
             return Array.Empty<Manga>();
         }
     }
@@ -186,7 +187,7 @@ public class Mangasee : MangaConnector
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {manga}");
+        logger?.LogDebug($"Getting chapters {manga}");
         try
         {
             XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.publicationId}.xml");
@@ -205,12 +206,12 @@ public class Mangasee : MangaConnector
             }
 
             //Return Chapters ordered by Chapter-Number
-            Log($"Got {chapters.Count} chapters. {manga}");
+            logger?.LogInformation($"Got {chapters.Count} chapters. {manga}");
             return chapters.Order().ToArray();
         }
         catch (HttpRequestException e)
         {
-            Log($"Failed to load https://mangasee123.com/rss/{manga.publicationId}.xml \n\r{e}");
+            logger?.LogError($"Failed to load https://mangasee123.com/rss/{manga.publicationId}.xml \n\r{e}");
             return Array.Empty<Chapter>();
         }
     }
@@ -230,7 +231,7 @@ public class Mangasee : MangaConnector
             return HttpStatusCode.RequestTimeout;
         }
 
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
+        logger?.LogInformation($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
         RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, RequestType.Default);
         if (requestResult.htmlDocument is null)

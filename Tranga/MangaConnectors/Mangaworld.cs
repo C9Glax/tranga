@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using JobQueue;
+using Microsoft.Extensions.Logging;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -15,7 +16,7 @@ public class Mangaworld: MangaConnector
 
     public override Manga[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
+        logger?.LogInformation($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://www.mangaworld.ac/archive?keyword={sanitizedTitle}";
         RequestResult requestResult =
@@ -26,7 +27,7 @@ public class Mangaworld: MangaConnector
         if (requestResult.htmlDocument is null)
             return Array.Empty<Manga>();
         Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-        Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+        logger?.LogDebug($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
 
@@ -127,7 +128,7 @@ public class Mangaworld: MangaConnector
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {manga}");
+        logger?.LogDebug($"Getting chapters {manga}");
         string requestUrl = $"https://www.mangaworld.ac/manga/{manga.publicationId}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
@@ -138,7 +139,7 @@ public class Mangaworld: MangaConnector
         if (requestResult.htmlDocument is null)
             return Array.Empty<Chapter>();
         List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
-        Log($"Got {chapters.Count} chapters. {manga}");
+        logger?.LogInformation($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
 
@@ -186,7 +187,7 @@ public class Mangaworld: MangaConnector
         }
 
         Manga chapterParentManga = chapter.parentManga;
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
+        logger?.LogDebug($"Retrieving chapter-info {chapter} {chapterParentManga}");
         string requestUrl = $"{chapter.url}?style=list";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);

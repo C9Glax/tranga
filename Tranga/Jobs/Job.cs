@@ -1,6 +1,6 @@
-﻿using JobQueue;
-using Tranga.MangaConnectors;
+using JobQueue;
 using Microsoft.Extensions.Logging;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using JobQueue;
+using Microsoft.Extensions.Logging;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -16,7 +17,7 @@ public class Bato : MangaConnector
 
 	public override Manga[] GetManga(string publicationTitle = "")
 	{
-		Log($"Searching Publications. Term=\"{publicationTitle}\"");
+		logger?.LogInformation($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://bato.to/v3x-search?word={sanitizedTitle}&lang=en";
 		RequestResult requestResult =
@@ -26,12 +27,12 @@ public class Bato : MangaConnector
 
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
+			logger?.LogError("Failed to retrieve site");
 			return Array.Empty<Manga>();
 		}
 			
 		Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-		Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+		logger?.LogDebug($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
 		return publications;
 	}
 
@@ -47,7 +48,7 @@ public class Bato : MangaConnector
 			return null;
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
+			logger?.LogError("Failed to retrieve site");
 			return null;
 		}
 		return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1]);
@@ -133,7 +134,7 @@ public class Bato : MangaConnector
 
 		//Return Chapters ordered by Chapter-Number
 		List<Chapter> chapters = ParseChaptersFromHtml(manga, requestUrl);
-		Log($"Got {chapters.Count} chapters. {manga}");
+		logger?.LogInformation($"Got {chapters.Count} chapters. {manga}");
 		return chapters.Order().ToArray();
 	}
 
@@ -142,7 +143,7 @@ public class Bato : MangaConnector
 		RequestResult result = downloadClient.MakeRequest(mangaUrl, RequestType.Default);
 		if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
 		{
-			Log("Failed to load site");
+			logger?.LogError("Failed to load site");
 			return new List<Chapter>();
 		}
 
@@ -178,7 +179,7 @@ public class Bato : MangaConnector
 		}
 
 		Manga chapterParentManga = chapter.parentManga;
-		Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
+		logger?.LogInformation($"Retrieving chapter-info {chapter} {chapterParentManga}");
 		string requestUrl = chapter.url;
 		// Leaving this in to check if the page exists
 		RequestResult requestResult =
@@ -207,7 +208,7 @@ public class Bato : MangaConnector
 		}
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
+			logger?.LogError("Failed to retrieve site");
 			return Array.Empty<string>();
 		}
 

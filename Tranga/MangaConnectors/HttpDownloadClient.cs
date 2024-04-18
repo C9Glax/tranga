@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 
 namespace Tranga.MangaConnectors;
 
@@ -19,7 +20,7 @@ internal class HttpDownloadClient : DownloadClient
     protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         if(clickButton is not null)
-            Log("Can not click button on static site.");
+            logger?.LogError("Can not click button on static site.");
         HttpResponseMessage? response = null;
         while (response is null)
         {
@@ -36,10 +37,10 @@ internal class HttpDownloadClient : DownloadClient
                 switch (e)
                 {
                     case TaskCanceledException:
-                        Log($"Request timed out {url}.\n\r{e}");
+                        logger?.LogError(e, $"Request timed out {url}.");
                         return new RequestResult(HttpStatusCode.RequestTimeout, null, Stream.Null);
                     case HttpRequestException:
-                        Log($"Request failed {url}\n\r{e}");
+                        logger?.LogError(e, $"Request failed {url}");
                         return new RequestResult(HttpStatusCode.BadRequest, null, Stream.Null);
                 }
             }
@@ -47,7 +48,7 @@ internal class HttpDownloadClient : DownloadClient
 
         if (!response.IsSuccessStatusCode)
         {
-            Log($"Request-Error {response.StatusCode}: {url}");
+            logger?.LogError($"Request-Error {response.StatusCode}: {url}");
             return new RequestResult(response.StatusCode,  null, Stream.Null);
         }
         
@@ -75,6 +76,6 @@ internal class HttpDownloadClient : DownloadClient
 
     public override void Close()
     {
-        Log("Closing.");
+        logger?.LogDebug("Closing.");
     }
 }

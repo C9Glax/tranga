@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -27,7 +28,7 @@ public class Komga : LibraryConnector
 
     public override void UpdateLibrary()
     {
-        Log("Updating libraries.");
+        logger?.LogInformation("Updating libraries.");
         foreach (KomgaLibrary lib in GetLibraries())
             NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth, logger);
     }
@@ -38,17 +39,17 @@ public class Komga : LibraryConnector
     /// <returns>Array of KomgaLibraries</returns>
     private IEnumerable<KomgaLibrary> GetLibraries()
     {
-        Log("Getting Libraries");
+        logger?.LogDebug("Getting Libraries");
         Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", "Basic", auth, logger);
         if (data == Stream.Null)
         {
-            Log("No libraries returned");
+            logger?.LogDebug("No libraries returned");
             return Array.Empty<KomgaLibrary>();
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            Log("No libraries returned");
+            logger?.LogDebug("No libraries returned");
             return Array.Empty<KomgaLibrary>();
         }
 

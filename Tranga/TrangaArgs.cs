@@ -8,6 +8,7 @@ public partial class Tranga : GlobalBase
 
     public static void Main(string[] args)
     {
+        Console.WriteLine(string.Join(' ', args));
         string[]? help = GetArg(args, ArgEnum.Help);
         if (help is not null)
         {
