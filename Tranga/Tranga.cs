@@ -26,6 +26,8 @@ public partial class Tranga : GlobalBase
             new Bato(this),
             new MangaLife(this)
         };
+        foreach(DirectoryInfo dir in new DirectoryInfo(Path.GetTempPath()).GetDirectories("trangatemp"))//Cleanup old temp folders
+            dir.Delete();
         jobBoss = new(this, this._connectors);
         StartJobBoss();
         this._server = new Server(this);
@@ -71,10 +73,23 @@ public partial class Tranga : GlobalBase
         {
             while (keepRunning)
             {
-                jobBoss.CheckJobs();
+                if(!settings.aprilFoolsMode || !IsAprilFirst())
+                    jobBoss.CheckJobs();
+                else
+                    Log("April Fools Mode in Effect");
                 Thread.Sleep(100);
             }
         });
         t.Start();
+    }
+
+    private bool IsAprilFirst()
+    {
+        //UTC 01 Apr +-12hrs
+        DateTime start = new DateTime(DateTime.Now.Year, 03, 31, 12, 0, 0, DateTimeKind.Utc);
+        DateTime end = new DateTime(DateTime.Now.Year, 04, 02, 12, 0, 0, DateTimeKind.Utc);
+        if (DateTime.UtcNow > start && DateTime.UtcNow < end)
+            return true;
+        return false;
     }
 }

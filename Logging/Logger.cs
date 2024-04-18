@@ -20,17 +20,17 @@ public class Logger : TextWriter
     private readonly FormattedConsoleLogger? _formattedConsoleLogger;
     private readonly MemoryLogger _memoryLogger;
 
-    public Logger(LoggerType[] enabledLoggers, TextWriter? stdOut, Encoding? encoding, string? logFilePath)
+    public Logger(LoggerType[] enabledLoggers, TextWriter? stdOut, Encoding? encoding, string? logFolderPath)
     {
         this.Encoding = encoding ?? Encoding.UTF8;
-        if(enabledLoggers.Contains(LoggerType.FileLogger) && (logFilePath is null || logFilePath == ""))
+        DateTime now = DateTime.Now;
+        if(enabledLoggers.Contains(LoggerType.FileLogger) && (logFolderPath is null || logFolderPath == ""))
         {
-            DateTime now = DateTime.Now;
-            logFilePath = Path.Join(LogDirectoryPath,
+            string filePath = Path.Join(LogDirectoryPath,
                 $"{now.ToShortDateString()}_{now.Hour}-{now.Minute}-{now.Second}.log");
-            _fileLogger = new FileLogger(logFilePath, encoding);
-        }else if (enabledLoggers.Contains(LoggerType.FileLogger) && logFilePath is not null)
-            _fileLogger = new FileLogger(logFilePath, encoding);
+            _fileLogger = new FileLogger(filePath, encoding);
+        }else if (enabledLoggers.Contains(LoggerType.FileLogger) && logFolderPath is not null)
+            _fileLogger = new FileLogger(Path.Join(logFolderPath, $"{now.ToShortDateString()}_{now.Hour}-{now.Minute}-{now.Second}.log") , encoding);
         
 
         if (enabledLoggers.Contains(LoggerType.ConsoleLogger) && stdOut is not null)
@@ -43,6 +43,7 @@ public class Logger : TextWriter
             throw new ArgumentException($"stdOut can not be null for LoggerType {LoggerType.ConsoleLogger}");
         }
         _memoryLogger = new MemoryLogger(encoding);
+        WriteLine(GetType().ToString(), $"Logfile: {logFilePath}");
     }
 
     public void WriteLine(string caller, string? value)
