@@ -1,6 +1,9 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Tranga.Jobs;
@@ -85,7 +88,7 @@ public class Server : GlobalBase
         }
     }
     
-    private Dictionary<string, string> GetRequestVariables(string query)
+    private Dictionary<string, string> GetRequestVariablesFromUri(string query)
     {
         Dictionary<string, string> ret = new();
         Regex queryRex = new (@"\?{1}&?([A-z0-9-=]+=[A-z0-9-=]+)+(&[A-z0-9-=]+=[A-z0-9-=]+)*");
@@ -102,609 +105,733 @@ public class Server : GlobalBase
         return ret;
     }
 
+    private Dictionary<string, JsonElement> GetRequestVariables(HttpListenerRequest message)
+    {
+        Dictionary<string, JsonElement> variables = new();
+        Encoding encoding = message.ContentEncoding;
+        if(encoding is not UTF8Encoding)
+        {
+            Log($"Request Encoding is not UTF8 ({encoding})");
+            return variables;
+        }
+        long length = message.ContentLength64;
+        if (length < 1)
+            return variables;
+        byte[] buffer = new byte[length];
+        int readBytes = message.InputStream.Read(buffer, 0, (int)length);
+        if (readBytes != length)
+        {
+            Log($"Not all content could be read. Read {readBytes}, MessageLength {length}");
+            return variables;
+        }
+        JsonNode? content = JsonNode.Parse(buffer);
+        if (content is null)
+        {
+            Log($"Json could not be parsed.\n{buffer}");
+            return variables;
+        }
+        foreach((string key, JsonNode? value) in content.AsObject())
+            if(value is not null)
+                variables.Add(key, value.GetValue<JsonElement>());
+        
+        return variables;
+    }
+
+    private T GetRequestVariable<T>(Dictionary<string, JsonElement> variables, string key)
+    {
+        if (!variables.ContainsKey(key))
+            throw new KeyNotFoundException($"Missing value: {key}");
+        if (typeof(T) == typeof(string) && variables[key].ValueKind == JsonValueKind.String &&
+            variables[key].GetString() is { } s)
+            return (T)(object)s;
+        if (typeof(T) == typeof(int) && variables[key].ValueKind == JsonValueKind.Number && variables[key].TryGetInt32(out int i32))
+            return (T)(object)i32;
+        if (typeof(T) == typeof(uint) && variables[key].ValueKind == JsonValueKind.Number && variables[key].TryGetUInt32(out uint ui32))
+            return (T)(object)ui32;
+        if (typeof(T) == typeof(bool) && variables[key].ValueKind == JsonValueKind.False)
+            return (T)(object)false;
+        if (typeof(T) == typeof(bool) && variables[key].ValueKind == JsonValueKind.True)
+            return (T)(object)true;
+        if (typeof(T) == typeof(float) && variables[key].ValueKind == JsonValueKind.Number && variables[key].TryGetSingle(out float f))
+            return (T)(object)f;
+        if (typeof(T) == typeof(double) && variables[key].ValueKind == JsonValueKind.Number && variables[key].TryGetDouble(out double d))
+            return (T)(object)d;
+        if (typeof(T) == typeof(TimeSpan) && variables[key].ValueKind == JsonValueKind.String &&
+            TimeSpan.TryParse(GetRequestVariable<string>(variables, key), out TimeSpan ts))
+            return (T)(object)ts;
+        if (typeof(T) == typeof(DateTime) && variables[key].ValueKind == JsonValueKind.String &&
+            DateTime.TryParse(GetRequestVariable<string>(variables, key), out DateTime dt))
+            return (T)(object)dt;
+
+        throw new ConstraintException($"{key} was not of Type {typeof(T).FullName} ({variables[key].GetType()}) or no conversion could be found.");
+    }
+
     private void HandleGet(HttpListenerRequest request, HttpListenerResponse response)
     {
-        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, jobId, internalId;
-        MangaConnector? connector;
-        Manga? manga;
+        Dictionary<string, JsonElement> requestVariables = GetRequestVariables(request);
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
-        switch (path)
+        try
         {
-            case "Connectors":
-                SendResponse(HttpStatusCode.OK, response, _parent.GetConnectors().Select(con => con.name).ToArray());
-                break;
-            case "Manga/Cover":
-                if (!requestVariables.TryGetValue("internalId", out internalId) ||
-                    !_parent.TryGetPublicationById(internalId, out manga))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
+            string? connectorName, jobId, internalId;
+            MangaConnector? connector;
+            Manga? manga;
+            switch (path)
+            {
+                case "Connectors":
+                    SendResponse(HttpStatusCode.OK, response,
+                        _parent.GetConnectors().Select(con => con.name).ToArray());
                     break;
-                }
+                case "Manga/Cover":
+                    internalId = GetRequestVariable<string>(requestVariables, "internalId");
+                    if (!_parent.TryGetPublicationById(internalId, out manga))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response, $"internalId {internalId} not found.");
+                        break;
+                    }
 
-                string filePath = settings.GetFullCoverPath((Manga)manga!);
-                if (File.Exists(filePath))
-                {
-                    FileStream coverStream = new(filePath, FileMode.Open);
-                    SendResponse(HttpStatusCode.OK, response, coverStream);
-                }
-                else
-                {
-                    SendResponse(HttpStatusCode.NotFound, response);
-                }
-                break;
-            case "Manga/FromConnector":
-                requestVariables.TryGetValue("title", out string? title);
-                requestVariables.TryGetValue("url", out string? url);
-                if (!requestVariables.TryGetValue("connector", out connectorName) ||
-                    !_parent.TryGetConnector(connectorName, out connector) ||
-                    (title is null && url is null))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-
-                if (url is not null)
-                {
-                    HashSet<Manga> ret = new();
-                    manga = connector!.GetMangaFromUrl(url);
-                    if (manga is not null)
-                        ret.Add((Manga)manga);
-                    SendResponse(HttpStatusCode.OK, response, ret);
-                }else
-                    SendResponse(HttpStatusCode.OK, response, connector!.GetManga(title!));
-                break;
-            case "Manga/Chapters":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   !_parent.TryGetConnector(connectorName, out connector) ||
-                   !_parent.TryGetPublicationById(internalId, out manga))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                requestVariables.TryGetValue("translatedLanguage", out string? translatedLanguage);
-                SendResponse(HttpStatusCode.OK, response, connector!.GetChapters((Manga)manga!, translatedLanguage??"en"));
-                break;
-            case "Jobs":
-                if (!requestVariables.TryGetValue("jobId", out jobId))
-                {
-                    if(!_parent.jobBoss.jobs.Any(jjob => jjob.id == jobId))
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                    string filePath = settings.GetFullCoverPath((Manga)manga!);
+                    if (File.Exists(filePath))
+                    {
+                        FileStream coverStream = new(filePath, FileMode.Open);
+                        SendResponse(HttpStatusCode.OK, response, coverStream);
+                    }
                     else
-                        SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.First(jjob => jjob.id == jobId));
-                    break;
-                }
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs);
-                break;
-            case "Jobs/Progress":
-                if (requestVariables.TryGetValue("jobId", out jobId))
-                {
-                    if(!_parent.jobBoss.jobs.Any(jjob => jjob.id == jobId))
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                    else
-                        SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.First(jjob => jjob.id == jobId).progressToken);
-                    break;
-                }
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Select(jjob => jjob.progressToken));
-                break;
-            case "Jobs/Running":
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Running));
-                break;
-            case "Jobs/Waiting":
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Standby).OrderBy(jjob => jjob.nextExecution));
-                break;
-            case "Jobs/MonitorJobs":
-                SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob is DownloadNewChapters).OrderBy(jjob => ((DownloadNewChapters)jjob).manga.sortName));
-                break;
-            case "Settings":
-                SendResponse(HttpStatusCode.OK, response, settings);
-                break;
-            case "Settings/userAgent":
-                SendResponse(HttpStatusCode.OK, response, settings.userAgent);
-                break;
-            case "Settings/customRequestLimit":
-                SendResponse(HttpStatusCode.OK, response, settings.requestLimits);
-                break;
-            case "Settings/AprilFoolsMode":
-                SendResponse(HttpStatusCode.OK, response, settings.aprilFoolsMode);
-                break;
-            case "NotificationConnectors":
-                SendResponse(HttpStatusCode.OK, response, notificationConnectors);
-                break;
-            case "NotificationConnectors/Types":
-                SendResponse(HttpStatusCode.OK, response,
-                    Enum.GetValues<NotificationConnector.NotificationConnectorType>().Select(nc => new KeyValuePair<byte, string?>((byte)nc, Enum.GetName(nc))));
-                break;
-            case "LibraryConnectors":
-                SendResponse(HttpStatusCode.OK, response, libraryConnectors);
-                break;
-            case "LibraryConnectors/Types":
-                SendResponse(HttpStatusCode.OK, response, 
-                    Enum.GetValues<LibraryConnector.LibraryType>().Select(lc => new KeyValuePair<byte, string?>((byte)lc, Enum.GetName(lc))));
-                break;
-            case "Ping":
-                SendResponse(HttpStatusCode.OK, response, "Pong");
-                break;
-            case "LogMessages":
-                if (logger is null || !File.Exists(logger?.logFilePath))
-                {
-                    SendResponse(HttpStatusCode.NotFound, response);
-                    break;
-                }
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response);
+                    }
 
-                if (requestVariables.TryGetValue("count", out string? count))
-                {
+                    break;
+                case "Manga/FromConnector":
+                    string? title = null, url = null;
                     try
                     {
-                        uint messageCount = uint.Parse(count);
-                        SendResponse(HttpStatusCode.OK, response, logger.Tail(messageCount));
+                        title = GetRequestVariable<string>(requestVariables, "title");
                     }
-                    catch (FormatException f)
+                    catch (KeyNotFoundException) { }
+                    try
                     {
-                        SendResponse(HttpStatusCode.InternalServerError, response, f);
+                        url = GetRequestVariable<string>(requestVariables, "url");
                     }
-                }else
-                    SendResponse(HttpStatusCode.OK, response, logger.GetLog());
-                break;
-            case "LogFile":
-                if (logger is null || !File.Exists(logger?.logFilePath))
-                {
-                    SendResponse(HttpStatusCode.NotFound, response);
-                    break;
-                }
+                    catch (KeyNotFoundException) { }
+                    
+                    if(title is null && url is null)
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, "Missing keys title or url");
+                        break;
+                    }
 
-                string logDir = new FileInfo(logger.logFilePath).DirectoryName!;
-                string tmpFilePath = Path.Join(logDir, "Tranga.log");
-                File.Copy(logger.logFilePath, tmpFilePath);
-                SendResponse(HttpStatusCode.OK, response, new FileStream(tmpFilePath, FileMode.Open));
-                File.Delete(tmpFilePath);
-                break;
-            default:
-                SendResponse(HttpStatusCode.BadRequest, response);
-                break;
+                    connectorName = GetRequestVariable<string>(requestVariables, "connector");
+                    if (!_parent.TryGetConnector(connectorName, out connector))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"connector {connectorName} does not exist.");
+                        break;
+                    }
+
+                    if (url is not null)
+                    {
+                        HashSet<Manga> ret = new();
+                        manga = connector!.GetMangaFromUrl(url);
+                        if (manga is not null)
+                            ret.Add((Manga)manga);
+                        SendResponse(HttpStatusCode.OK, response, ret);
+                    }
+                    else
+                        SendResponse(HttpStatusCode.OK, response, connector!.GetManga(title!));
+
+                    break;
+                case "Manga/Chapters":
+                    connectorName = GetRequestVariable<string>(requestVariables, "connector");
+                    internalId = GetRequestVariable<string>(requestVariables, "internalId");
+                    if (!_parent.TryGetConnector(connectorName, out connector))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"connector {connectorName} does not exist.");
+                        break;
+                    }
+                    if (!_parent.TryGetPublicationById(internalId, out manga))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response, $"internalId {internalId} not found.");
+                        break;
+                    }
+
+                    try
+                    {
+                        string translatedLanguage = GetRequestVariable<string>(requestVariables, "translatedLanguage");
+                        SendResponse(HttpStatusCode.OK, response, connector!.GetChapters((Manga)manga!, translatedLanguage));
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        SendResponse(HttpStatusCode.OK, response, connector!.GetChapters((Manga)manga!));
+                    }
+                    break;
+                case "Jobs":
+                    try
+                    {
+                        jobId = GetRequestVariable<string>(requestVariables, "jobId");
+                        Job? job = _parent.jobBoss.jobs.FirstOrDefault(jjob => jjob.id == jobId);
+                        if (job is null)
+                            SendResponse(HttpStatusCode.NotFound, response, $"jobId {jobId} not found.");
+                        else
+                            SendResponse(HttpStatusCode.OK, response, job);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs);
+                    }
+                    break;
+                case "Jobs/Progress":
+                    jobId = GetRequestVariable<string>(requestVariables, "jobId");
+                    Job? job2 = _parent.jobBoss.jobs.FirstOrDefault(jjob => jjob.id == jobId);
+                    if (job2 is null)
+                        SendResponse(HttpStatusCode.NotFound, response, $"jobId {jobId} not found.");
+                    else
+                        SendResponse(HttpStatusCode.OK, response, job2.progressToken);
+                    break;
+                case "Jobs/Running":
+                    SendResponse(HttpStatusCode.OK, response,
+                        _parent.jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Running));
+                    break;
+                case "Jobs/Waiting":
+                    SendResponse(HttpStatusCode.OK, response,
+                        _parent.jobBoss.jobs.Where(jjob => jjob.progressToken.state is ProgressToken.State.Standby)
+                            .OrderBy(jjob => jjob.nextExecution));
+                    break;
+                case "Jobs/MonitorJobs":
+                    SendResponse(HttpStatusCode.OK, response,
+                        _parent.jobBoss.jobs.Where(jjob => jjob is DownloadNewChapters)
+                            .OrderBy(jjob => ((DownloadNewChapters)jjob).manga.sortName));
+                    break;
+                case "Settings":
+                    SendResponse(HttpStatusCode.OK, response, settings);
+                    break;
+                case "Settings/userAgent":
+                    SendResponse(HttpStatusCode.OK, response, settings.userAgent);
+                    break;
+                case "Settings/customRequestLimit":
+                    SendResponse(HttpStatusCode.OK, response, settings.requestLimits);
+                    break;
+                case "Settings/AprilFoolsMode":
+                    SendResponse(HttpStatusCode.OK, response, settings.aprilFoolsMode);
+                    break;
+                case "NotificationConnectors":
+                    SendResponse(HttpStatusCode.OK, response, notificationConnectors);
+                    break;
+                case "NotificationConnectors/Types":
+                    SendResponse(HttpStatusCode.OK, response,
+                        Enum.GetValues<NotificationConnector.NotificationConnectorType>()
+                            .Select(nc => new KeyValuePair<byte, string?>((byte)nc, Enum.GetName(nc))));
+                    break;
+                case "LibraryConnectors":
+                    SendResponse(HttpStatusCode.OK, response, libraryConnectors);
+                    break;
+                case "LibraryConnectors/Types":
+                    SendResponse(HttpStatusCode.OK, response,
+                        Enum.GetValues<LibraryConnector.LibraryType>()
+                            .Select(lc => new KeyValuePair<byte, string?>((byte)lc, Enum.GetName(lc))));
+                    break;
+                case "Ping":
+                    SendResponse(HttpStatusCode.OK, response, "Pong");
+                    break;
+                case "LogMessages":
+                    if (logger is null || !File.Exists(logger?.logFilePath))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response);
+                        break;
+                    }
+
+                    try
+                    {
+                        uint messageCount = GetRequestVariable<uint>(requestVariables, "count");
+                        try
+                        {
+                            SendResponse(HttpStatusCode.OK, response, logger.Tail(messageCount));
+                        }
+                        catch (FormatException f)
+                        {
+                            SendResponse(HttpStatusCode.InternalServerError, response, f.Message);
+                        }
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        SendResponse(HttpStatusCode.OK, response, logger.GetLog());
+                    }
+                    break;
+                case "LogFile":
+                    if (logger is null || !File.Exists(logger?.logFilePath))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response, "No LogFile.");
+                        break;
+                    }
+
+                    string logDir = new FileInfo(logger.logFilePath).DirectoryName!;
+                    string tmpFilePath = Path.Join(logDir, "Tranga.log");
+                    File.Copy(logger.logFilePath, tmpFilePath);
+                    SendResponse(HttpStatusCode.OK, response, new FileStream(tmpFilePath, FileMode.Open));
+                    File.Delete(tmpFilePath);
+                    break;
+                default:
+                    SendResponse(HttpStatusCode.NotFound, response, "Request-URI doesn't exist.");
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            SendResponse(HttpStatusCode.BadRequest, response, e.Message);
         }
     }
 
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
-        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId, jobId, chapterNumStr, customFolderName, translatedLanguage, notificationConnectorStr, libraryConnectorStr;
-        MangaConnector? connector;
-        Manga? tmpManga;
-        Manga manga;
-        Job? job;
-        NotificationConnector.NotificationConnectorType notificationConnectorType;
-        LibraryConnector.LibraryType libraryConnectorType;
+        Dictionary<string, JsonElement> requestVariables = GetRequestVariables(request);
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
-        switch (path)
+        try
         {
-            case "Manga":
-                if(!requestVariables.TryGetValue("internalId", out internalId) ||
-                   !_parent.TryGetPublicationById(internalId, out tmpManga))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                manga = (Manga)tmpManga!;
-                SendResponse(HttpStatusCode.OK, response, manga);
-                break;
-            case "Jobs/MonitorManga":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   !requestVariables.TryGetValue("interval", out string? intervalStr) ||
-                   !_parent.TryGetConnector(connectorName, out connector)||
-                   !_parent.TryGetPublicationById(internalId, out tmpManga) ||
-                   !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-
-                manga = (Manga)tmpManga!;
-                
-                if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
-                {
-                    if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
+            NotificationConnector.NotificationConnectorType notificationConnectorType;
+            LibraryConnector.LibraryType libraryConnectorType;
+            string? connectorName, internalId, jobId, customFolderName, translatedLanguage, notificationConnectorStr, libraryConnectorStr;
+            MangaConnector? connector;
+            Manga? tmpManga;
+            Manga manga;
+            Job? job;
+            switch (path)
+            {
+                case "Manga":
+                    internalId = GetRequestVariable<string>(requestVariables, "internalId");
+                    if (!_parent.TryGetPublicationById(internalId, out tmpManga))
                     {
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                        SendResponse(HttpStatusCode.NotFound, response, $"internalId {internalId} not found.");
                         break;
                     }
-                    manga.ignoreChaptersBelow = chapterNum;
-                }
-                
-                if (requestVariables.TryGetValue("customFolderName", out customFolderName))
-                    manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
-                requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
-                
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval, translatedLanguage: translatedLanguage??"en"));
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Jobs/DownloadNewChapters":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   !_parent.TryGetConnector(connectorName, out connector)||
-                   !_parent.TryGetPublicationById(internalId, out tmpManga))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
 
-                manga = (Manga)tmpManga!;
-                
-                if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
-                {
-                    if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
+                    manga = (Manga)tmpManga!;
+                    SendResponse(HttpStatusCode.OK, response, manga);
+                    break;
+                case "Jobs/MonitorManga":
+                    connectorName = GetRequestVariable<string>(requestVariables, "connector");
+                    internalId = GetRequestVariable<string>(requestVariables, "internalId");
+                    TimeSpan interval = GetRequestVariable<TimeSpan>(requestVariables, "interval");
+                    if (!_parent.TryGetConnector(connectorName, out connector))
                     {
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                        SendResponse(HttpStatusCode.BadRequest, response, $"connector {connectorName} does not exist.");
                         break;
                     }
-                    manga.ignoreChaptersBelow = chapterNum;
-                }
-
-                if (requestVariables.TryGetValue("customFolderName", out customFolderName))
-                    manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
-                requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
-                
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false, translatedLanguage: translatedLanguage??"en"));
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Jobs/UpdateMetadata":
-                if (!requestVariables.TryGetValue("internalId", out internalId))
-                {
-                    foreach (Job pJob in _parent.jobBoss.jobs.Where(possibleDncJob =>
-                                 possibleDncJob.jobType is Job.JobType.DownloadNewChaptersJob).ToArray())//ToArray to avoid modyifying while adding new jobs
+                    if (!_parent.TryGetPublicationById(internalId, out tmpManga))
                     {
-                        DownloadNewChapters dncJob = pJob as DownloadNewChapters ??
-                                                     throw new Exception("Has to be DownloadNewChapters Job");
-                        _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
+                        SendResponse(HttpStatusCode.NotFound, response, $"internalId {internalId} not found.");
+                        break;
                     }
+
+                    manga = (Manga)tmpManga!;
+
+                    try
+                    {
+                        float chapterNum = GetRequestVariable<float>(requestVariables, "ignoreBelowChapterNum");
+                        manga.ignoreChaptersBelow = chapterNum;
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                    }
+
+                    try
+                    {
+                        customFolderName = GetRequestVariable<string>(requestVariables, "customFolderName");
+                        manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                    }
+
+                    try
+                    {
+                        translatedLanguage = GetRequestVariable<string>(requestVariables, "translatedLanguage");
+                        _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval,
+                            translatedLanguage: translatedLanguage));
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval,
+                            translatedLanguage: "en"));
+                    }
+
                     SendResponse(HttpStatusCode.Accepted, response);
-                }
-                else
-                {
-                    Job[] possibleDncJobs = _parent.jobBoss.GetJobsLike(internalId: internalId).ToArray();
-                    switch (possibleDncJobs.Length)
+                    break;
+                case "Jobs/DownloadNewChapters":
+                    connectorName = GetRequestVariable<string>(requestVariables, "connector");
+                    internalId = GetRequestVariable<string>(requestVariables, "internalId");
+                    if (!_parent.TryGetConnector(connectorName, out connector))
                     {
-                        case <1: SendResponse(HttpStatusCode.BadRequest, response, "Could not find matching release"); break;
-                        case >1: SendResponse(HttpStatusCode.BadRequest, response, "Multiple releases??"); break;
-                        default:
-                            DownloadNewChapters dncJob = possibleDncJobs[0] as DownloadNewChapters ??
+                        SendResponse(HttpStatusCode.BadRequest, response, $"connector {connectorName} does not exist.");
+                        break;
+                    }
+                    if (!_parent.TryGetPublicationById(internalId, out tmpManga))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response, $"internalId {internalId} not found.");
+                        break;
+                    }
+
+                    manga = (Manga)tmpManga!;
+
+                    try
+                    {
+                        float chapterNum = GetRequestVariable<float>(requestVariables, "ignoreBelowChapterNum");
+                        manga.ignoreChaptersBelow = chapterNum;
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                    }
+
+                    try
+                    {
+                        customFolderName = GetRequestVariable<string>(requestVariables, "customFolderName");
+                        manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                    }
+
+                    try
+                    {
+                        translatedLanguage = GetRequestVariable<string>(requestVariables, "translatedLanguage");
+                        _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true,
+                            translatedLanguage: translatedLanguage));
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true,
+                            translatedLanguage: "en"));
+                    }
+
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "Jobs/UpdateMetadata":
+                    try
+                    {
+                        internalId = GetRequestVariable<string>(requestVariables, "internalId");
+                        Job[] possibleDncJobs = _parent.jobBoss.GetJobsLike(internalId: internalId).ToArray();
+                        switch (possibleDncJobs.Length)
+                        {
+                            case < 1:
+                                SendResponse(HttpStatusCode.NotFound, response, "Could not find matching release");
+                                break;
+                            case > 1:
+                                SendResponse(HttpStatusCode.Ambiguous, response, "Multiple releases??");
+                                break;
+                            default:
+                                DownloadNewChapters dncJob = possibleDncJobs[0] as DownloadNewChapters ??
+                                                             throw new Exception("Has to be DownloadNewChapters Job");
+                                _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
+                                SendResponse(HttpStatusCode.Accepted, response);
+                                break;
+                        }
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        foreach (Job pJob in _parent.jobBoss.jobs.Where(possibleDncJob =>
+                                         possibleDncJob.jobType is Job.JobType.DownloadNewChaptersJob)
+                                     .ToArray()) //ToArray to avoid modyifying while adding new jobs
+                        {
+                            DownloadNewChapters dncJob = pJob as DownloadNewChapters ??
                                                          throw new Exception("Has to be DownloadNewChapters Job");
                             _parent.jobBoss.AddJob(new UpdateMetadata(this, dncJob.mangaConnector, dncJob.manga));
-                            SendResponse(HttpStatusCode.Accepted, response);
-                            break;
-                    }
-                }
-                break;
-            case "Jobs/StartNow":
-                if (!requestVariables.TryGetValue("jobId", out jobId) ||
-                    !_parent.jobBoss.TryGetJobById(jobId, out job))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                _parent.jobBoss.AddJobToQueue(job!);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Jobs/Cancel":
-                if (!requestVariables.TryGetValue("jobId", out jobId) ||
-                    !_parent.jobBoss.TryGetJobById(jobId, out job))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                job!.Cancel();
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Settings/UpdateDownloadLocation":
-                if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
-                    !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
-                    !bool.TryParse(moveFilesStr, out bool moveFiles))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                settings.UpdateDownloadLocation(downloadLocation, moveFiles);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Settings/AprilFoolsMode":
-                if (!requestVariables.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
-                    bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                settings.UpdateAprilFoolsMode(aprilFoolsModeEnabled);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            /*case "Settings/UpdateWorkingDirectory":
-                if (!requestVariables.TryGetValue("workingDirectory", out string? workingDirectory))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                settings.UpdateWorkingDirectory(workingDirectory);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;*/
-            case "Settings/userAgent":
-                if(!requestVariables.TryGetValue("userAgent", out string? customUserAgent))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                settings.UpdateUserAgent(customUserAgent);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Settings/userAgent/Reset":
-                settings.UpdateUserAgent(null);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Settings/customRequestLimit":
-                if (!requestVariables.TryGetValue("requestType", out string? requestTypeStr) ||
-                    !requestVariables.TryGetValue("requestsPerMinute", out string? requestsPerMinuteStr) ||
-                    !Enum.TryParse(requestTypeStr, out RequestType requestType) ||
-                    !int.TryParse(requestsPerMinuteStr, out int requestsPerMinute))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
+                        }
 
-                if (settings.requestLimits.ContainsKey(requestType))
-                {
-                    settings.requestLimits[requestType] = requestsPerMinute;
-                    SendResponse(HttpStatusCode.Accepted, response);
-                }else
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                settings.ExportSettings();
-                break;
-            case "Settings/customRequestLimit/Reset":
-                settings.requestLimits = TrangaSettings.DefaultRequestLimits;
-                settings.ExportSettings();
-                break;
-            case "NotificationConnectors/Update":
-                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
+                        SendResponse(HttpStatusCode.Accepted, response);
+                    }
 
-                if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
-                {
-                    if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
-                        !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        break;
-                    }
-                    AddNotificationConnector(new Gotify(this, gotifyUrl, gotifyAppToken));
-                    SendResponse(HttpStatusCode.Accepted, response);
-                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
-                {
-                    if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        break;
-                    }
-                    AddNotificationConnector(new LunaSea(this, lunaseaWebhook));
-                    SendResponse(HttpStatusCode.Accepted, response);
-                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
-                {
-                    if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
-                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        break;
-                    }
-                    AddNotificationConnector(new Ntfy(this, ntfyUrl, ntfyAuth));
-                    SendResponse(HttpStatusCode.Accepted, response);
-                }
-                else
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                }
-                break;
-            case "NotificationConnectors/Test":
-                NotificationConnector notificationConnector;
-                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
                     break;
-                }
+                case "Jobs/StartNow":
+                    jobId = GetRequestVariable<string>(requestVariables, "jobId");
+                    if (!_parent.jobBoss.TryGetJobById(jobId, out job))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response, $"jobId {jobId} not found.");
+                        break;
+                    }
 
-                if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
-                {
-                    if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
-                        !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        break;
-                    }
-                    notificationConnector = new Gotify(this, gotifyUrl, gotifyAppToken);
-                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
-                {
-                    if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        break;
-                    }
-                    notificationConnector = new LunaSea(this, lunaseaWebhook);
-                }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
-                {
-                    if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
-                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        break;
-                    }
-                    notificationConnector = new Ntfy(this, ntfyUrl, ntfyAuth);
-                }
-                else
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                
-                notificationConnector.SendNotification("Tranga Test", "This is Test-Notification.");
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "NotificationConnectors/Reset":
-                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-                DeleteNotificationConnector(notificationConnectorType);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "LibraryConnectors/Update":
-                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
-                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
-
-                if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
-                {
-                    if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
-                        !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
-                        !requestVariables.TryGetValue("kavitaPassword", out string? kavitaPassword))
-                    {
-                        SendResponse(HttpStatusCode.BadRequest, response);
-                        break;
-                    }
-                    AddLibraryConnector(new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword));
+                    _parent.jobBoss.AddJobToQueue(job!);
                     SendResponse(HttpStatusCode.Accepted, response);
-                }else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
-                {
-                    if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
-                        !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
+                    break;
+                case "Jobs/Cancel":
+                    jobId = GetRequestVariable<string>(requestVariables, "jobId");
+                    if (!_parent.jobBoss.TryGetJobById(jobId, out job))
                     {
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                        SendResponse(HttpStatusCode.NotFound, response, $"jobId {jobId} not found.");
                         break;
                     }
-                    AddLibraryConnector(new Komga(this, komgaUrl, komgaAuth));
-                    SendResponse(HttpStatusCode.Accepted, response);
-                }
-                else
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                }
-                break;
-            case "LibraryConnectors/Test":
-                LibraryConnector libraryConnector;
-                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
-                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                    break;
-                }
 
-                if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
-                {
-                    if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
-                        !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
-                        !requestVariables.TryGetValue("kavitaPassword", out string? kavitaPassword))
+                    job!.Cancel();
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "Settings/UpdateDownloadLocation":
+                    string downloadLocation = GetRequestVariable<string>(requestVariables, "downloadLocation");
+                    bool moveFiles = GetRequestVariable<bool>(requestVariables, "moveFiles");
+                    settings.UpdateDownloadLocation(downloadLocation, moveFiles);
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "Settings/AprilFoolsMode":
+                    bool aprilFoolsModeEnabled = GetRequestVariable<bool>(requestVariables, "enabled");
+                    settings.UpdateAprilFoolsMode(aprilFoolsModeEnabled);
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "Settings/userAgent":
+                    string customUserAgent = GetRequestVariable<string>(requestVariables, "userAgent");
+                    settings.UpdateUserAgent(customUserAgent);
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "Settings/userAgent/Reset":
+                    settings.UpdateUserAgent(null);
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "Settings/customRequestLimit":
+                    string requestTypeStr = GetRequestVariable<string>(requestVariables, "requestType");
+                    int requestsPerMinute = GetRequestVariable<int>(requestVariables, "requestsPerMinute");
+                    if (!Enum.TryParse(requestTypeStr, out RequestType requestType))
                     {
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                        SendResponse(HttpStatusCode.BadRequest, response, $"requestType {requestTypeStr} does not exist.");
                         break;
                     }
-                    libraryConnector = new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword);
-                }else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
-                {
-                    if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
-                        !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
+
+                    if (settings.requestLimits.ContainsKey(requestType))
                     {
-                        SendResponse(HttpStatusCode.BadRequest, response);
+                        settings.requestLimits[requestType] = requestsPerMinute;
+                        SendResponse(HttpStatusCode.Accepted, response);
+                    }
+                    else
+                        SendResponse(HttpStatusCode.BadRequest, response, $"requestType {requestTypeStr} can not be configured.");
+
+                    settings.ExportSettings();
+                    break;
+                case "Settings/customRequestLimit/Reset":
+                    settings.requestLimits = TrangaSettings.DefaultRequestLimits;
+                    settings.ExportSettings();
+                    break;
+                case "NotificationConnectors/Update":
+                    notificationConnectorStr = GetRequestVariable<string>(requestVariables, "notificationConnector");
+                    if (!Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"notificationConnector {notificationConnectorStr} does not exist.");
                         break;
                     }
-                    libraryConnector = new Komga(this, komgaUrl, komgaAuth);
-                }
-                else
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
+
+                    if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
+                    {
+                        string gotifyUrl = GetRequestVariable<string>(requestVariables, "gotifyUrl");
+                        string gotifyAppToken = GetRequestVariable<string>(requestVariables, "gotifyAppToken");
+                        AddNotificationConnector(new Gotify(this, gotifyUrl, gotifyAppToken));
+                        SendResponse(HttpStatusCode.Accepted, response);
+                    }
+                    else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
+                    {
+                        string lunaseaWebhook = GetRequestVariable<string>(requestVariables, "lunaseaWebhook");
+                        AddNotificationConnector(new LunaSea(this, lunaseaWebhook));
+                        SendResponse(HttpStatusCode.Accepted, response);
+                    }
+                    else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
+                    {
+                        string ntfyUrl = GetRequestVariable<string>(requestVariables, "ntfyUrl");
+                        string ntfyAuth = GetRequestVariable<string>(requestVariables, "ntfyAuth");
+                        AddNotificationConnector(new Ntfy(this, ntfyUrl, ntfyAuth));
+                        SendResponse(HttpStatusCode.Accepted, response);
+                    }
+                    else
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"notificationConnector {notificationConnectorType} can not be configured.");
+                    }
+
                     break;
-                }
-                libraryConnector.UpdateLibrary();
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "LibraryConnectors/Reset":
-                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
-                    !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
+                case "NotificationConnectors/Test":
+                    NotificationConnector notificationConnector;
+                    notificationConnectorStr = GetRequestVariable<string>(requestVariables, "notificationConnector");
+                    if (!Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"notificationConnector {notificationConnectorType} does not exist.");
+                        break;
+                    }
+
+                    if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
+                    {
+                        string gotifyUrl = GetRequestVariable<string>(requestVariables, "gotifyUrl");
+                        string gotifyAppToken = GetRequestVariable<string>(requestVariables, "gotifyAppToken");
+                        notificationConnector = new Gotify(this, gotifyUrl, gotifyAppToken);
+                    }
+                    else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
+                    {
+                        string lunaseaWebhook = GetRequestVariable<string>(requestVariables, "lunaseaWebhook");
+                        notificationConnector = new LunaSea(this, lunaseaWebhook);
+                    }
+                    else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
+                    {
+                        string ntfyUrl = GetRequestVariable<string>(requestVariables, "ntfyUrl");
+                        string ntfyAuth = GetRequestVariable<string>(requestVariables, "ntfyAuth");
+                        notificationConnector = new Ntfy(this, ntfyUrl, ntfyAuth);
+                    }
+                    else
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"notificationConnector {notificationConnectorType} can not be tested.");
+                        break;
+                    }
+
+                    notificationConnector.SendNotification("Tranga Test", "This is Test-Notification.");
+                    SendResponse(HttpStatusCode.Accepted, response);
                     break;
-                }
-                DeleteLibraryConnector(libraryConnectorType);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            default:
-                SendResponse(HttpStatusCode.BadRequest, response);
-                break;
+                case "NotificationConnectors/Reset":
+                    notificationConnectorStr = GetRequestVariable<string>(requestVariables, "notificationConnector");
+                    if (!Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"notificationConnector {notificationConnectorType} does not exist.");
+                        break;
+                    }
+
+                    DeleteNotificationConnector(notificationConnectorType);
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "LibraryConnectors/Update":
+                    libraryConnectorStr = GetRequestVariable<string>(requestVariables, "libraryConnector");
+                    if (!Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"libraryConnector {libraryConnectorStr} does not exist.");
+                        break;
+                    }
+
+                    if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
+                    {
+                        string kavitaUrl = GetRequestVariable<string>(requestVariables, "kavitaUrl");
+                        string kavitaUsername = GetRequestVariable<string>(requestVariables, "kavitaUsername");
+                        string kavitaPassword = GetRequestVariable<string>(requestVariables, "kavitaPassword");
+                        AddLibraryConnector(new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword));
+                        SendResponse(HttpStatusCode.Accepted, response);
+                    }
+                    else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
+                    {
+                        string komgaUrl = GetRequestVariable<string>(requestVariables, "komgaUrl");
+                        string komgaAuth = GetRequestVariable<string>(requestVariables, "komgaAuth");
+                        AddLibraryConnector(new Komga(this, komgaUrl, komgaAuth));
+                        SendResponse(HttpStatusCode.Accepted, response);
+                    }
+                    else
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"libraryConnector {libraryConnectorStr} can not be configured.");
+                    }
+
+                    break;
+                case "LibraryConnectors/Test":
+                    LibraryConnector libraryConnector;
+                    libraryConnectorStr = GetRequestVariable<string>(requestVariables, "libraryConnector");
+                    if (!Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"libraryConnector {libraryConnectorStr} does not exist.");
+                        break;
+                    }
+
+                    if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
+                    {
+                        string kavitaUrl = GetRequestVariable<string>(requestVariables, "kavitaUrl");
+                        string kavitaUsername = GetRequestVariable<string>(requestVariables, "kavitaUsername");
+                        string kavitaPassword = GetRequestVariable<string>(requestVariables, "kavitaPassword");
+                        libraryConnector = new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword);
+                    }
+                    else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
+                    {
+                        string komgaUrl = GetRequestVariable<string>(requestVariables, "komgaUrl");
+                        string komgaAuth = GetRequestVariable<string>(requestVariables, "komgaAuth");
+                        libraryConnector = new Komga(this, komgaUrl, komgaAuth);
+                    }
+                    else
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"libraryConnector {libraryConnectorStr} can not be tested.");
+                        break;
+                    }
+
+                    libraryConnector.UpdateLibrary();
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                case "LibraryConnectors/Reset":
+                    libraryConnectorStr = GetRequestVariable<string>(requestVariables, "libraryConnector");
+                    if (!Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"libraryConnector {libraryConnectorStr} does not exist.");
+                        break;
+                    }
+
+                    DeleteLibraryConnector(libraryConnectorType);
+                    SendResponse(HttpStatusCode.Accepted, response);
+                    break;
+                default:
+                    SendResponse(HttpStatusCode.NotFound, response, "Request-URI does not exist.");
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            SendResponse(HttpStatusCode.BadRequest, response, e.Message);
         }
     }
 
     private void HandleDelete(HttpListenerRequest request, HttpListenerResponse response)
     {
-        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
-        string? connectorName, internalId;
-        MangaConnector connector;
-        Manga manga;
+        Dictionary<string, JsonElement> requestVariables = GetRequestVariables(request);
         string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
-        switch (path)
+        try
         {
-            case "Jobs":
-                if (!requestVariables.TryGetValue("jobId", out string? jobId) ||
-                    !_parent.jobBoss.TryGetJobById(jobId, out Job? job))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
+            switch (path)
+            {
+                case "Jobs":
+                    string jobId = GetRequestVariable<string>(requestVariables, "jobId");
+                    if (!_parent.jobBoss.TryGetJobById(jobId, out Job? job))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response, $"jobId {jobId} not found.");
+                        break;
+                    }
+
+                    _parent.jobBoss.RemoveJob(job!);
+                    SendResponse(HttpStatusCode.Accepted, response);
                     break;
-                }
-                _parent.jobBoss.RemoveJob(job!);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "Jobs/DownloadNewChapters":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   _parent.GetConnector(connectorName) is null ||
-                   _parent.GetPublicationById(internalId) is null)
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
+                case "Jobs/DownloadNewChapters":
+                    string connectorName = GetRequestVariable<string>(requestVariables, "connector");
+                    string internalId = GetRequestVariable<string>(requestVariables, "internalId");
+                    if (!_parent.TryGetConnector(connectorName, out MangaConnector? connector))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"connector {connectorName} does not exist.");
+                        break;
+                    }
+                    if (!_parent.TryGetPublicationById(internalId, out var manga))
+                    {
+                        SendResponse(HttpStatusCode.NotFound, response, $"internalId {internalId} not found.");
+                        break;
+                    }
+                    _parent.jobBoss.RemoveJobs(_parent.jobBoss.GetJobsLike(connector, manga));
+                    SendResponse(HttpStatusCode.Accepted, response);
                     break;
-                }
-                connector = _parent.GetConnector(connectorName)!;
-                manga = (Manga)_parent.GetPublicationById(internalId)!;
-                _parent.jobBoss.RemoveJobs(_parent.jobBoss.GetJobsLike(connector, manga));
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "NotificationConnectors":
-                if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
-                    !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationConnectorType notificationConnectorType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
+                case "NotificationConnectors":
+                    string notificationConnectorStr =
+                        GetRequestVariable<string>(requestVariables, "notificationConnector");
+                    if (!Enum.TryParse(notificationConnectorStr,
+                            out NotificationConnector.NotificationConnectorType notificationConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"notificationConnector {notificationConnectorType} does not exist.");
+                        break;
+                    }
+
+                    DeleteNotificationConnector(notificationConnectorType);
+                    SendResponse(HttpStatusCode.Accepted, response);
                     break;
-                }
-                DeleteNotificationConnector(notificationConnectorType);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            case "LibraryConnectors":
-                if (!requestVariables.TryGetValue("libraryConnectors", out string? libraryConnectorStr) ||
-                    !Enum.TryParse(libraryConnectorStr,
-                        out LibraryConnector.LibraryType libraryConnectoryType))
-                {
-                    SendResponse(HttpStatusCode.BadRequest, response);
+                case "LibraryConnectors":
+                    string libraryConnectorStr = GetRequestVariable<string>(requestVariables, "libraryConnector");
+                    if (!Enum.TryParse(libraryConnectorStr, out LibraryConnector.LibraryType libraryConnectorType))
+                    {
+                        SendResponse(HttpStatusCode.BadRequest, response, $"libraryConnector {libraryConnectorStr} does not exist.");
+                        break;
+                    }
+
+                    DeleteLibraryConnector(libraryConnectorType);
+                    SendResponse(HttpStatusCode.Accepted, response);
                     break;
-                }
-                DeleteLibraryConnector(libraryConnectoryType);
-                SendResponse(HttpStatusCode.Accepted, response);
-                break;
-            default:
-                SendResponse(HttpStatusCode.BadRequest, response);
-                break;
+                default:
+                    SendResponse(HttpStatusCode.NotFound, response, "Request-URI does not exist.");
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            SendResponse(HttpStatusCode.BadRequest, response, e.Message);
         }
     }
 
