@@ -28,7 +28,6 @@ public class TrangaSettings
         {RequestType.MangaDexImage, 40},
         {RequestType.MangaImage, 60},
         {RequestType.MangaCover, 250},
-        {RequestType.MangaDexAuthor, 250}, //Legacy
         {RequestType.Default, 60}
     };
 
