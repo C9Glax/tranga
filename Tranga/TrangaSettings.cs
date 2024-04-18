@@ -1,4 +1,6 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
 using Tranga.MangaConnectors;
@@ -19,7 +21,7 @@ public class TrangaSettings
     [JsonIgnore] public string jobsFolderPath => Path.Join(workingDirectory, "jobs");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     [JsonIgnore] internal static readonly string DefaultUserAgent = $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
-    public ushort? version { get; } = 1;
+    public ushort? version { get; } = 2;
     public bool aprilFoolsMode { get; private set; } = true;
     [JsonIgnore]internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
@@ -43,6 +45,7 @@ public class TrangaSettings
         {//Load from settings file
             FileStream lockFile = File.Create(lockFilePath,0, FileOptions.DeleteOnClose); //lock settingsfile
             string settingsStr = File.ReadAllText(sfp);
+            settingsStr = Regex.Replace(settingsStr, @"""MangaDexAuthor"": [0-9]+,", "");//https://github.com/C9Glax/tranga/pull/161 Remove sometime in the future :3
             TrangaSettings settings = JsonConvert.DeserializeObject<TrangaSettings>(settingsStr)!;
             this.requestLimits = settings.requestLimits;
             this.userAgent = settings.userAgent;
