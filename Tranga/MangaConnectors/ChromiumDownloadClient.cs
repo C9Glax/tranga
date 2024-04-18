@@ -10,6 +10,7 @@ internal class ChromiumDownloadClient : DownloadClient
 {
     private IBrowser browser { get; set; }
     private const string ChromiumVersion = "1154303";
+    private const int StartTimeoutMs = 30000;
     
     private async Task<IBrowser> DownloadBrowser()
     {
@@ -40,7 +41,7 @@ internal class ChromiumDownloadClient : DownloadClient
             await browserFetcher.DownloadAsync(ChromiumVersion);
         }
         
-        Log("Starting Browser.");
+        Log($"Starting Browser. ({StartTimeoutMs}ms timeout)");
         return await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
@@ -50,7 +51,7 @@ internal class ChromiumDownloadClient : DownloadClient
                 "--disable-dev-shm-usage",
                 "--disable-setuid-sandbox",
                 "--no-sandbox"},
-            Timeout = 10000
+            Timeout = StartTimeoutMs
         });
     }
 

@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "cuttingedge" ]
+    branches: [ "dev" ]
   workflow_dispatch:
 
 jobs:
@@ -42,4 +42,4 @@ jobs:
           pull: true
           push: true
           tags: |
-            glax/tranga-api:cuttingedge
+            glax/tranga-api:dev

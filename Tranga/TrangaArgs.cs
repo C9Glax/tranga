@@ -17,16 +17,16 @@ public partial class Tranga : GlobalBase
         
         string[]? consoleLogger = GetArg(args, ArgEnum.ConsoleLogger);
         string[]? fileLogger = GetArg(args, ArgEnum.FileLogger);
-        string? filePath = GetArg(args, ArgEnum.FileLoggerPath)?[0];
-        if (filePath is not null && !Directory.Exists(new FileInfo(filePath).DirectoryName))
-            Directory.CreateDirectory(new FileInfo(filePath).DirectoryName!);
+        string? directoryPath = GetArg(args, ArgEnum.FileLoggerPath)?[0];
+        if (directoryPath is not null && !Directory.Exists(directoryPath))
+            Directory.CreateDirectory(directoryPath);
         
         List<Logger.LoggerType> enabledLoggers = new();
         if(consoleLogger is not null)
             enabledLoggers.Add(Logger.LoggerType.ConsoleLogger);
         if (fileLogger is not null)
             enabledLoggers.Add(Logger.LoggerType.FileLogger);
-        Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, filePath);
+        Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, directoryPath);
 
         TrangaSettings? settings = null;
         string[]? downloadLocationPath = GetArg(args, ArgEnum.DownloadLocation);
@@ -109,7 +109,7 @@ public partial class Tranga : GlobalBase
         { ArgEnum.WorkingDirectory, new(new []{"-w", "--workingDirectory"}, 1, "Directory in which application-data is saved") },
         { ArgEnum.ConsoleLogger, new(new []{"-c", "--consoleLogger"}, 0, "Enables the consoleLogger") },
         { ArgEnum.FileLogger, new(new []{"-f", "--fileLogger"}, 0, "Enables the fileLogger") },
-        { ArgEnum.FileLoggerPath, new (new []{"-l", "--fPath"}, 1, "LogFilePath" ) },
+        { ArgEnum.FileLoggerPath, new (new []{"-l", "--fPath"}, 1, "Log Folder Path" ) },
         { ArgEnum.Help, new(new []{"-h", "--help"}, 0, "Print this") }
         //{ ArgEnum., new(new []{""}, 1, "") }
     };
