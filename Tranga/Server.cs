@@ -12,17 +12,17 @@ namespace Tranga;
 
 public partial class Server : GlobalBase
 {
-    private readonly HttpListener _listener = new ();
+    private readonly HttpListener _listener = new();
     private readonly Tranga _parent;
-    
+
     public Server(Tranga parent) : base(parent)
     {
         this._parent = parent;
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             this._listener.Prefixes.Add($"http://*:{settings.apiPortNumber}/");
         else
             this._listener.Prefixes.Add($"http://localhost:{settings.apiPortNumber}/");
-        Thread listenThread = new (Listen);
+        Thread listenThread = new(Listen);
         listenThread.Start();
         Thread watchThread = new(WatchRunning);
         watchThread.Start();
@@ -30,7 +30,7 @@ public partial class Server : GlobalBase
 
     private void WatchRunning()
     {
-        while(_parent.keepRunning)
+        while (_parent.keepRunning)
             Thread.Sleep(1000);
         this._listener.Close();
     }
@@ -38,7 +38,7 @@ public partial class Server : GlobalBase
     private void Listen()
     {
         this._listener.Start();
-        foreach(string prefix in this._listener.Prefixes)
+        foreach (string prefix in this._listener.Prefixes)
             Log($"Listening on {prefix}");
         while (this._listener.IsListening && _parent.keepRunning)
         {
@@ -54,7 +54,7 @@ public partial class Server : GlobalBase
             }
             catch (HttpListenerException)
             {
-                
+
             }
         }
     }
@@ -63,9 +63,9 @@ public partial class Server : GlobalBase
     {
         HttpListenerRequest request = context.Request;
         HttpListenerResponse response = context.Response;
-        if(request.HttpMethod == "OPTIONS")
+        if (request.HttpMethod == "OPTIONS")
             SendResponse(HttpStatusCode.OK, context.Response);
-        if(request.Url!.LocalPath.Contains("favicon"))
+        if (request.Url!.LocalPath.Contains("favicon"))
             SendResponse(HttpStatusCode.NoContent, response);
 
         if (Regex.IsMatch(request.Url.LocalPath, ""))
@@ -85,16 +85,16 @@ public partial class Server : GlobalBase
             case "DELETE":
                 HandleDelete(request, response);
                 break;
-            default: 
+            default:
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;
         }
     }
-    
+
     private Dictionary<string, string> GetRequestVariables(string query)
     {
         Dictionary<string, string> ret = new();
-        Regex queryRex = new (@"\?{1}&?([A-z0-9-=]+=[A-z0-9-=]+)+(&[A-z0-9-=]+=[A-z0-9-=]+)*");
+        Regex queryRex = new(@"\?{1}&?([A-z0-9-=]+=[A-z0-9-=]+)+(&[A-z0-9-=]+=[A-z0-9-=]+)*");
         if (!queryRex.IsMatch(query))
             return ret;
         query = query.Substring(1);
@@ -106,6 +106,22 @@ public partial class Server : GlobalBase
             ret.Add(var, val);
         }
         return ret;
+    }
+
+    private Dictionary<string, string> GetRequestBody(HttpListenerRequest request)
+    {
+        if (!request.HasEntityBody)
+        {
+            Log("No request body");
+            Dictionary<string, string> emptyBody = new();
+            return emptyBody;
+        }
+        Stream body = request.InputStream;
+        Encoding encoding = request.ContentEncoding;
+        StreamReader reader = new StreamReader(body, encoding);
+        string s = reader.ReadToEnd();
+        Dictionary<string, string> requestBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(s);
+        return requestBody;
     }
 
     private void HandleGet(HttpListenerRequest request, HttpListenerResponse response)
@@ -274,7 +290,13 @@ public partial class Server : GlobalBase
 
     private void HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
-        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
+        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);  //Variables in the URI
+        Dictionary<string, string> requestBody = GetRequestBody(request);                       //Variables in the JSON body
+        Dictionary<string, string> requestParams = new();                                       //The actual variable used for the API
+
+        //Concatenate the two dictionaries for compatibility with older versions of front-ends
+        requestParams = requestVariables.Concat(requestBody).ToDictionary(x => x.Key, x => x.Value);
+
         string? connectorName, internalId, jobId, chapterNumStr, customFolderName, translatedLanguage, notificationConnectorStr, libraryConnectorStr;
         MangaConnector? connector;
         Manga? tmpManga;
@@ -286,7 +308,7 @@ public partial class Server : GlobalBase
         switch (path)
         {
             case "Manga":
-                if(!requestVariables.TryGetValue("internalId", out internalId) ||
+                if(!requestParams.TryGetValue("internalId", out internalId) ||
                    !_parent.TryGetPublicationById(internalId, out tmpManga))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -296,9 +318,9 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.OK, response, manga);
                 break;
             case "Jobs/MonitorManga":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
-                   !requestVariables.TryGetValue("interval", out string? intervalStr) ||
+                if(!requestParams.TryGetValue("connector", out connectorName) ||
+                   !requestParams.TryGetValue("internalId", out internalId) ||
+                   !requestParams.TryGetValue("interval", out string? intervalStr) ||
                    !_parent.TryGetConnector(connectorName, out connector)||
                    !_parent.TryGetPublicationById(internalId, out tmpManga) ||
                    !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
@@ -309,7 +331,7 @@ public partial class Server : GlobalBase
 
                 manga = (Manga)tmpManga!;
                 
-                if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
+                if (requestParams.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
                 {
                     if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
                     {
@@ -319,16 +341,16 @@ public partial class Server : GlobalBase
                     manga.ignoreChaptersBelow = chapterNum;
                 }
                 
-                if (requestVariables.TryGetValue("customFolderName", out customFolderName))
+                if (requestParams.TryGetValue("customFolderName", out customFolderName))
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
-                requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
+                requestParams.TryGetValue("translatedLanguage", out translatedLanguage);
                 
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval, translatedLanguage: translatedLanguage??"en"));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/DownloadNewChapters":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                if(!requestParams.TryGetValue("connector", out connectorName) ||
+                   !requestParams.TryGetValue("internalId", out internalId) ||
                    !_parent.TryGetConnector(connectorName, out connector)||
                    !_parent.TryGetPublicationById(internalId, out tmpManga))
                 {
@@ -338,7 +360,7 @@ public partial class Server : GlobalBase
 
                 manga = (Manga)tmpManga!;
                 
-                if (requestVariables.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
+                if (requestParams.TryGetValue("ignoreBelowChapterNum", out chapterNumStr))
                 {
                     if (!float.TryParse(chapterNumStr, numberFormatDecimalPoint, out float chapterNum))
                     {
@@ -348,15 +370,15 @@ public partial class Server : GlobalBase
                     manga.ignoreChaptersBelow = chapterNum;
                 }
 
-                if (requestVariables.TryGetValue("customFolderName", out customFolderName))
+                if (requestParams.TryGetValue("customFolderName", out customFolderName))
                     manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
-                requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
+                requestParams.TryGetValue("translatedLanguage", out translatedLanguage);
                 
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false, translatedLanguage: translatedLanguage??"en"));
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/UpdateMetadata":
-                if (!requestVariables.TryGetValue("internalId", out internalId))
+                if (!requestParams.TryGetValue("internalId", out internalId))
                 {
                     foreach (Job pJob in _parent.jobBoss.jobs.Where(possibleDncJob =>
                                  possibleDncJob.jobType is Job.JobType.DownloadNewChaptersJob).ToArray())//ToArray to avoid modyifying while adding new jobs
@@ -384,7 +406,7 @@ public partial class Server : GlobalBase
                 }
                 break;
             case "Jobs/StartNow":
-                if (!requestVariables.TryGetValue("jobId", out jobId) ||
+                if (!requestParams.TryGetValue("jobId", out jobId) ||
                     !_parent.jobBoss.TryGetJobById(jobId, out job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -394,7 +416,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/Cancel":
-                if (!requestVariables.TryGetValue("jobId", out jobId) ||
+                if (!requestParams.TryGetValue("jobId", out jobId) ||
                     !_parent.jobBoss.TryGetJobById(jobId, out job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -404,8 +426,8 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/UpdateDownloadLocation":
-                if (!requestVariables.TryGetValue("downloadLocation", out string? downloadLocation) ||
-                    !requestVariables.TryGetValue("moveFiles", out string? moveFilesStr) ||
+                if (!requestParams.TryGetValue("downloadLocation", out string? downloadLocation) ||
+                    !requestParams.TryGetValue("moveFiles", out string? moveFilesStr) ||
                     !bool.TryParse(moveFilesStr, out bool moveFiles))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -415,7 +437,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/AprilFoolsMode":
-                if (!requestVariables.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
+                if (!requestParams.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
                     bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -425,7 +447,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             /*case "Settings/UpdateWorkingDirectory":
-                if (!requestVariables.TryGetValue("workingDirectory", out string? workingDirectory))
+                if (!requestParams.TryGetValue("workingDirectory", out string? workingDirectory))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -434,7 +456,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;*/
             case "Settings/userAgent":
-                if(!requestVariables.TryGetValue("userAgent", out string? customUserAgent))
+                if(!requestParams.TryGetValue("userAgent", out string? customUserAgent))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -447,8 +469,8 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/customRequestLimit":
-                if (!requestVariables.TryGetValue("requestType", out string? requestTypeStr) ||
-                    !requestVariables.TryGetValue("requestsPerMinute", out string? requestsPerMinuteStr) ||
+                if (!requestParams.TryGetValue("requestType", out string? requestTypeStr) ||
+                    !requestParams.TryGetValue("requestsPerMinute", out string? requestsPerMinuteStr) ||
                     !Enum.TryParse(requestTypeStr, out RequestType requestType) ||
                     !int.TryParse(requestsPerMinuteStr, out int requestsPerMinute))
                 {
@@ -469,7 +491,7 @@ public partial class Server : GlobalBase
                 settings.ExportSettings();
                 break;
             case "NotificationConnectors/Update":
-                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                if (!requestParams.TryGetValue("notificationConnector", out notificationConnectorStr) ||
                     !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -478,8 +500,8 @@ public partial class Server : GlobalBase
 
                 if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
                 {
-                    if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
-                        !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
+                    if (!requestParams.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
+                        !requestParams.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -488,7 +510,7 @@ public partial class Server : GlobalBase
                     SendResponse(HttpStatusCode.Accepted, response);
                 }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
                 {
-                    if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
+                    if (!requestParams.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -497,8 +519,8 @@ public partial class Server : GlobalBase
                     SendResponse(HttpStatusCode.Accepted, response);
                 }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
                 {
-                    if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
-                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
+                    if (!requestParams.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
+                        !requestParams.TryGetValue("ntfyAuth", out string? ntfyAuth))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -513,7 +535,7 @@ public partial class Server : GlobalBase
                 break;
             case "NotificationConnectors/Test":
                 NotificationConnector notificationConnector;
-                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                if (!requestParams.TryGetValue("notificationConnector", out notificationConnectorStr) ||
                     !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -522,8 +544,8 @@ public partial class Server : GlobalBase
 
                 if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Gotify)
                 {
-                    if (!requestVariables.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
-                        !requestVariables.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
+                    if (!requestParams.TryGetValue("gotifyUrl", out string? gotifyUrl) ||
+                        !requestParams.TryGetValue("gotifyAppToken", out string? gotifyAppToken))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -531,7 +553,7 @@ public partial class Server : GlobalBase
                     notificationConnector = new Gotify(this, gotifyUrl, gotifyAppToken);
                 }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.LunaSea)
                 {
-                    if (!requestVariables.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
+                    if (!requestParams.TryGetValue("lunaseaWebhook", out string? lunaseaWebhook))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -539,8 +561,8 @@ public partial class Server : GlobalBase
                     notificationConnector = new LunaSea(this, lunaseaWebhook);
                 }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
                 {
-                    if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
-                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
+                    if (!requestParams.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
+                        !requestParams.TryGetValue("ntfyAuth", out string? ntfyAuth))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -557,7 +579,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "NotificationConnectors/Reset":
-                if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||
+                if (!requestParams.TryGetValue("notificationConnector", out notificationConnectorStr) ||
                     !Enum.TryParse(notificationConnectorStr, out notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -567,7 +589,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "LibraryConnectors/Update":
-                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                if (!requestParams.TryGetValue("libraryConnector", out libraryConnectorStr) ||
                     !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -576,9 +598,9 @@ public partial class Server : GlobalBase
 
                 if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
                 {
-                    if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
-                        !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
-                        !requestVariables.TryGetValue("kavitaPassword", out string? kavitaPassword))
+                    if (!requestParams.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
+                        !requestParams.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
+                        !requestParams.TryGetValue("kavitaPassword", out string? kavitaPassword))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -587,8 +609,8 @@ public partial class Server : GlobalBase
                     SendResponse(HttpStatusCode.Accepted, response);
                 }else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
                 {
-                    if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
-                        !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
+                    if (!requestParams.TryGetValue("komgaUrl", out string? komgaUrl) ||
+                        !requestParams.TryGetValue("komgaAuth", out string? komgaAuth))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -603,7 +625,7 @@ public partial class Server : GlobalBase
                 break;
             case "LibraryConnectors/Test":
                 LibraryConnector libraryConnector;
-                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                if (!requestParams.TryGetValue("libraryConnector", out libraryConnectorStr) ||
                     !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -612,9 +634,9 @@ public partial class Server : GlobalBase
 
                 if (libraryConnectorType is LibraryConnector.LibraryType.Kavita)
                 {
-                    if (!requestVariables.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
-                        !requestVariables.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
-                        !requestVariables.TryGetValue("kavitaPassword", out string? kavitaPassword))
+                    if (!requestParams.TryGetValue("kavitaUrl", out string? kavitaUrl) ||
+                        !requestParams.TryGetValue("kavitaUsername", out string? kavitaUsername) ||
+                        !requestParams.TryGetValue("kavitaPassword", out string? kavitaPassword))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -622,8 +644,8 @@ public partial class Server : GlobalBase
                     libraryConnector = new Kavita(this, kavitaUrl, kavitaUsername, kavitaPassword);
                 }else if (libraryConnectorType is LibraryConnector.LibraryType.Komga)
                 {
-                    if (!requestVariables.TryGetValue("komgaUrl", out string? komgaUrl) ||
-                        !requestVariables.TryGetValue("komgaAuth", out string? komgaAuth))
+                    if (!requestParams.TryGetValue("komgaUrl", out string? komgaUrl) ||
+                        !requestParams.TryGetValue("komgaAuth", out string? komgaAuth))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
@@ -639,7 +661,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "LibraryConnectors/Reset":
-                if (!requestVariables.TryGetValue("libraryConnector", out libraryConnectorStr) ||
+                if (!requestParams.TryGetValue("libraryConnector", out libraryConnectorStr) ||
                     !Enum.TryParse(libraryConnectorStr, out libraryConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -656,7 +678,13 @@ public partial class Server : GlobalBase
 
     private void HandleDelete(HttpListenerRequest request, HttpListenerResponse response)
     {
-        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);
+        Dictionary<string, string> requestVariables = GetRequestVariables(request.Url!.Query);  //Variables in the URI
+        Dictionary<string, string> requestBody = GetRequestBody(request);                       //Variables in the JSON body
+        Dictionary<string, string> requestParams = new();                                       //The actual variable used for the API
+
+        //Concatenate the two dictionaries for compatibility with older versions of front-ends
+        requestParams = requestVariables.Concat(requestBody).ToDictionary(x => x.Key, x => x.Value);
+
         string? connectorName, internalId;
         MangaConnector connector;
         Manga manga;
@@ -664,7 +692,7 @@ public partial class Server : GlobalBase
         switch (path)
         {
             case "Jobs":
-                if (!requestVariables.TryGetValue("jobId", out string? jobId) ||
+                if (!requestParams.TryGetValue("jobId", out string? jobId) ||
                     !_parent.jobBoss.TryGetJobById(jobId, out Job? job))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -674,8 +702,8 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Jobs/DownloadNewChapters":
-                if(!requestVariables.TryGetValue("connector", out connectorName) ||
-                   !requestVariables.TryGetValue("internalId", out internalId) ||
+                if(!requestParams.TryGetValue("connector", out connectorName) ||
+                   !requestParams.TryGetValue("internalId", out internalId) ||
                    _parent.GetConnector(connectorName) is null ||
                    _parent.GetPublicationById(internalId) is null)
                 {
@@ -688,7 +716,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "NotificationConnectors":
-                if (!requestVariables.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
+                if (!requestParams.TryGetValue("notificationConnector", out string? notificationConnectorStr) ||
                     !Enum.TryParse(notificationConnectorStr, out NotificationConnector.NotificationConnectorType notificationConnectorType))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
@@ -698,7 +726,7 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "LibraryConnectors":
-                if (!requestVariables.TryGetValue("libraryConnectors", out string? libraryConnectorStr) ||
+                if (!requestParams.TryGetValue("libraryConnector", out string? libraryConnectorStr) ||
                     !Enum.TryParse(libraryConnectorStr,
                         out LibraryConnector.LibraryType libraryConnectoryType))
                 {
@@ -709,6 +737,12 @@ public partial class Server : GlobalBase
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             default:
+                Log("Invalid Request:");
+                Log(request.Url!.Query);
+                foreach (KeyValuePair<string, string> kvp in requestParams)
+                {
+                    Log("Request variable = {0}, Variable Value = {1}", kvp.Key, kvp.Value);
+                }
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;
         }
