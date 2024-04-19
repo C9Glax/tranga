@@ -1,12 +1,3 @@
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -61,8 +52,8 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [Manga4Life](https://manga4life.com) (en)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues)
 
-and trigger an scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
-Notifications will can sent to your devices using [Gotify](https://gotify.net/) and [LunaSea](https://www.lunasea.app/).
+and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
+Notifications can be sent to your devices using [Gotify](https://gotify.net/) and [LunaSea](https://www.lunasea.app/).
 
 ### What this does and doesn't do
 
@@ -75,15 +66,15 @@ This project downloads the images for a Manga from the specified Scanlation-Webs
 It does this on an interval, and checks for any Chapters (.cbz-Archive) not already existing in your specified Download-Location. (If you rename or move files, it will download those again)  
 Tranga can (if configured) trigger a scan in Komga or Kavita, however the directory in which the Manga reside has to be available to both Tranga and Komga/Kavita.
 
-The project doesn't manage metadata, doesn't curate, change or enhance any information that isn't available on the selected Scanlation-Site.  
+The project doesn't manage metadata, and doesn't curate, change or enhance any information that isn't available on the selected Scanlation-Site.  
 It will blindly use whatever is scrapes (yes this is a glorified Web-scraper).
 
 
 ### Inspiration:
 
 Because [Kaizoku](https://github.com/oae/kaizoku) was relying on [mangal](https://github.com/metafates/mangal) and mangal
-hasn't received bugfixes for it's issues with Titles not showing up, or throwing errors because of illegal characters,
-there were no alternatives for automatic downloads. However [Kaizoku](https://github.com/oae/kaizoku) certainly had a great Web-UI.
+hasn't received bugfixes for its issues with Titles not showing up, or throwing errors because of illegal characters,
+there were no alternatives for automatic downloads. However, [Kaizoku](https://github.com/oae/kaizoku) certainly had a great Web-UI.
 
 That is why I wanted to create my own project, in a language I understand, and that I am able to maintain myself.
 
@@ -102,24 +93,14 @@ That is why I wanted to create my own project, in a language I understand, and t
 <!-- GETTING STARTED -->
 ## Getting Started
 
-There is two release types:
-
-- CLI
-- Docker
-
-### CLI
-
-Head over to [releases](https://git.bernloehr.eu/glax/Tranga/releases) and download.
-
-
-~~The CLI will guide you through setup.~~ Not in the current version.  
-Right now it is barebones with options to view logs and make HTTP-Requests
-
 ### Docker
 
 Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.  
-Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives) downloaded (for exampled where Komga/Kavita can access them).  
+Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives) downloaded (where Komga/Kavita can access them).  
 The `docker-compose` also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the repo README.
+
+For compatibility do not execute the compose as root (which you should not do anyways...) but as user that can
+access the folder.
 
 ### Prerequisites
 
@@ -131,7 +112,6 @@ The `docker-compose` also includes [tranga-website](https://github.com/C9Glax/tr
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Docker ARM support
 - [ ] ❓
 
 See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list of proposed features (and known issues).
