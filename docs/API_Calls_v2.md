@@ -179,7 +179,7 @@ Returns all configured Jobs.
 <details>
   <summary>Returns</summary>
   
-  List of [Jobs](Types.md#job)
+  List of JobIds.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Running`
@@ -188,8 +188,8 @@ Returns all Running Jobs.
 
 <details>
   <summary>Returns</summary>
-  
-  List of [Jobs](Types.md#job)
+
+  List of JobIds.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Waiting`
@@ -198,8 +198,8 @@ Returns all Waiting Jobs.
 
 <details>
   <summary>Returns</summary>
-  
-  List of [Jobs](Types.md#job)
+
+  List of JobIds.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Monitoring`
@@ -208,8 +208,8 @@ Returns all Monitoring Jobs.
 
 <details>
   <summary>Returns</summary>
-  
-  List of [Jobs](Types.md#job)
+
+  List of JobIds.
 </details>
 
 ### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Jobs/Create/Monitor/<internalId>`
