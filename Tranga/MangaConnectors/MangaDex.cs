@@ -61,7 +61,7 @@ public class MangaDex : MangaConnector
     public override Manga? GetMangaFromId(string publicationId)
     {
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}", RequestType.MangaInfo);
+            downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}?includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag", RequestType.MangaInfo);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return null;
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);

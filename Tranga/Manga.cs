@@ -12,14 +12,14 @@ namespace Tranga;
 public struct Manga
 {
     public string sortName { get; private set; }
-    public List<string> authors { get; }
+    public List<string> authors { get; private set; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public Dictionary<string,string> altTitles { get; }
+    public Dictionary<string,string> altTitles { get; private set; }
     // ReSharper disable once MemberCanBePrivate.Global
     public string? description { get; private set; }
-    public string[] tags { get; }
+    public string[] tags { get; private set; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public string? coverUrl { get; }
+    public string? coverUrl { get; private set; }
     public string? coverFileNameInCache { get; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Dictionary<string,string> links { get; }
@@ -28,7 +28,7 @@ public struct Manga
     public string? originalLanguage { get; }
     // ReSharper disable twice MemberCanBePrivate.Global
     public string status { get; private set; }
-    public ReleaseStatusByte releaseStatus { get; }
+    public ReleaseStatusByte releaseStatus { get; private set; }
     public enum ReleaseStatusByte : byte
     {
         Continuing = 0,
@@ -76,10 +76,12 @@ public struct Manga
     {
         this.sortName = newManga.sortName;
         this.description = newManga.description;
-        foreach (string author in newManga.authors)
-            if(!this.authors.Contains(author))
-                this.authors.Add(author);
+        this.coverUrl = newManga.coverUrl;
+        this.authors = authors.Union(newManga.authors).ToList();
+        this.altTitles = altTitles.UnionBy(newManga.altTitles, kv => kv.Key).ToDictionary(x => x.Key, x => x.Value);
+        this.tags = tags.Union(newManga.tags).ToArray();
         this.status = newManga.status;
+        this.releaseStatus = newManga.releaseStatus;
         this.year = newManga.year;
     }
 
@@ -93,7 +95,8 @@ public struct Manga
                this.releaseStatus == compareManga.releaseStatus &&
                this.sortName == compareManga.sortName &&
                this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&
-               this.tags.SequenceEqual(compareManga.tags);
+               this.authors.All(a => compareManga.authors.Contains(a)) &&
+               this.tags.All(t => compareManga.tags.Contains(t));
     }
 
     public override string ToString()
