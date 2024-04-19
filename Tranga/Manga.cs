@@ -78,7 +78,7 @@ public struct Manga
         this.description = newManga.description;
         this.coverUrl = newManga.coverUrl;
         this.authors = authors.Union(newManga.authors).ToList();
-        this.altTitles = altTitles.Concat(newManga.altTitles).ToDictionary(x => x.Key, x => x.Value);
+        this.altTitles = altTitles.UnionBy(newManga.altTitles, kv => kv.Key).ToDictionary(x => x.Key, x => x.Value);
         this.tags = tags.Union(newManga.tags).ToArray();
         this.status = newManga.status;
         this.releaseStatus = newManga.releaseStatus;
