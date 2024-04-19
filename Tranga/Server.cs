@@ -68,7 +68,7 @@ public partial class Server : GlobalBase
         if (request.Url!.LocalPath.Contains("favicon"))
             SendResponse(HttpStatusCode.NoContent, response);
 
-        if (Regex.IsMatch(request.Url.LocalPath, ""))
+        if (Regex.IsMatch(request.Url.LocalPath, "/v2(/.*)?"))
         {
             HandleRequestV2(context);
             return;

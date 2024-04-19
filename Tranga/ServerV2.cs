@@ -18,30 +18,27 @@ public partial class Server
 
         ValueTuple<HttpStatusCode, object?> responseMessage = request.HttpMethod switch
         {
-            "GET" => HandleGetV2(path, response, requestParams),
-            "POST" => HandlePostV2(path, response, requestParams),
-            "DELETE" => HandleDeleteV2(path, response, requestParams),
+            "GET" => HandleGetV2(path, requestParams),
+            "POST" => HandlePostV2(path, requestParams),
+            "DELETE" => HandleDeleteV2(path, requestParams),
             _ => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.MethodNotAllowed, null)
         };
         
         SendResponse(responseMessage.Item1, response, responseMessage.Item2);
     }
     
-    private ValueTuple<HttpStatusCode, object?> HandleGetV2(string path, HttpListenerResponse response,
-        Dictionary<string, string> requestParameters)
+    private ValueTuple<HttpStatusCode, object?> HandleGetV2(string path, Dictionary<string, string> requestParameters)
     {
-        throw new NotImplementedException("v2 not implemented yet");
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not implemented.");
     }
     
-    private ValueTuple<HttpStatusCode, object?> HandlePostV2(string path, HttpListenerResponse response,
-        Dictionary<string, string> requestParameters)
+    private ValueTuple<HttpStatusCode, object?> HandlePostV2(string path, Dictionary<string, string> requestParameters)
     {
-        throw new NotImplementedException("v2 not implemented yet");
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not implemented.");
     }
     
-    private ValueTuple<HttpStatusCode, object?> HandleDeleteV2(string path, HttpListenerResponse response,
-        Dictionary<string, string> requestParameters)
+    private ValueTuple<HttpStatusCode, object?> HandleDeleteV2(string path, Dictionary<string, string> requestParameters)
     {
-        throw new NotImplementedException("v2 not implemented yet");
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not implemented.");
     }
 }
