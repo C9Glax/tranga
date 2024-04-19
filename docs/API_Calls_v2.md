@@ -76,10 +76,6 @@ Returns the specified Manga.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs](#-v2jobs)
-  * [GET /v2/Jobs/Running](#-v2jobsrunning)
-  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
-  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
   * [GET /v2/Jobs/*jobId*](#-v2jobs)
 </details>
 
@@ -102,10 +98,6 @@ Deletes all associated Jobs for the specified Manga
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs](#-v2jobs)
-  * [GET /v2/Jobs/Running](#-v2jobsrunning)
-  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
-  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
   * [GET /v2/Jobs/*jobId*](#-v2jobs)
 </details>
 
@@ -126,11 +118,7 @@ Returns the URL for the Cover of the specified Manga.
   <summary>Request</summary>
   
   `internalId` is returned in the response of
-  * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs](#-v2jobs)
-  * [GET /v2/Jobs/Running](#-v2jobsrunning)
-  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
-  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
+  *  [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
   * [GET /v2/Jobs/*jobId*](#-v2jobs)
 </details>
 
@@ -153,10 +141,6 @@ Returns the Chapter-list for the specified Manga.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs](#-v2jobs)
-  * [GET /v2/Jobs/Running](#-v2jobsrunning)
-  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
-  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
   * [GET /v2/Jobs/*jobId*](#-v2jobs)
 </details>
 
@@ -179,7 +163,7 @@ Returns all configured Jobs.
 <details>
   <summary>Returns</summary>
   
-  List of [Jobs](Types.md#job)
+  List of JobIds.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Running`
@@ -188,8 +172,8 @@ Returns all Running Jobs.
 
 <details>
   <summary>Returns</summary>
-  
-  List of [Jobs](Types.md#job)
+
+  List of JobIds.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Waiting`
@@ -198,8 +182,8 @@ Returns all Waiting Jobs.
 
 <details>
   <summary>Returns</summary>
-  
-  List of [Jobs](Types.md#job)
+
+  List of JobIds.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Monitoring`
@@ -208,8 +192,8 @@ Returns all Monitoring Jobs.
 
 <details>
   <summary>Returns</summary>
-  
-  List of [Jobs](Types.md#job)
+
+  List of JobIds.
 </details>
 
 ### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Jobs/Create/Monitor/<internalId>`
@@ -221,10 +205,6 @@ Creates a Monitoring-Job for the specified Manga at the specified Interval.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs](#-v2jobs)
-  * [GET /v2/Jobs/Running](#-v2jobsrunning)
-  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
-  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
   * [GET /v2/Jobs/*jobId*](#-v2jobs)
 
     | Parameter | Value                                                  |
@@ -252,10 +232,6 @@ Creates a Job to check for new Chapters and Download new ones of the specified M
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs](#-v2jobs)
-  * [GET /v2/Jobs/Running](#-v2jobsrunning)
-  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
-  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
   * [GET /v2/Jobs/*jobId*](#-v2jobs)
 </details>
 
@@ -288,10 +264,6 @@ Updates the Metadata of the specified Manga.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs](#-v2jobs)
-  * [GET /v2/Jobs/Running](#-v2jobsrunning)
-  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
-  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
   * [GET /v2/Jobs/*jobId*](#-v2jobs)
 </details>
 
