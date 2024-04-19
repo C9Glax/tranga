@@ -10,7 +10,7 @@ using Tranga.NotificationConnectors;
 
 namespace Tranga;
 
-public class Server : GlobalBase
+public partial class Server : GlobalBase
 {
     private readonly HttpListener _listener = new ();
     private readonly Tranga _parent;
@@ -67,6 +67,12 @@ public class Server : GlobalBase
             SendResponse(HttpStatusCode.OK, context.Response);
         if(request.Url!.LocalPath.Contains("favicon"))
             SendResponse(HttpStatusCode.NoContent, response);
+
+        if (Regex.IsMatch(request.Url.LocalPath, ""))
+        {
+            HandleRequestV2(context);
+            return;
+        }
 
         switch (request.HttpMethod)
         {
