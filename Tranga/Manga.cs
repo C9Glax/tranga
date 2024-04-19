@@ -28,7 +28,7 @@ public struct Manga
     public string? originalLanguage { get; }
     // ReSharper disable twice MemberCanBePrivate.Global
     public string status { get; private set; }
-    public ReleaseStatusByte releaseStatus { get; }
+    public ReleaseStatusByte releaseStatus { get; private set; }
     public enum ReleaseStatusByte : byte
     {
         Continuing = 0,
@@ -80,6 +80,7 @@ public struct Manga
             if(!this.authors.Contains(author))
                 this.authors.Add(author);
         this.status = newManga.status;
+        this.releaseStatus = newManga.releaseStatus;
         this.year = newManga.year;
     }
 
