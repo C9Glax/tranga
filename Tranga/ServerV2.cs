@@ -1,7 +1,5 @@
 ﻿using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace Tranga;
 
@@ -27,30 +25,6 @@ public partial class Server
         };
         
         SendResponse(responseMessage.Item1, response, responseMessage.Item2);
-    }
-    
-    private Dictionary<string, string> GetRequestBody(HttpListenerRequest request)
-    {
-        if (!request.HasEntityBody)
-        {
-            Log("No request body");
-            return new Dictionary<string, string>();
-        }
-        Stream body = request.InputStream;
-        Encoding encoding = request.ContentEncoding;
-        using StreamReader streamReader = new (body, encoding);
-        try
-        {
-            Dictionary<string, string> requestBody =
-                JsonConvert.DeserializeObject<Dictionary<string, string>>(streamReader.ReadToEnd())
-                ?? new();
-            return requestBody;
-        }
-        catch (JsonException e)
-        {
-            Log(e.Message);
-        }
-        return new Dictionary<string, string>();
     }
     
     private ValueTuple<HttpStatusCode, object?> HandleGetV2(string path, HttpListenerResponse response,

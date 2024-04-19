@@ -113,15 +113,23 @@ public partial class Server : GlobalBase
         if (!request.HasEntityBody)
         {
             Log("No request body");
-            Dictionary<string, string> emptyBody = new();
-            return emptyBody;
+            return new Dictionary<string, string>();
         }
         Stream body = request.InputStream;
         Encoding encoding = request.ContentEncoding;
-        StreamReader reader = new StreamReader(body, encoding);
-        string s = reader.ReadToEnd();
-        Dictionary<string, string> requestBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(s);
-        return requestBody;
+        using StreamReader streamReader = new (body, encoding);
+        try
+        {
+            Dictionary<string, string> requestBody =
+                JsonConvert.DeserializeObject<Dictionary<string, string>>(streamReader.ReadToEnd())
+                ?? new();
+            return requestBody;
+        }
+        catch (JsonException e)
+        {
+            Log(e.Message);
+        }
+        return new Dictionary<string, string>();
     }
 
     private void HandleGet(HttpListenerRequest request, HttpListenerResponse response)
