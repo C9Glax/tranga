@@ -17,23 +17,16 @@ public partial class Server
         Dictionary<string, string> requestBody = GetRequestBody(request);                       //Variables in the JSON body
         Dictionary<string, string> requestParams = requestVariables.UnionBy(requestBody, v => v.Key)
                 .ToDictionary(kv => kv.Key, kv => kv.Value); //The actual variable used for the API
-        
-        
-        switch (request.HttpMethod)
+
+        ValueTuple<HttpStatusCode, object?> responseMessage = request.HttpMethod switch
         {
-            case "GET":
-                HandleGetV2(path, response, requestParams);
-                break;
-            case "POST":
-                HandlePostV2(path, response, requestParams);
-                break;
-            case "DELETE":
-                HandleDeleteV2(path, response, requestParams);
-                break;
-            default: 
-                SendResponse(HttpStatusCode.MethodNotAllowed, response);
-                break;
-        }
+            "GET" => HandleGetV2(path, response, requestParams),
+            "POST" => HandlePostV2(path, response, requestParams),
+            "DELETE" => HandleDeleteV2(path, response, requestParams),
+            _ => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.MethodNotAllowed, null)
+        };
+        
+        SendResponse(responseMessage.Item1, response, responseMessage.Item2);
     }
     
     private Dictionary<string, string> GetRequestBody(HttpListenerRequest request)
@@ -60,19 +53,19 @@ public partial class Server
         return new Dictionary<string, string>();
     }
     
-    private void HandleGetV2(string path, HttpListenerResponse response,
+    private ValueTuple<HttpStatusCode, object?> HandleGetV2(string path, HttpListenerResponse response,
         Dictionary<string, string> requestParameters)
     {
         throw new NotImplementedException("v2 not implemented yet");
     }
     
-    private void HandlePostV2(string path, HttpListenerResponse response,
+    private ValueTuple<HttpStatusCode, object?> HandlePostV2(string path, HttpListenerResponse response,
         Dictionary<string, string> requestParameters)
     {
         throw new NotImplementedException("v2 not implemented yet");
     }
     
-    private void HandleDeleteV2(string path, HttpListenerResponse response,
+    private ValueTuple<HttpStatusCode, object?> HandleDeleteV2(string path, HttpListenerResponse response,
         Dictionary<string, string> requestParameters)
     {
         throw new NotImplementedException("v2 not implemented yet");
