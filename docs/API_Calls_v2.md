@@ -416,6 +416,28 @@ Cancels the specified Job, or dequeues it.
   | 404        | Manga with `jobId` could not be found |
 </details>
 
+### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Job/<jobId>/SetInterval`
+
+Edits the specified Job.
+
+<details>
+  <summary>Request</summary>
+
+  `jobId` is returned in the response of
+  * [GET /v2/Jobs](#-v2jobs)
+  * [GET /v2/Jobs/Running](#-v2jobsrunning)
+  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
+  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
+</details>
+
+<details>
+  <summary>Returns</summary>
+
+  | StatusCode | Meaning                               |
+  |------------|---------------------------------------|
+  | 404        | Manga with `jobId` could not be found |
+</details>
+
 ## Settings <sup>[^top](#top)</sup>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Settings`
