@@ -6,14 +6,68 @@ using Newtonsoft.Json;
 
 namespace Tranga.Server;
 
-public class Server : GlobalBase, IDisposable
+public partial class Server : GlobalBase, IDisposable
 {
     private readonly HttpListener _listener = new();
     private readonly Tranga _parent;
     private bool _running = true;
 
+    private readonly List<RequestPath> _apiRequestPaths;
+
     public Server(Tranga parent) : base(parent)
     {
+        /*
+         * Contains all valid Request Methods, Paths (with Regex Group Matching for specific Parameters) and Handling Methods
+         */
+        _apiRequestPaths = new List<RequestPath>
+        {
+            new ("GET", @"/v2/Connector/Types", GetV2ConnectorTypes),
+            new ("GET", @"/v2/Connector/([a-zA-Z]+)/GetManga", GetV2ConnectorConnectorNameGetManga),
+            new ("GET", @"/v2/Manga/([-A-Za-z0-9+/]*={0,3})", GetV2MangaInternalId),
+            new ("DELETE", @"/v2/Manga/([-A-Za-z0-9+/]*={0,3})", DeleteV2MangaInternalId),
+            new ("GET", @"/v2/Manga/([-A-Za-z0-9+/]*={0,3})/Cover", GetV2MangaInternalIdCover),
+            new ("GET", @"/v2/Manga/([-A-Za-z0-9+/]*={0,3})/Chapters", GetV2MangaInternalIdChapters),
+            new ("GET", @"/v2/Jobs", GetV2Jobs),
+            new ("GET", @"/v2/Jobs/Running", GetV2JobsRunning),
+            new ("GET", @"/v2/Jobs/Waiting", GetV2JobsWaiting),
+            new ("GET", @"/v2/Jobs/Monitoring", GetV2JobsMonitoring),
+            new ("POST", @"/v2/Jobs/Create/Monitor/(^[-A-Za-z0-9+/]*={0,3}$)", PostV2JobsCreateMonitorInternalId),
+            new ("POST", @"/v2/Jobs/Create/DownloadNewChapters/(^[-A-Za-z0-9+/]*={0,3}$)", PostV2JobsCreateDownloadNewChaptersInternalId),
+            new ("POST", @"/v2/Jobs/Create/UpdateMetadata", PostV2JobsCreateUpdateMetadata),
+            new ("POST", @"/v2/Jobs/Create/UpdateMetadata/(^[-A-Za-z0-9+/]*={0,3}$)", PostV2JobsCreateUpdateMetadataInternalId),
+            new ("GET", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)", GetV2JobJobId),
+            new ("DELETE", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)", DeleteV2JobJobId),
+            new ("GET", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)/Progress", GetV2JobJobIdProgress),
+            new ("POST", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)/StartNow", PostV2JobJobIdStartNow),
+            new ("POST", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)/Cancel", PostV2JobJobIdCancel),
+            new ("GET", @"/v2/Settings", GetV2Settings),
+            new ("GET", @"/v2/Settings/UserAgent", GetV2SettingsUserAgent),
+            new ("POST", @"/v2/Settings/UserAgent", PostV2SettingsUserAgent),
+            new ("GET", @"/v2/Settings/RateLimit/Types", GetV2SettingsRateLimitTypes),
+            new ("GET", @"/v2/Settings/RateLimit", GetV2SettingsRateLimit),
+            new ("POST", @"/v2/Settings/RateLimit", PostV2SettingsRateLimit),
+            new ("GET", @"/v2/Settings/RateLimit/([a-zA-Z]+)", GetV2SettingsRateLimitType),
+            new ("POST", @"/v2/Settings/RateLimit/([a-zA-Z]+)", PostV2SettingsRateLimitType),
+            new ("GET", @"/v2/Settings/AprilFoolsMode", GetV2SettingsAprilFoolsMode),
+            new ("POST", @"/v2/Settings/AprilFoolsMode", PostV2SettingsAprilFoolsMode),
+            new ("POST", @"/v2/Settings/DownloadLocation", PostV2SettingsDownloadLocation),
+            new ("GET", @"/v2/LibraryConnector", GetV2LibraryConnector),
+            new ("GET", @"/v2/LibraryConnector/Types", GetV2LibraryConnectorTypes),
+            new ("GET", @"/v2/LibraryConnector/([a-zA-Z]+)", GetV2LibraryConnectorType),
+            new ("POST", @"/v2/LibraryConnector/([a-zA-Z]+)", PostV2LibraryConnectorType),
+            new ("POST", @"/v2/LibraryConnector/([a-zA-Z]+)/Test", PostV2LibraryConnectorTypeTest),
+            new ("DELETE", @"/v2/LibraryConnector/([a-zA-Z]+)", DeleteV2LibraryConnectorType),
+            new ("GET", @"/v2/NotificationConnector", GetV2NotificationConnector),
+            new ("GET", @"/v2/NotificationConnector/Types", GetV2NotificationConnectorTypes),
+            new ("GET", @"/v2/NotificationConnector/([a-zA-Z]+)", GetV2NotificationConnectorType),
+            new ("POST", @"/v2/NotificationConnector/([a-zA-Z]+)", PostV2NotificationConnectorType),
+            new ("POST", @"/v2/NotificationConnector/([a-zA-Z]+)/Test", PostV2NotificationConnectorTypeTest),
+            new ("DELETE", @"/v2/NotificationConnector/([a-zA-Z]+)", DeleteV2NotificationConnectorType),
+            new ("GET", @"/v2/LogFile", GetV2LogFile),
+            new ("GET", @"/v2/Ping", GetV2Ping),
+            new ("POST", @"/v2/Ping", PostV2Ping)
+        };
+        
         this._parent = parent;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             this._listener.Prefixes.Add($"http://*:{settings.apiPortNumber}/");
@@ -55,14 +109,14 @@ public class Server : GlobalBase, IDisposable
         HttpListenerRequest request = context.Request;
         HttpListenerResponse response = context.Response;
         if (request.HttpMethod == "OPTIONS")
-            SendResponse(HttpStatusCode.OK, context.Response);
+            SendResponse(HttpStatusCode.OK, context.Response); //Response always contains all valid Request-Methods
         if (request.Url!.LocalPath.Contains("favicon"))
             SendResponse(HttpStatusCode.NoContent, response);
-        string path = Regex.Match(request.Url!.LocalPath, @"[A-z0-9]+(\/[A-z0-9]+)*").Value;
+        string path = Regex.Match(request.Url.LocalPath, @"\/[A-z0-9]+(\/[A-z0-9]+)*").Value; //Local Path
 
-        if (!Regex.IsMatch(request.Url.LocalPath, "/v2(/.*)?"))
+        if (!Regex.IsMatch(path, "/v2(/.*)?")) //Use only v2 API
         {
-            SendResponse(HttpStatusCode.NotFound, response);
+            SendResponse(HttpStatusCode.NotFound, response, "Use Version 2 API");
             return;
         }
         
@@ -71,13 +125,16 @@ public class Server : GlobalBase, IDisposable
         Dictionary<string, string> requestParams = requestVariables.UnionBy(requestBody, v => v.Key)
             .ToDictionary(kv => kv.Key, kv => kv.Value); //The actual variable used for the API
 
-        ValueTuple<HttpStatusCode, object?> responseMessage = request.HttpMethod switch
+        ValueTuple<HttpStatusCode, object?> responseMessage; //Used to respond to the HttpRequest
+        if (_apiRequestPaths.Any(p => p.HttpMethod == request.HttpMethod && Regex.IsMatch(path, p.RegexStr))) //Check if Request-Path is valid
         {
-            "GET" => HandleGet(path, requestParams),
-            "POST" => HandlePost(path, requestParams),
-            "DELETE" => HandleDelete(path, requestParams),
-            _ => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.MethodNotAllowed, null)
-        };
+            RequestPath requestPath =
+                _apiRequestPaths.First(p => p.HttpMethod == request.HttpMethod && Regex.IsMatch(path, p.RegexStr));
+            responseMessage =
+                requestPath.Method.Invoke(Regex.Match(path, requestPath.RegexStr).Groups, requestParams); //Get HttpResponse content
+        }
+        else
+            responseMessage = new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.MethodNotAllowed, "Unknown Request Path");
         
         SendResponse(responseMessage.Item1, response, responseMessage.Item2);
     }
@@ -170,21 +227,6 @@ public class Server : GlobalBase, IDisposable
             response.OutputStream.Close();
             stream.Close();
         }
-    }
-    
-    private ValueTuple<HttpStatusCode, object?> HandleGet(string path, Dictionary<string, string> requestParameters)
-    {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not implemented.");
-    }
-    
-    private ValueTuple<HttpStatusCode, object?> HandlePost(string path, Dictionary<string, string> requestParameters)
-    {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not implemented.");
-    }
-    
-    private ValueTuple<HttpStatusCode, object?> HandleDelete(string path, Dictionary<string, string> requestParameters)
-    {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not implemented.");
     }
 
 
