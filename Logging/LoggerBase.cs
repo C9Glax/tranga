@@ -10,16 +10,5 @@ public abstract class LoggerBase : TextWriter
     {
         this.Encoding = encoding ?? Encoding.ASCII;
     }
-
-    public void Write(string caller, string? value)
-    {
-        if (value is null)
-            return;
-
-        LogMessage message = new (DateTime.Now, caller, value);
-        
-        Write(message);
-    }
-
     protected abstract void Write(LogMessage message);
 }

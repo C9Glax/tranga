@@ -1,59 +1,39 @@
-﻿using Tranga.MangaConnectors;
+﻿using JobQueue;
+using Microsoft.Extensions.Logging;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
-public class DownloadNewChapters : Job
+public class DownloadNewChapter : Job
 {
     public Manga manga { get; set; }
     public string translatedLanguage { get; init; }
-
-    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, DateTime lastExecution,
-        bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base(clone, JobType.DownloadNewChaptersJob, connector, lastExecution, recurring,
-        recurrence, parentJobId)
+    
+    public DownloadNewChapter(GlobalBase clone, JobQueue<MangaConnector> queue, MangaConnector connector, Manga manga, TimeSpan interval, int steps, string? jobId = null, string? parentJobId = null, ILogger? logger = null, string translatedLanguage = "en") : base (clone, queue, connector, JobType.DownloadNewChaptersJob, interval, TimeSpan.FromSeconds(clone.settings.jobTimeout), steps, jobId, parentJobId, logger)
     {
         this.manga = manga;
         this.translatedLanguage = translatedLanguage;
-    }
-    
-    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base (clone, JobType.DownloadNewChaptersJob, connector, recurring, recurrence, parentJobId)
-    {
-        this.manga = manga;
-        this.translatedLanguage = translatedLanguage;
-    }
-
-    protected override string GetId()
-    {
-        return $"{GetType()}-{manga.internalId}";
-    }
-    
-    public override string ToString()
-    {
-        return $"{id} Manga: {manga}";
+        if (jobId is null)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            this.JobId = $"{this.GetType().Name}-{connector.name}-{manga.sortName}-{new string(Enumerable.Repeat(chars, 4).Select(s => s[Random.Shared.Next(s.Length)]).ToArray())}";
+        }
     }
 
-    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
+    protected override void Execute(CancellationToken cancellationToken)
     {
-        manga.SaveSeriesInfoJson(settings.downloadLocation);
+        manga.SaveSeriesInfoJson(GlobalBase.settings.downloadLocation);
         Chapter[] chapters = mangaConnector.GetNewChapters(manga, this.translatedLanguage);
-        this.progressToken.increments = chapters.Length;
-        List<Job> jobs = new();
+        this.ProgressToken.SetSteps(chapters.Length);
         mangaConnector.CopyCoverFromCacheToDownloadLocation(manga);
         foreach (Chapter chapter in chapters)
         {
-            DownloadChapter downloadChapterJob = new(this, this.mangaConnector, chapter, parentJobId: this.id);
-            jobs.Add(downloadChapterJob);
+            DownloadChapter downloadChapterJob = new(this.GlobalBase, Queue, mangaConnector, chapter, 0, null,
+                this.JobId, this.logger);
+            Queue.AddJob(mangaConnector, downloadChapterJob);
         }
-        UpdateMetadata updateMetadataJob = new(this, this.mangaConnector, this.manga, parentJobId: this.id);
-        jobs.Add(updateMetadataJob);
-        progressToken.Complete();
-        return jobs;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not DownloadNewChapters otherJob)
-            return false;
-        return otherJob.mangaConnector == this.mangaConnector &&
-               otherJob.manga.Equals(this.manga);
+        UpdateMetadata updateMetadataJob = new(this.GlobalBase, Queue, mangaConnector, manga, null, this.JobId, this.logger);
+        Queue.AddJob(mangaConnector, updateMetadataJob);
+        this.ProgressToken.MarkFinished();
     }
 }

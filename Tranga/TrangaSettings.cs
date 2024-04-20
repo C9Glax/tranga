@@ -15,6 +15,7 @@ public class TrangaSettings
     public string workingDirectory { get; private set; }
     public int apiPortNumber { get; init; }
     public string userAgent { get; private set; } = DefaultUserAgent;
+    public int jobTimeout { get; init; } = 180;
     [JsonIgnore] public string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");

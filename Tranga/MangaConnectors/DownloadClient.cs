@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 
 namespace Tranga.MangaConnectors;
 
@@ -16,7 +17,7 @@ internal abstract class DownloadClient : GlobalBase
     {
         if (!settings.requestLimits.ContainsKey(requestType))
         {
-            Log("RequestType not configured for rate-limit.");
+            logger?.LogError("RequestType not configured for rate-limit.");
             return new RequestResult(HttpStatusCode.NotAcceptable, null, Stream.Null);
         }
 
@@ -31,7 +32,7 @@ internal abstract class DownloadClient : GlobalBase
 
         if (rateLimitTimeout > TimeSpan.Zero)
         {
-            Log($"Waiting {rateLimitTimeout.TotalSeconds} seconds");
+            logger?.LogDebug($"Waiting {rateLimitTimeout.TotalSeconds} seconds");
             Thread.Sleep(rateLimitTimeout);
         }
 

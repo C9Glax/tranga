@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using Logging;
+using GlaxLogger;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Tranga;
@@ -22,15 +23,15 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
         [DefaultValue(null)]
         public string? workingDirectory { get; init; }
         
-        [Description("Enables the file-logger")]
-        [CommandOption("-f")]
-        [DefaultValue(null)]
-        public bool? fileLogger { get; init; }
-        
         [Description("Path to save logfile to")]
-        [CommandOption("-l|--fPath")]
+        [CommandOption("-f|--fileLogger")]
         [DefaultValue(null)]
         public string? fileLoggerPath { get; init; }
+        
+        [Description("LogLevel")]
+        [CommandOption("-l|--loglevel")]
+        [DefaultValue(LogLevel.Information)]
+        public LogLevel level { get; init; }
         
         [Description("Port on which to run API on")]
         [CommandOption("-p|--port")]
@@ -40,15 +41,10 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        List<Logger.LoggerType> enabledLoggers = new();
-        if(settings.fileLogger is true)
-            enabledLoggers.Add(Logger.LoggerType.FileLogger);
-        
-        string? logFolderPath = settings.fileLoggerPath ?? "";
-        Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, logFolderPath);
-        
-        TrangaSettings? trangaSettings = null;
+        Logger logger = new (settings.level, settings.fileLoggerPath, Console.Out);
 
+        TrangaSettings? trangaSettings = null;
+        
         if (settings.downloadLocation is not null && settings.workingDirectory is not null)
         {
             trangaSettings = new TrangaSettings(settings.downloadLocation, settings.workingDirectory);
@@ -94,7 +90,6 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
                     .AddChoices(new[]
                     {
                         "CustomRequest",
-                        "Log",
                         "Exit"
                     }));
 
@@ -136,31 +131,6 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
                     else break;
                     AnsiConsole.WriteLine($"Response: {(int)response.StatusCode} {response.StatusCode}");
                     AnsiConsole.WriteLine(response.Content.ReadAsStringAsync().Result);
-                    break;
-                case "Log":
-                    List<string> lines = logger.Tail(10).ToList();
-                    Rows rows = new Rows(lines.Select(line => new Text(line)));
-                    
-                    AnsiConsole.Live(rows).Start(context =>
-                    {
-                        bool running = true;
-                        while (running)
-                        {
-                            string[] newLines = logger.GetNewLines();
-                            if (newLines.Length > 0)
-                            {
-                                lines.AddRange(newLines);
-                                rows = new Rows(lines.Select(line => new Text(line)));
-                                context.UpdateTarget(rows);
-                            }
-                            Thread.Sleep(100);
-                            if (AnsiConsole.Console.Input.IsKeyAvailable())
-                            {
-                                AnsiConsole.Console.Input.ReadKey(true); //Do not process input
-                                running = false;
-                            }
-                        }
-                    });
                     break;
                 case "Exit":
                     exit = true;

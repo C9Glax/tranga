@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using JobQueue;
+using Microsoft.Extensions.Logging;
 using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
@@ -6,42 +8,27 @@ namespace Tranga.Jobs;
 public class DownloadChapter : Job
 {
     public Chapter chapter { get; init; }
-
-    public DownloadChapter(GlobalBase clone, MangaConnector connector, Chapter chapter, DateTime lastExecution, string? parentJobId = null) : base(clone, JobType.DownloadChapterJob, connector, lastExecution, parentJobId: parentJobId)
+    
+    public DownloadChapter(GlobalBase clone, JobQueue<MangaConnector> queue, MangaConnector connector, Chapter chapter, int steps, string? jobId = null, string? parentJobId = null, ILogger? logger = null) : base (clone, queue, connector, JobType.DownloadChapterJob, TimeSpan.Zero, TimeSpan.FromSeconds(clone.settings.jobTimeout), steps, jobId, parentJobId, logger)
     {
         this.chapter = chapter;
-    }
-    
-    public DownloadChapter(GlobalBase clone, MangaConnector connector, Chapter chapter, string? parentJobId = null) : base(clone, JobType.DownloadChapterJob, connector, parentJobId: parentJobId)
-    {
-        this.chapter = chapter;
-    }
-    
-    protected override string GetId()
-    {
-        return $"{GetType()}-{chapter.parentManga.internalId}-{chapter.chapterNumber}";
-    }
-
-    public override string ToString()
-    {
-        return $"{id} Chapter: {chapter}";
-    }
-
-    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
-    {
-        Task downloadTask = new(delegate
+        if (jobId is null)
         {
-            mangaConnector.CopyCoverFromCacheToDownloadLocation(chapter.parentManga);
-            HttpStatusCode success = mangaConnector.DownloadChapter(chapter, this.progressToken);
-            chapter.parentManga.UpdateLatestDownloadedChapter(chapter);
-            if (success == HttpStatusCode.OK)
-            {
-                UpdateLibraries();
-                SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}");
-            }
-        });
-        downloadTask.Start();
-        return Array.Empty<Job>();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            this.JobId = $"{this.GetType().Name}-{connector.name}-{chapter}-{new string(Enumerable.Repeat(chars, 4).Select(s => s[Random.Shared.Next(s.Length)]).ToArray())}";
+        }
+    }
+
+    protected override void Execute(CancellationToken cancellationToken)
+    {
+        mangaConnector.CopyCoverFromCacheToDownloadLocation(chapter.parentManga);
+        HttpStatusCode success = mangaConnector.DownloadChapter(chapter, this.ProgressToken);
+        chapter.parentManga.UpdateLatestDownloadedChapter(chapter);
+        if (success == HttpStatusCode.OK)
+        {
+            this.GlobalBase.UpdateLibraries();
+            this.GlobalBase.SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}");
+        }
     }
 
     public override bool Equals(object? obj)
