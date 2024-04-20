@@ -76,7 +76,7 @@ Returns the specified Manga.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 </details>
 
 <details>
@@ -98,7 +98,7 @@ Deletes all associated Jobs for the specified Manga
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 </details>
 
 <details>
@@ -118,8 +118,8 @@ Returns the URL for the Cover of the specified Manga.
   <summary>Request</summary>
   
   `internalId` is returned in the response of
-  *  [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 </details>
 
 <details>
@@ -141,7 +141,7 @@ Returns the Chapter-list for the specified Manga.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 </details>
 
 <details>
@@ -163,7 +163,7 @@ Returns the latest Chapter of the specified Manga.
 
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 </details>
 
 <details>
@@ -227,7 +227,7 @@ Creates a Monitoring-Job for the specified Manga at the specified Interval.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 
     | Parameter | Value                                                  |
     |-----------|--------------------------------------------------------|
@@ -254,7 +254,7 @@ Creates a Job to check for new Chapters and Download new ones of the specified M
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 </details>
 
 <details>
@@ -286,7 +286,7 @@ Updates the Metadata of the specified Manga.
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
 </details>
 
 <details>
