@@ -59,7 +59,6 @@ Notifications can be sent to your devices using [Gotify](https://gotify.net/) an
 
 Tranga (this git-repo) will open a port (standard 6531) and listen for requests to add Jobs to Monitor and/or download specific Manga.
 The configuration is all done through HTTP-Requests.
-The frontend in this repo is **CLI**-based.  
 _**For a web-frontend use [tranga-website](https://github.com/C9Glax/tranga-website).**_
 
 This project downloads the images for a Manga from the specified Scanlation-Website and packages them with some metadata - from that same website - in a .cbz-archive (per chapter).  
