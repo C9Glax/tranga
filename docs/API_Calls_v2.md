@@ -568,7 +568,7 @@ Returns the current state of the April-Fools-Mode setting.
   Boolean
 </details>
 
-### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Settings/ApriFoolsMode`
+### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Settings/AprilFoolsMode`
 
 Enables/Disables April-Fools-Mode.
 
