@@ -154,6 +154,28 @@ Returns the Chapter-list for the specified Manga.
   | 404        | Manga with `internalId` could not be found |
 </details>
 
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Manga/<internalId>/Chapters/latest`
+
+Returns the latest Chapter of the specified Manga.
+
+<details>
+  <summary>Request</summary>
+
+  `internalId` is returned in the response of
+  * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
+  * [GET /v2/Jobs/*jobId*](#-v2jobs)
+</details>
+
+<details>
+  <summary>Returns</summary>
+
+  [Chapter](Types.md/#chapter)
+
+  | StatusCode | Meaning                                    |
+  |------------|--------------------------------------------|
+  | 404        | Manga with `internalId` could not be found |
+</details>
+
 ## Jobs <sup>[^top](#top)</sup>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs`
