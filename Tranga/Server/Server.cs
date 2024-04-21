@@ -112,7 +112,7 @@ public partial class Server : GlobalBase, IDisposable
             SendResponse(HttpStatusCode.OK, context.Response); //Response always contains all valid Request-Methods
         if (request.Url!.LocalPath.Contains("favicon"))
             SendResponse(HttpStatusCode.NoContent, response);
-        string path = Regex.Match(request.Url.LocalPath, @"\/[A-z0-9]+(\/[A-z0-9]+)*").Value; //Local Path
+        string path = Regex.Match(request.Url.LocalPath, @"\/[a-zA-Z0-9\.+/=-]+(\/[a-zA-Z0-9\.+/=-]+)*").Value; //Local Path
 
         if (!Regex.IsMatch(path, "/v2(/.*)?")) //Use only v2 API
         {
