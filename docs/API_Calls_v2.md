@@ -218,39 +218,32 @@ Returns all Monitoring Jobs.
   List of JobIds.
 </details>
 
-### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Jobs/Create/Monitor/<internalId>`
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Job/Types`
 
-Creates a Monitoring-Job for the specified Manga at the specified Interval.
-
-<details>
-  <summary>Request</summary>
-  
-  `internalId` is returned in the response of
-  * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Job/*jobId*](#-v2jobjobid)
-
-    | Parameter | Value                                                  |
-    |-----------|--------------------------------------------------------|
-    | interval  | Interval at which the Job is re-run in HH:MM:SS format |
-</details>
+Returns the valid Job-Types.
 
 <details>
   <summary>Returns</summary>
-  
-  [Job](Types.md#job)
-  
-  | StatusCode | Meaning                                    |
-  |------------|--------------------------------------------|
-  | 404        | Manga with `internalId` could not be found |
-  | 500        | Error parsing interval                     |
+
+  List of strings.
 </details>
 
-### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Jobs/Create/DownloadNewChapters/<internalId>`
+### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Job/Create/<Type>`
 
-Creates a Job to check for new Chapters and Download new ones of the specified Manga.
+Creates a Job.
 
 <details>
   <summary>Request</summary>
+
+  `Type` is returned in the response of [GET /v2/Job/Types](#-v2jobtypes)
+
+  | Parameter  | Value                                                                                             |
+  |------------|---------------------------------------------------------------------------------------------------|
+  | connector  | Name of the connector to use                                                                      |
+  | internalId | Manga ID                                                                                          |
+  | *interval* | Interval at which the Job is re-run in HH:MM:SS format<br />Only for MonitorManga, UpdateMetadata |
+  | *language* | Translated language<br />Only for MonitorManga, DownloadNewChapters and DownloadChapter           |
+
   
   `internalId` is returned in the response of
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
@@ -262,41 +255,10 @@ Creates a Job to check for new Chapters and Download new ones of the specified M
   
   [Job](Types.md#job)
   
-  | StatusCode | Meaning                                    |
-  |------------|--------------------------------------------|
-  | 404        | Manga with `internalId` could not be found |
-</details>
-
-### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Jobs/Create/UpdateMetadata`
-
-Creates a Job to update the Metadata of all Manga.
-
-<details>
-  <summary>Returns</summary>
-  
-  [Job](Types.md#job)
-</details>
-
-### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Jobs/Create/UpdateMetadata/<internalId>`
-
-Updates the Metadata of the specified Manga.
-
-<details>
-  <summary>Request</summary>
-  
-  `internalId` is returned in the response of
-  * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
-  * [GET /v2/Job/*jobId*](#-v2jobjobid)
-</details>
-
-<details>
-  <summary>Returns</summary>
-  
-  [Job](Types.md#job)
-  
-  | StatusCode | Meaning                                    |
-  |------------|--------------------------------------------|
-  | 404        | Manga with `internalId` could not be found |
+  | StatusCode | Meaning                                  |
+  |------------|------------------------------------------|
+  | 404        | Parameter missing or could not be found. |
+  | 500        | Error parsing interval                   |
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Job/<jobId>`
