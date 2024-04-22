@@ -436,6 +436,12 @@ Sets the User Agent. If left empty, User Agent is reset to default.
 
 <details>
   <summary>Returns</summary>
+
+| StatusCode | Meaning           |
+|------------|-------------------|
+| 202        | UserAgent Reset   |
+| 201        | UserAgent Updated |
+    
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Settings/RateLimit/Types`
@@ -445,7 +451,7 @@ Returns the configurable Rate-Limits.
 <details>
   <summary>Returns</summary>
 
-  List of Rate-Limit-Names.
+  Key-Value-Pairs of Values and RateLimit-Names.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Settings/RateLimit`
@@ -467,19 +473,19 @@ Sets the Rate-Limits for all Requests. If left empty, resets to default Rate-Lim
 
   For each Rate-Limit set as follows:
   
-  | Parameter                          | Value               |
-  |------------------------------------|---------------------|
-  | [Type](#-v2settingsratelimittypes) | Requests per Minute |
+  | Parameter                            | Value                 |
+  |--------------------------------------|-----------------------|
+  | [Type](#-v2settingsratelimittypes)   | Requests per Minute   |
   
-  `Type` is returned by [GET /v2/Settings/RateLimit/Types](#-v2settingsratelimittypes)
+  `Type` is returned by [GET /v2/Settings/RateLimit/Types](#-v2settingsratelimittypes) and should be supplied as string
 </details>
 
 <details>
   <summary>Returns</summary>
 
-  | StatusCode | Meaning                        |
-  |------------|--------------------------------|
-  | 404        | Rate-Limit-Name does not exist |
+  | StatusCode | Meaning                                        |
+  |------------|------------------------------------------------|
+  | 500        | Error parsing RequestType or RequestsPerMinute |
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Settings/RateLimit/<Type>`
@@ -496,6 +502,10 @@ Returns the current Rate-Limit for the Request-Type.
   <summary>Returns</summary>
 
   Integer with Requests per Minute.
+
+| StatusCode | Meaning                                       |
+|------------|-----------------------------------------------|
+| 404        | Error parsing RequestType |
 </details>
 
 ### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Settings/RateLimit/<Type>`
@@ -547,7 +557,6 @@ Enables/Disables April-Fools-Mode.
 
   | StatusCode | Meaning                        |
   |------------|--------------------------------|
-  | 404        | Rate-Limit-Name does not exist |
   | 500        | Parsing Error                  |
 </details>
 
@@ -568,10 +577,11 @@ Updates the default Download-Location.
   <summary>Returns</summary>
 
 
-  | StatusCode | Meaning                  |
-  |------------|--------------------------|
-  | 200        | Successfully changed     |
-  | 500        | Files could not be moved |
+  | StatusCode | Meaning                         |
+  |------------|---------------------------------|
+  | 200        | Successfully changed            |
+  | 404        | Parameter 'location' is missing |
+  | 500        | Parsing Error                   |
 </details>
 
 ## Library Connectors <sup>[^top](#top)</sup>
