@@ -33,7 +33,7 @@ public class UpdateMetadata : Job
                 return Array.Empty<Job>();
             }
             
-            this.manga.UpdateMetadata(updatedManga);
+            this.manga = manga.WithMetadata(updatedManga);
             this.manga.SaveSeriesInfoJson(settings.downloadLocation, true);
             this.progressToken.Complete();
         }

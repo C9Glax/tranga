@@ -75,18 +75,21 @@ public struct Manga
         this.websiteUrl = websiteUrl;
     }
 
-    public void UpdateMetadata(Manga newManga)
+    public Manga WithMetadata(Manga newManga)
     {
-        this.sortName = newManga.sortName;
-        this.description = newManga.description;
-        this.coverUrl = newManga.coverUrl;
-        this.authors = authors.Union(newManga.authors).ToList();
-        this.altTitles = altTitles.UnionBy(newManga.altTitles, kv => kv.Key).ToDictionary(x => x.Key, x => x.Value);
-        this.tags = tags.Union(newManga.tags).ToArray();
-        this.status = newManga.status;
-        this.releaseStatus = newManga.releaseStatus;
-        this.websiteUrl = newManga.websiteUrl;
-        this.year = newManga.year;
+        return this with
+        {
+            sortName = newManga.sortName,
+            description = newManga.description,
+            coverUrl = newManga.coverUrl,
+            authors = authors.Union(newManga.authors).ToList(),
+            altTitles = altTitles.UnionBy(newManga.altTitles, kv => kv.Key).ToDictionary(x => x.Key, x => x.Value),
+            tags = tags.Union(newManga.tags).ToArray(),
+            status = newManga.status,
+            releaseStatus = newManga.releaseStatus,
+            websiteUrl = newManga.websiteUrl,
+            year = newManga.year
+        };
     }
 
     public override bool Equals(object? obj)

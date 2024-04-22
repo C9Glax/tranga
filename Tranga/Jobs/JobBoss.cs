@@ -171,7 +171,7 @@ public class JobBoss : GlobalBase
         }
     }
 
-    private void UpdateJobFile(Job job)
+    internal void UpdateJobFile(Job job)
     {
         string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
         
@@ -245,7 +245,9 @@ public class JobBoss : GlobalBase
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
-                Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks(this).ToArray();
+                Job eJob = jobQueue.Peek();
+                Job[] subJobs = eJob.ExecuteReturnSubTasks(this).ToArray();
+                UpdateJobFile(eJob);
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
             }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))
