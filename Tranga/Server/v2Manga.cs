@@ -1,27 +1,63 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
+using Tranga.Jobs;
 
 namespace Tranga.Server;
 
 public partial class Server
 {
+    private ValueTuple<HttpStatusCode, object?> GetV2Manga(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, cachedPublications.Select(m => m.internalId));
+    }
+    
     private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalId(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not Implemented");
+        if(groups.Count < 1 ||
+           !_parent.TryGetPublicationById(groups[1].Value, out Manga? manga) ||
+           manga is null)
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, manga);
     }
     
     private ValueTuple<HttpStatusCode, object?> DeleteV2MangaInternalId(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not Implemented");
+        if(groups.Count < 1 ||
+           !_parent.TryGetPublicationById(groups[1].Value, out Manga? manga) ||
+           manga is null)
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
+        Job[] jobs = _parent.jobBoss.GetJobsLike(publication: manga).ToArray();
+        _parent.jobBoss.RemoveJobs(jobs);
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
     }
     
     private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalIdCover(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not Implemented");
+        if(groups.Count < 1 ||
+           !_parent.TryGetPublicationById(groups[1].Value, out Manga? manga) ||
+           manga is null)
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
+        string filePath = settings.GetFullCoverPath((Manga)manga!);
+        if (File.Exists(filePath))
+        {
+            FileStream coverStream = new(filePath, FileMode.Open);
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, coverStream);
+        }
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "Cover-File not found.");
     }
     
     private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalIdChapters(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "Not Implemented");
+        if(groups.Count < 1 ||
+           !_parent.TryGetPublicationById(groups[1].Value, out Manga? manga) ||
+           manga is null)
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
+
+        Chapter[] chapters = requestParameters.TryGetValue("language", out string? parameter) switch
+        {
+            true => manga.Value.mangaConnector.GetChapters((Manga)manga, parameter),
+            false => manga.Value.mangaConnector.GetChapters((Manga)manga)
+        };
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, chapters);
     }
 }
