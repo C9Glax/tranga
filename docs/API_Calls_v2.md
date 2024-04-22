@@ -640,9 +640,9 @@ Returns the Library-Connector for the specified Type.
 
   [LibraryConnector](Types.md#libraryconnector)
   
-  | StatusCode | Meaning                               |
-  |------------|---------------------------------------|
-  | 404        | Library Connector Type does not exist |
+  | StatusCode | Meaning                                            |
+  |------------|----------------------------------------------------|
+  | 404        | Library Connector of specified Type does not exist |
 </details>
 
 ### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/LibraryConnector/<Type>`
@@ -681,6 +681,7 @@ Creates a Library-Connector of the specified Type.
   | StatusCode | Meaning                          |
   |------------|----------------------------------|
   | 404        | Library Connector does not exist |
+  | 406        | Missing Parameter                |
   | 500        | Parsing Error                    |
 </details>
 
@@ -715,12 +716,13 @@ Tests a Library-Connector of the specified Type.
   <details>
     <summary>Returns</summary>
   
-  | StatusCode | Meaning                               |
-  |------------|---------------------------------------|
-  | 200        | Test successful                       |
-  | 404        | Library Connector Type does not exist |
-  | 408        | Test failed                           |
-  | 500        | Parsing Error                         |
+  | StatusCode | Meaning                            |
+  |------------|------------------------------------|
+  | 200        | Test successful                    |
+  | 404        | Library Connector does not exist   |
+  | 406        | Missing Parameter                  |
+  | 424        | Test failed                        |
+  | 500        | Parsing Error                      |
 </details>
 
 ### <sub>![DELETE](https://img.shields.io/badge/DELETE-f00)</sub> `/v2/LibraryConnector/<Type>`

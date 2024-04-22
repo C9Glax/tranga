@@ -35,7 +35,8 @@ public partial class Server
     
     private ValueTuple<HttpStatusCode, object?> GetV2JobTypes(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, Enum.GetNames(typeof(Job.JobType)));
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK,
+            Enum.GetValues<Job.JobType>().ToDictionary(b => (byte)b, b => Enum.GetName(b)));
     }
     
     private ValueTuple<HttpStatusCode, object?> PostV2JobCreateType(GroupCollection groups, Dictionary<string, string> requestParameters)
@@ -43,7 +44,7 @@ public partial class Server
         if (groups.Count < 1 ||
             !Enum.TryParse(groups[1].Value, true, out Job.JobType jobType))
         {
-            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID: '{groups[1].Value}' does not exist.");
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"JobType {groups[1].Value} does not exist.");
         }
 
         string? mangaId;
