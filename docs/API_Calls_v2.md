@@ -878,6 +878,10 @@ Returns the current log-file.
   <summary>Returns</summary>
 
   The Logfile as Stream.
+
+| StatusCode | Meaning    |
+|------------|------------|
+| 404        | No Logfile |
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Ping`

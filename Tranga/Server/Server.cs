@@ -217,7 +217,7 @@ public partial class Server : GlobalBase, IDisposable
                 case "jpeg":
                     response.ContentType = "image/jpeg";
                     break;
-                case "log":
+                default:
                     response.ContentType = "text/plain";
                     break;
             }
