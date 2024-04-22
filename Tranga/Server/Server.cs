@@ -127,7 +127,7 @@ public partial class Server : GlobalBase, IDisposable
         if (_apiRequestPaths.Any(p => p.HttpMethod == request.HttpMethod && Regex.IsMatch(path, p.RegexStr))) //Check if Request-Path is valid
         {
             RequestPath requestPath =
-                _apiRequestPaths.First(p => p.HttpMethod == request.HttpMethod && Regex.IsMatch(path, p.RegexStr));
+                _apiRequestPaths.First(p => p.HttpMethod == request.HttpMethod && Regex.Match(path, p.RegexStr).Length == path.Length);
             responseMessage =
                 requestPath.Method.Invoke(Regex.Match(path, requestPath.RegexStr).Groups, requestParams); //Get HttpResponse content
         }
