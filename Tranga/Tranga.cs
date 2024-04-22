@@ -54,14 +54,7 @@ public partial class Tranga : GlobalBase
         return _connectors;
     }
 
-    public Manga? GetPublicationById(string internalId)
-    {
-        return cachedPublications.TryGetValue(internalId, out Manga manga) switch
-        {
-            true => manga,
-            _ => null
-        };
-    }
+    public Manga? GetPublicationById(string internalId) => GetCachedManga(internalId);
 
     public bool TryGetPublicationById(string internalId, out Manga? manga)
     {
