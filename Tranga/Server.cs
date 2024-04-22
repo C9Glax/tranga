@@ -122,7 +122,7 @@ public class Server : GlobalBase
                     break;
                 }
 
-                string filePath = settings.GetFullCoverPath((Manga)manga!);
+                string filePath = manga?.coverFileNameInCache ?? "";
                 if (File.Exists(filePath))
                 {
                     FileStream coverStream = new(filePath, FileMode.Open);
