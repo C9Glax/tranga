@@ -68,10 +68,10 @@ public class Mangaworld: MangaConnector
         
         Regex idRex = new (@"https:\/\/www\.mangaworld\.[a-z]{0,63}\/manga\/([0-9]+\/[0-9A-z\-]+).*");
         string id = idRex.Match(url).Groups[1].Value;
-        return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id);
+        return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id, url);
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         Dictionary<string, string> altTitles = new();
         Dictionary<string, string>? links = null;
@@ -119,7 +119,7 @@ public class Mangaworld: MangaConnector
         int year = Convert.ToInt32(yearString);
         
         Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, status, publicationId, releaseStatus);
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
         cachedPublications.Add(manga);
         return manga;
     }

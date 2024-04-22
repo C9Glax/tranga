@@ -116,7 +116,7 @@ public class MangaDex : MangaConnector
 
         Dictionary<string, string> linksDict = new();
         if (attributes.TryGetPropertyValue("links", out JsonNode? linksNode))
-            foreach (KeyValuePair<string, JsonNode> linkKv in linksNode!.AsObject())
+            foreach (KeyValuePair<string, JsonNode?> linkKv in linksNode!.AsObject())
                 linksDict.TryAdd(linkKv.Key, linkKv.Value.GetValue<string>());
 
         string? originalLanguage =
@@ -183,9 +183,9 @@ public class MangaDex : MangaConnector
             linksDict,
             year,
             originalLanguage,
-            Enum.GetName(status) ?? "",
             publicationId,
-            status
+            status,
+            websiteUrl: $"https://mangadex.org/title/{publicationId}"
         );
         cachedPublications.Add(pub);
         return pub;
