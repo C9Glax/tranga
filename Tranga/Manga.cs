@@ -84,6 +84,7 @@ public struct Manga
         this.tags = tags.Union(newManga.tags).ToArray();
         this.status = newManga.status;
         this.releaseStatus = newManga.releaseStatus;
+        this.websiteUrl = newManga.websiteUrl;
         this.year = newManga.year;
     }
 
@@ -98,6 +99,7 @@ public struct Manga
                this.sortName == compareManga.sortName &&
                this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&
                this.authors.All(a => compareManga.authors.Contains(a)) &&
+               this.websiteUrl.Equals(compareManga.websiteUrl) &&
                this.tags.All(t => compareManga.tags.Contains(t));
     }
 
