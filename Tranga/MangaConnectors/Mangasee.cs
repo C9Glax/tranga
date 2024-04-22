@@ -120,11 +120,11 @@ public class Mangasee : MangaConnector
 
         RequestResult requestResult = this.downloadClient.MakeRequest(url, RequestType.MangaInfo);
         if((int)requestResult.statusCode < 300 && (int)requestResult.statusCode >= 200 && requestResult.htmlDocument is not null)
-            return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
+            return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId, url);
         return null;
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -178,7 +178,7 @@ public class Mangasee : MangaConnector
 
         Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
             coverFileNameInCache, links,
-            year, originalLanguage, status, publicationId, releaseStatus);
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
         cachedPublications.Add(manga);
         return manga;
     }

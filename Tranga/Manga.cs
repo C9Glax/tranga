@@ -43,11 +43,13 @@ public struct Manga
     public float ignoreChaptersBelow { get; set; }
     public float latestChapterDownloaded { get; set; }
     public float latestChapterAvailable { get; set; }
+    
+    public string websiteUrl { get; private set; }
 
     private static readonly Regex LegalCharacters = new (@"[A-Za-zÀ-ÖØ-öø-ÿ0-9 \.\-,'\'\)\(~!\+]*");
 
     [JsonConstructor]
-    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string status, string publicationId, ReleaseStatusByte releaseStatus = 0, string? websiteUrl = null, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string publicationId, ReleaseStatusByte releaseStatus, string? websiteUrl, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
@@ -59,7 +61,6 @@ public struct Manga
         this.links = links ?? new Dictionary<string, string>();
         this.year = year;
         this.originalLanguage = originalLanguage;
-        this.status = status;
         this.publicationId = publicationId;
         this.folderName = folderName ?? string.Concat(LegalCharacters.Matches(sortName));
         while (this.folderName.EndsWith('.'))
@@ -70,6 +71,7 @@ public struct Manga
         this.latestChapterDownloaded = 0;
         this.latestChapterAvailable = 0;
         this.releaseStatus = releaseStatus;
+        this.websiteUrl = websiteUrl;
     }
 
     public void UpdateMetadata(Manga newManga)
@@ -171,38 +173,22 @@ public struct Manga
         [JsonRequired]public string year { get; }
         [JsonRequired]public string status { get; }
         [JsonRequired]public string description_text { get; }
-        [JsonIgnore] public static string[] continuing = new[]
-        {
-            "ongoing",
-            "hiatus",
-            "in corso",
-            "in pausa"
-        };
-        [JsonIgnore] public static string[] ended = new[]
-        {
-            "completed",
-            "cancelled",
-            "discontinued",
-            "finito",
-            "cancellato",
-            "droppato"
-        };
 
-        public Metadata(Manga manga) : this(manga.sortName, manga.year.ToString() ?? string.Empty, manga.status, manga.description ?? "")
+        public Metadata(Manga manga) : this(manga.sortName, manga.year.ToString() ?? string.Empty, manga.releaseStatus, manga.description ?? "")
         {
             
         }
         
-        public Metadata(string name, string year, string status, string description_text)
+        public Metadata(string name, string year, ReleaseStatusByte status, string description_text)
         {
             this.name = name;
             this.year = year;
-            if(continuing.Contains(status.ToLower()))
-                this.status = "Continuing";
-            else if(ended.Contains(status.ToLower()))
-                this.status = "Ended";
-            else
-                this.status = status;
+            this.status = status switch
+            {
+                ReleaseStatusByte.Continuing => "Continuing",
+                ReleaseStatusByte.Completed => "Ended",
+                _ => Enum.GetName(status) ?? "Ended"
+            };
             this.description_text = description_text;
             
             //kill it with fire, but otherwise Komga will not parse
