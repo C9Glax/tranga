@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Tranga.MangaConnectors;
 using static System.IO.UnixFileMode;
 
 namespace Tranga;
@@ -26,8 +27,6 @@ public struct Manga
     // ReSharper disable once MemberCanBePrivate.Global
     public int? year { get; private set; }
     public string? originalLanguage { get; }
-    // ReSharper disable twice MemberCanBePrivate.Global
-    public string status { get; private set; }
     public ReleaseStatusByte releaseStatus { get; private set; }
     public enum ReleaseStatusByte : byte
     {
@@ -43,14 +42,15 @@ public struct Manga
     public float ignoreChaptersBelow { get; set; }
     public float latestChapterDownloaded { get; set; }
     public float latestChapterAvailable { get; set; }
-    
     public string websiteUrl { get; private set; }
+    public MangaConnector mangaConnector { get; private set; }
 
     private static readonly Regex LegalCharacters = new (@"[A-Za-zÀ-ÖØ-öø-ÿ0-9 \.\-,'\'\)\(~!\+]*");
 
     [JsonConstructor]
-    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string publicationId, ReleaseStatusByte releaseStatus, string? websiteUrl, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Manga(MangaConnector mangaConnector, string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string publicationId, ReleaseStatusByte releaseStatus, string? websiteUrl, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
+        this.mangaConnector = mangaConnector;
         this.sortName = sortName;
         this.authors = authors;
         this.description = description;
@@ -82,7 +82,6 @@ public struct Manga
         this.authors = authors.Union(newManga.authors).ToList();
         this.altTitles = altTitles.UnionBy(newManga.altTitles, kv => kv.Key).ToDictionary(x => x.Key, x => x.Value);
         this.tags = tags.Union(newManga.tags).ToArray();
-        this.status = newManga.status;
         this.releaseStatus = newManga.releaseStatus;
         this.year = newManga.year;
     }
@@ -93,7 +92,6 @@ public struct Manga
             return false;
         return this.description == compareManga.description &&
                this.year == compareManga.year &&
-               this.status == compareManga.status &&
                this.releaseStatus == compareManga.releaseStatus &&
                this.sortName == compareManga.sortName &&
                this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&

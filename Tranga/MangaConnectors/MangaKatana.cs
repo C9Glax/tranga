@@ -141,8 +141,8 @@ public class MangaKatana : MangaConnector
 			year = Convert.ToInt32(yearString);
 		}
 
-		Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-			year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+		Manga manga = new (this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
 		cachedPublications.Add(manga);
 		return manga;
 	}

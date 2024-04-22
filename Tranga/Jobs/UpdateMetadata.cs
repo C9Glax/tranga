@@ -6,7 +6,7 @@ public class UpdateMetadata : Job
 {
     public Manga manga { get; set; }
     
-    public UpdateMetadata(GlobalBase clone, MangaConnector connector, Manga manga, string? parentJobId = null) : base(clone, JobType.UpdateMetaDataJob, connector, parentJobId: parentJobId)
+    public UpdateMetadata(GlobalBase clone, Manga manga, string? parentJobId = null) : base(clone, JobType.UpdateMetaDataJob, manga.mangaConnector, parentJobId: parentJobId)
     {
         this.manga = manga;
     }

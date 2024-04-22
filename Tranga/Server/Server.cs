@@ -32,7 +32,7 @@ public partial class Server : GlobalBase, IDisposable
             new ("GET", @"/v2/Jobs/Waiting", GetV2JobsWaiting),
             new ("GET", @"/v2/Jobs/Monitoring", GetV2JobsMonitoring),
             new ("Get", @"/v2/Job/Types", GetV2JobTypes),
-            new ("POST", @"/v2/Job/Create/([a-zA-Z]+)>", PostV2JobsCreateType),
+            new ("POST", @"/v2/Job/Create/([a-zA-Z]+)", PostV2JobsCreateType),
             new ("GET", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)", GetV2JobJobId),
             new ("DELETE", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)", DeleteV2JobJobId),
             new ("GET", @"/v2/Job/([a-zA-Z\.]+-[-A-Za-z0-9+/]*={0,3}(?:-[0-9]+)?)/Progress", GetV2JobJobIdProgress),
@@ -124,7 +124,7 @@ public partial class Server : GlobalBase, IDisposable
             .ToDictionary(kv => kv.Key, kv => kv.Value); //The actual variable used for the API
 
         ValueTuple<HttpStatusCode, object?> responseMessage; //Used to respond to the HttpRequest
-        if (_apiRequestPaths.Any(p => p.HttpMethod == request.HttpMethod && Regex.IsMatch(path, p.RegexStr))) //Check if Request-Path is valid
+        if (_apiRequestPaths.Any(p => p.HttpMethod == request.HttpMethod && Regex.Match(path, p.RegexStr).Length == path.Length)) //Check if Request-Path is valid
         {
             RequestPath requestPath =
                 _apiRequestPaths.First(p => p.HttpMethod == request.HttpMethod && Regex.Match(path, p.RegexStr).Length == path.Length);

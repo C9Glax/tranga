@@ -176,9 +176,8 @@ public class Mangasee : MangaConnector
             .Descendants("div").First();
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
-            coverFileNameInCache, links,
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        Manga manga = new(this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
+            coverFileNameInCache, links, year, originalLanguage, publicationId, releaseStatus, websiteUrl);
         cachedPublications.Add(manga);
         return manga;
     }

@@ -46,42 +46,32 @@ public partial class Server
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID: '{groups[1].Value}' does not exist.");
         }
 
-        string? connectorStr, mangaId;
-        MangaConnector? connector;
+        string? mangaId;
         Manga? manga;
         switch (jobType)
         {
             case Job.JobType.MonitorManga:
-                if(!requestParameters.TryGetValue("connector", out connectorStr) ||
-                   !_parent.TryGetConnector(connectorStr, out connector) ||
-                   connector is null)
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "Connector Parameter missing, or is not a valid connector.");
                 if(!requestParameters.TryGetValue("internalId", out mangaId) ||
                    !_parent.TryGetPublicationById(mangaId, out manga) ||
                    manga is null)
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "InternalId Parameter missing, or is not a valid ID.");
+                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "'internalId' Parameter missing, or is not a valid ID.");
                 if(!requestParameters.TryGetValue("interval", out string? intervalStr) ||
                    !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "Interval Parameter missing, or is not in correct format.");
+                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "'interval' Parameter missing, or is not in correct format.");
                 requestParameters.TryGetValue("language", out string? language);
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector, (Manga)manga, true, interval, language));
-                break;
+                _parent.jobBoss.AddJob(new DownloadNewChapters(this, ((Manga)manga).mangaConnector, (Manga)manga, true, interval, language));
+                return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
             case Job.JobType.UpdateMetaDataJob:
-                if(!requestParameters.TryGetValue("connector", out connectorStr) ||
-                   !_parent.TryGetConnector(connectorStr, out connector) ||
-                   connector is null)
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "Connector Parameter missing, or is not a valid connector.");
                 if(!requestParameters.TryGetValue("internalId", out mangaId) ||
                    !_parent.TryGetPublicationById(mangaId, out manga) ||
                    manga is null)
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "InternalId Parameter missing, or is not a valid ID.");
-                _parent.jobBoss.AddJob(new UpdateMetadata(this, connector, (Manga)manga));
-                break;
+                _parent.jobBoss.AddJob(new UpdateMetadata(this, (Manga)manga));
+                return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
             case Job.JobType.DownloadNewChaptersJob: //TODO
             case Job.JobType.DownloadChapterJob: //TODO
             default: return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.MethodNotAllowed, $"JobType {Enum.GetName(jobType)} is not supported.");
         }
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotImplemented, "How'd you get here.");
     }
     
     private ValueTuple<HttpStatusCode, object?> GetV2JobJobId(GroupCollection groups, Dictionary<string, string> requestParameters)

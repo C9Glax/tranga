@@ -126,10 +126,10 @@ public class MangaDex : MangaConnector
                 false => null
             };
         
-        Manga.ReleaseStatusByte status = Manga.ReleaseStatusByte.Unreleased;
+        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
         if (attributes.TryGetPropertyValue("status", out JsonNode? statusNode))
         {
-            status = statusNode?.GetValue<string>().ToLower() switch
+            releaseStatus = statusNode?.GetValue<string>().ToLower() switch
             {
                 "ongoing" => Manga.ReleaseStatusByte.Continuing,
                 "completed" => Manga.ReleaseStatusByte.Completed,
@@ -173,6 +173,7 @@ public class MangaDex : MangaConnector
         }
 
         Manga pub = new(
+            this,
             title,
             authors,
             description,
@@ -184,8 +185,8 @@ public class MangaDex : MangaConnector
             year,
             originalLanguage,
             publicationId,
-            status,
-            websiteUrl: $"https://mangadex.org/title/{publicationId}"
+            releaseStatus,
+            $"https://mangadex.org/title/{publicationId}"
         );
         cachedPublications.Add(pub);
         return pub;

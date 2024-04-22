@@ -118,8 +118,8 @@ public class Mangaworld: MangaConnector
         string yearString = metadata.SelectSingleNode("//span[text()='Anno di uscita: ']/..").SelectNodes("a").First().InnerText;
         int year = Convert.ToInt32(yearString);
         
-        Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        Manga manga = new (this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl);
         cachedPublications.Add(manga);
         return manga;
     }

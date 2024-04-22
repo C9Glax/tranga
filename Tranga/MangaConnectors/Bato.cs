@@ -114,8 +114,8 @@ public class Bato : MangaConnector
 			case "pending": releaseStatus = Manga.ReleaseStatusByte.Unreleased; break;
 		}
 
-		Manga manga = new (sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
-			year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+		Manga manga = new (this, sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
+			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
 		cachedPublications.Add(manga);
 		return manga;
 	}

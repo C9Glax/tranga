@@ -7,8 +7,8 @@ public class DownloadNewChapters : Job
     public Manga manga { get; set; }
     public string translatedLanguage { get; init; }
 
-    public DownloadNewChapters(GlobalBase clone, MangaConnector connector, Manga manga, DateTime lastExecution,
-        bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base(clone, JobType.DownloadNewChaptersJob, connector, lastExecution, recurring,
+    public DownloadNewChapters(GlobalBase clone, Manga manga, DateTime lastExecution,
+        bool recurring = false, TimeSpan? recurrence = null, string? parentJobId = null, string translatedLanguage = "en") : base(clone, JobType.DownloadNewChaptersJob, manga.mangaConnector, lastExecution, recurring,
         recurrence, parentJobId)
     {
         this.manga = manga;
@@ -43,7 +43,7 @@ public class DownloadNewChapters : Job
             DownloadChapter downloadChapterJob = new(this, this.mangaConnector, chapter, parentJobId: this.id);
             jobs.Add(downloadChapterJob);
         }
-        UpdateMetadata updateMetadataJob = new(this, this.mangaConnector, this.manga, parentJobId: this.id);
+        UpdateMetadata updateMetadataJob = new(this, this.manga, parentJobId: this.id);
         jobs.Add(updateMetadataJob);
         progressToken.Complete();
         return jobs;

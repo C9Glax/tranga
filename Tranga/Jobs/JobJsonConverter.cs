@@ -23,53 +23,42 @@ public class JobJsonConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         JObject jo = JObject.Load(reader);
+        
+        if(!jo.ContainsKey("jobType"))
+            throw new Exception();
 
-        if (jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.UpdateMetaDataJob)
+        return Enum.Parse<Job.JobType>(jo["jobType"]!.Value<byte>().ToString()) switch
         {
-            return new UpdateMetadata(this._clone,
+            Job.JobType.UpdateMetaDataJob => new UpdateMetadata(_clone, 
+                jo.GetValue("manga")!.ToObject<Manga>(JsonSerializer.Create(new JsonSerializerSettings()
+                {
+                    Converters = { this._mangaConnectorJsonConverter }
+                })), 
+                jo.GetValue("parentJobId")!.Value<string?>()),
+            Job.JobType.DownloadChapterJob => new DownloadChapter(this._clone,
                 jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
                 {
-                    Converters =
-                    {
-                        this._mangaConnectorJsonConverter
-                    }
+                    Converters = { this._mangaConnectorJsonConverter }
                 }))!,
-                jo.GetValue("manga")!.ToObject<Manga>(),
-                jo.GetValue("parentJobId")!.Value<string?>());
-        }else if ((jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.DownloadNewChaptersJob) || jo.ContainsKey("translatedLanguage"))//TODO change to jobType
-        {
-            DateTime lastExecution = jo.GetValue("lastExecution") is {} le 
-                ? le.ToObject<DateTime>()
-                : DateTime.UnixEpoch; //TODO do null checks on all variables
-            return new DownloadNewChapters(this._clone,
-                jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
+                jo.GetValue("chapter")!.ToObject<Chapter>(JsonSerializer.Create(new JsonSerializerSettings()
                 {
-                    Converters =
-                    {
-                        this._mangaConnectorJsonConverter
-                    }
-                }))!,
-                jo.GetValue("manga")!.ToObject<Manga>(),
-                lastExecution,
+                    Converters = { this._mangaConnectorJsonConverter }
+                })),
+                DateTime.UnixEpoch,
+                jo.GetValue("parentJobId")!.Value<string?>()),
+            Job.JobType.DownloadNewChaptersJob => new DownloadNewChapters(this._clone,
+                jo.GetValue("manga")!.ToObject<Manga>(JsonSerializer.Create(new JsonSerializerSettings()
+                {
+                    Converters = { this._mangaConnectorJsonConverter }
+                })), 
+                jo.GetValue("lastExecution") is {} le 
+                    ? le.ToObject<DateTime>()
+                    : DateTime.UnixEpoch,
                 jo.GetValue("recurring")!.Value<bool>(),
                 jo.GetValue("recurrenceTime")!.ToObject<TimeSpan?>(),
-                jo.GetValue("parentJobId")!.Value<string?>());
-        }else if ((jo.ContainsKey("jobType") && jo["jobType"]!.Value<byte>() == (byte)Job.JobType.DownloadChapterJob) || jo.ContainsKey("chapter"))//TODO change to jobType
-        {
-            return new DownloadChapter(this._clone,
-                jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
-                {
-                    Converters =
-                    {
-                        this._mangaConnectorJsonConverter
-                    }
-                }))!,
-                jo.GetValue("chapter")!.ToObject<Chapter>(),
-                DateTime.UnixEpoch,
-                jo.GetValue("parentJobId")!.Value<string?>());
-        }
-
-        throw new Exception();
+                jo.GetValue("parentJobId")!.Value<string?>()),
+            _ => throw new Exception()
+        };
     }
 
     public override bool CanWrite => false;

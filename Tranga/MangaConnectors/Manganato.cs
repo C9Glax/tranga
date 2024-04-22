@@ -127,8 +127,8 @@ public class Manganato : MangaConnector
             .First(s => s.HasClass("chapter-time")).InnerText;
         int year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
         
-        Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        Manga manga = new (this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl);
         cachedPublications.Add(manga);
         return manga;
     }

@@ -239,7 +239,6 @@ Creates a Job.
 
   | Parameter  | Value                                                                                             |
   |------------|---------------------------------------------------------------------------------------------------|
-  | connector  | Name of the connector to use                                                                      |
   | internalId | Manga ID                                                                                          |
   | *interval* | Interval at which the Job is re-run in HH:MM:SS format<br />Only for MonitorManga, UpdateMetadata |
   | *language* | Translated language<br />Only for MonitorManga, DownloadNewChapters and DownloadChapter           |
