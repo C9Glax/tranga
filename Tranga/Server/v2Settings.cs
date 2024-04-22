@@ -16,7 +16,7 @@ public partial class Server
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, settings.userAgent);
     }
     
-    private ValueTuple<HttpStatusCode, object?> PostV2SettingsUserAgent(GroupCollection groups, Dictionary<string, string?> requestParameters)
+    private ValueTuple<HttpStatusCode, object?> PostV2SettingsUserAgent(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
         if (!requestParameters.TryGetValue("value", out string? userAgent))
         {
