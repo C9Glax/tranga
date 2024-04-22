@@ -160,10 +160,10 @@ public class JobBoss : GlobalBase
         {
             this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
             if (job is DownloadNewChapters dncJob)
-                cachedPublications.Add(dncJob.manga);
+                cachedPublications.Add(dncJob.manga.internalId, dncJob.manga);
         }
 
-        HashSet<string> coverFileNames = cachedPublications.Select(manga => manga.coverFileNameInCache!).ToHashSet();
+        HashSet<string> coverFileNames = cachedPublications.Select(manga => manga.Value.coverFileNameInCache!).ToHashSet();
         foreach (string fileName in Directory.GetFiles(settings.coverImageCache)) //Cleanup Unused Covers
         {
             if(!coverFileNames.Any(existingManga => fileName.Contains(existingManga)))

@@ -187,7 +187,7 @@ public class MangaDex : MangaConnector
             status,
             websiteUrl: $"https://mangadex.org/title/{publicationId}"
         );
-        cachedPublications.Add(pub);
+        cachedPublications.Add(pub.internalId, pub);
         return pub;
     }
 

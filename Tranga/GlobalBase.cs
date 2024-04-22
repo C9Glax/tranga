@@ -14,7 +14,7 @@ public abstract class GlobalBase
     protected TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
-    protected List<Manga> cachedPublications { get; init; }
+    protected Dictionary<string, Manga> cachedPublications { get; init; }
     public static readonly NumberFormatInfo numberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
     protected static readonly Regex baseUrlRex = new(@"https?:\/\/[0-9A-z\.-]+(:[0-9]+)?");
 
