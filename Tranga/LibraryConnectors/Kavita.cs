@@ -67,7 +67,15 @@ public class Kavita : LibraryConnector
         foreach (KavitaLibrary lib in GetLibraries())
             NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger);
     }
-    
+
+    internal override bool Test()
+    {
+        foreach (KavitaLibrary lib in GetLibraries())
+            if (NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger))
+                return true;
+        return false;
+    }
+
     /// <summary>
     /// Fetches all libraries available to the user
     /// </summary>
