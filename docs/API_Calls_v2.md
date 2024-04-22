@@ -784,6 +784,7 @@ Returns the configured Notification-Connector of the specified Type.
   | StatusCode | Meaning                               |
   |------------|---------------------------------------|
   | 404        | Library Connector Type does not exist |
+  | 500        | Parsing Error                         |
 </details>
 
 ### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/NotificationConnector/<Type>`
@@ -825,6 +826,7 @@ Creates a Notification-Connector of the specified Type.
   | StatusCode | Meaning                                    |
   |------------|--------------------------------------------|
   | 404        | Notification Connector Type does not exist |
+  | 406        | Missing Parameter                          |
   | 500        | Parsing Error                              |
 </details>
 
@@ -866,7 +868,7 @@ Tests a Notification-Connector of the specified Type.
   |------------|--------------------------------------------|
   | 200        | Test successful                            |
   | 404        | Notification Connector Type does not exist |
-  | 408        | Test failed                                |
+  | 406        | Missing Parameter                          |
   | 500        | Parsing Error                              |
 </details>
 
