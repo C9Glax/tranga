@@ -13,7 +13,7 @@ internal struct RequestPath
         Func<GroupCollection, Dictionary<string, string>, ValueTuple<HttpStatusCode, object?>> method)
     {
         this.HttpMethod = httpHttpMethod;
-        this.RegexStr = regexStr;
+        this.RegexStr = regexStr + "(?:/?)";
         this.Method = method;
     }
 }
