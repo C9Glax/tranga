@@ -44,12 +44,12 @@ public struct Manga
     public float latestChapterDownloaded { get; set; }
     public float latestChapterAvailable { get; set; }
     
-    public string websiteUrl { get; private set; }
+    public string? websiteUrl { get; private set; }
 
     private static readonly Regex LegalCharacters = new (@"[A-Za-zÀ-ÖØ-öø-ÿ0-9 \.\-,'\'\)\(~!\+]*");
 
     [JsonConstructor]
-    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string publicationId, ReleaseStatusByte releaseStatus, string? websiteUrl, string? folderName = null, float? ignoreChaptersBelow = 0)
+    public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string publicationId, ReleaseStatusByte releaseStatus, string? websiteUrl = null, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
         this.sortName = sortName;
         this.authors = authors;
@@ -71,6 +71,7 @@ public struct Manga
         this.latestChapterDownloaded = 0;
         this.latestChapterAvailable = 0;
         this.releaseStatus = releaseStatus;
+        this.status = Enum.GetName(releaseStatus) ?? "";
         this.websiteUrl = websiteUrl;
     }
 
@@ -99,7 +100,7 @@ public struct Manga
                this.sortName == compareManga.sortName &&
                this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&
                this.authors.All(a => compareManga.authors.Contains(a)) &&
-               this.websiteUrl.Equals(compareManga.websiteUrl) &&
+               (this.websiteUrl??"").Equals(compareManga.websiteUrl) &&
                this.tags.All(t => compareManga.tags.Contains(t));
     }
 
