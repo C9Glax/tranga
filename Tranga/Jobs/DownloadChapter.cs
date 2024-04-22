@@ -7,12 +7,12 @@ public class DownloadChapter : Job
 {
     public Chapter chapter { get; init; }
 
-    public DownloadChapter(GlobalBase clone, MangaConnector connector, Chapter chapter, DateTime lastExecution, string? parentJobId = null) : base(clone, JobType.DownloadChapterJob, connector, lastExecution, parentJobId: parentJobId)
+    public DownloadChapter(GlobalBase clone, Chapter chapter, DateTime lastExecution, string? parentJobId = null) : base(clone, JobType.DownloadChapterJob, lastExecution, parentJobId: parentJobId)
     {
         this.chapter = chapter;
     }
     
-    public DownloadChapter(GlobalBase clone, MangaConnector connector, Chapter chapter, string? parentJobId = null) : base(clone, JobType.DownloadChapterJob, connector, parentJobId: parentJobId)
+    public DownloadChapter(GlobalBase clone, Chapter chapter, string? parentJobId = null) : base(clone, JobType.DownloadChapterJob, parentJobId: parentJobId)
     {
         this.chapter = chapter;
     }
@@ -44,11 +44,15 @@ public class DownloadChapter : Job
         return Array.Empty<Job>();
     }
 
+    protected override MangaConnector GetMangaConnector()
+    {
+        return chapter.parentManga.mangaConnector;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not DownloadChapter otherJob)
             return false;
-        return otherJob.mangaConnector == this.mangaConnector &&
-               otherJob.chapter.Equals(this.chapter);
+        return otherJob.chapter.Equals(this.chapter);
     }
 }

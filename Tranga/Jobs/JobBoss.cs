@@ -65,11 +65,9 @@ public class JobBoss : GlobalBase
                 RemoveJob(job);
     }
 
-    public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, string? chapterNumber = null)
+    public IEnumerable<Job> GetJobsLike(string? internalId = null, string? chapterNumber = null)
     {
         IEnumerable<Job> ret = this.jobs;
-        if (connectorName is not null)
-            ret = ret.Where(job => job.mangaConnector.name == connectorName);
         
         if (internalId is not null && chapterNumber is not null)
             ret = ret.Where(jjob =>
@@ -84,18 +82,18 @@ public class JobBoss : GlobalBase
             {
                 if (jjob is not DownloadNewChapters job)
                     return false;
-                return job.manga.internalId == internalId;
+                return job.mangaInternalId == internalId;
             });
         return ret;
     }
 
-    public IEnumerable<Job> GetJobsLike(MangaConnector? mangaConnector = null, Manga? publication = null,
+    public IEnumerable<Job> GetJobsLike(Manga? publication = null,
         Chapter? chapter = null)
     {
         if (chapter is not null)
-            return GetJobsLike(mangaConnector?.name, chapter.Value.parentManga.internalId, chapter.Value.chapterNumber);
+            return GetJobsLike(chapter.Value.parentManga.internalId, chapter.Value.chapterNumber);
         else
-            return GetJobsLike(mangaConnector?.name, publication?.internalId);
+            return GetJobsLike(publication?.internalId);
     }
 
     public Job? GetJobById(string jobId)
@@ -154,16 +152,28 @@ public class JobBoss : GlobalBase
                 new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
             this.jobs.Add(job);
         }
+        
+        //Load Manga-Files
+        ImportManga();
 
-        //Connect jobs to parent-jobs and add Publications to cache
+        //Connect jobs to parent-jobs
         foreach (Job job in this.jobs)
         {
             this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
-            if (job is DownloadNewChapters dncJob)
-                cachedPublications.Add(dncJob.manga);
         }
 
-        HashSet<string> coverFileNames = cachedPublications.Select(manga => manga.coverFileNameInCache!).ToHashSet();
+        string[] jobMangaInternalIds = this.jobs.Where(job => job is DownloadNewChapters)
+            .Select(dnc => ((DownloadNewChapters)dnc).mangaInternalId).ToArray();
+        jobMangaInternalIds = jobMangaInternalIds.Concat(
+            this.jobs.Where(job => job is UpdateMetadata)
+            .Select(dnc => ((UpdateMetadata)dnc).mangaInternalId)).ToArray();
+        string[] internalIds = GetAllCachedManga().Select(m => m.internalId).ToArray();
+
+        string[] extraneousIds = internalIds.Except(jobMangaInternalIds).ToArray();
+        foreach (string internalId in extraneousIds)
+            RemoveMangaFromCache(internalId);
+
+        HashSet<string> coverFileNames = GetAllCachedManga().Select(manga => manga.coverFileNameInCache!).ToHashSet();
         foreach (string fileName in Directory.GetFiles(settings.coverImageCache)) //Cleanup Unused Covers
         {
             if(!coverFileNames.Any(existingManga => fileName.Contains(existingManga)))
@@ -171,7 +181,7 @@ public class JobBoss : GlobalBase
         }
     }
 
-    private void UpdateJobFile(Job job)
+    internal void UpdateJobFile(Job job)
     {
         string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
         
@@ -245,7 +255,9 @@ public class JobBoss : GlobalBase
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
-                Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks(this).ToArray();
+                Job eJob = jobQueue.Peek();
+                Job[] subJobs = eJob.ExecuteReturnSubTasks(this).ToArray();
+                UpdateJobFile(eJob);
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
             }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))

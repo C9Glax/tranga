@@ -30,16 +30,9 @@ public class JobJsonConverter : JsonConverter
         return Enum.Parse<Job.JobType>(jo["jobType"]!.Value<byte>().ToString()) switch
         {
             Job.JobType.UpdateMetaDataJob => new UpdateMetadata(_clone, 
-                jo.GetValue("manga")!.ToObject<Manga>(JsonSerializer.Create(new JsonSerializerSettings()
-                {
-                    Converters = { this._mangaConnectorJsonConverter }
-                })), 
+                jo.GetValue("mangaInternalId")!.Value<string>()!,
                 jo.GetValue("parentJobId")!.Value<string?>()),
             Job.JobType.DownloadChapterJob => new DownloadChapter(this._clone,
-                jo.GetValue("mangaConnector")!.ToObject<MangaConnector>(JsonSerializer.Create(new JsonSerializerSettings()
-                {
-                    Converters = { this._mangaConnectorJsonConverter }
-                }))!,
                 jo.GetValue("chapter")!.ToObject<Chapter>(JsonSerializer.Create(new JsonSerializerSettings()
                 {
                     Converters = { this._mangaConnectorJsonConverter }
@@ -47,10 +40,7 @@ public class JobJsonConverter : JsonConverter
                 DateTime.UnixEpoch,
                 jo.GetValue("parentJobId")!.Value<string?>()),
             Job.JobType.DownloadNewChaptersJob => new DownloadNewChapters(this._clone,
-                jo.GetValue("manga")!.ToObject<Manga>(JsonSerializer.Create(new JsonSerializerSettings()
-                {
-                    Converters = { this._mangaConnectorJsonConverter }
-                })), 
+                jo.GetValue("mangaInternalId")!.Value<string>()!,
                 jo.GetValue("lastExecution") is {} le 
                     ? le.ToObject<DateTime>()
                     : DateTime.UnixEpoch,

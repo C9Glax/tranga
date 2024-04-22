@@ -116,7 +116,7 @@ public class Bato : MangaConnector
 
 		Manga manga = new (this, sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
 			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
-		cachedPublications.Add(manga);
+		AddMangaToCache(manga);
 		return manga;
 	}
 

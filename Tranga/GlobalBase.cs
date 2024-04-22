@@ -1,8 +1,11 @@
 ﻿using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using Logging;
 using Newtonsoft.Json;
 using Tranga.LibraryConnectors;
+using Tranga.MangaConnectors;
 using Tranga.NotificationConnectors;
 
 namespace Tranga;
@@ -14,7 +17,9 @@ public abstract class GlobalBase
     protected TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
-    protected List<Manga> cachedPublications { get; init; }
+    private Dictionary<string, Manga> cachedPublications { get; init; }
+    
+    protected HashSet<MangaConnector> _connectors;
     public static readonly NumberFormatInfo numberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
     protected static readonly Regex baseUrlRex = new(@"https?:\/\/[0-9A-z\.-]+(:[0-9]+)?");
 
@@ -25,6 +30,7 @@ public abstract class GlobalBase
         this.notificationConnectors = clone.notificationConnectors;
         this.libraryConnectors = clone.libraryConnectors;
         this.cachedPublications = clone.cachedPublications;
+        this._connectors = clone._connectors;
     }
 
     protected GlobalBase(Logger? logger, TrangaSettings settings)
@@ -34,6 +40,85 @@ public abstract class GlobalBase
         this.notificationConnectors = settings.LoadNotificationConnectors(this);
         this.libraryConnectors = settings.LoadLibraryConnectors(this);
         this.cachedPublications = new();
+        this._connectors = new();
+    }
+
+    protected Manga? GetCachedManga(string internalId)
+    {
+        return cachedPublications.TryGetValue(internalId, out Manga manga) switch
+        {
+            true => manga,
+            _ => null
+        };
+    }
+
+    protected IEnumerable<Manga> GetAllCachedManga() => cachedPublications.Values;
+
+    protected void AddMangaToCache(Manga manga)
+    {
+        if (!cachedPublications.TryAdd(manga.internalId, manga))
+        {
+            Log($"Overwriting Manga {manga.internalId}");
+            cachedPublications[manga.internalId] = manga;
+        }
+        ExportManga();
+    }
+    
+    protected void RemoveMangaFromCache(Manga manga) => RemoveMangaFromCache(manga.internalId);
+
+    protected void RemoveMangaFromCache(string internalId)
+    {
+        cachedPublications.Remove(internalId);
+        ExportManga();
+    }
+
+    internal void ImportManga()
+    {
+        string folder = settings.mangaCacheFolderPath;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            Directory.CreateDirectory(folder,
+                UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead | UnixFileMode.OtherWrite |
+                UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        else
+            Directory.CreateDirectory(folder);
+
+        foreach (FileInfo fileInfo in new DirectoryInfo(folder).GetFiles())
+        {
+            string content = File.ReadAllText(fileInfo.FullName);
+            try
+            {
+                Manga m = JsonConvert.DeserializeObject<Manga>(content, new MangaConnectorJsonConverter(this, _connectors));
+                this.cachedPublications.TryAdd(m.internalId, m);
+            }
+            catch (JsonException e)
+            {
+                Log($"Error parsing Manga {fileInfo.Name}:\n{e.Message}");
+            }
+        }
+        
+    }
+
+    private void ExportManga()
+    {
+        string folder = settings.mangaCacheFolderPath;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            Directory.CreateDirectory(folder,
+                UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead | UnixFileMode.OtherWrite |
+                UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        else
+            Directory.CreateDirectory(folder);
+        foreach (Manga manga in cachedPublications.Values)
+        {
+            string content = JsonConvert.SerializeObject(manga, Formatting.Indented);
+            string filePath = Path.Combine(folder, $"{manga.internalId}.json");
+            File.WriteAllText(filePath, content, Encoding.UTF8);
+        }
+
+        foreach (FileInfo fileInfo in new DirectoryInfo(folder).GetFiles())
+        {
+            if(!cachedPublications.Keys.Any(key => fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf('.')).Equals(key)))
+                fileInfo.Delete();
+        }
     }
 
     protected void Log(string message)

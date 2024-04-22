@@ -38,7 +38,7 @@ public partial class Server
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, Enum.GetNames(typeof(Job.JobType)));
     }
     
-    private ValueTuple<HttpStatusCode, object?> PostV2JobsCreateType(GroupCollection groups, Dictionary<string, string> requestParameters)
+    private ValueTuple<HttpStatusCode, object?> PostV2JobCreateType(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
         if (groups.Count < 1 ||
             !Enum.TryParse(groups[1].Value, true, out Job.JobType jobType))
@@ -59,14 +59,14 @@ public partial class Server
                    !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "'interval' Parameter missing, or is not in correct format.");
                 requestParameters.TryGetValue("language", out string? language);
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, ((Manga)manga).mangaConnector, (Manga)manga, true, interval, language));
+                _parent.jobBoss.AddJob(new DownloadNewChapters(this, ((Manga)manga).mangaConnector, ((Manga)manga).internalId, true, interval, language));
                 return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
             case Job.JobType.UpdateMetaDataJob:
                 if(!requestParameters.TryGetValue("internalId", out mangaId) ||
                    !_parent.TryGetPublicationById(mangaId, out manga) ||
                    manga is null)
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "InternalId Parameter missing, or is not a valid ID.");
-                _parent.jobBoss.AddJob(new UpdateMetadata(this, (Manga)manga));
+                _parent.jobBoss.AddJob(new UpdateMetadata(this, ((Manga)manga).internalId));
                 return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
             case Job.JobType.DownloadNewChaptersJob: //TODO
             case Job.JobType.DownloadChapterJob: //TODO

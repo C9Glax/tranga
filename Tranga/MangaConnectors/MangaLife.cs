@@ -123,7 +123,7 @@ public class MangaLife : MangaConnector
 
         Manga manga = new(this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
             coverFileNameInCache, links, year, originalLanguage, publicationId, releaseStatus, websiteUrl);
-        cachedPublications.Add(manga);
+        AddMangaToCache(manga);
         return manga;
     }
 

@@ -4,7 +4,6 @@ namespace Tranga.Jobs;
 
 public abstract class Job : GlobalBase
 {
-    public MangaConnector mangaConnector { get; init; }
     public ProgressToken progressToken { get; private set; }
     public bool recurring { get; init; }
     public TimeSpan? recurrenceTime { get; set; }
@@ -15,12 +14,13 @@ public abstract class Job : GlobalBase
     public string? parentJobId { get; init; }
     public enum JobType : byte { DownloadChapterJob, DownloadNewChaptersJob, UpdateMetaDataJob, MonitorManga }
 
+    public MangaConnector mangaConnector => GetMangaConnector();
+
     public JobType jobType;
 
-    internal Job(GlobalBase clone, JobType jobType, MangaConnector connector, bool recurring = false, TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
+    internal Job(GlobalBase clone, JobType jobType, bool recurring = false, TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
     {
         this.jobType = jobType;
-        this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
         this.recurring = recurring;
         if (recurring && recurrenceTime is null)
@@ -31,11 +31,10 @@ public abstract class Job : GlobalBase
         this.parentJobId = parentJobId;
     }
 
-    internal Job(GlobalBase clone, JobType jobType, MangaConnector connector, DateTime lastExecution, bool recurring = false,
+    internal Job(GlobalBase clone, JobType jobType, DateTime lastExecution, bool recurring = false,
         TimeSpan? recurrenceTime = null, string? parentJobId = null) : base(clone)
     {
         this.jobType = jobType;
-        this.mangaConnector = connector;
         this.progressToken = new ProgressToken(0);
         this.recurring = recurring;
         if (recurring && recurrenceTime is null)
@@ -95,4 +94,6 @@ public abstract class Job : GlobalBase
     }
 
     protected abstract IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss);
+
+    protected abstract MangaConnector GetMangaConnector();
 }

@@ -188,7 +188,7 @@ public class MangaDex : MangaConnector
             releaseStatus,
             $"https://mangadex.org/title/{publicationId}"
         );
-        cachedPublications.Add(pub);
+        AddMangaToCache(pub);
         return pub;
     }
 

@@ -19,6 +19,7 @@ public class TrangaSettings
     [JsonIgnore] public string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public string jobsFolderPath => Path.Join(workingDirectory, "jobs");
+    [JsonIgnore] public string mangaCacheFolderPath => Path.Join(workingDirectory, "manga");
     [JsonIgnore] public string coverImageCache => Path.Join(workingDirectory, "imageCache");
     [JsonIgnore] internal static readonly string DefaultUserAgent = $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
     public ushort? version { get; } = 2;

@@ -8,7 +8,7 @@ public partial class Server
 {
     private ValueTuple<HttpStatusCode, object?> GetV2Manga(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, cachedPublications.Select(m => m.internalId));
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, GetAllCachedManga().Select(m => m.internalId));
     }
     
     private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalId(GroupCollection groups, Dictionary<string, string> requestParameters)
@@ -28,6 +28,7 @@ public partial class Server
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
         Job[] jobs = _parent.jobBoss.GetJobsLike(publication: manga).ToArray();
         _parent.jobBoss.RemoveJobs(jobs);
+        RemoveMangaFromCache(groups[1].Value);
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
     }
     

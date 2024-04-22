@@ -74,16 +74,20 @@ public struct Manga
         this.websiteUrl = websiteUrl;
     }
 
-    public void UpdateMetadata(Manga newManga)
+    public Manga WithMetadata(Manga newManga)
     {
-        this.sortName = newManga.sortName;
-        this.description = newManga.description;
-        this.coverUrl = newManga.coverUrl;
-        this.authors = authors.Union(newManga.authors).ToList();
-        this.altTitles = altTitles.UnionBy(newManga.altTitles, kv => kv.Key).ToDictionary(x => x.Key, x => x.Value);
-        this.tags = tags.Union(newManga.tags).ToArray();
-        this.releaseStatus = newManga.releaseStatus;
-        this.year = newManga.year;
+        return this with
+        {
+            sortName = newManga.sortName,
+            description = newManga.description,
+            coverUrl = newManga.coverUrl,
+            authors = authors.Union(newManga.authors).ToList(),
+            altTitles = altTitles.UnionBy(newManga.altTitles, kv => kv.Key).ToDictionary(x => x.Key, x => x.Value),
+            tags = tags.Union(newManga.tags).ToArray(),
+            releaseStatus = newManga.releaseStatus,
+            year = newManga.year,
+            websiteUrl = newManga.websiteUrl
+        };
     }
 
     public override bool Equals(object? obj)
@@ -96,6 +100,7 @@ public struct Manga
                this.sortName == compareManga.sortName &&
                this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&
                this.authors.All(a => compareManga.authors.Contains(a)) &&
+               this.websiteUrl.Equals(compareManga.websiteUrl) &&
                this.tags.All(t => compareManga.tags.Contains(t));
     }
 
