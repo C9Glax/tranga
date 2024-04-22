@@ -98,6 +98,8 @@ public class Manganato : MangaConnector
                     break;
                 case "authors":
                     authors = value.Split('-');
+                    for (int i = 0; i < authors.Length; i++)
+                        authors[i] = authors[i].Replace("\r\n", "");
                     break;
                 case "status":
                     switch (value.ToLower())
@@ -108,6 +110,8 @@ public class Manganato : MangaConnector
                     break;
                 case "genres":
                     string[] genres = value.Split(" - ");
+                    for (int i = 0; i < genres.Length; i++)
+                        genres[i] = genres[i].Replace("\r\n", "");
                     tags = genres.ToHashSet();
                     break;
             }
