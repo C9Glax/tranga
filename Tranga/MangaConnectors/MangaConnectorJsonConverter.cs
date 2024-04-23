@@ -13,7 +13,7 @@ public class MangaConnectorJsonConverter : JsonConverter
         this._clone = clone;
         this._connectors = connectors;
     }
-    
+
     public override bool CanConvert(Type objectType)
     {
         return (objectType == typeof(MangaConnector));
@@ -38,6 +38,14 @@ public class MangaConnectorJsonConverter : JsonConverter
                 return this._connectors.First(c => c is Bato);
             case "Manga4Life":
                 return this._connectors.First(c => c is MangaLife);
+            case "OmegaScans":
+                return this._connectors.First(c => c is OmegaScans);
+            case "PerfScan":
+                return this._connectors.First(c => c is PerfScan);
+            case "TempleScan":
+                return this._connectors.First(c => c is TempleScan);
+            case "YugenMangas":
+                return this._connectors.First(c => c is YugenMangas);
         }
 
         throw new Exception();
