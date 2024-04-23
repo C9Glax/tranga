@@ -78,9 +78,11 @@ public abstract class HeanCms : MangaConnector
     private readonly string seriesPath = $"/series";
     private readonly string chapterPath = $"/chapter";
 
-    private string GetQueryUrl(string publicationTitle) => $"{hostname}{queryPath}{publicationTitle}";
-    private string GetSeriesUrl(string publicationId) => $"{hostname}{seriesPath}/{publicationId}";
-    private string GetChapterUrl(string publicationId, string chapterId) => $"{hostname}{chapterPath}/{publicationId}/{chapterId}";
+    private string GetQueryUrl(string publicationTitle) => $"{hostname}{queryPath}?query_string={publicationTitle}";
+    private string GetSeriesUrl(string publicationSlug) => $"{hostname}{seriesPath}/{publicationSlug}";
+    private string GetSeriesQueryUrl(string publicationId) => $"{hostname}{chapterPath}/query?series_id={publicationId}&perPage=9999&page=1";
+    private string GetChapterSlugUrl(string publicationSlug, string chapterSlug) => $"{hostname}{chapterPath}/{publicationSlug}/{chapterSlug}";
+    private string GetChapterIdUrl(string chapterId) => $"{hostname}{chapterPath}/{chapterId}";
 
     private Manga[] FetchMangasByTitle(string publicationTitle = "")
     {
@@ -101,7 +103,7 @@ public abstract class HeanCms : MangaConnector
     {
         Log($"Getting manga from id. {publicationId}");
 
-        JsonObject? result = FetchSeriesById(publicationId);
+        JsonObject? result = FetchSeriesBySlug(publicationId);
 
         if (result is null)
         {
@@ -147,17 +149,36 @@ public abstract class HeanCms : MangaConnector
         return retManga.ToArray();
     }
 
-    private JsonObject? FetchSeriesById(string publicationId)
+    private JsonObject? FetchSeriesBySlug(string publicationSlug)
     {
-        Log($"Getting series {publicationId}");
+        Log($"Getting series {publicationSlug}");
 
-        string seriesUrl = GetSeriesUrl(publicationId);
+        string seriesUrl = GetSeriesUrl(publicationSlug);
 
         RequestResult requestResult = downloadClient.MakeRequest(seriesUrl, RequestType.MangaInfo);
 
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
-            Log($"Failed to get series. Term=\"{publicationId}\" Status: {requestResult.statusCode}");
+            Log($"Failed to get series. Term=\"{publicationSlug}\" Status: {requestResult.statusCode}");
+            return null;
+        }
+
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+
+        return result;
+    }
+
+    private JsonObject? FetchSeriesById(string id)
+    {
+        Log($"Getting series by query {id}");
+
+        string seriesUrl = GetSeriesQueryUrl(id);
+
+        RequestResult requestResult = downloadClient.MakeRequest(seriesUrl, RequestType.MangaInfo);
+
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        {
+            Log($"Failed to get series. Term=\"{id}\" Status: {requestResult.statusCode}");
             return null;
         }
 
@@ -292,11 +313,20 @@ public abstract class HeanCms : MangaConnector
 
     private Chapter[] FetchChapters(Manga manga, string language="en")
     {
-        // note: there's no sensible way to filter out "we're taking a break" stuff. they're just regular chapters with only one image, which isn't sufficient to filter them out without a lot of false positives
+        Chapter[] chapterList = FetchChaptersV1(manga, language);
 
-        Log($"Fetching chapters {manga.publicationId}");
+        if (chapterList.Length == 0) {
+            chapterList = FetchChaptersV2(manga, language);
+        }
 
-        JsonObject? result = FetchSeriesById(manga.publicationId);
+        return chapterList;
+    }
+
+    private Chapter[] FetchChaptersV1(Manga manga, string language="en")
+    {
+        Log($"Fetching chapters v1 {manga.publicationId}");
+
+        JsonObject? result = FetchSeriesBySlug(manga.publicationId);
 
         Log($"Got series {manga.publicationId}");
 
@@ -310,6 +340,11 @@ public abstract class HeanCms : MangaConnector
 
         foreach (JsonObject? season in result["seasons"]!.AsArray())
         {
+            if (season?["chapters"] is null)
+            {
+                continue;
+            }
+
             foreach (JsonObject? chapter in season!["chapters"]!.AsArray())
             {
                 // skip paid chapters
@@ -334,6 +369,102 @@ public abstract class HeanCms : MangaConnector
         return retChapters.Order().ToArray();
     }
 
+    private Chapter[] FetchChaptersV2(Manga manga, string language="en")
+    {
+        Log($"Fetching chapters v2 {manga.publicationId}");
+
+        JsonObject? resultBase = FetchSeriesBySlug(manga.publicationId)!;
+
+        string publicationId = resultBase["id"]!.GetValue<int>().ToString();
+
+        JsonObject? result = FetchSeriesById(publicationId);
+
+        Log($"Got series {manga.publicationId}");
+
+        if (result is null)
+        {
+            Log($"Failed to get chapters - null result. {manga}");
+            return Array.Empty<Chapter>();
+        }
+
+        List<Chapter> retChapters = new();
+
+        foreach (JsonObject? chapter in result["data"]!.AsArray())
+        {
+            // skip paid chapters
+            if (chapter!["price"]!.GetValue<int>() > 0)
+                continue;
+
+            string chapterId = chapter["id"]!.GetValue<int>().ToString();
+
+            JsonObject? chapterData = FetchChapterById(chapterId);
+
+            Log($"Got chapterData {chapterData}");
+
+            string chapterSlug = chapterData!["chapter_slug"]!.GetValue<string>();
+            string title = chapterData!["chapter_title"]?.GetValue<string>() ?? chapter!["chapter_name"]!.GetValue<string>();
+            string volume = chapterData!["season"]!["index"]!.GetValue<int>().ToString();
+            string chapterNum = chapterData!["index"]!.GetValue<string>();
+
+            retChapters.Add(new Chapter(manga, title, volume, chapterNum, chapterSlug));
+        }
+
+        Log($"Got {retChapters.Count} chapters. {manga}");
+
+        return retChapters.Order().ToArray();
+
+    }
+
+    private JsonObject? FetchChapterBySlug(string publicationId, string chapterId)
+    {
+        Log($"Fetching chapter {publicationId} {chapterId}");
+
+        string chapterUrl = GetChapterSlugUrl(publicationId, chapterId);
+
+        Log($"Fetching chapter {chapterUrl}");
+
+        RequestResult requestResult = downloadClient.MakeRequest(chapterUrl, RequestType.MangaDexImage);
+
+        Log($"Got chapter {publicationId} {chapterId} {requestResult.statusCode}");
+
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        {
+            Log($"Failed to get chapter. {publicationId} {chapterId} Status: {requestResult.statusCode}");
+            return new JsonObject();
+        }
+
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+
+        Log($"Got chapter {publicationId} {chapterId} {result}");
+
+        return result;
+    }
+
+    private JsonObject? FetchChapterById(string chapterId)
+    {
+        Log($"Fetching chapter by id {chapterId}");
+
+        string chapterUrl = GetChapterIdUrl(chapterId);
+
+        Log($"Fetching chapter {chapterUrl}");
+
+        RequestResult requestResult = downloadClient.MakeRequest(chapterUrl, RequestType.MangaInfo);
+
+        Log($"Got chapter {chapterId} {requestResult.statusCode}");
+
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        {
+            Log($"Failed to get chapter. {chapterId} Status: {requestResult.statusCode}");
+            return new JsonObject();
+        }
+
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+
+        Log($"Got chapter {chapterId} {result}");
+
+        return result;
+    }
+
     private HttpStatusCode FetchChapterImages(Chapter chapter, ProgressToken? progressToken = null)
     {
         if (progressToken?.cancellationRequested ?? false)
@@ -347,18 +478,7 @@ public abstract class HeanCms : MangaConnector
 
         Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
-        string chapterUrl = GetChapterUrl(chapterParentManga.publicationId, chapter.url); // NB: chapter.url is the chapter_slug
-
-        RequestResult requestResult = downloadClient.MakeRequest(chapterUrl, RequestType.MangaDexImage);
-
-        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-        {
-            Log($"Failed to get chapter-info. {chapter} {chapterParentManga} Status: {requestResult.statusCode}");
-            progressToken?.Cancel();
-            return requestResult.statusCode;
-        }
-
-        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
+        JsonObject? result = FetchChapterBySlug(chapterParentManga.publicationId, chapter.url);
 
         if (result is null)
         {
@@ -367,7 +487,7 @@ public abstract class HeanCms : MangaConnector
             return HttpStatusCode.NoContent;
         }
 
-        if (result["paywall"]!.GetValue<bool>())
+        if (result["paywall"]?.GetValue<bool>() ?? false)
         {
             Log($"Chapter is behind a paywall. {chapter} {chapterParentManga}");
             progressToken?.Cancel();
@@ -375,6 +495,11 @@ public abstract class HeanCms : MangaConnector
         }
 
         JsonArray? data = (JsonArray?)result["data"];
+
+        if (data is null)
+        {
+            data = (JsonArray?)result["chapter"]?["chapter_data"]?["images"];
+        }
 
         if (data is null)
         {
