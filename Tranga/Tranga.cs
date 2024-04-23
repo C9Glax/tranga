@@ -16,7 +16,7 @@ public partial class Tranga : GlobalBase
         Log("\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n");
         keepRunning = true;
         _connectors = new HashSet<MangaConnector>()
-        {  
+        {
             new Manganato(this),
             new Mangasee(this),
             new MangaDex(this),
@@ -27,6 +27,9 @@ public partial class Tranga : GlobalBase
             new ManhuaPlus(this),
             new MangaHere(this),
             new AsuraToon(this),
+            new OmegaScans(this),
+            new PerfScan(this),
+            new TempleScan(this),
         };
         foreach(DirectoryInfo dir in new DirectoryInfo(Path.GetTempPath()).GetDirectories("trangatemp"))//Cleanup old temp folders
             dir.Delete();

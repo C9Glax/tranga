@@ -15,7 +15,7 @@ public class MangaConnectorJsonConverter : JsonConverter
         this._clone = clone;
         this._connectors = connectors;
     }
-    
+
     public override bool CanConvert(Type objectType)
     {
         return (objectType == typeof(MangaConnector));
@@ -39,6 +39,9 @@ public class MangaConnectorJsonConverter : JsonConverter
             "ManhuaPlus" => this._connectors.First(c => c is ManhuaPlus),
             "MangaHere" => this._connectors.First(c => c is MangaHere),
             "AsuraToon" => this._connectors.First(c => c is AsuraToon),
+            "OmegaScans" => this._connectors.First(c => c is OmegaScans),
+            "PerfScan" => this._connectors.First(c => c is PerfScan),
+            "TempleScan" => this._connectors.First(c => c is TempleScan),
             _ => throw new UnreachableException($"Could not find Connector with name {connectorName}")
         };
     }
