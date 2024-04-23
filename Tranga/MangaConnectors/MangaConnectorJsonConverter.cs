@@ -44,8 +44,6 @@ public class MangaConnectorJsonConverter : JsonConverter
                 return this._connectors.First(c => c is PerfScan);
             case "TempleScan":
                 return this._connectors.First(c => c is TempleScan);
-            case "YugenMangas":
-                return this._connectors.First(c => c is YugenMangas);
         }
 
         throw new Exception();
