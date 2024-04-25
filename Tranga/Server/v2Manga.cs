@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
 using Tranga.Jobs;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Server;
 
@@ -23,6 +24,27 @@ public partial class Server
                 return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with id '{mangaId}' not found.");
             ret.Add(manga.Value);
         }
+
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, ret);
+    }
+
+    private ValueTuple<HttpStatusCode, object?> GetV2MangaSearch(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        if(!requestParameters.TryGetValue("title", out string? title))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, "Missing parameter 'title'.");
+        List<Manga> ret = new();
+        List<Thread> threads = new();
+        foreach (MangaConnector mangaConnector in _connectors)
+        {
+            Thread t = new (() =>
+            {
+                ret.AddRange(mangaConnector.GetManga(title));
+            });
+            t.Start();
+            threads.Add(t);
+        }
+        while(threads.Any(t => t.ThreadState is ThreadState.Running or ThreadState.WaitSleepJoin))
+            Thread.Sleep(10);
 
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, ret);
     }

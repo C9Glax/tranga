@@ -77,6 +77,29 @@ Returns all known Manga.
   List of internalIds.
 </details>
 
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Manga/Search`
+
+Initiates a search for a Manga on all Connectors.
+
+<details>
+  <summary>Request</summary>
+
+
+  | Parameter | Value                                           |
+  |-----------|-------------------------------------------------|
+  | title     | Search Term                                     |
+</details>
+
+<details>
+  <summary>Returns</summary>
+  
+  List of [Manga](Types.md#Manga)
+
+  | StatusCode | Meaning           |
+  |------------|-------------------|
+  | 400        | Parameter missing |
+</details>
+
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Manga/<internalId>`
 
 Returns the specified Manga.
