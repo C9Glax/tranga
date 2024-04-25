@@ -89,7 +89,7 @@ public struct Manga
             releaseStatus = newManga.releaseStatus,
             websiteUrl = newManga.websiteUrl,
             year = newManga.year,
-            coverFileNameInCache = coverFileNameInCache
+            coverFileNameInCache = newManga.coverFileNameInCache
         };
     }
 
