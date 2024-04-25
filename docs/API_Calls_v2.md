@@ -276,7 +276,9 @@ Creates a Job.
   
   | StatusCode | Meaning                                  |
   |------------|------------------------------------------|
+  | 200        | Job created.                             |
   | 404        | Parameter missing or could not be found. |
+  | 409        | Job already exists                       |
   | 500        | Error parsing interval                   |
 </details>
 

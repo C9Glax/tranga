@@ -17,17 +17,19 @@ public class JobBoss : GlobalBase
         Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
     }
 
-    public void AddJob(Job job)
+    public bool AddJob(Job job)
     {
         if (ContainsJobLike(job))
         {
             Log($"Already Contains Job {job}");
+            return false;
         }
         else
         {
             Log($"Added {job}");
             this.jobs.Add(job);
             UpdateJobFile(job);
+            return true;
         }
     }
 

@@ -60,15 +60,22 @@ public partial class Server
                    !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "'interval' Parameter missing, or is not in correct format.");
                 requestParameters.TryGetValue("language", out string? language);
-                _parent.jobBoss.AddJob(new DownloadNewChapters(this, ((Manga)manga).mangaConnector, ((Manga)manga).internalId, true, interval, language));
-                return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
+                return _parent.jobBoss.AddJob(new DownloadNewChapters(this, ((Manga)manga).mangaConnector,
+                        ((Manga)manga).internalId, true, interval, language)) switch
+                    {
+                        true => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null),
+                        false => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.Conflict, "Job already exists."),
+                    };
             case Job.JobType.UpdateMetaDataJob:
                 if(!requestParameters.TryGetValue("internalId", out mangaId) ||
                    !_parent.TryGetPublicationById(mangaId, out manga) ||
                    manga is null)
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "InternalId Parameter missing, or is not a valid ID.");
-                _parent.jobBoss.AddJob(new UpdateMetadata(this, ((Manga)manga).internalId));
-                return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
+                return _parent.jobBoss.AddJob(new UpdateMetadata(this, ((Manga)manga).internalId)) switch
+                {
+                    true => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null),
+                    false => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.Conflict, "Job already exists."),
+                };
             case Job.JobType.DownloadNewChaptersJob: //TODO
             case Job.JobType.DownloadChapterJob: //TODO
             default: return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.MethodNotAllowed, $"JobType {Enum.GetName(jobType)} is not supported.");
