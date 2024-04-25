@@ -115,7 +115,7 @@ public class MangaDex : MangaConnector
         };
 
         Dictionary<string, string> linksDict = new();
-        if (attributes.TryGetPropertyValue("links", out JsonNode? linksNode))
+        if (attributes.TryGetPropertyValue("links", out JsonNode? linksNode) && linksNode is not null)
             foreach (KeyValuePair<string, JsonNode?> linkKv in linksNode!.AsObject())
                 linksDict.TryAdd(linkKv.Key, linkKv.Value.GetValue<string>());
 
