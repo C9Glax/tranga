@@ -11,6 +11,22 @@ public partial class Server
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, GetAllCachedManga().Select(m => m.internalId));
     }
     
+    private ValueTuple<HttpStatusCode, object?> GetV2Manga(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        if(!requestParameters.TryGetValue("mangaIds", out string? mangaIdListStr))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, "Missing parameter 'mangaIds'.");
+        string[] mangaIdList = mangaIdListStr.Split(',');
+        List<Manga> ret = new();
+        foreach (string mangaId in mangaIdList)
+        {
+            if(!_parent.TryGetPublicationById(mangaId, out Manga? manga) || manga is null)
+                return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with id '{mangaId}' not found.");
+            ret.Add(manga.Value);
+        }
+
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, ret);
+    }
+    
     private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalId(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
         if(groups.Count < 1 ||

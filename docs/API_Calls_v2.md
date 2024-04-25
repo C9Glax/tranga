@@ -100,6 +100,34 @@ Returns the specified Manga.
   | 404        | Manga with `internalId` could not be found |
 </details>
 
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Manga/`
+
+Returns the list of Mangas requested.
+
+<details>
+  <summary>Request</summary>
+
+  | Parameter | Value                                |
+  |-----------|--------------------------------------|
+  | mangaIds  | Comma-Seperated list of `internalId` |
+  
+  `internalId` is returned in the response of
+  * [GET /v2/Manga](#-v2manga)
+  * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
+</details>
+
+<details>
+  <summary>Returns</summary>
+
+  List of [Manga](Types.md#manga)
+
+  | StatusCode | Meaning                                    |
+  |------------|--------------------------------------------|
+  | 400        | Missing Parameter                          |
+  | 404        | Manga with `internalId` could not be found |
+</details>
+
 ### <sub>![DELETE](https://img.shields.io/badge/DELETE-f00)</sub> `/v2/Manga/<internalId>`
 
 Deletes all associated Jobs for the specified Manga
@@ -115,10 +143,12 @@ Deletes all associated Jobs for the specified Manga
 
 <details>
   <summary>Returns</summary>
+
+  [Manga](Types.md#manga)
   
   | StatusCode | Meaning                                    |
   |------------|--------------------------------------------|
-  | 200        | Jobs were deleted                          |
+  | 200        | Manga was deleted                          |
   | 404        | Manga with `internalId` could not be found |
 </details>
 
