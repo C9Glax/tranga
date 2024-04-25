@@ -23,7 +23,7 @@ public partial class Server : GlobalBase, IDisposable
         {
             new ("GET", @"/v2/Connector/Types", GetV2ConnectorTypes),
             new ("GET", @"/v2/Connector/([a-zA-Z]+)/GetManga", GetV2ConnectorConnectorNameGetManga),
-            new ("GET", @"/v2/Manga", GetV2Manga),
+            new ("GET", @"/v2/Mangas", GetV2Mangas),
             new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})", GetV2MangaInternalId),
             new ("DELETE", @"/v2/Manga/([-A-Za-z0-9]*={0,3})", DeleteV2MangaInternalId),
             new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/Cover", GetV2MangaInternalIdCover),

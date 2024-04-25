@@ -67,7 +67,7 @@ Returns the Manga from the specified Manga Connector.
 
 ## Manga <sup>[^top](#top)</sup>
 
-### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Manga`
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Mangas`
 
 Returns all known Manga.
 

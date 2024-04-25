@@ -6,7 +6,7 @@ namespace Tranga.Server;
 
 public partial class Server
 {
-    private ValueTuple<HttpStatusCode, object?> GetV2Manga(GroupCollection groups, Dictionary<string, string> requestParameters)
+    private ValueTuple<HttpStatusCode, object?> GetV2Mangas(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, GetAllCachedManga().Select(m => m.internalId));
     }
