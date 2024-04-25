@@ -61,4 +61,19 @@ public partial class Server
         };
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, chapters);
     }
+    
+    private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalIdChaptersLatest(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        if(groups.Count < 1 ||
+           !_parent.TryGetPublicationById(groups[1].Value, out Manga? manga) ||
+           manga is null)
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
+
+        float latest = requestParameters.TryGetValue("language", out string? parameter) switch
+        {
+            true => float.Parse(manga.Value.mangaConnector.GetChapters(manga.Value, parameter).Max().chapterNumber),
+            false => float.Parse(manga.Value.mangaConnector.GetChapters(manga.Value).Max().chapterNumber)
+        };
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, latest);
+    }
 }
