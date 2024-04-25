@@ -5,9 +5,9 @@ namespace Tranga.NotificationConnectors;
 
 public class Ntfy : NotificationConnector
 {
-    // ReSharper disable once MemberCanBePrivate.Global
+    // ReSharper disable twice MemberCanBePrivate.Global
     public string endpoint { get; init; }
-    private string auth { get; init; }
+    public string auth { get; init; }
     private const string Topic = "tranga";
     private readonly HttpClient _client = new();
     

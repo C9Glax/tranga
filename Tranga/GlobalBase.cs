@@ -18,7 +18,6 @@ public abstract class GlobalBase
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
     private Dictionary<string, Manga> cachedPublications { get; init; }
-    
     protected HashSet<MangaConnector> _connectors;
     public static readonly NumberFormatInfo numberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
     protected static readonly Regex baseUrlRex = new(@"https?:\/\/[0-9A-z\.-]+(:[0-9]+)?");
