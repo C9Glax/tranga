@@ -333,6 +333,35 @@ Creates a Job.
   | 500        | Error parsing interval                   |
 </details>
 
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Job/`
+
+Returns the list of Jobs requested.
+
+<details>
+  <summary>Request</summary>
+
+  | Parameter  | Value                          |
+  |------------|--------------------------------|
+  | jobIds     | Comma-Seperated list of jobIds |
+
+  `jobId` is returned in the response of
+  * [GET /v2/Jobs](#-v2jobs)
+  * [GET /v2/Jobs/Running](#-v2jobsrunning)
+  * [GET /v2/Jobs/Waiting](#-v2jobswaiting)
+  * [GET /v2/Jobs/Monitoring](#-v2jobsmonitoring)
+</details>
+
+<details>
+  <summary>Returns</summary>
+
+  List of [Jobs](Types.md#job)
+
+  | StatusCode | Meaning                               |
+  |------------|---------------------------------------|
+  | 400        | Missing Parameter                     |
+  | 404        | Manga with `jobId` could not be found |
+</details>
+
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Job/<jobId>`
 
 Returns the specified Job.

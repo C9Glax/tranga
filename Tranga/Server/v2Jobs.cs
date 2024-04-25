@@ -150,5 +150,20 @@ public partial class Server
         job.Cancel();
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
     }
-    
+
+    private ValueTuple<HttpStatusCode, object?> GetV2Job(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        if(!requestParameters.TryGetValue("jobIds", out string? jobIdListStr))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, "Missing parameter 'jobIds'.");
+        string[] jobIdList = jobIdListStr.Split(',');
+        List<Job> ret = new();
+        foreach (string jobId in jobIdList)
+        {
+            if(!_parent.jobBoss.TryGetJobById(jobId, out Job? job) || job is null)
+                return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Job with id '{jobId}' not found.");
+            ret.Add(job);
+        }
+
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, ret);
+    }
 }
