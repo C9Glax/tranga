@@ -32,6 +32,14 @@ public class Komga : LibraryConnector
             NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth, logger);
     }
 
+    internal override bool Test()
+    {
+        foreach (KomgaLibrary lib in GetLibraries())
+            if (NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth, logger))
+                return true;
+        return false;
+    }
+
     /// <summary>
     /// Fetches all libraries available to the user
     /// </summary>

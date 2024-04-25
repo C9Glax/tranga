@@ -20,7 +20,7 @@ public struct Manga
     public string[] tags { get; private set; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string? coverUrl { get; private set; }
-    public string? coverFileNameInCache { get; }
+    public string? coverFileNameInCache { get; private set; }
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Dictionary<string,string> links { get; }
     // ReSharper disable once MemberCanBePrivate.Global
@@ -88,7 +88,8 @@ public struct Manga
             status = newManga.status,
             releaseStatus = newManga.releaseStatus,
             websiteUrl = newManga.websiteUrl,
-            year = newManga.year
+            year = newManga.year,
+            coverFileNameInCache = coverFileNameInCache
         };
     }
 
@@ -103,6 +104,7 @@ public struct Manga
                this.sortName == compareManga.sortName &&
                this.latestChapterAvailable.Equals(compareManga.latestChapterAvailable) &&
                this.authors.All(a => compareManga.authors.Contains(a)) &&
+               (this.coverFileNameInCache??"").Equals(compareManga.coverFileNameInCache) &&
                (this.websiteUrl??"").Equals(compareManga.websiteUrl) &&
                this.tags.All(t => compareManga.tags.Contains(t));
     }
