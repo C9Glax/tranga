@@ -256,11 +256,13 @@ Creates a Job.
 
   `Type` is returned in the response of [GET /v2/Job/Types](#-v2jobtypes)
 
-  | Parameter  | Value                                                                                             |
-  |------------|---------------------------------------------------------------------------------------------------|
-  | internalId | Manga ID                                                                                          |
-  | *interval* | Interval at which the Job is re-run in HH:MM:SS format<br />Only for MonitorManga, UpdateMetadata |
-  | *language* | Translated language<br />Only for MonitorManga, DownloadNewChapters and DownloadChapter           |
+  | Parameter      | Value                                                                                             |
+  |----------------|---------------------------------------------------------------------------------------------------|
+  | internalId     | Manga ID                                                                                          |
+  | *customFolder* | Custom folder location<br />Only for MonitorManga, DownloadNewChapters and DownloadChapter        |
+  | *startChapter* | Chapter to start downloading at<br />Only for MonitorManga, DownloadNewChapters                   |
+  | *interval*     | Interval at which the Job is re-run in HH:MM:SS format<br />Only for MonitorManga, UpdateMetadata |
+  | *language*     | Translated language<br />Only for MonitorManga, DownloadNewChapters and DownloadChapter           |
 
   
   `internalId` is returned in the response of

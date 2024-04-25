@@ -60,6 +60,15 @@ public partial class Server
                    !TimeSpan.TryParse(intervalStr, out TimeSpan interval))
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "'interval' Parameter missing, or is not in correct format.");
                 requestParameters.TryGetValue("language", out string? language);
+                if (requestParameters.TryGetValue("customFolder", out string? folder))
+                    manga.Value.MovePublicationFolder(settings.downloadLocation, folder);
+                if (requestParameters.TryGetValue("startChapter", out string? startChapterStr) &&
+                    float.TryParse(startChapterStr, out float startChapter))
+                {
+                    Manga manga1 = manga.Value;
+                    manga1.ignoreChaptersBelow = startChapter;
+                }
+
                 return _parent.jobBoss.AddJob(new DownloadNewChapters(this, ((Manga)manga).mangaConnector,
                         ((Manga)manga).internalId, true, interval, language)) switch
                     {
