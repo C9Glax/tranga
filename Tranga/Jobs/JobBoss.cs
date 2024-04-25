@@ -171,18 +171,18 @@ public class JobBoss : GlobalBase
         }
     }
 
-    internal void UpdateJobFile(Job job)
+    internal void UpdateJobFile(Job job, string? oldFile = null)
     {
-        string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
+        string newJobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
         
         if (!this.jobs.Any(jjob => jjob.id == job.id))
         {
             try
             {
-                Log($"Deleting Job-file {jobFilePath}");
-                while(IsFileInUse(jobFilePath))
+                Log($"Deleting Job-file {newJobFilePath}");
+                while(IsFileInUse(newJobFilePath))
                     Thread.Sleep(10);
-                File.Delete(jobFilePath);
+                File.Delete(newJobFilePath);
             }
             catch (Exception e)
             {
@@ -191,12 +191,25 @@ public class JobBoss : GlobalBase
         }
         else
         {
-            Log($"Exporting Job {jobFilePath}");
+            Log($"Exporting Job {newJobFilePath}");
             string jobStr = JsonConvert.SerializeObject(job);
-            while(IsFileInUse(jobFilePath))
+            while(IsFileInUse(newJobFilePath))
                 Thread.Sleep(10);
-            File.WriteAllText(jobFilePath, jobStr);
+            File.WriteAllText(newJobFilePath, jobStr);
         }
+        
+        if(oldFile is not null)
+            try
+            {
+                Log($"Deleting old Job-file {oldFile}");
+                while(IsFileInUse(oldFile))
+                    Thread.Sleep(10);
+                File.Delete(oldFile);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+            }
     }
 
     private void UpdateAllJobFiles()
