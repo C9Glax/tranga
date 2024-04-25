@@ -30,6 +30,7 @@ public partial class Server : GlobalBase, IDisposable
             new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/Chapters", GetV2MangaInternalIdChapters),
             new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/Chapters/Latest", GetV2MangaInternalIdChaptersLatest),
             new ("POST", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/ignoreChaptersBelow", PostV2MangaInternalIdIgnoreChaptersBelow),
+            new ("POST", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/moveFolder", PostV2MangaInternalIdMoveFolder),
             new ("GET", @"/v2/Jobs", GetV2Jobs),
             new ("GET", @"/v2/Jobs/Running", GetV2JobsRunning),
             new ("GET", @"/v2/Jobs/Waiting", GetV2JobsWaiting),

@@ -92,4 +92,17 @@ public partial class Server
         }else
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "Parameter 'startChapter' missing, or failed to parse.");
     }
+
+    private ValueTuple<HttpStatusCode, object?> PostV2MangaInternalIdMoveFolder(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        
+        if(groups.Count < 1 ||
+           !_parent.TryGetPublicationById(groups[1].Value, out Manga? manga) ||
+           manga is null)
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
+        if(!requestParameters.TryGetValue("location", out string? newFolder))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, "Parameter 'location' missing.");
+        manga.Value.MovePublicationFolder(settings.downloadLocation, newFolder);
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
+    }
 }
