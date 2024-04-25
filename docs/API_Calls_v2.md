@@ -356,10 +356,10 @@ Returns the list of Jobs requested.
 
   List of [Jobs](Types.md#job)
 
-  | StatusCode | Meaning                               |
-  |------------|---------------------------------------|
-  | 400        | Missing Parameter                     |
-  | 404        | Manga with `jobId` could not be found |
+  | StatusCode | Meaning                             |
+  |------------|-------------------------------------|
+  | 400        | Missing Parameter                   |
+  | 404        | Job with `jobId` could not be found |
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Job/<jobId>`
