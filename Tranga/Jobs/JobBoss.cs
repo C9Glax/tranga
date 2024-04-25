@@ -192,7 +192,7 @@ public class JobBoss : GlobalBase
         else
         {
             Log($"Exporting Job {newJobFilePath}");
-            string jobStr = JsonConvert.SerializeObject(job);
+            string jobStr = JsonConvert.SerializeObject(job, Formatting.Indented);
             while(IsFileInUse(newJobFilePath))
                 Thread.Sleep(10);
             File.WriteAllText(newJobFilePath, jobStr);
