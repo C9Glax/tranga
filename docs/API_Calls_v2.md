@@ -195,6 +195,30 @@ Returns the latest Chapter of the specified Manga.
   | 404        | Manga with `internalId` could not be found |
 </details>
 
+### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Manga/<internalId>/ignoreChaptersBelow`
+
+<details>
+  <summary>Request</summary>
+  
+  `internalId` is returned in the response of
+  * [GET /v2/Manga](#-v2manga)
+  * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
+  * [GET /v2/Job/*jobId*](#-v2jobjobid)
+
+  | Parameter    | Value                      |
+  |--------------|----------------------------|
+  | startChapter | Chapter-number to start at |
+</details>
+
+<details>
+  <summary>Returns</summary>
+  
+  | StatusCode | Meaning                                    |
+  |------------|--------------------------------------------|
+  | 404        | Manga with `internalId` could not be found |
+  | 500        | Parsing Error                              |
+</details>
+
 ## Jobs <sup>[^top](#top)</sup>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs`
