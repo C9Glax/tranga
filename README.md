@@ -5,10 +5,10 @@
 <h3 align="center">Tranga</h3>
 
   <p align="center">
-    Automatic Manga and Metadata downloader 
+    Automatic Manga and Metadata downloader
   </p>
   <p align="center">
-    This is the API for <a href="https://github.com/C9Glax/tranga-website">Tranga-Website</a>  
+    This is the API for <a href="https://github.com/C9Glax/tranga-website">Tranga-Website</a>
   </p>
 </div>
 
@@ -36,12 +36,11 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
-Tranga can download Chapters and Metadata from "Scanlation" sites such as 
+Tranga can download Chapters and Metadata from "Scanlation" sites such as
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
 - [Manganato.com](https://manganato.com/) (en)
@@ -59,16 +58,15 @@ Notifications can be sent to your devices using [Gotify](https://gotify.net/) an
 
 Tranga (this git-repo) will open a port (standard 6531) and listen for requests to add Jobs to Monitor and/or download specific Manga.
 The configuration is all done through HTTP-Requests.
-The frontend in this repo is **CLI**-based.  
+The frontend in this repo is **CLI**-based.
 _**For a web-frontend use [tranga-website](https://github.com/C9Glax/tranga-website).**_
 
-This project downloads the images for a Manga from the specified Scanlation-Website and packages them with some metadata - from that same website - in a .cbz-archive (per chapter).  
-It does this on an interval, and checks for any Chapters (.cbz-Archive) not already existing in your specified Download-Location. (If you rename or move files, it will download those again)  
+This project downloads the images for a Manga from the specified Scanlation-Website and packages them with some metadata - from that same website - in a .cbz-archive (per chapter).
+It does this on an interval, and checks for any Chapters (.cbz-Archive) not already existing in your specified Download-Location. (If you rename or move files, it will download those again)
 Tranga can (if configured) trigger a scan in Komga or Kavita, however the directory in which the Manga reside has to be available to both Tranga and Komga/Kavita.
 
-The project doesn't manage metadata, and doesn't curate, change or enhance any information that isn't available on the selected Scanlation-Site.  
+The project doesn't manage metadata, and doesn't curate, change or enhance any information that isn't available on the selected Scanlation-Site.
 It will blindly use whatever is scrapes (yes this is a glorified Web-scraper).
-
 
 ### Inspiration:
 
@@ -91,12 +89,13 @@ That is why I wanted to create my own project, in a language I understand, and t
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 ### Docker
 
-Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.  
-Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives) downloaded (where Komga/Kavita can access them).  
+Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.
+Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives) downloaded (where Komga/Kavita can access them).
 The `docker-compose` also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the repo README.
 
 For compatibility do not execute the compose as root (which you should not do anyways...) but as user that can
@@ -105,11 +104,15 @@ access the folder.
 ### Prerequisites
 
 #### To Build
+
 [.NET-Core 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+
 #### To Run
+
 [.NET-Core 7.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) scroll down a bit, should be on the right the second item.
 
 <!-- ROADMAP -->
+
 ## Roadmap
 
 - [ ] ❓
@@ -118,9 +121,8 @@ See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list o
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 The following is copy & pasted:
@@ -138,22 +140,20 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- LICENSE -->
+
 ## License
 
-Distributed under the GNU GPLv3  License. See `LICENSE.txt` for more information.
+Distributed under the GNU GPLv3 License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- ACKNOWLEDGMENTS -->
+
 ## Acknowledgments
 
-* [Choose an Open Source License](https://choosealicense.com)
-* [Font Awesome](https://fontawesome.com)
-* [Best-README-Template](https://github.com/othneildrew/Best-README-Template/tree/master)
+- [Choose an Open Source License](https://choosealicense.com)
+- [Font Awesome](https://fontawesome.com)
+- [Best-README-Template](https://github.com/othneildrew/Best-README-Template/tree/master)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

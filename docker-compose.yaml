@@ -1,19 +1,33 @@
-﻿version: '3'
+﻿version: "3"
 services:
   tranga-api:
     image: glax/tranga-api:latest
     container_name: tranga-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - UID=1000
+        - GID=1000
     volumes:
       - ./Manga:/Manga
       - ./settings:/usr/share/tranga-api
     ports:
       - "6531:6531"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://127.0.0.1:6531/Ping" ]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 1m30s
+
   tranga-website:
     image: glax/tranga-website:latest
     container_name: tranga-website
     ports:
       - "9555:80"
-    depends_on: 
-      - tranga-api
+    depends_on:
+      tranga-api:
+        condition: service_healthy
     restart: unless-stopped
