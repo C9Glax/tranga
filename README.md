@@ -86,6 +86,7 @@ That is why I wanted to create my own project, in a language I understand, and t
 - Newtonsoft.JSON
 - [PuppeteerSharp](https://www.puppeteersharp.com/)
 - [Html Agility Pack (HAP)](https://html-agility-pack.net/)
+- [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch)
 - 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
