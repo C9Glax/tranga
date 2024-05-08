@@ -273,14 +273,13 @@ public abstract class HeanCms : MangaConnector
             year = parsedYear;
         }
 
-        string? originalLanguage = null;    // TODO:
-
-        string status = manga["status"]!.GetValue<string>();
+        string? originalLanguage = null;
 
         string publicationId = manga["series_slug"]!.GetValue<string>();
 
         Log($"Got publicationId {publicationId}");
 
+        string status = manga["status"]!.GetValue<string>();
         Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
         switch (status.ToLower())
         {
@@ -301,13 +300,14 @@ public abstract class HeanCms : MangaConnector
             linksDict,
             year,
             originalLanguage,
-            status,
             publicationId,
             releaseStatus
+            // TODO: websiteUrl
+            // string? websiteUrl = null
         );
-        cachedPublications.Add(pub);
         string json = JsonSerializer.Serialize(pub, new System.Text.Json.JsonSerializerOptions{WriteIndented = true});
         Log($"Converted series to manga. {json}");
+        AddMangaToCache(pub);
         return pub;
     }
 
