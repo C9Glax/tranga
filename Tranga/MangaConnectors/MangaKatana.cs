@@ -126,7 +126,7 @@ public class MangaKatana : MangaConnector
 		string posterUrl = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[1]/div").Descendants("img").First()
 			.GetAttributes().First(a => a.Name == "src").Value;
 
-		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
 		string description = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[3]/p").InnerText;
 		while (description.StartsWith('\n'))

@@ -182,7 +182,7 @@ public abstract class MangaConnector : GlobalBase
             if (retries > 0 && manga.coverUrl is not null)
             {
                 Log($"Trying {retries} more times");
-                SaveCoverImageToCache(manga.coverUrl, 0);
+                SaveCoverImageToCache(manga.coverUrl, manga.internalId, 0);
                 CopyCoverFromCacheToDownloadLocation(manga, --retries);
             }
 
@@ -285,11 +285,11 @@ public abstract class MangaConnector : GlobalBase
         return HttpStatusCode.OK;
     }
     
-    protected string SaveCoverImageToCache(string url, RequestType requestType)
+    protected string SaveCoverImageToCache(string url, string mangaInternalId, RequestType requestType)
     {
-        Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9]+\.)+[a-zA-Z]+)\/(?:.+\/)*(.+\.[a-zA-Z]+)");
+        Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9]+\.)+[a-zA-Z]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
         Match match = urlRex.Match(url);
-        string filename = $"{match.Groups[1].Value}-{match.Groups[2].Value}";
+        string filename = $"{match.Groups[1].Value}-{mangaInternalId}.{match.Groups[3].Value}";
         string saveImagePath = Path.Join(settings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))

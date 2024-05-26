@@ -160,7 +160,7 @@ public class MangaDex : MangaConnector
             return null;
         string fileName = coverNode["attributes"]!["fileName"]!.GetValue<string>();
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
-        string coverCacheName = SaveCoverImageToCache(coverUrl, RequestType.MangaCover);
+        string coverCacheName = SaveCoverImageToCache(coverUrl, publicationId, RequestType.MangaCover);
         
         List<string> authors = new();
         JsonNode?[] authorNodes = relationshipsNode.AsArray()
