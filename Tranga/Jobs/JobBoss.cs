@@ -151,10 +151,19 @@ public class JobBoss : GlobalBase
         foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
         {
             Log($"Adding {file.Name}");
-            Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
-                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
-            Log($"Adding Job {job}");
-            this.jobs.Add(job);
+            Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)));
+            if (job is null)
+            {
+                string newName = file.FullName + ".failed";
+                Log($"Failed loading file {file.Name}.\nMoving to {newName}");
+                File.Move(file.FullName, newName);
+            }
+            else
+            {
+                Log($"Adding Job {job}");
+                this.jobs.Add(job);
+            }
         }
 
         //Connect jobs to parent-jobs and add Publications to cache
