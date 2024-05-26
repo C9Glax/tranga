@@ -287,8 +287,9 @@ public abstract class MangaConnector : GlobalBase
     
     protected string SaveCoverImageToCache(string url, RequestType requestType)
     {
-        string filetype = url.Split('/')[^1].Split('?')[0].Split('.')[^1];
-        string filename = $"{DateTime.Now.Ticks.ToString()}.{filetype}";
+        Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9]+\.)+[a-zA-Z]+)\/(?:.+\/)*(.+\.[a-zA-Z]+)");
+        Match match = urlRex.Match(url);
+        string filename = $"{match.Groups[1].Value}-{match.Groups[2].Value}";
         string saveImagePath = Path.Join(settings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))
