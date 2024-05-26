@@ -175,8 +175,8 @@ public abstract class MangaConnector : GlobalBase
             return;
         }
 
-        string fileInCache = manga.coverFileNameInCache ?? Path.Join(settings.coverImageCache, manga.coverFileNameInCache);
-        if (!File.Exists(fileInCache))
+        string? fileInCache = manga.coverFileNameInCache;
+        if (fileInCache is null || !File.Exists(fileInCache))
         {
             Log($"Cloning cover failed: File missing {fileInCache}.");
             if (retries > 0 && manga.coverUrl is not null)
