@@ -86,7 +86,7 @@ public class Bato : MangaConnector
 
 		string posterUrl = document.DocumentNode.SelectNodes("//img")
 			.First(child => child.GetAttributeValue("data-hk", "") == "0-1-0").GetAttributeValue("src", "").Replace("&amp;", "&");
-		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
 		List<HtmlNode> genreNodes = document.DocumentNode.SelectSingleNode("//b[text()='Genres:']/..").SelectNodes("span").ToList();
 		string[] tags = genreNodes.Select(node => node.FirstChild.InnerText).ToArray();

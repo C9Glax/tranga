@@ -103,7 +103,7 @@ public class Mangasee : MangaConnector
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
         string posterUrl = posterNode.GetAttributeValue("src", "");
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
