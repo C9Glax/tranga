@@ -150,18 +150,35 @@ public class JobBoss : GlobalBase
         //Load json-job-files
         foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
         {
-            Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
-                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
-            this.jobs.Add(job);
+            Log($"Adding {file.Name}");
+            Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)));
+            if (job is null)
+            {
+                string newName = file.FullName + ".failed";
+                Log($"Failed loading file {file.Name}.\nMoving to {newName}");
+                File.Move(file.FullName, newName);
+            }
+            else
+            {
+                Log($"Adding Job {job}");
+                this.jobs.Add(job);
+            }
         }
         
         //Load Manga-Files
         ImportManga();
 
-        //Connect jobs to parent-jobs
+        //Connect jobs to parent-jobs and add Publications to cache
         foreach (Job job in this.jobs)
         {
-            this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+            Log($"Loading Job {job}");
+            Job? parentJob = this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId);
+            if (parentJob is not null)
+            {
+                parentJob.AddSubJob(job);
+                Log($"Parent Job {parentJob}");
+            }
         }
 
         string[] jobMangaInternalIds = this.jobs.Where(job => job is DownloadNewChapters)
