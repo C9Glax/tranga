@@ -180,12 +180,9 @@ public class JobBoss : GlobalBase
                 AddMangaToCache(dncJob.manga);
         }
 
-        HashSet<string> coverFileNames = GetAllCachedManga().Select(manga => manga.coverFileNameInCache!).ToHashSet();
-        foreach (string fileName in Directory.GetFiles(settings.coverImageCache)) //Cleanup Unused Covers
-        {
-            if(!coverFileNames.Any(existingManga => fileName.Contains(existingManga)))
+        string[] coverFiles = Directory.GetFiles(settings.coverImageCache);
+        foreach(string fileName in coverFiles.Where(fileName => !GetAllCachedManga().Any(manga => manga.coverFileNameInCache == fileName)))
                 File.Delete(fileName);
-        }
     }
 
     internal void UpdateJobFile(Job job, string? oldFile = null)
