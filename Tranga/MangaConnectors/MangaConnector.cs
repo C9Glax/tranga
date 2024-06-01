@@ -294,7 +294,7 @@ public abstract class MangaConnector : GlobalBase
         string saveImagePath = Path.Join(settings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))
-            return filename;
+            return saveImagePath;
         
         RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
         using MemoryStream ms = new();
