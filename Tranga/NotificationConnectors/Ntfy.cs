@@ -9,10 +9,9 @@ public class Ntfy : NotificationConnector
     // ReSharper disable twice MemberCanBePrivate.Global
     public string endpoint { get; init; }
     public string auth { get; init; }
-    private readonly string _topic = "tranga";
+    public string topic { get; init; }
     private readonly HttpClient _client = new();
     
-    [JsonConstructor]
     public Ntfy(GlobalBase clone, string endpoint, string auth) : base(clone, NotificationConnectorType.Ntfy)
     {
         if (!baseUrlRex.IsMatch(endpoint))
@@ -23,19 +22,29 @@ public class Ntfy : NotificationConnector
             Log($"Error getting URI from provided endpoint-URI: {endpoint}");
         this.endpoint = match.Groups[1].Value;
         if (match.Groups[2].Success)
-            _topic = match.Groups[2].Value;
+            topic = match.Groups[2].Value;
+        else
+            topic = "tranga";
+        this.auth = auth;
+    }
+
+    [JsonConstructor]
+    public Ntfy(GlobalBase clone, string endpoint, string auth, string topic) : base(clone, NotificationConnectorType.Ntfy)
+    {
+        this.endpoint = endpoint;
+        this.topic = topic.Length > 0 ? topic : "tranga";
         this.auth = auth;
     }
 
     public override string ToString()
     {
-        return $"Ntfy {endpoint} {_topic}";
+        return $"Ntfy {endpoint} {topic}";
     }
 
     public override void SendNotification(string title, string notificationText)
     {
         Log($"Sending notification: {title} - {notificationText}");
-        MessageData message = new(title, _topic, notificationText);
+        MessageData message = new(title, topic, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"{this.endpoint}?auth={this.auth}");
         request.Content = new StringContent(JsonConvert.SerializeObject(message, Formatting.None), Encoding.UTF8, "application/json");
         HttpResponseMessage response = _client.Send(request);
