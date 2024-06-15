@@ -11,29 +11,42 @@ public class Ntfy : NotificationConnector
     public string auth { get; init; }
     public string topic { get; init; }
     private readonly HttpClient _client = new();
-    
-    public Ntfy(GlobalBase clone, string endpoint, string auth) : base(clone, NotificationConnectorType.Ntfy)
-    {
-        if (!baseUrlRex.IsMatch(endpoint))
-            throw new ArgumentException("endpoint does not match pattern");
-        Regex rootUriRex = new(@"(https?:\/\/[a-zA-Z0-9-\.]+\.[a-zA-Z0-9]+)(?:\/([a-zA-Z0-9-\.]+))?.*");
-        Match match = rootUriRex.Match(endpoint);
-        if(!match.Success)
-            Log($"Error getting URI from provided endpoint-URI: {endpoint}");
-        this.endpoint = match.Groups[1].Value;
-        if (match.Groups[2].Success)
-            topic = match.Groups[2].Value;
-        else
-            topic = "tranga";
-        this.auth = auth;
-    }
 
     [JsonConstructor]
-    public Ntfy(GlobalBase clone, string endpoint, string auth, string topic) : base(clone, NotificationConnectorType.Ntfy)
+    public Ntfy(GlobalBase clone, string endpoint, string topic, string auth) : base(clone, NotificationConnectorType.Ntfy)
     {
         this.endpoint = endpoint;
-        this.topic = topic.Length > 0 ? topic : "tranga";
+        this.topic = topic;
         this.auth = auth;
+    }
+    
+    public Ntfy(GlobalBase clone, string endpoint, string username, string password, string? topic = null) : 
+        this(clone, EndpointAndTopicFromUrl(endpoint)[0], topic??EndpointAndTopicFromUrl(endpoint)[1], AuthFromUsernamePassword(username, password))
+    {
+        
+    }
+
+    private static string AuthFromUsernamePassword(string username, string password)
+    {
+        string authHeader = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+        string authParam = Convert.ToBase64String(Encoding.UTF8.GetBytes(authHeader)).Replace("=","");
+        return authParam;
+    }
+
+    private static string[] EndpointAndTopicFromUrl(string url)
+    {
+        string[] ret = new string[2];
+        if (!baseUrlRex.IsMatch(url))
+            throw new ArgumentException("url does not match pattern");
+        Regex rootUriRex = new(@"(https?:\/\/[a-zA-Z0-9-\.]+\.[a-zA-Z0-9]+)(?:\/([a-zA-Z0-9-\.]+))?.*");
+        Match match = rootUriRex.Match(url);
+        if(!match.Success)
+            throw new ArgumentException($"Error getting URI from provided endpoint-URI: {url}");
+        
+        ret[0] = match.Groups[1].Value;
+        ret[1] = match.Groups[2].Success && match.Groups[2].Value.Length > 0 ? match.Groups[2].Value : "tranga";
+
+        return ret;
     }
 
     public override string ToString()
