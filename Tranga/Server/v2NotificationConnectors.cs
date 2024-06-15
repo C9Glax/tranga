@@ -63,9 +63,11 @@ public partial class Server
             case NotificationConnector.NotificationConnectorType.Ntfy:
                 if(!requestParameters.TryGetValue("url", out url))
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'url' missing.");
-                if(!requestParameters.TryGetValue("auth", out string? auth))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'auth' missing.");
-                Ntfy ntfy = new(this, url, auth);
+                if(!requestParameters.TryGetValue("username", out string? username))
+                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'username' missing.");
+                if(!requestParameters.TryGetValue("password", out string? password))
+                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'password' missing.");
+                Ntfy ntfy = new(this, url, username, password, null);
                 this.notificationConnectors.RemoveWhere(nc =>
                     nc.notificationConnectorType == NotificationConnector.NotificationConnectorType.Ntfy);
                 this.notificationConnectors.Add(ntfy);
@@ -103,9 +105,11 @@ public partial class Server
             case NotificationConnector.NotificationConnectorType.Ntfy:
                 if(!requestParameters.TryGetValue("url", out url))
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'url' missing.");
-                if(!requestParameters.TryGetValue("auth", out string? auth))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'auth' missing.");
-                Ntfy ntfy = new(this, url, auth);
+                if(!requestParameters.TryGetValue("username", out string? username))
+                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'username' missing.");
+                if(!requestParameters.TryGetValue("password", out string? password))
+                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'password' missing.");
+                Ntfy ntfy = new(this, url, username, password, null);
                 ntfy.SendNotification("Tranga Test", "It was successful :3");
                 return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, ntfy);
             default:

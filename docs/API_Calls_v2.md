@@ -950,7 +950,8 @@ Creates a Notification-Connector of the specified Type.
   | Parameter | Value                    |
   |-----------|--------------------------|
   | url       | URL of the Ntfy Instance |
-  | auth      | Auth-String              |
+  | username  | Username                 |
+  | password  | Password                 |
 </details>
 
 <details>
