@@ -28,7 +28,7 @@ public class NotificationManagerJsonConverter : JsonConverter
             case (byte)NotificationConnector.NotificationConnectorType.LunaSea:
                 return new LunaSea(this._clone, jo.GetValue("id")!.Value<string>()!);
             case (byte)NotificationConnector.NotificationConnectorType.Ntfy:
-                return new Ntfy(this._clone, jo.GetValue("endpoint")!.Value<string>()!, jo.GetValue("auth")!.Value<string>()!);
+                return new Ntfy(this._clone, jo.GetValue("endpoint")!.Value<string>()!, jo.GetValue("topic")!.Value<string>()!, jo.GetValue("auth")!.Value<string>()!);
         }
 
         throw new Exception();
