@@ -105,7 +105,7 @@ public readonly struct Chapter : IComparable
                    archiveVolNum == "0" && archiveChNum == t.chapterNumber;
         });
         if(archive is not null && thisPath != archive.FullName)
-            archive.MoveTo(thisPath);
+            archive.MoveTo(thisPath, true);
         return archive is not null;
     }
     /// <summary>
