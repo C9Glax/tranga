@@ -299,6 +299,7 @@ public abstract class MangaConnector : GlobalBase
         RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
+        Directory.CreateDirectory(settings.coverImageCache);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
         Log($"Saving cover to {saveImagePath}");
         return saveImagePath;
