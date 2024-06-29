@@ -115,8 +115,8 @@ public class MangaDex : MangaConnector
         };
 
         Dictionary<string, string> linksDict = new();
-        if (attributes.TryGetPropertyValue("links", out JsonNode? linksNode))
-            foreach (KeyValuePair<string, JsonNode> linkKv in linksNode!.AsObject())
+        if (attributes.TryGetPropertyValue("links", out JsonNode? linksNode) && linksNode is not null)
+            foreach (KeyValuePair<string, JsonNode?> linkKv in linksNode!.AsObject())
                 linksDict.TryAdd(linkKv.Key, linkKv.Value.GetValue<string>());
 
         string? originalLanguage =
@@ -160,7 +160,7 @@ public class MangaDex : MangaConnector
             return null;
         string fileName = coverNode["attributes"]!["fileName"]!.GetValue<string>();
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
-        string coverCacheName = SaveCoverImageToCache(coverUrl, RequestType.MangaCover);
+        string coverCacheName = SaveCoverImageToCache(coverUrl, publicationId, RequestType.MangaCover);
         
         List<string> authors = new();
         JsonNode?[] authorNodes = relationshipsNode.AsArray()
@@ -183,11 +183,11 @@ public class MangaDex : MangaConnector
             linksDict,
             year,
             originalLanguage,
-            Enum.GetName(status) ?? "",
             publicationId,
-            status
+            status,
+            websiteUrl: $"https://mangadex.org/title/{publicationId}"
         );
-        cachedPublications.Add(pub);
+        AddMangaToCache(pub);
         return pub;
     }
 

@@ -1,34 +1,63 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace Tranga.NotificationConnectors;
 
 public class Ntfy : NotificationConnector
 {
-    // ReSharper disable once MemberCanBePrivate.Global
+    // ReSharper disable twice MemberCanBePrivate.Global
     public string endpoint { get; init; }
-    private string auth { get; init; }
-    private const string Topic = "tranga";
+    public string auth { get; init; }
+    public string topic { get; init; }
     private readonly HttpClient _client = new();
-    
+
     [JsonConstructor]
-    public Ntfy(GlobalBase clone, string endpoint, string auth) : base(clone, NotificationConnectorType.Ntfy)
+    public Ntfy(GlobalBase clone, string endpoint, string topic, string auth) : base(clone, NotificationConnectorType.Ntfy)
     {
-        if (!baseUrlRex.IsMatch(endpoint))
-            throw new ArgumentException("endpoint does not match pattern");
         this.endpoint = endpoint;
+        this.topic = topic;
         this.auth = auth;
+    }
+    
+    public Ntfy(GlobalBase clone, string endpoint, string username, string password, string? topic = null) : 
+        this(clone, EndpointAndTopicFromUrl(endpoint)[0], topic??EndpointAndTopicFromUrl(endpoint)[1], AuthFromUsernamePassword(username, password))
+    {
+        
+    }
+
+    private static string AuthFromUsernamePassword(string username, string password)
+    {
+        string authHeader = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+        string authParam = Convert.ToBase64String(Encoding.UTF8.GetBytes(authHeader)).Replace("=","");
+        return authParam;
+    }
+
+    private static string[] EndpointAndTopicFromUrl(string url)
+    {
+        string[] ret = new string[2];
+        if (!baseUrlRex.IsMatch(url))
+            throw new ArgumentException("url does not match pattern");
+        Regex rootUriRex = new(@"(https?:\/\/[a-zA-Z0-9-\.]+\.[a-zA-Z0-9]+)(?:\/([a-zA-Z0-9-\.]+))?.*");
+        Match match = rootUriRex.Match(url);
+        if(!match.Success)
+            throw new ArgumentException($"Error getting URI from provided endpoint-URI: {url}");
+        
+        ret[0] = match.Groups[1].Value;
+        ret[1] = match.Groups[2].Success && match.Groups[2].Value.Length > 0 ? match.Groups[2].Value : "tranga";
+
+        return ret;
     }
 
     public override string ToString()
     {
-        return $"Ntfy {endpoint} {Topic}";
+        return $"Ntfy {endpoint} {topic}";
     }
 
     public override void SendNotification(string title, string notificationText)
     {
         Log($"Sending notification: {title} - {notificationText}");
-        MessageData message = new(title, notificationText);
+        MessageData message = new(title, topic, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"{this.endpoint}?auth={this.auth}");
         request.Content = new StringContent(JsonConvert.SerializeObject(message, Formatting.None), Encoding.UTF8, "application/json");
         HttpResponseMessage response = _client.Send(request);
@@ -47,9 +76,9 @@ public class Ntfy : NotificationConnector
         public string message { get; }
         public int priority { get; }
 
-        public MessageData(string title, string message)
+        public MessageData(string title, string topic, string message)
         {
-            this.topic = Topic;
+            this.topic = topic;
             this.title = title;
             this.message = message;
             this.priority = 3;

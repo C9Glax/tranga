@@ -30,6 +30,7 @@ public abstract class LibraryConnector : GlobalBase
         this.libraryType = libraryType;
     }
     public abstract void UpdateLibrary();
+    internal abstract bool Test();
 
     protected static class NetClient
     {

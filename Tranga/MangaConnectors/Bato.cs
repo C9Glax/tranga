@@ -49,7 +49,7 @@ public class Bato : MangaConnector
 			Log($"Failed to retrieve site");
 			return null;
 		}
-		return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1]);
+		return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1], url);
 	}
 
 	private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
@@ -72,7 +72,7 @@ public class Bato : MangaConnector
 		return ret.ToArray();
 	}
 
-	private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
+	private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
 	{
 		HtmlNode infoNode = document.DocumentNode.SelectSingleNode("/html/body/div/main/div[1]/div[2]");
 
@@ -86,7 +86,7 @@ public class Bato : MangaConnector
 
 		string posterUrl = document.DocumentNode.SelectNodes("//img")
 			.First(child => child.GetAttributeValue("data-hk", "") == "0-1-0").GetAttributeValue("src", "").Replace("&amp;", "&");
-		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
 		List<HtmlNode> genreNodes = document.DocumentNode.SelectSingleNode("//b[text()='Genres:']/..").SelectNodes("span").ToList();
 		string[] tags = genreNodes.Select(node => node.FirstChild.InnerText).ToArray();
@@ -115,8 +115,8 @@ public class Bato : MangaConnector
 		}
 
 		Manga manga = new (sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
-			year, originalLanguage, status, publicationId, releaseStatus);
-		cachedPublications.Add(manga);
+			year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+		AddMangaToCache(manga);
 		return manga;
 	}
 

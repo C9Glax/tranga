@@ -150,39 +150,53 @@ public class JobBoss : GlobalBase
         //Load json-job-files
         foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
         {
-            Job job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
-                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)))!;
-            this.jobs.Add(job);
+            Log($"Adding {file.Name}");
+            Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)));
+            if (job is null)
+            {
+                string newName = file.FullName + ".failed";
+                Log($"Failed loading file {file.Name}.\nMoving to {newName}");
+                File.Move(file.FullName, newName);
+            }
+            else
+            {
+                Log($"Adding Job {job}");
+                this.jobs.Add(job);
+            }
         }
 
         //Connect jobs to parent-jobs and add Publications to cache
         foreach (Job job in this.jobs)
         {
-            this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId)?.AddSubJob(job);
+            Log($"Loading Job {job}");
+            Job? parentJob = this.jobs.FirstOrDefault(jjob => jjob.id == job.parentJobId);
+            if (parentJob is not null)
+            {
+                parentJob.AddSubJob(job);
+                Log($"Parent Job {parentJob}");
+            }
             if (job is DownloadNewChapters dncJob)
-                cachedPublications.Add(dncJob.manga);
+                AddMangaToCache(dncJob.manga);
         }
 
-        HashSet<string> coverFileNames = cachedPublications.Select(manga => manga.coverFileNameInCache!).ToHashSet();
-        foreach (string fileName in Directory.GetFiles(settings.coverImageCache)) //Cleanup Unused Covers
-        {
-            if(!coverFileNames.Any(existingManga => fileName.Contains(existingManga)))
+        string[] coverFiles = Directory.GetFiles(settings.coverImageCache);
+        foreach(string fileName in coverFiles.Where(fileName => !GetAllCachedManga().Any(manga => manga.coverFileNameInCache == fileName)))
                 File.Delete(fileName);
-        }
     }
 
-    private void UpdateJobFile(Job job)
+    internal void UpdateJobFile(Job job, string? oldFile = null)
     {
-        string jobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
+        string newJobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
         
         if (!this.jobs.Any(jjob => jjob.id == job.id))
         {
             try
             {
-                Log($"Deleting Job-file {jobFilePath}");
-                while(IsFileInUse(jobFilePath))
+                Log($"Deleting Job-file {newJobFilePath}");
+                while(IsFileInUse(newJobFilePath))
                     Thread.Sleep(10);
-                File.Delete(jobFilePath);
+                File.Delete(newJobFilePath);
             }
             catch (Exception e)
             {
@@ -191,12 +205,25 @@ public class JobBoss : GlobalBase
         }
         else
         {
-            Log($"Exporting Job {jobFilePath}");
-            string jobStr = JsonConvert.SerializeObject(job);
-            while(IsFileInUse(jobFilePath))
+            Log($"Exporting Job {newJobFilePath}");
+            string jobStr = JsonConvert.SerializeObject(job, Formatting.Indented);
+            while(IsFileInUse(newJobFilePath))
                 Thread.Sleep(10);
-            File.WriteAllText(jobFilePath, jobStr);
+            File.WriteAllText(newJobFilePath, jobStr);
         }
+        
+        if(oldFile is not null)
+            try
+            {
+                Log($"Deleting old Job-file {oldFile}");
+                while(IsFileInUse(oldFile))
+                    Thread.Sleep(10);
+                File.Delete(oldFile);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+            }
     }
 
     private void UpdateAllJobFiles()
@@ -245,7 +272,9 @@ public class JobBoss : GlobalBase
                 Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
             }else if (queueHead.progressToken.state is ProgressToken.State.Standby)
             {
-                Job[] subJobs = jobQueue.Peek().ExecuteReturnSubTasks(this).ToArray();
+                Job eJob = jobQueue.Peek();
+                Job[] subJobs = eJob.ExecuteReturnSubTasks(this).ToArray();
+                UpdateJobFile(eJob);
                 AddJobs(subJobs);
                 AddJobsToQueue(subJobs);
             }else if (queueHead.progressToken.state is ProgressToken.State.Running && DateTime.Now.Subtract(queueHead.progressToken.lastUpdate) > TimeSpan.FromMinutes(5))

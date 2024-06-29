@@ -122,7 +122,7 @@ public class Server : GlobalBase
                     break;
                 }
 
-                string filePath = settings.GetFullCoverPath((Manga)manga!);
+                string filePath = manga?.coverFileNameInCache ?? "";
                 if (File.Exists(filePath))
                 {
                     FileStream coverStream = new(filePath, FileMode.Open);
@@ -410,7 +410,7 @@ public class Server : GlobalBase
                 break;
             case "Settings/AprilFoolsMode":
                 if (!requestVariables.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
-                    bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
+                    !bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
@@ -492,12 +492,13 @@ public class Server : GlobalBase
                 }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
                 {
                     if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
-                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
+                        !requestVariables.TryGetValue("ntfyUser", out string? ntfyUser)||
+                        !requestVariables.TryGetValue("ntfyPass", out string? ntfyPass))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
                     }
-                    AddNotificationConnector(new Ntfy(this, ntfyUrl, ntfyAuth));
+                    AddNotificationConnector(new Ntfy(this, ntfyUrl, ntfyUser, ntfyPass, null));
                     SendResponse(HttpStatusCode.Accepted, response);
                 }
                 else
@@ -534,12 +535,13 @@ public class Server : GlobalBase
                 }else if (notificationConnectorType is NotificationConnector.NotificationConnectorType.Ntfy)
                 {
                     if (!requestVariables.TryGetValue("ntfyUrl", out string? ntfyUrl) ||
-                        !requestVariables.TryGetValue("ntfyAuth", out string? ntfyAuth))
+                        !requestVariables.TryGetValue("ntfyUser", out string? ntfyUser)||
+                        !requestVariables.TryGetValue("ntfyPass", out string? ntfyPass))
                     {
                         SendResponse(HttpStatusCode.BadRequest, response);
                         break;
                     }
-                    notificationConnector = new Ntfy(this, ntfyUrl, ntfyAuth);
+                    notificationConnector = new Ntfy(this, ntfyUrl, ntfyUser, ntfyPass, null);
                 }
                 else
                 {

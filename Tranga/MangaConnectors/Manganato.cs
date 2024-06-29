@@ -65,12 +65,11 @@ public class Manganato : MangaConnector
         
         if (requestResult.htmlDocument is null)
             return null;
-        return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1]);
+        return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1], url);
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
-        string status = "";
         Dictionary<string, string> altTitles = new();
         Dictionary<string, string>? links = null;
         HashSet<string> tags = new();
@@ -99,10 +98,11 @@ public class Manganato : MangaConnector
                     break;
                 case "authors":
                     authors = value.Split('-');
+                    for (int i = 0; i < authors.Length; i++)
+                        authors[i] = authors[i].Replace("\r\n", "");
                     break;
                 case "status":
-                    status = value;
-                    switch (status.ToLower())
+                    switch (value.ToLower())
                     {
                         case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
                         case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
@@ -110,6 +110,8 @@ public class Manganato : MangaConnector
                     break;
                 case "genres":
                     string[] genres = value.Split(" - ");
+                    for (int i = 0; i < genres.Length; i++)
+                        genres[i] = genres[i].Replace("\r\n", "");
                     tags = genres.ToHashSet();
                     break;
             }
@@ -118,7 +120,7 @@ public class Manganato : MangaConnector
         string posterUrl = document.DocumentNode.Descendants("span").First(s => s.HasClass("info-image")).Descendants("img").First()
             .GetAttributes().First(a => a.Name == "src").Value;
 
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
         string description = document.DocumentNode.Descendants("div").First(d => d.HasClass("panel-story-info-description"))
             .InnerText.Replace("Description :", "");
@@ -130,8 +132,8 @@ public class Manganato : MangaConnector
         int year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
         
         Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage,  status, publicationId, releaseStatus);
-        cachedPublications.Add(manga);
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        AddMangaToCache(manga);
         return manga;
     }
 

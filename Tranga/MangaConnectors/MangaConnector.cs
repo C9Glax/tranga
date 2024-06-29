@@ -175,14 +175,14 @@ public abstract class MangaConnector : GlobalBase
             return;
         }
 
-        string fileInCache = Path.Join(settings.coverImageCache, manga.coverFileNameInCache);
-        if (!File.Exists(fileInCache))
+        string? fileInCache = manga.coverFileNameInCache;
+        if (fileInCache is null || !File.Exists(fileInCache))
         {
             Log($"Cloning cover failed: File missing {fileInCache}.");
             if (retries > 0 && manga.coverUrl is not null)
             {
                 Log($"Trying {retries} more times");
-                SaveCoverImageToCache(manga.coverUrl, 0);
+                SaveCoverImageToCache(manga.coverUrl, manga.internalId, 0);
                 CopyCoverFromCacheToDownloadLocation(manga, --retries);
             }
 
@@ -285,20 +285,23 @@ public abstract class MangaConnector : GlobalBase
         return HttpStatusCode.OK;
     }
     
-    protected string SaveCoverImageToCache(string url, RequestType requestType)
+    protected string SaveCoverImageToCache(string url, string mangaInternalId, RequestType requestType)
     {
-        string filetype = url.Split('/')[^1].Split('?')[0].Split('.')[^1];
-        string filename = $"{DateTime.Now.Ticks.ToString()}.{filetype}";
+        Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
+        //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
+        Match match = urlRex.Match(url);
+        string filename = $"{match.Groups[1].Value}-{mangaInternalId}.{match.Groups[3].Value}";
         string saveImagePath = Path.Join(settings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))
-            return filename;
+            return saveImagePath;
         
         RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
+        Directory.CreateDirectory(settings.coverImageCache);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
         Log($"Saving cover to {saveImagePath}");
-        return filename;
+        return saveImagePath;
     }
 }

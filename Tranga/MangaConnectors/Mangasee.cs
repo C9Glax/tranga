@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using Soenneker.Utils.String.NeedlemanWunsch;
 using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
@@ -41,14 +42,6 @@ public class Mangasee : MangaConnector
             SearchResult[] filteredResults = FilteredResults(publicationTitle, searchResults);
             Log($"Total available manga: {searchResults.Length} Filtered down to: {filteredResults.Length}");
             
-            /*
-            Dictionary<SearchResult, int> levenshteinRelation = filteredResults.ToDictionary(result => result,
-                result =>
-                {
-                    Log($"Levenshtein {result.s}");
-                    return LevenshteinDistance(publicationTitle.Replace(" ", "").ToLower(), result.s.Replace(" ", "").ToLower());
-                });
-            Log($"After levenshtein: {levenshteinRelation.Count}");*/
 
             string[] urls = filteredResults.Select(result => $"https://mangasee123.com/manga/{result.i}").ToArray();
             List<Manga> searchResultManga = new();
@@ -70,42 +63,19 @@ public class Mangasee : MangaConnector
 
     private SearchResult[] FilteredResults(string publicationTitle, SearchResult[] unfilteredSearchResults)
     {
-        string[] bannedStrings = {"a", "the", "of", "as", "to", "no", "for", "on", "with", "be", "and", "in", "wa", "at"};
-        string[] cleanSplitPublicationTitle = publicationTitle.Split(' ')
-            .Where(part => part.Length > 0 && !bannedStrings.Contains(part.ToLower())).ToArray();
-        
-        return unfilteredSearchResults.Where(usr =>
+        Dictionary<SearchResult, int> similarity = new();
+        foreach (SearchResult sr in unfilteredSearchResults)
         {
-            string cleanSearchResultString = string.Join(' ', usr.s.Split(' ').Where(part => part.Length > 0 && !bannedStrings.Contains(part.ToLower())));
-            foreach(string splitPublicationTitlePart in cleanSplitPublicationTitle)
-                if (cleanSearchResultString.Contains(splitPublicationTitlePart, StringComparison.InvariantCultureIgnoreCase) ||
-                    cleanSearchResultString.Contains(splitPublicationTitlePart, StringComparison.InvariantCultureIgnoreCase))
-                    return true;
-            return false;
-        }).ToArray();
-    }
-
-    private int LevenshteinDistance(string a, string b)
-    {
-        if (b.Length == 0)
-            return a.Length;
-        if (a.Length == 0)
-            return b.Length;
-        if (a[0] == b[0])
-            return LevenshteinDistance(a[1..], b[1..]);
-
-        int case1 = LevenshteinDistance(a, b[1..]);
-        int case2 = LevenshteinDistance(a[1..], b[1..]);
-        int case3 = LevenshteinDistance(a[1..], b);
-
-        if (case1 < case2)
-        {
-            return 1 + (case1 < case3 ? case1 : case3);
+            List<int> scores = new();
+            foreach (string se in sr.a)
+                scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(se.ToLower(), publicationTitle.ToLower()));
+            scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(sr.s.ToLower(), publicationTitle.ToLower()));
+            similarity.Add(sr, scores.Sum() / scores.Count);
         }
-        else
-        {
-            return 1 + (case2 < case3 ? case2 : case3);
-        }
+
+        SearchResult[] similarity90 = similarity.Where(s => s.Value < 10).Select(s => s.Key).ToArray();
+
+        return similarity90;
     }
 
     public override Manga? GetMangaFromId(string publicationId)
@@ -120,11 +90,11 @@ public class Mangasee : MangaConnector
 
         RequestResult requestResult = this.downloadClient.MakeRequest(url, RequestType.MangaInfo);
         if((int)requestResult.statusCode < 300 && (int)requestResult.statusCode >= 200 && requestResult.htmlDocument is not null)
-            return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
+            return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId, url);
         return null;
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -133,7 +103,7 @@ public class Mangasee : MangaConnector
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
         string posterUrl = posterNode.GetAttributeValue("src", "");
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
@@ -178,8 +148,8 @@ public class Mangasee : MangaConnector
 
         Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
             coverFileNameInCache, links,
-            year, originalLanguage, status, publicationId, releaseStatus);
-        cachedPublications.Add(manga);
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        AddMangaToCache(manga);
         return manga;
     }
 

@@ -14,7 +14,7 @@ public abstract class GlobalBase
     protected TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
-    protected List<Manga> cachedPublications { get; init; }
+    private Dictionary<string, Manga> cachedPublications { get; init; }
     public static readonly NumberFormatInfo numberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
     protected static readonly Regex baseUrlRex = new(@"https?:\/\/[0-9A-z\.-]+(:[0-9]+)?");
 
@@ -34,6 +34,29 @@ public abstract class GlobalBase
         this.notificationConnectors = settings.LoadNotificationConnectors(this);
         this.libraryConnectors = settings.LoadLibraryConnectors(this);
         this.cachedPublications = new();
+    }
+
+    protected void AddMangaToCache(Manga manga)
+    {
+        if (!this.cachedPublications.TryAdd(manga.internalId, manga))
+        {
+            Log($"Overwriting Manga {manga.internalId}");
+            this.cachedPublications[manga.internalId] = manga;
+        }
+    }
+
+    protected Manga? GetCachedManga(string internalId)
+    {
+        return cachedPublications.TryGetValue(internalId, out Manga manga) switch
+        {
+            true => manga,
+            _ => null
+        };
+    }
+
+    protected IEnumerable<Manga> GetAllCachedManga()
+    {
+        return cachedPublications.Values;
     }
 
     protected void Log(string message)

@@ -28,7 +28,7 @@ public class MangaKatana : MangaConnector
 		    && requestResult.redirectedToUrl is not null
 			&& requestResult.redirectedToUrl.Contains("mangakatana.com/manga"))
 		{
-			return new [] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.redirectedToUrl.Split('/')[^1]) };
+			return new [] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.redirectedToUrl.Split('/')[^1], requestResult.redirectedToUrl) };
 		}
 
 		Manga[] publications = ParsePublicationsFromHtml(requestResult.result);
@@ -47,7 +47,7 @@ public class MangaKatana : MangaConnector
 			downloadClient.MakeRequest(url, RequestType.MangaInfo);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return null;
-		return ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1]);
+		return ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1], url);
 	}
 
 	private Manga[] ParsePublicationsFromHtml(Stream html)
@@ -77,13 +77,12 @@ public class MangaKatana : MangaConnector
 		return ret.ToArray();
 	}
 
-	private Manga ParseSinglePublicationFromHtml(Stream html, string publicationId)
+	private Manga ParseSinglePublicationFromHtml(Stream html, string publicationId, string websiteUrl)
 	{
 		StreamReader reader = new(html);
 		string htmlString = reader.ReadToEnd();
 		HtmlDocument document = new();
 		document.LoadHtml(htmlString);
-		string status = "";
 		Dictionary<string, string> altTitles = new();
 		Dictionary<string, string>? links = null;
 		HashSet<string> tags = new();
@@ -112,8 +111,7 @@ public class MangaKatana : MangaConnector
 					authors = value.Split(',');
 					break;
 				case "status":
-					status = value;
-					switch (status.ToLower())
+					switch (value.ToLower())
 					{
 						case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
 						case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
@@ -128,7 +126,7 @@ public class MangaKatana : MangaConnector
 		string posterUrl = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[1]/div").Descendants("img").First()
 			.GetAttributes().First(a => a.Name == "src").Value;
 
-		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
 		string description = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[3]/p").InnerText;
 		while (description.StartsWith('\n'))
@@ -144,8 +142,8 @@ public class MangaKatana : MangaConnector
 		}
 
 		Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-			year, originalLanguage, status, publicationId, releaseStatus);
-		cachedPublications.Add(manga);
+			year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+		AddMangaToCache(manga);
 		return manga;
 	}
 

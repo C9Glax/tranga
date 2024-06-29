@@ -68,10 +68,10 @@ public class Mangaworld: MangaConnector
         
         Regex idRex = new (@"https:\/\/www\.mangaworld\.[a-z]{0,63}\/manga\/([0-9]+\/[0-9A-z\-]+).*");
         string id = idRex.Match(url).Groups[1].Value;
-        return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id);
+        return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id, url);
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         Dictionary<string, string> altTitles = new();
         Dictionary<string, string>? links = null;
@@ -111,7 +111,7 @@ public class Mangaworld: MangaConnector
 
         string posterUrl = document.DocumentNode.SelectSingleNode("//img[@class='rounded']").GetAttributeValue("src", "");
 
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId.Replace('/', '-'), RequestType.MangaCover);
 
         string description = document.DocumentNode.SelectSingleNode("//div[@id='noidungm']").InnerText;
         
@@ -119,8 +119,8 @@ public class Mangaworld: MangaConnector
         int year = Convert.ToInt32(yearString);
         
         Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, status, publicationId, releaseStatus);
-        cachedPublications.Add(manga);
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        AddMangaToCache(manga);
         return manga;
     }
 
@@ -153,10 +153,13 @@ public class Mangaworld: MangaConnector
         {
             foreach (HtmlNode volNode in document.DocumentNode.SelectNodes("//div[contains(concat(' ',normalize-space(@class),' '),'volume-element')]"))
             {
-                string volume = volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText.Split(' ')[^1];
+                string volume = Regex.Match(volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText,
+                    @"[Vv]olume ([0-9]+).*").Groups[1].Value;
                 foreach (HtmlNode chNode in volNode.SelectNodes("div").First(node => node.HasClass("volume-chapters")).SelectNodes("div"))
                 {
-                    string number = chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText.Split(" ")[^1];
+
+                    string number = Regex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText,
+                        @"[Cc]apitolo ([0-9]+).*").Groups[1].Value;
                     string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                     ret.Add(new Chapter(manga, null, volume, number, url));
                 }

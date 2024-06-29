@@ -41,7 +41,7 @@ public class MangaLife : MangaConnector
 
         RequestResult requestResult = this.downloadClient.MakeRequest(url, RequestType.MangaInfo);
         if(requestResult.htmlDocument is not null)
-            return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId);
+            return ParseSinglePublicationFromHtml(requestResult.htmlDocument, publicationId, url);
         return null;
     }
 
@@ -69,7 +69,7 @@ public class MangaLife : MangaConnector
     }
 
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId)
+    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -78,7 +78,7 @@ public class MangaLife : MangaConnector
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
         string posterUrl = posterNode.GetAttributeValue("src", "");
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, RequestType.MangaCover);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
@@ -122,8 +122,8 @@ public class MangaLife : MangaConnector
         string description = descriptionNode.InnerText;
 
         Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
-            coverFileNameInCache, links, year, originalLanguage, status, publicationId, releaseStatus);
-        cachedPublications.Add(manga);
+            coverFileNameInCache, links, year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        AddMangaToCache(manga);
         return manga;
     }
 
