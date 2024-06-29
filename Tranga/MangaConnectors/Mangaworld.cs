@@ -111,7 +111,7 @@ public class Mangaworld: MangaConnector
 
         string posterUrl = document.DocumentNode.SelectSingleNode("//img[@class='rounded']").GetAttributeValue("src", "");
 
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId.Replace('/', '-'), RequestType.MangaCover);
 
         string description = document.DocumentNode.SelectSingleNode("//div[@id='noidungm']").InnerText;
         
