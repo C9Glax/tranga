@@ -91,18 +91,22 @@ public readonly struct Chapter : IComparable
     {
         if (!Directory.Exists(Path.Join(downloadLocation, parentManga.folderName)))
             return false;
-        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, parentManga.folderName)).GetFiles();
+        FileInfo[] archives = new DirectoryInfo(Path.Join(downloadLocation, parentManga.folderName)).GetFiles().Where(file => file.Name.Split('.')[^1] == "cbz").ToArray();
         Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
 
         Chapter t = this;
-        return archives.Select(archive => archive.Name).Any(archiveFileName =>
+        string thisPath = GetArchiveFilePath(downloadLocation);
+        FileInfo? archive = archives.FirstOrDefault(archive =>
         {
-            Match m = volChRex.Match(archiveFileName);
+            Match m = volChRex.Match(archive.Name);
             string archiveVolNum = m.Groups[1].Success ? m.Groups[1].Value : "0";
             string archiveChNum = m.Groups[2].Value;
-            return archiveVolNum == t.volumeNumber &&
-                   archiveChNum == t.chapterNumber;
+            return archiveVolNum == t.volumeNumber && archiveChNum == t.chapterNumber ||
+                   archiveVolNum == "0" && archiveChNum == t.chapterNumber;
         });
+        if(archive is not null && thisPath != archive.FullName)
+            archive.MoveTo(thisPath);
+        return archive is not null;
     }
     /// <summary>
     /// Creates full file path of chapter-archive
