@@ -410,7 +410,7 @@ public class Server : GlobalBase
                 break;
             case "Settings/AprilFoolsMode":
                 if (!requestVariables.TryGetValue("enabled", out string? aprilFoolsModeEnabledStr) ||
-                    bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
+                    !bool.TryParse(aprilFoolsModeEnabledStr, out bool aprilFoolsModeEnabled))
                 {
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
