@@ -83,7 +83,7 @@ public class Kavita : LibraryConnector
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
         Log("Getting libraries.");
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library", "Bearer", auth, logger);
+        Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library/libraries", "Bearer", auth, logger);
         if (data == Stream.Null)
         {
             Log("No libraries returned");
@@ -96,11 +96,13 @@ public class Kavita : LibraryConnector
             return Array.Empty<KavitaLibrary>();
         }
 
-        HashSet<KavitaLibrary> ret = new();
+        List<KavitaLibrary> ret = new();
 
         foreach (JsonNode? jsonNode in result)
         {
-            var jObject = (JsonObject?)jsonNode;
+            JsonObject? jObject = (JsonObject?)jsonNode;
+            if(jObject is null)
+                continue;
             int libraryId = jObject!["id"]!.GetValue<int>();
             string libraryName = jObject["name"]!.GetValue<string>();
             ret.Add(new KavitaLibrary(libraryId, libraryName));
