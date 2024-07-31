@@ -17,17 +17,19 @@ public class JobBoss : GlobalBase
         Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
     }
 
-    public void AddJob(Job job)
+    public bool AddJob(Job job)
     {
         if (ContainsJobLike(job))
         {
             Log($"Already Contains Job {job}");
+            return false;
         }
         else
         {
             Log($"Added {job}");
             this.jobs.Add(job);
             UpdateJobFile(job);
+            return true;
         }
     }
 
@@ -65,11 +67,9 @@ public class JobBoss : GlobalBase
                 RemoveJob(job);
     }
 
-    public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, string? chapterNumber = null)
+    public IEnumerable<Job> GetJobsLike(string? internalId = null, string? chapterNumber = null)
     {
         IEnumerable<Job> ret = this.jobs;
-        if (connectorName is not null)
-            ret = ret.Where(job => job.mangaConnector.name == connectorName);
         
         if (internalId is not null && chapterNumber is not null)
             ret = ret.Where(jjob =>
@@ -84,18 +84,18 @@ public class JobBoss : GlobalBase
             {
                 if (jjob is not DownloadNewChapters job)
                     return false;
-                return job.manga.internalId == internalId;
+                return job.mangaInternalId == internalId;
             });
         return ret;
     }
 
-    public IEnumerable<Job> GetJobsLike(MangaConnector? mangaConnector = null, Manga? publication = null,
+    public IEnumerable<Job> GetJobsLike(Manga? publication = null,
         Chapter? chapter = null)
     {
         if (chapter is not null)
-            return GetJobsLike(mangaConnector?.name, chapter.Value.parentManga.internalId, chapter.Value.chapterNumber);
+            return GetJobsLike(chapter.Value.parentManga.internalId, chapter.Value.chapterNumber);
         else
-            return GetJobsLike(mangaConnector?.name, publication?.internalId);
+            return GetJobsLike(publication?.internalId);
     }
 
     public Job? GetJobById(string jobId)
@@ -165,6 +165,9 @@ public class JobBoss : GlobalBase
                 this.jobs.Add(job);
             }
         }
+        
+        //Load Manga-Files
+        ImportManga();
 
         //Connect jobs to parent-jobs and add Publications to cache
         foreach (Job job in this.jobs)
@@ -176,9 +179,18 @@ public class JobBoss : GlobalBase
                 parentJob.AddSubJob(job);
                 Log($"Parent Job {parentJob}");
             }
-            if (job is DownloadNewChapters dncJob)
-                AddMangaToCache(dncJob.manga);
         }
+
+        string[] jobMangaInternalIds = this.jobs.Where(job => job is DownloadNewChapters)
+            .Select(dnc => ((DownloadNewChapters)dnc).mangaInternalId).ToArray();
+        jobMangaInternalIds = jobMangaInternalIds.Concat(
+            this.jobs.Where(job => job is UpdateMetadata)
+            .Select(dnc => ((UpdateMetadata)dnc).mangaInternalId)).ToArray();
+        string[] internalIds = GetAllCachedManga().Select(m => m.internalId).ToArray();
+
+        string[] extraneousIds = internalIds.Except(jobMangaInternalIds).ToArray();
+        foreach (string internalId in extraneousIds)
+            RemoveMangaFromCache(internalId);
 
         string[] coverFiles = Directory.GetFiles(settings.coverImageCache);
         foreach(string fileName in coverFiles.Where(fileName => !GetAllCachedManga().Any(manga => manga.coverFileNameInCache == fileName)))
