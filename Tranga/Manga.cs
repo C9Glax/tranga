@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using Newtonsoft.Json;
 using static System.IO.UnixFileMode;
 
@@ -51,11 +52,11 @@ public struct Manga
     [JsonConstructor]
     public Manga(string sortName, List<string> authors, string? description, Dictionary<string,string> altTitles, string[] tags, string? coverUrl, string? coverFileNameInCache, Dictionary<string,string>? links, int? year, string? originalLanguage, string publicationId, ReleaseStatusByte releaseStatus, string? websiteUrl = null, string? folderName = null, float? ignoreChaptersBelow = 0)
     {
-        this.sortName = sortName;
-        this.authors = authors;
-        this.description = description;
-        this.altTitles = altTitles;
-        this.tags = tags;
+        this.sortName = HttpUtility.HtmlDecode(sortName);
+        this.authors = authors.Select(HttpUtility.HtmlDecode).ToList()!;
+        this.description = HttpUtility.HtmlDecode(description);
+        this.altTitles = altTitles.ToDictionary(a => HttpUtility.HtmlDecode(a.Key), a => HttpUtility.HtmlDecode(a.Value));
+        this.tags = tags.Select(HttpUtility.HtmlDecode).ToArray()!;
         this.coverFileNameInCache = coverFileNameInCache;
         this.coverUrl = coverUrl;
         this.links = links ?? new Dictionary<string, string>();
