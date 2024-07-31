@@ -17,14 +17,17 @@ public partial class Tranga : GlobalBase
         Log(settings.ToString());
         keepRunning = true;
         _connectors = new HashSet<MangaConnector>()
-        {  
+        {
             new Manganato(this),
             new Mangasee(this),
             new MangaDex(this),
             new MangaKatana(this),
             new Mangaworld(this),
             new Bato(this),
-            new MangaLife(this)
+            new MangaLife(this),
+            new OmegaScans(this),
+            new PerfScan(this),
+            new TempleScan(this),
         };
         foreach(DirectoryInfo dir in new DirectoryInfo(Path.GetTempPath()).GetDirectories("trangatemp"))//Cleanup old temp folders
             dir.Delete();
