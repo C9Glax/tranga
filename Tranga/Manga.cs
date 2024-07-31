@@ -63,7 +63,7 @@ public struct Manga
         this.year = year;
         this.originalLanguage = originalLanguage;
         this.publicationId = publicationId;
-        this.folderName = folderName ?? string.Concat(LegalCharacters.Matches(sortName));
+        this.folderName = folderName ?? string.Concat(LegalCharacters.Matches(HttpUtility.HtmlDecode(sortName)));
         while (this.folderName.EndsWith('.'))
             this.folderName = this.folderName.Substring(0, this.folderName.Length - 1);
         string onlyLowerLetters = string.Concat(this.sortName.ToLower().Where(Char.IsLetter));
