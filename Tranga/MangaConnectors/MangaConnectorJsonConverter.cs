@@ -40,6 +40,8 @@ public class MangaConnectorJsonConverter : JsonConverter
                 return this._connectors.First(c => c is MangaLife);
             case "ManhuaPlus":
                 return this._connectors.First(c => c is ManhuaPlus);
+            case "MangaHere":
+                return this._connectors.First(c => c is MangaHere);
         }
 
         throw new Exception();
