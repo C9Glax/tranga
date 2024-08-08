@@ -173,6 +173,7 @@ public class MangaHere : MangaConnector
             images = requestResult.htmlDocument.DocumentNode
                 .SelectNodes("//a[contains(@href, '/manga/')]")
                 .MaxBy(node => node.GetAttributeValue("data-page", 0))!.GetAttributeValue("data-page", 0);
+            logger?.WriteLine($"MangaHere speciality: Get Image-url {downloaded}/{images}");
             if (progressToken is not null)
             {
                 progressToken.increments = images * 2;//we also have to download the images later
