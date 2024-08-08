@@ -24,7 +24,8 @@ public partial class Tranga : GlobalBase
             new MangaKatana(this),
             new Mangaworld(this),
             new Bato(this),
-            new MangaLife(this)
+            new MangaLife(this),
+            new ManhuaPlus(this)
         };
         foreach(DirectoryInfo dir in new DirectoryInfo(Path.GetTempPath()).GetDirectories("trangatemp"))//Cleanup old temp folders
             dir.Delete();
