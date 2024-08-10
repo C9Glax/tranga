@@ -101,7 +101,7 @@ public class MangaHere : MangaConnector
             .SelectSingleNode("//p[contains(concat(' ',normalize-space(@class),' '),' fullcontent ')]");
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
+        Manga manga = new(this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
             coverFileNameInCache, links,
             null, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
         AddMangaToCache(manga);
