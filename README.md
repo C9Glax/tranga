@@ -50,6 +50,8 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [Mangaworld.bz](https://www.mangaworld.bz/) (it)
 - [Bato.to](https://bato.to/v3x) (en)
 - [Manga4Life](https://manga4life.com) (en)
+- [ManhuaPlus](https://manhuaplus.org/) (en)
+- [MangaHere](https://www.mangahere.cc/) (en) (Their covers suck)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  

@@ -222,8 +222,8 @@ public abstract class MangaConnector : GlobalBase
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
         Log($"Downloading Images for {saveArchiveFilePath}");
-        if(progressToken is not null)
-            progressToken.increments = imageUrls.Length;
+        if (progressToken is not null)
+            progressToken.increments += imageUrls.Length;
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
