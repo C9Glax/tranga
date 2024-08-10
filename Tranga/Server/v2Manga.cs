@@ -76,7 +76,7 @@ public partial class Server
            !_parent.TryGetPublicationById(groups[1].Value, out Manga? manga) ||
            manga is null)
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
-        string filePath = settings.GetFullCoverPath((Manga)manga!);
+        string filePath = manga.Value.coverFileNameInCache!;
         if (File.Exists(filePath))
         {
             FileStream coverStream = new(filePath, FileMode.Open);
