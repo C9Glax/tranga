@@ -74,12 +74,7 @@ public abstract class GlobalBase
     internal void ImportManga()
     {
         string folder = settings.mangaCacheFolderPath;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Directory.CreateDirectory(folder,
-                UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead | UnixFileMode.OtherWrite |
-                UnixFileMode.UserRead | UnixFileMode.UserWrite);
-        else
-            Directory.CreateDirectory(folder);
+        Directory.CreateDirectory(folder);
 
         foreach (FileInfo fileInfo in new DirectoryInfo(folder).GetFiles())
         {
@@ -100,12 +95,7 @@ public abstract class GlobalBase
     private void ExportManga()
     {
         string folder = settings.mangaCacheFolderPath;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Directory.CreateDirectory(folder,
-                UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead | UnixFileMode.OtherWrite |
-                UnixFileMode.UserRead | UnixFileMode.UserWrite);
-        else
-            Directory.CreateDirectory(folder);
+        Directory.CreateDirectory(folder);
         foreach (Manga manga in cachedPublications.Values)
         {
             string content = JsonConvert.SerializeObject(manga, Formatting.Indented);
