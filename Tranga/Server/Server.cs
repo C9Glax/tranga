@@ -165,7 +165,7 @@ public partial class Server : GlobalBase, IDisposable
     {
         if (!request.HasEntityBody)
         {
-            Log("No request body");
+            //Nospam Log("No request body");
             return new Dictionary<string, string>();
         }
         Stream body = request.InputStream;
