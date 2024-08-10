@@ -195,6 +195,9 @@ public class JobBoss : GlobalBase
         string[] coverFiles = Directory.GetFiles(settings.coverImageCache);
         foreach(string fileName in coverFiles.Where(fileName => !GetAllCachedManga().Any(manga => manga.coverFileNameInCache == fileName)))
                 File.Delete(fileName);
+        string[] mangaFiles = Directory.GetFiles(settings.mangaCacheFolderPath);
+        foreach(string fileName in mangaFiles.Where(fileName => !GetAllCachedManga().Any(manga => fileName.Split('.')[0] == manga.internalId)))
+            File.Delete(fileName);
     }
 
     internal void UpdateJobFile(Job job, string? oldFile = null)
