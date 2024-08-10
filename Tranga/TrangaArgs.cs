@@ -38,7 +38,7 @@ public partial class Tranga : GlobalBase
 
         TrangaSettings? settings = null;
         bool dlp = fetched.TryGetValue(downloadLocation, out string[]? downloadLocationPath);
-        bool wdp = fetched.TryGetValue(downloadLocation, out string[]? workingDirectoryPath);
+        bool wdp = fetched.TryGetValue(workingDirectory, out string[]? workingDirectoryPath);
 
         if (dlp && wdp)
         {
@@ -52,7 +52,7 @@ public partial class Tranga : GlobalBase
         }else if (wdp)
         {
             if (settings is null)
-                settings = new TrangaSettings(downloadLocation: workingDirectoryPath![0]);
+                settings = new TrangaSettings(workingDirectory: workingDirectoryPath![0]);
             else
                 settings = new TrangaSettings(settings.downloadLocation, workingDirectoryPath![0]);
         }
