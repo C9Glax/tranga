@@ -289,6 +289,9 @@ public abstract class HeanCms : MangaConnector
             case "cancelled": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
         }
 
+        string modifiedHostname = hostname.Replace("api.", "");
+        string websiteUrl = $"{modifiedHostname}{mangaUrlPrefix}{publicationId}";
+
         Manga pub = new(
             title,
             authors,
@@ -301,9 +304,8 @@ public abstract class HeanCms : MangaConnector
             year,
             originalLanguage,
             publicationId,
-            releaseStatus
-            // TODO: websiteUrl
-            // string? websiteUrl = null
+            releaseStatus,
+            websiteUrl
         );
         string json = JsonSerializer.Serialize(pub, new System.Text.Json.JsonSerializerOptions{WriteIndented = true});
         Log($"Converted series to manga. {json}");
