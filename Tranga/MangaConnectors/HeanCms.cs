@@ -245,6 +245,8 @@ public abstract class HeanCms : MangaConnector
 
         string title = manga["title"]!.GetValue<string>();
 
+        string publicationId = manga["series_slug"]!.GetValue<string>();
+
         List<string> authors = manga["author"]!.GetValue<string>().Split(" & ").ToList();
 
         // description comes as html text, so we need to parse it
@@ -262,7 +264,7 @@ public abstract class HeanCms : MangaConnector
         string? coverUrl = manga["thumbnail"]!.GetValue<string>();
         string? coverCacheName = null;
         if (coverUrl is not null)
-            coverCacheName = SaveCoverImageToCache(coverUrl, RequestType.MangaCover);
+            coverCacheName = SaveCoverImageToCache(coverUrl, publicationId, RequestType.MangaCover);
 
         Dictionary<string, string>? linksDict = null;
 
@@ -274,8 +276,6 @@ public abstract class HeanCms : MangaConnector
         }
 
         string? originalLanguage = null;
-
-        string publicationId = manga["series_slug"]!.GetValue<string>();
 
         Log($"Got publicationId {publicationId}");
 
