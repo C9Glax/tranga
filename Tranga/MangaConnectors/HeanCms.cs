@@ -12,6 +12,7 @@ namespace Tranga.MangaConnectors;
 public abstract class HeanCms : MangaConnector
 {
     protected abstract string hostname { get; } // "https://api.example.heancms.com"
+    protected virtual string mangaUrlPrefix { get; } = "/series/";
 
     public HeanCms(GlobalBase clone, string label) : base(clone, label)
     {
@@ -44,8 +45,7 @@ public abstract class HeanCms : MangaConnector
     {
         Log($"GetMangaFromUrl: {url}");
 
-        string prefix = "/series/";
-        int startIndex = url.IndexOf(prefix) + prefix.Length;
+        int startIndex = url.IndexOf(this.mangaUrlPrefix) + this.mangaUrlPrefix.Length;
         string id = url.Substring(startIndex);
 
         Log($"Got id {id} from {url}");
