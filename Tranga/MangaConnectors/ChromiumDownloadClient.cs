@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using PuppeteerSharp;
-using PuppeteerSharp.Input;
 
 namespace Tranga.MangaConnectors;
 
@@ -12,7 +11,7 @@ internal class ChromiumDownloadClient : DownloadClient
     private IBrowser browser { get; set; }
     private const string ChromiumVersion = "1154303";
     private const int StartTimeoutMs = 30000;
-    private HttpDownloadClient _httpDownloadClient;
+    private readonly HttpDownloadClient _httpDownloadClient;
     
     private async Task<IBrowser> DownloadBrowser()
     {
