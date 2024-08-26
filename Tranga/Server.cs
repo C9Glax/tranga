@@ -198,7 +198,7 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob is DownloadNewChapters).OrderBy(jjob => ((DownloadNewChapters)jjob).manga.sortName));
                 break;
             case "Settings":
-                SendResponse(HttpStatusCode.OK, response, TrangaSettings.Serialize());
+                SendResponse(HttpStatusCode.OK, response, TrangaSettings.AsJObject());
                 break;
             case "Settings/userAgent":
                 SendResponse(HttpStatusCode.OK, response, TrangaSettings.userAgent);
