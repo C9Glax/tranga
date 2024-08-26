@@ -716,6 +716,7 @@ public class Server : GlobalBase
         if (content is not Stream)
         {
             response.ContentType = "application/json";
+            response.AddHeader("Cache-Control", "no-store");
             try
             {
                 response.OutputStream.Write(content is not null
@@ -731,6 +732,7 @@ public class Server : GlobalBase
         else if(content is FileStream stream)
         {
             string contentType = stream.Name.Split('.')[^1];
+            response.AddHeader("Cache-Control", "max-age=600");
             switch (contentType.ToLower())
             {
                 case "gif":
