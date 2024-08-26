@@ -14,15 +14,15 @@ internal abstract class DownloadClient : GlobalBase
     
     public RequestResult MakeRequest(string url, RequestType requestType, string? referrer = null, string? clickButton = null)
     {
-        if (!settings.requestLimits.ContainsKey(requestType))
+        if (!TrangaSettings.requestLimits.ContainsKey(requestType))
         {
             Log("RequestType not configured for rate-limit.");
             return new RequestResult(HttpStatusCode.NotAcceptable, null, Stream.Null);
         }
 
-        int rateLimit = settings.userAgent == TrangaSettings.DefaultUserAgent
+        int rateLimit = TrangaSettings.userAgent == TrangaSettings.DefaultUserAgent
             ? TrangaSettings.DefaultRequestLimits[requestType]
-            : settings.requestLimits[requestType];
+            : TrangaSettings.requestLimits[requestType];
         
         TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
         _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(timeBetweenRequests));
