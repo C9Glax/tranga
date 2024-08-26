@@ -140,7 +140,7 @@ public partial class Server
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
         if(!requestParameters.TryGetValue("location", out string? newFolder))
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, "Parameter 'location' missing.");
-        manga.Value.MovePublicationFolder(settings.downloadLocation, newFolder);
+        manga.Value.MovePublicationFolder(TrangaSettings.downloadLocation, newFolder);
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
     }
 }

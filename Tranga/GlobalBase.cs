@@ -70,7 +70,7 @@ public abstract class GlobalBase
 
     internal void ImportManga()
     {
-        string folder = settings.mangaCacheFolderPath;
+        string folder = TrangaSettings.mangaCacheFolderPath;
         Directory.CreateDirectory(folder);
 
         foreach (FileInfo fileInfo in new DirectoryInfo(folder).GetFiles())
@@ -91,7 +91,7 @@ public abstract class GlobalBase
 
     private void ExportManga()
     {
-        string folder = settings.mangaCacheFolderPath;
+        string folder = TrangaSettings.mangaCacheFolderPath;
         Directory.CreateDirectory(folder);
         foreach (Manga manga in cachedPublications.Values)
         {

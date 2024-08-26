@@ -38,7 +38,7 @@ public class DownloadNewChapters : Job
             Log($"Manga {mangaInternalId} is missing! Can not execute job.");
             return Array.Empty<Job>();
         }
-        manga.Value.SaveSeriesInfoJson(settings.downloadLocation);
+        manga.Value.SaveSeriesInfoJson();
         Chapter[] chapters = manga.Value.mangaConnector.GetNewChapters(manga.Value, this.translatedLanguage);
         this.progressToken.increments = chapters.Length;
         List<Job> jobs = new();

@@ -61,7 +61,7 @@ public partial class Server
                     return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "'interval' Parameter missing, or is not in correct format.");
                 requestParameters.TryGetValue("language", out string? language);
                 if (requestParameters.TryGetValue("customFolder", out string? folder))
-                    manga.Value.MovePublicationFolder(settings.downloadLocation, folder);
+                    manga.Value.MovePublicationFolder(TrangaSettings.downloadLocation, folder);
                 if (requestParameters.TryGetValue("startChapter", out string? startChapterStr) &&
                     float.TryParse(startChapterStr, out float startChapter))
                 {

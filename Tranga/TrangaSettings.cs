@@ -20,6 +20,7 @@ public static class TrangaSettings
     [JsonIgnore] public static string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public static string jobsFolderPath => Path.Join(workingDirectory, "jobs");
     [JsonIgnore] public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
+    [JsonIgnore] public static string mangaCacheFolderPath => Path.Join(workingDirectory, "mangaCache");
     public static ushort? version { get; } = 2;
     public static bool aprilFoolsMode { get; private set; } = true;
     [JsonIgnore]internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()

@@ -75,9 +75,9 @@ public partial class Server : GlobalBase, IDisposable
         
         this._parent = parent;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            this._listener.Prefixes.Add($"http://*:{settings.apiPortNumber}/");
+            this._listener.Prefixes.Add($"http://*:{TrangaSettings.apiPortNumber}/");
         else
-            this._listener.Prefixes.Add($"http://localhost:{settings.apiPortNumber}/");
+            this._listener.Prefixes.Add($"http://localhost:{TrangaSettings.apiPortNumber}/");
         Thread listenThread = new(Listen);
         listenThread.Start();
         while(_parent.keepRunning && _running)
