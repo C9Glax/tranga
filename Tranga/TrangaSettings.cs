@@ -151,7 +151,7 @@ public static class TrangaSettings
         File.WriteAllText(settingsFilePath, Serialize());
     }
 
-    public static string Serialize()
+    public static JObject AsJObject()
     {
         JObject jobj = new JObject();
         jobj.Add("downloadLocation", JToken.FromObject(TrangaSettings.downloadLocation));
@@ -161,8 +161,10 @@ public static class TrangaSettings
         jobj.Add("aprilFoolsMode", JToken.FromObject(TrangaSettings.aprilFoolsMode));
         jobj.Add("version", JToken.FromObject(TrangaSettings.version));
         jobj.Add("requestLimits", JToken.FromObject(TrangaSettings.requestLimits));
-        return jobj.ToString();
+        return jobj;
     }
+
+    public static string Serialize() => AsJObject().ToString();
 
     public static void Deserialize(string serialized)
     {
