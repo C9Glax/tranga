@@ -49,6 +49,8 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
         
         if(settings.workingDirectory is not null)
             TrangaSettings.LoadFromWorkingDirectory(settings.workingDirectory);
+        else
+            TrangaSettings.CreateOrUpdate();
         if(settings.downloadLocation is not null)
             TrangaSettings.CreateOrUpdate(downloadDirectory: settings.downloadLocation);
 

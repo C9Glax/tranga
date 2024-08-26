@@ -37,14 +37,9 @@ public static class TrangaSettings
     public static void LoadFromWorkingDirectory(string directory)
     {
         TrangaSettings.workingDirectory = directory;
-        if (!File.Exists(settingsFilePath))
-        {
-            return;
-        }
-        else
-        {
+        if(File.Exists(settingsFilePath))
             Deserialize(File.ReadAllText(settingsFilePath));
-        }
+        else return;
 
         Directory.CreateDirectory(downloadLocation);
         Directory.CreateDirectory(workingDirectory);
@@ -53,6 +48,8 @@ public static class TrangaSettings
 
     public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null, int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null)
     {
+        if(pWorkingDirectory is null && File.Exists(settingsFilePath))
+            LoadFromWorkingDirectory(workingDirectory);
         TrangaSettings.downloadLocation = downloadDirectory ?? TrangaSettings.downloadLocation;
         TrangaSettings.workingDirectory = pWorkingDirectory ?? TrangaSettings.workingDirectory;
         TrangaSettings.apiPortNumber = pApiPortNumber ?? TrangaSettings.apiPortNumber;
