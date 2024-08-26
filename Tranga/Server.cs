@@ -706,10 +706,6 @@ public class Server : GlobalBase
 
     private void SendResponse(HttpStatusCode statusCode, HttpListenerResponse response, object? content = null)
     {
-        if (response.OutputStream.CanWrite == false)
-        {
-            Log($"No response sent to request: Stream closed before response could be sent.");
-        }
         //Log($"Response: {statusCode} {content}");
         response.StatusCode = (int)statusCode;
         response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
@@ -717,43 +713,45 @@ public class Server : GlobalBase
         response.AddHeader("Access-Control-Max-Age", "1728000");
         response.AppendHeader("Access-Control-Allow-Origin", "*");
 
-        try
+        if (content is not Stream)
         {
-            if (content is not Stream)
+            response.ContentType = "application/json";
+            response.AddHeader("Cache-Control", "no-store");
+            try
             {
-                response.ContentType = "application/json";
                 response.OutputStream.Write(content is not null
                     ? Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
                     : Array.Empty<byte>());
+                response.OutputStream.Close();
             }
-            else if (content is FileStream stream)
+            catch (HttpListenerException e)
             {
-                string contentType = stream.Name.Split('.')[^1];
-                switch (contentType.ToLower())
-                {
-                    case "gif":
-                        response.ContentType = "image/gif";
-                        break;
-                    case "png":
-                        response.ContentType = "image/png";
-                        break;
-                    case "jpg":
-                    case "jpeg":
-                        response.ContentType = "image/jpeg";
-                        break;
-                    case "log":
-                        response.ContentType = "text/plain";
-                        break;
-                }
-
-                stream.CopyTo(response.OutputStream);
-                stream.Close();
+                Log(e.ToString());
             }
-            response.OutputStream.Close();
         }
-        catch (HttpListenerException e)
+        else if(content is FileStream stream)
         {
-            Log(e.ToString());
+            string contentType = stream.Name.Split('.')[^1];
+            response.AddHeader("Cache-Control", "max-age=600");
+            switch (contentType.ToLower())
+            {
+                case "gif":
+                    response.ContentType = "image/gif";
+                    break;
+                case "png":
+                    response.ContentType = "image/png";
+                    break;
+                case "jpg":
+                case "jpeg":
+                    response.ContentType = "image/jpeg";
+                    break;
+                case "log":
+                    response.ContentType = "text/plain";
+                    break;
+            }
+            stream.CopyTo(response.OutputStream);
+            response.OutputStream.Close();
+            stream.Close();
         }
     }
 }
