@@ -19,9 +19,9 @@ public class Server : GlobalBase
     {
         this._parent = parent;
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            this._listener.Prefixes.Add($"http://*:{settings.apiPortNumber}/");
+            this._listener.Prefixes.Add($"http://*:{TrangaSettings.apiPortNumber}/");
         else
-            this._listener.Prefixes.Add($"http://localhost:{settings.apiPortNumber}/");
+            this._listener.Prefixes.Add($"http://localhost:{TrangaSettings.apiPortNumber}/");
         Thread listenThread = new (Listen);
         listenThread.Start();
         Thread watchThread = new(WatchRunning);
@@ -198,16 +198,16 @@ public class Server : GlobalBase
                 SendResponse(HttpStatusCode.OK, response, _parent.jobBoss.jobs.Where(jjob => jjob is DownloadNewChapters).OrderBy(jjob => ((DownloadNewChapters)jjob).manga.sortName));
                 break;
             case "Settings":
-                SendResponse(HttpStatusCode.OK, response, settings);
+                SendResponse(HttpStatusCode.OK, response, TrangaSettings.Serialize());
                 break;
             case "Settings/userAgent":
-                SendResponse(HttpStatusCode.OK, response, settings.userAgent);
+                SendResponse(HttpStatusCode.OK, response, TrangaSettings.userAgent);
                 break;
             case "Settings/customRequestLimit":
-                SendResponse(HttpStatusCode.OK, response, settings.requestLimits);
+                SendResponse(HttpStatusCode.OK, response, TrangaSettings.requestLimits);
                 break;
             case "Settings/AprilFoolsMode":
-                SendResponse(HttpStatusCode.OK, response, settings.aprilFoolsMode);
+                SendResponse(HttpStatusCode.OK, response, TrangaSettings.aprilFoolsMode);
                 break;
             case "NotificationConnectors":
                 SendResponse(HttpStatusCode.OK, response, notificationConnectors);
@@ -314,7 +314,7 @@ public class Server : GlobalBase
                 }
                 
                 if (requestVariables.TryGetValue("customFolderName", out customFolderName))
-                    manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                    manga.MovePublicationFolder(TrangaSettings.downloadLocation, customFolderName);
                 requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
                 
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, true, interval, translatedLanguage: translatedLanguage??"en"));
@@ -343,7 +343,7 @@ public class Server : GlobalBase
                 }
 
                 if (requestVariables.TryGetValue("customFolderName", out customFolderName))
-                    manga.MovePublicationFolder(settings.downloadLocation, customFolderName);
+                    manga.MovePublicationFolder(TrangaSettings.downloadLocation, customFolderName);
                 requestVariables.TryGetValue("translatedLanguage", out translatedLanguage);
                 
                 _parent.jobBoss.AddJob(new DownloadNewChapters(this, connector!, manga, false, translatedLanguage: translatedLanguage??"en"));
@@ -405,7 +405,7 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                settings.UpdateDownloadLocation(downloadLocation, moveFiles);
+                TrangaSettings.UpdateDownloadLocation(downloadLocation, moveFiles);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/AprilFoolsMode":
@@ -415,7 +415,7 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                settings.UpdateAprilFoolsMode(aprilFoolsModeEnabled);
+                TrangaSettings.UpdateAprilFoolsMode(aprilFoolsModeEnabled);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             /*case "Settings/UpdateWorkingDirectory":
@@ -433,11 +433,11 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-                settings.UpdateUserAgent(customUserAgent);
+                TrangaSettings.UpdateUserAgent(customUserAgent);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/userAgent/Reset":
-                settings.UpdateUserAgent(null);
+                TrangaSettings.UpdateUserAgent(null);
                 SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/customRequestLimit":
@@ -449,18 +449,12 @@ public class Server : GlobalBase
                     SendResponse(HttpStatusCode.BadRequest, response);
                     break;
                 }
-
-                if (settings.requestLimits.ContainsKey(requestType))
-                {
-                    settings.requestLimits[requestType] = requestsPerMinute;
-                    SendResponse(HttpStatusCode.Accepted, response);
-                }else
-                    SendResponse(HttpStatusCode.BadRequest, response);
-                settings.ExportSettings();
+                
+                TrangaSettings.UpdateRateLimit(requestType, requestsPerMinute);
+                SendResponse(HttpStatusCode.Accepted, response);
                 break;
             case "Settings/customRequestLimit/Reset":
-                settings.requestLimits = TrangaSettings.DefaultRequestLimits;
-                settings.ExportSettings();
+                TrangaSettings.ResetRateLimits();
                 break;
             case "NotificationConnectors/Update":
                 if (!requestVariables.TryGetValue("notificationConnector", out notificationConnectorStr) ||

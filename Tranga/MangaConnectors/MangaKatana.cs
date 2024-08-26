@@ -217,7 +217,7 @@ public class MangaKatana : MangaConnector
 		string comicInfoPath = Path.GetTempFileName();
 		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
 
-		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
+		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)
