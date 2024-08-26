@@ -41,6 +41,8 @@ public partial class Tranga : GlobalBase
 
         if (wdp)
             TrangaSettings.LoadFromWorkingDirectory(workingDirectoryPath![0]);
+        else
+            TrangaSettings.CreateOrUpdate();
         if(dlp)
             TrangaSettings.CreateOrUpdate(downloadDirectory: downloadLocationPath![0]);
 
