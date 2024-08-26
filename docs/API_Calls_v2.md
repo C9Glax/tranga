@@ -186,12 +186,16 @@ Returns the URL for the Cover of the specified Manga.
   * [GET /v2/Manga](#-v2manga)
   * [GET /v2/Connector/*ConnectorName*/GetManga](#-v2connectorconnectornamegetmanga)
   * [GET /v2/Job/*jobId*](#-v2jobjobid)
+
+  Optional: `dimensions=<width>x<height>` replace width and height with requested dimensions in pixels.
+  Fitting will cover requested area.
 </details>
 
 <details>
   <summary>Returns</summary>
 
 String with the url.
+If `dimensions=x` was not requested, returns full sized image.
   
   | StatusCode | Meaning                                    |
   |------------|--------------------------------------------|

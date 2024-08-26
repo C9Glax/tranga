@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
+using System.Net;
 using System.Text.RegularExpressions;
 using Tranga.Jobs;
 using Tranga.MangaConnectors;
@@ -77,12 +79,37 @@ public partial class Server
            manga is null)
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"Manga with ID '{groups[1].Value} could not be found.'");
         string filePath = manga.Value.coverFileNameInCache!;
-        if (File.Exists(filePath))
+        if(!File.Exists(filePath))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "Cover-File not found.");
+
+        Bitmap bitmap;
+        if (requestParameters.TryGetValue("dimensions", out string? dimensionsStr))
+        {
+            Regex dimensionsRex = new(@"([0-9]+)x([0-9]+)");
+            if(!dimensionsRex.IsMatch(dimensionsStr))
+                return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, "Requested dimensions not in required format.");
+            Match m = dimensionsRex.Match(dimensionsStr);
+            int width = int.Parse(m.Groups[1].Value);
+            int height = int.Parse(m.Groups[2].Value);
+            double aspectRequested = (double)width / (double)height;
+            
+            using Image coverImage = Image.FromFile(filePath);
+            double aspectCover = (double)coverImage.Width / (double)coverImage.Height;
+
+            Size newSize = aspectRequested > aspectCover
+                ? new Size(width, (width / coverImage.Width) * coverImage.Height)
+                : new Size((height / coverImage.Height) * coverImage.Width, height);
+
+            bitmap = new(coverImage, newSize);
+        }
+        else
         {
             FileStream coverStream = new(filePath, FileMode.Open);
-            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, coverStream);
+            bitmap = new(coverStream);
         }
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "Cover-File not found.");
+        using MemoryStream ret = new();
+        bitmap.Save(ret, ImageFormat.Jpeg);
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, ret);
     }
     
     private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalIdChapters(GroupCollection groups, Dictionary<string, string> requestParameters)
