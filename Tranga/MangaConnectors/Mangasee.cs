@@ -62,7 +62,7 @@ public class Mangasee : MangaConnector
     }
 
     private readonly string[] _filterWords = {"a", "the", "of", "as", "to", "no", "for", "on", "with", "be", "and", "in", "wa", "at", "be", "ni"};
-    private string ToFilteredString(string input) => string.Join(' ', input.ToLower().Split(' ').Where(word => _filterWords.Contains(word)));
+    private string ToFilteredString(string input) => string.Join(' ', input.ToLower().Split(' ').Where(word => _filterWords.Contains(word) == false));
     private SearchResult[] FilteredResults(string publicationTitle, SearchResult[] unfilteredSearchResults)
     {
         Dictionary<SearchResult, int> similarity = new();
@@ -81,7 +81,6 @@ public class Mangasee : MangaConnector
         }
 
         List<SearchResult> ret = similarity.OrderBy(s => s.Value).Take(10).Select(s => s.Key).ToList();
-        ret.AddRange(similarity.Where(s => s.Value < 5).Select(s => s.Key));
         return ret.ToArray();
     }
 
