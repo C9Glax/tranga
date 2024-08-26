@@ -131,9 +131,9 @@ public class Manganato : MangaConnector
         string pattern = "MMM dd,yyyy HH:mm";
 
         HtmlNode oldestChapter = document.DocumentNode
-            .SelectNodes("//chapter-time[contains(concat(' ',normalize-space(@class),' '),' chapter-time ')]").MaxBy(
+            .SelectNodes("//span[contains(concat(' ',normalize-space(@class),' '),' chapter-time ')]").MaxBy(
                 node => DateTime.ParseExact(node.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
-                    CultureInfo.InvariantCulture))!;
+                    CultureInfo.InvariantCulture).Millisecond)!;
 
 
         int year = DateTime.ParseExact(oldestChapter.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
