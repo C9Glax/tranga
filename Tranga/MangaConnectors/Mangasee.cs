@@ -61,21 +61,28 @@ public class Mangasee : MangaConnector
         }
     }
 
+    private readonly string[] _filterWords = {"a", "the", "of", "as", "to", "no", "for", "on", "with", "be", "and", "in", "wa", "at", "be", "ni"};
+    private string ToFilteredString(string input) => string.Join(' ', input.ToLower().Split(' ').Where(word => _filterWords.Contains(word)));
     private SearchResult[] FilteredResults(string publicationTitle, SearchResult[] unfilteredSearchResults)
     {
         Dictionary<SearchResult, int> similarity = new();
         foreach (SearchResult sr in unfilteredSearchResults)
         {
             List<int> scores = new();
-            foreach (string se in sr.a)
-                scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(se.ToLower(), publicationTitle.ToLower()));
-            scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(sr.s.ToLower(), publicationTitle.ToLower()));
+            string filteredPublicationString = ToFilteredString(publicationTitle);
+            string filteredSString = ToFilteredString(sr.s);
+            scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(filteredSString, filteredPublicationString));
+            foreach (string srA in sr.a)
+            {
+                string filteredAString = ToFilteredString(srA);
+                scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(filteredAString, filteredPublicationString));
+            }
             similarity.Add(sr, scores.Sum() / scores.Count);
         }
 
-        SearchResult[] similarity90 = similarity.Where(s => s.Value < 10).Select(s => s.Key).ToArray();
-
-        return similarity90;
+        List<SearchResult> ret = similarity.OrderBy(s => s.Value).Take(10).Select(s => s.Key).ToList();
+        ret.AddRange(similarity.Where(s => s.Value < 5).Select(s => s.Key));
+        return ret.ToArray();
     }
 
     public override Manga? GetMangaFromId(string publicationId)
