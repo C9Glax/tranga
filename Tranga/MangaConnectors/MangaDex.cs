@@ -291,6 +291,6 @@ public class MangaDex : MangaConnector
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
         //Download Chapter-Images
-        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
     }
 }

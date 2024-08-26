@@ -36,34 +36,16 @@ public partial class Tranga : GlobalBase
             enabledLoggers.Add(Logger.LoggerType.FileLogger);
         Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, directoryPath);
 
-        TrangaSettings? settings = null;
         bool dlp = fetched.TryGetValue(downloadLocation, out string[]? downloadLocationPath);
         bool wdp = fetched.TryGetValue(workingDirectory, out string[]? workingDirectoryPath);
 
-        if (dlp && wdp)
-        {
-            settings = new TrangaSettings(downloadLocationPath![0], workingDirectoryPath![0]);
-        }else if (dlp)
-        {
-            if (settings is null)
-                settings = new TrangaSettings(downloadLocation: downloadLocationPath![0]);
-            else
-                settings = new TrangaSettings(downloadLocation: downloadLocationPath![0], settings.workingDirectory);
-        }else if (wdp)
-        {
-            if (settings is null)
-                settings = new TrangaSettings(workingDirectory: workingDirectoryPath![0]);
-            else
-                settings = new TrangaSettings(settings.downloadLocation, workingDirectoryPath![0]);
-        }
+        if (wdp)
+            TrangaSettings.LoadFromWorkingDirectory(workingDirectoryPath![0]);
         else
-        {
-            settings = new TrangaSettings();
-        }
-        
-        Directory.CreateDirectory(settings.downloadLocation);//TODO validate path
-        Directory.CreateDirectory(settings.workingDirectory);//TODO validate path
+            TrangaSettings.CreateOrUpdate();
+        if(dlp)
+            TrangaSettings.CreateOrUpdate(downloadDirectory: downloadLocationPath![0]);
 
-        Tranga _ = new (logger, settings);
+        Tranga _ = new (logger);
     }
 }

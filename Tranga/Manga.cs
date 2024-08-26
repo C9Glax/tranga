@@ -137,9 +137,9 @@ public struct Manga
         latestChapterDownloaded = latestChapterDownloaded < chapterNumber ? chapterNumber : latestChapterDownloaded;
     }
 
-    public void SaveSeriesInfoJson(string downloadDirectory, bool overwrite = false)
+    public void SaveSeriesInfoJson(bool overwrite = false)
     {
-        string publicationFolder = CreatePublicationFolder(downloadDirectory);
+        string publicationFolder = CreatePublicationFolder(TrangaSettings.downloadLocation);
         string seriesInfoPath = Path.Join(publicationFolder, "series.json");
         if(overwrite || (!overwrite && !File.Exists(seriesInfoPath)))
             File.WriteAllText(seriesInfoPath,this.GetSeriesInfoJson());

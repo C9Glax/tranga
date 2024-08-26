@@ -186,7 +186,7 @@ public class MangaHere : MangaConnector
         
         if (progressToken is not null)
             progressToken.increments = images;//we blip to normal length, in downloadchapterimages it is increasaed by the amount of urls again
-        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
     }
 
     private string[] ParseImageUrlsFromHtml(HtmlDocument document)

@@ -140,15 +140,15 @@ public class JobBoss : GlobalBase
 
     private void LoadJobsList(HashSet<MangaConnector> connectors)
     {
-        if (!Directory.Exists(settings.jobsFolderPath)) //No jobs to load
+        if (!Directory.Exists(TrangaSettings.jobsFolderPath)) //No jobs to load
         {
-            Directory.CreateDirectory(settings.jobsFolderPath);
+            Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
             return;
         }
         Regex idRex = new (@"(.*)\.json");
 
         //Load json-job-files
-        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
+        foreach (FileInfo file in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
         {
             Log($"Adding {file.Name}");
             Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
@@ -192,7 +192,7 @@ public class JobBoss : GlobalBase
         foreach (string internalId in extraneousIds)
             RemoveMangaFromCache(internalId);
 
-        string[] coverFiles = Directory.GetFiles(settings.coverImageCache);
+        string[] coverFiles = Directory.GetFiles(TrangaSettings.coverImageCache);
         foreach(string fileName in coverFiles.Where(fileName => !GetAllCachedManga().Any(manga => manga.coverFileNameInCache == fileName)))
                 File.Delete(fileName);
         string[] mangaFiles = Directory.GetFiles(settings.mangaCacheFolderPath);
@@ -202,7 +202,7 @@ public class JobBoss : GlobalBase
 
     internal void UpdateJobFile(Job job, string? oldFile = null)
     {
-        string newJobFilePath = Path.Join(settings.jobsFolderPath, $"{job.id}.json");
+        string newJobFilePath = Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
         
         if (!this.jobs.Any(jjob => jjob.id == job.id))
         {
@@ -249,7 +249,7 @@ public class JobBoss : GlobalBase
 
         //Remove files with jobs not in this.jobs-list
         Regex idRex = new (@"(.*)\.json");
-        foreach (FileInfo file in new DirectoryInfo(settings.jobsFolderPath).EnumerateFiles())
+        foreach (FileInfo file in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles())
         {
             if (idRex.IsMatch(file.Name))
             {

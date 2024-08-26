@@ -13,10 +13,10 @@ internal class HttpDownloadClient : DownloadClient
 
     public HttpDownloadClient(GlobalBase clone) : base(clone)
     {
-        Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", settings.userAgent);
+        Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", TrangaSettings.userAgent);
     }
     
-    protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
+    internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         if(clickButton is not null)
             Log("Can not click button on static site.");

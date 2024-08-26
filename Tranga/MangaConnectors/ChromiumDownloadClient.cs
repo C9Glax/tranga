@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using PuppeteerSharp;
-using PuppeteerSharp.Input;
 
 namespace Tranga.MangaConnectors;
 
@@ -11,10 +11,11 @@ internal class ChromiumDownloadClient : DownloadClient
     private IBrowser browser { get; set; }
     private const string ChromiumVersion = "1154303";
     private const int StartTimeoutMs = 30000;
+    private readonly HttpDownloadClient _httpDownloadClient;
     
     private async Task<IBrowser> DownloadBrowser()
     {
-        BrowserFetcher browserFetcher = new BrowserFetcher();
+        BrowserFetcher browserFetcher = new ();
         foreach(string rev in browserFetcher.LocalRevisions().Where(rev => rev != ChromiumVersion))
             browserFetcher.Remove(rev);
         if (!browserFetcher.LocalRevisions().Contains(ChromiumVersion))
@@ -58,9 +59,18 @@ internal class ChromiumDownloadClient : DownloadClient
     public ChromiumDownloadClient(GlobalBase clone) : base(clone)
     {
         this.browser = DownloadBrowser().Result;
+        _httpDownloadClient = new(this);
     }
 
-    protected override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
+    private readonly Regex _imageUrlRex = new(@"https?:\/\/.*\.(?:p?jpe?g|gif|a?png|bmp|avif|webp)(\?.*)?");
+    internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
+    {
+        return _imageUrlRex.IsMatch(url)
+            ? _httpDownloadClient.MakeRequestInternal(url, referrer)
+            : MakeRequestBrowser(url, referrer, clickButton);
+    }
+
+    private RequestResult MakeRequestBrowser(string url, string? referrer = null, string? clickButton = null)
     {
         IPage page = this.browser.NewPageAsync().Result;
         page.DefaultTimeout = 10000;
