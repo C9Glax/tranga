@@ -20,3 +20,6 @@ riderModule.iml
 cover.jpg
 cover.png
 /.vscode
+/Manga
+/settings
+*.DotSettings.user
