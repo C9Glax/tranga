@@ -23,7 +23,7 @@ public abstract class MangaConnector : GlobalBase
     protected MangaConnector(GlobalBase clone, string name) : base(clone)
     {
         this.name = name;
-        Directory.CreateDirectory(settings.coverImageCache);
+        Directory.CreateDirectory(TrangaSettings.coverImageCache);
     }
     
     public string name { get; } //Name of the Connector (e.g. Website)
@@ -65,7 +65,7 @@ public abstract class MangaConnector : GlobalBase
         Log($"Checking for duplicates {manga}");
         List<Chapter> newChaptersList = allChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
                                                                       && chapterNumber > manga.ignoreChaptersBelow
-                                                                      && !nChapter.CheckChapterIsDownloaded(settings.downloadLocation)).ToList();
+                                                                      && !nChapter.CheckChapterIsDownloaded()).ToList();
         Log($"{newChaptersList.Count} new chapters. {manga}");
         try
         {
@@ -167,7 +167,7 @@ public abstract class MangaConnector : GlobalBase
     {
         Log($"Copy cover {manga}");
         //Check if Publication already has a Folder and cover
-        string publicationFolder = manga.CreatePublicationFolder(settings.downloadLocation);
+        string publicationFolder = manga.CreatePublicationFolder(TrangaSettings.downloadLocation);
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
@@ -222,8 +222,8 @@ public abstract class MangaConnector : GlobalBase
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
         Log($"Downloading Images for {saveArchiveFilePath}");
-        if(progressToken is not null)
-            progressToken.increments = imageUrls.Length;
+        if (progressToken is not null)
+            progressToken.increments += imageUrls.Length;
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
@@ -291,7 +291,7 @@ public abstract class MangaConnector : GlobalBase
         //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
         Match match = urlRex.Match(url);
         string filename = $"{match.Groups[1].Value}-{mangaInternalId}.{match.Groups[3].Value}";
-        string saveImagePath = Path.Join(settings.coverImageCache, filename);
+        string saveImagePath = Path.Join(TrangaSettings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))
             return saveImagePath;
@@ -299,7 +299,7 @@ public abstract class MangaConnector : GlobalBase
         RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
-        Directory.CreateDirectory(settings.coverImageCache);
+        Directory.CreateDirectory(TrangaSettings.coverImageCache);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
         Log($"Saving cover to {saveImagePath}");
         return saveImagePath;

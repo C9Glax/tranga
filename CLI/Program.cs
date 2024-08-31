@@ -47,37 +47,18 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
         string? logFolderPath = settings.fileLoggerPath ?? "";
         Logger logger = new(enabledLoggers.ToArray(), Console.Out, Console.OutputEncoding, logFolderPath);
         
-        TrangaSettings? trangaSettings = null;
-
-        if (settings.downloadLocation is not null && settings.workingDirectory is not null)
-        {
-            trangaSettings = new TrangaSettings(settings.downloadLocation, settings.workingDirectory);
-        }else if (settings.downloadLocation is not null)
-        {
-            if (trangaSettings is null)
-                trangaSettings = new TrangaSettings(downloadLocation: settings.downloadLocation);
-            else
-                trangaSettings = new TrangaSettings(downloadLocation: settings.downloadLocation, settings.workingDirectory);
-        }else if (settings.workingDirectory is not null)
-        {
-            if (trangaSettings is null)
-                trangaSettings = new TrangaSettings(downloadLocation: settings.workingDirectory);
-            else
-                trangaSettings = new TrangaSettings(settings.downloadLocation, settings.workingDirectory);
-        }
+        if(settings.workingDirectory is not null)
+            TrangaSettings.LoadFromWorkingDirectory(settings.workingDirectory);
         else
-        {
-            trangaSettings = new TrangaSettings();
-        }
-
-        Directory.CreateDirectory(trangaSettings.downloadLocation);
-        Directory.CreateDirectory(trangaSettings.workingDirectory);
+            TrangaSettings.CreateOrUpdate();
+        if(settings.downloadLocation is not null)
+            TrangaSettings.CreateOrUpdate(downloadDirectory: settings.downloadLocation);
 
         Tranga.Tranga? api = null;
 
         Thread trangaApi = new Thread(() =>
         {
-            api = new(logger, trangaSettings);
+            api = new(logger);
         });
         trangaApi.Start();
         
@@ -120,7 +101,7 @@ internal sealed class TrangaCli : Command<TrangaCli.Settings>
                         parameters.Add(new ValueTuple<string, string>(name, value));
                     }
 
-                    string requestString = $"http://localhost:{trangaSettings.apiPortNumber}/{requestPath}";
+                    string requestString = $"http://localhost:{TrangaSettings.apiPortNumber}/{requestPath}";
                     if (parameters.Any())
                     {
                         requestString += "?";

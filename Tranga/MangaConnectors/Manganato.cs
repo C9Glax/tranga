@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Tranga.Jobs;
@@ -126,10 +127,17 @@ public class Manganato : MangaConnector
             .InnerText.Replace("Description :", "");
         while (description.StartsWith('\n'))
             description = description.Substring(1);
+        
+        string pattern = "MMM dd,yyyy HH:mm";
 
-        string yearString = document.DocumentNode.Descendants("li").Last(li => li.HasClass("a-h")).Descendants("span")
-            .First(s => s.HasClass("chapter-time")).InnerText;
-        int year = Convert.ToInt32(yearString.Split(',')[^1]) + 2000;
+        HtmlNode oldestChapter = document.DocumentNode
+            .SelectNodes("//span[contains(concat(' ',normalize-space(@class),' '),' chapter-time ')]").MaxBy(
+                node => DateTime.ParseExact(node.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
+                    CultureInfo.InvariantCulture).Millisecond)!;
+
+
+        int year = DateTime.ParseExact(oldestChapter.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
+            CultureInfo.InvariantCulture).Year;
         
         Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
             year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
@@ -209,7 +217,7 @@ public class Manganato : MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, "https://chapmanganato.com/", progressToken:progressToken);
+        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, "https://chapmanganato.com/", progressToken:progressToken);
     }
 
     private string[] ParseImageUrlsFromHtml(HtmlDocument document)

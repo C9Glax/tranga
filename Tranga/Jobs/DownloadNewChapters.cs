@@ -33,7 +33,7 @@ public class DownloadNewChapters : Job
 
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
     {
-        manga.SaveSeriesInfoJson(settings.downloadLocation);
+        manga.SaveSeriesInfoJson();
         Chapter[] chapters = mangaConnector.GetNewChapters(manga, this.translatedLanguage);
         this.progressToken.increments = chapters.Length;
         List<Job> jobs = new();

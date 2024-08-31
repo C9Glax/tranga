@@ -11,10 +11,9 @@ public partial class Tranga : GlobalBase
     private Server _server;
     private HashSet<MangaConnector> _connectors;
 
-    public Tranga(Logger? logger, TrangaSettings settings) : base(logger, settings)
+    public Tranga(Logger? logger) : base(logger)
     {
         Log("\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n");
-        Log(settings.ToString());
         keepRunning = true;
         _connectors = new HashSet<MangaConnector>()
         {  
@@ -24,7 +23,9 @@ public partial class Tranga : GlobalBase
             new MangaKatana(this),
             new Mangaworld(this),
             new Bato(this),
-            new MangaLife(this)
+            new MangaLife(this),
+            new ManhuaPlus(this),
+            new MangaHere(this),
         };
         foreach(DirectoryInfo dir in new DirectoryInfo(Path.GetTempPath()).GetDirectories("trangatemp"))//Cleanup old temp folders
             dir.Delete();
@@ -68,7 +69,7 @@ public partial class Tranga : GlobalBase
         {
             while (keepRunning)
             {
-                if(!settings.aprilFoolsMode || !IsAprilFirst())
+                if(!TrangaSettings.aprilFoolsMode || !IsAprilFirst())
                     jobBoss.CheckJobs();
                 else
                     Log("April Fools Mode in Effect");

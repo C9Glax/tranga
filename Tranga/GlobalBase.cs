@@ -11,7 +11,6 @@ public abstract class GlobalBase
 {
     [JsonIgnore]
     public Logger? logger { get; init; }
-    protected TrangaSettings settings { get; init; }
     protected HashSet<NotificationConnector> notificationConnectors { get; init; }
     protected HashSet<LibraryConnector> libraryConnectors { get; init; }
     private Dictionary<string, Manga> cachedPublications { get; init; }
@@ -21,18 +20,16 @@ public abstract class GlobalBase
     protected GlobalBase(GlobalBase clone)
     {
         this.logger = clone.logger;
-        this.settings = clone.settings;
         this.notificationConnectors = clone.notificationConnectors;
         this.libraryConnectors = clone.libraryConnectors;
         this.cachedPublications = clone.cachedPublications;
     }
 
-    protected GlobalBase(Logger? logger, TrangaSettings settings)
+    protected GlobalBase(Logger? logger)
     {
         this.logger = logger;
-        this.settings = settings;
-        this.notificationConnectors = settings.LoadNotificationConnectors(this);
-        this.libraryConnectors = settings.LoadLibraryConnectors(this);
+        this.notificationConnectors = TrangaSettings.LoadNotificationConnectors(this);
+        this.libraryConnectors = TrangaSettings.LoadLibraryConnectors(this);
         this.cachedPublications = new();
     }
 
@@ -81,20 +78,20 @@ public abstract class GlobalBase
         notificationConnectors.RemoveWhere(nc => nc.notificationConnectorType == notificationConnector.notificationConnectorType);
         notificationConnectors.Add(notificationConnector);
         
-        while(IsFileInUse(settings.notificationConnectorsFilePath))
+        while(IsFileInUse(TrangaSettings.notificationConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting notificationConnectors");
-        File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
+        File.WriteAllText(TrangaSettings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
     protected void DeleteNotificationConnector(NotificationConnector.NotificationConnectorType notificationConnectorType)
     {
         Log($"Removing {notificationConnectorType}");
         notificationConnectors.RemoveWhere(nc => nc.notificationConnectorType == notificationConnectorType);
-        while(IsFileInUse(settings.notificationConnectorsFilePath))
+        while(IsFileInUse(TrangaSettings.notificationConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting notificationConnectors");
-        File.WriteAllText(settings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
+        File.WriteAllText(TrangaSettings.notificationConnectorsFilePath, JsonConvert.SerializeObject(notificationConnectors));
     }
 
     protected void UpdateLibraries()
@@ -109,20 +106,20 @@ public abstract class GlobalBase
         libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryConnector.libraryType);
         libraryConnectors.Add(libraryConnector);
         
-        while(IsFileInUse(settings.libraryConnectorsFilePath))
+        while(IsFileInUse(TrangaSettings.libraryConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting libraryConnectors");
-        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
+        File.WriteAllText(TrangaSettings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
     protected void DeleteLibraryConnector(LibraryConnector.LibraryType libraryType)
     {
         Log($"Removing {libraryType}");
         libraryConnectors.RemoveWhere(lc => lc.libraryType == libraryType);
-        while(IsFileInUse(settings.libraryConnectorsFilePath))
+        while(IsFileInUse(TrangaSettings.libraryConnectorsFilePath))
             Thread.Sleep(100);
         Log("Exporting libraryConnectors");
-        File.WriteAllText(settings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
+        File.WriteAllText(TrangaSettings.libraryConnectorsFilePath, JsonConvert.SerializeObject(libraryConnectors, Formatting.Indented));
     }
 
     protected bool IsFileInUse(string filePath) => IsFileInUse(filePath, this.logger);

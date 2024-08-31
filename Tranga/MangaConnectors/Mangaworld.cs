@@ -169,7 +169,8 @@ public class Mangaworld: MangaConnector
         {
             foreach (HtmlNode chNode in chaptersWrapper.SelectNodes("div").Where(node => node.HasClass("chapter")))
             {
-                string number = chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText.Split(" ")[^1];
+                string number = Regex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText,
+                    @"[Cc]apitolo ([0-9]+).*").Groups[1].Value;
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                 ret.Add(new Chapter(manga, null, null, number, url));
             }
@@ -209,7 +210,7 @@ public class Mangaworld: MangaConnector
         string comicInfoPath = Path.GetTempFileName();
         File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(settings.downloadLocation), RequestType.MangaImage, comicInfoPath, "https://www.mangaworld.bz/", progressToken:progressToken);
+        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, "https://www.mangaworld.bz/", progressToken:progressToken);
     }
 
     private string[] ParseImageUrlsFromHtml(HtmlDocument document)

@@ -34,7 +34,7 @@ public class UpdateMetadata : Job
             }
             
             this.manga = manga.WithMetadata(updatedManga);
-            this.manga.SaveSeriesInfoJson(settings.downloadLocation, true);
+            this.manga.SaveSeriesInfoJson(true);
             this.mangaConnector.CopyCoverFromCacheToDownloadLocation(manga);
             foreach (Job job in jobBoss.GetJobsLike(publication: this.manga))
             {
