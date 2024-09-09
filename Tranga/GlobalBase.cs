@@ -89,11 +89,17 @@ public abstract class GlobalBase
         
     }
 
+    private static bool ExportRunning = false;
     private void ExportManga()
     {
+        while (ExportRunning)
+            Thread.Sleep(1);
+        ExportRunning = true;
         string folder = TrangaSettings.mangaCacheFolderPath;
         Directory.CreateDirectory(folder);
-        foreach (Manga manga in cachedPublications.Values)
+        Manga[] copy = new Manga[cachedPublications.Values.Count];
+        cachedPublications.Values.CopyTo(copy, 0);
+        foreach (Manga manga in copy)
         {
             string content = JsonConvert.SerializeObject(manga, Formatting.Indented);
             string filePath = Path.Combine(folder, $"{manga.internalId}.json");
@@ -105,6 +111,8 @@ public abstract class GlobalBase
             if(!cachedPublications.Keys.Any(key => fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf('.')).Equals(key)))
                 fileInfo.Delete();
         }
+
+        ExportRunning = false;
     }
 
     protected void Log(string message)
