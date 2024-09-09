@@ -1,0 +1,21 @@
+﻿version: '3'
+services:
+  tranga-api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: tranga-api
+    volumes:
+      - ./Manga:/Manga
+      - ./settings:/usr/share/tranga-api
+    ports:
+      - "6531:6531"
+    restart: unless-stopped
+  tranga-website:
+    image: glax/tranga-website:latest
+    container_name: tranga-website
+    ports:
+      - "9555:80"
+    depends_on: 
+      - tranga-api
+    restart: unless-stopped
