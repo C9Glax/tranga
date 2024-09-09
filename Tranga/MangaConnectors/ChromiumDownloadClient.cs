@@ -13,40 +13,12 @@ internal class ChromiumDownloadClient : DownloadClient
     private const int StartTimeoutMs = 30000;
     private readonly HttpDownloadClient _httpDownloadClient;
     
-    private async Task<IBrowser> DownloadBrowser()
+    private async Task<IBrowser> StartBrowser()
     {
-        BrowserFetcher browserFetcher = new ();
-        foreach(string rev in browserFetcher.LocalRevisions().Where(rev => rev != ChromiumVersion))
-            browserFetcher.Remove(rev);
-        if (!browserFetcher.LocalRevisions().Contains(ChromiumVersion))
-        {
-            Log("Downloading headless browser");
-            DateTime last = DateTime.Now.Subtract(TimeSpan.FromSeconds(5));
-            browserFetcher.DownloadProgressChanged += (_, args) =>
-            {
-                double currentBytes = Convert.ToDouble(args.BytesReceived) / Convert.ToDouble(args.TotalBytesToReceive);
-                if (args.TotalBytesToReceive == args.BytesReceived)
-                    Log("Browser downloaded.");
-                else if (DateTime.Now > last.AddSeconds(1))
-                {
-                    Log($"Browser download progress: {currentBytes:P2}");
-                    last = DateTime.Now;
-                }
-
-            };
-            if (!browserFetcher.CanDownloadAsync(ChromiumVersion).Result)
-            {
-                Log($"Can't download browser version {ChromiumVersion}");
-                throw new Exception();
-            }
-            await browserFetcher.DownloadAsync(ChromiumVersion);
-        }
-        
         Log($"Starting Browser. ({StartTimeoutMs}ms timeout)");
         return await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
-            ExecutablePath = browserFetcher.GetExecutablePath(ChromiumVersion),
             Args = new [] {
                 "--disable-gpu",
                 "--disable-dev-shm-usage",
@@ -58,7 +30,7 @@ internal class ChromiumDownloadClient : DownloadClient
 
     public ChromiumDownloadClient(GlobalBase clone) : base(clone)
     {
-        this.browser = DownloadBrowser().Result;
+        this.browser = StartBrowser().Result;
         _httpDownloadClient = new(this);
     }
 

@@ -22,3 +22,6 @@ cover.png
 /.vscode
 /.vs/
 Tranga/Properties/launchSettings.json
+/Manga
+/settings
+*.DotSettings.user

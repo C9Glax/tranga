@@ -1,8 +1,0 @@
-﻿# syntax=docker/dockerfile:1
-#FROM mcr.microsoft.com/dotnet/aspnet:7.0 as runtime
-FROM mcr.microsoft.com/dotnet/runtime:7.0 as runtime
-WORKDIR /publish
-RUN apt-get update
-RUN apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0 libgtk-3-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libxshmfence1 libnss3
-RUN apt-get autopurge -y
-RUN apt-get autoclean -y
