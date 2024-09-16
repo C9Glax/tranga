@@ -243,7 +243,7 @@ public class MangaDex : MangaConnector
                     continue;
                 }
                 
-                if(chapterNum is not "null")
+                if(chapterNum is not "null" && !chapters.Any(chp => chp.volumeNumber.Equals(volume) && chp.chapterNumber.Equals(chapterNum)))
                     chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId));
             }
         }
