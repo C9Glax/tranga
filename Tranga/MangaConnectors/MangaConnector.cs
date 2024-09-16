@@ -15,11 +15,6 @@ public abstract class MangaConnector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
 
-    public void StopDownloadClient()
-    {
-        downloadClient.Close();
-    }
-
     protected MangaConnector(GlobalBase clone, string name) : base(clone)
     {
         this.name = name;
