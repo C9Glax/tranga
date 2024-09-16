@@ -14,7 +14,7 @@ namespace Tranga.MangaConnectors;
 public abstract class MangaConnector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
-    protected string[] SupportedLanguages;
+    public string[] SupportedLanguages;
 
     protected MangaConnector(GlobalBase clone, string name, string[] supportedLanguages) : base(clone)
     {
