@@ -208,7 +208,6 @@ public partial class Server : GlobalBase, IDisposable
                 response.ContentType = "image/jpeg";
                 response.AddHeader("Cache-Control", "max-age=600");
                 stream.CopyTo(response.OutputStream);
-                response.OutputStream.Close();
                 stream.Close();
             }
             else
