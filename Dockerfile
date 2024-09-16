@@ -20,7 +20,7 @@ COPY Tranga/Tranga.csproj /src/Tranga/Tranga.csproj
 RUN dotnet restore /src/Tranga.sln
 
 COPY . /src/
-RUN dotnet publish -c Release -o /publish -maxcpucount:1 
+RUN dotnet publish -c Release --property:OutputPath=/publish -maxcpucount:1 
 
 FROM base AS runtime
 EXPOSE 6531
