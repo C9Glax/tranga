@@ -15,11 +15,6 @@ public abstract class MangaConnector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
 
-    public void StopDownloadClient()
-    {
-        downloadClient.Close();
-    }
-
     protected MangaConnector(GlobalBase clone, string name) : base(clone)
     {
         this.name = name;
@@ -234,7 +229,10 @@ public abstract class MangaConnector : GlobalBase
                 Directory.CreateDirectory(directoryPath);
 
         if (File.Exists(saveArchiveFilePath)) //Don't download twice.
+        {
+            progressToken?.Complete();
             return HttpStatusCode.Created;
+        }
         
         //Create a temporary folder to store images
         string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
