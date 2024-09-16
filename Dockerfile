@@ -1,5 +1,5 @@
 ﻿# syntax=docker/dockerfile:1
-ARG DOTNET=7.0
+ARG DOTNET=8.0
 
 FROM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
 WORKDIR /publish
