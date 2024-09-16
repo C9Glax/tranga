@@ -49,9 +49,9 @@ public partial class Tranga : GlobalBase
         return connector is not null;
     }
 
-    public IEnumerable<string> GetConnectors()
+    public Dictionary<string, string[]> GetConnectors()
     {
-        return _connectors.Select(c => c.name);
+        return _connectors.ToDictionary(c => c.name, c => c.SupportedLanguages);
     }
 
     public Manga? GetPublicationById(string internalId) => GetCachedManga(internalId);

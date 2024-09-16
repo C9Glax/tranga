@@ -34,7 +34,7 @@ Returns available Manga Connectors (Scanlation sites)
 <details>
   <summary>Returns</summary>
 
-  List of strings with Names.
+  Dictionary with Connector-Names and supported languages.
 </details>
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Connector/<ConnectorName>/GetManga`
