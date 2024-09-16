@@ -41,5 +41,4 @@ internal abstract class DownloadClient : GlobalBase
     }
 
     internal abstract RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null);
-    public abstract void Close();
 }

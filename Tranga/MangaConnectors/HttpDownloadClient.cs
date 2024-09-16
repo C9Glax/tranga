@@ -72,9 +72,4 @@ internal class HttpDownloadClient : DownloadClient
 
         return new RequestResult(response.StatusCode, document, stream);
     }
-
-    public override void Close()
-    {
-        Log("Closing.");
-    }
 }

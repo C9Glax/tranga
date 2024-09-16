@@ -8,13 +8,12 @@ namespace Tranga.MangaConnectors;
 
 internal class ChromiumDownloadClient : DownloadClient
 {
-    private IBrowser browser { get; set; }
-    private const int StartTimeoutMs = 30000;
+    private static readonly IBrowser Browser = StartBrowser().Result;
+    private const int StartTimeoutMs = 10000;
     private readonly HttpDownloadClient _httpDownloadClient;
     
-    private async Task<IBrowser> StartBrowser()
+    private static async Task<IBrowser> StartBrowser()
     {
-        Log($"Starting Browser. ({StartTimeoutMs}ms timeout)");
         return await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
@@ -29,7 +28,6 @@ internal class ChromiumDownloadClient : DownloadClient
 
     public ChromiumDownloadClient(GlobalBase clone) : base(clone)
     {
-        this.browser = StartBrowser().Result;
         _httpDownloadClient = new(this);
     }
 
@@ -43,7 +41,7 @@ internal class ChromiumDownloadClient : DownloadClient
 
     private RequestResult MakeRequestBrowser(string url, string? referrer = null, string? clickButton = null)
     {
-        IPage page = this.browser.NewPageAsync().Result;
+        IPage page = Browser.NewPageAsync().Result;
         page.DefaultTimeout = 10000;
         IResponse response;
         try
@@ -54,6 +52,7 @@ internal class ChromiumDownloadClient : DownloadClient
         catch (Exception e)
         {
             Log($"Could not load Page:\n{e.Message}");
+            page.CloseAsync();
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         }
 
@@ -83,10 +82,5 @@ internal class ChromiumDownloadClient : DownloadClient
         
         page.CloseAsync();
         return new RequestResult(response.Status, document, stream, false, "");
-    }
-
-    public override void Close()
-    {
-        this.browser.CloseAsync();
     }
 }

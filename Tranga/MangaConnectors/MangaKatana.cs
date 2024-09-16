@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class MangaKatana : MangaConnector
 {
-	public MangaKatana(GlobalBase clone) : base(clone, "MangaKatana")
+	public MangaKatana(GlobalBase clone) : base(clone, "MangaKatana", ["en"])
 	{
 		this.downloadClient = new HttpDownloadClient(clone);
 	}

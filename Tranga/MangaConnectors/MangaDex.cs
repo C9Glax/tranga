@@ -7,14 +7,17 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Tranga.MangaConnectors;
 public class MangaDex : MangaConnector
 {
-    public MangaDex(GlobalBase clone) : base(clone, "MangaDex")
+    //https://api.mangadex.org/docs/3-enumerations/#language-codes--localization
+    //https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
+    //https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
+    public MangaDex(GlobalBase clone) : base(clone, "MangaDex", ["en","pt","pt-br","it","de","ru","aa","ab","ae","af","ak","am","an","ar-ae","ar-bh","ar-dz","ar-eg","ar-iq","ar-jo","ar-kw","ar-lb","ar-ly","ar-ma","ar-om","ar-qa","ar-sa","ar-sy","ar-tn","ar-ye","ar","as","av","ay","az","ba","be","bg","bh","bi","bm","bn","bo","br","bs","ca","ce","ch","co","cr","cs","cu","cv","cy","da","de-at","de-ch","de-de","de-li","de-lu","div","dv","dz","ee","el","en-au","en-bz","en-ca","en-cb","en-gb","en-ie","en-jm","en-nz","en-ph","en-tt","en-us","en-za","en-zw","eo","es-ar","es-bo","es-cl","es-co","es-cr","es-do","es-ec","es-es","es-gt","es-hn","es-la","es-mx","es-ni","es-pa","es-pe","es-pr","es-py","es-sv","es-us","es-uy","es-ve","es","et","eu","fa","ff","fi","fj","fo","fr-be","fr-ca","fr-ch","fr-fr","fr-lu","fr-mc","fr","fy","ga","gd","gl","gn","gu","gv","ha","he","hi","ho","hr-ba","hr-hr","hr","ht","hu","hy","hz","ia","id","ie","ig","ii","ik","in","io","is","it-ch","it-it","iu","iw","ja","ja-ro","ji","jv","jw","ka","kg","ki","kj","kk","kl","km","kn","ko","ko-ro","kr","ks","ku","kv","kw","ky","kz","la","lb","lg","li","ln","lo","ls","lt","lu","lv","mg","mh","mi","mk","ml","mn","mo","mr","ms-bn","ms-my","ms","mt","my","na","nb","nd","ne","ng","nl-be","nl-nl","nl","nn","no","nr","ns","nv","ny","oc","oj","om","or","os","pa","pi","pl","ps","pt-pt","qu-bo","qu-ec","qu-pe","qu","rm","rn","ro","rw","sa","sb","sc","sd","se-fi","se-no","se-se","se","sg","sh","si","sk","sl","sm","sn","so","sq","sr-ba","sr-sp","sr","ss","st","su","sv-fi","sv-se","sv","sw","sx","syr","ta","te","tg","th","ti","tk","tl","tn","to","tr","ts","tt","tw","ty","ug","uk","ur","us","uz","ve","vi","vo","wa","wo","xh","yi","yo","za","zh-cn","zh-hk","zh-mo","zh-ro","zh-sg","zh-tw","zh","zu"])
     {
         this.downloadClient = new HttpDownloadClient(clone);
     }
 
     public override Manga[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
+        Log($"Searching Publications. Term={publicationTitle}");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -54,7 +57,7 @@ public class MangaDex : MangaConnector
             if(MangaFromJsonObject(mangaNode.AsObject()) is { } manga)
                 retManga.Add(manga); //Add Publication (Manga) to result
         }
-        Log($"Retrieved {retManga.Count} publications. Term=\"{publicationTitle}\"");
+        Log($"Retrieved {retManga.Count} publications. Term={publicationTitle}");
         return retManga.ToArray();
     }
 
@@ -244,7 +247,7 @@ public class MangaDex : MangaConnector
                     continue;
                 }
                 
-                if(chapterNum is not "null")
+                if(chapterNum is not "null" && !chapters.Any(chp => chp.volumeNumber.Equals(volume) && chp.chapterNumber.Equals(chapterNum)))
                     chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId));
             }
         }
