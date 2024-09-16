@@ -58,29 +58,24 @@ public readonly struct Chapter : IComparable
 
     public int CompareTo(object? obj)
     {
-        if (obj is Chapter otherChapter)
+        if(obj is not Chapter otherChapter)
+            throw new ArgumentException($"{obj} can not be compared to {this}");
+        
+        if (float.TryParse(volumeNumber, GlobalBase.numberFormatDecimalPoint, out float volumeNumberFloat) &&
+            float.TryParse(chapterNumber, GlobalBase.numberFormatDecimalPoint, out float chapterNumberFloat) &&
+            float.TryParse(otherChapter.volumeNumber, GlobalBase.numberFormatDecimalPoint,
+                out float otherVolumeNumberFloat) &&
+            float.TryParse(otherChapter.chapterNumber, GlobalBase.numberFormatDecimalPoint,
+                out float otherChapterNumberFloat))
         {
-            if (float.TryParse(volumeNumber, GlobalBase.numberFormatDecimalPoint, out float volumeNumberFloat) &&
-                float.TryParse(chapterNumber, GlobalBase.numberFormatDecimalPoint, out float chapterNumberFloat) &&
-                float.TryParse(otherChapter.volumeNumber, GlobalBase.numberFormatDecimalPoint,
-                    out float otherVolumeNumberFloat) &&
-                float.TryParse(otherChapter.chapterNumber, GlobalBase.numberFormatDecimalPoint,
-                    out float otherChapterNumberFloat))
+            return volumeNumberFloat.CompareTo(otherVolumeNumberFloat) switch
             {
-
-                switch (volumeNumberFloat.CompareTo(otherVolumeNumberFloat))
-                {
-                    case < 0:
-                        return -1;
-                    case > 0:
-                        return 1;
-                    default:
-                        return chapterNumberFloat.CompareTo(otherChapterNumberFloat);
-                }
-            }
-            else throw new FormatException($"Value could not be parsed");
+                <0 => -1,
+                >0 => 1,
+                _ => chapterNumberFloat.CompareTo(otherChapterNumberFloat)
+            };
         }
-        throw new ArgumentException($"{obj} can not be compared to {this}");
+        else throw new FormatException($"Value could not be parsed");
     }
 
     /// <summary>

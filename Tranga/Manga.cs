@@ -128,10 +128,19 @@ public struct Manga
     public void MovePublicationFolder(string downloadDirectory, string newFolderName)
     {
         string oldPath = Path.Join(downloadDirectory, this.folderName);
-        this.folderName = newFolderName;
+        this.folderName = newFolderName;//Create new Path with the new folderName
         string newPath = CreatePublicationFolder(downloadDirectory);
-        if(Directory.Exists(oldPath))
-            Directory.Move(oldPath, newPath);
+        if (Directory.Exists(oldPath))
+        {
+            if (Directory.Exists(newPath)) //Move/Overwrite old Files, Delete old Directory
+            {
+                IEnumerable<string> newPathFileNames = new DirectoryInfo(newPath).GetFiles().Select(fi => fi.Name);
+                foreach(FileInfo fileInfo in new DirectoryInfo(oldPath).GetFiles().Where(fi => newPathFileNames.Contains(fi.Name) == false))
+                    File.Move(fileInfo.FullName, Path.Join(newPath, fileInfo.Name), true);
+                Directory.Delete(oldPath);
+            }else
+                Directory.Move(oldPath, newPath);
+        }
     }
 
     public void UpdateLatestDownloadedChapter(Chapter chapter)//TODO check files if chapters are all downloaded

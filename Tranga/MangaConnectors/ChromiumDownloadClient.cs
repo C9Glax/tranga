@@ -9,7 +9,6 @@ namespace Tranga.MangaConnectors;
 internal class ChromiumDownloadClient : DownloadClient
 {
     private IBrowser browser { get; set; }
-    private const string ChromiumVersion = "1154303";
     private const int StartTimeoutMs = 30000;
     private readonly HttpDownloadClient _httpDownloadClient;
     
