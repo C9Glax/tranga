@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class ManhuaPlus : MangaConnector
 {
-    public ManhuaPlus(GlobalBase clone) : base(clone, "ManhuaPlus")
+    public ManhuaPlus(GlobalBase clone) : base(clone, "ManhuaPlus", ["en"])
     {
         this.downloadClient = new ChromiumDownloadClient(clone);
     }
