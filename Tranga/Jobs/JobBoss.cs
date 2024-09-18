@@ -206,6 +206,7 @@ public class JobBoss : GlobalBase
         string newJobFilePath = Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
         string oldFilePath = Path.Join(TrangaSettings.jobsFolderPath, oldFile);
 
+        //Delete old file
         if (File.Exists(oldFilePath))
         {
             Log($"Deleting Job-file {oldFilePath}");
@@ -220,12 +221,16 @@ public class JobBoss : GlobalBase
                 Log(e.ToString());
             }
         }
-        
-        Log($"Exporting Job {newJobFilePath}");
-        string jobStr = JsonConvert.SerializeObject(job, Formatting.Indented);
-        while(IsFileInUse(newJobFilePath))
-            Thread.Sleep(10);
-        File.WriteAllText(newJobFilePath, jobStr);
+
+        //Export job (in new file) if it is still in our jobs list
+        if (GetJobById(job.id) is not null)
+        {
+            Log($"Exporting Job {newJobFilePath}");
+            string jobStr = JsonConvert.SerializeObject(job, Formatting.Indented);
+            while(IsFileInUse(newJobFilePath))
+                Thread.Sleep(10);
+            File.WriteAllText(newJobFilePath, jobStr);
+        }
     }
 
     private void UpdateAllJobFiles()
