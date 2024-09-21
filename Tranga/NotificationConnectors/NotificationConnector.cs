@@ -45,7 +45,7 @@ public abstract class NotificationConnector : GlobalBase
     public void SendNotification(string title, string notificationText, bool buffer = false)
     {
         _notificationRequested ??= DateTime.Now;
-        if (!TrangaSettings.bufferLibraryUpdates || !buffer)
+        if (!TrangaSettings.bufferNotifications || !buffer)
         {
             SendNotificationInternal(title, notificationText);
             return;
