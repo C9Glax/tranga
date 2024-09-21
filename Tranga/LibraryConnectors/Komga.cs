@@ -25,7 +25,7 @@ public class Komga : LibraryConnector
         return $"Komga {baseUrl}";
     }
 
-    public override void UpdateLibrary()
+    protected override void UpdateLibraryInternal()
     {
         Log("Updating libraries.");
         foreach (KomgaLibrary lib in GetLibraries())
