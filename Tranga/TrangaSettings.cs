@@ -16,6 +16,7 @@ public static class TrangaSettings
     public static int apiPortNumber { get; private set; } = 6531;
     public static string userAgent { get; private set; } = DefaultUserAgent;
     public static bool bufferLibraryUpdates { get; private set; } = false;
+    public static bool bufferNotifications { get; private set; } = false;
     [JsonIgnore] public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public static string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public static string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
@@ -47,7 +48,7 @@ public static class TrangaSettings
         ExportSettings();
     }
 
-    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null, int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null, bool? pBufferLibraryUpdates = null)
+    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null, int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null, bool? pBufferLibraryUpdates = null, bool? pBufferNotifications = null)
     {
         if(pWorkingDirectory is null && File.Exists(settingsFilePath))
             LoadFromWorkingDirectory(workingDirectory);
@@ -57,6 +58,7 @@ public static class TrangaSettings
         userAgent = pUserAgent ?? userAgent;
         aprilFoolsMode = pAprilFoolsMode ?? aprilFoolsMode;
         bufferLibraryUpdates = pBufferLibraryUpdates ?? bufferLibraryUpdates;
+        bufferNotifications = pBufferNotifications ?? bufferNotifications;
         Directory.CreateDirectory(downloadLocation);
         Directory.CreateDirectory(workingDirectory);
         ExportSettings();
@@ -164,6 +166,7 @@ public static class TrangaSettings
         jobj.Add("version", JToken.FromObject(version));
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
         jobj.Add("bufferLibraryUpdates", JToken.FromObject(bufferLibraryUpdates));
+        jobj.Add("bufferNotifications", JToken.FromObject(bufferNotifications));
         return jobj;
     }
 
@@ -186,5 +189,7 @@ public static class TrangaSettings
             requestLimits = rl.ToObject<Dictionary<RequestType, int>>()!;
         if (jobj.TryGetValue("bufferLibraryUpdates", out JToken? blu))
             bufferLibraryUpdates = blu.Value<bool>()!;
+        if (jobj.TryGetValue("bufferNotifications", out JToken? bn))
+            bufferNotifications = bn.Value<bool>()!;
     }
 }

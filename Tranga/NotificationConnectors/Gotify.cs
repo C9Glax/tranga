@@ -24,7 +24,7 @@ public class Gotify : NotificationConnector
         return $"Gotify {endpoint}";
     }
 
-    public override void SendNotification(string title, string notificationText)
+    protected override void SendNotificationInternal(string title, string notificationText)
     {
         Log($"Sending notification: {title} - {notificationText}");
         MessageData message = new(title, notificationText);
