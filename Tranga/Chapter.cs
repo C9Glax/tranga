@@ -84,24 +84,25 @@ public readonly struct Chapter : IComparable
     /// <returns>true if chapter is present</returns>
     internal bool CheckChapterIsDownloaded()
     {
-        if (!Directory.Exists(Path.Join(TrangaSettings.downloadLocation, parentManga.folderName)))
+        string mangaDirectory = Path.Join(TrangaSettings.downloadLocation, parentManga.folderName);
+        if (!Directory.Exists(mangaDirectory))
             return false;
-        FileInfo[] archives = new DirectoryInfo(Path.Join(TrangaSettings.downloadLocation, parentManga.folderName)).GetFiles().Where(file => file.Name.Split('.')[^1] == "cbz").ToArray();
+        FileInfo[] archives = new DirectoryInfo(mangaDirectory).GetFiles("*.cbz");
         Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
 
         Chapter t = this;
-        string thisPath = GetArchiveFilePath();
+        string correctPath = GetArchiveFilePath();
         FileInfo? archive = archives.FirstOrDefault(archive =>
         {
             Match m = volChRex.Match(archive.Name);
-            string archiveVolNum = m.Groups[1].Success ? m.Groups[1].Value : "0";
-            string archiveChNum = m.Groups[2].Value;
-            return archiveVolNum == t.volumeNumber && archiveChNum == t.chapterNumber ||
-                   archiveVolNum == "0" && archiveChNum == t.chapterNumber;
+            if (m.Groups[1].Success)
+                return m.Groups[1].Value == t.volumeNumber && m.Groups[2].Value == t.chapterNumber;
+            else
+                return m.Groups[2].Value == t.chapterNumber;
         });
-        if(archive is not null && thisPath != archive.FullName)
-            archive.MoveTo(thisPath, true);
-        return archive is not null;
+        if(archive is not null && archive.FullName != correctPath)
+            archive.MoveTo(correctPath, true);
+        return (archive is not null);
     }
     /// <summary>
     /// Creates full file path of chapter-archive
