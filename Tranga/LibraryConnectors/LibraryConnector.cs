@@ -17,6 +17,9 @@ public abstract class LibraryConnector : GlobalBase
     public string baseUrl { get; }
     // ReSharper disable once MemberCanBeProtected.Global
     public string auth { get; } //Base64 encoded, if you use your password everywhere, you have problems
+    private DateTime? _updateLibraryRequested = null;
+    private readonly Thread? _libraryBufferThread = null;
+    private const int NoChangeTimeout = 2, BiggestInterval = 20;
     
     protected LibraryConnector(GlobalBase clone, string baseUrl, string auth, LibraryType libraryType) : base(clone)
     {
@@ -28,8 +31,47 @@ public abstract class LibraryConnector : GlobalBase
         this.baseUrl = baseUrlRex.Match(baseUrl).Value;
         this.auth = auth;
         this.libraryType = libraryType;
+
+        if (TrangaSettings.bufferLibraryUpdates)
+        {
+            _libraryBufferThread = new(CheckLibraryBuffer);
+            _libraryBufferThread.Start();
+        }
     }
-    public abstract void UpdateLibrary();
+
+    private void CheckLibraryBuffer()
+    {
+        while (true)
+        {
+            if (_updateLibraryRequested is not null && DateTime.Now.Subtract((DateTime)_updateLibraryRequested) > TimeSpan.FromMinutes(NoChangeTimeout)) //If no updates have been requested for NoChangeTimeout minutes, update library
+            {
+                UpdateLibraryInternal();
+                _updateLibraryRequested = null;
+            }
+            Thread.Sleep(100);
+        }
+    }
+
+    public void UpdateLibrary()
+    {
+        _updateLibraryRequested ??= DateTime.Now;
+        if (!TrangaSettings.bufferLibraryUpdates)
+        {
+            UpdateLibraryInternal();
+            return;
+        }else if (_updateLibraryRequested is not null &&
+                  DateTime.Now.Subtract((DateTime)_updateLibraryRequested) > TimeSpan.FromMinutes(BiggestInterval)) //If the last update has been more than BiggestInterval minutes ago, update library
+        {
+            UpdateLibraryInternal();
+            _updateLibraryRequested = null;
+        }
+        else if(_updateLibraryRequested is not null)
+        {
+            Log($"Buffering Library Updates (Updates in latest {((DateTime)_updateLibraryRequested).Add(TimeSpan.FromMinutes(BiggestInterval)).Subtract(DateTime.Now)} or {((DateTime)_updateLibraryRequested).Add(TimeSpan.FromMinutes(NoChangeTimeout)).Subtract(DateTime.Now)})");
+        }
+    }
+    
+    protected abstract void UpdateLibraryInternal();
     internal abstract bool Test();
 
     protected static class NetClient

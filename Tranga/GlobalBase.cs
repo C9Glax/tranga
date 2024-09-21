@@ -66,10 +66,10 @@ public abstract class GlobalBase
         Log(string.Format(fStr, replace));
     }
 
-    protected void SendNotifications(string title, string text)
+    protected void SendNotifications(string title, string text, bool buffer = false)
     {
         foreach (NotificationConnector nc in notificationConnectors)
-            nc.SendNotification(title, text);
+            nc.SendNotification(title, text, buffer);
     }
 
     protected void AddNotificationConnector(NotificationConnector notificationConnector)
