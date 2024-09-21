@@ -28,11 +28,11 @@ public abstract class NotificationConnector : GlobalBase
             if (_notificationRequested is not null && DateTime.Now.Subtract((DateTime)_notificationRequested) > TimeSpan.FromMinutes(NoChangeTimeout)) //If no updates have been requested for NoChangeTimeout minutes, update library
             {
                 string[] uniqueTitles = _notifications.DistinctBy(n => n.Key).Select(n => n.Key).ToArray();
-                Log($"Notification Buffer sending! {string.Join(", ", uniqueTitles)}");
+                Log($"Notification Buffer sending! Notifications: {string.Join(", ", uniqueTitles)}");
                 foreach (string ut in uniqueTitles)
                 {
                     string[] texts = _notifications.Where(n => n.Key == ut).Select(n => n.Value).ToArray();
-                    SendNotificationInternal(ut, string.Join('\n', texts));
+                    SendNotificationInternal($"{ut} ({texts.Length})", string.Join('\n', texts));
                 }
                 _notificationRequested = null;
             }
