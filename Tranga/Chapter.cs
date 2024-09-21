@@ -95,9 +95,10 @@ public readonly struct Chapter : IComparable
         FileInfo? archive = archives.FirstOrDefault(archive =>
         {
             Match m = volChRex.Match(archive.Name);
+            /*Uncommenting this section will only allow *Version without Volume number* -> *Version with Volume number* but not the other way
             if (m.Groups[1].Success)
                 return m.Groups[1].Value == t.volumeNumber && m.Groups[2].Value == t.chapterNumber;
-            else
+            else*/
                 return m.Groups[2].Value == t.chapterNumber;
         });
         if(archive is not null && archive.FullName != correctPath)
