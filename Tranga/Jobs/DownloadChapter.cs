@@ -37,7 +37,7 @@ public class DownloadChapter : Job
             if (success == HttpStatusCode.OK)
             {
                 UpdateLibraries();
-                SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}");
+                SendNotifications("Chapter downloaded", $"{chapter.parentManga.sortName} - {chapter.chapterNumber}", true);
             }
         });
         downloadTask.Start();

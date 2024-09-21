@@ -15,6 +15,8 @@ public static class TrangaSettings
     public static string workingDirectory { get; private set; } = Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
     public static int apiPortNumber { get; private set; } = 6531;
     public static string userAgent { get; private set; } = DefaultUserAgent;
+    public static bool bufferLibraryUpdates { get; private set; } = false;
+    public static bool bufferNotifications { get; private set; } = false;
     [JsonIgnore] public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public static string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public static string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
@@ -47,15 +49,17 @@ public static class TrangaSettings
         ExportSettings();
     }
 
-    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null, int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null)
+    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null, int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null, bool? pBufferLibraryUpdates = null, bool? pBufferNotifications = null)
     {
         if(pWorkingDirectory is null && File.Exists(settingsFilePath))
             LoadFromWorkingDirectory(workingDirectory);
-        TrangaSettings.downloadLocation = downloadDirectory ?? TrangaSettings.downloadLocation;
-        TrangaSettings.workingDirectory = pWorkingDirectory ?? TrangaSettings.workingDirectory;
-        TrangaSettings.apiPortNumber = pApiPortNumber ?? TrangaSettings.apiPortNumber;
-        TrangaSettings.userAgent = pUserAgent ?? TrangaSettings.userAgent;
-        TrangaSettings.aprilFoolsMode = pAprilFoolsMode ?? TrangaSettings.aprilFoolsMode;
+        downloadLocation = downloadDirectory ?? downloadLocation;
+        workingDirectory = pWorkingDirectory ?? workingDirectory;
+        apiPortNumber = pApiPortNumber ?? apiPortNumber;
+        userAgent = pUserAgent ?? userAgent;
+        aprilFoolsMode = pAprilFoolsMode ?? aprilFoolsMode;
+        bufferLibraryUpdates = pBufferLibraryUpdates ?? bufferLibraryUpdates;
+        bufferNotifications = pBufferNotifications ?? bufferNotifications;
         Directory.CreateDirectory(downloadLocation);
         Directory.CreateDirectory(workingDirectory);
         ExportSettings();
@@ -91,7 +95,7 @@ public static class TrangaSettings
 
     public static void UpdateAprilFoolsMode(bool enabled)
     {
-        TrangaSettings.aprilFoolsMode = enabled;
+        aprilFoolsMode = enabled;
         ExportSettings();
     }
 
@@ -146,19 +150,19 @@ public static class TrangaSettings
 
     public static void UpdateUserAgent(string? customUserAgent)
     {
-        TrangaSettings.userAgent = customUserAgent ?? DefaultUserAgent;
+        userAgent = customUserAgent ?? DefaultUserAgent;
         ExportSettings();
     }
 
     public static void UpdateRateLimit(RequestType requestType, int newLimit)
     {
-        TrangaSettings.requestLimits[requestType] = newLimit;
+        requestLimits[requestType] = newLimit;
         ExportSettings();
     }
 
     public static void ResetRateLimits()
     {
-        TrangaSettings.requestLimits = DefaultRequestLimits;
+        requestLimits = DefaultRequestLimits;
         ExportSettings();
     }
 
@@ -177,13 +181,15 @@ public static class TrangaSettings
     public static JObject AsJObject()
     {
         JObject jobj = new JObject();
-        jobj.Add("downloadLocation", JToken.FromObject(TrangaSettings.downloadLocation));
-        jobj.Add("workingDirectory", JToken.FromObject(TrangaSettings.workingDirectory));
-        jobj.Add("apiPortNumber", JToken.FromObject(TrangaSettings.apiPortNumber));
-        jobj.Add("userAgent", JToken.FromObject(TrangaSettings.userAgent));
-        jobj.Add("aprilFoolsMode", JToken.FromObject(TrangaSettings.aprilFoolsMode));
-        jobj.Add("version", JToken.FromObject(TrangaSettings.version));
-        jobj.Add("requestLimits", JToken.FromObject(TrangaSettings.requestLimits));
+        jobj.Add("downloadLocation", JToken.FromObject(downloadLocation));
+        jobj.Add("workingDirectory", JToken.FromObject(workingDirectory));
+        jobj.Add("apiPortNumber", JToken.FromObject(apiPortNumber));
+        jobj.Add("userAgent", JToken.FromObject(userAgent));
+        jobj.Add("aprilFoolsMode", JToken.FromObject(aprilFoolsMode));
+        jobj.Add("version", JToken.FromObject(version));
+        jobj.Add("requestLimits", JToken.FromObject(requestLimits));
+        jobj.Add("bufferLibraryUpdates", JToken.FromObject(bufferLibraryUpdates));
+        jobj.Add("bufferNotifications", JToken.FromObject(bufferNotifications));
         return jobj;
     }
 
@@ -193,16 +199,20 @@ public static class TrangaSettings
     {
         JObject jobj = JObject.Parse(serialized);
         if (jobj.TryGetValue("downloadLocation", out JToken? dl))
-            TrangaSettings.downloadLocation = dl.Value<string>()!;
+            downloadLocation = dl.Value<string>()!;
         if (jobj.TryGetValue("workingDirectory", out JToken? wd))
-            TrangaSettings.workingDirectory = wd.Value<string>()!;
+            workingDirectory = wd.Value<string>()!;
         if (jobj.TryGetValue("apiPortNumber", out JToken? apn))
-            TrangaSettings.apiPortNumber = apn.Value<int>();
+            apiPortNumber = apn.Value<int>();
         if (jobj.TryGetValue("userAgent", out JToken? ua))
-            TrangaSettings.userAgent = ua.Value<string>()!;
+            userAgent = ua.Value<string>()!;
         if (jobj.TryGetValue("aprilFoolsMode", out JToken? afm))
-            TrangaSettings.aprilFoolsMode = afm.Value<bool>()!;
+            aprilFoolsMode = afm.Value<bool>()!;
         if (jobj.TryGetValue("requestLimits", out JToken? rl))
-            TrangaSettings.requestLimits = rl.ToObject<Dictionary<RequestType, int>>()!;
+            requestLimits = rl.ToObject<Dictionary<RequestType, int>>()!;
+        if (jobj.TryGetValue("bufferLibraryUpdates", out JToken? blu))
+            bufferLibraryUpdates = blu.Value<bool>()!;
+        if (jobj.TryGetValue("bufferNotifications", out JToken? bn))
+            bufferNotifications = bn.Value<bool>()!;
     }
 }
