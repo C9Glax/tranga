@@ -35,6 +35,7 @@ public abstract class NotificationConnector : GlobalBase
                     SendNotificationInternal($"{ut} ({texts.Length})", string.Join('\n', texts));
                 }
                 _notificationRequested = null;
+                _notifications.Clear();
             }
             Thread.Sleep(100);
         }
@@ -61,6 +62,7 @@ public abstract class NotificationConnector : GlobalBase
                 SendNotificationInternal(ut, string.Join('\n', texts));
             }
             _notificationRequested = null;
+            _notifications.Clear();
         }
         else if(_notificationRequested is not null)
         {
