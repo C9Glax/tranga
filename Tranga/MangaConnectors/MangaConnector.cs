@@ -14,15 +14,12 @@ namespace Tranga.MangaConnectors;
 public abstract class MangaConnector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
+    public string[] SupportedLanguages;
 
-    public void StopDownloadClient()
-    {
-        downloadClient.Close();
-    }
-
-    protected MangaConnector(GlobalBase clone, string name) : base(clone)
+    protected MangaConnector(GlobalBase clone, string name, string[] supportedLanguages) : base(clone)
     {
         this.name = name;
+        this.SupportedLanguages = supportedLanguages;
         Directory.CreateDirectory(TrangaSettings.coverImageCache);
     }
     
@@ -234,7 +231,10 @@ public abstract class MangaConnector : GlobalBase
                 Directory.CreateDirectory(directoryPath);
 
         if (File.Exists(saveArchiveFilePath)) //Don't download twice.
+        {
+            progressToken?.Complete();
             return HttpStatusCode.Created;
+        }
         
         //Create a temporary folder to store images
         string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;

@@ -148,7 +148,7 @@ public class JobBoss : GlobalBase
         Regex idRex = new (@"(.*)\.json");
 
         //Load json-job-files
-        foreach (FileInfo file in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
+        foreach (FileInfo file  in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
         {
             Log($"Adding {file.Name}");
             Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
@@ -163,6 +163,7 @@ public class JobBoss : GlobalBase
             {
                 Log($"Adding Job {job}");
                 this.jobs.Add(job);
+                UpdateJobFile(job, file.Name);
             }
         }
 
@@ -188,22 +189,26 @@ public class JobBoss : GlobalBase
     internal void UpdateJobFile(Job job, string? oldFile = null)
     {
         string newJobFilePath = Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
-        
-        if (!this.jobs.Any(jjob => jjob.id == job.id))
+        string oldFilePath = Path.Join(TrangaSettings.jobsFolderPath, oldFile??$"{job.id}.json");
+
+        //Delete old file
+        if (File.Exists(oldFilePath))
         {
+            Log($"Deleting Job-file {oldFilePath}");
             try
             {
-                Log($"Deleting Job-file {newJobFilePath}");
-                while(IsFileInUse(newJobFilePath))
+                while(IsFileInUse(oldFilePath))
                     Thread.Sleep(10);
-                File.Delete(newJobFilePath);
+                File.Delete(oldFilePath);
             }
             catch (Exception e)
             {
                 Log(e.ToString());
             }
         }
-        else
+
+        //Export job (in new file) if it is still in our jobs list
+        if (GetJobById(job.id) is not null)
         {
             Log($"Exporting Job {newJobFilePath}");
             string jobStr = JsonConvert.SerializeObject(job, Formatting.Indented);
@@ -211,19 +216,6 @@ public class JobBoss : GlobalBase
                 Thread.Sleep(10);
             File.WriteAllText(newJobFilePath, jobStr);
         }
-        
-        if(oldFile is not null)
-            try
-            {
-                Log($"Deleting old Job-file {oldFile}");
-                while(IsFileInUse(oldFile))
-                    Thread.Sleep(10);
-                File.Delete(oldFile);
-            }
-            catch (Exception e)
-            {
-                Log(e.ToString());
-            }
     }
 
     private void UpdateAllJobFiles()

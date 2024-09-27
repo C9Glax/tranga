@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class ManhuaPlus : MangaConnector
 {
-    public ManhuaPlus(GlobalBase clone) : base(clone, "ManhuaPlus")
+    public ManhuaPlus(GlobalBase clone) : base(clone, "ManhuaPlus", ["en"])
     {
         this.downloadClient = new ChromiumDownloadClient(clone);
     }
@@ -82,17 +82,31 @@ public class ManhuaPlus : MangaConnector
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//h1");
         string sortName = titleNode.InnerText.Replace("\n", "");
         
-        HtmlNode[] authorsNodes = document.DocumentNode
-            .SelectNodes("//a[contains(@href, 'https://manhuaplus.org/authors/')]")
-            .ToArray();
         List<string> authors = new();
-        foreach (HtmlNode authorNode in authorsNodes)
-            authors.Add(authorNode.InnerText);
+        try
+        {
+            HtmlNode[] authorsNodes = document.DocumentNode
+                .SelectNodes("//a[contains(@href, 'https://manhuaplus.org/authors/')]")
+                .ToArray();
+            foreach (HtmlNode authorNode in authorsNodes)
+                authors.Add(authorNode.InnerText);
+        }
+        catch (ArgumentNullException e)
+        {
+            Log("No authors found.");
+        }
 
-        HtmlNode[] genreNodes = document.DocumentNode
-            .SelectNodes("//a[contains(@href, 'https://manhuaplus.org/genres/')]").ToArray();
-        foreach (HtmlNode genreNode in genreNodes)
-            tags.Add(genreNode.InnerText.Replace("\n", ""));
+        try
+        {
+            HtmlNode[] genreNodes = document.DocumentNode
+                .SelectNodes("//a[contains(@href, 'https://manhuaplus.org/genres/')]").ToArray();
+            foreach (HtmlNode genreNode in genreNodes)
+                tags.Add(genreNode.InnerText.Replace("\n", ""));
+        }
+        catch (ArgumentNullException e)
+        {
+            Log("No genres found");
+        }
 
         string yearNodeStr = document.DocumentNode
             .SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-clock ')]/../span").InnerText.Replace("\n", "");

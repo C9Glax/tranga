@@ -63,10 +63,11 @@ public class Server : GlobalBase
     {
         HttpListenerRequest request = context.Request;
         HttpListenerResponse response = context.Response;
-        if(request.HttpMethod == "OPTIONS")
-            SendResponse(HttpStatusCode.OK, context.Response);
-        if(request.Url!.LocalPath.Contains("favicon"))
+        if (request.Url!.LocalPath.Contains("favicon"))
+        {
             SendResponse(HttpStatusCode.NoContent, response);
+            return;
+        }
 
         switch (request.HttpMethod)
         {
@@ -79,7 +80,10 @@ public class Server : GlobalBase
             case "DELETE":
                 HandleDelete(request, response);
                 break;
-            default: 
+            case "OPTIONS": 
+                SendResponse(HttpStatusCode.OK, context.Response);
+                break;
+            default:
                 SendResponse(HttpStatusCode.BadRequest, response);
                 break;
         }
@@ -707,14 +711,15 @@ public class Server : GlobalBase
     private void SendResponse(HttpStatusCode statusCode, HttpListenerResponse response, object? content = null)
     {
         //Log($"Response: {statusCode} {content}");
+
         response.StatusCode = (int)statusCode;
         response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
         response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
         response.AddHeader("Access-Control-Max-Age", "1728000");
         response.AppendHeader("Access-Control-Allow-Origin", "*");
-
         try
         {
+            
             if (content is not Stream)
             {
                 response.ContentType = "application/json";
@@ -750,7 +755,7 @@ public class Server : GlobalBase
                 stream.Close();
             }
         }
-        catch (HttpListenerException e)
+        catch (Exception e)
         {
             Log(e.ToString());
         }

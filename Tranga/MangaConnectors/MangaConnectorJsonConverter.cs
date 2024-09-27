@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Data;
+using System.Diagnostics;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Tranga.MangaConnectors;
@@ -22,29 +24,22 @@ public class MangaConnectorJsonConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         JObject jo = JObject.Load(reader);
-        switch (jo.GetValue("name")!.Value<string>()!)
+        string? connectorName = jo.Value<string>("name");
+        if (connectorName is null)
+            throw new ConstraintException("Name can not be null.");
+        return connectorName switch
         {
-            case "MangaDex":
-                return this._connectors.First(c => c is MangaDex);
-            case "Manganato":
-                return this._connectors.First(c => c is Manganato);
-            case "MangaKatana":
-                return this._connectors.First(c => c is MangaKatana);
-            case "Mangasee":
-                return this._connectors.First(c => c is Mangasee);
-            case "Mangaworld":
-                return this._connectors.First(c => c is Mangaworld);
-            case "Bato":
-                return this._connectors.First(c => c is Bato);
-            case "Manga4Life":
-                return this._connectors.First(c => c is MangaLife);
-            case "ManhuaPlus":
-                return this._connectors.First(c => c is ManhuaPlus);
-            case "MangaHere":
-                return this._connectors.First(c => c is MangaHere);
-        }
-
-        throw new Exception();
+            "MangaDex" => this._connectors.First(c => c is MangaDex),
+            "Manganato" => this._connectors.First(c => c is Manganato),
+            "MangaKatana" => this._connectors.First(c => c is MangaKatana),
+            "Mangasee" => this._connectors.First(c => c is Mangasee),
+            "Mangaworld" => this._connectors.First(c => c is Mangaworld),
+            "Bato" => this._connectors.First(c => c is Bato),
+            "Manga4Life" => this._connectors.First(c => c is MangaLife),
+            "ManhuaPlus" => this._connectors.First(c => c is ManhuaPlus),
+            "MangaHere" => this._connectors.First(c => c is MangaHere),
+            _ => throw new UnreachableException($"Could not find Connector with name {connectorName}")
+        };
     }
 
     public override bool CanWrite => false;

@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class MangaLife : MangaConnector
 {
-    public MangaLife(GlobalBase clone) : base(clone, "Manga4Life")
+    public MangaLife(GlobalBase clone) : base(clone, "Manga4Life", ["en"])
     {
         this.downloadClient = new ChromiumDownloadClient(clone);
     }

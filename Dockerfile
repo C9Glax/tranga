@@ -1,7 +1,7 @@
 ﻿# syntax=docker/dockerfile:1
-ARG DOTNET=7.0
+ARG DOTNET=8.0
 
-FROM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
 WORKDIR /publish
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
@@ -10,7 +10,7 @@ RUN apt-get update \
   && apt-get autopurge -y \
   && apt-get autoclean -y
 
-FROM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
 WORKDIR /src
 
 COPY Tranga.sln /src
@@ -20,9 +20,9 @@ COPY Tranga/Tranga.csproj /src/Tranga/Tranga.csproj
 RUN dotnet restore /src/Tranga.sln
 
 COPY . /src/
-RUN dotnet publish -c Release -o /publish -maxcpucount:1 
+RUN dotnet publish -c Release --property:OutputPath=/publish -maxcpucount:1 
 
-FROM base AS runtime
+FROM --platform=$BUILDPLATFORM base AS runtime
 EXPOSE 6531
 ARG UNAME=tranga
 ARG UID=1000
