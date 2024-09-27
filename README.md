@@ -51,11 +51,12 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [Bato.to](https://bato.to/v3x) (en)
 - [Manga4Life](https://manga4life.com) (en)
 - [ManhuaPlus](https://manhuaplus.org/) (en)
-- [MangaHere](https://www.mangahere.cc/) (en) (Their covers suck)
-- ❓ Open an [issue](https://github.com/C9Glax/tranga/issues)
+- [MangaHere](https://www.mangahere.cc/) (en) (Their covers aren't scrapeable.)
+- ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
-Notifications can be sent to your devices using [Gotify](https://gotify.net/) and [LunaSea](https://www.lunasea.app/).
+Notifications can be sent to your devices using [Gotify](https://gotify.net/), [LunaSea](https://www.lunasea.app/) or [Ntfy](https://ntfy.sh/
+).
 
 ### What this does and doesn't do
 
@@ -107,14 +108,9 @@ access the folder.
 ### Prerequisites
 
 #### To Build
-[.NET-Core 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+[.NET-Core 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 #### To Run
-[.NET-Core 7.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) scroll down a bit, should be on the right the second item.
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [ ] ❓
+[.NET-Core 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) scroll down a bit, should be on the right the second item.
 
 See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list of proposed features (and known issues).
 
