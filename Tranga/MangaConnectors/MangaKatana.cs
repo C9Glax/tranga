@@ -15,7 +15,7 @@ public class MangaKatana : MangaConnector
 	public override Manga[] GetManga(string publicationTitle = "")
 	{
 		Log($"Searching Publications. Term=\"{publicationTitle}\"");
-		string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
+		string sanitizedTitle = string.Join("%20", Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
