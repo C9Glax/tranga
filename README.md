@@ -93,6 +93,16 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Star History
+
+<a href="https://star-history.com/#c9glax/tranga&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=c9glax/tranga&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=c9glax/tranga&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=c9glax/tranga&type=Date" />
+ </picture>
+</a>
+
 <!-- GETTING STARTED -->
 ## Getting Started
 
