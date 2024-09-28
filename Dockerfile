@@ -10,7 +10,7 @@ RUN apt-get update \
   && apt-get autopurge -y \
   && apt-get autoclean -y
 
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
 WORKDIR /src
 
 COPY Tranga.sln /src
