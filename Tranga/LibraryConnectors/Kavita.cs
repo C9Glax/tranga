@@ -61,7 +61,7 @@ public class Kavita : LibraryConnector
         return "";
     }
 
-    public override void UpdateLibrary()
+    protected override void UpdateLibraryInternal()
     {
         Log("Updating libraries.");
         foreach (KavitaLibrary lib in GetLibraries())
