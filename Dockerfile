@@ -1,7 +1,7 @@
 ﻿# syntax=docker/dockerfile:1
 ARG DOTNET=8.0
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
 WORKDIR /publish
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
