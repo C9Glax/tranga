@@ -1,7 +1,7 @@
 ﻿# syntax=docker/dockerfile:1
 ARG DOTNET=8.0
 
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
 WORKDIR /publish
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
@@ -10,7 +10,7 @@ RUN apt-get update \
   && apt-get autopurge -y \
   && apt-get autoclean -y
 
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
 WORKDIR /src
 
 COPY Tranga.sln /src
