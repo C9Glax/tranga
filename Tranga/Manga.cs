@@ -72,7 +72,7 @@ public struct Manga
         this.latestChapterDownloaded = 0;
         this.latestChapterAvailable = 0;
         this.releaseStatus = releaseStatus;
-        this.websiteUrl = websiteUrl;
+        this.websiteUrl = websiteUrl??"";
     }
 
     public Manga WithMetadata(Manga newManga)
