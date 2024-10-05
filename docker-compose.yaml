@@ -10,8 +10,8 @@ services:
         - UID=1000
         - GID=1000
     volumes:
-      - ./Manga:/Manga
-      - ./settings:/usr/share/tranga-api
+      - /home/sagnik/Projects/docker/tranga/manga:/Manga
+      - /home/sagnik/Projects/docker/tranga/settings:/usr/share/tranga-api
     ports:
       - "6531:6531"
     restart: unless-stopped
