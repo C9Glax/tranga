@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class MangaHere : MangaConnector
 {
-    public MangaHere(GlobalBase clone) : base(clone, "MangaHere", ["en"])
+    public MangaHere(GlobalBase clone) : base(clone, "MangaHere", ["en"], ["www.mangahere.cc"])
     {
         this.downloadClient = new ChromiumDownloadClient(clone);
     }

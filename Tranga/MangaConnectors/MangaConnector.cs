@@ -15,11 +15,13 @@ public abstract class MangaConnector : GlobalBase
 {
     internal DownloadClient downloadClient { get; init; } = null!;
     public string[] SupportedLanguages;
+    public string[] BaseUris;
 
-    protected MangaConnector(GlobalBase clone, string name, string[] supportedLanguages) : base(clone)
+    protected MangaConnector(GlobalBase clone, string name, string[] supportedLanguages, string[] baseUris) : base(clone)
     {
         this.name = name;
         this.SupportedLanguages = supportedLanguages;
+        this.BaseUris = baseUris;
         Directory.CreateDirectory(TrangaSettings.coverImageCache);
     }
     

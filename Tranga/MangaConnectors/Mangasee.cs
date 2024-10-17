@@ -11,7 +11,7 @@ namespace Tranga.MangaConnectors;
 
 public class Mangasee : MangaConnector
 {
-    public Mangasee(GlobalBase clone) : base(clone, "Mangasee", ["en"])
+    public Mangasee(GlobalBase clone) : base(clone, "Mangasee", ["en"], ["mangasee123.com"])
     {
         this.downloadClient = new ChromiumDownloadClient(clone);
     }

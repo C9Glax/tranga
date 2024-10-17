@@ -3,7 +3,8 @@
 ```
 {
   "name": string,
-  "SupportedLanguages": string[]
+  "SupportedLanguages": string[],
+  "BaseUris": stirng[]
 }
 ```
 

@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 public class Bato : MangaConnector
 {
 	
-	public Bato(GlobalBase clone) : base(clone, "Bato", ["en"])
+	public Bato(GlobalBase clone) : base(clone, "Bato", ["en"], ["bato.to"])
 	{
 		this.downloadClient = new HttpDownloadClient(clone);
 	}

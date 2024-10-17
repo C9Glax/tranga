@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 
 public class Manganato : MangaConnector
 {
-    public Manganato(GlobalBase clone) : base(clone, "Manganato", ["en"])
+    public Manganato(GlobalBase clone) : base(clone, "Manganato", ["en"], ["manganato.com"])
     {
         this.downloadClient = new HttpDownloadClient(clone);
     }
