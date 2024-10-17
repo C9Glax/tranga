@@ -4,7 +4,7 @@
 {
   "name": string,
   "SupportedLanguages": string[],
-  "BaseUris": stirng[]
+  "BaseUris": string[]
 }
 ```
 
