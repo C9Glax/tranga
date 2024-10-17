@@ -14,7 +14,7 @@ public partial class Server
     private ValueTuple<HttpStatusCode, object?> GetV2ConnectorConnectorNameGetManga(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
         if(groups.Count < 1 ||
-           !_parent.GetConnectors().Keys.Contains(groups[1].Value) ||
+           !_parent.GetConnectors().Any(mangaConnector => mangaConnector.name == groups[1].Value)||
            !_parent.TryGetConnector(groups[1].Value, out MangaConnector? connector) ||
            connector is null)
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, $"Connector '{groups[1].Value}' does not exist.");

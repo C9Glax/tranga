@@ -1,41 +1,51 @@
-﻿## Manga
-```json
+﻿## Connector
+
+```
 {
+  "name": string,
+  "SupportedLanguages": string[]
+}
+```
+
+## Manga
+```
+{
+    
 }
 ```
 
 ## Chapter
-```json
+```
 {
 }
 ```
 
 ## Job
-```json
+```
 {
 }
 ```
 
 ## ProgressToken
-```json
+```
 {
 }
 ```
 
 ## Settings
-```json
+```
 {
 }
 ```
 
 ## LibraryConnector
-```json
+```
 {
 }
 ```
 
 ## NotificationConnector
-```json
+```
 {
 }
 ```
