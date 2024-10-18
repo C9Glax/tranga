@@ -21,7 +21,7 @@
     "links": string[][],
     "year": int,
     "originalLanguage": string,
-    "releaseStatus": int,
+    "releaseStatus": ReleaseStatus,
     "folderName": string,
     "publicationId": string,
     "internalId": string,
@@ -36,6 +36,17 @@
 ## Chapter
 ```
 {
+}
+```
+
+## ReleaseStatus
+```
+{
+    Continuing = 0,
+    Completed = 1,
+    OnHiatus = 2,
+    Cancelled = 3,
+    Unreleased = 4
 }
 ```
 
