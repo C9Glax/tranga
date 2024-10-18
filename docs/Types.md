@@ -25,9 +25,9 @@
     "folderName": string,
     "publicationId": string,
     "internalId": string,
-    "ignoreChaptersBelow": decimal,
-    "latestChapterDownloaded": decimal,
-    "latestChapterAvailable": decimal,
+    "ignoreChaptersBelow": number,
+    "latestChapterDownloaded": number,
+    "latestChapterAvailable": number,
     "websiteUrl": string,
     "mangaConnector": Connector
 }
@@ -42,12 +42,31 @@
 ## Job
 ```
 {
+    jobType: number,
+    mangaInternalId: string,
+    translatedLanguage: string,
+    progressToken: ProgressToken,
+    recurring: boolean,
+    recurrenceTime: string,
+    lastExecution: Date,
+    nextExecution: Date,
+    id: string,
+    parentJobId: string | null,
+    mangaConnector: Connector
 }
 ```
 
 ## ProgressToken
 ```
 {
+    cancellationRequested: boolean,
+    increments: number,
+    incrementsCompleted: number,
+    progress: number,
+    lastUpdate: Date,
+    executionStarted: Date,
+    timeRemaining: Date,
+    state: number
 }
 ```
 

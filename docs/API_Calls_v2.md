@@ -305,7 +305,7 @@ Returns the latest Chapter of the specified Manga.
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs`
 
-Returns all configured Jobs.
+Returns all configured Jobs as IDs.
 
 <details>
   <summary>Returns</summary>
@@ -315,7 +315,7 @@ Returns all configured Jobs.
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Running`
 
-Returns all Running Jobs.
+Returns all Running Jobs as IDs.
 
 <details>
   <summary>Returns</summary>
@@ -325,7 +325,7 @@ Returns all Running Jobs.
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Waiting`
 
-Returns all Waiting Jobs.
+Returns all Waiting Jobs as IDs.
 
 <details>
   <summary>Returns</summary>
@@ -335,7 +335,7 @@ Returns all Waiting Jobs.
 
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Monitoring`
 
-Returns all Monitoring Jobs.
+Returns all Monitoring Jobs as IDs.
 
 <details>
   <summary>Returns</summary>
