@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace Tranga.Server;
 
@@ -26,13 +28,13 @@ public partial class Server : GlobalBase, IDisposable
             new ("GET", @"/v2/Mangas", GetV2Mangas),
             new ("GET", @"/v2/Manga/Search", GetV2MangaSearch),
             new ("GET", @"/v2/Manga", GetV2Manga),
-            new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})", GetV2MangaInternalId),
-            new ("DELETE", @"/v2/Manga/([-A-Za-z0-9]*={0,3})", DeleteV2MangaInternalId),
             new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/Cover", GetV2MangaInternalIdCover),
             new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/Chapters", GetV2MangaInternalIdChapters),
             new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/Chapters/Latest", GetV2MangaInternalIdChaptersLatest),
             new ("POST", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/ignoreChaptersBelow", PostV2MangaInternalIdIgnoreChaptersBelow),
             new ("POST", @"/v2/Manga/([-A-Za-z0-9]*={0,3})/moveFolder", PostV2MangaInternalIdMoveFolder),
+            new ("GET", @"/v2/Manga/([-A-Za-z0-9]*={0,3})", GetV2MangaInternalId),
+            new ("DELETE", @"/v2/Manga/([-A-Za-z0-9]*={0,3})", DeleteV2MangaInternalId),
             new ("GET", @"/v2/Jobs", GetV2Jobs),
             new ("GET", @"/v2/Jobs/Running", GetV2JobsRunning),
             new ("GET", @"/v2/Jobs/Waiting", GetV2JobsWaiting),
@@ -205,10 +207,15 @@ public partial class Server : GlobalBase, IDisposable
         {
             if (content is Stream stream)
             {
-                response.ContentType = "image/jpeg";
-                response.AddHeader("Cache-Control", "max-age=600");
+                response.ContentType = "text/plain";
                 stream.CopyTo(response.OutputStream);
                 stream.Close();
+            }else if (content is Image image)
+            {
+                response.ContentType = image.Metadata.DecodedImageFormat?.DefaultMimeType ?? PngFormat.Instance.DefaultMimeType;
+                response.AddHeader("Cache-Control", "max-age=600");
+                image.Save(response.OutputStream, image.Metadata.DecodedImageFormat ?? PngFormat.Instance);
+                image.Dispose();
             }
             else
             {

@@ -1,5 +1,5 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System.Net;
 using System.Text.RegularExpressions;
 using Tranga.Jobs;
@@ -82,7 +82,7 @@ public partial class Server
         if(!File.Exists(filePath))
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, "Cover-File not found.");
 
-        Bitmap bitmap;
+        Image image = Image.Load(filePath);
         if (requestParameters.TryGetValue("dimensions", out string? dimensionsStr))
         {
             Regex dimensionsRex = new(@"([0-9]+)x([0-9]+)");
@@ -93,23 +93,15 @@ public partial class Server
             int height = int.Parse(m.Groups[2].Value);
             double aspectRequested = (double)width / (double)height;
             
-            using Image coverImage = Image.FromFile(filePath);
-            double aspectCover = (double)coverImage.Width / (double)coverImage.Height;
+            double aspectCover = (double)image.Width / (double)image.Height;
 
             Size newSize = aspectRequested > aspectCover
-                ? new Size(width, (width / coverImage.Width) * coverImage.Height)
-                : new Size((height / coverImage.Height) * coverImage.Width, height);
-
-            bitmap = new(coverImage, newSize);
+                ? new Size(width, (width / image.Width) * image.Height)
+                : new Size((height / image.Height) * image.Width, height);
+            
+            image.Mutate(x => x.Resize(newSize));
         }
-        else
-        {
-            FileStream coverStream = new(filePath, FileMode.Open);
-            bitmap = new(coverStream);
-        }
-        using MemoryStream ret = new();
-        bitmap.Save(ret, ImageFormat.Jpeg);
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, ret);
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, image);
     }
     
     private ValueTuple<HttpStatusCode, object?> GetV2MangaInternalIdChapters(GroupCollection groups, Dictionary<string, string> requestParameters)
