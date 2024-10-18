@@ -536,7 +536,7 @@ Cancels the specified Job, or dequeues it.
   | 404        | Manga with `jobId` could not be found |
 </details>
 
-### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Job/<jobId>/SetInterval`
+### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Job/<jobId>/SetInterval` NOT YET IMPLEMENTED
 
 Edits the specified Job.
 
