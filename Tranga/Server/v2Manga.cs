@@ -18,7 +18,7 @@ public partial class Server
     {
         if(!requestParameters.TryGetValue("mangaIds", out string? mangaIdListStr))
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.BadRequest, "Missing parameter 'mangaIds'.");
-        string[] mangaIdList = mangaIdListStr.Split(',');
+        string[] mangaIdList = mangaIdListStr.Split(',').Distinct().ToArray();
         List<Manga> ret = new();
         foreach (string mangaId in mangaIdList)
         {
