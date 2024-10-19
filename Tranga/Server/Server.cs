@@ -39,6 +39,7 @@ public partial class Server : GlobalBase, IDisposable
             new ("GET", @"/v2/Jobs/Running", GetV2JobsRunning),
             new ("GET", @"/v2/Jobs/Waiting", GetV2JobsWaiting),
             new ("GET", @"/v2/Jobs/Monitoring", GetV2JobsMonitoring),
+            new ("GET", @"/v2/Jobs/Standby", GetV2JobsStandby),
             new ("GET", @"/v2/Job/Types", GetV2JobTypes),
             new ("POST", @"/v2/Job/Create/([a-zA-Z]+)", PostV2JobCreateType),
             new ("GET", @"/v2/Job", GetV2Job),

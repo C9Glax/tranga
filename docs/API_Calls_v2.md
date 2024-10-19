@@ -333,6 +333,16 @@ Returns all Waiting Jobs as IDs.
   List of JobIds.
 </details>
 
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Standby`
+
+Returns all Standby Jobs as IDs.
+
+<details>
+  <summary>Returns</summary>
+
+List of JobIds.
+</details>
+
 ### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Jobs/Monitoring`
 
 Returns all Monitoring Jobs as IDs.

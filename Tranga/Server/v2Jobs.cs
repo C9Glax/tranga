@@ -26,6 +26,13 @@ public partial class Server
             .Select(job => job.id));
     }
     
+    private ValueTuple<HttpStatusCode, object?> GetV2JobsStandby(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, _parent.jobBoss.jobs
+            .Where(job => job.progressToken.state is ProgressToken.State.Standby)
+            .Select(job => job.id));
+    }
+    
     private ValueTuple<HttpStatusCode, object?> GetV2JobsMonitoring(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, _parent.jobBoss.jobs
