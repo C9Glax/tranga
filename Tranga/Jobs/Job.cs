@@ -12,7 +12,7 @@ public abstract class Job : GlobalBase
     public string id => GetId();
     internal IEnumerable<Job>? subJobs { get; private set; }
     public string? parentJobId { get; init; }
-    public enum JobType : byte { DownloadChapterJob, DownloadNewChaptersJob, UpdateMetaDataJob, MonitorManga }
+    public enum JobType : byte { DownloadChapterJob = 0, DownloadNewChaptersJob = 1, UpdateMetaDataJob = 2, MonitorManga = 3 }
 
     public MangaConnector mangaConnector => GetMangaConnector();
 

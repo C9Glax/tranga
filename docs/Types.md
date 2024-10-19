@@ -21,7 +21,7 @@
     "links": string[][],
     "year": int,
     "originalLanguage": string,
-    "releaseStatus": ReleaseStatus,
+    "releaseStatus": ReleaseStatus, see ReleaseStatus
     "folderName": string,
     "publicationId": string,
     "internalId": string,
@@ -53,7 +53,7 @@
 ## Job
 ```
 {
-    jobType: number,
+    jobType: number, see JobType
     mangaInternalId: string,
     translatedLanguage: string,
     progressToken: ProgressToken,
@@ -64,6 +64,16 @@
     id: string,
     parentJobId: string | null,
     mangaConnector: Connector
+}
+```
+
+## JobType
+```
+{
+    DownloadChapterJob = 0,
+    DownloadNewChaptersJob = 1,
+    UpdateMetaDataJob = 2,
+    MonitorManga = 3
 }
 ```
 
