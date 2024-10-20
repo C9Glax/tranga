@@ -123,6 +123,17 @@
 ## LibraryConnector
 ```
 {
+    "libraryType": number, //see LibraryType
+    "baseUrl": string,
+    "auth": string
+}
+```
+
+## LibraryType
+```
+{
+    Komga = 0,
+    Kavita = 1
 }
 ```
 
