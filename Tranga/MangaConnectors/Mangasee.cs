@@ -11,7 +11,7 @@ namespace Tranga.MangaConnectors;
 
 public class Mangasee : MangaConnector
 {
-    public Mangasee(GlobalBase clone) : base(clone, "Mangasee", ["en"])
+    public Mangasee(GlobalBase clone) : base(clone, "Mangasee", ["en"], ["mangasee123.com"])
     {
         this.downloadClient = new ChromiumDownloadClient(clone);
     }
@@ -152,9 +152,8 @@ public class Mangasee : MangaConnector
             .Descendants("div").First();
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
-            coverFileNameInCache, links,
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        Manga manga = new(this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
+            coverFileNameInCache, links, year, originalLanguage, publicationId, releaseStatus, websiteUrl);
         AddMangaToCache(manga);
         return manga;
     }

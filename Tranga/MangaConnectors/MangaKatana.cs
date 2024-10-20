@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class MangaKatana : MangaConnector
 {
-	public MangaKatana(GlobalBase clone) : base(clone, "MangaKatana", ["en"])
+	public MangaKatana(GlobalBase clone) : base(clone, "MangaKatana", ["en"], ["mangakatana.com"])
 	{
 		this.downloadClient = new HttpDownloadClient(clone);
 	}
@@ -141,8 +141,8 @@ public class MangaKatana : MangaConnector
 			year = Convert.ToInt32(yearString);
 		}
 
-		Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-			year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+		Manga manga = new (this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
 		AddMangaToCache(manga);
 		return manga;
 	}
