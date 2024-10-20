@@ -10,7 +10,7 @@ public class ProgressToken
     public DateTime executionStarted { get; private set; }
     public TimeSpan timeRemaining => GetTimeRemaining();
     
-    public enum State { Running, Complete, Standby, Cancelled, Waiting }
+    public enum State : byte { Running = 0, Complete = 1, Standby = 2, Cancelled = 3, Waiting = 4 }
     public State state { get; private set; }
 
     public ProgressToken(int increments)

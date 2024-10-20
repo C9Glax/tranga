@@ -45,7 +45,7 @@
 }
 ```
 
-## ReleaseStatus
+### ReleaseStatus
 ```
 {
     Continuing = 0,
@@ -74,7 +74,7 @@
 }
 ```
 
-## JobType
+### JobType
 ```
 {
     DownloadChapterJob = 0,
@@ -94,7 +94,18 @@
     "lastUpdate": Date,
     "executionStarted": Date,
     "timeRemaining": Date,
-    "state": number
+    "state": number //see ProgressState
+}
+```
+
+### ProgressState
+```
+{
+    Running = 0,
+    Complete = 1,
+    Standby = 2,
+    Cancelled = 3,
+    Waiting = 4
 }
 ```
 
@@ -129,7 +140,7 @@
 }
 ```
 
-## LibraryType
+### LibraryType
 ```
 {
     Komga = 0,
@@ -149,7 +160,7 @@
 }
 ```
 
-## NotificationConnectorType
+### NotificationConnectorType
 ```
 {
     Gotify = 0,
