@@ -140,5 +140,20 @@
 ## NotificationConnector
 ```
 {
+    "notificationConnectorType": number, //see NotificationConnectorType
+    "endpoint": string, //only on Ntfy, Gotify
+    "appToken": string, //only on Gotify
+    "auth": string, //only on Ntfy
+    "topic": string, //only on Ntfy
+    "id": string, //only on LunaSea
+}
+```
+
+## NotificationConnectorType
+```
+{
+    Gotify = 0,
+    LunaSea = 1,
+    Ntfy = 2
 }
 ```
