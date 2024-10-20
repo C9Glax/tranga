@@ -36,12 +36,12 @@
 ## Chapter
 ```
 {
-    parentManga: IManga,
-    name: string | undefined,
-    volumeNumber: string,
-    chapterNumber: string,
-    url: string,
-    fileName: string
+    "parentManga": IManga,
+    "name": string | undefined,
+    "volumeNumber": string,
+    "chapterNumber": string,
+    "url": string,
+    "fileName": string
 }
 ```
 
@@ -59,18 +59,18 @@
 ## Job
 ```
 {
-    progressToken: IProgressToken,
-    recurring: boolean,
-    recurrenceTime: string,
-    lastExecution: Date,
-    nextExecution: Date,
-    id: string,
-    jobType: number, //see JobType
-    parentJobId: string | null,
-    mangaConnector: IMangaConnector,
-    mangaInternalId: string | undefined, //only on DownloadNewChapters
-    translatedLanguage: string | undefined, //only on DownloadNewChapters
-    chapter: IChapter | undefined, //only on DownloadChapter
+    "progressToken": IProgressToken,
+    "recurring": boolean,
+    "recurrenceTime": string,
+    "lastExecution": Date,
+    "nextExecution": Date,
+    "id": string,
+    "jobType": number, //see JobType
+    "parentJobId": string | null,
+    "mangaConnector": IMangaConnector,
+    "mangaInternalId": string | undefined, //only on DownloadNewChapters
+    "translatedLanguage": string | undefined, //only on DownloadNewChapters
+    "chapter": IChapter | undefined, //only on DownloadChapter
 }
 ```
 
@@ -87,14 +87,14 @@
 ## ProgressToken
 ```
 {
-    cancellationRequested: boolean,
-    increments: number,
-    incrementsCompleted: number,
-    progress: number,
-    lastUpdate: Date,
-    executionStarted: Date,
-    timeRemaining: Date,
-    state: number
+    "cancellationRequested": boolean,
+    "increments": number,
+    "incrementsCompleted": number,
+    "progress": number,
+    "lastUpdate": Date,
+    "executionStarted": Date,
+    "timeRemaining": Date,
+    "state": number
 }
 ```
 
