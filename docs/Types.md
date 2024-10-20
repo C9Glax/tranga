@@ -36,6 +36,12 @@
 ## Chapter
 ```
 {
+    parentManga: IManga,
+    name: string | undefined,
+    volumeNumber: string,
+    chapterNumber: string,
+    url: string,
+    fileName: string
 }
 ```
 
@@ -53,17 +59,18 @@
 ## Job
 ```
 {
-    jobType: number, see JobType
-    mangaInternalId: string,
-    translatedLanguage: string,
-    progressToken: ProgressToken,
+    progressToken: IProgressToken,
     recurring: boolean,
     recurrenceTime: string,
     lastExecution: Date,
     nextExecution: Date,
     id: string,
+    jobType: number, //see JobType
     parentJobId: string | null,
-    mangaConnector: Connector
+    mangaConnector: IMangaConnector,
+    mangaInternalId: string | undefined, //only on DownloadNewChapters
+    translatedLanguage: string | undefined, //only on DownloadNewChapters
+    chapter: IChapter | undefined, //only on DownloadChapter
 }
 ```
 
