@@ -803,23 +803,11 @@ Creates a Library-Connector of the specified Type.
 
   `Type` is returned by [GET /v2/LibraryConnector/Types](#-v2libraryconnectortypes)
   
-  | Parameter   | Value              |
-  |-------------|--------------------|
-  | URL         | URL of the Library |
-  
-  #### Type specific Parameters (must be included for each)
-  * Komga
-  
-  | Parameter | Value                                                                                                             |
-  |-----------|-------------------------------------------------------------------------------------------------------------------|
-  | auth      | [Base64 encoded Basic-Authentication-String](https://datatracker.ietf.org/doc/html/rfc7617) (`username:password`) |
-  
-  * Kavita
-  
-  | Parameter | Value           |
-  |-----------|-----------------|
-  | username  | Kavita Username |
-  | password  | Kavita Password |
+  | Parameter | Value              |
+  |-----------|--------------------|
+  | url       | URL of the Library |
+  | username  | Username           |
+  | password  | Password           |
 </details>
 
 <details>
@@ -843,23 +831,11 @@ Tests a Library-Connector of the specified Type.
 
   `Type` is returned by [GET /v2/LibraryConnector/Types](#-v2libraryconnectortypes)
   
-  | Parameter   | Value              |
-  |-------------|--------------------|
-  | URL         | URL of the Library |
-
-  #### Type specific Parameters (must be included for each)
-  * Komga
-  
-  | Parameter | Value                                                                                                             |
-  |-----------|-------------------------------------------------------------------------------------------------------------------|
-  | auth      | [Base64 encoded Basic-Authentication-String](https://datatracker.ietf.org/doc/html/rfc7617) (`username:password`) |
-  
-  * Kavita
-  
-  | Parameter | Value           |
-  |-----------|-----------------|
-  | username  | Kavita Username |
-  | password  | Kavita Password |
+  | Parameter | Value              |
+  |-----------|--------------------|
+  | url       | URL of the Library |
+  | username  | Username           |
+  | password  | Password           |
   </details>
   
   <details>

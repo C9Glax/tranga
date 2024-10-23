@@ -39,24 +39,22 @@ public partial class Server
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"LibraryType {groups[1].Value} does not exist.");
         }
         
-        if(!requestParameters.TryGetValue("URL", out string? url))
+        if(!requestParameters.TryGetValue("url", out string? url))
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'url' missing.");
+        if(!requestParameters.TryGetValue("username", out string? username))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'username' missing.");
+        if(!requestParameters.TryGetValue("password", out string? password))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'password' missing.");
 
         switch (libraryType)
         {
             case LibraryConnector.LibraryType.Kavita:
-                if(!requestParameters.TryGetValue("username", out string? username))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'username' missing.");
-                if(!requestParameters.TryGetValue("password", out string? password))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'password' missing.");
                 Kavita kavita = new (this, url, username, password);
                 libraryConnectors.RemoveWhere(lc => lc.libraryType == LibraryConnector.LibraryType.Kavita);
                 libraryConnectors.Add(kavita);
                 return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, kavita);
             case LibraryConnector.LibraryType.Komga:
-                if(!requestParameters.TryGetValue("auth", out string? auth))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'auth' missing.");
-                Komga komga = new (this, url, auth);
+                Komga komga = new (this, url, username, password);
                 libraryConnectors.RemoveWhere(lc => lc.libraryType == LibraryConnector.LibraryType.Komga);
                 libraryConnectors.Add(komga);
                 return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, komga);
@@ -72,16 +70,16 @@ public partial class Server
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotFound, $"LibraryType {groups[1].Value} does not exist.");
         }
         
-        if(!requestParameters.TryGetValue("URL", out string? url))
+        if(!requestParameters.TryGetValue("url", out string? url))
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'url' missing.");
+        if(!requestParameters.TryGetValue("username", out string? username))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'username' missing.");
+        if(!requestParameters.TryGetValue("password", out string? password))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'password' missing.");
 
         switch (libraryType)
         {
             case LibraryConnector.LibraryType.Kavita:
-                if(!requestParameters.TryGetValue("username", out string? username))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'username' missing.");
-                if(!requestParameters.TryGetValue("password", out string? password))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'password' missing.");
                 Kavita kavita = new (this, url, username, password);
                 return kavita.Test() switch
                 {
@@ -89,9 +87,7 @@ public partial class Server
                     _ => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.FailedDependency, kavita)
                 };
             case LibraryConnector.LibraryType.Komga:
-                if(!requestParameters.TryGetValue("auth", out string? auth))
-                    return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.NotAcceptable, "Parameter 'auth' missing.");
-                Komga komga = new (this, url, auth);
+                Komga komga = new (this, url, username, password);
                 return komga.Test() switch
                 {
                     true => new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, komga),
