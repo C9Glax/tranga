@@ -22,6 +22,7 @@ public static class TrangaSettings
     [JsonIgnore] public static string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public static string jobsFolderPath => Path.Join(workingDirectory, "jobs");
     [JsonIgnore] public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
+    [JsonIgnore] public static string mangaCacheFolderPath => Path.Join(workingDirectory, "mangaCache");
     public static ushort? version { get; } = 2;
     public static bool aprilFoolsMode { get; private set; } = true;
     [JsonIgnore]internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
@@ -101,28 +102,50 @@ public static class TrangaSettings
     public static void UpdateDownloadLocation(string newPath, bool moveFiles = true)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Directory.CreateDirectory(newPath,
-                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+            Directory.CreateDirectory(newPath, GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
         else
             Directory.CreateDirectory(newPath);
         
-        if (moveFiles && Directory.Exists(downloadLocation))
-            Directory.Move(downloadLocation, newPath);
-
-        downloadLocation = newPath;
+        if (moveFiles)
+            MoveContentsOfDirectoryTo(TrangaSettings.downloadLocation, newPath);
+        
+        TrangaSettings.downloadLocation = newPath;
         ExportSettings();
     }
 
     public static void UpdateWorkingDirectory(string newPath)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Directory.CreateDirectory(newPath,
-                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+            Directory.CreateDirectory(newPath, GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
         else
             Directory.CreateDirectory(newPath);
-        Directory.Move(workingDirectory, newPath);
-        workingDirectory = newPath;
+        
+        MoveContentsOfDirectoryTo(TrangaSettings.workingDirectory, newPath);
+        
+        TrangaSettings.workingDirectory = newPath;
         ExportSettings();
+    }
+
+    private static void MoveContentsOfDirectoryTo(string oldDir, string newDir)
+    {
+        string[] directoryPaths = Directory.GetDirectories(oldDir);
+        string[] filePaths = Directory.GetFiles(oldDir);
+        foreach (string file in filePaths)
+        {
+            string newPath = Path.Join(newDir, Path.GetFileName(file));
+            File.Move(file, newPath, true);
+        }
+        foreach(string directory in directoryPaths)
+        {
+            string? dirName = Path.GetDirectoryName(directory);
+            if(dirName is null)
+                continue;
+            string newPath = Path.Join(newDir, dirName);
+            if(Directory.Exists(newPath))
+                MoveContentsOfDirectoryTo(directory, newPath);
+            else
+                Directory.Move(directory, newPath);
+        }
     }
 
     public static void UpdateUserAgent(string? customUserAgent)

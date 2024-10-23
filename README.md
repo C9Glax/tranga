@@ -2,7 +2,7 @@
 <br />
 <div align="center">
 
-<h3 align="center">Tranga</h3>
+<h3 align="center">Tranga v2</h3>
 
   <p align="center">
     Automatic Manga and Metadata downloader 
@@ -61,7 +61,8 @@ Notifications can be sent to your devices using [Gotify](https://gotify.net/), [
 ### What this does and doesn't do
 
 Tranga (this git-repo) will open a port (standard 6531) and listen for requests to add Jobs to Monitor and/or download specific Manga.
-The configuration is all done through HTTP-Requests.
+The configuration is all done through HTTP-Requests. [Documentation](docs/API_Calls_v2.md)
+
 _**For a web-frontend use [tranga-website](https://github.com/C9Glax/tranga-website).**_
 
 This project downloads the images for a Manga from the specified Scanlation-Website and packages them with some metadata - from that same website - in a .cbz-archive (per chapter).  
@@ -89,6 +90,7 @@ That is why I wanted to create my own project, in a language I understand, and t
 - [PuppeteerSharp](https://www.puppeteersharp.com/)
 - [Html Agility Pack (HAP)](https://html-agility-pack.net/)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch)
+- [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
