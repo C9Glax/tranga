@@ -120,6 +120,7 @@ public readonly struct Chapter : IComparable
     {
         string path = Path.Join(TrangaSettings.downloadLocation, parentManga.folderName, $".{id}");
         File.WriteAllText(path, GetArchiveFilePath());
+        File.SetAttributes(path, FileAttributes.Hidden);
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))  
             File.SetUnixFileMode(path, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
     }
