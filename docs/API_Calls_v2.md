@@ -735,19 +735,19 @@ Returns the current state of the Image-compression setting.
 <details>
   <summary>Returns</summary>
 
-  Boolean
+  number
 </details>
 
 ### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Settings/CompressImages`
 
-Enables/Disables Imagecompression.
+Set the quality of the compression.
 
 <details>
   <summary>Request</summary>
 
-  | Parameter | Value      |
-  |-----------|------------|
-  | value     | true/false |
+  | Parameter | Value |
+  |-----------|-------|
+  | value     | 1-100 |
 </details>
 
 <details>

@@ -222,7 +222,7 @@ public abstract class MangaConnector : GlobalBase
 
     private void ProcessImage(string imagePath)
     {
-        if (!TrangaSettings.bwImages && !TrangaSettings.compressImages)
+        if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
             return;
         DateTime start = DateTime.Now;
         using Image image = Image.Load(imagePath);
@@ -231,9 +231,9 @@ public abstract class MangaConnector : GlobalBase
             image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
         image.SaveAsJpeg(imagePath, new JpegEncoder()
         {
-            Quality = TrangaSettings.compressImages ? 30 : 75
+            Quality = TrangaSettings.compression
         });
-        Log($"Image processing took {DateTime.Now.Subtract(start):s\\.fff} B/W:{TrangaSettings.bwImages} Compress:{TrangaSettings.compressImages}");
+        Log($"Image processing took {DateTime.Now.Subtract(start):s\\.fff} B/W:{TrangaSettings.bwImages} Compression: {TrangaSettings.compression}");
     }
 
     protected HttpStatusCode DownloadChapterImages(string[] imageUrls, Chapter chapter, RequestType requestType, string? referrer = null, ProgressToken? progressToken = null)

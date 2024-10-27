@@ -88,15 +88,16 @@ public partial class Server
     
     private ValueTuple<HttpStatusCode, object?> GetV2SettingsCompressImages(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, TrangaSettings.compressImages);
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, TrangaSettings.compression);
     }
     
     private ValueTuple<HttpStatusCode, object?> PostV2SettingsCompressImages(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
-        if (!requestParameters.TryGetValue("value", out string? trueFalseStr) ||
-            !bool.TryParse(trueFalseStr, out bool trueFalse))
+        if (!requestParameters.TryGetValue("value", out string? valueStr) ||
+            !int.TryParse(valueStr, out int value)
+            || value != int.Clamp(value, 1, 100))
             return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "Errors parsing 'value'");
-        TrangaSettings.UpdateCompressImages(trueFalse);
+        TrangaSettings.UpdateCompressImages(value);
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
     }
     
