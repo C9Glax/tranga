@@ -150,7 +150,7 @@ public class Bato : MangaConnector
 		HtmlNode chapterList =
 			result.htmlDocument.DocumentNode.SelectSingleNode("/html/body/div/main/div[3]/astro-island/div/div[2]/div/div/astro-slot");
 
-		Regex numberRex = new(@"\/title\/.+\/[0-9]+(-vol_([0-9]+))?-ch_([0-9\.]+)");
+		Regex numberRex = new(@"\/title\/.+\/([0-9])+(?:-vol_([0-9]+))?-ch_([0-9\.]+)");
 
 		foreach (HtmlNode chapterInfo in chapterList.SelectNodes("div"))
 		{
@@ -158,6 +158,7 @@ public class Bato : MangaConnector
 			string chapterUrl = infoNode.GetAttributeValue("href", "");
 
 			Match match = numberRex.Match(chapterUrl);
+			string id = match.Groups[1].Value;
 			string? volumeNumber = match.Groups[2].Success ? match.Groups[2].Value : null;
 			string chapterNumber = match.Groups[3].Value;
 			string chapterName = chapterNumber;
@@ -189,11 +190,8 @@ public class Bato : MangaConnector
 		}
 
 		string[] imageUrls = ParseImageUrlsFromHtml(requestUrl);
-
-		string comicInfoPath = Path.GetTempFileName();
-		File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
-
-		return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, "https://mangakatana.com/", progressToken:progressToken);
+		
+		return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage, progressToken:progressToken);
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)

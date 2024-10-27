@@ -189,10 +189,7 @@ public class ManhuaPlus : MangaConnector
         
         HtmlNode[] images = document.DocumentNode.SelectNodes("//a[contains(concat(' ',normalize-space(@class),' '),' readImg ')]/img").ToArray();
         List<string> urls = images.Select(node => node.GetAttributeValue("src", "")).ToList();
-            
-        string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(urls.ToArray(), chapter, RequestType.MangaImage, progressToken:progressToken);
     }
 }

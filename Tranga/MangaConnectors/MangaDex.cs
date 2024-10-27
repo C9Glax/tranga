@@ -247,7 +247,7 @@ public class MangaDex : MangaConnector
                 }
                 
                 if(chapterNum is not "null" && !chapters.Any(chp => chp.volumeNumber.Equals(volume) && chp.chapterNumber.Equals(chapterNum)))
-                    chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId));
+                    chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId, chapterId));
             }
         }
 
@@ -288,11 +288,8 @@ public class MangaDex : MangaConnector
         HashSet<string> imageUrls = new();
         foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
-
-        string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
         //Download Chapter-Images
-        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter, RequestType.MangaImage, progressToken:progressToken);
     }
 }
