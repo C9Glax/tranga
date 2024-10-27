@@ -41,7 +41,8 @@
     "volumeNumber": string,
     "chapterNumber": string,
     "url": string,
-    "fileName": string
+    "fileName": string,
+    "id": string?
 }
 ```
 
