@@ -146,6 +146,9 @@ public class JobBoss : GlobalBase
             return;
         }
         Regex idRex = new (@"(.*)\.json");
+        
+        //Load Manga-Files
+        ImportManga();
 
         //Load json-job-files
         foreach (FileInfo file  in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
@@ -166,9 +169,6 @@ public class JobBoss : GlobalBase
                 UpdateJobFile(job, file.Name);
             }
         }
-        
-        //Load Manga-Files
-        ImportManga();
 
         //Connect jobs to parent-jobs and add Publications to cache
         foreach (Job job in this.jobs)
