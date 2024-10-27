@@ -17,6 +17,8 @@ public static class TrangaSettings
     public static string userAgent { get; private set; } = DefaultUserAgent;
     public static bool bufferLibraryUpdates { get; private set; } = false;
     public static bool bufferNotifications { get; private set; } = false;
+    public static bool compressImages { get; private set; } = true;
+    public static bool bwImages { get; private set; } = false;
     [JsonIgnore] public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public static string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public static string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
@@ -49,7 +51,9 @@ public static class TrangaSettings
         ExportSettings();
     }
 
-    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null, int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null, bool? pBufferLibraryUpdates = null, bool? pBufferNotifications = null)
+    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null,
+        int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null,
+        bool? pBufferLibraryUpdates = null, bool? pBufferNotifications = null, bool? pCompressImages = null, bool? pbwImages = null)
     {
         if(pWorkingDirectory is null && File.Exists(settingsFilePath))
             LoadFromWorkingDirectory(workingDirectory);
@@ -60,6 +64,8 @@ public static class TrangaSettings
         aprilFoolsMode = pAprilFoolsMode ?? aprilFoolsMode;
         bufferLibraryUpdates = pBufferLibraryUpdates ?? bufferLibraryUpdates;
         bufferNotifications = pBufferNotifications ?? bufferNotifications;
+        compressImages = pCompressImages ?? compressImages;
+        bwImages = pbwImages ?? bwImages;
         Directory.CreateDirectory(downloadLocation);
         Directory.CreateDirectory(workingDirectory);
         ExportSettings();
@@ -96,6 +102,18 @@ public static class TrangaSettings
     public static void UpdateAprilFoolsMode(bool enabled)
     {
         aprilFoolsMode = enabled;
+        ExportSettings();
+    }
+
+    public static void UpdateCompressImages(bool enabled)
+    {
+        compressImages = enabled;
+        ExportSettings();
+    }
+
+    public static void UpdateBwImages(bool enabled)
+    {
+        bwImages = enabled;
         ExportSettings();
     }
 
@@ -190,6 +208,8 @@ public static class TrangaSettings
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
         jobj.Add("bufferLibraryUpdates", JToken.FromObject(bufferLibraryUpdates));
         jobj.Add("bufferNotifications", JToken.FromObject(bufferNotifications));
+        jobj.Add("compressImages", JToken.FromObject(compressImages));
+        jobj.Add("bwImages", JToken.FromObject(bwImages));
         return jobj;
     }
 
@@ -214,5 +234,9 @@ public static class TrangaSettings
             bufferLibraryUpdates = blu.Value<bool>()!;
         if (jobj.TryGetValue("bufferNotifications", out JToken? bn))
             bufferNotifications = bn.Value<bool>()!;
+        if (jobj.TryGetValue("compressImages", out JToken? ci))
+            compressImages = ci.Value<bool>()!;
+        if (jobj.TryGetValue("bwImages", out JToken? bwi))
+            bwImages = bwi.Value<bool>()!;
     }
 }

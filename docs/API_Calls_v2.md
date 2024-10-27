@@ -728,6 +728,67 @@ Enables/Disables April-Fools-Mode.
   | 500        | Parsing Error                  |
 </details>
 
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Settings/CompressImages`
+
+Returns the current state of the Image-compression setting.
+
+<details>
+  <summary>Returns</summary>
+
+  Boolean
+</details>
+
+### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Settings/CompressImages`
+
+Enables/Disables Imagecompression.
+
+<details>
+  <summary>Request</summary>
+
+  | Parameter | Value      |
+  |-----------|------------|
+  | value     | true/false |
+</details>
+
+<details>
+  <summary>Returns</summary>
+
+  | StatusCode | Meaning                        |
+  |------------|--------------------------------|
+  | 500        | Parsing Error                  |
+</details>
+
+### <sub>![GET](https://img.shields.io/badge/GET-0f0)</sub> `/v2/Settings/BWImages`
+
+Returns the current state of the Black/White Image setting.
+
+<details>
+  <summary>Returns</summary>
+
+Boolean
+</details>
+
+### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Settings/BWImages`
+
+Enables/Disables converting Images to Black and White.
+
+<details>
+  <summary>Request</summary>
+
+  | Parameter | Value      |
+  |-----------|------------|
+  | value     | true/false |
+</details>
+
+<details>
+  <summary>Returns</summary>
+
+| StatusCode | Meaning                        |
+  |------------|--------------------------------|
+| 500        | Parsing Error                  |
+</details>
+
+
 ### <sub>![POST](https://img.shields.io/badge/POST-00f)</sub> `/v2/Settings/DownloadLocation`
 
 Updates the default Download-Location.

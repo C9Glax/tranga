@@ -2,6 +2,10 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Binarization;
 using Tranga.Jobs;
 using static System.IO.UnixFileMode;
 
@@ -216,6 +220,22 @@ public abstract class MangaConnector : GlobalBase
         return requestResult.statusCode;
     }
 
+    private void ProcessImage(string imagePath)
+    {
+        if (!TrangaSettings.bwImages && !TrangaSettings.compressImages)
+            return;
+        DateTime start = DateTime.Now;
+        using Image image = Image.Load(imagePath);
+        File.Delete(imagePath);
+        if(TrangaSettings.bwImages) 
+            image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
+        image.SaveAsJpeg(imagePath, new JpegEncoder()
+        {
+            Quality = TrangaSettings.compressImages ? 30 : 75
+        });
+        Log($"Image processing took {DateTime.Now.Subtract(start):s\\.fff} B/W:{TrangaSettings.bwImages} Compress:{TrangaSettings.compressImages}");
+    }
+
     protected HttpStatusCode DownloadChapterImages(string[] imageUrls, Chapter chapter, RequestType requestType, string? referrer = null, ProgressToken? progressToken = null)
     {
         string saveArchiveFilePath = chapter.GetArchiveFilePath();
@@ -254,11 +274,14 @@ public abstract class MangaConnector : GlobalBase
             progressToken?.Complete();
             return HttpStatusCode.NoContent;
         }
+        
         foreach (string imageUrl in imageUrls)
         {
             string extension = imageUrl.Split('.')[^1].Split('?')[0];
-            Log($"Downloading image {chapterNum + 1:000}/{imageUrls.Length:000}"); //TODO
-            HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapterNum++}.{extension}"), requestType, referrer);
+            Log($"Downloading image {chapterNum + 1:000}/{imageUrls.Length:000}");
+            string imagePath = Path.Join(tempFolder, $"{chapterNum++}.{extension}");
+            HttpStatusCode status = DownloadImage(imageUrl, imagePath, requestType, referrer);
+            ProcessImage(imagePath);
             Log($"{saveArchiveFilePath} {chapterNum + 1:000}/{imageUrls.Length:000} {status}");
             if ((int)status < 200 || (int)status >= 300)
             {

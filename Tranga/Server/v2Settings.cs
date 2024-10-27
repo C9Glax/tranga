@@ -86,6 +86,34 @@ public partial class Server
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
     }
     
+    private ValueTuple<HttpStatusCode, object?> GetV2SettingsCompressImages(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, TrangaSettings.compressImages);
+    }
+    
+    private ValueTuple<HttpStatusCode, object?> PostV2SettingsCompressImages(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        if (!requestParameters.TryGetValue("value", out string? trueFalseStr) ||
+            !bool.TryParse(trueFalseStr, out bool trueFalse))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "Errors parsing 'value'");
+        TrangaSettings.UpdateCompressImages(trueFalse);
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
+    }
+    
+    private ValueTuple<HttpStatusCode, object?> GetV2SettingsBwImages(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, TrangaSettings.bwImages);
+    }
+    
+    private ValueTuple<HttpStatusCode, object?> PostV2SettingsBwImages(GroupCollection groups, Dictionary<string, string> requestParameters)
+    {
+        if (!requestParameters.TryGetValue("value", out string? trueFalseStr) ||
+            !bool.TryParse(trueFalseStr, out bool trueFalse))
+            return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.InternalServerError, "Errors parsing 'value'");
+        TrangaSettings.UpdateBwImages(trueFalse);
+        return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, null);
+    }
+    
     private ValueTuple<HttpStatusCode, object?> PostV2SettingsDownloadLocation(GroupCollection groups, Dictionary<string, string> requestParameters)
     {
         if (!requestParameters.TryGetValue("location", out string? folderPath))
