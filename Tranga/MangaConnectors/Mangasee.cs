@@ -220,10 +220,7 @@ public class Mangasee : MangaConnector
         List<string> urls = new();
         foreach(HtmlNode galleryImage in images)
             urls.Add(galleryImage.GetAttributeValue("src", ""));
-            
-        string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
         
-        return DownloadChapterImages(urls.ToArray(), chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(urls.ToArray(), chapter, RequestType.MangaImage, progressToken:progressToken);
     }
 }

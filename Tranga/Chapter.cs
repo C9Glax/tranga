@@ -1,5 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using static System.IO.UnixFileMode;
 
 namespace Tranga;
 
@@ -17,23 +19,21 @@ public readonly struct Chapter : IComparable
     public string url { get; }
     // ReSharper disable once MemberCanBePrivate.Global
     public string fileName { get; }
+    public string? id { get; }
     
     private static readonly Regex LegalCharacters = new (@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
     private static readonly Regex IllegalStrings = new(@"(Vol(ume)?|Ch(apter)?)\.?", RegexOptions.IgnoreCase);
     private static readonly Regex Digits = new(@"[0-9\.]*");
-    public Chapter(Manga parentManga, string? name, string? volumeNumber, string chapterNumber, string url)
+    public Chapter(Manga parentManga, string? name, string? volumeNumber, string chapterNumber, string url, string? id = null)
     {
         this.parentManga = parentManga;
         this.name = name;
         this.volumeNumber = volumeNumber is not null ? string.Concat(Digits.Matches(volumeNumber).Select(x => x.Value)) : "0";
         this.chapterNumber = string.Concat(Digits.Matches(chapterNumber).Select(x => x.Value));
         this.url = url;
+        this.id = id;
         
-        string chapterVolNumStr;
-        if (volumeNumber is not null && volumeNumber.Length > 0)
-            chapterVolNumStr = $"Vol.{volumeNumber} Ch.{chapterNumber}";
-        else
-            chapterVolNumStr = $"Ch.{chapterNumber}";
+        string chapterVolNumStr = $"Vol.{this.volumeNumber} Ch.{chapterNumber}";
 
         if (name is not null && name.Length > 0)
         {
@@ -87,24 +87,44 @@ public readonly struct Chapter : IComparable
         string mangaDirectory = Path.Join(TrangaSettings.downloadLocation, parentManga.folderName);
         if (!Directory.Exists(mangaDirectory))
             return false;
-        FileInfo[] archives = new DirectoryInfo(mangaDirectory).GetFiles("*.cbz");
-        Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
-
-        Chapter t = this;
-        string correctPath = GetArchiveFilePath();
-        FileInfo? archive = archives.FirstOrDefault(archive =>
+        FileInfo? mangaArchive = null;
+        string markerPath = Path.Join(mangaDirectory, $".{id}");
+        if (this.id is not null
+            && File.Exists(markerPath)
+            && File.Exists(File.ReadAllText(markerPath)))
         {
-            Match m = volChRex.Match(archive.Name);
-            /*Uncommenting this section will only allow *Version without Volume number* -> *Version with Volume number* but not the other way
-            if (m.Groups[1].Success)
-                return m.Groups[1].Value == t.volumeNumber && m.Groups[2].Value == t.chapterNumber;
-            else*/
-                return m.Groups[2].Value == t.chapterNumber;
-        });
-        if(archive is not null && archive.FullName != correctPath)
-            archive.MoveTo(correctPath, true);
-        return (archive is not null);
+            mangaArchive = new FileInfo(File.ReadAllText(markerPath));
+        }
+        else
+        {
+            FileInfo[] archives = new DirectoryInfo(mangaDirectory).GetFiles("*.cbz");
+            Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
+
+            Chapter t = this;
+            mangaArchive = archives.FirstOrDefault(archive =>
+            {
+                Match m = volChRex.Match(archive.Name);
+                if (m.Groups[1].Success)
+                    return m.Groups[1].Value == t.volumeNumber && m.Groups[2].Value == t.chapterNumber;
+                else
+                    return m.Groups[2].Value == t.chapterNumber;
+            });
+        }
+        string correctPath = GetArchiveFilePath();
+        if(mangaArchive is not null && mangaArchive.FullName != correctPath)
+            mangaArchive.MoveTo(correctPath, true);
+        return (mangaArchive is not null);
     }
+    
+    public void CreateChapterMarker()
+    {
+        string path = Path.Join(TrangaSettings.downloadLocation, parentManga.folderName, $".{id}");
+        File.WriteAllText(path, GetArchiveFilePath());
+        File.SetAttributes(path, FileAttributes.Hidden);
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))  
+            File.SetUnixFileMode(path, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
+    }
+    
     /// <summary>
     /// Creates full file path of chapter-archive
     /// </summary>

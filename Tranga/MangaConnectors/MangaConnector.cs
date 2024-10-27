@@ -216,8 +216,10 @@ public abstract class MangaConnector : GlobalBase
         return requestResult.statusCode;
     }
 
-    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, string saveArchiveFilePath, RequestType requestType, string? comicInfoPath = null, string? referrer = null, ProgressToken? progressToken = null)
+    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, Chapter chapter, RequestType requestType, string? referrer = null, ProgressToken? progressToken = null)
     {
+        string saveArchiveFilePath = chapter.GetArchiveFilePath();
+        
         if (progressToken?.cancellationRequested ?? false)
             return HttpStatusCode.RequestTimeout;
         Log($"Downloading Images for {saveArchiveFilePath}");
@@ -241,7 +243,7 @@ public abstract class MangaConnector : GlobalBase
         //Create a temporary folder to store images
         string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
 
-        int chapter = 0;
+        int chapterNum = 0;
         //Download all Images to temporary Folder
         if (imageUrls.Length == 0)
         {
@@ -255,9 +257,9 @@ public abstract class MangaConnector : GlobalBase
         foreach (string imageUrl in imageUrls)
         {
             string extension = imageUrl.Split('.')[^1].Split('?')[0];
-            Log($"Downloading image {chapter + 1:000}/{imageUrls.Length:000}"); //TODO
-            HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapter++}.{extension}"), requestType, referrer);
-            Log($"{saveArchiveFilePath} {chapter + 1:000}/{imageUrls.Length:000} {status}");
+            Log($"Downloading image {chapterNum + 1:000}/{imageUrls.Length:000}"); //TODO
+            HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapterNum++}.{extension}"), requestType, referrer);
+            Log($"{saveArchiveFilePath} {chapterNum + 1:000}/{imageUrls.Length:000} {status}");
             if ((int)status < 200 || (int)status >= 300)
             {
                 progressToken?.Complete();
@@ -271,16 +273,14 @@ public abstract class MangaConnector : GlobalBase
             progressToken?.Increment();
         }
         
-        if(comicInfoPath is not null){
-            File.Copy(comicInfoPath, Path.Join(tempFolder, "ComicInfo.xml"));
-            File.Delete(comicInfoPath); //Delete tmp-file
-        }
+        File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
         
         Log($"Creating archive {saveArchiveFilePath}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute);
+        chapter.CreateChapterMarker();
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
         Directory.Delete(tempFolder, true); //Cleanup
         
         progressToken?.Complete();
