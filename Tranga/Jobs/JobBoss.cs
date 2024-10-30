@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Tranga.MangaConnectors;
+using static System.IO.UnixFileMode;
 
 namespace Tranga.Jobs;
 
@@ -146,6 +148,8 @@ public class JobBoss : GlobalBase
         if (!Directory.Exists(TrangaSettings.jobsFolderPath)) //No jobs to load
         {
             Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
             return;
         }
         Regex idRex = new (@"(.*)\.json");
