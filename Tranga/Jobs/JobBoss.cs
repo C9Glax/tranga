@@ -203,7 +203,8 @@ public class JobBoss : GlobalBase
             }
             catch (Exception e)
             {
-                Log(e.ToString());
+                Log($"Error deleting {oldFilePath} job {job.id}\n{e}");
+                return; //Don't export a new file when we haven't actually deleted the old one
             }
         }
 
