@@ -89,13 +89,15 @@ public readonly struct Chapter : IComparable
             return false;
         FileInfo? mangaArchive = null;
         string markerPath = Path.Join(mangaDirectory, $".{id}");
-        if (this.id is not null
-            && File.Exists(markerPath)
-            && File.Exists(File.ReadAllText(markerPath)))
+        if (this.id is not null && File.Exists(markerPath))
         {
-            mangaArchive = new FileInfo(File.ReadAllText(markerPath));
+            if(File.Exists(File.ReadAllText(markerPath)))
+                mangaArchive = new FileInfo(File.ReadAllText(markerPath));
+            else
+                File.Delete(markerPath);
         }
-        else
+        
+        if(mangaArchive is null)
         {
             FileInfo[] archives = new DirectoryInfo(mangaDirectory).GetFiles("*.cbz");
             Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
@@ -110,6 +112,7 @@ public readonly struct Chapter : IComparable
                     return m.Groups[2].Value == t.chapterNumber;
             });
         }
+        
         string correctPath = GetArchiveFilePath();
         if(mangaArchive is not null && mangaArchive.FullName != correctPath)
             mangaArchive.MoveTo(correctPath, true);

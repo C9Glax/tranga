@@ -108,9 +108,10 @@ public class ManhuaPlus : MangaConnector
             Log("No genres found");
         }
 
-        string yearNodeStr = document.DocumentNode
-            .SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-clock ')]/../span").InnerText.Replace("\n", "");
-        int year = int.Parse(yearNodeStr.Split(' ')[0].Split('/')[^1]);
+        Regex yearRex = new(@"(?:[0-9]{1,2}\/){2}([0-9]{2,4}) [0-9]{1,2}:[0-9]{1,2}");
+        HtmlNode yearNode = document.DocumentNode.SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-clock ')]/../span");
+        Match match = yearRex.Match(yearNode.InnerText);
+        int year = match.Success && match.Groups[1].Success ? int.Parse(match.Groups[1].Value) : 1960;
 
         status = document.DocumentNode.SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-rss ')]/../span").InnerText.Replace("\n", "");
         switch (status.ToLower())
