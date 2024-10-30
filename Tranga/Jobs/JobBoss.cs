@@ -17,18 +17,21 @@ public class JobBoss : GlobalBase
         Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
     }
 
-    public void AddJob(Job job)
+    public bool AddJob(Job job, string? jobFile = null)
     {
         if (ContainsJobLike(job))
         {
             Log($"Already Contains Job {job}");
+            return false;
         }
         else
         {
             Log($"Added {job}");
-            this.jobs.Add(job);
-            UpdateJobFile(job);
+            if (!this.jobs.Add(job))
+                return false;
+            UpdateJobFile(job, jobFile);
         }
+        return true;
     }
 
     public void AddJobs(IEnumerable<Job> jobsToAdd)
@@ -162,8 +165,8 @@ public class JobBoss : GlobalBase
             else
             {
                 Log($"Adding Job {job}");
-                this.jobs.Add(job);
-                UpdateJobFile(job, file.Name);
+                if(!AddJob(job, file.Name)) //If we detect a duplicate, delete the file.
+                    file.Delete();
             }
         }
 
