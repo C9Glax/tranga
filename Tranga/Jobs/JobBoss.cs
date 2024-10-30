@@ -155,7 +155,7 @@ public class JobBoss : GlobalBase
         Regex idRex = new (@"(.*)\.json");
 
         //Load json-job-files
-        foreach (FileInfo file  in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
+        foreach (FileInfo file in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
         {
             Log($"Adding {file.Name}");
             Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
@@ -190,7 +190,7 @@ public class JobBoss : GlobalBase
 
         string[] coverFiles = Directory.GetFiles(TrangaSettings.coverImageCache);
         foreach(string fileName in coverFiles.Where(fileName => !GetAllCachedManga().Any(manga => manga.coverFileNameInCache == fileName)))
-                File.Delete(fileName);
+            File.Delete(fileName);
     }
 
     internal void UpdateJobFile(Job job, string? oldFile = null)
@@ -223,6 +223,8 @@ public class JobBoss : GlobalBase
             while(IsFileInUse(newJobFilePath))
                 Thread.Sleep(10);
             File.WriteAllText(newJobFilePath, jobStr);
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                File.SetUnixFileMode(newJobFilePath, UserRead | UserWrite | GroupRead | OtherRead);
         }
     }
 
