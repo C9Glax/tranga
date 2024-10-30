@@ -145,13 +145,11 @@ public class JobBoss : GlobalBase
 
     private void LoadJobsList(HashSet<MangaConnector> connectors)
     {
+        Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
         if (!Directory.Exists(TrangaSettings.jobsFolderPath)) //No jobs to load
-        {
-            Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
             return;
-        }
         Regex idRex = new (@"(.*)\.json");
 
         //Load json-job-files
