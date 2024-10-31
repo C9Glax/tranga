@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp.Processing;
 using System.Net;
 using System.Text.RegularExpressions;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using Tranga.Jobs;
 using Tranga.MangaConnectors;
 
@@ -99,7 +100,7 @@ public partial class Server
                 ? new Size(width, (width / image.Width) * image.Height)
                 : new Size((height / image.Height) * image.Width, height);
             
-            image.Mutate(x => x.Resize(newSize));
+            image.Mutate(x => x.Resize(newSize, CubicResampler.Robidoux, true));
         }
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, image);
     }
