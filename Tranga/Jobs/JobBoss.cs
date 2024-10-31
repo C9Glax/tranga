@@ -28,9 +28,9 @@ public class JobBoss : GlobalBase
         }
         else
         {
-            Log($"Added {job}");
             if (!this.jobs.Add(job))
                 return false;
+            Log($"Added {job}");
             UpdateJobFile(job, jobFile);
         }
         return true;
