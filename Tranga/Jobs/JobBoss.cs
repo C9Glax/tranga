@@ -167,8 +167,8 @@ public class JobBoss : GlobalBase
             else
             {
                 Log($"Adding Job {job}");
-                if(!AddJob(job, file.Name)) //If we detect a duplicate, delete the file.
-                    file.Delete();
+                if(!AddJob(job, file.FullName)) //If we detect a duplicate, delete the file.
+                    file.MoveTo(string.Concat(file.FullName, ".failed"));
             }
         }
 
