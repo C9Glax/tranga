@@ -224,6 +224,7 @@ public partial class Server : GlobalBase, IDisposable
             {
                 response.ContentType = image.Metadata.DecodedImageFormat?.DefaultMimeType ?? PngFormat.Instance.DefaultMimeType;
                 response.AddHeader("Cache-Control", "public, max-age=3600");
+                response.AddHeader("Expires", $"{DateTime.Now.AddHours(1):ddd\\,\\ dd\\ MMM\\ yyyy\\ HH\\:mm\\:ss} GMT");
                 string lastModifiedStr = "";
                 if (image.Metadata.IptcProfile is not null)
                 {
