@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using SixLabors.ImageSharp.Metadata.Profiles.Iptc;
 using ZstdSharp;
 
 namespace Tranga.Server;
@@ -215,20 +217,33 @@ public partial class Server : GlobalBase, IDisposable
             if (content is Stream stream)
             {
                 response.ContentType = "text/plain";
-                response.AddHeader("Cache-Control", "no-store");
+                response.AddHeader("Cache-Control", "private, no-store");
                 stream.CopyTo(compressor);
                 stream.Close();
             }else if (content is Image image)
             {
                 response.ContentType = image.Metadata.DecodedImageFormat?.DefaultMimeType ?? PngFormat.Instance.DefaultMimeType;
-                response.AddHeader("Cache-Control", "max-age=600");
+                response.AddHeader("Cache-Control", "public, max-age=3600");
+                string lastModifiedStr = "";
+                if (image.Metadata.IptcProfile is not null)
+                {
+                    DateTime date = DateTime.ParseExact(image.Metadata.IptcProfile.GetValues(IptcTag.CreatedDate).First().Value, "yyyyMMdd",null);
+                    DateTime time = DateTime.ParseExact(image.Metadata.IptcProfile.GetValues(IptcTag.CreatedTime).First().Value, "HHmmssK",null);
+                    lastModifiedStr = $"{date:ddd\\,\\ dd\\ MMM\\ yyyy} {time:HH\\:mm\\:ss} GMT";
+                }else if (image.Metadata.ExifProfile is not null)
+                {
+                    DateTime datetime = DateTime.ParseExact(image.Metadata.ExifProfile.Values.FirstOrDefault(value => value.Tag == ExifTag.DateTime)?.ToString() ?? "2000:01:01 01:01:01", "yyyy:MM:dd HH:mm:ss", null);
+                    lastModifiedStr = $"{datetime:ddd\\,\\ dd\\ MMM\\ yyyy\\ HH\\:mm\\:ss} GMT";
+                }
+                if(lastModifiedStr.Length>0)
+                    response.AddHeader("Last-Modified", lastModifiedStr);
                 image.Save(compressor, image.Metadata.DecodedImageFormat ?? PngFormat.Instance);
                 image.Dispose();
             }
             else
             {
                 response.ContentType = "application/json";
-                response.AddHeader("Cache-Control", "no-store");
+                response.AddHeader("Cache-Control", "private, no-store");
                 if(content is not null)
                     new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))).CopyTo(compressor);
                 else
