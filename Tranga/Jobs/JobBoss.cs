@@ -28,9 +28,9 @@ public class JobBoss : GlobalBase
         }
         else
         {
-            Log($"Added {job}");
             if (!this.jobs.Add(job))
                 return false;
+            Log($"Added {job}");
             UpdateJobFile(job, jobFile);
         }
         return true;
@@ -168,8 +168,12 @@ public class JobBoss : GlobalBase
             else
             {
                 Log($"Adding Job {job}");
-                if(!AddJob(job, file.Name)) //If we detect a duplicate, delete the file.
-                    file.Delete();
+                if (!AddJob(job, file.FullName)) //If we detect a duplicate, delete the file.
+                {
+                    string path = string.Concat(file.FullName, ".failed");
+                    file.MoveTo(path);
+                    Log($"Duplicate detected or otherwise not able to add job to list.\nMoved job {job} to {path}");
+                }
             }
         }
 
