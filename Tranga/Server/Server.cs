@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
+using ZstdSharp;
 
 namespace Tranga.Server;
 
@@ -205,32 +206,36 @@ public partial class Server : GlobalBase, IDisposable
         response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
         response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
         response.AddHeader("Access-Control-Max-Age", "1728000");
-        response.AppendHeader("Access-Control-Allow-Origin", "*");
-
-
+        response.AddHeader("Access-Control-Allow-Origin", "*");
+        response.AddHeader("Content-Encoding", "zstd");
+        
+        using CompressionStream compressor = new (response.OutputStream, 5);
         try
         {
             if (content is Stream stream)
             {
                 response.ContentType = "text/plain";
-                stream.CopyTo(response.OutputStream);
+                response.AddHeader("Cache-Control", "no-store");
+                stream.CopyTo(compressor);
                 stream.Close();
             }else if (content is Image image)
             {
                 response.ContentType = image.Metadata.DecodedImageFormat?.DefaultMimeType ?? PngFormat.Instance.DefaultMimeType;
                 response.AddHeader("Cache-Control", "max-age=600");
-                image.Save(response.OutputStream, image.Metadata.DecodedImageFormat ?? PngFormat.Instance);
+                image.Save(compressor, image.Metadata.DecodedImageFormat ?? PngFormat.Instance);
                 image.Dispose();
             }
             else
             {
                 response.ContentType = "application/json";
                 response.AddHeader("Cache-Control", "no-store");
-                response.OutputStream.Write(content is not null
-                    ? Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))
-                    : Array.Empty<byte>());
+                if(content is not null)
+                    new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(content))).CopyTo(compressor);
+                else
+                    compressor.Write(Array.Empty<byte>());
             }
 
+            compressor.Flush();
             response.OutputStream.Close();
         }
         catch (HttpListenerException e)
