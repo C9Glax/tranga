@@ -26,6 +26,7 @@ public partial class Tranga : GlobalBase
             new MangaLife(this),
             new ManhuaPlus(this),
             new MangaHere(this),
+            new AsuraToon(this),
         };
         foreach(DirectoryInfo dir in new DirectoryInfo(Path.GetTempPath()).GetDirectories("trangatemp"))//Cleanup old temp folders
             dir.Delete();
