@@ -150,10 +150,9 @@ public class JobBoss : GlobalBase
             File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
         if (!Directory.Exists(TrangaSettings.jobsFolderPath)) //No jobs to load
             return;
-        Regex idRex = new (@"(.*)\.json");
 
         //Load json-job-files
-        foreach (FileInfo file in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
+        foreach (FileInfo file in Directory.GetFiles(TrangaSettings.jobsFolderPath, "*.json").Select(f => new FileInfo(f)))
         {
             Log($"Adding {file.Name}");
             Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
