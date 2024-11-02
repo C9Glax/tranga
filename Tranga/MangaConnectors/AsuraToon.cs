@@ -58,7 +58,7 @@ public class AsuraToon : MangaConnector
 		if (mangaList.Count < 1)
 			return Array.Empty<Manga>();
 
-		IEnumerable<string> urls = mangaList.Select(a => a.GetAttributeValue("href", ""));
+		IEnumerable<string> urls = mangaList.Select(a => $"https://asuracomic.net/{a.GetAttributeValue("href", "")}");
 		
 		List<Manga> ret = new();
 		foreach (string url in urls)
@@ -79,7 +79,7 @@ public class AsuraToon : MangaConnector
 		HtmlNodeCollection genreNodes = document.DocumentNode.SelectNodes("//h3[text()='Genres']/../div/button");
 		string[] tags = genreNodes.Select(b => b.InnerText).ToArray();
 		
-		HtmlNode statusNode = document.DocumentNode.SelectSingleNode("//h3[text()='Genres']/../h3[2]");
+		HtmlNode statusNode = document.DocumentNode.SelectSingleNode("//h3[text()='Status']/../h3[2]");
 		Manga.ReleaseStatusByte releaseStatus = statusNode.InnerText.ToLower() switch
 		{
 			"ongoing" => Manga.ReleaseStatusByte.Continuing,
@@ -92,13 +92,13 @@ public class AsuraToon : MangaConnector
 		};
 		
 		HtmlNode coverNode = 
-			document.DocumentNode.SelectSingleNode("/html/body/div[3]/div/div/div/div[1]/div/div[1]/div[1]/div[2]/div[2]/div[1]/img");
+			document.DocumentNode.SelectSingleNode("//img[@alt='poster']");
 		string coverUrl = coverNode.GetAttributeValue("src", "");
 		string coverFileNameInCache = SaveCoverImageToCache(coverUrl, publicationId, RequestType.MangaCover);
 		
 		HtmlNode titleNode = 
-			document.DocumentNode.SelectSingleNode("/html/body/div[3]/div/div/div/div[1]/div/div[1]/div[1]/div[2]/div[2]/div[2]/div[1]/span");
-		string sortName = titleNode.InnerText;
+			document.DocumentNode.SelectSingleNode("//title");
+		string sortName = Regex.Match(titleNode.InnerText, @"(.*) - Asura Scans").Groups[1].Value;
 		
 		HtmlNode descriptionNode =
 			document.DocumentNode.SelectSingleNode("//h3[starts-with(text(),'Synopsis')]/../span");
@@ -108,8 +108,8 @@ public class AsuraToon : MangaConnector
 		HtmlNodeCollection artistNodes = document.DocumentNode.SelectNodes("//h3[text()='Artist']/../h3[not(text()='Author' or text()='_')]");
 		List<string> authors = authorNodes.Select(a => a.InnerText).Concat(artistNodes.Select(a => a.InnerText)).ToList();
 
-		HtmlNode? firstChapterNode = document.DocumentNode.SelectSingleNode("//a[contains(@href, 'chapter/1')]");
-		int? year = int.Parse(firstChapterNode?.InnerText ?? "2000");
+		HtmlNode? firstChapterNode = document.DocumentNode.SelectSingleNode("//a[contains(@href, 'chapter/1')]/../following-sibling::h3");
+		int? year = int.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
 		
 		Manga manga = new (sortName, authors, description, altTitles, tags, coverUrl, coverFileNameInCache, links,
 			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
@@ -144,7 +144,7 @@ public class AsuraToon : MangaConnector
 
 		List<Chapter> ret = new();
 
-		HtmlNodeCollection chapterURLNodes = result.htmlDocument.DocumentNode.SelectNodes("//a[contains(@href, '/chapter/')]/");
+		HtmlNodeCollection chapterURLNodes = result.htmlDocument.DocumentNode.SelectNodes("//a[contains(@href, '/chapter/')]");
 		Regex infoRex = new(@"Chapter ([0-9]+)(.*)?");
 
 		foreach (HtmlNode chapterInfo in chapterURLNodes)
@@ -153,7 +153,7 @@ public class AsuraToon : MangaConnector
 
 			Match match = infoRex.Match(chapterInfo.InnerText);
 			string chapterNumber = match.Groups[1].Value;
-			string? chapterName = match.Groups[2].Success ? match.Groups[2].Value : null;
+			string? chapterName = match.Groups[2].Success && match.Groups[2].Length > 0 ? match.Groups[2].Value : null;
 			string url = $"https://asuracomic.net/series/{chapterUrl}";
 			ret.Add(new Chapter(manga, chapterName, null, chapterNumber, url));
 		}
@@ -201,7 +201,7 @@ public class AsuraToon : MangaConnector
 		}
 
 		HtmlNodeCollection images =
-			requestResult.htmlDocument.DocumentNode.SelectNodes("\\img[contains(@alt, 'chapter page')]");
+			requestResult.htmlDocument.DocumentNode.SelectNodes("//img[contains(@alt, 'chapter page')]");
 
 		return images.Select(i => i.GetAttributeValue("src", "")).ToArray();
 	}
