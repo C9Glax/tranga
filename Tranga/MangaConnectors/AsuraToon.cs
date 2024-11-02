@@ -153,7 +153,7 @@ public class AsuraToon : MangaConnector
 
 			Match match = infoRex.Match(chapterInfo.InnerText);
 			string chapterNumber = match.Groups[1].Value;
-			string? chapterName = match.Groups[2].Success && match.Groups[2].Length > 0 ? match.Groups[2].Value : null;
+			string? chapterName = match.Groups[2].Success && match.Groups[2].Length > 1 ? match.Groups[2].Value : null;
 			string url = $"https://asuracomic.net/series/{chapterUrl}";
 			ret.Add(new Chapter(manga, chapterName, null, chapterNumber, url));
 		}
