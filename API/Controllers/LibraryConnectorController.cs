@@ -1,4 +1,5 @@
 ﻿using API.Schema;
+using API.Schema.LibraryConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,25 +13,24 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     [HttpGet]
     public IActionResult GetAllConnectors()
     {
-        
+        return NotFound(new ProblemResponse("Not implemented"));
     }
     
     [HttpGet("Types")]
     public IActionResult GetConnectorTypes()
     {
-        
+        return NotFound(new ProblemResponse("Not implemented"));
     }
     
     [HttpPost("Create")]
-    public IActionResult CreateConnector([FromBody] details)
+    public IActionResult CreateConnector([FromBody]LibraryConnector libraryConnector)
     {
-        
+        return NotFound(new ProblemResponse("Not implemented"));
     }
     
     [HttpDelete("{id}")]
     public IActionResult DeleteConnector(string id)
     {
-        
+        return NotFound(new ProblemResponse("Not implemented"));
     }
-    
 }
