@@ -281,7 +281,9 @@ public abstract class MangaConnector : GlobalBase
             File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
         Directory.Delete(tempFolder, true); //Cleanup
         
+        Log("Created archive.");
         progressToken?.Complete();
+        Log("Download complete.");
         return HttpStatusCode.OK;
     }
     
