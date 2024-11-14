@@ -14,4 +14,15 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="log4net" Version="3.0.3" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\API\API.csproj" />
+      <ProjectReference Include="..\Tranga\Tranga.csproj" />
+    </ItemGroup>
+
 </Project>

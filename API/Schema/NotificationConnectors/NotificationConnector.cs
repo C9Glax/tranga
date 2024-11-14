@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Schema.NotificationConnectors;
 
 [PrimaryKey("NotificationConnectorId")]
-public abstract class NotificationConnector(string notificationConnectorId, Tranga.NotificationConnectors.NotificationConnector.NotificationConnectorType notificationConnectorType)
+public abstract class NotificationConnector(string notificationConnectorId, NotificationConnectorType notificationConnectorType)
 {
     [MaxLength(64)]
     public string NotificationConnectorId { get; } = notificationConnectorId;
 
-    public Tranga.NotificationConnectors.NotificationConnector.NotificationConnectorType NotificationConnectorType
+    public NotificationConnectorType NotificationConnectorType
     {
         get;
         init;

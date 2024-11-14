@@ -1,78 +1,76 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using API.Schema;
 using HtmlAgilityPack;
-using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
 
 public class Bato : MangaConnector
 {
-	
-	public Bato(GlobalBase clone) : base(clone, "Bato", ["en"], ["bato.to"])
+	//["en"], ["bato.to"]
+	public Bato(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
 	{
-		this.downloadClient = new HttpDownloadClient(clone);
 	}
 
-	public override Manga[] GetManga(string publicationTitle = "")
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
 	{
-		Log($"Searching Publications. Term=\"{publicationTitle}\"");
+		log.Info($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://bato.to/v3x-search?word={sanitizedTitle}&lang=en";
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-			return Array.Empty<Manga>();
+			return [];
 
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
-			return Array.Empty<Manga>();
+			log.Info($"Failed to retrieve site");
+			return [];
 		}
 			
-		Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-		Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+		(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+		log.Info($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
 		return publications;
 	}
 
-	public override Manga? GetMangaFromId(string publicationId)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
 	{
 		return GetMangaFromUrl($"https://bato.to/title/{publicationId}");
 	}
 
-	public override Manga? GetMangaFromUrl(string url)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
 	{
 		RequestResult requestResult = downloadClient.MakeRequest(url, RequestType.MangaInfo);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return null;
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
+			log.Info($"Failed to retrieve site");
 			return null;
 		}
 		return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1], url);
 	}
 
-	private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
 	{
 		HtmlNode mangaList = document.DocumentNode.SelectSingleNode("//div[@data-hk='0-0-2']");
 		if (!mangaList.ChildNodes.Any(node => node.Name == "div"))
-			return Array.Empty<Manga>();
+			return [];
 
 		List<string> urls = mangaList.ChildNodes
 			.Select(node => $"https://bato.to{node.Descendants("div").First().FirstChild.GetAttributeValue("href", "")}").ToList();
 		
-		HashSet<Manga> ret = new();
+		HashSet<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
 		foreach (string url in urls)
 		{
-			Manga? manga = GetMangaFromUrl(url);
+			(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
 			if (manga is not null)
-				ret.Add((Manga)manga);
+				ret.Add(((Manga, Author[], MangaTag[], Link[], MangaAltTitle[]))manga);
 		}
 
 		return ret.ToArray();
 	}
 
-	private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
 	{
 		HtmlNode infoNode = document.DocumentNode.SelectSingleNode("/html/body/div/main/div[1]/div[2]");
 
@@ -82,48 +80,48 @@ public class Bato : MangaConnector
 
 		string[] altTitlesList = infoNode.ChildNodes[1].ChildNodes[2].InnerText.Split('/');
 		int i = 0;
-		Dictionary<string, string> altTitles = altTitlesList.ToDictionary(s => i++.ToString(), s => s);
+		MangaAltTitle[] altTitles = altTitlesList.Select(at => new MangaAltTitle(i++.ToString(), at)).ToArray();
 
 		string posterUrl = document.DocumentNode.SelectNodes("//img")
 			.First(child => child.GetAttributeValue("data-hk", "") == "0-1-0").GetAttributeValue("src", "").Replace("&amp;", "&");
-		string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
 		List<HtmlNode> genreNodes = document.DocumentNode.SelectSingleNode("//b[text()='Genres:']/..").SelectNodes("span").ToList();
-		string[] tags = genreNodes.Select(node => node.FirstChild.InnerText).ToArray();
+		MangaTag[] tags = genreNodes.Select(gn => new MangaTag(gn.FirstChild.InnerText)).ToArray();
 
 		List<HtmlNode> authorsNodes = infoNode.ChildNodes[1].ChildNodes[3].Descendants("a").ToList();
-		List<string> authors = authorsNodes.Select(node => node.InnerText.Replace("amp;", "")).ToList();
+		Author[] authors = authorsNodes.Select(an => new Author(an.InnerText.Replace("amp;", ""))).ToArray();
 
 		HtmlNode? originalLanguageNode = document.DocumentNode.SelectSingleNode("//span[text()='Tr From']/..");
 		string originalLanguage = originalLanguageNode is not null ? originalLanguageNode.LastChild.InnerText : "";
 
-		if (!int.TryParse(
-			    document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..").LastChild.InnerText.Split('-')[0],
-			    out int year))
-			year = DateTime.Now.Year;
+		uint year = uint.Parse(document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..").LastChild
+			.InnerText.Split('-')[0] ?? "0");
 
 		string status = document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..")
 			.ChildNodes[2].InnerText;
-		Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
+		MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 		switch (status.ToLower())
 		{
-			case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
-			case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
-			case "hiatus": releaseStatus = Manga.ReleaseStatusByte.OnHiatus; break;
-			case "cancelled": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
-			case "pending": releaseStatus = Manga.ReleaseStatusByte.Unreleased; break;
+			case "ongoing": releaseStatus = MangaReleaseStatus.Continuing; break;
+			case "completed": releaseStatus = MangaReleaseStatus.Completed; break;
+			case "hiatus": releaseStatus = MangaReleaseStatus.OnHiatus; break;
+			case "cancelled": releaseStatus = MangaReleaseStatus.Cancelled; break;
+			case "pending": releaseStatus = MangaReleaseStatus.Unreleased; break;
 		}
 
-		Manga manga = new (this, sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
-			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
-		AddMangaToCache(manga);
-		return manga;
+		Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null,
+			year, originalLanguage, releaseStatus, 0, null, null,
+			publicationId,
+			authors.Select(a => a.AuthorId).ToArray(),
+			tags.Select(t => t.Tag).ToArray(),
+			[], altTitles.Select(at => at.AltTitleId).ToArray());
+		return (manga, authors, tags, [], altTitles);
 	}
 
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
-		Log($"Getting chapters {manga}");
-		string requestUrl = $"https://bato.to/title/{manga.publicationId}";
+		log.Info($"Getting chapters {manga}");
+		string requestUrl = $"https://bato.to/title/{manga.MangaConnectorId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
@@ -132,7 +130,7 @@ public class Bato : MangaConnector
 
 		//Return Chapters ordered by Chapter-Number
 		List<Chapter> chapters = ParseChaptersFromHtml(manga, requestUrl);
-		Log($"Got {chapters.Count} chapters. {manga}");
+		log.Info($"Got {chapters.Count} chapters. {manga}");
 		return chapters.Order().ToArray();
 	}
 
@@ -141,7 +139,7 @@ public class Bato : MangaConnector
 		RequestResult result = downloadClient.MakeRequest(mangaUrl, RequestType.Default);
 		if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
 		{
-			Log("Failed to load site");
+			log.Info("Failed to load site");
 			return new List<Chapter>();
 		}
 
@@ -160,38 +158,36 @@ public class Bato : MangaConnector
 			Match match = numberRex.Match(chapterUrl);
 			string id = match.Groups[1].Value;
 			string? volumeNumber = match.Groups[2].Success ? match.Groups[2].Value : null;
+			float.TryParse(volumeNumber, NumberFormatDecimalPoint, out float volNum);
 			string chapterNumber = match.Groups[3].Value;
-			string chapterName = chapterNumber;
+			if (!float.TryParse(chapterNumber, NumberFormatDecimalPoint, out float chNum))
+			{
+				log.Debug($"Failed parsing {chapterNumber} as float.");
+				continue;
+			}
 			string url = $"https://bato.to{chapterUrl}?load=2";
-			ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
+			ret.Add(new Chapter(manga, url, chNum, volNum, null));
 		}
 		
 		return ret;
 	}
 
-	public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
+	protected override string[] GetChapterImages(Chapter chapter)
 	{
-		if (progressToken?.cancellationRequested ?? false)
-		{
-			progressToken.Cancel();
-			return HttpStatusCode.RequestTimeout;
-		}
-
-		Manga chapterParentManga = chapter.parentManga;
-		Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
-		string requestUrl = chapter.url;
+		Manga chapterParentManga = chapter.ParentManga;
+		log.Info($"Retrieving chapter-info {chapter} {chapterParentManga}");
+		string requestUrl = chapter.Url;
 		// Leaving this in to check if the page exists
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
-			progressToken?.Cancel();
-			return requestResult.statusCode;
+			return [];
 		}
 
 		string[] imageUrls = ParseImageUrlsFromHtml(requestUrl);
-		
-		return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage, progressToken:progressToken);
+
+		return imageUrls;
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)
@@ -204,7 +200,7 @@ public class Bato : MangaConnector
 		}
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
+			log.Info($"Failed to retrieve site");
 			return Array.Empty<string>();
 		}
 

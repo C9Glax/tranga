@@ -3,34 +3,21 @@ using Newtonsoft.Json;
 
 namespace Tranga.NotificationConnectors;
 
-public class LunaSea : NotificationConnector
+public class LunaSea(API.Schema.NotificationConnectors.Lunasea info) : NotificationConnector(info)
 {
-    // ReSharper disable once MemberCanBePrivate.Global
-    public string id { get; init; }
-    private readonly HttpClient _client = new();
-    
-    [JsonConstructor]
-    public LunaSea(GlobalBase clone, string id) : base(clone, NotificationConnectorType.LunaSea)
+    public override void SendNotification(string title, string notificationText)
     {
-        this.id = id;
-    }
-
-    public override string ToString()
-    {
-        return $"LunaSea {id}";
-    }
-
-    protected override void SendNotificationInternal(string title, string notificationText)
-    {
-        Log($"Sending notification: {title} - {notificationText}");
+        API.Schema.NotificationConnectors.Lunasea i = (API.Schema.NotificationConnectors.Lunasea)info;
+        
+        log.Info($"Sending notification: {title} - {notificationText}");
         MessageData message = new(title, notificationText);
-        HttpRequestMessage request = new(HttpMethod.Post, $"https://notify.lunasea.app/v1/custom/{id}");
+        HttpRequestMessage request = new(HttpMethod.Post, $"https://notify.lunasea.app/v1/custom/{i.Id}");
         request.Content = new StringContent(JsonConvert.SerializeObject(message, Formatting.None), Encoding.UTF8, "application/json");
         HttpResponseMessage response = _client.Send(request);
         if (!response.IsSuccessStatusCode)
         {
             StreamReader sr = new (response.Content.ReadAsStream());
-            Log($"{response.StatusCode}: {sr.ReadToEnd()}");
+            log.Info($"{response.StatusCode}: {sr.ReadToEnd()}");
         }
     }
 

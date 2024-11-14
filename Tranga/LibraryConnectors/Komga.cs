@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Nodes;
-using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga.LibraryConnectors;
@@ -8,34 +7,22 @@ namespace Tranga.LibraryConnectors;
 /// Provides connectivity to Komga-API
 /// Can fetch and update libraries
 /// </summary>
-public class Komga : LibraryConnector
+public class Komga(API.Schema.LibraryConnectors.LibraryConnector info) : LibraryConnector(info)
 {
-    public Komga(GlobalBase clone, string baseUrl, string username, string password)
-        : base(clone, baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")), LibraryType.Komga)
-    {
-    }
+    public static string GetAuth(string username, string password) =>
+        Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}"));
 
-    [JsonConstructor]
-    public Komga(GlobalBase clone, string baseUrl, string auth) : base(clone, baseUrl, auth, LibraryType.Komga)
+    public override void UpdateLibrary()
     {
-    }
-
-    public override string ToString()
-    {
-        return $"Komga {baseUrl}";
-    }
-
-    protected override void UpdateLibraryInternal()
-    {
-        Log("Updating libraries.");
+        log.Info("Updating libraries.");
         foreach (KomgaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth, logger);
+            NetClient.MakePost($"{info.BaseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", info.Auth);
     }
 
-    internal override bool Test()
+    public override bool Test()
     {
         foreach (KomgaLibrary lib in GetLibraries())
-            if (NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth, logger))
+            if (NetClient.MakePost($"{info.BaseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", info.Auth))
                 return true;
         return false;
     }
@@ -46,17 +33,17 @@ public class Komga : LibraryConnector
     /// <returns>Array of KomgaLibraries</returns>
     private IEnumerable<KomgaLibrary> GetLibraries()
     {
-        Log("Getting Libraries");
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", "Basic", auth, logger);
-        if (data == Stream.Null)
+        log.Info("Getting Libraries");
+        
+        if (!NetClient.MakeRequest($"{info.BaseUrl}/api/v1/libraries", "Basic", info.Auth, out Stream? data) || data is null)
         {
-            Log("No libraries returned");
+            log.Info("No libraries returned");
             return Array.Empty<KomgaLibrary>();
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            Log("No libraries returned");
+            log.Info("No libraries returned");
             return Array.Empty<KomgaLibrary>();
         }
 

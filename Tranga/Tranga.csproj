@@ -11,6 +11,8 @@
     <ItemGroup>
       <PackageReference Include="GlaxArguments" Version="1.1.0" />
       <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+      <PackageReference Include="log4net" Version="3.0.3" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.10" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="PuppeteerSharp" Version="10.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
@@ -24,6 +26,10 @@
         <Link>.dockerignore</Link>
         <DependentUpon>Dockerfile</DependentUpon>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\API\API.csproj" />
     </ItemGroup>
 
 </Project>

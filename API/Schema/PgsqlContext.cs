@@ -22,6 +22,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     {
         modelBuilder.Entity<Job>()
             .HasOne<Job>("ParentJobId");
+        modelBuilder.Entity<Job>()
+            .HasOne<Job>("DependsOnJobId");
         modelBuilder.Entity<DownloadNewChaptersJob>()
             .HasOne<Manga>("MangaId");
         modelBuilder.Entity<DownloadSingleChapterJob>()

@@ -4,39 +4,19 @@ using Newtonsoft.Json;
 
 namespace Tranga.NotificationConnectors;
 
-public class Ntfy : NotificationConnector
+public class Ntfy(API.Schema.NotificationConnectors.Ntfy info) : NotificationConnector(info)
 {
-    // ReSharper disable twice MemberCanBePrivate.Global
-    public string endpoint { get; init; }
-    public string auth { get; init; }
-    public string topic { get; init; }
-    private readonly HttpClient _client = new();
-
-    [JsonConstructor]
-    public Ntfy(GlobalBase clone, string endpoint, string topic, string auth) : base(clone, NotificationConnectorType.Ntfy)
-    {
-        this.endpoint = endpoint;
-        this.topic = topic;
-        this.auth = auth;
-    }
-    
-    public Ntfy(GlobalBase clone, string endpoint, string username, string password, string? topic = null) : 
-        this(clone, EndpointAndTopicFromUrl(endpoint)[0], topic??EndpointAndTopicFromUrl(endpoint)[1], AuthFromUsernamePassword(username, password))
-    {
-        
-    }
-
-    private static string AuthFromUsernamePassword(string username, string password)
+    public static string AuthFromUsernamePassword(string username, string password)
     {
         string authHeader = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
         string authParam = Convert.ToBase64String(Encoding.UTF8.GetBytes(authHeader)).Replace("=","");
         return authParam;
     }
 
-    private static string[] EndpointAndTopicFromUrl(string url)
+    public static string[] EndpointAndTopicFromUrl(string url)
     {
         string[] ret = new string[2];
-        if (!baseUrlRex.IsMatch(url))
+        if (!BaseUrlRex.IsMatch(url))
             throw new ArgumentException("url does not match pattern");
         Regex rootUriRex = new(@"(https?:\/\/[a-zA-Z0-9-\.]+\.[a-zA-Z0-9]+)(?:\/([a-zA-Z0-9-\.]+))?.*");
         Match match = rootUriRex.Match(url);
@@ -49,22 +29,19 @@ public class Ntfy : NotificationConnector
         return ret;
     }
 
-    public override string ToString()
+    public override void SendNotification(string title, string notificationText)
     {
-        return $"Ntfy {endpoint} {topic}";
-    }
-
-    protected override void SendNotificationInternal(string title, string notificationText)
-    {
-        Log($"Sending notification: {title} - {notificationText}");
-        MessageData message = new(title, topic, notificationText);
-        HttpRequestMessage request = new(HttpMethod.Post, $"{this.endpoint}?auth={this.auth}");
+        API.Schema.NotificationConnectors.Ntfy i = (API.Schema.NotificationConnectors.Ntfy)info;
+        
+        log.Info($"Sending notification: {title} - {notificationText}");
+        MessageData message = new(title, i.Topic, notificationText);
+        HttpRequestMessage request = new(HttpMethod.Post, $"{i.Endpoint}?auth={i.Auth}");
         request.Content = new StringContent(JsonConvert.SerializeObject(message, Formatting.None), Encoding.UTF8, "application/json");
         HttpResponseMessage response = _client.Send(request);
         if (!response.IsSuccessStatusCode)
         {
             StreamReader sr = new (response.Content.ReadAsStream());
-            Log($"{response.StatusCode}: {sr.ReadToEnd()}");
+            log.Info($"{response.StatusCode}: {sr.ReadToEnd()}");
         }
     }
 

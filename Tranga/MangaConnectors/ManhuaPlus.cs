@@ -1,62 +1,61 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using API.Schema;
 using HtmlAgilityPack;
-using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
 
 public class ManhuaPlus : MangaConnector
 {
-    public ManhuaPlus(GlobalBase clone) : base(clone, "ManhuaPlus", ["en"], ["manhuaplus.org"])
+    //["en"], ["manhuaplus.org"]
+    public ManhuaPlus(string mangaConnectorId) : base(mangaConnectorId, new ChromiumDownloadClient())
     {
-        this.downloadClient = new ChromiumDownloadClient(clone);
     }
 
-    public override Manga[] GetManga(string publicationTitle = "")
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
+        log.Info($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://manhuaplus.org/search?keyword={sanitizedTitle}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return Array.Empty<Manga>();
+            return [];
 
         if (requestResult.htmlDocument is null)
-            return Array.Empty<Manga>();
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-        Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+            return [];
+        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        log.Info($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
     
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (document.DocumentNode.SelectSingleNode("//h1/../..").ChildNodes//I already want to not.
                 .Any(node => node.InnerText.Contains("No manga found")))
-            return Array.Empty<Manga>();
+            return [];
 
         List<string> urls = document.DocumentNode
             .SelectNodes("//h1/../..//a[contains(@href, 'https://manhuaplus.org/manga/') and contains(concat(' ',normalize-space(@class),' '),' clamp ') and not(contains(@href, '/chapter'))]")
                 .Select(mangaNode => mangaNode.GetAttributeValue("href", "")).ToList();
-        logger?.WriteLine($"Got {urls.Count} urls.");
+        log.Info($"Got {urls.Count} urls.");
 
-        HashSet<Manga> ret = new();
+        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
         foreach (string url in urls)
         {
-            Manga? manga = GetMangaFromUrl(url);
+            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
             if (manga is not null)
-                ret.Add((Manga)manga);
+                ret.Add(((Manga, Author[], MangaTag[], Link[], MangaAltTitle[]))manga);
         }
 
         return ret.ToArray();
     }
 
-    public override Manga? GetMangaFromId(string publicationId)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://manhuaplus.org/manga/{publicationId}");
     }
 
-    public override Manga? GetMangaFromUrl(string url)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/manhuaplus.org\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
@@ -67,77 +66,74 @@ public class ManhuaPlus : MangaConnector
         return null;
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
-        string originalLanguage = "", status = "";
-        Dictionary<string, string> altTitles = new(), links = new();
-        HashSet<string> tags = new();
-        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
+        MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("/html/body/main/div/div/div[2]/div[1]/figure/a/img");//BRUH
         Regex posterRex = new(@".*(\/uploads/covers/[a-zA-Z0-9\-\._\~\!\$\&\'\(\)\*\+\,\;\=\:\@]+).*");
         string posterUrl = $"https://manhuaplus.org/{posterRex.Match(posterNode.GetAttributeValue("src", "")).Groups[1].Value}";
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//h1");
         string sortName = titleNode.InnerText.Replace("\n", "");
         
-        List<string> authors = new();
+        Author[] authors = [];
         try
         {
             HtmlNode[] authorsNodes = document.DocumentNode
                 .SelectNodes("//a[contains(@href, 'https://manhuaplus.org/authors/')]")
                 .ToArray();
-            foreach (HtmlNode authorNode in authorsNodes)
-                authors.Add(authorNode.InnerText);
+            authors = authorsNodes.Select(a => new Author(a.InnerText)).ToArray();
         }
         catch (ArgumentNullException e)
         {
-            Log("No authors found.");
+            log.Info("No authors found.");
         }
 
+        MangaTag[] tags = [];
         try
         {
             HtmlNode[] genreNodes = document.DocumentNode
                 .SelectNodes("//a[contains(@href, 'https://manhuaplus.org/genres/')]").ToArray();
-            foreach (HtmlNode genreNode in genreNodes)
-                tags.Add(genreNode.InnerText.Replace("\n", ""));
+            tags = genreNodes.Select(genreNode => new MangaTag(genreNode.InnerText.Replace("\n", ""))).ToArray();
         }
         catch (ArgumentNullException e)
         {
-            Log("No genres found");
+            log.Info("No genres found");
         }
 
         Regex yearRex = new(@"(?:[0-9]{1,2}\/){2}([0-9]{2,4}) [0-9]{1,2}:[0-9]{1,2}");
         HtmlNode yearNode = document.DocumentNode.SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-clock ')]/../span");
         Match match = yearRex.Match(yearNode.InnerText);
-        int year = match.Success && match.Groups[1].Success ? int.Parse(match.Groups[1].Value) : 1960;
+        uint year = match.Success && match.Groups[1].Success ? uint.Parse(match.Groups[1].Value) : 0;
 
-        status = document.DocumentNode.SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-rss ')]/../span").InnerText.Replace("\n", "");
+        string status = document.DocumentNode.SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-rss ')]/../span").InnerText.Replace("\n", "");
         switch (status.ToLower())
         {
-            case "cancelled": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
-            case "hiatus": releaseStatus = Manga.ReleaseStatusByte.OnHiatus; break;
-            case "discontinued": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
-            case "complete": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
-            case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+            case "cancelled": releaseStatus = MangaReleaseStatus.Cancelled; break;
+            case "hiatus": releaseStatus = MangaReleaseStatus.OnHiatus; break;
+            case "discontinued": releaseStatus = MangaReleaseStatus.Cancelled; break;
+            case "complete": releaseStatus = MangaReleaseStatus.Completed; break;
+            case "ongoing": releaseStatus = MangaReleaseStatus.Continuing; break;
         }
 
         HtmlNode descriptionNode = document.DocumentNode
             .SelectSingleNode("//div[@id='syn-target']");
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
-            coverFileNameInCache, links,
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
-        AddMangaToCache(manga);
-        return manga;
+        Manga manga = new(MangaConnectorId,sortName, description, posterUrl, null, year, null,
+            releaseStatus, 0, null, null, publicationId,
+            authors.Select(a => a.AuthorId).ToArray(),
+            tags.Select(t => t.Tag).ToArray(),
+            [],
+            []);
+        return (manga, authors, tags, [], []);
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {manga}");
-        RequestResult result = downloadClient.MakeRequest($"https://manhuaplus.org/manga/{manga.publicationId}", RequestType.Default);
+        log.Info($"Getting chapters {manga}");
+        RequestResult result = downloadClient.MakeRequest($"https://manhuaplus.org/manga/{manga.MangaConnectorId}", RequestType.Default);
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
             return Array.Empty<Chapter>();
@@ -152,45 +148,36 @@ public class ManhuaPlus : MangaConnector
         {
             Match rexMatch = urlRex.Match(url);
 
-            string volumeNumber = "1";
             string chapterNumber = rexMatch.Groups[1].Value;
             string fullUrl = url;
-            chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
+            if (!float.TryParse(chapterNumber, NumberFormatDecimalPoint, out float chNum))
+            {
+                log.Debug($"Failed parsing {chapterNumber} as float.");
+                continue;
+            }
+            chapters.Add(new Chapter(manga, fullUrl, chNum));
         }
         //Return Chapters ordered by Chapter-Number
-        Log($"Got {chapters.Count} chapters. {manga}");
+        log.Info($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
 
-    public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
+    protected override string[] GetChapterImages(Chapter chapter)
     {
-        if (progressToken?.cancellationRequested ?? false)
-        {
-            progressToken.Cancel();
-            return HttpStatusCode.RequestTimeout;
-        }
+        Manga chapterParentManga = chapter.ParentManga;
+        log.Info($"Retrieving chapter-info {chapter} {chapterParentManga}");
 
-        Manga chapterParentManga = chapter.parentManga;
-        if (progressToken?.cancellationRequested ?? false)
-        {
-            progressToken.Cancel();
-            return HttpStatusCode.RequestTimeout;
-        }
-
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
-
-        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.url, RequestType.Default);
+        RequestResult requestResult = this.downloadClient.MakeRequest(chapter.Url, RequestType.Default);
         if (requestResult.htmlDocument is null)
         {
-            progressToken?.Cancel();
-            return HttpStatusCode.RequestTimeout;
+            return [];
         }
 
         HtmlDocument document = requestResult.htmlDocument;
         
         HtmlNode[] images = document.DocumentNode.SelectNodes("//a[contains(concat(' ',normalize-space(@class),' '),' readImg ')]/img").ToArray();
         List<string> urls = images.Select(node => node.GetAttributeValue("src", "")).ToList();
-        
-        return DownloadChapterImages(urls.ToArray(), chapter, RequestType.MangaImage, progressToken:progressToken);
+
+        return urls.ToArray();
     }
 }

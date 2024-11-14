@@ -1,62 +1,62 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
+using API.Schema;
 using HtmlAgilityPack;
-using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
 
-public class Mangaworld: MangaConnector
+public class Mangaworld : MangaConnector
 {
-    public Mangaworld(GlobalBase clone) : base(clone, "Mangaworld", ["it"], ["www.mangaworld.ac"])
+    //["it"], ["www.mangaworld.ac"]
+    public Mangaworld(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
     {
-        this.downloadClient = new HttpDownloadClient(clone);
     }
 
-    public override Manga[] GetManga(string publicationTitle = "")
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
+        log.Info($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://www.mangaworld.ac/archive?keyword={sanitizedTitle}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return Array.Empty<Manga>();
+            return [];
 
         if (requestResult.htmlDocument is null)
-            return Array.Empty<Manga>();
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-        Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+            return [];
+        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        log.Info($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
         return publications;
     }
 
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (!document.DocumentNode.SelectSingleNode("//div[@class='comics-grid']").ChildNodes
                 .Any(node => node.HasClass("entry")))
-            return Array.Empty<Manga>();
+            return [];
         
         List<string> urls = document.DocumentNode
             .SelectNodes(
                 "//div[@class='comics-grid']//div[@class='entry']//a[contains(concat(' ',normalize-space(@class),' '),'thumb')]")
             .Select(thumb => thumb.GetAttributeValue("href", "")).ToList();
 
-        HashSet<Manga> ret = new();
+        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
         foreach (string url in urls)
         {
-            Manga? manga = GetMangaFromUrl(url);
+            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
             if (manga is not null)
-                ret.Add((Manga)manga);
+                ret.Add(((Manga, Author[], MangaTag[], Link[], MangaAltTitle[]))manga);
         }
 
         return ret.ToArray();
     }
 
-    public override Manga? GetMangaFromId(string publicationId)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://www.mangaworld.ac/manga/{publicationId}");
     }
 
-    public override Manga? GetMangaFromUrl(string url)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
     {
         RequestResult requestResult =
             downloadClient.MakeRequest(url, RequestType.MangaInfo);
@@ -71,12 +71,10 @@ public class Mangaworld: MangaConnector
         return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id, url);
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
-        Dictionary<string, string> altTitles = new();
-        Dictionary<string, string>? links = null;
         string originalLanguage = "";
-        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
+        MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 
         HtmlNode infoNode = document.DocumentNode.Descendants("div").First(d => d.HasClass("info"));
 
@@ -86,48 +84,48 @@ public class Mangaworld: MangaConnector
 
         HtmlNode altTitlesNode = metadata.SelectSingleNode("//span[text()='Titoli alternativi: ' or text()='Titolo alternativo: ']/..").ChildNodes[1];
 
-        string[] alts = altTitlesNode.InnerText.Split(", ");
-        for(int i = 0; i < alts.Length; i++)
-            altTitles.Add(i.ToString(), alts[i]);
+        int i = 0;
+        MangaAltTitle[] alts = altTitlesNode.InnerText.Split(", ").Select(v => new MangaAltTitle(i++.ToString(), v)).ToArray();
 
         HtmlNode genresNode =
             metadata.SelectSingleNode("//span[text()='Generi: ' or text()='Genero: ']/..");
-        HashSet<string> tags = genresNode.SelectNodes("a").Select(node => node.InnerText).ToHashSet();
+        MangaTag[] tags = genresNode.SelectNodes("a").Select(node => new MangaTag(node.InnerText)).ToArray();
         
         HtmlNode authorsNode =
             metadata.SelectSingleNode("//span[text()='Autore: ' or text()='Autori: ']/..");
-        string[] authors = authorsNode.SelectNodes("a").Select(node => node.InnerText).ToArray();
+        Author[] authors = authorsNode.SelectNodes("a").Select(node => new Author(node.InnerText)).ToArray();
 
         string status = metadata.SelectSingleNode("//span[text()='Stato: ']/..").SelectNodes("a").First().InnerText;
         // ReSharper disable 5 times StringLiteralTypo
         switch (status.ToLower())
         {
-            case "cancellato": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
-            case "in pausa": releaseStatus = Manga.ReleaseStatusByte.OnHiatus; break;
-            case "droppato": releaseStatus = Manga.ReleaseStatusByte.Cancelled; break;
-            case "finito": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
-            case "in corso": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
+            case "cancellato": releaseStatus = MangaReleaseStatus.Cancelled; break;
+            case "in pausa": releaseStatus = MangaReleaseStatus.OnHiatus; break;
+            case "droppato": releaseStatus = MangaReleaseStatus.Cancelled; break;
+            case "finito": releaseStatus = MangaReleaseStatus.Completed; break;
+            case "in corso": releaseStatus = MangaReleaseStatus.Continuing; break;
         }
 
         string posterUrl = document.DocumentNode.SelectSingleNode("//img[@class='rounded']").GetAttributeValue("src", "");
 
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId.Replace('/', '-'), RequestType.MangaCover);
-
         string description = document.DocumentNode.SelectSingleNode("//div[@id='noidungm']").InnerText;
         
         string yearString = metadata.SelectSingleNode("//span[text()='Anno di uscita: ']/..").SelectNodes("a").First().InnerText;
-        int year = Convert.ToInt32(yearString);
+        uint year = uint.Parse(yearString);
         
-        Manga manga = new (this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl);
-        AddMangaToCache(manga);
-        return manga;
+        Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null, year, originalLanguage,
+            releaseStatus, 0, null, null, publicationId,
+            authors.Select(a => a.AuthorId).ToArray(),
+            tags.Select(t => t.Tag).ToArray(),
+            [],
+            alts.Select(a => a.AltTitleId).ToArray());
+        return (manga, authors, tags, [], alts);
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {manga}");
-        string requestUrl = $"https://www.mangaworld.ac/manga/{manga.publicationId}";
+        log.Info($"Getting chapters {manga}");
+        string requestUrl = $"https://www.mangaworld.ac/manga/{manga.MangaConnectorId}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -137,7 +135,7 @@ public class Mangaworld: MangaConnector
         if (requestResult.htmlDocument is null)
             return Array.Empty<Chapter>();
         List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
-        Log($"Got {chapters.Count} chapters. {manga}");
+        log.Info($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
 
@@ -159,11 +157,20 @@ public class Mangaworld: MangaConnector
                 string volume = volumeRex.Match(volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText).Groups[1].Value;
                 foreach (HtmlNode chNode in volNode.SelectNodes("div").First(node => node.HasClass("volume-chapters")).SelectNodes("div"))
                 {
-
                     string number = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
                     string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                     string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
-                    ret.Add(new Chapter(manga, null, volume, number, url, id));
+                    if (!float.TryParse(volume, NumberFormatDecimalPoint, out float volNum))
+                    {
+                        log.Debug($"Failed parsing {volume} as float.");
+                        continue;
+                    }
+                    if (!float.TryParse(number, NumberFormatDecimalPoint, out float chNum))
+                    {
+                        log.Debug($"Failed parsing {number} as float.");
+                        continue;
+                    }
+                    ret.Add(new Chapter(manga, url, chNum, volNum));
                 }
             }
         }
@@ -174,7 +181,12 @@ public class Mangaworld: MangaConnector
                 string number = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                 string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
-                ret.Add(new Chapter(manga, null, null, number, url, id));
+                if (!float.TryParse(number, NumberFormatDecimalPoint, out float chNum))
+                {
+                    log.Debug($"Failed parsing {number} as float.");
+                    continue;
+                }
+                ret.Add(new Chapter(manga, url, chNum));
             }
         }
 
@@ -182,34 +194,26 @@ public class Mangaworld: MangaConnector
         return ret;
     }
 
-    public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
+    protected override string[] GetChapterImages(Chapter chapter)
     {
-        if (progressToken?.cancellationRequested ?? false)
-        {
-            progressToken.Cancel();
-            return HttpStatusCode.RequestTimeout;
-        }
-
-        Manga chapterParentManga = chapter.parentManga;
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
-        string requestUrl = $"{chapter.url}?style=list";
+        Manga chapterParentManga = chapter.ParentManga;
+        log.Info($"Retrieving chapter-info {chapter} {chapterParentManga}");
+        string requestUrl = $"{chapter.Url}?style=list";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
-            progressToken?.Cancel();
-            return requestResult.statusCode;
+            return [];
         }
 
         if (requestResult.htmlDocument is null)
         {
-            progressToken?.Cancel();
-            return HttpStatusCode.InternalServerError;
+            return [];
         }
 
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.htmlDocument);
-        
-        return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage,"https://www.mangaworld.bz/", progressToken:progressToken);
+
+        return imageUrls;
     }
 
     private string[] ParseImageUrlsFromHtml(HtmlDocument document)

@@ -1,7 +1,6 @@
-﻿using System.Net;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using Tranga.Jobs;
+using API.Schema;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga.MangaConnectors;
@@ -10,18 +9,18 @@ public class MangaDex : MangaConnector
     //https://api.mangadex.org/docs/3-enumerations/#language-codes--localization
     //https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
     //https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
-    public MangaDex(GlobalBase clone) : base(clone, "MangaDex", ["en","pt","pt-br","it","de","ru","aa","ab","ae","af","ak","am","an","ar-ae","ar-bh","ar-dz","ar-eg","ar-iq","ar-jo","ar-kw","ar-lb","ar-ly","ar-ma","ar-om","ar-qa","ar-sa","ar-sy","ar-tn","ar-ye","ar","as","av","ay","az","ba","be","bg","bh","bi","bm","bn","bo","br","bs","ca","ce","ch","co","cr","cs","cu","cv","cy","da","de-at","de-ch","de-de","de-li","de-lu","div","dv","dz","ee","el","en-au","en-bz","en-ca","en-cb","en-gb","en-ie","en-jm","en-nz","en-ph","en-tt","en-us","en-za","en-zw","eo","es-ar","es-bo","es-cl","es-co","es-cr","es-do","es-ec","es-es","es-gt","es-hn","es-la","es-mx","es-ni","es-pa","es-pe","es-pr","es-py","es-sv","es-us","es-uy","es-ve","es","et","eu","fa","ff","fi","fj","fo","fr-be","fr-ca","fr-ch","fr-fr","fr-lu","fr-mc","fr","fy","ga","gd","gl","gn","gu","gv","ha","he","hi","ho","hr-ba","hr-hr","hr","ht","hu","hy","hz","ia","id","ie","ig","ii","ik","in","io","is","it-ch","it-it","iu","iw","ja","ja-ro","ji","jv","jw","ka","kg","ki","kj","kk","kl","km","kn","ko","ko-ro","kr","ks","ku","kv","kw","ky","kz","la","lb","lg","li","ln","lo","ls","lt","lu","lv","mg","mh","mi","mk","ml","mn","mo","mr","ms-bn","ms-my","ms","mt","my","na","nb","nd","ne","ng","nl-be","nl-nl","nl","nn","no","nr","ns","nv","ny","oc","oj","om","or","os","pa","pi","pl","ps","pt-pt","qu-bo","qu-ec","qu-pe","qu","rm","rn","ro","rw","sa","sb","sc","sd","se-fi","se-no","se-se","se","sg","sh","si","sk","sl","sm","sn","so","sq","sr-ba","sr-sp","sr","ss","st","su","sv-fi","sv-se","sv","sw","sx","syr","ta","te","tg","th","ti","tk","tl","tn","to","tr","ts","tt","tw","ty","ug","uk","ur","us","uz","ve","vi","vo","wa","wo","xh","yi","yo","za","zh-cn","zh-hk","zh-mo","zh-ro","zh-sg","zh-tw","zh","zu"], ["mangadex.org"])
+    //["en","pt","pt-br","it","de","ru","aa","ab","ae","af","ak","am","an","ar-ae","ar-bh","ar-dz","ar-eg","ar-iq","ar-jo","ar-kw","ar-lb","ar-ly","ar-ma","ar-om","ar-qa","ar-sa","ar-sy","ar-tn","ar-ye","ar","as","av","ay","az","ba","be","bg","bh","bi","bm","bn","bo","br","bs","ca","ce","ch","co","cr","cs","cu","cv","cy","da","de-at","de-ch","de-de","de-li","de-lu","div","dv","dz","ee","el","en-au","en-bz","en-ca","en-cb","en-gb","en-ie","en-jm","en-nz","en-ph","en-tt","en-us","en-za","en-zw","eo","es-ar","es-bo","es-cl","es-co","es-cr","es-do","es-ec","es-es","es-gt","es-hn","es-la","es-mx","es-ni","es-pa","es-pe","es-pr","es-py","es-sv","es-us","es-uy","es-ve","es","et","eu","fa","ff","fi","fj","fo","fr-be","fr-ca","fr-ch","fr-fr","fr-lu","fr-mc","fr","fy","ga","gd","gl","gn","gu","gv","ha","he","hi","ho","hr-ba","hr-hr","hr","ht","hu","hy","hz","ia","id","ie","ig","ii","ik","in","io","is","it-ch","it-it","iu","iw","ja","ja-ro","ji","jv","jw","ka","kg","ki","kj","kk","kl","km","kn","ko","ko-ro","kr","ks","ku","kv","kw","ky","kz","la","lb","lg","li","ln","lo","ls","lt","lu","lv","mg","mh","mi","mk","ml","mn","mo","mr","ms-bn","ms-my","ms","mt","my","na","nb","nd","ne","ng","nl-be","nl-nl","nl","nn","no","nr","ns","nv","ny","oc","oj","om","or","os","pa","pi","pl","ps","pt-pt","qu-bo","qu-ec","qu-pe","qu","rm","rn","ro","rw","sa","sb","sc","sd","se-fi","se-no","se-se","se","sg","sh","si","sk","sl","sm","sn","so","sq","sr-ba","sr-sp","sr","ss","st","su","sv-fi","sv-se","sv","sw","sx","syr","ta","te","tg","th","ti","tk","tl","tn","to","tr","ts","tt","tw","ty","ug","uk","ur","us","uz","ve","vi","vo","wa","wo","xh","yi","yo","za","zh-cn","zh-hk","zh-mo","zh-ro","zh-sg","zh-tw","zh","zu"]
+    public MangaDex(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
     {
-        this.downloadClient = new HttpDownloadClient(clone);
     }
 
-    public override Manga[] GetManga(string publicationTitle = "")
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
     {
-        Log($"Searching Publications. Term={publicationTitle}");
+        log.Info($"Searching Publications. Term={publicationTitle}");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
-        HashSet<Manga> retManga = new();
+        HashSet<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> retManga = new();
         int loadedPublicationData = 0;
         List<JsonNode> results = new();
         
@@ -53,15 +52,15 @@ public class MangaDex : MangaConnector
         
         foreach (JsonNode mangaNode in results)
         {
-            Log($"Getting publication data. {++loadedPublicationData}/{total}");
+            log.Info($"Getting publication data. {++loadedPublicationData}/{total}");
             if(MangaFromJsonObject(mangaNode.AsObject()) is { } manga)
                 retManga.Add(manga); //Add Publication (Manga) to result
         }
-        Log($"Retrieved {retManga.Count} publications. Term={publicationTitle}");
+        log.Info($"Retrieved {retManga.Count} publications. Term={publicationTitle}");
         return retManga.ToArray();
     }
 
-    public override Manga? GetMangaFromId(string publicationId)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
     {
         RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}?includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag", RequestType.MangaInfo);
@@ -73,15 +72,15 @@ public class MangaDex : MangaConnector
         return null;
     }
 
-    public override Manga? GetMangaFromUrl(string url)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
     {
         Regex idRex = new (@"https:\/\/mangadex.org\/title\/([A-z0-9-]*)\/.*");
         string id = idRex.Match(url).Groups[1].Value;
-        Log($"Got id {id} from {url}");
+        log.Info($"Got id {id} from {url}");
         return GetMangaFromId(id);
     }
 
-    private Manga? MangaFromJsonObject(JsonObject manga)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? MangaFromJsonObject(JsonObject manga)
     {
         if (!manga.TryGetPropertyValue("id", out JsonNode? idNode))
             return null;
@@ -99,13 +98,13 @@ public class MangaDex : MangaConnector
             false => titleNode.AsObject().First().Value!.GetValue<string>()
         };
         
-        Dictionary<string, string> altTitlesDict = new();
+        List<MangaAltTitle> altTitles = new();
         if (attributes.TryGetPropertyValue("altTitles", out JsonNode? altTitlesNode))
         {
             foreach (JsonNode? altTitleNode in altTitlesNode!.AsArray())
             {
                 JsonObject altTitleNodeObject = altTitleNode!.AsObject();
-                altTitlesDict.TryAdd(altTitleNodeObject.First().Key, altTitleNodeObject.First().Value!.GetValue<string>());
+                altTitles.Add(new MangaAltTitle(altTitleNodeObject.First().Key, altTitleNodeObject.First().Value!.GetValue<string>()));
             }
         }
 
@@ -117,10 +116,10 @@ public class MangaDex : MangaConnector
             false => descriptionNode.AsObject().FirstOrDefault().Value?.GetValue<string>() ?? ""
         };
 
-        Dictionary<string, string> linksDict = new();
+        List<Link> links = new();
         if (attributes.TryGetPropertyValue("links", out JsonNode? linksNode) && linksNode is not null)
             foreach (KeyValuePair<string, JsonNode?> linkKv in linksNode!.AsObject())
-                linksDict.TryAdd(linkKv.Key, linkKv.Value.GetValue<string>());
+                links.Add(new Link(linkKv.Key, linkKv.Value!.GetValue<string>()));
 
         string? originalLanguage =
             attributes.TryGetPropertyValue("originalLanguage", out JsonNode? originalLanguageNode) switch
@@ -129,31 +128,30 @@ public class MangaDex : MangaConnector
                 false => null
             };
         
-        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
+        MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
         if (attributes.TryGetPropertyValue("status", out JsonNode? statusNode))
         {
             releaseStatus = statusNode?.GetValue<string>().ToLower() switch
             {
-                "ongoing" => Manga.ReleaseStatusByte.Continuing,
-                "completed" => Manga.ReleaseStatusByte.Completed,
-                "hiatus" => Manga.ReleaseStatusByte.OnHiatus,
-                "cancelled" => Manga.ReleaseStatusByte.Cancelled,
-                _ => Manga.ReleaseStatusByte.Unreleased
+                "ongoing" => MangaReleaseStatus.Continuing,
+                "completed" => MangaReleaseStatus.Completed,
+                "hiatus" => MangaReleaseStatus.OnHiatus,
+                "cancelled" => MangaReleaseStatus.Cancelled,
+                _ => MangaReleaseStatus.Unreleased
             };
         }
 
-        int? year = attributes.TryGetPropertyValue("year", out JsonNode? yearNode) switch
+        uint year = attributes.TryGetPropertyValue("year", out JsonNode? yearNode) switch
         {
-            true => yearNode?.GetValue<int>(),
-            false => null
+            true => yearNode?.GetValue<uint>() ?? 0,
+            false => 0
         };
         
-        HashSet<string> tags = new(128);
+        List<MangaTag> tags = new();
         if (attributes.TryGetPropertyValue("tags", out JsonNode? tagsNode))
             foreach (JsonNode? tagNode in tagsNode!.AsArray())
-                tags.Add(tagNode!["attributes"]!["name"]!["en"]!.GetValue<string>());
+                tags.Add(new MangaTag(tagNode!["attributes"]!["name"]!["en"]!.GetValue<string>()));
 
-        
         if (!manga.TryGetPropertyValue("relationships", out JsonNode? relationshipsNode))
             return null;
         
@@ -163,41 +161,30 @@ public class MangaDex : MangaConnector
             return null;
         string fileName = coverNode["attributes"]!["fileName"]!.GetValue<string>();
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
-        string coverCacheName = SaveCoverImageToCache(coverUrl, publicationId, RequestType.MangaCover);
         
-        List<string> authors = new();
+        List<Author> authors = new();
         JsonNode?[] authorNodes = relationshipsNode.AsArray()
             .Where(rel => rel!["type"]!.GetValue<string>().Equals("author") || rel!["type"]!.GetValue<string>().Equals("artist")).ToArray();
         foreach (JsonNode? authorNode in authorNodes)
         {
             string authorName = authorNode!["attributes"]!["name"]!.GetValue<string>();
-            if(!authors.Contains(authorName))
-               authors.Add(authorName);
+            authors.Add(new Author(authorName));
         }
 
-        Manga pub = new(
-            this,
-            title,
-            authors,
-            description,
-            altTitlesDict,
-            tags.ToArray(),
-            coverUrl,
-            coverCacheName,
-            linksDict,
-            year,
-            originalLanguage,
+        Manga pub = new(MangaConnectorId, title, description, coverUrl, null, year,
+            originalLanguage, releaseStatus, 0, null, null,
             publicationId,
-            releaseStatus,
-            $"https://mangadex.org/title/{publicationId}"
+            authors.Select(a => a.AuthorId).ToArray(),
+            tags.Select(t => t.Tag).ToArray(),
+            links.Select(l => l.LinkId).ToArray(),
+            altTitles.Select(a => a.AltTitleId).ToArray()
         );
-        AddMangaToCache(pub);
-        return pub;
+        return (pub, authors.ToArray(), tags.ToArray(), links.ToArray(), altTitles.ToArray());
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
-        Log($"Getting chapters {manga}");
+        log.Info($"Getting chapters {manga}");
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
@@ -208,7 +195,7 @@ public class MangaDex : MangaConnector
             //Request next "Page"
             RequestResult requestResult =
                 downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga/{manga.publicationId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&contentRating%5B%5D=pornographic", RequestType.MangaDexFeed);
+                    $"https://api.mangadex.org/manga/{manga.ConnectorId}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&contentRating%5B%5D=pornographic", RequestType.MangaDexFeed);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
                 break;
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
@@ -234,52 +221,51 @@ public class MangaDex : MangaConnector
                 string? volume = attributes.ContainsKey("volume") && attributes["volume"] is not null
                     ? attributes["volume"]!.GetValue<string>()
                     : null;
+                if (!float.TryParse(volume, NumberFormatDecimalPoint, out float volNum))
+                {
+                    log.Debug($"Failed parsing {volume} as float.");
+                    continue;
+                }
                 
                 string chapterNum = attributes.ContainsKey("chapter") && attributes["chapter"] is not null
                     ? attributes["chapter"]!.GetValue<string>()
                     : "null";
-                
+                if (!float.TryParse(chapterNum, NumberFormatDecimalPoint, out float chNum))
+                {
+                    log.Debug($"Failed parsing {chapterNum} as float.");
+                    continue;
+                }
                 
                 if (attributes.ContainsKey("pages") && attributes["pages"] is not null &&
                     attributes["pages"]!.GetValue<int>() < 1)
                 {
-                    Log($"Skipping {chapterId} Vol.{volume} Ch.{chapterNum} {title} because it has no pages or is externally linked.");
+                    log.Info($"Skipping {chapterId} Vol.{volume} Ch.{chapterNum} {title} because it has no pages or is externally linked.");
                     continue;
                 }
-                
-                if(chapterNum is not "null" && !chapters.Any(chp => chp.volumeNumber.Equals(volume) && chp.chapterNumber.Equals(chapterNum)))
-                    chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId, chapterId));
+                chapters.Add(new Chapter(manga, chapterId, chNum, volNum, title));
             }
         }
 
         //Return Chapters ordered by Chapter-Number
-        Log($"Got {chapters.Count} chapters. {manga}");
+        log.Info($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
 
-    public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
+    protected override string[] GetChapterImages(Chapter chapter)
     {
-        if (progressToken?.cancellationRequested ?? false)
-        {
-            progressToken.Cancel();
-            return HttpStatusCode.RequestTimeout;
-        }
-
-        Manga chapterParentManga = chapter.parentManga;
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
+        Manga chapterParentManga = chapter.ParentManga;
+        log.Info($"Retrieving chapter-info {chapter} {chapterParentManga}");
         //Request URLs for Chapter-Images
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.url}?forcePort443=false", RequestType.MangaDexImage);
+            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.Url}?forcePort443=false", RequestType.MangaDexImage);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
-            progressToken?.Cancel();
-            return requestResult.statusCode;
+            return [];
         }
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
         {
-            progressToken?.Cancel();
-            return HttpStatusCode.NoContent;
+            return [];
         }
 
         string baseUrl = result["baseUrl"]!.GetValue<string>();
@@ -289,8 +275,7 @@ public class MangaDex : MangaConnector
         HashSet<string> imageUrls = new();
         foreach (JsonNode? image in imageFileNames)
             imageUrls.Add($"{baseUrl}/data/{hash}/{image!.GetValue<string>()}");
-        
-        //Download Chapter-Images
-        return DownloadChapterImages(imageUrls.ToArray(), chapter, RequestType.MangaImage, progressToken:progressToken);
+
+        return imageUrls.ToArray();
     }
 }

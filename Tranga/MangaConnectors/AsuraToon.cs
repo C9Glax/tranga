@@ -1,100 +1,97 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using API.Schema;
 using HtmlAgilityPack;
-using Tranga.Jobs;
 
 namespace Tranga.MangaConnectors;
 
 public class AsuraToon : MangaConnector
 {
-	
-	public AsuraToon(GlobalBase clone) : base(clone, "AsuraToon", ["en"], ["asuracomic.net"])
+	//["en"], ["asuracomic.net"]
+	public AsuraToon(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
 	{
-		this.downloadClient = new HttpDownloadClient(clone);
 	}
 
-	public override Manga[] GetManga(string publicationTitle = "")
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
 	{
-		Log($"Searching Publications. Term=\"{publicationTitle}\"");
+		log.Info($"Searching Publications. Term=\"{publicationTitle}\"");
 		string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://asuracomic.net/series?name={sanitizedTitle}";
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-			return Array.Empty<Manga>();
+			return [];
 
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
-			return Array.Empty<Manga>();
+			log.Info($"Failed to retrieve site");
+			return [];
 		}
 			
-		Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-		Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+		(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+		log.Info($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
 		return publications;
 	}
 
-	public override Manga? GetMangaFromId(string publicationId)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
 	{
 		return GetMangaFromUrl($"https://asuracomic.net/series/{publicationId}");
 	}
 
-	public override Manga? GetMangaFromUrl(string url)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
 	{
 		RequestResult requestResult = downloadClient.MakeRequest(url, RequestType.MangaInfo);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 			return null;
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
+			log.Info($"Failed to retrieve site");
 			return null;
 		}
 		return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1], url);
 	}
 
-	private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
 	{
 		HtmlNodeCollection mangaList = document.DocumentNode.SelectNodes("//a[starts-with(@href,'series')]");
 		if (mangaList.Count < 1)
-			return Array.Empty<Manga>();
+			return [];
 
 		IEnumerable<string> urls = mangaList.Select(a => $"https://asuracomic.net/{a.GetAttributeValue("href", "")}");
 		
-		List<Manga> ret = new();
+		List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
 		foreach (string url in urls)
 		{
-			Manga? manga = GetMangaFromUrl(url);
+			(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
 			if (manga is not null)
-				ret.Add((Manga)manga);
+				ret.Add(((Manga, Author[], MangaTag[], Link[], MangaAltTitle[]))manga);
 		}
 
 		return ret.ToArray();
 	}
 
-	private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
 	{
 		string? originalLanguage = null;
-		Dictionary<string, string> altTitles = new(), links = new();
 
 		HtmlNodeCollection genreNodes = document.DocumentNode.SelectNodes("//h3[text()='Genres']/../div/button");
-		string[] tags = genreNodes.Select(b => b.InnerText).ToArray();
+		MangaTag[] tags = genreNodes.Select(b => new MangaTag(b.InnerText)).ToArray();
 		
 		HtmlNode statusNode = document.DocumentNode.SelectSingleNode("//h3[text()='Status']/../h3[2]");
-		Manga.ReleaseStatusByte releaseStatus = statusNode.InnerText.ToLower() switch
+		
+		MangaReleaseStatus releaseStatus = statusNode.InnerText.ToLower() switch
 		{
-			"ongoing" => Manga.ReleaseStatusByte.Continuing,
-			"hiatus" => Manga.ReleaseStatusByte.OnHiatus,
-			"completed" => Manga.ReleaseStatusByte.Completed,
-			"dropped" => Manga.ReleaseStatusByte.Cancelled,
-			"season end" => Manga.ReleaseStatusByte.Continuing,
-			"coming soon" => Manga.ReleaseStatusByte.Unreleased,
-			_ => Manga.ReleaseStatusByte.Unreleased
+			"ongoing" => MangaReleaseStatus.Continuing,
+			"hiatus" => MangaReleaseStatus.OnHiatus,
+			"completed" => MangaReleaseStatus.Completed,
+			"dropped" => MangaReleaseStatus.Cancelled,
+			"season end" => MangaReleaseStatus.Continuing,
+			"coming soon" => MangaReleaseStatus.Unreleased,
+			_ => MangaReleaseStatus.Unreleased
 		};
 		
 		HtmlNode coverNode = 
 			document.DocumentNode.SelectSingleNode("//img[@alt='poster']");
 		string coverUrl = coverNode.GetAttributeValue("src", "");
-		string coverFileNameInCache = SaveCoverImageToCache(coverUrl, publicationId, RequestType.MangaCover);
 		
 		HtmlNode titleNode = 
 			document.DocumentNode.SelectSingleNode("//title");
@@ -106,21 +103,24 @@ public class AsuraToon : MangaConnector
 		
 		HtmlNodeCollection authorNodes = document.DocumentNode.SelectNodes("//h3[text()='Author']/../h3[not(text()='Author' or text()='_')]");
 		HtmlNodeCollection artistNodes = document.DocumentNode.SelectNodes("//h3[text()='Artist']/../h3[not(text()='Author' or text()='_')]");
-		List<string> authors = authorNodes.Select(a => a.InnerText).Concat(artistNodes.Select(a => a.InnerText)).ToList();
+		Author[] authors = authorNodes.Select(a => new Author(a.InnerText)).Concat(artistNodes.Select(a => new Author(a.InnerText))).ToArray();
 
 		HtmlNode? firstChapterNode = document.DocumentNode.SelectSingleNode("//a[contains(@href, 'chapter/1')]/../following-sibling::h3");
-		int? year = int.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
+		uint year = uint.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
 		
-		Manga manga = new (this, sortName, authors, description, altTitles, tags, coverUrl, coverFileNameInCache, links,
-			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
-		AddMangaToCache(manga);
-		return manga;
+
+		Manga manga = new(MangaConnectorId, sortName, description, coverUrl, null, year, originalLanguage,
+			releaseStatus, 0, null, null, publicationId, 
+			authors.Select(a => a.AuthorId).ToArray(), 
+			tags.Select(t => t.Tag).ToArray(), [], []);
+
+		return (manga, authors, tags, [], []);
 	}
 
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
-		Log($"Getting chapters {manga}");
-		string requestUrl = $"https://asuracomic.net/series/{manga.publicationId}";
+		log.Info($"Getting chapters {manga}");
+		string requestUrl = $"https://asuracomic.net/series/{manga.MangaConnectorId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
@@ -129,7 +129,7 @@ public class AsuraToon : MangaConnector
 
 		//Return Chapters ordered by Chapter-Number
 		List<Chapter> chapters = ParseChaptersFromHtml(manga, requestUrl);
-		Log($"Got {chapters.Count} chapters. {manga}");
+		log.Info($"Got {chapters.Count} chapters. {manga}");
 		return chapters.Order().ToArray();
 	}
 
@@ -138,52 +138,46 @@ public class AsuraToon : MangaConnector
 		RequestResult result = downloadClient.MakeRequest(mangaUrl, RequestType.Default);
 		if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
 		{
-			Log("Failed to load site");
+			log.Info("Failed to load site");
 			return new List<Chapter>();
 		}
 
 		List<Chapter> ret = new();
 
-		HtmlNodeCollection chapterURLNodes = result.htmlDocument.DocumentNode.SelectNodes("//a[contains(@href, '/chapter/')]");
+		HtmlNodeCollection chapterUrlNodes = result.htmlDocument.DocumentNode.SelectNodes("//a[contains(@href, '/chapter/')]");
 		Regex infoRex = new(@"Chapter ([0-9]+)(.*)?");
 
-		foreach (HtmlNode chapterInfo in chapterURLNodes)
+		foreach (HtmlNode chapterInfo in chapterUrlNodes)
 		{
 			string chapterUrl = chapterInfo.GetAttributeValue("href", "");
 
 			Match match = infoRex.Match(chapterInfo.InnerText);
 			string chapterNumber = match.Groups[1].Value;
+			float.TryParse(chapterNumber, NumberFormatDecimalPoint, out float chNum);
 			string? chapterName = match.Groups[2].Success && match.Groups[2].Length > 1 ? match.Groups[2].Value : null;
 			string url = $"https://asuracomic.net/series/{chapterUrl}";
-			ret.Add(new Chapter(manga, chapterName, null, chapterNumber, url));
+			ret.Add(new Chapter(manga, chapterUrl, chNum, null, chapterName));
 		}
 		
 		return ret;
 	}
 
-	public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
+	protected override string[] GetChapterImages(Chapter chapter)
 	{
-		if (progressToken?.cancellationRequested ?? false)
-		{
-			progressToken.Cancel();
-			return HttpStatusCode.RequestTimeout;
-		}
-
-		Manga chapterParentManga = chapter.parentManga;
-		Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
-		string requestUrl = chapter.url;
+		Manga chapterParentManga = chapter.ParentManga;
+		log.Info($"Retrieving chapter-info {chapter} {chapterParentManga}");
+		string requestUrl = chapter.Url;
 		// Leaving this in to check if the page exists
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
-			progressToken?.Cancel();
-			return requestResult.statusCode;
+			return [];
 		}
 
 		string[] imageUrls = ParseImageUrlsFromHtml(requestUrl);
-		
-		return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage, progressToken:progressToken);
+
+		return imageUrls;
 	}
 
 	private string[] ParseImageUrlsFromHtml(string mangaUrl)
@@ -192,12 +186,12 @@ public class AsuraToon : MangaConnector
 			downloadClient.MakeRequest(mangaUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
 		{
-			return Array.Empty<string>();
+			return [];
 		}
 		if (requestResult.htmlDocument is null)
 		{
-			Log($"Failed to retrieve site");
-			return Array.Empty<string>();
+			log.Info($"Failed to retrieve site");
+			return [];
 		}
 
 		HtmlNodeCollection images =

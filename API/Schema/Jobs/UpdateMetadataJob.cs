@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class UpdateMetadataJob(JobWorker.Jobs.Job.JobType jobType, TimeSpan recurrence, string mangaId, string? parentJobId = null)
-    : Job(TokenGen.CreateToken(typeof(UpdateMetadataJob), 64), JobWorker.Jobs.Job.JobType.UpdateMetaData, recurrence, parentJobId)
+public class UpdateMetadataJob(JobType jobType, TimeSpan recurrence, string mangaId, string? parentJobId = null, string[]? dependsOnJobIds = null)
+    : Job(TokenGen.CreateToken(typeof(UpdateMetadataJob), 64), JobType.UpdateMetaDataJob, recurrence, parentJobId, dependsOnJobIds)
 {
     [MaxLength(64)]
     [ForeignKey("Manga")]

@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class DownloadSingleChapterJob(JobWorker.Jobs.Job.JobType jobType, TimeSpan recurrence, string chapterId, string? parentJobId = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadSingleChapterJob), 64), JobWorker.Jobs.Job.JobType.DownloadSingleChapter, recurrence, parentJobId)
+public class DownloadSingleChapterJob(string chapterId, string? parentJobId = null, string[]? dependsOnJobIds = null)
+    : Job(TokenGen.CreateToken(typeof(DownloadSingleChapterJob), 64), JobType.DownloadSingleChapterJob, TimeSpan.Zero, parentJobId, dependsOnJobIds)
 {
     [MaxLength(64)]
     [ForeignKey("Chapter")]

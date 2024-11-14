@@ -1,14 +1,18 @@
 ﻿using System.Net;
-using HtmlAgilityPack;
+using log4net;
+using log4net.Config;
 
 namespace Tranga.MangaConnectors;
 
-internal abstract class DownloadClient : GlobalBase
+public abstract class DownloadClient
 {
     private readonly Dictionary<RequestType, DateTime> _lastExecutedRateLimit;
+    protected readonly ILog log;
 
-    protected DownloadClient(GlobalBase clone) : base(clone)
+    protected DownloadClient()
     {
+        log = LogManager.GetLogger(this.GetType());
+        BasicConfigurator.Configure();
         this._lastExecutedRateLimit = new();
     }
     
@@ -16,7 +20,7 @@ internal abstract class DownloadClient : GlobalBase
     {
         if (!TrangaSettings.requestLimits.ContainsKey(requestType))
         {
-            Log("RequestType not configured for rate-limit.");
+            log.Info("RequestType not configured for rate-limit.");
             return new RequestResult(HttpStatusCode.NotAcceptable, null, Stream.Null);
         }
 
@@ -31,7 +35,7 @@ internal abstract class DownloadClient : GlobalBase
 
         if (rateLimitTimeout > TimeSpan.Zero)
         {
-            Log($"Waiting {rateLimitTimeout.TotalSeconds} seconds");
+            log.Info($"Waiting {rateLimitTimeout.TotalSeconds} seconds");
             Thread.Sleep(rateLimitTimeout);
         }
 
