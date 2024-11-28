@@ -149,19 +149,21 @@ public class Mangaworld: MangaConnector
             document.DocumentNode.SelectSingleNode(
                 "//div[contains(concat(' ',normalize-space(@class),' '),'chapters-wrapper')]");
 
+        Regex volumeRex = new(@"[Vv]olume ([0-9]+).*");
+        Regex chapterRex = new(@"[Cc]apitolo ([0-9]+).*");
+        Regex idRex = new(@".*\/read\/([a-z0-9]+)(?:[?\/].*)?");
         if (chaptersWrapper.Descendants("div").Any(descendant => descendant.HasClass("volume-element")))
         {
             foreach (HtmlNode volNode in document.DocumentNode.SelectNodes("//div[contains(concat(' ',normalize-space(@class),' '),'volume-element')]"))
             {
-                string volume = Regex.Match(volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText,
-                    @"[Vv]olume ([0-9]+).*").Groups[1].Value;
+                string volume = volumeRex.Match(volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText).Groups[1].Value;
                 foreach (HtmlNode chNode in volNode.SelectNodes("div").First(node => node.HasClass("volume-chapters")).SelectNodes("div"))
                 {
 
-                    string number = Regex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText,
-                        @"[Cc]apitolo ([0-9]+).*").Groups[1].Value;
+                    string number = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
                     string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
-                    ret.Add(new Chapter(manga, null, volume, number, url));
+                    string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
+                    ret.Add(new Chapter(manga, null, volume, number, url, id));
                 }
             }
         }
@@ -169,10 +171,10 @@ public class Mangaworld: MangaConnector
         {
             foreach (HtmlNode chNode in chaptersWrapper.SelectNodes("div").Where(node => node.HasClass("chapter")))
             {
-                string number = Regex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText,
-                    @"[Cc]apitolo ([0-9]+).*").Groups[1].Value;
+                string number = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
-                ret.Add(new Chapter(manga, null, null, number, url));
+                string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
+                ret.Add(new Chapter(manga, null, null, number, url, id));
             }
         }
 
@@ -207,10 +209,7 @@ public class Mangaworld: MangaConnector
 
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.htmlDocument);
         
-        string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
-        
-        return DownloadChapterImages(imageUrls, chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, "https://www.mangaworld.bz/", progressToken:progressToken);
+        return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage,"https://www.mangaworld.bz/", progressToken:progressToken);
     }
 
     private string[] ParseImageUrlsFromHtml(HtmlDocument document)

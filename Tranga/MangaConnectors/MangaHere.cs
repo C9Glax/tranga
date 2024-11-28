@@ -117,7 +117,7 @@ public class MangaHere : MangaConnector
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 || requestResult.htmlDocument is null)
             return Array.Empty<Chapter>();
         
-        List<string> urls = requestResult.htmlDocument.DocumentNode.SelectNodes("//div[@id='list-2']/ul//li//a[contains(@href, '/manga/')]")
+        List<string> urls = requestResult.htmlDocument.DocumentNode.SelectNodes("//div[@id='list-1']/ul//li//a[contains(@href, '/manga/')]")
             .Select(node => node.GetAttributeValue("href", "")).ToList();
         Regex chapterRex = new(@".*\/manga\/[a-zA-Z0-9\-\._\~\!\$\&\'\(\)\*\+\,\;\=\:\@]+\/v([0-9(TBD)]+)\/c([0-9\.]+)\/.*");
         
@@ -181,12 +181,9 @@ public class MangaHere : MangaConnector
             }
         } while (downloaded++ <= images);
         
-        string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
-        
         if (progressToken is not null)
             progressToken.increments = images;//we blip to normal length, in downloadchapterimages it is increasaed by the amount of urls again
-        return DownloadChapterImages(imageUrls.ToArray(), chapter.GetArchiveFilePath(), RequestType.MangaImage, comicInfoPath, progressToken:progressToken);
+        return DownloadChapterImages(imageUrls.ToArray(), chapter, RequestType.MangaImage, progressToken:progressToken);
     }
 
     private string[] ParseImageUrlsFromHtml(HtmlDocument document)

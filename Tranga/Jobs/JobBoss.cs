@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Tranga.MangaConnectors;
+using static System.IO.UnixFileMode;
 
 namespace Tranga.Jobs;
 
@@ -17,18 +19,21 @@ public class JobBoss : GlobalBase
         Log($"Next job in {jobs.MinBy(job => job.nextExecution)?.nextExecution.Subtract(DateTime.Now)} {jobs.MinBy(job => job.nextExecution)?.id}");
     }
 
-    public void AddJob(Job job)
+    public bool AddJob(Job job, string? jobFile = null)
     {
         if (ContainsJobLike(job))
         {
             Log($"Already Contains Job {job}");
+            return false;
         }
         else
         {
+            if (!this.jobs.Add(job))
+                return false;
             Log($"Added {job}");
-            this.jobs.Add(job);
-            UpdateJobFile(job);
+            UpdateJobFile(job, jobFile);
         }
+        return true;
     }
 
     public void AddJobs(IEnumerable<Job> jobsToAdd)
@@ -140,15 +145,14 @@ public class JobBoss : GlobalBase
 
     private void LoadJobsList(HashSet<MangaConnector> connectors)
     {
+        Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
         if (!Directory.Exists(TrangaSettings.jobsFolderPath)) //No jobs to load
-        {
-            Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
             return;
-        }
-        Regex idRex = new (@"(.*)\.json");
 
         //Load json-job-files
-        foreach (FileInfo file  in new DirectoryInfo(TrangaSettings.jobsFolderPath).EnumerateFiles().Where(fileInfo => idRex.IsMatch(fileInfo.Name)))
+        foreach (FileInfo file in Directory.GetFiles(TrangaSettings.jobsFolderPath, "*.json").Select(f => new FileInfo(f)))
         {
             Log($"Adding {file.Name}");
             Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
@@ -162,8 +166,12 @@ public class JobBoss : GlobalBase
             else
             {
                 Log($"Adding Job {job}");
-                this.jobs.Add(job);
-                UpdateJobFile(job, file.Name);
+                if (!AddJob(job, file.FullName)) //If we detect a duplicate, delete the file.
+                {
+                    string path = string.Concat(file.FullName, ".duplicate");
+                    file.MoveTo(path);
+                    Log($"Duplicate detected or otherwise not able to add job to list.\nMoved job {job} to {path}");
+                }
             }
         }
 
@@ -183,7 +191,7 @@ public class JobBoss : GlobalBase
 
         string[] coverFiles = Directory.GetFiles(TrangaSettings.coverImageCache);
         foreach(string fileName in coverFiles.Where(fileName => !GetAllCachedManga().Any(manga => manga.coverFileNameInCache == fileName)))
-                File.Delete(fileName);
+            File.Delete(fileName);
     }
 
     internal void UpdateJobFile(Job job, string? oldFile = null)
@@ -203,7 +211,8 @@ public class JobBoss : GlobalBase
             }
             catch (Exception e)
             {
-                Log(e.ToString());
+                Log($"Error deleting {oldFilePath} job {job.id}\n{e}");
+                return; //Don't export a new file when we haven't actually deleted the old one
             }
         }
 
@@ -215,6 +224,8 @@ public class JobBoss : GlobalBase
             while(IsFileInUse(newJobFilePath))
                 Thread.Sleep(10);
             File.WriteAllText(newJobFilePath, jobStr);
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                File.SetUnixFileMode(newJobFilePath, UserRead | UserWrite | GroupRead | OtherRead);
         }
     }
 
