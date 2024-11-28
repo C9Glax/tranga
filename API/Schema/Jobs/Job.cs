@@ -17,12 +17,13 @@ public abstract class Job
     
     [MaxLength(64)]
     [ForeignKey("DependsOnJob")] public string[]? DependsOnJobIds { get; init; }
-    [JsonIgnore] internal Job[] DependsOnJobs { get; }
+    [JsonIgnore] public Job[] DependsOnJobs { get; init; }
     
     public JobType JobType { get; init; }
     public ulong RecurrenceMs { get; set; }
     public DateTime LastExecution { get; internal set; } = DateTime.UnixEpoch;
-    public bool Completed { get; set; } = false;
+    public DateTime NextExecution { get; internal set; } 
+    public JobState state { get; internal set; } = JobState.Waiting;
 
     public object? returnValue { get; set; } = null;
 
@@ -34,8 +35,14 @@ public abstract class Job
         DependsOnJobIds = dependsOnJobIds;
         JobType = jobType;
         RecurrenceMs = Convert.ToUInt64(recurrence.TotalMilliseconds);
+        NextExecution = LastExecution.AddMilliseconds(RecurrenceMs);
 
         foreach (Job dependsOnJob in DependsOnJobs)
             dependsOnJob.ParentJobId = this.JobId;
+    }
+
+    public void MarkCompleted()
+    {
+        
     }
 }

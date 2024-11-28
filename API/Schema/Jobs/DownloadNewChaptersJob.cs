@@ -10,5 +10,5 @@ public class DownloadNewChaptersJob(JobType jobType, TimeSpan recurrence, string
     [MaxLength(64)]
     [ForeignKey("Manga")]
     public string MangaId { get; init; } = mangaId;
-    [JsonIgnore]internal Manga Manga { get; }
+    [JsonIgnore]public Manga Manga { get; init; }
 }

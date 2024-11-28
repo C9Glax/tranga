@@ -10,5 +10,5 @@ public class UpdateMetadataJob(JobType jobType, TimeSpan recurrence, string mang
     [MaxLength(64)]
     [ForeignKey("Manga")]
     public string MangaId { get; init; } = mangaId;
-    [JsonIgnore]internal Manga Manga { get; }
+    [JsonIgnore]public Manga Manga { get; init; }
 }

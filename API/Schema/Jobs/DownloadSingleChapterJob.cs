@@ -10,5 +10,5 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     [MaxLength(64)]
     [ForeignKey("Chapter")]
     public string ChapterId { get; init; } = chapterId;
-    [JsonIgnore]internal Chapter Chapter { get; }
+    [JsonIgnore]public Chapter Chapter { get; init; }
 }
