@@ -32,19 +32,19 @@ public class Chapter
         this.ArchiveFileName = BuildArchiveFileName();
     }
 
-    public MoveFileJob? UpdateChapterNumber(float chapterNumber)
+    public MoveFileOrFolderJob? UpdateChapterNumber(float chapterNumber)
     {
         this.ChapterNumber = chapterNumber;
         return UpdateArchiveFileName();
     }
 
-    public MoveFileJob? UpdateVolumeNumber(float? volumeNumber)
+    public MoveFileOrFolderJob? UpdateVolumeNumber(float? volumeNumber)
     {
         this.VolumeNumber = volumeNumber;
         return UpdateArchiveFileName();
     }
 
-    public MoveFileJob? UpdateTitle(string? title)
+    public MoveFileOrFolderJob? UpdateTitle(string? title)
     {
         this.Title = title;
         return UpdateArchiveFileName();
@@ -55,13 +55,13 @@ public class Chapter
         return $"{this.ParentManga.Name} - Vol.{this.VolumeNumber ?? 0} Ch.{this.ChapterNumber}{(this.Title is null ? "" : $" - {this.Title}")}.cbz";
     }
 
-    private MoveFileJob? UpdateArchiveFileName()
+    private MoveFileOrFolderJob? UpdateArchiveFileName()
     {
         string oldPath = GetArchiveFilePath(""); //TODO GET PATH
         this.ArchiveFileName = BuildArchiveFileName();
         if (Downloaded)
         {
-            return new MoveFileJob(oldPath, GetArchiveFilePath("")); //TODO GET PATH
+            return new MoveFileOrFolderJob(oldPath, GetArchiveFilePath("")); //TODO GET PATH
         }
         return null;
     }

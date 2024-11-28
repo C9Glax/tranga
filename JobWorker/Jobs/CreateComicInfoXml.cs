@@ -6,7 +6,7 @@ namespace JobWorker.Jobs;
 
 public class CreateComicInfoXml : Job<Chapter, string>
 {
-    protected override (IEnumerable<Job>, string) ExecuteReturnSubTasksInternal(Chapter chapter)
+    protected override (IEnumerable<Job>, string) ExecuteReturnSubTasksInternal(Chapter chapter, Job[] relatedJobs)
     {
         string path = Path.GetTempFileName();
         XElement comicInfo = new("ComicInfo",
@@ -18,6 +18,6 @@ public class CreateComicInfoXml : Job<Chapter, string>
             new XElement("Number", chapter.ChapterNumber)
         );
         File.WriteAllText(path, comicInfo.ToString());
-        return (Array.Empty<Job>(), path);
+        return ([], path);
     }
 }

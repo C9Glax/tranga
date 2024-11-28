@@ -9,7 +9,7 @@ namespace JobWorker.Jobs;
 
 public class ProcessImages : Job<(string, bool, int), object?>
 {
-    protected override (IEnumerable<Job>, object?) ExecuteReturnSubTasksInternal((string, bool, int) data)
+    protected override (IEnumerable<Job>, object?) ExecuteReturnSubTasksInternal((string, bool, int) data, Job[] relatedJobs)
     {
         string path = data.Item1;
         string[] imagePaths = File.GetAttributes(path).HasFlag(FileAttribute.Directory)
@@ -32,7 +32,7 @@ public class ProcessImages : Job<(string, bool, int), object?>
                 Quality = compression
             });
         }
-        log.Info($"Image processing took {DateTime.Now.Subtract(start):s\\.fff} B/W:{bwImages} Compression: {compression}");
-        return (Array.Empty<Job>(), null);
+        Log.Info($"Image processing took {DateTime.Now.Subtract(start):s\\.fff} B/W:{bwImages} Compression: {compression}");
+        return ([], null);
     }
 }

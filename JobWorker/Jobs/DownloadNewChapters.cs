@@ -6,7 +6,7 @@ namespace JobWorker.Jobs;
 
 public class DownloadNewChapters : Job<Manga, Chapter[]>
 {
-    protected override (IEnumerable<Job>, Chapter[]) ExecuteReturnSubTasksInternal(Manga manga)
+    protected override (IEnumerable<Job>, Chapter[]) ExecuteReturnSubTasksInternal(Manga manga, Job[] relatedJobs)
     {
         MangaConnector mangaConnector = GetConnector(manga);
         Chapter[] chapters = mangaConnector.GetChapters(manga);
