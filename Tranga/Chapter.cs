@@ -121,6 +121,8 @@ public readonly struct Chapter : IComparable
     
     public void CreateChapterMarker()
     {
+        if (this.id is null)
+            return;
         string path = Path.Join(TrangaSettings.downloadLocation, parentManga.folderName, $".{id}");
         File.WriteAllText(path, GetArchiveFilePath());
         File.SetAttributes(path, FileAttributes.Hidden);
