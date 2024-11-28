@@ -130,13 +130,13 @@ public class Manganato : MangaConnector
         
         string pattern = "MMM dd,yyyy HH:mm";
 
-        HtmlNode oldestChapter = document.DocumentNode
+        HtmlNode? oldestChapter = document.DocumentNode
             .SelectNodes("//span[contains(concat(' ',normalize-space(@class),' '),' chapter-time ')]").MaxBy(
                 node => DateTime.ParseExact(node.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
-                    CultureInfo.InvariantCulture).Millisecond)!;
+                    CultureInfo.InvariantCulture).Millisecond);
 
 
-        int year = DateTime.ParseExact(oldestChapter.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
+        int year = DateTime.ParseExact(oldestChapter?.GetAttributeValue("title", "Dec 31 2400, 23:59")??"Dec 31 2400, 23:59", pattern,
             CultureInfo.InvariantCulture).Year;
         
         Manga manga = new (this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
