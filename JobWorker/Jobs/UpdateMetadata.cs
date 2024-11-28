@@ -11,7 +11,8 @@ public class UpdateMetadata : Job<Manga, Manga?>
         MangaConnector mangaConnector = GetConnector(manga);
         //Retrieve new Metadata
         Manga? retManga = mangaConnector.GetMangaFromManga(manga)?.Item1;
-        //TODO update
+        if(retManga is not null)
+            manga.UpdateWithInfo(retManga);
         return ([], retManga);
     }
 }
