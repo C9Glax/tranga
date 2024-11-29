@@ -8,6 +8,7 @@ namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
+[Produces("application/json")]
 [Route("v{version:apiVersion}/[controller]")]
 public class JobController(PgsqlContext context) : Controller
 {
@@ -91,7 +92,7 @@ public class JobController(PgsqlContext context) : Controller
 
     [HttpPost("Create")]
     [ProducesResponseType(Status201Created)]
-    [ProducesResponseType(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult CreateJob([FromBody]Job job)
     {
         try
@@ -102,7 +103,7 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
-            return new StatusCodeResult(500);
+            return StatusCode(500, e.Message);
         }
     }
 
@@ -126,7 +127,7 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
-            return new StatusCodeResult(500);
+            return StatusCode(500, e.Message);
         }
     }
 
@@ -148,7 +149,7 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
-            return new StatusCodeResult(500);
+            return StatusCode(500, e.Message);
         }
     }
 
