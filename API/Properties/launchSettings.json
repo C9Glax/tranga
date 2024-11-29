@@ -5,7 +5,10 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:5976",
-      "sslPort": 44332
+      "sslPort": 44332,
+      "environmentVariables": {
+        "POSTGRES_Host": "localhost:5432"
+      }
     }
   },
   "profiles": {
@@ -16,7 +19,8 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5287",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "POSTGRES_Host": "localhost:5432"
       }
     },
     "https": {
@@ -26,7 +30,8 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7206;http://localhost:5287",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "POSTGRES_Host": "localhost:5432"
       }
     },
     "IIS Express": {
@@ -34,7 +39,8 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "POSTGRES_Host": "localhost:5432"
       }
     }
   }

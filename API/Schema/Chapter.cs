@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using API.Schema.Jobs;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace API.Schema;
 
@@ -11,15 +10,17 @@ public class Chapter
 {
     [MaxLength(64)]
     public string ChapterId { get; init; } = TokenGen.CreateToken(typeof(Chapter), 64);
-    [ForeignKey("ParentManga")]
-    public string ParentMangaId { get; init; }
-    [JsonIgnore]public Manga ParentManga { get; }
     public float? VolumeNumber { get; private set; }
     public float ChapterNumber { get; private set; }
     public string Url { get; internal set; }
     public string? Title { get; private set; }
     public string ArchiveFileName { get; private set; }
     public bool Downloaded { get; internal set; } = false;
+    
+    [MaxLength(64)]
+    public string ParentMangaId { get; init; }
+    [ForeignKey("ParentMangaId")]
+    public virtual Manga ParentManga { get; init; }
 
     public Chapter(string parentMangaId, string url, float chapterNumber,
         float? volumeNumber = null, string? title = null)
@@ -30,6 +31,11 @@ public class Chapter
         this.VolumeNumber = volumeNumber;
         this.Title = title;
         this.ArchiveFileName = BuildArchiveFileName();
+    }
+
+    public Chapter(Manga parentManga, string url, float chapterNumber,
+        float? volumeNumber = null, string? title = null) : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
+    {
     }
 
     public MoveFileOrFolderJob? UpdateChapterNumber(float chapterNumber)
@@ -64,12 +70,6 @@ public class Chapter
             return new MoveFileOrFolderJob(oldPath, GetArchiveFilePath("")); //TODO GET PATH
         }
         return null;
-    }
-
-    public Chapter(Manga parentManga, string url, float chapterNumber,
-        float? volumeNumber = null, string? title = null) : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
-    {
-        this.ParentManga = parentManga;
     }
     
     /// <summary>

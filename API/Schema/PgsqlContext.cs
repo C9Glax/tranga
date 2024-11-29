@@ -20,27 +20,61 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<LibraryConnector>()
+            .HasDiscriminator<LibraryType>(l => l.LibraryType)
+            .HasValue<Komga>(LibraryType.Komga)
+            .HasValue<Kavita>(LibraryType.Kavita);
+        modelBuilder.Entity<NotificationConnector>()
+            .HasDiscriminator<NotificationConnectorType>(n => n.NotificationConnectorType)
+            .HasValue<Gotify>(NotificationConnectorType.Gotify)
+            .HasValue<Ntfy>(NotificationConnectorType.Ntfy)
+            .HasValue<Lunasea>(NotificationConnectorType.LunaSea);
         modelBuilder.Entity<Job>()
-            .HasOne<Job>("ParentJobId");
-        modelBuilder.Entity<Job>()
-            .HasOne<Job>("DependsOnJobId");
-        modelBuilder.Entity<DownloadNewChaptersJob>()
-            .HasOne<Manga>("MangaId");
-        modelBuilder.Entity<DownloadSingleChapterJob>()
-            .HasOne<Chapter>("ChapterId");
-        modelBuilder.Entity<UpdateMetadataJob>()
-            .HasOne<Manga>("MangaId");
+            .HasDiscriminator<JobType>(j => j.JobType)
+            .HasValue<CreateArchiveJob>(JobType.CreateArchiveJob)
+            .HasValue<MoveFileOrFolderJob>(JobType.MoveFileOrFolderJob)
+            .HasValue<ProcessImagesJob>(JobType.ProcessImagesJob)
+            .HasValue<DownloadNewChaptersJob>(JobType.DownloadNewChaptersJob)
+            .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
+            .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob)
+            .HasValue<CreateComicInfoXmlJob>(JobType.CreateComicInfoXmlJob);
+
         modelBuilder.Entity<Chapter>()
-            .HasOne<Manga>("ParentMangaId");
+            .HasOne<Manga>(c => c.ParentManga)
+            .WithMany(m => m.Chapters)
+            .HasForeignKey(c => c.ParentMangaId);
+
         modelBuilder.Entity<Manga>()
-            .HasOne<MangaConnector>("MangaConnectorId");
+            .HasOne<Chapter>(m => m.LatestChapterAvailable)
+            .WithOne();
         modelBuilder.Entity<Manga>()
-            .HasMany<Author>("AuthorIds");
+            .HasOne<Chapter>(m => m.LatestChapterDownloaded)
+            .WithOne();
         modelBuilder.Entity<Manga>()
-            .HasMany<MangaTag>("TagIds");
+            .HasOne<MangaConnector>(m => m.MangaConnector)
+            .WithMany(c => c.Mangas)
+            .HasForeignKey(m => m.MangaConnectorId);
         modelBuilder.Entity<Manga>()
-            .HasMany<Link>("LinkIds");
+            .HasMany<Author>(m => m.Authors)
+            .WithMany(a => a.Mangas)
+            .UsingEntity(
+                "MangaAuthor",
+                l => l.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaId").HasPrincipalKey("MangaId"),
+                r => r.HasOne(typeof(Author)).WithMany().HasForeignKey("AuthorId").HasPrincipalKey("AuthorId"),
+                j => j.HasKey("MangaId", "AuthorId"));
         modelBuilder.Entity<Manga>()
-            .HasMany<MangaAltTitle>("AltTitleIds");
+            .HasMany<MangaTag>(m => m.Tags)
+            .WithMany(t => t.Mangas)
+            .UsingEntity(
+                "MangaTag",
+                l => l.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaId").HasPrincipalKey("MangaId"),
+                r => r.HasOne(typeof(MangaTag)).WithMany().HasForeignKey("Tag").HasPrincipalKey("Tag"),
+                j => j.HasKey("MangaId", "Tag"));
+        modelBuilder.Entity<Manga>()
+            .HasMany<Link>(m => m.Links)
+            .WithOne(c => c.Manga);
+        modelBuilder.Entity<Manga>()
+            .HasMany<MangaAltTitle>(m => m.AltTitles)
+            .WithOne(c => c.Manga);
     }
 }

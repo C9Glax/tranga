@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
@@ -8,5 +9,8 @@ public class Author(string authorName)
 {
     [MaxLength(64)]
     public string AuthorId { get; init; } = TokenGen.CreateToken(typeof(Author), 64);
-    public string Name { get; init; } = authorName;
+    public string AuthorName { get; init; } = authorName;
+
+    [ForeignKey("MangaIds")]
+    public virtual Manga[] Mangas { get; internal set; } = [];
 }

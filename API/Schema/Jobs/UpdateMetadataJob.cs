@@ -4,11 +4,10 @@ using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class UpdateMetadataJob(JobType jobType, TimeSpan recurrence, string mangaId, string? parentJobId = null, string[]? dependsOnJobIds = null)
-    : Job(TokenGen.CreateToken(typeof(UpdateMetadataJob), 64), JobType.UpdateMetaDataJob, recurrence, parentJobId, dependsOnJobIds)
+public class UpdateMetadataJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, string[]? dependsOnJobIds = null)
+    : Job(TokenGen.CreateToken(typeof(UpdateMetadataJob), 64), JobType.UpdateMetaDataJob, recurrenceMs, parentJobId, dependsOnJobIds)
 {
     [MaxLength(64)]
-    [ForeignKey("Manga")]
     public string MangaId { get; init; } = mangaId;
-    [JsonIgnore]public Manga Manga { get; init; }
+    public virtual Manga Manga { get; init; }
 }

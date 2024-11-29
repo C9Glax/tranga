@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
@@ -7,4 +7,7 @@ namespace API.Schema;
 public class MangaTag(string tag)
 {
     public string Tag { get; init; } = tag;
+    
+    [ForeignKey("MangaIds")]
+    public virtual Manga[] Mangas { get; internal set; } = [];
 }

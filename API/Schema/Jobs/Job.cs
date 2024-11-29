@@ -12,12 +12,12 @@ public abstract class Job
     public string JobId { get; init; }
     
     [MaxLength(64)]
-    [ForeignKey("ParentJob")] public string? ParentJobId { get; internal set; }
-    [JsonIgnore] internal Job ParentJob { get; }
+    public string? ParentJobId { get; internal set; }
+    internal virtual Job ParentJob { get; }
     
     [MaxLength(64)]
-    [ForeignKey("DependsOnJob")] public string[]? DependsOnJobIds { get; init; }
-    [JsonIgnore] public Job[] DependsOnJobs { get; init; }
+    public string[]? DependsOnJobIds { get; init; }
+    public virtual Job[] DependsOnJobs { get; init; }
     
     public JobType JobType { get; init; }
     public ulong RecurrenceMs { get; set; }
@@ -25,16 +25,16 @@ public abstract class Job
     public DateTime NextExecution { get; internal set; } 
     public JobState state { get; internal set; } = JobState.Waiting;
 
-    public object? returnValue { get; set; } = null;
+    public string? returnValue { get; set; } = null;
 
-    public Job(string jobId, JobType jobType, TimeSpan recurrence, string? parentJobId = null,
+    public Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId = null,
         string[]? dependsOnJobIds = null)
     {
         JobId = jobId;
         ParentJobId = parentJobId;
         DependsOnJobIds = dependsOnJobIds;
         JobType = jobType;
-        RecurrenceMs = Convert.ToUInt64(recurrence.TotalMilliseconds);
+        RecurrenceMs = recurrenceMs;
         NextExecution = LastExecution.AddMilliseconds(RecurrenceMs);
 
         foreach (Job dependsOnJob in DependsOnJobs)

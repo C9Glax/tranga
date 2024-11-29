@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
@@ -13,4 +13,7 @@ public class MangaConnector(string name, string[] supportedLanguages, string[] b
     public string Name { get; init; } = name;
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
     public string[] BaseUris { get; init; } = baseUris;
+
+    [ForeignKey("MangaIds")]
+    public virtual Manga[] Mangas { get; internal set; } = [];
 }

@@ -8,7 +8,7 @@ namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
-[Route("v{v:apiVersion}/[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
 public class JobController(PgsqlContext context) : Controller
 {
     [HttpGet]
@@ -30,7 +30,7 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetDueJobs()
     {
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.Now.ToUniversalTime();
         Job[] dueJobs = context.Jobs.Where(job => now < job.NextExecution).ToArray();
         return Ok(dueJobs);
     }

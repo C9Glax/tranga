@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
@@ -11,4 +12,7 @@ public class MangaAltTitle(string language, string title)
     [MaxLength(8)]
     public string Language { get; init; } = language;
     public string Title { get; set; } = title;
+    
+    [ForeignKey("MangaId")]
+    public virtual Manga Manga { get; init; }
 }

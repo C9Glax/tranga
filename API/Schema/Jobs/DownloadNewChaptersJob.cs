@@ -4,11 +4,10 @@ using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class DownloadNewChaptersJob(JobType jobType, TimeSpan recurrence, string mangaId, string? parentJobId = null, string[]? dependsOnJobIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadNewChaptersJob), 64), JobType.DownloadNewChaptersJob, recurrence, parentJobId, dependsOnJobIds)
+public class DownloadNewChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, string[]? dependsOnJobIds = null)
+    : Job(TokenGen.CreateToken(typeof(DownloadNewChaptersJob), 64), JobType.DownloadNewChaptersJob, recurrenceMs, parentJobId, dependsOnJobIds)
 {
     [MaxLength(64)]
-    [ForeignKey("Manga")]
     public string MangaId { get; init; } = mangaId;
-    [JsonIgnore]public Manga Manga { get; init; }
+    public virtual Manga Manga { get; init; }
 }

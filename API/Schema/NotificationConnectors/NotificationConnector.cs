@@ -9,9 +9,5 @@ public abstract class NotificationConnector(string notificationConnectorId, Noti
     [MaxLength(64)]
     public string NotificationConnectorId { get; } = notificationConnectorId;
 
-    public NotificationConnectorType NotificationConnectorType
-    {
-        get;
-        init;
-    } = notificationConnectorType;
+    public NotificationConnectorType NotificationConnectorType { get; init; } = notificationConnectorType;
 }

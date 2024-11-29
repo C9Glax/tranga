@@ -91,7 +91,6 @@ That is why I wanted to create my own project, in a language I understand, and t
 - [Html Agility Pack (HAP)](https://html-agility-pack.net/)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
-- [zstd-wrapper](https://github.com/oleg-st/ZstdSharp) [zstd](https://github.com/facebook/zstd)
 - 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

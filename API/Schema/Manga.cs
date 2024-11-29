@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using API.Schema.Jobs;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace API.Schema;
 
@@ -40,40 +39,33 @@ public class Manga(
     public string FolderName { get; private set; } = BuildFolderName(name);
     public float IgnoreChapterBefore { get; internal set; } = ignoreChapterBefore;
 
-    [ForeignKey("LatestChapterDownloaded")]
     public string? LatestChapterDownloadedId { get; internal set; } = latestChapterDownloadedId;
-    [JsonIgnore]
-    public Chapter? LatestChapterDownloaded { get; }
-    [ForeignKey("LatestChapterAvailable")]
+    public virtual Chapter? LatestChapterDownloaded { get; }
     
     public string? LatestChapterAvailableId { get; internal set; } = latestChapterAvailableId;
-    [JsonIgnore]
-    public Chapter? LatestChapterAvailable { get; }
+    public virtual Chapter? LatestChapterAvailable { get; }
 
-    [ForeignKey("MangaConnector")]
     public string MangaConnectorId { get; init; } = mangaConnectorId;
-    [JsonIgnore]
-    public MangaConnector MangaConnector { get; }
+    public virtual MangaConnector MangaConnector { get; }
     
-    [ForeignKey("Authors")]
     public string[] AuthorIds { get; internal set; } = authorIds;
-    [JsonIgnore]
-    public Author[] Authors { get; }
+    [ForeignKey("AuthorIds")]
+    public virtual Author[] Authors { get; }
     
-    [ForeignKey("Tags")]
     public string[] TagIds { get; internal set; } = tagIds;
-    [JsonIgnore]
-    public MangaTag[] Tags { get; }
+    [ForeignKey("TagIds")]
+    public virtual MangaTag[] Tags { get; }
     
-    [ForeignKey("Links")]
     public string[] LinkIds { get; internal set; } = linkIds;
-    [JsonIgnore]
-    public Link[] Links { get; }
+    [ForeignKey("LinkIds")]
+    public virtual Link[] Links { get; }
     
-    [ForeignKey("AltTitles")]
     public string[] AltTitleIds { get; internal set; } = altTitleIds;
-    [JsonIgnore]
-    public MangaAltTitle[] AltTitles { get; }
+    [ForeignKey("AltTitleIds")]
+    public virtual MangaAltTitle[] AltTitles { get; }
+    
+    [ForeignKey("ChapterIds")]
+    public virtual Chapter[] Chapters { get; internal set; }
 
     public MoveFileOrFolderJob UpdateFolderName(string downloadLocation, string newName)
     {
