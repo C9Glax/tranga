@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Runtime.InteropServices;
 using API.Schema.Jobs;
 using log4net;
@@ -35,8 +36,6 @@ public class Monitor
                 _abortReceived = true;
                 Log.Info("_abortReceived");
                 break;
-            default:
-                break;
         }
     }
 
@@ -49,10 +48,7 @@ public class Monitor
             
             IEnumerable<Worker> finishedWorkers = this._workers.Where(worker => (byte)worker.Task.Status > 4);
             foreach (Worker finishedWorker in finishedWorkers)
-            {
-                this._workers.Remove(finishedWorker);
-                MarkJobCompleted(finishedWorker.Job);
-            }
+                MarkJobCompleted(finishedWorker);
             
             Job[] workQueue = GetDueJobs();
             Job[] distinctJobs = workQueue.DistinctBy(j => j.JobType).ToArray();
@@ -67,35 +63,68 @@ public class Monitor
     }
 
     private const string DueJobsEndpoint = "v2/Job/Due";
-    private readonly string? _apiUri = Environment.GetEnvironmentVariable("apiUri");
     private Job[] GetDueJobs()
     {
-        if (_apiUri is null)
+        if (MakeGetRequestApi<Job[]>(DueJobsEndpoint, out Job[]? dueJobs))
+            return dueJobs!;
+        return [];
+    }
+
+    private const string UpdateJobStatusEndpoint = "v2/Job/{0}/Status";
+    private const string CreateJobEndpoint = "v2/Job";
+    private void MarkJobCompleted(Worker worker)
+    {
+        this._workers.Remove(worker);
+        
+        MakePatchRequestApi(string.Format(UpdateJobStatusEndpoint, worker.Job.JobId), JobState.Completed, out object? _);
+
+        foreach (Job newJob in worker.NewJobs)
+            MakePutRequestApi(CreateJobEndpoint, newJob, out object? _);
+    }
+
+    private static readonly string? APIUri = Environment.GetEnvironmentVariable("apiUri");
+    
+    public static bool MakeGetRequestApi<T>(string endpoint, out T? result) => MakeRequestApi(HttpMethod.Get, endpoint, null, out result);
+    public static bool MakePostRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Post, endpoint, content, out result);
+    public static bool MakeDeleteRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Delete, endpoint, content, out result);
+    public static bool MakePatchRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Patch, endpoint, content, out result);
+    public static bool MakePutRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Put, endpoint, content, out result);
+    
+    public static bool MakeRequestApi<T>(HttpMethod method, string endpoint, object? content, out T? result)
+    {
+        result = default;
+        if (APIUri is null)
         {
             Log.Error("_apiUri is null.");
-            return [];
+            return false;
         }
-        string completeUri = MakeCompleteUri(_apiUri, DueJobsEndpoint);
+        string completeUri = MakeCompleteUri(APIUri, DueJobsEndpoint);
         if (!Uri.TryCreate(completeUri, UriKind.Absolute, out Uri? requestUri))
         {
             Log.Error($"{completeUri} is not valid URI.");
-            return [];
+            return false;
         }
         HttpClient client = new();
+        HttpRequestMessage request = new (method, requestUri);
+        if (content is not null)
+        {
+            request.Content = JsonContent.Create(content);
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+        }
 
         try
         {
-            HttpResponseMessage response = client.GetAsync(requestUri).Result;
+            HttpResponseMessage response = client.Send(request);
             if (!response.IsSuccessStatusCode)
             {
                 Log.Error($"Response {response.StatusCode}");
-                return [];
+                return false;
             }
+            
+            result = response.Content.ReadFromJsonAsync<T>().GetAwaiter().GetResult();
+            Log.Debug("Request sucessful.");
 
-            Job[]? jobs = response.Content.ReadFromJsonAsync<Job[]>().Result;
-            Log.Debug($"Got {jobs?.Length??-1} jobs.");
-
-            return jobs ?? [];
+            return true;
         }
         catch (TaskCanceledException taskCanceledException)
         {
@@ -105,11 +134,8 @@ public class Monitor
         {
             Log.Error(e.Message);
         }
-
-        return [];
+        return false;
     }
-
-    private void MarkJobCompleted(Job job) => job.MarkCompleted();
 
     private static string MakeCompleteUri(string apiUri, string endpoint)
     {

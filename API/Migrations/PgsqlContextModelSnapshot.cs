@@ -423,6 +423,10 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasIndex("ChapterId");
 
                     b.ToTable("Jobs", t =>
@@ -490,6 +494,12 @@ namespace API.Migrations
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.ToTable("Jobs", t =>
+                        {
+                            t.Property("Path")
+                                .HasColumnName("ProcessImagesJob_Path");
+                        });
 
                     b.HasDiscriminator().HasValue((byte)5);
                 });

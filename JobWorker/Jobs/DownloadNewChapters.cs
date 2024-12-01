@@ -4,12 +4,18 @@ using MangaConnector = Tranga.MangaConnectors.MangaConnector;
 
 namespace JobWorker.Jobs;
 
-public class DownloadNewChapters : Job<Manga, Chapter[]>
+public class DownloadNewChapters(DownloadNewChaptersJob data) : Job<DownloadNewChaptersJob>(data)
 {
-    protected override (IEnumerable<Job>, Chapter[]) ExecuteReturnSubTasksInternal(Manga manga, Job[] relatedJobs)
+    
+    private const string AddChaptersEndpoint = "v2/Manga/{0}";
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(DownloadNewChaptersJob data)
     {
+        Manga manga = data.Manga;
         MangaConnector mangaConnector = GetConnector(manga);
         Chapter[] chapters = mangaConnector.GetChapters(manga);
-        return (chapters.Select(c => new DownloadSingleChapterJob(c.ChapterId)), chapters);
+        
+        Monitor.MakePutRequestApi(string.Format(AddChaptersEndpoint, manga.MangaId), chapters, out object? _);
+        
+        return chapters.Select(c => new DownloadSingleChapterJob(c.ChapterId));
     }
 }

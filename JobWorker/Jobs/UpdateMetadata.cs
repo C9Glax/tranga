@@ -4,15 +4,23 @@ using MangaConnector = Tranga.MangaConnectors.MangaConnector;
 
 namespace JobWorker.Jobs;
 
-public class UpdateMetadata : Job<Manga, Manga?>
+public class UpdateMetadata(UpdateMetadataJob data) : Job<UpdateMetadataJob>(data)
 {
-    protected override (IEnumerable<Job>, Manga?) ExecuteReturnSubTasksInternal(Manga manga, Job[] relatedJobs)
+    
+    private const string UpdateMetadataEndpoint = "v2/Manga/{0}";
+    
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(UpdateMetadataJob data)
     {
+        Manga manga = data.Manga;
         MangaConnector mangaConnector = GetConnector(manga);
+        
         //Retrieve new Metadata
         Manga? retManga = mangaConnector.GetMangaFromManga(manga)?.Item1;
-        if(retManga is not null)
-            manga.UpdateWithInfo(retManga);
-        return ([], retManga);
+        if (retManga is null)
+            return [];
+
+        Monitor.MakePatchRequestApi(string.Format(UpdateMetadataEndpoint, manga.MangaId), manga, out object? _);
+
+        return [];
     }
 }

@@ -7,25 +7,26 @@ using MangaConnector = Tranga.MangaConnectors.MangaConnector;
 
 namespace JobWorker.Jobs;
 
-public abstract class Job<I, O>
+public abstract class Job<T> where T : Job
 {
     protected readonly ILog Log;
-    public O returnValue { get; protected set; }
+    private readonly T _data;
 
-    public Job()
+    public Job(T data)
     {
+        this._data = data;
+        
         Log = LogManager.GetLogger(this.GetType());
         BasicConfigurator.Configure();
     }
 
-    public IEnumerable<Job> Execute(I data, Job[] relatedJobs)
+    public void Execute(out Job[] newJobs)
     {
-        (IEnumerable<Job> jobs, O ret) = ExecuteReturnSubTasksInternal(data, relatedJobs);
-        returnValue = ret;
-        return jobs;
+        Job[] jobs = ExecuteReturnSubTasksInternal(this._data).ToArray();
+        newJobs = jobs;
     }
 
-    protected abstract ValueTuple<IEnumerable<Job>, O> ExecuteReturnSubTasksInternal(I data, Job[] relatedJobs);
+    protected abstract IEnumerable<Job> ExecuteReturnSubTasksInternal(T data);
 
     protected MangaConnector GetConnector(Manga manga)
     {

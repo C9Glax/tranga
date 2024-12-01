@@ -7,18 +7,18 @@ using SixLabors.ImageSharp.Processing.Processors.Binarization;
 
 namespace JobWorker.Jobs;
 
-public class ProcessImages : Job<(string, bool, int), object?>
+public class ProcessImages(ProcessImagesJob data) : Job<ProcessImagesJob>(data)
 {
-    protected override (IEnumerable<Job>, object?) ExecuteReturnSubTasksInternal((string, bool, int) data, Job[] relatedJobs)
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(ProcessImagesJob data)
     {
-        string path = data.Item1;
+        string path = data.Path;
         string[] imagePaths = File.GetAttributes(path).HasFlag(FileAttribute.Directory)
             ? Directory.GetFiles(path)
             : [path];
-        bool bwImages = data.Item2;
-        int compression = data.Item3;
+        bool bwImages = data.Bw;
+        int compression = data.Compression;
         if (!bwImages && compression == 100)
-            return (Array.Empty<Job>(), null);
+            return [];
 
         DateTime start = DateTime.Now;
         foreach (string imagePath in imagePaths)
@@ -33,6 +33,6 @@ public class ProcessImages : Job<(string, bool, int), object?>
             });
         }
         Log.Info($"Image processing took {DateTime.Now.Subtract(start):s\\.fff} B/W:{bwImages} Compression: {compression}");
-        return ([], null);
+        return [];
     }
 }

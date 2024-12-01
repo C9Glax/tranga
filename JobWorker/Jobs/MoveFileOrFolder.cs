@@ -2,12 +2,12 @@
 
 namespace JobWorker.Jobs;
 
-public class MoveFileOrFolder : Job<(string, string), object?>
+public class MoveFileOrFolder(MoveFileOrFolderJob data): Job<MoveFileOrFolderJob>(data)
 {
-    protected override (IEnumerable<Job>, object?) ExecuteReturnSubTasksInternal((string, string) data, Job[] relatedJobs)
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(MoveFileOrFolderJob data)
     {
-        string from = data.Item1;
-        string to = data.Item2;
+        string from = data.FromLocation;
+        string to = data.ToLocation;
         
         FileAttributes attr = File.GetAttributes(from);
 
@@ -19,6 +19,6 @@ public class MoveFileOrFolder : Job<(string, string), object?>
                 break;
         }
 
-        return ([], null);
+        return [];
     }
 }

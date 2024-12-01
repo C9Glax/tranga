@@ -5,24 +5,25 @@ using MangaConnector = Tranga.MangaConnectors.MangaConnector;
 
 namespace JobWorker.Jobs;
 
-public class DownloadSingleChapter : Job<Chapter, string?>
+public class DownloadSingleChapter(DownloadSingleChapterJob data) : Job<DownloadSingleChapterJob>(data)
 {
-    protected override (IEnumerable<Job>, string?) ExecuteReturnSubTasksInternal(Chapter chapter, Job[] relatedJobs)
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(DownloadSingleChapterJob data)
     {
+        Chapter chapter = data.Chapter;
         MangaConnector mangaConnector = GetConnector(chapter);
         if (mangaConnector.DownloadChapterImages(chapter, out string? downloadPath) && downloadPath is not null)
         {
             ProcessImagesJob pi = new(downloadPath, TrangaSettings.bwImages, TrangaSettings.compression);
-            CreateComicInfoXmlJob cx = new(chapter.ChapterId);
+            CreateComicInfoXmlJob cx = new(chapter.ChapterId, downloadPath);
             
             CreateArchiveJob ca = new(downloadPath, chapter.ChapterId, null, [pi.JobId, cx.JobId]);
-            return (new Job[]
-            {
+            return
+            [
                 pi,
                 cx,
                 ca
-            }, downloadPath);
+            ];
         }
-        return ([], null);
+        return [];
     }
 }

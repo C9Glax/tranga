@@ -4,11 +4,14 @@ using API.Schema.Jobs;
 
 namespace JobWorker.Jobs;
 
-public class CreateComicInfoXml : Job<Chapter, string>
+public class CreateComicInfoXml(CreateComicInfoXmlJob data) : Job<CreateComicInfoXmlJob>(data)
 {
-    protected override (IEnumerable<Job>, string) ExecuteReturnSubTasksInternal(Chapter chapter, Job[] relatedJobs)
+    
+    public const string ComicInfoXmlFileName = "ComicInfo.xml";
+    protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(CreateComicInfoXmlJob data)
     {
-        string path = Path.GetTempFileName();
+        Chapter chapter = data.Chapter;
+        string path = Path.Join(data.Path, ComicInfoXmlFileName);
         XElement comicInfo = new("ComicInfo",
             new XElement("Tags", string.Join(',', chapter.ParentManga.Tags.Select(t => t.Tag))),
             new XElement("LanguageISO", chapter.ParentManga.OriginalLanguage),
@@ -18,6 +21,6 @@ public class CreateComicInfoXml : Job<Chapter, string>
             new XElement("Number", chapter.ChapterNumber)
         );
         File.WriteAllText(path, comicInfo.ToString());
-        return ([], path);
+        return [];
     }
 }
