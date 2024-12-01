@@ -43,9 +43,9 @@ public class JobController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="state">Requested Job-State</param>
     /// <returns>Array of Jobs</returns>
-    [HttpGet("State")]
+    [HttpGet("State/{state}")]
     [ProducesResponseType<Job[]>(Status200OK)]
-    public IActionResult GetJobsInState([FromBody]JobState state)
+    public IActionResult GetJobsInState(JobState state)
     {
         Job[] jobsInState = context.Jobs.Where(job => job.state == state).ToArray();
         return Ok(jobsInState);
@@ -56,9 +56,9 @@ public class JobController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="type">Requested Job-Type</param>
     /// <returns>Array of Jobs</returns>
-    [HttpGet("Type/{type}")]
+    [HttpPost("Type/{type}")]
     [ProducesResponseType<Job[]>(Status200OK)]
-    public IActionResult GetJobsOfType([FromBody]JobType type)
+    public IActionResult GetJobsOfType(JobType type)
     {
         Job[] jobsOfType = context.Jobs.Where(job => job.JobType == type).ToArray();
         return Ok(jobsOfType);
