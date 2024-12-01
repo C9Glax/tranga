@@ -76,7 +76,17 @@ public class Manga(
 
     internal void UpdateWithInfo(Manga other)
     {
-        //TODO
+        this.Name = other.Name;
+        this.year = other.year;
+        this.Description = other.Description;
+        this.CoverUrl = other.CoverUrl;
+        this.OriginalLanguage = other.OriginalLanguage;
+        this.AuthorIds = other.AuthorIds;
+        this.LinkIds = other.LinkIds;
+        this.TagIds = other.TagIds;
+        this.AltTitleIds = other.AltTitleIds;
+        this.LatestChapterAvailableId = other.LatestChapterAvailableId;
+        this.ReleaseStatus = other.ReleaseStatus;
     }
 
     private static string BuildFolderName(string mangaName)
