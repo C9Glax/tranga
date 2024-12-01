@@ -28,23 +28,24 @@ public abstract class Job<T> where T : Job
 
     protected abstract IEnumerable<Job> ExecuteReturnSubTasksInternal(T data);
 
-    protected MangaConnector GetConnector(Manga manga)
-    {
-        return manga.MangaConnector.Name switch
-        {
-            "AsuraToon" => new AsuraToon(manga.MangaConnectorName),
-            "Bato" => new Bato(manga.MangaConnectorName),
-            "MangaDex" => new MangaDex(manga.MangaConnectorName),
-            "MangaHere" => new MangaHere(manga.MangaConnectorName),
-            "MangaKatana" => new MangaKatana(manga.MangaConnectorName),
-            "MangaLife" => new MangaLife(manga.MangaConnectorName),
-            "Manganato" => new Manganato(manga.MangaConnectorName),
-            "Mangasee" => new Mangasee(manga.MangaConnectorName),
-            "Mangaworld" => new Mangaworld(manga.MangaConnectorName),
-            "ManhuaPlus" => new ManhuaPlus(manga.MangaConnectorName),
-            _ => throw new KeyNotFoundException($"Could not find connector with name {manga.MangaConnector.Name}")
-        };
-    }
+    protected MangaConnector GetConnector(Manga manga) => GetConnector(manga.MangaConnectorName);
 
     protected MangaConnector GetConnector(Chapter chapter) => GetConnector(chapter.ParentManga);
+    
+    protected MangaConnector GetConnector(API.Schema.MangaConnector connector) => GetConnector(connector.Name);
+    
+    protected MangaConnector GetConnector(string connectorName) => connectorName switch
+    {
+        "AsuraToon" => new AsuraToon(connectorName),
+        "Bato" => new Bato(connectorName),
+        "MangaDex" => new MangaDex(connectorName),
+        "MangaHere" => new MangaHere(connectorName),
+        "MangaKatana" => new MangaKatana(connectorName),
+        "MangaLife" => new MangaLife(connectorName),
+        "Manganato" => new Manganato(connectorName),
+        "Mangasee" => new Mangasee(connectorName),
+        "Mangaworld" => new Mangaworld(connectorName),
+        "ManhuaPlus" => new ManhuaPlus(connectorName),
+        _ => throw new KeyNotFoundException($"Could not find connector with name {connectorName}")
+    };
 }
