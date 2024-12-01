@@ -123,7 +123,6 @@ public class Monitor
             }
             
             result = response.Content.ReadFromJsonAsync<T>().GetAwaiter().GetResult();
-            Log.Debug("Request sucessful.");
 
             return true;
         }

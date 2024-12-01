@@ -1,6 +1,8 @@
 ﻿using API.Schema;
+using API.Schema.Jobs;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace API.Controllers;
@@ -28,7 +30,7 @@ public class ConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Array of Manga</returns>
-    [HttpGet("SearchManga")]
+    [HttpPost("SearchManga")]
     [ProducesResponseType<Manga[]>(Status500InternalServerError)]
     public IActionResult SearchMangaGlobal(string name)
     {
@@ -41,10 +43,32 @@ public class ConnectorController(PgsqlContext context) : Controller
     /// <param name="id">Manga-Connector-ID</param>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Manga</returns>
-    [HttpGet("{id}/SearchManga")]
-    [ProducesResponseType<Manga>(Status500InternalServerError)]
+    [HttpPost("{id}/SearchManga")]
+    [ProducesResponseType<Manga[]>(Status200OK)]
+    [ProducesResponseType(Status500InternalServerError)]
     public IActionResult SearchManga(string id, [FromBody]string name)
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        try
+        {
+            SearchMangaJob searchMangaJob = new(name, id);
+            context.Jobs.Add(searchMangaJob);
+            context.SaveChanges();
+
+            JobState? state = null;
+            do
+            {
+                state = context.Jobs.Find(searchMangaJob.JobId)?.state;
+                if (state is null)
+                    return StatusCode(500, "Missing job state");
+            } while (state is not JobState.Completed);
+
+            Manga[] all = context.Manga.Where(m => m.MangaConnectorName == id).ToArray();
+            
+            return Ok(all.Where(m => NeedlemanWunschStringUtil.CalculateSimilarityPercentage(m.Name, name) >= 07f));
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
 }

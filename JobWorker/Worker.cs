@@ -1,5 +1,7 @@
 ﻿using API.Schema.Jobs;
 using JobWorker.Jobs;
+using log4net;
+using log4net.Config;
 
 namespace JobWorker;
 
@@ -8,9 +10,12 @@ internal class Worker
     internal readonly Job Job;
     internal readonly Task Task;
     internal Job[] NewJobs;
+    private static readonly ILog Log = LogManager.GetLogger(typeof(Monitor));
 
     public Worker(Job job)
     {
+        BasicConfigurator.Configure();
+        Log.Info($"Creating new Worker: {job.JobType}");
         this.Job = job;
         this.NewJobs = [];
         switch (job.JobType)
@@ -50,13 +55,14 @@ internal class Worker
                 CreateComicInfoXml ccix = new(ccixj);
                 this.Task = new Task(() => ccix.Execute(out NewJobs));
                 break;
-            case JobType.SearchManga:
+            case JobType.SearchMangaJob:
                 SearchMangaJob smj = job as SearchMangaJob ?? throw new InvalidOperationException();
                 SearchManga sm = new(smj);
                 this.Task = new Task(() => sm.Execute(out NewJobs));
                 break;
             default:
-                throw new KeyNotFoundException($"Could not create Worker for Job-type {job.JobType}");
+                this.Task = new Task(() => Log.Debug($"Could not create Worker for Job-type {job.JobType}"));
+                break;
         }
         this.Task.Start();
     }

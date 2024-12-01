@@ -14,7 +14,7 @@
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="PuppeteerSharp" Version="20.0.5" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
-      <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.650" />
+      <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.653" />
     </ItemGroup>
 
     <ItemGroup>
