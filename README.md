@@ -120,9 +120,9 @@ access the folder.
 ### Prerequisites
 
 #### To Build
-[.NET-Core 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+[.NET-Core 9.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 #### To Run
-[.NET-Core 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) scroll down a bit, should be on the right the second item.
+[.NET-Core 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) scroll down a bit, should be on the right the second item.
 
 See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list of proposed features (and known issues).
 
@@ -153,7 +153,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the GNU GPLv3  License. See `LICENSE.txt` for more information.
+Distributed under the GNU GPLv3 License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
