@@ -25,8 +25,6 @@ public abstract class Job
     public DateTime NextExecution { get; internal set; } 
     public JobState state { get; internal set; } = JobState.Waiting;
 
-    public string? returnValue { get; set; } = null;
-
     public Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId = null,
         string[]? dependsOnJobIds = null)
     {
@@ -36,8 +34,5 @@ public abstract class Job
         JobType = jobType;
         RecurrenceMs = recurrenceMs;
         NextExecution = LastExecution.AddMilliseconds(RecurrenceMs);
-
-        foreach (Job dependsOnJob in DependsOnJobs)
-            dependsOnJob.ParentJobId = this.JobId;
     }
 }

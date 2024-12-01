@@ -5,7 +5,7 @@ public class SearchMangaJob(
     string? mangaConnectorName = null,
     string? parentJobId = null,
     string[]? dependsOnJobIds = null)
-    : Job(TokenGen.CreateToken(typeof(SearchMangaJob), 64), JobType.SearchManga, 0, parentJobId, dependsOnJobIds)
+    : Job(TokenGen.CreateToken(typeof(SearchMangaJob), 64), JobType.SearchMangaJob, 0, parentJobId, dependsOnJobIds)
 {
     public string SearchString { get; init; } = searchString;
     

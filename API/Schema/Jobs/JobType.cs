@@ -10,5 +10,5 @@ public enum JobType : byte
     CreateArchiveJob = 4,
     ProcessImagesJob = 5,
     CreateComicInfoXmlJob = 6,
-    SearchManga = 7
+    SearchMangaJob = 7
 }
