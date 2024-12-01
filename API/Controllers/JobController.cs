@@ -12,21 +12,23 @@ namespace API.Controllers;
 [Route("v{version:apiVersion}/[controller]")]
 public class JobController(PgsqlContext context) : Controller
 {
-    [HttpGet]
+    /// <summary>
+    /// Returns Jobs with requested Job-IDs
+    /// </summary>
+    /// <param name="ids">Array of Job-IDs</param>
+    /// <returns>Array of Jobs</returns>
+    [HttpPost("WithIDs")]
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetJobs([FromBody] string[] ids)
     {
         Job[] ret = context.Jobs.Where(job => ids.Contains(job.JobId)).ToArray();
         return Ok(ret);
     }
-    
-    [HttpGet("Types")]
-    [ProducesResponseType<string[]>(Status200OK)]
-    public IActionResult GetJobTypes()
-    {
-        return Ok(Enum.GetNames<JobType>());
-    }
 
+    /// <summary>
+    /// Get all due Jobs (NextExecution > CurrentTime)
+    /// </summary>
+    /// <returns>Array of Jobs</returns>
     [HttpGet("Due")]
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetDueJobs()
@@ -35,48 +37,38 @@ public class JobController(PgsqlContext context) : Controller
         Job[] dueJobs = context.Jobs.Where(job => now < job.NextExecution).ToArray();
         return Ok(dueJobs);
     }
-    
-    [HttpGet("States")]
-    [ProducesResponseType<string[]>(Status200OK)]
-    public IActionResult GetJobStates()
-    {
-        return Ok(Enum.GetNames<JobState>());
-    }
 
-    [HttpGet("State/{stateStr}")]
+    /// <summary>
+    /// Get all Jobs in requested State
+    /// </summary>
+    /// <param name="state">Requested Job-State</param>
+    /// <returns>Array of Jobs</returns>
+    [HttpGet("State")]
     [ProducesResponseType<Job[]>(Status200OK)]
-    [ProducesResponseType<Exception>(Status400BadRequest)]
-    public IActionResult GetJobsInState(string stateStr)
+    public IActionResult GetJobsInState([FromBody]JobState state)
     {
-        try
-        {
-            JobState state = Enum.Parse<JobState>(stateStr);
-            Job[] jobsInState = context.Jobs.Where(job => job.state == state).ToArray();
-            return Ok(jobsInState);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e);
-        }
+        Job[] jobsInState = context.Jobs.Where(job => job.state == state).ToArray();
+        return Ok(jobsInState);
     }
 
+    /// <summary>
+    /// Returns all Jobs of requested Type
+    /// </summary>
+    /// <param name="type">Requested Job-Type</param>
+    /// <returns>Array of Jobs</returns>
     [HttpGet("Type/{type}")]
     [ProducesResponseType<Job[]>(Status200OK)]
-    [ProducesResponseType<Exception>(Status400BadRequest)]
-    public IActionResult GetJobsOfType(string typeStr)
+    public IActionResult GetJobsOfType([FromBody]JobType type)
     {
-        try
-        {
-            JobType type = Enum.Parse<JobType>(typeStr);
-            Job[] jobsOfType = context.Jobs.Where(job => job.JobType == type).ToArray();
-            return Ok(jobsOfType);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e);
-        }
+        Job[] jobsOfType = context.Jobs.Where(job => job.JobType == type).ToArray();
+        return Ok(jobsOfType);
     }
 
+    /// <summary>
+    /// Return Job with ID
+    /// </summary>
+    /// <param name="id">Job-ID</param>
+    /// <returns>Job</returns>
     [HttpGet("{id}")]
     [ProducesResponseType<Job>(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -90,6 +82,12 @@ public class JobController(PgsqlContext context) : Controller
         };
     }
 
+    /// <summary>
+    /// Updates the State of a Job
+    /// </summary>
+    /// <param name="id">Job-ID</param>
+    /// <param name="state">New State</param>
+    /// <returns>Nothing</returns>
     [HttpPatch("{id}/Status")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound)]
@@ -116,6 +114,11 @@ public class JobController(PgsqlContext context) : Controller
 
     }
 
+    /// <summary>
+    /// Create a new Job
+    /// </summary>
+    /// <param name="job">Job</param>
+    /// <returns>Nothing</returns>
     [HttpPut]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError)]
@@ -133,6 +136,11 @@ public class JobController(PgsqlContext context) : Controller
         }
     }
 
+    /// <summary>
+    /// Delete Job with ID
+    /// </summary>
+    /// <param name="id">Job-ID</param>
+    /// <returns>Nothing</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -157,6 +165,11 @@ public class JobController(PgsqlContext context) : Controller
         }
     }
 
+    /// <summary>
+    /// Starts the Job with the requested ID
+    /// </summary>
+    /// <param name="id">Job-ID</param>
+    /// <returns>Nothing</returns>
     [HttpPost("{id}/Start")]
     [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
@@ -182,6 +195,6 @@ public class JobController(PgsqlContext context) : Controller
     [HttpPost("{id}/Stop")]
     public IActionResult StopJob(string id)
     {
-        return NotFound(new ProblemResponse("Not implemented"));
+        return NotFound(new ProblemResponse("Not implemented")); //TODO
     }
 }

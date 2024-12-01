@@ -11,6 +11,10 @@ namespace API.Controllers;
 [Route("v{v:apiVersion}/[controller]")]
 public class ConnectorController(PgsqlContext context) : Controller
 {
+    /// <summary>
+    /// Get all available Connectors (Scanlation-Sites)
+    /// </summary>
+    /// <returns>Array of MangaConnector</returns>
     [HttpGet]
     [ProducesResponseType<MangaConnector[]>(Status200OK)]
     public IActionResult GetConnectors()
@@ -19,24 +23,28 @@ public class ConnectorController(PgsqlContext context) : Controller
         return Ok(connectors);
     }
     
+    /// <summary>
+    /// Initiate a search for a Manga on all Connectors
+    /// </summary>
+    /// <param name="name">Name/Title of the Manga</param>
+    /// <returns>Array of Manga</returns>
     [HttpGet("SearchManga")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<Manga[]>(Status500InternalServerError)]
     public IActionResult SearchMangaGlobal(string name)
     {
-        return StatusCode(500, "Not implemented");
+        return StatusCode(500, "Not implemented"); //TODO
     }
     
+    /// <summary>
+    /// Initiate a search for a Manga on a specific Connector
+    /// </summary>
+    /// <param name="id">Manga-Connector-ID</param>
+    /// <param name="name">Name/Title of the Manga</param>
+    /// <returns>Manga</returns>
     [HttpGet("{id}/SearchManga")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
-    public IActionResult SearchManga(string id, string name)
+    [ProducesResponseType<Manga>(Status500InternalServerError)]
+    public IActionResult SearchManga(string id, [FromBody]string name)
     {
-        return StatusCode(500, "Not implemented");
-    }
-    
-    [HttpGet("{id}/GetManga")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
-    public IActionResult GetManga(string id, [FromBody]string mangaId)
-    {
-        return StatusCode(500, "Not implemented");
+        return StatusCode(500, "Not implemented"); //TODO
     }
 }

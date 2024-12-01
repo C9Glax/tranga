@@ -12,6 +12,10 @@ namespace API.Controllers;
 [Route("v{v:apiVersion}/[controller]")]
 public class LibraryConnectorController(PgsqlContext context) : Controller
 {
+    /// <summary>
+    /// Gets all configured Library-Connectors
+    /// </summary>
+    /// <returns>Array of configured Library-Connectors</returns>
     [HttpGet]
     [ProducesResponseType<LibraryConnector[]>(Status200OK)]
     public IActionResult GetAllConnectors()
@@ -20,21 +24,51 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
         return Ok(connectors);
     }
     
-    [HttpGet("Types")]
-    [ProducesResponseType<string[]>(Status200OK)]
-    public IActionResult GetConnectorTypes()
+    /// <summary>
+    /// Returns Library-Connector with requested ID
+    /// </summary>
+    /// <param name="id">Library-Connector-ID</param>
+    /// <returns>Library-Connector</returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType<LibraryConnector>(Status200OK)]
+    [ProducesResponseType(Status404NotFound)]
+    public IActionResult GetConnector(string id)
     {
-        string[] ret = Enum.GetNames<LibraryType>();
-        return Ok(ret);
+        LibraryConnector? ret = context.LibraryConnectors.Find(id);
+        return (ret is not null) switch
+        {
+            true => Ok(ret),
+            false => NotFound()
+        };
     }
     
-    [HttpPost("Create")]
+    /// <summary>
+    /// Creates a new Library-Connector
+    /// </summary>
+    /// <param name="libraryConnector">Library-Connector</param>
+    /// <returns>Nothing</returns>
+    [HttpPut]
+    [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult CreateConnector([FromBody]LibraryConnector libraryConnector)
     {
-        return StatusCode(500, "Not implemented");
+        try
+        {
+            context.LibraryConnectors.Add(libraryConnector);
+            context.SaveChanges();
+            return Created();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
     
+    /// <summary>
+    /// Deletes the Library-Connector with the requested ID
+    /// </summary>
+    /// <param name="id">Library-Connector-ID</param>
+    /// <returns>Nothing</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]

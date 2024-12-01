@@ -1,6 +1,5 @@
 ﻿using API.Schema;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -12,7 +11,12 @@ namespace API.Controllers;
 [Route("v{v:apiVersion}/[controller]")]
 public class MangaController(PgsqlContext context) : Controller
 {
-    [HttpPost]
+    /// <summary>
+    /// Returns all cached Manga with IDs
+    /// </summary>
+    /// <param name="ids">Array of Manga-IDs</param>
+    /// <returns>Array of Manga</returns>
+    [HttpPost("WithIDs")]
     [ProducesResponseType<Manga[]>(Status200OK)]
     public IActionResult GetManga([FromBody]string[] ids)
     {
@@ -20,6 +24,11 @@ public class MangaController(PgsqlContext context) : Controller
         return Ok(ret);
     }
 
+    /// <summary>
+    /// Return Manga with ID
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <returns>Manga</returns>
     [HttpGet("{id}")]
     [ProducesResponseType<Manga>(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -33,6 +42,11 @@ public class MangaController(PgsqlContext context) : Controller
         };
     }
 
+    /// <summary>
+    /// Delete Manga with ID
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <returns>Nothing</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -57,6 +71,11 @@ public class MangaController(PgsqlContext context) : Controller
         }
     }
 
+    /// <summary>
+    /// Create new Manga
+    /// </summary>
+    /// <param name="manga">Manga</param>
+    /// <returns>Nothing</returns>
     [HttpPut]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status500InternalServerError)]
@@ -74,6 +93,12 @@ public class MangaController(PgsqlContext context) : Controller
         }
     }
 
+    /// <summary>
+    /// Update Manga MetaData
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <param name="manga">New Manga-Info</param>
+    /// <returns>Nothing</returns>
     [HttpPatch("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -99,13 +124,23 @@ public class MangaController(PgsqlContext context) : Controller
         }
     }
 
+    /// <summary>
+    /// Returns URL of Cover of Manga
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <returns>URL of Cover</returns>
     [HttpGet("{id}/Cover")]
     [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult GetCover(string id)
     {
-        return StatusCode(500, "Not implemented");
+        return StatusCode(500, "Not implemented"); //TODO
     }
 
+    /// <summary>
+    /// Returns all Chapters of Manga
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <returns>Array of Chapters</returns>
     [HttpGet("{id}/Chapters")]
     [ProducesResponseType<Chapter[]>(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound)]
@@ -118,6 +153,13 @@ public class MangaController(PgsqlContext context) : Controller
         return Ok(ret);
     }
 
+    /// <summary>
+    /// Adds/Creates new Chapter for Manga
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <param name="chapters">Array of Chapters</param>
+    /// <remarks>Manga-ID and all Chapters have to be the same</remarks>
+    /// <returns>Nothing</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound)]
@@ -142,6 +184,11 @@ public class MangaController(PgsqlContext context) : Controller
         }
     }
     
+    /// <summary>
+    /// Returns the latest Chapter of requested Manga
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <returns>Latest Chapter</returns>
     [HttpGet("{id}/Chapter/Latest")]
     [ProducesResponseType<Chapter>(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound)]
@@ -156,6 +203,12 @@ public class MangaController(PgsqlContext context) : Controller
         return Ok(c);
     }
     
+    /// <summary>
+    /// Configure the cut-off for Manga
+    /// </summary>
+    /// <remarks>This is important for the DownloadNewChapters-Job</remarks>
+    /// <param name="id">Manga-ID</param>
+    /// <returns>Nothing</returns>
     [HttpPatch("{id}/IgnoreChaptersBefore")]
     [ProducesResponseType<float>(Status200OK)]
     public IActionResult IgnoreChaptersBefore(string id)
@@ -166,10 +219,16 @@ public class MangaController(PgsqlContext context) : Controller
         return Ok(m.IgnoreChapterBefore);
     }
     
+    /// <summary>
+    /// Move the Directory the .cbz-files are located in
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <param name="folder">New Directory-Path</param>
+    /// <returns>Nothing</returns>
     [HttpPost("{id}/MoveFolder")]
     [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult MoveFolder(string id, [FromBody]string folder)
     {
-        return StatusCode(500, "Not implemented");
+        return StatusCode(500, "Not implemented"); //TODO
     }
 }
