@@ -74,7 +74,7 @@ public class Manga(
         return new MoveFileOrFolderJob(Path.Join(downloadLocation, oldName), Path.Join(downloadLocation, this.FolderName));
     }
 
-    public void UpdateWithInfo(Manga other)
+    internal void UpdateWithInfo(Manga other)
     {
         //TODO
     }

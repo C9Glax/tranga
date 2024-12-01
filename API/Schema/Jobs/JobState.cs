@@ -3,5 +3,6 @@
 public enum JobState
 {
     Waiting,
-    Running
+    Running,
+    Completed
 }

@@ -90,7 +90,33 @@ public class JobController(PgsqlContext context) : Controller
         };
     }
 
-    [HttpPost("Create")]
+    [HttpPatch("{id}/Status")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string>(Status404NotFound)]
+    [ProducesResponseType(Status500InternalServerError)]
+    public IActionResult UpdateJobStatus(string id, [FromBody]JobState state)
+    {
+        try
+        {
+            Job? ret = context.Jobs.Find(id);
+            switch (ret is not null)
+            {
+                case true:
+                    ret.state = state;
+                    context.Update(ret);
+                    context.SaveChanges();
+                    return Ok();
+                case false: return NotFound();
+            }
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+
+    }
+
+    [HttpPut]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult CreateJob([FromBody]Job job)

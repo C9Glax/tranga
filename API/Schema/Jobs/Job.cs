@@ -40,9 +40,4 @@ public abstract class Job
         foreach (Job dependsOnJob in DependsOnJobs)
             dependsOnJob.ParentJobId = this.JobId;
     }
-
-    public void MarkCompleted()
-    {
-        
-    }
 }

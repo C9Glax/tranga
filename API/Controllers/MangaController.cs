@@ -1,5 +1,6 @@
 ﻿using API.Schema;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -56,6 +57,48 @@ public class MangaController(PgsqlContext context) : Controller
         }
     }
 
+    [HttpPut]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status500InternalServerError)]
+    public IActionResult CreateManga([FromBody] Manga manga)
+    {
+        try
+        {
+            context.Manga.Add(manga);
+            context.SaveChanges();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpPatch("{id}")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType(Status500InternalServerError)]
+    public IActionResult UpdateMangaMetadata(string id, [FromBody]Manga manga)
+    {
+        try
+        {
+            Manga? ret = context.Manga.Find(id);
+            switch (ret is not null)
+            {
+                case true:
+                    ret.UpdateWithInfo(manga);
+                    context.Update(ret);
+                    context.SaveChanges();
+                    return Ok();
+                case false: return NotFound();
+            }
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     [HttpGet("{id}/Cover")]
     [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult GetCover(string id)
@@ -73,6 +116,30 @@ public class MangaController(PgsqlContext context) : Controller
             return NotFound("Manga could not be found");
         Chapter[] ret = context.Chapters.Where(c => c.ParentMangaId == m.MangaId).ToArray();
         return Ok(ret);
+    }
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string>(Status404NotFound)]
+    [ProducesResponseType(Status500InternalServerError)]
+    public IActionResult CreateChapters(string id, [FromBody]Chapter[] chapters)
+    {
+        try
+        {
+            Manga? ret = context.Manga.Find(id);
+            if(ret is null)
+                return NotFound("Manga could not be found");
+            if(chapters.All(c => c.ParentMangaId == ret.MangaId))
+                return BadRequest("Chapters belong to different Manga.");
+            
+            context.Chapters.AddRange(chapters);
+            context.SaveChanges();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
     
     [HttpGet("{id}/Chapter/Latest")]
