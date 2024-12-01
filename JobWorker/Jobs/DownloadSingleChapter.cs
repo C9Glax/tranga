@@ -16,7 +16,7 @@ public class DownloadSingleChapter(DownloadSingleChapterJob data) : Job<Download
             ProcessImagesJob pi = new(downloadPath, TrangaSettings.bwImages, TrangaSettings.compression);
             CreateComicInfoXmlJob cx = new(chapter.ChapterId, downloadPath);
             
-            CreateArchiveJob ca = new(downloadPath, chapter.ChapterId, null, [pi.JobId, cx.JobId]);
+            CreateArchiveJob ca = new(downloadPath, Path.Join(downloadPath, CreateComicInfoXml.ComicInfoXmlFileName), chapter.ChapterId, null, [pi.JobId, cx.JobId]);
             return
             [
                 pi,
