@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 public class Mangaworld : MangaConnector
 {
     //["it"], ["www.mangaworld.ac"]
-    public Mangaworld(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
+    public Mangaworld(string mangaConnectorName) : base(mangaConnectorName, new HttpDownloadClient())
     {
     }
 
@@ -113,7 +113,7 @@ public class Mangaworld : MangaConnector
         string yearString = metadata.SelectSingleNode("//span[text()='Anno di uscita: ']/..").SelectNodes("a").First().InnerText;
         uint year = uint.Parse(yearString);
         
-        Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null, year, originalLanguage,
+        Manga manga = new(MangaConnectorName, sortName, description, posterUrl, null, year, originalLanguage,
             releaseStatus, 0, null, null, publicationId,
             authors.Select(a => a.AuthorId).ToArray(),
             tags.Select(t => t.Tag).ToArray(),
@@ -125,7 +125,7 @@ public class Mangaworld : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         log.Info($"Getting chapters {manga}");
-        string requestUrl = $"https://www.mangaworld.ac/manga/{manga.MangaConnectorId}";
+        string requestUrl = $"https://www.mangaworld.ac/manga/{manga.ConnectorId}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)

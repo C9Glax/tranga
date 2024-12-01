@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 public class MangaHere : MangaConnector
 {
     //["en"], ["www.mangahere.cc"]
-    public MangaHere(string mangaConnectorId) : base(mangaConnectorId, new ChromiumDownloadClient())
+    public MangaHere(string mangaConnectorName) : base(mangaConnectorName, new ChromiumDownloadClient())
     {
     }
 
@@ -98,7 +98,7 @@ public class MangaHere : MangaConnector
             .SelectSingleNode("//p[contains(concat(' ',normalize-space(@class),' '),' fullcontent ')]");
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null, 0,
+        Manga manga = new(MangaConnectorName, sortName, description, posterUrl, null, 0,
             originalLanguage, releaseStatus, 0, null, null, 
             publicationId, 
             authors.Select(a => a.AuthorId).ToArray(), 
@@ -111,7 +111,7 @@ public class MangaHere : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         log.Info($"Getting chapters {manga}");
-        string requestUrl = $"https://www.mangahere.cc/manga/{manga.MangaConnectorId}";
+        string requestUrl = $"https://www.mangahere.cc/manga/{manga.ConnectorId}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 || requestResult.htmlDocument is null)

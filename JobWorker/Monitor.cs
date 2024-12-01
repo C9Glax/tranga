@@ -21,6 +21,7 @@ public class Monitor
         PosixSignalRegistration.Create(PosixSignal.SIGTERM, context => SignalReceived(context.Signal));
         PosixSignalRegistration.Create(PosixSignal.SIGQUIT, context => SignalReceived(context.Signal));
         PosixSignalRegistration.Create(PosixSignal.SIGQUIT, context => SignalReceived(context.Signal));
+        
         Loop();
     }
 

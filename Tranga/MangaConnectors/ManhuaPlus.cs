@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 public class ManhuaPlus : MangaConnector
 {
     //["en"], ["manhuaplus.org"]
-    public ManhuaPlus(string mangaConnectorId) : base(mangaConnectorId, new ChromiumDownloadClient())
+    public ManhuaPlus(string mangaConnectorName) : base(mangaConnectorName, new ChromiumDownloadClient())
     {
     }
 
@@ -121,7 +121,7 @@ public class ManhuaPlus : MangaConnector
             .SelectSingleNode("//div[@id='syn-target']");
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(MangaConnectorId,sortName, description, posterUrl, null, year, null,
+        Manga manga = new(MangaConnectorName,sortName, description, posterUrl, null, year, null,
             releaseStatus, 0, null, null, publicationId,
             authors.Select(a => a.AuthorId).ToArray(),
             tags.Select(t => t.Tag).ToArray(),
@@ -133,7 +133,7 @@ public class ManhuaPlus : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         log.Info($"Getting chapters {manga}");
-        RequestResult result = downloadClient.MakeRequest($"https://manhuaplus.org/manga/{manga.MangaConnectorId}", RequestType.Default);
+        RequestResult result = downloadClient.MakeRequest($"https://manhuaplus.org/manga/{manga.ConnectorId}", RequestType.Default);
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
             return Array.Empty<Chapter>();

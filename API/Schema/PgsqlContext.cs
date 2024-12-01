@@ -53,7 +53,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Manga>()
             .HasOne<MangaConnector>(m => m.MangaConnector)
             .WithMany(c => c.Mangas)
-            .HasForeignKey(m => m.MangaConnectorId);
+            .HasForeignKey(m => m.MangaConnectorName);
         modelBuilder.Entity<Manga>()
             .HasMany<Author>(m => m.Authors)
             .WithMany(a => a.Mangas)

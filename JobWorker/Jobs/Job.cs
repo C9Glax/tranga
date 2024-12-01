@@ -32,16 +32,16 @@ public abstract class Job<T> where T : Job
     {
         return manga.MangaConnector.Name switch
         {
-            "AsuraToon" => new AsuraToon(manga.MangaConnectorId),
-            "Bato" => new Bato(manga.MangaConnectorId),
-            "MangaDex" => new MangaDex(manga.MangaConnectorId),
-            "MangaHere" => new MangaHere(manga.MangaConnectorId),
-            "MangaKatana" => new MangaKatana(manga.MangaConnectorId),
-            "MangaLife" => new MangaLife(manga.MangaConnectorId),
-            "Manganato" => new Manganato(manga.MangaConnectorId),
-            "Mangasee" => new Mangasee(manga.MangaConnectorId),
-            "Mangaworld" => new Mangaworld(manga.MangaConnectorId),
-            "ManhuaPlus" => new ManhuaPlus(manga.MangaConnectorId),
+            "AsuraToon" => new AsuraToon(manga.MangaConnectorName),
+            "Bato" => new Bato(manga.MangaConnectorName),
+            "MangaDex" => new MangaDex(manga.MangaConnectorName),
+            "MangaHere" => new MangaHere(manga.MangaConnectorName),
+            "MangaKatana" => new MangaKatana(manga.MangaConnectorName),
+            "MangaLife" => new MangaLife(manga.MangaConnectorName),
+            "Manganato" => new Manganato(manga.MangaConnectorName),
+            "Mangasee" => new Mangasee(manga.MangaConnectorName),
+            "Mangaworld" => new Mangaworld(manga.MangaConnectorName),
+            "ManhuaPlus" => new ManhuaPlus(manga.MangaConnectorName),
             _ => throw new KeyNotFoundException($"Could not find connector with name {manga.MangaConnector.Name}")
         };
     }

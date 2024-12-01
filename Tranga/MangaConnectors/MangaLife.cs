@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 public class MangaLife : MangaConnector
 {
     //["en"], ["manga4life.com"]
-    public MangaLife(string mangaConnectorId) : base(mangaConnectorId, new ChromiumDownloadClient())
+    public MangaLife(string mangaConnectorName) : base(mangaConnectorName, new ChromiumDownloadClient())
     {
     }
 
@@ -115,7 +115,7 @@ public class MangaLife : MangaConnector
             .Descendants("div").First();
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null, year, originalLanguage,
+        Manga manga = new(MangaConnectorName, sortName, description, posterUrl, null, year, originalLanguage,
             releaseStatus, 0, null, null, publicationId,
             authors.Select(a => a.AuthorId).ToArray(),
             tags.Select(t => t.Tag).ToArray(),
@@ -128,7 +128,7 @@ public class MangaLife : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         log.Info($"Getting chapters {manga}");
-        RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.MangaConnectorId}", RequestType.Default, clickButton:"[class*='ShowAllChapters']");
+        RequestResult result = downloadClient.MakeRequest($"https://manga4life.com/manga/{manga.ConnectorId}", RequestType.Default, clickButton:"[class*='ShowAllChapters']");
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
             return Array.Empty<Chapter>();

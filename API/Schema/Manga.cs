@@ -18,7 +18,7 @@ public class Manga(
     float ignoreChapterBefore,
     string? latestChapterDownloadedId,
     string? latestChapterAvailableId,
-    string mangaConnectorId,
+    string mangaConnectorName,
     string[] authorIds,
     string[] tagIds,
     string[] linkIds,
@@ -45,7 +45,7 @@ public class Manga(
     public string? LatestChapterAvailableId { get; internal set; } = latestChapterAvailableId;
     public virtual Chapter? LatestChapterAvailable { get; }
 
-    public string MangaConnectorId { get; init; } = mangaConnectorId;
+    public string MangaConnectorName { get; init; } = mangaConnectorName;
     public virtual MangaConnector MangaConnector { get; }
     
     public string[] AuthorIds { get; internal set; } = authorIds;

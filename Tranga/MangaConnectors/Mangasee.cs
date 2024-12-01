@@ -11,7 +11,7 @@ namespace Tranga.MangaConnectors;
 public class Mangasee : MangaConnector
 {
     //["en"], ["mangasee123.com"]
-    public Mangasee(string mangaConnectorId) : base(mangaConnectorId, new ChromiumDownloadClient())
+    public Mangasee(string mangaConnectorName) : base(mangaConnectorName, new ChromiumDownloadClient())
     {
     }
 
@@ -145,7 +145,7 @@ public class Mangasee : MangaConnector
             .Descendants("div").First();
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null, year, originalLanguage,
+        Manga manga = new(MangaConnectorName, sortName, description, posterUrl, null, year, originalLanguage,
             releaseStatus, 0, null, null, publicationId,
         authors.Select(a => a.AuthorId).ToArray(),
         tags.Select(t => t.Tag).ToArray(),
@@ -160,7 +160,7 @@ public class Mangasee : MangaConnector
         log.Info($"Getting chapters {manga}");
         try
         {
-            XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.MangaConnectorId}.xml");
+            XDocument doc = XDocument.Load($"https://mangasee123.com/rss/{manga.ConnectorId}.xml");
             XElement[] chapterItems = doc.Descendants("item").ToArray();
             List<Chapter> chapters = new();
             Regex chVolRex = new(@".*chapter-([0-9\.]+)(?:-index-([0-9\.]+))?.*");
@@ -191,7 +191,7 @@ public class Mangasee : MangaConnector
         }
         catch (HttpRequestException e)
         {
-            log.Info($"Failed to load https://mangasee123.com/rss/{manga.MangaConnectorId}.xml \n\r{e}");
+            log.Info($"Failed to load https://mangasee123.com/rss/{manga.ConnectorId}.xml \n\r{e}");
             return Array.Empty<Chapter>();
         }
     }

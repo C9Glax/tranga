@@ -15,14 +15,14 @@ namespace Tranga.MangaConnectors;
 public abstract class MangaConnector
 {
     internal DownloadClient downloadClient { get; init; }
-    protected readonly string MangaConnectorId;
+    protected readonly string MangaConnectorName;
     protected readonly ILog log;
     protected static readonly NumberFormatInfo NumberFormatDecimalPoint = new (){ NumberDecimalSeparator = "." };
     private readonly string? _referrer = null;
 
-    protected MangaConnector(string mangaConnectorId, DownloadClient downloadClient, string? referrer = null)
+    protected MangaConnector(string mangaConnectorName, DownloadClient downloadClient, string? referrer = null)
     {
-        this.MangaConnectorId = mangaConnectorId;
+        this.MangaConnectorName = mangaConnectorName;
         this.downloadClient = downloadClient;
         log = LogManager.GetLogger(this.GetType());
         BasicConfigurator.Configure();
@@ -34,7 +34,7 @@ public abstract class MangaConnector
     public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url);
 
     public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId);
-    public (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromManga(Manga manga) => GetMangaFromId(manga.MangaConnectorId);
+    public (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromManga(Manga manga) => GetMangaFromId(manga.MangaConnectorName);
     
     public abstract Chapter[] GetChapters(Manga manga, string language="en");
     

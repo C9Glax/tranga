@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 public class Manganato : MangaConnector
 {
     //["en"], ["manganato.com"]
-    public Manganato(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient(), "https://chapmanganato.com/")
+    public Manganato(string mangaConnectorName) : base(mangaConnectorName, new HttpDownloadClient(), "https://chapmanganato.com/")
     {
     }
 
@@ -129,7 +129,7 @@ public class Manganato : MangaConnector
         uint year = (uint)DateTime.ParseExact(oldestChapter.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
             CultureInfo.InvariantCulture).Year;
 
-        Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null, year, originalLanguage,
+        Manga manga = new(MangaConnectorName, sortName, description, posterUrl, null, year, originalLanguage,
             releaseStatus, 0, null, null, publicationId,
             authors.Select(a => a.AuthorId).ToArray(),
             tags.Select(t => t.Tag).ToArray(),
@@ -142,7 +142,7 @@ public class Manganato : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         log.Info($"Getting chapters {manga}");
-        string requestUrl = $"https://chapmanganato.com/{manga.MangaConnectorId}";
+        string requestUrl = $"https://chapmanganato.com/{manga.ConnectorId}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)

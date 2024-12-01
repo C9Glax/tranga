@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 public class AsuraToon : MangaConnector
 {
 	//["en"], ["asuracomic.net"]
-	public AsuraToon(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
+	public AsuraToon(string mangaConnectorName) : base(mangaConnectorName, new HttpDownloadClient())
 	{
 	}
 
@@ -109,7 +109,7 @@ public class AsuraToon : MangaConnector
 		uint year = uint.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
 		
 
-		Manga manga = new(MangaConnectorId, sortName, description, coverUrl, null, year, originalLanguage,
+		Manga manga = new(MangaConnectorName, sortName, description, coverUrl, null, year, originalLanguage,
 			releaseStatus, 0, null, null, publicationId, 
 			authors.Select(a => a.AuthorId).ToArray(), 
 			tags.Select(t => t.Tag).ToArray(), [], []);
@@ -120,7 +120,7 @@ public class AsuraToon : MangaConnector
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
 		log.Info($"Getting chapters {manga}");
-		string requestUrl = $"https://asuracomic.net/series/{manga.MangaConnectorId}";
+		string requestUrl = $"https://asuracomic.net/series/{manga.ConnectorId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);

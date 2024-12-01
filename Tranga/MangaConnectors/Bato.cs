@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 public class Bato : MangaConnector
 {
 	//["en"], ["bato.to"]
-	public Bato(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
+	public Bato(string mangaConnectorName) : base(mangaConnectorName, new HttpDownloadClient())
 	{
 	}
 
@@ -109,7 +109,7 @@ public class Bato : MangaConnector
 			case "pending": releaseStatus = MangaReleaseStatus.Unreleased; break;
 		}
 
-		Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null,
+		Manga manga = new(MangaConnectorName, sortName, description, posterUrl, null,
 			year, originalLanguage, releaseStatus, 0, null, null,
 			publicationId,
 			authors.Select(a => a.AuthorId).ToArray(),
@@ -121,7 +121,7 @@ public class Bato : MangaConnector
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
 		log.Info($"Getting chapters {manga}");
-		string requestUrl = $"https://bato.to/title/{manga.MangaConnectorId}";
+		string requestUrl = $"https://bato.to/title/{manga.ConnectorId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);

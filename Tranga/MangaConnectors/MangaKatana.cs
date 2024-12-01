@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 public class MangaKatana : MangaConnector
 {
 	//["en"], ["mangakatana.com"]
-	public MangaKatana(string mangaConnectorId) : base(mangaConnectorId, new HttpDownloadClient())
+	public MangaKatana(string mangaConnectorName) : base(mangaConnectorName, new HttpDownloadClient())
 	{
 	}
 
@@ -133,7 +133,7 @@ public class MangaKatana : MangaConnector
 		
 		uint year = yearString.Contains("ago") ? uint.Parse(yearString) : (uint)DateTime.Now.Year;
 
-		Manga manga = new(MangaConnectorId, sortName, description, posterUrl, null, year, originalLanguage,
+		Manga manga = new(MangaConnectorName, sortName, description, posterUrl, null, year, originalLanguage,
 			releaseStatus, 0, null, null, publicationId,
 			authors.Select(a => a.AuthorId).ToArray(),
 			tags.Select(t => t.Tag).ToArray(),
@@ -146,7 +146,7 @@ public class MangaKatana : MangaConnector
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
 		log.Info($"Getting chapters {manga}");
-		string requestUrl = $"https://mangakatana.com/manga/{manga.MangaConnectorId}";
+		string requestUrl = $"https://mangakatana.com/manga/{manga.ConnectorId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
