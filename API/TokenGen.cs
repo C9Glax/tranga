@@ -11,7 +11,7 @@ public static class TokenGen
     
     public static string CreateToken(string prefix, uint fullLength)
     {
-        if (prefix.Length + 1 <= fullLength - MinimumLength)
+        if (prefix.Length + 1 >= fullLength - MinimumLength)
             throw new ArgumentException("Prefix to long to create Token of meaningful length.");
         long l = fullLength - prefix.Length - 1;
         byte[] rng = new byte[l];
