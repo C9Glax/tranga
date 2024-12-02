@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using API;
 using API.Schema;
+using API.Schema.Jobs;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +22,11 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddMvc().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddMvc().AddJsonOptions(opts =>
+{
+    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    opts.JsonSerializerOptions.Converters.Add(new ApiJsonSerializer());
+});
 
 builder.Services.AddApiVersioning(option =>
 {
@@ -124,7 +128,12 @@ using (var scope = app.Services.CreateScope())
         ];
     MangaConnector[] newConnectors = context.MangaConnectors.Where(c => !connectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
+    
+    context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
+    
     context.SaveChanges();
 }
+
+app.UseCors("AllowAll");
 
 app.Run();

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Schema.NotificationConnectors;
 
 [PrimaryKey("NotificationConnectorId")]
-public abstract class NotificationConnector(string notificationConnectorId, NotificationConnectorType notificationConnectorType)
+public abstract class NotificationConnector(string notificationConnectorId, NotificationConnectorType notificationConnectorType) : APISerializable
 {
     [MaxLength(64)]
     public string NotificationConnectorId { get; } = notificationConnectorId;
