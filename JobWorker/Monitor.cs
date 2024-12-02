@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using API.Schema.Jobs;
 using log4net;
 using log4net.Config;
+using Newtonsoft.Json;
 
 namespace JobWorker;
 
@@ -47,11 +48,13 @@ public class Monitor
         {
             Thread.Sleep(500);
             
-            IEnumerable<Worker> finishedWorkers = this._workers.Where(worker => (byte)worker.Task.Status > 4);
+            Worker[] finishedWorkers = this._workers.Where(worker => (byte)worker.Task.Status > 4).ToArray();
             foreach (Worker finishedWorker in finishedWorkers)
                 MarkJobCompleted(finishedWorker);
             
             Job[] workQueue = GetDueJobs();
+            if(workQueue.Length < 1)
+                continue;
             Job[] distinctJobs = workQueue.DistinctBy(j => j.JobType).ToArray();
             foreach (Job distinctJob in distinctJobs)
             {
@@ -66,7 +69,7 @@ public class Monitor
     private const string DueJobsEndpoint = "v2/Job/Due";
     private Job[] GetDueJobs()
     {
-        if (MakeGetRequestApi<Job[]>(DueJobsEndpoint, out Job[]? dueJobs))
+        if (MakeGetRequestApi<Job[]>(DueJobsEndpoint, out Job[]? dueJobs, [new JobJsonDeserializer()]))
             return dueJobs!;
         return [];
     }
@@ -75,6 +78,7 @@ public class Monitor
     private const string CreateJobEndpoint = "v2/Job";
     private void MarkJobCompleted(Worker worker)
     {
+        Log.Info($"Worker done {worker}");
         this._workers.Remove(worker);
         
         MakePatchRequestApi(string.Format(UpdateJobStatusEndpoint, worker.Job.JobId), JobState.Completed, out object? _);
@@ -85,13 +89,13 @@ public class Monitor
 
     private static readonly string? APIUri = Environment.GetEnvironmentVariable("apiUri");
     
-    public static bool MakeGetRequestApi<T>(string endpoint, out T? result) => MakeRequestApi(HttpMethod.Get, endpoint, null, out result);
-    public static bool MakePostRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Post, endpoint, content, out result);
-    public static bool MakeDeleteRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Delete, endpoint, content, out result);
-    public static bool MakePatchRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Patch, endpoint, content, out result);
-    public static bool MakePutRequestApi<T>(string endpoint, object? content, out T? result) => MakeRequestApi(HttpMethod.Put, endpoint, content, out result);
+    public static bool MakeGetRequestApi<T>(string endpoint, out T? result, JsonConverter[]? converters = null) => MakeRequestApi(HttpMethod.Get, endpoint, null, out result, converters);
+    public static bool MakePostRequestApi<T>(string endpoint, object? content, out T? result, JsonConverter[]? converters = null) => MakeRequestApi(HttpMethod.Post, endpoint, content, out result, converters);
+    public static bool MakeDeleteRequestApi<T>(string endpoint, object? content, out T? result, JsonConverter[]? converters = null) => MakeRequestApi(HttpMethod.Delete, endpoint, content, out result, converters);
+    public static bool MakePatchRequestApi<T>(string endpoint, object? content, out T? result, JsonConverter[]? converters = null) => MakeRequestApi(HttpMethod.Patch, endpoint, content, out result, converters);
+    public static bool MakePutRequestApi<T>(string endpoint, object? content, out T? result, JsonConverter[]? converters = null) => MakeRequestApi(HttpMethod.Put, endpoint, content, out result, converters);
     
-    public static bool MakeRequestApi<T>(HttpMethod method, string endpoint, object? content, out T? result)
+    public static bool MakeRequestApi<T>(HttpMethod method, string endpoint, object? content, out T? result, JsonConverter[]? converters = null)
     {
         result = default;
         if (APIUri is null)
@@ -99,7 +103,7 @@ public class Monitor
             Log.Error("_apiUri is null.");
             return false;
         }
-        string completeUri = MakeCompleteUri(APIUri, DueJobsEndpoint);
+        string completeUri = MakeCompleteUri(APIUri, endpoint);
         if (!Uri.TryCreate(completeUri, UriKind.Absolute, out Uri? requestUri))
         {
             Log.Error($"{completeUri} is not valid URI.");
@@ -118,11 +122,11 @@ public class Monitor
             HttpResponseMessage response = client.Send(request);
             if (!response.IsSuccessStatusCode)
             {
-                Log.Error($"Response {response.StatusCode}");
+                Log.Error($"{request.RequestUri} Response {response.StatusCode}");
                 return false;
             }
             
-            result = response.Content.ReadFromJsonAsync<T>().GetAwaiter().GetResult();
+            result = JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result, converters??[]);
 
             return true;
         }
@@ -132,7 +136,7 @@ public class Monitor
         }
         catch (Exception e)
         {
-            Log.Error(e.Message);
+            Log.Error($"Request error: {e.Message}");
         }
         return false;
     }

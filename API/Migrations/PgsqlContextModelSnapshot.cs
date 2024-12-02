@@ -391,6 +391,10 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<string>("ComicInfoLocation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ImagesLocation")
                         .IsRequired()
                         .HasColumnType("text");

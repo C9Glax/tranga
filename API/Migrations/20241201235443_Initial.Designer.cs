@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(PgsqlContext))]
-    [Migration("20241201214124_Mangaconnector_PK_Name")]
-    partial class Mangaconnector_PK_Name
+    [Migration("20241201235443_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,9 +110,6 @@ namespace API.Migrations
 
                     b.Property<decimal>("RecurrenceMs")
                         .HasColumnType("numeric(20,0)");
-
-                    b.Property<string>("returnValue")
-                        .HasColumnType("text");
 
                     b.Property<int>("state")
                         .HasColumnType("integer");
@@ -397,6 +394,10 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<string>("ComicInfoLocation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ImagesLocation")
                         .IsRequired()
                         .HasColumnType("text");
@@ -500,6 +501,21 @@ namespace API.Migrations
                         });
 
                     b.HasDiscriminator().HasValue((byte)5);
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.SearchMangaJob", b =>
+                {
+                    b.HasBaseType("API.Schema.Jobs.Job");
+
+                    b.Property<string>("MangaConnectorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchString")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue((byte)7);
                 });
 
             modelBuilder.Entity("API.Schema.Jobs.UpdateMetadataJob", b =>
