@@ -20,8 +20,10 @@ public abstract class Job<T> where T : Job
         BasicConfigurator.Configure();
     }
 
+    private const string UpdateJobStatusEndpoint = "v2/Job/{0}/Status";
     public void Execute(out Job[] newJobs)
     {
+        Monitor.MakePatchRequestApi(string.Format(UpdateJobStatusEndpoint, _data.JobId), JobState.Running, out object? _);
         Job[] jobs = ExecuteReturnSubTasksInternal(this._data).ToArray();
         newJobs = jobs;
     }
