@@ -34,7 +34,7 @@ public class JobController(PgsqlContext context) : Controller
     public IActionResult GetDueJobs()
     {
         DateTime now = DateTime.Now.ToUniversalTime();
-        Job[] dueJobs = context.Jobs.Where(job => job.NextExecution < now).ToArray();
+        Job[] dueJobs = context.Jobs.Where(job => job.NextExecution < now && job.state < JobState.Running).ToArray();
         return Ok(dueJobs);
     }
 
