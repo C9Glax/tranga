@@ -150,7 +150,7 @@ public class Mangaworld: MangaConnector
                 "//div[contains(concat(' ',normalize-space(@class),' '),'chapters-wrapper')]");
 
         Regex volumeRex = new(@"[Vv]olume ([0-9]+).*");
-        Regex chapterRex = new(@"[Cc]apitolo ([0-9]+).*");
+        Regex chapterRex = new(@"[Cc]apitolo ([0-9]+(?:\.[0-9]+)?).*");
         Regex idRex = new(@".*\/read\/([a-z0-9]+)(?:[?\/].*)?");
         if (chaptersWrapper.Descendants("div").Any(descendant => descendant.HasClass("volume-element")))
         {
