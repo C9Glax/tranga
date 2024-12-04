@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 public class Bato : MangaConnector
 {
 	
-	public Bato(GlobalBase clone) : base(clone, "Bato", ["en"])
+	public Bato(GlobalBase clone) : base(clone, "Bato", ["en"], ["bato.to"])
 	{
 		this.downloadClient = new HttpDownloadClient(clone);
 	}
@@ -114,8 +114,8 @@ public class Bato : MangaConnector
 			case "pending": releaseStatus = Manga.ReleaseStatusByte.Unreleased; break;
 		}
 
-		Manga manga = new (sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
-			year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+		Manga manga = new (this, sortName, authors, description, altTitles, tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
+			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
 		AddMangaToCache(manga);
 		return manga;
 	}

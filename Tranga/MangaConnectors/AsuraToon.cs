@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 public class AsuraToon : MangaConnector
 {
 	
-	public AsuraToon(GlobalBase clone) : base(clone, "AsuraToon", ["en"])
+	public AsuraToon(GlobalBase clone) : base(clone, "AsuraToon", ["en"], ["asuracomic.net"])
 	{
 		this.downloadClient = new HttpDownloadClient(clone);
 	}
@@ -111,7 +111,7 @@ public class AsuraToon : MangaConnector
 		HtmlNode? firstChapterNode = document.DocumentNode.SelectSingleNode("//a[contains(@href, 'chapter/1')]/../following-sibling::h3");
 		int? year = int.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
 		
-		Manga manga = new (sortName, authors, description, altTitles, tags, coverUrl, coverFileNameInCache, links,
+		Manga manga = new (this, sortName, authors, description, altTitles, tags, coverUrl, coverFileNameInCache, links,
 			year, originalLanguage, publicationId, releaseStatus, websiteUrl);
 		AddMangaToCache(manga);
 		return manga;

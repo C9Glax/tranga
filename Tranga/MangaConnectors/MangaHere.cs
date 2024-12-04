@@ -7,7 +7,7 @@ namespace Tranga.MangaConnectors;
 
 public class MangaHere : MangaConnector
 {
-    public MangaHere(GlobalBase clone) : base(clone, "MangaHere", ["en"])
+    public MangaHere(GlobalBase clone) : base(clone, "MangaHere", ["en"], ["www.mangahere.cc"])
     {
         this.downloadClient = new ChromiumDownloadClient(clone);
     }
@@ -101,7 +101,7 @@ public class MangaHere : MangaConnector
             .SelectSingleNode("//p[contains(concat(' ',normalize-space(@class),' '),' fullcontent ')]");
         string description = descriptionNode.InnerText;
 
-        Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
+        Manga manga = new(this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
             coverFileNameInCache, links,
             null, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
         AddMangaToCache(manga);
