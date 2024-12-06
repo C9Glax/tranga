@@ -1,23 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <OutputType>Exe</OutputType>
         <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="GlaxArguments" Version="1.1.0" />
-      <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.71" />
+      <PackageReference Include="log4net" Version="3.0.3" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="PuppeteerSharp" Version="10.0.0" />
-      <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="2.1.301" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Logging\Logging.csproj" />
+      <PackageReference Include="PuppeteerSharp" Version="20.0.5" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
+      <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.653" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,6 +22,10 @@
         <Link>.dockerignore</Link>
         <DependentUpon>Dockerfile</DependentUpon>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\API\API.csproj" />
     </ItemGroup>
 
 </Project>

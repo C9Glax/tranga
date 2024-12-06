@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http.Headers;
 using HtmlAgilityPack;
 
 namespace Tranga.MangaConnectors;
@@ -11,7 +10,7 @@ internal class HttpDownloadClient : DownloadClient
         Timeout = TimeSpan.FromSeconds(10)
     };
 
-    public HttpDownloadClient(GlobalBase clone) : base(clone)
+    public HttpDownloadClient()
     {
         Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", TrangaSettings.userAgent);
     }
@@ -19,14 +18,14 @@ internal class HttpDownloadClient : DownloadClient
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         if(clickButton is not null)
-            Log("Can not click button on static site.");
+            log.Info("Can not click button on static site.");
         HttpResponseMessage? response = null;
         while (response is null)
         {
             HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
             if (referrer is not null)
                 requestMessage.Headers.Referrer = new Uri(referrer);
-            //Log($"Requesting {requestType} {url}");
+            //log.Info($"Requesting {requestType} {url}");
             try
             {
                 response = Client.Send(requestMessage);
@@ -36,10 +35,10 @@ internal class HttpDownloadClient : DownloadClient
                 switch (e)
                 {
                     case TaskCanceledException:
-                        Log($"Request timed out {url}.\n\r{e}");
+                        log.Info($"Request timed out {url}.\n\r{e}");
                         return new RequestResult(HttpStatusCode.RequestTimeout, null, Stream.Null);
                     case HttpRequestException:
-                        Log($"Request failed {url}\n\r{e}");
+                        log.Info($"Request failed {url}\n\r{e}");
                         return new RequestResult(HttpStatusCode.BadRequest, null, Stream.Null);
                 }
             }
@@ -47,7 +46,7 @@ internal class HttpDownloadClient : DownloadClient
 
         if (!response.IsSuccessStatusCode)
         {
-            Log($"Request-Error {response.StatusCode}: {url}");
+            log.Info($"Request-Error {response.StatusCode}: {url}");
             return new RequestResult(response.StatusCode,  null, Stream.Null);
         }
         

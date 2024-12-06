@@ -1,29 +1,11 @@
 ﻿using System.Text.Json.Nodes;
-using Logging;
-using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tranga.LibraryConnectors;
 
-public class Kavita : LibraryConnector
+public class Kavita(API.Schema.LibraryConnectors.LibraryConnector info) : LibraryConnector(info)
 {
-
-    public Kavita(GlobalBase clone, string baseUrl, string username, string password) : 
-        base(clone, baseUrl, GetToken(baseUrl, username, password, clone.logger), LibraryType.Kavita)
-    {
-    }
-    
-    [JsonConstructor]
-    public Kavita(GlobalBase clone, string baseUrl, string auth) : base(clone, baseUrl, auth, LibraryType.Kavita)
-    {
-    }
-
-    public override string ToString()
-    {
-        return $"Kavita {baseUrl}";
-    }
-
-    private static string GetToken(string baseUrl, string username, string password, Logger? logger = null)
+    public string GetAuth(string username, string password)
     {
         HttpClient client = new()
         {
@@ -35,43 +17,37 @@ public class Kavita : LibraryConnector
         HttpRequestMessage requestMessage = new ()
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri($"{baseUrl}/api/Account/login"),
+            RequestUri = new Uri($"{info.BaseUrl}/api/Account/login"),
             Content = new StringContent($"{{\"username\":\"{username}\",\"password\":\"{password}\"}}", System.Text.Encoding.UTF8, "application/json")
         };
         try
         {
             HttpResponseMessage response = client.Send(requestMessage);
-            logger?.WriteLine($"Kavita | GetToken {requestMessage.RequestUri} -> {response.StatusCode}");
             if (response.IsSuccessStatusCode)
             {
                 JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
                 if (result is not null)
                     return result["token"]!.GetValue<string>();
             }
-            else
-            {
-                logger?.WriteLine($"Kavita | {response.Content}");
-            }
         }
         catch (HttpRequestException e)
         {
-            logger?.WriteLine($"Kavita | Unable to retrieve token:\n\r{e}");
+            
         }
-        logger?.WriteLine("Kavita | Did not receive token.");
         return "";
     }
 
-    protected override void UpdateLibraryInternal()
+    public override void UpdateLibrary()
     {
-        Log("Updating libraries.");
+        log.Info("Updating libraries.");
         foreach (KavitaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger);
+            NetClient.MakePost($"{info.BaseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", info.Auth);
     }
 
-    internal override bool Test()
+    public override bool Test()
     {
         foreach (KavitaLibrary lib in GetLibraries())
-            if (NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth, logger))
+            if (NetClient.MakePost($"{info.BaseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", info.Auth))
                 return true;
         return false;
     }
@@ -82,17 +58,17 @@ public class Kavita : LibraryConnector
     /// <returns>Array of KavitaLibrary</returns>
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
-        Log("Getting libraries.");
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library/libraries", "Bearer", auth, logger);
-        if (data == Stream.Null)
+        log.Info("Getting libraries.");
+
+        if (!NetClient.MakeRequest($"{info.BaseUrl}/api/Library/libraries", "Bearer", info.Auth, out Stream? data) || data is null)
         {
-            Log("No libraries returned");
+            log.Info("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            Log("No libraries returned");
+            log.Info("No libraries returned");
             return Array.Empty<KavitaLibrary>();
         }
 

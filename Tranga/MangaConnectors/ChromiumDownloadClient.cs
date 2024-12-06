@@ -26,9 +26,9 @@ internal class ChromiumDownloadClient : DownloadClient
         });
     }
 
-    public ChromiumDownloadClient(GlobalBase clone) : base(clone)
+    public ChromiumDownloadClient() : base()
     {
-        _httpDownloadClient = new(this);
+        _httpDownloadClient = new();
     }
 
     private readonly Regex _imageUrlRex = new(@"https?:\/\/.*\.(?:p?jpe?g|gif|a?png|bmp|avif|webp)(\?.*)?");
@@ -47,11 +47,11 @@ internal class ChromiumDownloadClient : DownloadClient
         try
         {
             response = page.GoToAsync(url, WaitUntilNavigation.Networkidle0).Result;
-            Log("Page loaded.");
+            log.Info("Page loaded.");
         }
         catch (Exception e)
         {
-            Log($"Could not load Page:\n{e.Message}");
+            log.Info($"Could not load Page:\n{e.Message}");
             page.CloseAsync();
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         }

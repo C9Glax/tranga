@@ -3,39 +3,22 @@ using Newtonsoft.Json;
 
 namespace Tranga.NotificationConnectors;
 
-public class Gotify : NotificationConnector
+public class Gotify(API.Schema.NotificationConnectors.Gotify info) : NotificationConnector(info)
 {
-    public string endpoint { get; }
-    // ReSharper disable once MemberCanBePrivate.Global
-    public string appToken { get; }
-    private readonly HttpClient _client = new();
-    
-    [JsonConstructor]
-    public Gotify(GlobalBase clone, string endpoint, string appToken) : base(clone, NotificationConnectorType.Gotify)
+    public override void SendNotification(string title, string notificationText)
     {
-        if (!baseUrlRex.IsMatch(endpoint))
-            throw new ArgumentException("endpoint does not match pattern");
-        this.endpoint = baseUrlRex.Match(endpoint).Value;;
-        this.appToken = appToken;
-    }
-
-    public override string ToString()
-    {
-        return $"Gotify {endpoint}";
-    }
-
-    protected override void SendNotificationInternal(string title, string notificationText)
-    {
-        Log($"Sending notification: {title} - {notificationText}");
+        API.Schema.NotificationConnectors.Gotify i = (API.Schema.NotificationConnectors.Gotify)info;
+        
+        log.Info($"Sending notification: {title} - {notificationText}");
         MessageData message = new(title, notificationText);
-        HttpRequestMessage request = new(HttpMethod.Post, $"{endpoint}/message");
-        request.Headers.Add("X-Gotify-Key", this.appToken);
+        HttpRequestMessage request = new(HttpMethod.Post, $"{i.Endpoint}/message");
+        request.Headers.Add("X-Gotify-Key", i.AppToken);
         request.Content = new StringContent(JsonConvert.SerializeObject(message, Formatting.None), Encoding.UTF8, "application/json");
         HttpResponseMessage response = _client.Send(request);
         if (!response.IsSuccessStatusCode)
         {
             StreamReader sr = new (response.Content.ReadAsStream());
-            Log($"{response.StatusCode}: {sr.ReadToEnd()}");
+            log.Info($"{response.StatusCode}: {sr.ReadToEnd()}");
         }
     }
 
