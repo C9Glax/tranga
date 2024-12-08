@@ -22,7 +22,7 @@ public abstract class MangaConnector : GlobalBase
         this.SupportedLanguages = supportedLanguages;
         Directory.CreateDirectory(TrangaSettings.coverImageCache);
     }
-    
+
     public string name { get; } //Name of the Connector (e.g. Website)
 
     /// <summary>
@@ -36,7 +36,7 @@ public abstract class MangaConnector : GlobalBase
     public abstract Manga? GetMangaFromUrl(string url);
 
     public abstract Manga? GetMangaFromId(string publicationId);
-    
+
     /// <summary>
     /// Returns all Chapters of the publication in the provided language.
     /// If the language is empty or null, returns all Chapters in all Languages.
@@ -58,7 +58,7 @@ public abstract class MangaConnector : GlobalBase
         Chapter[] allChapters = this.GetChapters(manga, language);
         if (allChapters.Length < 1)
             return Array.Empty<Chapter>();
-        
+
         Log($"Checking for duplicates {manga}");
         List<Chapter> newChaptersList = allChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
                                                                       && chapterNumber > manga.ignoreChaptersBelow
@@ -76,7 +76,7 @@ public abstract class MangaConnector : GlobalBase
             Log(e.ToString());
             Log($"Failed getting new Chapters for {manga}");
         }
-        
+
         return newChaptersList.ToArray();
     }
 
@@ -152,7 +152,7 @@ public abstract class MangaConnector : GlobalBase
 
         return Array.Empty<Chapter>();
     }
-    
+
     public abstract HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null);
 
     /// <summary>
@@ -202,7 +202,7 @@ public abstract class MangaConnector : GlobalBase
     private HttpStatusCode DownloadImage(string imageUrl, string fullPath, RequestType requestType, string? referrer = null)
     {
         RequestResult requestResult = downloadClient.MakeRequest(imageUrl, requestType, referrer);
-        
+
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return requestResult.statusCode;
         if (requestResult.result == Stream.Null)
@@ -214,79 +214,159 @@ public abstract class MangaConnector : GlobalBase
         return requestResult.statusCode;
     }
 
-    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, Chapter chapter, RequestType requestType, string? referrer = null, ProgressToken? progressToken = null)
+    protected HttpStatusCode DownloadChapterImage(int index, string imageUrl, string saveDir, RequestType requestType, string? referrer = null)
+    {
+        string extension = imageUrl.Split('.')[^1].Split('?')[0];
+        string savePath = Path.Join(saveDir, $"{index:000}.{extension}");
+        return DownloadImage(imageUrl, savePath, requestType, referrer);
+    }
+
+    protected HttpStatusCode DownloadChapterImages(Chapter.ChapterImages chapterImages, Chapter chapter, RequestType requestType, string? referrer = null, ProgressToken? progressToken = null)
     {
         string saveArchiveFilePath = chapter.GetArchiveFilePath();
-        
-        if (progressToken?.cancellationRequested ?? false)
-            return HttpStatusCode.RequestTimeout;
-        Log($"Downloading Images for {saveArchiveFilePath}");
-        if (progressToken is not null)
-            progressToken.increments += imageUrls.Length;
-        //Check if Publication Directory already exists
-        string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
-        if (!Directory.Exists(directoryPath))
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                Directory.CreateDirectory(directoryPath,
-                    UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
-            else
-                Directory.CreateDirectory(directoryPath);
 
-        if (File.Exists(saveArchiveFilePath)) //Don't download twice.
-        {
+        Log($"Downloading Images for {saveArchiveFilePath}");
+
+        if (progressToken?.cancellationRequested == true) {
+            Log("Download cancelled.");
+            return HttpStatusCode.RequestTimeout;
+        }
+
+        if (File.Exists(saveArchiveFilePath)) {
+            Log("Chapter already downloaded.");
             progressToken?.Complete();
             return HttpStatusCode.Created;
         }
-        
-        //Create a temporary folder to store images
-        string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
 
-        int chapterNum = 0;
-        //Download all Images to temporary Folder
-        if (imageUrls.Length == 0)
-        {
-            Log("No images found");
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute);
-            Directory.Delete(tempFolder, true);
+        // ensure Publication Directory exists
+        string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
+        if (!Directory.Exists(directoryPath)) {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+                Directory.CreateDirectory(directoryPath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute);
+            } else {
+                Directory.CreateDirectory(directoryPath);
+            }
+        }
+
+        if (chapterImages.StoryPages is null || chapterImages.StoryPages.Length == 0) {
+            Log("No story images found");
             progressToken?.Complete();
             return HttpStatusCode.NoContent;
         }
-        foreach (string imageUrl in imageUrls)
-        {
-            string extension = imageUrl.Split('.')[^1].Split('?')[0];
-            Log($"Downloading image {chapterNum + 1:000}/{imageUrls.Length:000}"); //TODO
-            HttpStatusCode status = DownloadImage(imageUrl, Path.Join(tempFolder, $"{chapterNum++}.{extension}"), requestType, referrer);
-            Log($"{saveArchiveFilePath} {chapterNum + 1:000}/{imageUrls.Length:000} {status}");
-            if ((int)status < 200 || (int)status >= 300)
-            {
+
+        if (progressToken is not null) {
+            progressToken.increments += chapterImages.Count();
+        }
+
+        //Create a temporary folder to store images
+        string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
+
+        int imageIndex = 0;
+
+        if (chapterImages.Cover is not null) {
+            if (chapterImages.Cover.StartsWith("http")) {
+                Log($"Downloading Cover {chapterImages.Cover}");
+
+                HttpStatusCode status = DownloadChapterImage(imageIndex++, chapterImages.Cover, tempFolder, requestType, referrer);
+
+                Log($"{saveArchiveFilePath} {imageIndex:000}/{chapterImages.Count():000} {status}");
+
+                if ((int)status < 200 || (int)status >= 300) {
+                    progressToken?.Complete();
+                    return status;
+                }
+
+                if (progressToken?.cancellationRequested == true) {
+                    progressToken.Complete();
+                    return HttpStatusCode.RequestTimeout;
+                }
+
+                progressToken?.Increment();
+            } else {
+                File.Copy(chapterImages.Cover, Path.Join(tempFolder, $"{imageIndex++:000}.jpg"));
+                progressToken?.Increment();
+            }
+        }
+
+        if (chapterImages.Thumbnail is not null) {
+            if (chapterImages.Thumbnail.StartsWith("http")) {
+                Log($"Downloading Thumbnail {chapterImages.Thumbnail}");
+
+                HttpStatusCode status = DownloadChapterImage(imageIndex++, chapterImages.Thumbnail, tempFolder, requestType, referrer);
+
+                Log($"{saveArchiveFilePath} {imageIndex:000}/{chapterImages.Count():000} {status}");
+
+                if ((int)status < 200 || (int)status >= 300) {
+                    progressToken?.Complete();
+                    return status;
+                }
+
+                if (progressToken?.cancellationRequested == true) {
+                    progressToken.Complete();
+                    return HttpStatusCode.RequestTimeout;
+                }
+
+                progressToken?.Increment();
+            } else {
+                File.Copy(chapterImages.Thumbnail, Path.Join(tempFolder, $"{imageIndex++:000}.jpg"));
+                progressToken?.Increment();
+            }
+        }
+
+        // Download all Story images to temporary Folder
+        foreach (string imageUrl in chapterImages.StoryPages) {
+
+            Log($"Downloading StoryImage {imageUrl}");
+
+            HttpStatusCode status = DownloadChapterImage(imageIndex++, imageUrl, tempFolder, requestType, referrer);
+
+            Log($"{saveArchiveFilePath} {imageIndex:000}/{chapterImages.Count():000} {status}");
+
+            if ((int)status < 200 || (int)status >= 300) {
                 progressToken?.Complete();
                 return status;
             }
-            if (progressToken?.cancellationRequested ?? false)
-            {
+
+            if (progressToken?.cancellationRequested ?? false) {
                 progressToken.Complete();
                 return HttpStatusCode.RequestTimeout;
             }
+
             progressToken?.Increment();
         }
-        
-        File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
-        
+
+        File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString(chapterImages));
+
         Log($"Creating archive {saveArchiveFilePath}");
-        //ZIP-it and ship-it
+
+        // create the cbz from the temp folder
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
+
+        // create a marker file to help prevent duplicates
         chapter.CreateChapterMarker();
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
+
+        // set permissions on output cbz
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | GroupRead | GroupWrite | OtherRead);
+        }
+
+        // cleanup temp dir
         Directory.Delete(tempFolder, true); //Cleanup
-        
+
         Log("Created archive.");
         progressToken?.Complete();
         Log("Download complete.");
+
         return HttpStatusCode.OK;
     }
-    
+
+    protected HttpStatusCode DownloadChapterImages(string[] imageUrls, Chapter chapter, RequestType requestType, string? referrer = null, ProgressToken? progressToken = null)
+    {
+        Chapter.ChapterImages chapterImages = new Chapter.ChapterImages();
+        chapterImages.StoryPages = imageUrls;
+        return DownloadChapterImages(chapterImages, chapter, requestType, referrer, progressToken);
+    }
+
     protected string SaveCoverImageToCache(string url, string mangaInternalId, RequestType requestType)
     {
         Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
@@ -297,7 +377,7 @@ public abstract class MangaConnector : GlobalBase
 
         if (File.Exists(saveImagePath))
             return saveImagePath;
-        
+
         RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
