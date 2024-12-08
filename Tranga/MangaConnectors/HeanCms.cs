@@ -630,21 +630,21 @@ public abstract class HeanCms : MangaConnector
             return HttpStatusCode.NoContent;    // ? TODO: we probably want to return a 4xx status code here
         }
 
-        List<string> imageUrls = chapterImageList
-            .Select(node => node!.GetValue<string>())
-            .ToList();
+        Chapter.ChapterImages chapterImages = new();
+
+        if (seriesChapterData["chapter"]!["series"]?["thumbnail"]?.GetValue<string>() is string seriesThumbnail)
+        {
+            chapterImages.Cover = ConvertRelativeUrlToAbsolute(seriesThumbnail);
+        }
 
         if (seriesChapterData["chapter"]!["chapter_thumbnail"]?.GetValue<string>() is string chapterThumbnail)
         {
-            imageUrls.Insert(0, chapterThumbnail);
+            chapterImages.Thumbnail = ConvertRelativeUrlToAbsolute(chapterThumbnail);
         }
 
-        imageUrls = ConvertRelativeUrlToAbsolute(imageUrls);
+        chapterImages.StoryPages = chapterImageList.Select(node => ConvertRelativeUrlToAbsolute(node!.GetValue<string>())).ToArray();
 
-        string comicInfoPath = Path.GetTempFileName();
-        File.WriteAllText(comicInfoPath, chapter.GetComicInfoXmlString());
-
-        return DownloadChapterImages(imageUrls.ToArray(), chapter, RequestType.MangaImage, progressToken:progressToken);
+        return DownloadChapterImages(chapterImages, chapter, RequestType.MangaImage, progressToken:progressToken);
     }
 
     private List<string> ConvertRelativeUrlToAbsolute(List<string> imageUrls)
