@@ -2,18 +2,20 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp;
 
 namespace Tranga.MangaConnectors;
 
 internal class ChromiumDownloadClient : DownloadClient
 {
-    private static readonly IBrowser Browser = StartBrowser().Result;
+    private static IBrowser? _browser;
     private const int StartTimeoutMs = 10000;
     private readonly HttpDownloadClient _httpDownloadClient;
     
-    private static async Task<IBrowser> StartBrowser()
+    private static async Task<IBrowser> StartBrowser(Logging.Logger? logger = null)
     {
+        logger?.WriteLine("Starting ChromiumDownloadClient Puppeteer");
         return await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
@@ -23,12 +25,37 @@ internal class ChromiumDownloadClient : DownloadClient
                 "--disable-setuid-sandbox",
                 "--no-sandbox"},
             Timeout = StartTimeoutMs
-        });
+        }, new LoggerFactory([new LogProvider(logger)]));
+    }
+
+    private class LogProvider : GlobalBase, ILoggerProvider
+    {
+        public LogProvider(Logging.Logger? logger) : base(logger) { }
+
+        public void Dispose() { }
+
+        public ILogger CreateLogger(string categoryName) => new Logger(logger);
+    }
+
+    private class Logger : GlobalBase, ILogger
+    {
+        public Logger(Logging.Logger? logger) : base(logger) { }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            logger?.WriteLine("Puppeteer", formatter.Invoke(state, exception));
+        }
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
     }
 
     public ChromiumDownloadClient(GlobalBase clone) : base(clone)
     {
         _httpDownloadClient = new(this);
+        if(_browser is null)
+            _browser = StartBrowser(this.logger).Result;
     }
 
     private readonly Regex _imageUrlRex = new(@"https?:\/\/.*\.(?:p?jpe?g|gif|a?png|bmp|avif|webp)(\?.*)?");
@@ -41,7 +68,7 @@ internal class ChromiumDownloadClient : DownloadClient
 
     private RequestResult MakeRequestBrowser(string url, string? referrer = null, string? clickButton = null)
     {
-        IPage page = Browser.NewPageAsync().Result;
+        IPage page = _browser.NewPageAsync().Result;
         page.DefaultTimeout = 10000;
         IResponse response;
         try
