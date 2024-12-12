@@ -176,7 +176,14 @@ public class Mangasee : MangaConnector
                 string chapterNumber = m.Groups[1].Value;
 
                 string chapterUrl = Regex.Replace(url, @"-page-[0-9]+(\.html)", ".html");
-                chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, chapterUrl));
+                try
+                {
+                    chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, chapterUrl));
+                }
+                catch (Exception e)
+                {
+                    Log($"Failed to load chapter {chapterNumber}: {e.Message}");
+                }
             }
 
             //Return Chapters ordered by Chapter-Number

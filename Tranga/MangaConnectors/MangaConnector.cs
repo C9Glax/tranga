@@ -60,8 +60,7 @@ public abstract class MangaConnector : GlobalBase
             return Array.Empty<Chapter>();
         
         Log($"Checking for duplicates {manga}");
-        List<Chapter> newChaptersList = allChapters.Where(nChapter => float.TryParse(nChapter.chapterNumber, numberFormatDecimalPoint, out float chapterNumber)
-                                                                      && chapterNumber > manga.ignoreChaptersBelow
+        List<Chapter> newChaptersList = allChapters.Where(nChapter => nChapter.chapterNumber > manga.ignoreChaptersBelow
                                                                       && !nChapter.CheckChapterIsDownloaded()).ToList();
         Log($"{newChaptersList.Count} new chapters. {manga}");
         try
@@ -78,79 +77,6 @@ public abstract class MangaConnector : GlobalBase
         }
         
         return newChaptersList.ToArray();
-    }
-
-    public Chapter[] SelectChapters(Manga manga, string searchTerm, string? language = null)
-    {
-        Chapter[] availableChapters = this.GetChapters(manga, language??"en");
-        Regex volumeRegex = new ("((v(ol)*(olume)*){1} *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
-        Regex chapterRegex = new ("((c(h)*(hapter)*){1} *([0-9]+(-[0-9]+)?){1})", RegexOptions.IgnoreCase);
-        Regex singleResultRegex = new("([0-9]+)", RegexOptions.IgnoreCase);
-        Regex rangeResultRegex = new("([0-9]+(-[0-9]+))", RegexOptions.IgnoreCase);
-        Regex allRegex = new("a(ll)?", RegexOptions.IgnoreCase);
-        if (volumeRegex.IsMatch(searchTerm) && chapterRegex.IsMatch(searchTerm))
-        {
-            string volume = singleResultRegex.Match(volumeRegex.Match(searchTerm).Value).Value;
-            string chapter = singleResultRegex.Match(chapterRegex.Match(searchTerm).Value).Value;
-            return availableChapters.Where(aCh => aCh.volumeNumber is not null &&
-                aCh.volumeNumber.Equals(volume, StringComparison.InvariantCultureIgnoreCase) &&
-                aCh.chapterNumber.Equals(chapter, StringComparison.InvariantCultureIgnoreCase))
-                .ToArray();
-        }
-        else if (volumeRegex.IsMatch(searchTerm))
-        {
-            string volume = volumeRegex.Match(searchTerm).Value;
-            if (rangeResultRegex.IsMatch(volume))
-            {
-                string range = rangeResultRegex.Match(volume).Value;
-                int start = Convert.ToInt32(range.Split('-')[0]);
-                int end = Convert.ToInt32(range.Split('-')[1]);
-                return availableChapters.Where(aCh => aCh.volumeNumber is not null &&
-                                                      Convert.ToInt32(aCh.volumeNumber) >= start &&
-                                                      Convert.ToInt32(aCh.volumeNumber) <= end).ToArray();
-            }
-            else if (singleResultRegex.IsMatch(volume))
-            {
-                string volumeNumber = singleResultRegex.Match(volume).Value;
-                return availableChapters.Where(aCh =>
-                    aCh.volumeNumber is not null &&
-                    aCh.volumeNumber.Equals(volumeNumber, StringComparison.InvariantCultureIgnoreCase)).ToArray();
-            }
-
-        }
-        else if (chapterRegex.IsMatch(searchTerm))
-        {
-            string chapter = chapterRegex.Match(searchTerm).Value;
-            if (rangeResultRegex.IsMatch(chapter))
-            {
-                string range = rangeResultRegex.Match(chapter).Value;
-                int start = Convert.ToInt32(range.Split('-')[0]);
-                int end = Convert.ToInt32(range.Split('-')[1]);
-                return availableChapters.Where(aCh => Convert.ToInt32(aCh.chapterNumber) >= start &&
-                                                      Convert.ToInt32(aCh.chapterNumber) <= end).ToArray();
-            }
-            else if (singleResultRegex.IsMatch(chapter))
-            {
-                string chapterNumber = singleResultRegex.Match(chapter).Value;
-                return availableChapters.Where(aCh =>
-                    aCh.chapterNumber.Equals(chapterNumber, StringComparison.InvariantCultureIgnoreCase)).ToArray();
-            }
-        }
-        else
-        {
-            if (rangeResultRegex.IsMatch(searchTerm))
-            {
-                int start = Convert.ToInt32(searchTerm.Split('-')[0]);
-                int end = Convert.ToInt32(searchTerm.Split('-')[1]);
-                return availableChapters[start..(end + 1)];
-            }
-            else if(singleResultRegex.IsMatch(searchTerm))
-                return new [] { availableChapters[Convert.ToInt32(searchTerm)] };
-            else if (allRegex.IsMatch(searchTerm))
-                return availableChapters;
-        }
-
-        return Array.Empty<Chapter>();
     }
     
     public abstract HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null);

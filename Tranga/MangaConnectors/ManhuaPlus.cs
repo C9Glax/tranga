@@ -155,7 +155,14 @@ public class ManhuaPlus : MangaConnector
             string volumeNumber = "1";
             string chapterNumber = rexMatch.Groups[1].Value;
             string fullUrl = url;
-            chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
+            try
+            {
+                chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
+            }
+            catch (Exception e)
+            {
+                Log($"Failed to load chapter {chapterNumber}: {e.Message}");
+            }
         }
         //Return Chapters ordered by Chapter-Number
         Log($"Got {chapters.Count} chapters. {manga}");

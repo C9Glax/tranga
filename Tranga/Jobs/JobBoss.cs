@@ -70,7 +70,7 @@ public class JobBoss : GlobalBase
                 RemoveJob(job);
     }
 
-    public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, string? chapterNumber = null)
+    public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, float? chapterNumber = null)
     {
         IEnumerable<Job> ret = this.jobs;
         if (connectorName is not null)
@@ -82,7 +82,7 @@ public class JobBoss : GlobalBase
                 if (jjob is not DownloadChapter job)
                     return false;
                 return job.chapter.parentManga.internalId == internalId &&
-                       job.chapter.chapterNumber == chapterNumber;
+                       job.chapter.chapterNumber.Equals(chapterNumber);
             });
         else if (internalId is not null)
             ret = ret.Where(jjob =>

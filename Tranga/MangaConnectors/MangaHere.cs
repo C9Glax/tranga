@@ -129,7 +129,15 @@ public class MangaHere : MangaConnector
             string volumeNumber = rexMatch.Groups[1].Value == "TBD" ? "0" : rexMatch.Groups[1].Value;
             string chapterNumber = rexMatch.Groups[2].Value;
             string fullUrl = $"https://www.mangahere.cc{url}";
-            chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
+                
+            try
+            {
+                chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
+            }
+            catch (Exception e)
+            {
+                Log($"Failed to load chapter {chapterNumber}: {e.Message}");
+            }
         }
         //Return Chapters ordered by Chapter-Number
         Log($"Got {chapters.Count} chapters. {manga}");
