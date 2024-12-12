@@ -129,8 +129,8 @@ public partial class Server
 
         float latest = requestParameters.TryGetValue("language", out string? parameter) switch
         {
-            true => float.Parse(manga.Value.mangaConnector.GetChapters(manga.Value, parameter).Max().chapterNumber),
-            false => float.Parse(manga.Value.mangaConnector.GetChapters(manga.Value).Max().chapterNumber)
+            true => manga.Value.mangaConnector.GetChapters(manga.Value, parameter).Max().chapterNumber,
+            false => manga.Value.mangaConnector.GetChapters(manga.Value).Max().chapterNumber
         };
         return new ValueTuple<HttpStatusCode, object?>(HttpStatusCode.OK, latest);
     }
