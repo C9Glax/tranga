@@ -75,7 +75,11 @@ public readonly struct Chapter : IComparable
                 _ => chapterNumberFloat.CompareTo(otherChapterNumberFloat)
             };
         }
-        else throw new FormatException($"Value could not be parsed");
+        else throw new FormatException($"Value could not be parsed.\n" +
+                                       $"\tVolumeNumber: '{volumeNumber}' ChapterNumber: '{chapterNumber}'\n" +
+                                       $"\tOther-VolumeNumber: '{otherChapter.volumeNumber}' Other-ChapterNumber: '{otherChapter.chapterNumber}'\n" +
+                                       $"\t{this}\n" +
+                                       $"\t{otherChapter}");
     }
 
     /// <summary>

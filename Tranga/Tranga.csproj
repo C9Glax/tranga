@@ -10,9 +10,9 @@
 
     <ItemGroup>
       <PackageReference Include="GlaxArguments" Version="1.1.0" />
-      <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.71" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="PuppeteerSharp" Version="10.0.0" />
+      <PackageReference Include="PuppeteerSharp" Version="20.0.5" />
       <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="2.1.301" />
     </ItemGroup>
 
