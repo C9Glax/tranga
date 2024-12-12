@@ -14,8 +14,8 @@ public readonly struct Chapter : IComparable
     // ReSharper disable once MemberCanBePrivate.Global
     public Manga parentManga { get; }
     public string? name { get; }
-    public string volumeNumber { get; }
-    public string chapterNumber { get; }
+    public float volumeNumber { get; }
+    public float chapterNumber { get; }
     public string url { get; }
     // ReSharper disable once MemberCanBePrivate.Global
     public string fileName { get; }
@@ -23,13 +23,19 @@ public readonly struct Chapter : IComparable
     
     private static readonly Regex LegalCharacters = new (@"([A-z]*[0-9]* *\.*-*,*\]*\[*'*\'*\)*\(*~*!*)*");
     private static readonly Regex IllegalStrings = new(@"(Vol(ume)?|Ch(apter)?)\.?", RegexOptions.IgnoreCase);
-    private static readonly Regex Digits = new(@"[0-9\.]*");
+
     public Chapter(Manga parentManga, string? name, string? volumeNumber, string chapterNumber, string url, string? id = null)
+        : this(parentManga, name, float.Parse(volumeNumber??"0", GlobalBase.numberFormatDecimalPoint),
+            float.Parse(chapterNumber, GlobalBase.numberFormatDecimalPoint), url, id)
+    {
+    }
+    
+    public Chapter(Manga parentManga, string? name, float? volumeNumber, float chapterNumber, string url, string? id = null)
     {
         this.parentManga = parentManga;
         this.name = name;
-        this.volumeNumber = volumeNumber is not null ? string.Concat(Digits.Matches(volumeNumber).Select(x => x.Value)) : "0";
-        this.chapterNumber = string.Concat(Digits.Matches(chapterNumber).Select(x => x.Value));
+        this.volumeNumber = volumeNumber??0;
+        this.chapterNumber = chapterNumber;
         this.url = url;
         this.id = id;
         
@@ -60,26 +66,12 @@ public readonly struct Chapter : IComparable
     {
         if(obj is not Chapter otherChapter)
             throw new ArgumentException($"{obj} can not be compared to {this}");
-        
-        if (float.TryParse(volumeNumber, GlobalBase.numberFormatDecimalPoint, out float volumeNumberFloat) &&
-            float.TryParse(chapterNumber, GlobalBase.numberFormatDecimalPoint, out float chapterNumberFloat) &&
-            float.TryParse(otherChapter.volumeNumber, GlobalBase.numberFormatDecimalPoint,
-                out float otherVolumeNumberFloat) &&
-            float.TryParse(otherChapter.chapterNumber, GlobalBase.numberFormatDecimalPoint,
-                out float otherChapterNumberFloat))
+        return volumeNumber.CompareTo(otherChapter.volumeNumber) switch
         {
-            return volumeNumberFloat.CompareTo(otherVolumeNumberFloat) switch
-            {
-                <0 => -1,
-                >0 => 1,
-                _ => chapterNumberFloat.CompareTo(otherChapterNumberFloat)
-            };
-        }
-        else throw new FormatException($"Value could not be parsed.\n" +
-                                       $"\tVolumeNumber: '{volumeNumber}' ChapterNumber: '{chapterNumber}'\n" +
-                                       $"\tOther-VolumeNumber: '{otherChapter.volumeNumber}' Other-ChapterNumber: '{otherChapter.chapterNumber}'\n" +
-                                       $"\t{this}\n" +
-                                       $"\t{otherChapter}");
+            <0 => -1,
+            >0 => 1,
+            _ => chapterNumber.CompareTo(otherChapter.chapterNumber)
+        };
     }
 
     /// <summary>
@@ -111,9 +103,10 @@ public readonly struct Chapter : IComparable
             {
                 Match m = volChRex.Match(archive.Name);
                 if (m.Groups[1].Success)
-                    return m.Groups[1].Value == t.volumeNumber && m.Groups[2].Value == t.chapterNumber;
+                    return m.Groups[1].Value == t.volumeNumber.ToString(GlobalBase.numberFormatDecimalPoint) &&
+                           m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint);
                 else
-                    return m.Groups[2].Value == t.chapterNumber;
+                    return m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint);
             });
         }
         

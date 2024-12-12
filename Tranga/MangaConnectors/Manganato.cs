@@ -181,7 +181,14 @@ public class Manganato : MangaConnector
             string? volumeNumber = volRex.IsMatch(fullString) ? volRex.Match(fullString).Groups[1].Value : null;
             string chapterNumber = chapterRex.Match(url).Groups[1].Value;
             string chapterName = nameRex.Match(fullString).Groups[3].Value;
-            ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
+            try
+            {
+                ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
+            }
+            catch (Exception e)
+            {
+                Log($"Failed to load chapter {chapterNumber}: {e.Message}");
+            }
         }
         ret.Reverse();
         return ret;

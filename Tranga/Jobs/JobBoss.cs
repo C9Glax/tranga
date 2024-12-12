@@ -70,7 +70,7 @@ public class JobBoss : GlobalBase
                 RemoveJob(job);
     }
 
-    public IEnumerable<Job> GetJobsLike(string? internalId = null, string? chapterNumber = null)
+    public IEnumerable<Job> GetJobsLike(string? internalId = null, float? chapterNumber = null)
     {
         IEnumerable<Job> ret = this.jobs;
         
@@ -80,7 +80,7 @@ public class JobBoss : GlobalBase
                 if (jjob is not DownloadChapter job)
                     return false;
                 return job.chapter.parentManga.internalId == internalId &&
-                       job.chapter.chapterNumber == chapterNumber;
+                       job.chapter.chapterNumber.Equals(chapterNumber);
             });
         else if (internalId is not null)
             ret = ret.Where(jjob =>
@@ -210,7 +210,7 @@ public class JobBoss : GlobalBase
     internal void UpdateJobFile(Job job, string? oldFile = null)
     {
         string newJobFilePath = Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
-        string oldFilePath = Path.Join(TrangaSettings.jobsFolderPath, oldFile??$"{job.id}.json");
+        string oldFilePath = oldFile??Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
 
         //Delete old file
         if (File.Exists(oldFilePath))

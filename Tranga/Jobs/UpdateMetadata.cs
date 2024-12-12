@@ -68,6 +68,7 @@ public class UpdateMetadata : Job
         
         if (obj is not UpdateMetadata otherJob)
             return false;
-        return otherJob.manga.Equals(this.manga);
+        return otherJob.mangaConnector == this.mangaConnector &&
+               otherJob.manga?.publicationId == this.manga?.publicationId;
     }
 }

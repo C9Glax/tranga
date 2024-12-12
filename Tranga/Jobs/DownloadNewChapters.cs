@@ -65,6 +65,7 @@ public class DownloadNewChapters : Job
     {
         if (obj is not DownloadNewChapters otherJob)
             return false;
-        return otherJob.manga.Equals(this.manga);
+        return otherJob.mangaConnector == this.mangaConnector &&
+               otherJob.manga?.publicationId == this.manga?.publicationId;
     }
 }

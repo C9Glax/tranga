@@ -247,8 +247,17 @@ public class MangaDex : MangaConnector
                     continue;
                 }
                 
-                if(chapterNum is not "null" && !chapters.Any(chp => chp.volumeNumber.Equals(volume) && chp.chapterNumber.Equals(chapterNum)))
+                try
+                {
+                    if(!chapters.Any(chp =>
+                           chp.volumeNumber.Equals(float.Parse(volume??"0", numberFormatDecimalPoint)) &&
+                           chp.chapterNumber.Equals(float.Parse(chapterNum, numberFormatDecimalPoint))))
                     chapters.Add(new Chapter(manga, title, volume, chapterNum, chapterId, chapterId));
+                }
+                catch (Exception e)
+                {
+                    Log($"Failed to load chapter {chapterNum}: {e.Message}");
+                }
             }
         }
 

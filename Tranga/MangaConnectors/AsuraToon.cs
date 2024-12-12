@@ -155,7 +155,14 @@ public class AsuraToon : MangaConnector
 			string chapterNumber = match.Groups[1].Value;
 			string? chapterName = match.Groups[2].Success && match.Groups[2].Length > 1 ? match.Groups[2].Value : null;
 			string url = $"https://asuracomic.net/series/{chapterUrl}";
-			ret.Add(new Chapter(manga, chapterName, null, chapterNumber, url));
+			try
+			{
+				ret.Add(new Chapter(manga, chapterName, null, chapterNumber, url));
+			}
+			catch (Exception e)
+			{
+				Log($"Failed to load chapter {chapterNumber}: {e.Message}");
+			}
 		}
 		
 		return ret;

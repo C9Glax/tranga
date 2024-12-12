@@ -152,7 +152,14 @@ public class MangaLife : MangaConnector
             string chapterNumber = rexMatch.Groups[1].Value;
             string fullUrl = $"https://manga4life.com{url}";
             fullUrl = fullUrl.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
-            chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
+            try
+            {
+                chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, fullUrl));
+            }
+            catch (Exception e)
+            {
+                Log($"Failed to load chapter {chapterNumber}: {e.Message}");
+            }
         }
         //Return Chapters ordered by Chapter-Number
         Log($"Got {chapters.Count} chapters. {manga}");
