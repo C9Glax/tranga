@@ -197,7 +197,7 @@ public class JobBoss : GlobalBase
     internal void UpdateJobFile(Job job, string? oldFile = null)
     {
         string newJobFilePath = Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
-        string oldFilePath = Path.Join(TrangaSettings.jobsFolderPath, oldFile??$"{job.id}.json");
+        string oldFilePath = oldFile??Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
 
         //Delete old file
         if (File.Exists(oldFilePath))
