@@ -10,7 +10,7 @@ public class AsuraToon : MangaConnector
 	
 	public AsuraToon(GlobalBase clone) : base(clone, "AsuraToon", ["en"])
 	{
-		this.downloadClient = new HttpDownloadClient(clone);
+		this.downloadClient = new ChromiumDownloadClient(clone);
 	}
 
 	public override Manga[] GetManga(string publicationTitle = "")
