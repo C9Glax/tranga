@@ -40,11 +40,6 @@ public class Weebcentral : MangaConnector
         return publications;
     }
 
-    /*
-     * Title: document.DocumentNode.SelectNodes("/html/body/article/section/div/a[@class='link link-hover']").Select(elem => elem.InnerText).ToList()
-     * URL: document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover']").Select(elem => elem.GetAttributeValue("href", "")).ToList()
-     */
-
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (document.DocumentNode.SelectNodes("//article") == null)
@@ -124,6 +119,11 @@ public class Weebcentral : MangaConnector
         AddMangaToCache(manga);
         return manga;
     }
+    
+    public override Manga? GetMangaFromId(string publicationId)
+    {
+        return GetMangaFromUrl($"https://weebcentral.com/series/{publicationId}");
+    }
 
     private string ToFilteredString(string input)
     {
@@ -152,40 +152,49 @@ public class Weebcentral : MangaConnector
         return ret.ToArray();
     }
 
-    public override Manga? GetMangaFromId(string publicationId)
-    {
-        return GetMangaFromUrl($"https://mangasee123.com/manga/{publicationId}");
-    }
-
-    public override Chapter[] GetChapters(Manga manga, string language = "en")
+    public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        try
-        {
-            var doc = XDocument.Load($"https://mangasee123.com/rss/{manga.publicationId}.xml");
-            var chapterItems = doc.Descendants("item").ToArray();
-            List<Chapter> chapters = new();
-            Regex chVolRex = new(@".*chapter-([0-9\.]+)(?:-index-([0-9\.]+))?.*");
-            foreach (var chapter in chapterItems)
-            {
-                var url = chapter.Descendants("link").First().Value;
-                var m = chVolRex.Match(url);
-                var volumeNumber = m.Groups[2].Success ? m.Groups[2].Value : "1";
-                var chapterNumber = m.Groups[1].Value;
-
-                var chapterUrl = Regex.Replace(url, @"-page-[0-9]+(\.html)", ".html");
-                chapters.Add(new Chapter(manga, "", volumeNumber, chapterNumber, chapterUrl));
-            }
-
-            //Return Chapters ordered by Chapter-Number
-            Log($"Got {chapters.Count} chapters. {manga}");
-            return chapters.Order().ToArray();
-        }
-        catch (HttpRequestException e)
-        {
-            Log($"Failed to load https://mangasee123.com/rss/{manga.publicationId}.xml \n\r{e}");
+        string requestUrl = $"{baseURL}/series/{manga.publicationId}/full-chapter-list";
+        RequestResult requestResult =
+            downloadClient.MakeRequest(requestUrl, RequestType.Default);
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return Array.Empty<Chapter>();
-        }
+        
+        //Return Chapters ordered by Chapter-Number
+        if (requestResult.htmlDocument is null)
+            return Array.Empty<Chapter>();
+        List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
+        Log($"Got {chapters.Count} chapters. {manga}");
+        return chapters.Order().ToArray();
+    }
+    
+    private List<Chapter> ParseChaptersFromHtml(Manga manga, HtmlDocument document)
+    {
+        HtmlNode chaptersWrapper = document.DocumentNode.SelectSingleNode("/html/body");
+        
+        Regex chapterRex = new(@".* (\d+)");
+        Regex idRex = new(@"https:\/\/weebcentral\.com\/chapters\/(\w*)");
+
+        List<Chapter> ret = chaptersWrapper.Descendants("a").Select(elem =>
+        {
+            var url = elem.GetAttributeValue("href", "") ?? "Undefined";
+
+            if (!url.StartsWith("https://") && !url.StartsWith("http://")) return new Chapter(manga, null, null, "-1", "undefined");
+            
+            var idMatch = idRex.Match(url);
+            var id = (idMatch.Success ? idMatch.Groups[1].Value : null);
+
+            var chapterNode = elem.SelectSingleNode("span[@class='grow flex items-center gap-2']/span")?.InnerText ?? "Undefined";
+            
+            var chapterNumberMatch = chapterRex.Match(chapterNode);
+            var chapterNumber = (chapterNumberMatch.Success ? chapterNumberMatch.Groups[1].Value : "-1");
+            
+            return new Chapter(manga, null, null, chapterNumber, url, id);
+        }).Where(elem => elem.chapterNumber != "-1" && elem.url != "undefined").ToList();
+
+        ret.Reverse();
+        return ret;
     }
 
     public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
