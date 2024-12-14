@@ -55,8 +55,8 @@ public class AsuraToon : MangaConnector
 	private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
 	{
 		HtmlNodeCollection mangaList = document.DocumentNode.SelectNodes("//a[starts-with(@href,'series')]");
-		if (mangaList.Count < 1)
-			return Array.Empty<Manga>();
+		if (mangaList is null || mangaList.Count < 1)
+			return [];
 
 		IEnumerable<string> urls = mangaList.Select(a => $"https://asuracomic.net/{a.GetAttributeValue("href", "")}");
 		
