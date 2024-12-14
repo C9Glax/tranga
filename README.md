@@ -52,6 +52,7 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [Manga4Life](https://manga4life.com) (en)
 - [ManhuaPlus](https://manhuaplus.org/) (en)
 - [MangaHere](https://www.mangahere.cc/) (en) (Their covers aren't scrapeable.)
+- [Weebcentral](https://weebcentral.com) (en)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
