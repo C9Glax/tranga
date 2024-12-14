@@ -55,8 +55,8 @@ public class AsuraToon : MangaConnector
 	private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
 	{
 		HtmlNodeCollection mangaList = document.DocumentNode.SelectNodes("//a[starts-with(@href,'series')]");
-		if (mangaList.Count < 1)
-			return Array.Empty<Manga>();
+		if (mangaList is null || mangaList.Count < 1)
+			return [];
 
 		IEnumerable<string> urls = mangaList.Select(a => $"https://asuracomic.net/{a.GetAttributeValue("href", "")}");
 		
@@ -102,11 +102,13 @@ public class AsuraToon : MangaConnector
 		
 		HtmlNode descriptionNode =
 			document.DocumentNode.SelectSingleNode("//h3[starts-with(text(),'Synopsis')]/../span");
-		string description = descriptionNode.InnerText;
+		string description = descriptionNode?.InnerText??"";
 		
 		HtmlNodeCollection authorNodes = document.DocumentNode.SelectNodes("//h3[text()='Author']/../h3[not(text()='Author' or text()='_')]");
-		HtmlNodeCollection artistNodes = document.DocumentNode.SelectNodes("//h3[text()='Artist']/../h3[not(text()='Author' or text()='_')]");
-		List<string> authors = authorNodes.Select(a => a.InnerText).Concat(artistNodes.Select(a => a.InnerText)).ToList();
+		HtmlNodeCollection artistNodes = document.DocumentNode.SelectNodes("//h3[text()='Artist']/../h3[not(text()='Artist' or text()='_')]");
+		IEnumerable<string> authorNames = authorNodes is null ? [] : authorNodes.Select(a => a.InnerText);
+		IEnumerable<string> artistNames = artistNodes is null ? [] : artistNodes.Select(a => a.InnerText);
+		List<string> authors = authorNames.Concat(artistNames).ToList();
 
 		HtmlNode? firstChapterNode = document.DocumentNode.SelectSingleNode("//a[contains(@href, 'chapter/1')]/../following-sibling::h3");
 		int? year = int.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
