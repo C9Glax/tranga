@@ -103,7 +103,8 @@ using (var scope = app.Services.CreateScope())
             new Manganato(),
             new Mangasee(),
             new Mangaworld(),
-            new ManhuaPlus()
+            new ManhuaPlus(),
+            new Weebcentral()
         ];
     MangaConnector[] newConnectors = context.MangaConnectors.Where(c => !connectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);

@@ -18,11 +18,9 @@ public class ManhuaPlus : MangaConnector
         string requestUrl = $"https://manhuaplus.org/search?keyword={sanitizedTitle}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
-        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return Array.Empty<Manga>();
-
-        if (requestResult.htmlDocument is null)
-            return Array.Empty<Manga>();
+        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 || requestResult.htmlDocument is null)
+            return [];
+        
         Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
