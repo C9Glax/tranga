@@ -8,7 +8,7 @@ namespace Tranga.MangaConnectors;
 
 public class Manganato : MangaConnector
 {
-    public Manganato(GlobalBase clone) : base(clone, "Manganato", ["en"])
+    public Manganato(GlobalBase clone) : base(clone, "Manganato", ["en"], ["manganato.com"])
     {
         this.downloadClient = new HttpDownloadClient(clone);
     }
@@ -139,8 +139,8 @@ public class Manganato : MangaConnector
         int year = DateTime.ParseExact(oldestChapter?.GetAttributeValue("title", "Dec 31 2400, 23:59")??"Dec 31 2400, 23:59", pattern,
             CultureInfo.InvariantCulture).Year;
         
-        Manga manga = new (sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
+        Manga manga = new (this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl, coverFileNameInCache, links,
+            year, originalLanguage, publicationId, releaseStatus, websiteUrl);
         AddMangaToCache(manga);
         return manga;
     }

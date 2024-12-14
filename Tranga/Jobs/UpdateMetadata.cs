@@ -1,19 +1,21 @@
-﻿using Tranga.MangaConnectors;
+﻿using System.Text.Json.Serialization;
+using Tranga.MangaConnectors;
 
 namespace Tranga.Jobs;
 
 public class UpdateMetadata : Job
 {
-    public Manga manga { get; set; }
+    public string mangaInternalId { get; set; }
+    [JsonIgnore] private Manga? manga => GetCachedManga(mangaInternalId);
     
-    public UpdateMetadata(GlobalBase clone, MangaConnector connector, Manga manga, string? parentJobId = null) : base(clone, JobType.UpdateMetaDataJob, connector, parentJobId: parentJobId)
+    public UpdateMetadata(GlobalBase clone, string mangaInternalId, string? parentJobId = null) : base(clone, JobType.UpdateMetaDataJob, parentJobId: parentJobId)
     {
-        this.manga = manga;
+        this.mangaInternalId = mangaInternalId;
     }
     
     protected override string GetId()
     {
-        return $"{GetType()}-{manga.internalId}";
+        return $"{GetType()}-{mangaInternalId}";
     }
 
     public override string ToString()
@@ -23,8 +25,14 @@ public class UpdateMetadata : Job
 
     protected override IEnumerable<Job> ExecuteReturnSubTasksInternal(JobBoss jobBoss)
     {
+        if (manga is null)
+        {
+            Log($"Manga {mangaInternalId} is missing! Can not execute job.");
+            return Array.Empty<Job>();
+        }
+
         //Retrieve new Metadata
-        Manga? possibleUpdatedManga = mangaConnector.GetMangaFromId(manga.publicationId);
+        Manga? possibleUpdatedManga = mangaConnector.GetMangaFromId(manga.Value.publicationId);
         if (possibleUpdatedManga is { } updatedManga)
         {
             if (updatedManga.Equals(this.manga)) //Check if anything changed
@@ -33,26 +41,9 @@ public class UpdateMetadata : Job
                 return Array.Empty<Job>();
             }
             
-            this.manga = manga.WithMetadata(updatedManga);
-            this.manga.SaveSeriesInfoJson(true);
-            this.mangaConnector.CopyCoverFromCacheToDownloadLocation(manga);
-            foreach (Job job in jobBoss.GetJobsLike(publication: this.manga))
-            {
-                string oldFile;
-                if (job is DownloadNewChapters dc)
-                {
-                    oldFile = dc.id;
-                    dc.manga = this.manga;
-                }
-                else if (job is UpdateMetadata um)
-                {
-                    oldFile = um.id;
-                    um.manga = this.manga;
-                }
-                else 
-                    continue;
-                jobBoss.UpdateJobFile(job, oldFile);
-            }
+            AddMangaToCache(manga.Value.WithMetadata(updatedManga));
+            this.manga.Value.SaveSeriesInfoJson(true);
+            this.mangaConnector.CopyCoverFromCacheToDownloadLocation((Manga)manga);
             this.progressToken.Complete();
         }
         else
@@ -65,12 +56,19 @@ public class UpdateMetadata : Job
         return Array.Empty<Job>();
     }
 
+    protected override MangaConnector GetMangaConnector()
+    {
+        if (manga is null)
+            throw new Exception($"Missing Manga {mangaInternalId}");
+        return manga.Value.mangaConnector;
+    }
+
     public override bool Equals(object? obj)
     {
         
         if (obj is not UpdateMetadata otherJob)
             return false;
         return otherJob.mangaConnector == this.mangaConnector &&
-               otherJob.manga.publicationId == this.manga.publicationId;
+               otherJob.manga?.publicationId == this.manga?.publicationId;
     }
 }
