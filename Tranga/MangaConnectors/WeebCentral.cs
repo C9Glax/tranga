@@ -195,7 +195,7 @@ public class Weebcentral : MangaConnector
             var chapterNumber = chapterNumberMatch.Success ? chapterNumberMatch.Groups[1].Value : "-1";
 
             return new Chapter(manga, null, null, chapterNumber, url, id);
-        }).Where(elem => elem.chapterNumber != "-1" && elem.url != "undefined").ToList();
+        }).Where(elem => elem.chapterNumber != -1 && elem.url != "undefined").ToList();
 
         ret.Reverse();
         return ret;
