@@ -108,7 +108,7 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 ### Docker
 
-Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.  
+Download [docker-compose.yaml](docker-compose.yaml) and configure to your needs.  
 Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives) downloaded (where Komga/Kavita can access them).  
 The `docker-compose` also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the repo README.
 
@@ -131,12 +131,7 @@ See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list o
 <!-- CONTRIBUTING -->
 ## Contributing
 
-The following is copy & pasted:
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+Read [Contributing](CONTRIBUTING.md).
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
