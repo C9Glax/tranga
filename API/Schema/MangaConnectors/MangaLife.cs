@@ -12,27 +12,27 @@ public class MangaLife : MangaConnector
         this.downloadClient = new ChromiumDownloadClient();
     }
 
-    public override Manga[] GetManga(string publicationTitle = "")
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
         string requestUrl = $"https://manga4life.com/search/?name={sanitizedTitle}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return Array.Empty<Manga>();
+            return [];
 
         if (requestResult.htmlDocument is null)
-            return Array.Empty<Manga>();
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+            return [];
+        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
 
-    public override Manga? GetMangaFromId(string publicationId)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://manga4life.com/manga/{publicationId}");
     }
 
-    public override Manga? GetMangaFromUrl(string url)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/(www\.)?manga4life.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[2].Value;
@@ -43,7 +43,7 @@ public class MangaLife : MangaConnector
         return null;
     }
 
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         HtmlNode resultsNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']/div[last()]/div[1]/div");
         if (resultsNode.Descendants("div").Count() == 1 && resultsNode.Descendants("div").First().HasClass("NoResults"))
@@ -51,21 +51,21 @@ public class MangaLife : MangaConnector
             return [];
         }
 
-        HashSet<Manga> ret = new();
+        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
 
         foreach (HtmlNode resultNode in resultsNode.SelectNodes("div"))
         {
             string url = resultNode.Descendants().First(d => d.HasClass("SeriesName")).GetAttributeValue("href", "");
-            Manga? manga = GetMangaFromUrl($"https://manga4life.com{url}");
-            if (manga is not null)
-                ret.Add((Manga)manga);
+            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl($"https://manga4life.com{url}");
+            if (manga is { } x)
+                ret.Add(x);
         }
         
         return ret.ToArray();
     }
 
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -73,7 +73,7 @@ public class MangaLife : MangaConnector
         MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//img");
-        string posterUrl = posterNode.GetAttributeValue("src", "");
+        string coverUrl = posterNode.GetAttributeValue("src", "");
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']//div[@class='row']//h1");
         string sortName = titleNode.InnerText;
@@ -81,20 +81,22 @@ public class MangaLife : MangaConnector
         HtmlNode[] authorsNodes = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Author(s):']/..").Descendants("a")
             .ToArray();
-        List<string> authors = new();
+        List<string> authorNames = new();
         foreach (HtmlNode authorNode in authorsNodes)
-            authors.Add(authorNode.InnerText);
+            authorNames.Add(authorNode.InnerText);
+        Author[] authors = authorNames.Select(a => new Author(a)).ToArray();
 
         HtmlNode[] genreNodes = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Genre(s):']/..").Descendants("a")
             .ToArray();
         foreach (HtmlNode genreNode in genreNodes)
             tags.Add(genreNode.InnerText);
+        MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
 
         HtmlNode yearNode = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Released:']/..").Descendants("a")
             .First();
-        int year = Convert.ToInt32(yearNode.InnerText);
+        uint year = uint.Parse(yearNode.InnerText);
 
         HtmlNode[] statusNodes = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Status:']/..").Descendants("a")
@@ -116,8 +118,15 @@ public class MangaLife : MangaConnector
             .Descendants("div").First();
         string description = descriptionNode.InnerText;
 
-        Manga manga = //TODO
-        return manga;
+        Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
+            originalLanguage, releaseStatus, -1, null, null,
+            this.Name, 
+            authors.Select(a => a.AuthorId).ToArray(), 
+            mangaTags.Select(t => t.Tag).ToArray(), 
+            [],
+            []);
+		
+        return (manga, authors, mangaTags, [], []);
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")

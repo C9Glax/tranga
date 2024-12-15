@@ -12,30 +12,30 @@ public class AsuraToon : MangaConnector
 		this.downloadClient = new ChromiumDownloadClient();
 	}
 
-	public override Manga[] GetManga(string publicationTitle = "")
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
 	{
 		string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://asuracomic.net/series?name={sanitizedTitle}";
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-			return Array.Empty<Manga>();
+			return [];
 
 		if (requestResult.htmlDocument is null)
 		{
 			return [];
 		}
 			
-		Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+		(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
 		return publications;
 	}
 
-	public override Manga? GetMangaFromId(string publicationId)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
 	{
 		return GetMangaFromUrl($"https://asuracomic.net/series/{publicationId}");
 	}
 
-	public override Manga? GetMangaFromUrl(string url)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
 	{
 		RequestResult requestResult = downloadClient.MakeRequest(url, RequestType.MangaInfo);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -47,7 +47,7 @@ public class AsuraToon : MangaConnector
 		return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1], url);
 	}
 
-	private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
 	{
 		HtmlNodeCollection mangaList = document.DocumentNode.SelectNodes("//a[starts-with(@href,'series')]");
 		if (mangaList is null || mangaList.Count < 1)
@@ -55,24 +55,25 @@ public class AsuraToon : MangaConnector
 
 		IEnumerable<string> urls = mangaList.Select(a => $"https://asuracomic.net/{a.GetAttributeValue("href", "")}");
 		
-		List<Manga> ret = new();
+		List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
 		foreach (string url in urls)
 		{
-			Manga? manga = GetMangaFromUrl(url);
-			if (manga is not null)
-				ret.Add((Manga)manga);
+			(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+			if (manga is { } x)
+				ret.Add(x);
 		}
 
 		return ret.ToArray();
 	}
 
-	private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
 	{
 		string? originalLanguage = null;
 		Dictionary<string, string> altTitles = new(), links = new();
 
 		HtmlNodeCollection genreNodes = document.DocumentNode.SelectNodes("//h3[text()='Genres']/../div/button");
 		string[] tags = genreNodes.Select(b => b.InnerText).ToArray();
+		MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
 		
 		HtmlNode statusNode = document.DocumentNode.SelectSingleNode("//h3[text()='Status']/../h3[2]");
 		MangaReleaseStatus releaseStatus = statusNode.InnerText.ToLower() switch
@@ -102,16 +103,21 @@ public class AsuraToon : MangaConnector
 		HtmlNodeCollection artistNodes = document.DocumentNode.SelectNodes("//h3[text()='Artist']/../h3[not(text()='Artist' or text()='_')]");
 		IEnumerable<string> authorNames = authorNodes is null ? [] : authorNodes.Select(a => a.InnerText);
 		IEnumerable<string> artistNames = artistNodes is null ? [] : artistNodes.Select(a => a.InnerText);
-		List<string> authors = authorNames.Concat(artistNames).ToList();
+		List<string> authorStrings = authorNames.Concat(artistNames).ToList();
+		Author[] authors = authorStrings.Select(author => new Author(author)).ToArray();
 
 		HtmlNode? firstChapterNode = document.DocumentNode.SelectSingleNode("//a[contains(@href, 'chapter/1')]/../following-sibling::h3");
 		uint year = uint.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
 
-		Manga manga = new Manga(publicationId, sortName, description, websiteUrl, coverUrl, null, year,
+		Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
 			originalLanguage, releaseStatus, -1, null, null,
-			this.Name, authors, tags, links, altTitles); //TODO
+			this.Name, 
+			authors.Select(a => a.AuthorId).ToArray(), 
+			mangaTags.Select(t => t.Tag).ToArray(), 
+			[],
+			[]);
 		
-		return manga;
+		return (manga, authors, mangaTags, [], []);
 	}
 
 	public override Chapter[] GetChapters(Manga manga, string language="en")

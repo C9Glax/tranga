@@ -18,11 +18,11 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     public virtual Manga[] Mangas { get; internal set; } = [];
     
     
-    public abstract Manga[] GetManga(string publicationTitle = "");
+    public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "");
 
-    public abstract Manga? GetMangaFromUrl(string url);
+    public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url);
 
-    public abstract Manga? GetMangaFromId(string publicationId);
+    public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId);
     
     public abstract Chapter[] GetChapters(Manga manga, string language="en");
     

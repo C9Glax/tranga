@@ -11,45 +11,45 @@ public class MangaHere : MangaConnector
         this.downloadClient = new ChromiumDownloadClient();
     }
 
-    public override Manga[] GetManga(string publicationTitle = "")
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = string.Join('+', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://www.mangahere.cc/search?title={sanitizedTitle}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 || requestResult.htmlDocument is null)
-            return Array.Empty<Manga>();
+            return [];
         
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
 
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (document.DocumentNode.SelectNodes("//div[contains(concat(' ',normalize-space(@class),' '),' container ')]").Any(node => node.ChildNodes.Any(cNode => cNode.HasClass("search-keywords"))))
-            return Array.Empty<Manga>();
+            return [];
         
         List<string> urls = document.DocumentNode
             .SelectNodes("//a[contains(@href, '/manga/') and not(contains(@href, '.html'))]")
             .Select(thumb => $"https://www.mangahere.cc{thumb.GetAttributeValue("href", "")}").Distinct().ToList();
 
-        HashSet<Manga> ret = new();
+        HashSet<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
         foreach (string url in urls)
         {
-            Manga? manga = GetMangaFromUrl(url);
-            if (manga is not null)
-                ret.Add((Manga)manga);
+            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+            if (manga is { } x)
+                ret.Add(x);
         }
 
         return ret.ToArray();
     }
 
-    public override Manga? GetMangaFromId(string publicationId)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://www.mangahere.cc/manga/{publicationId}");
     }
 
-    public override Manga? GetMangaFromUrl(string url)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
     {
         RequestResult requestResult =
             downloadClient.MakeRequest(url, RequestType.MangaInfo);
@@ -61,27 +61,29 @@ public class MangaHere : MangaConnector
         return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id, url);
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
         MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 
         //We dont get posters, because same origin bs HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//img[contains(concat(' ',normalize-space(@class),' '),' detail-info-cover-img ')]");
-        string posterUrl = "http://static.mangahere.cc/v20230914/mangahere/images/nopicture.jpg";
+        string coverUrl = "http://static.mangahere.cc/v20230914/mangahere/images/nopicture.jpg";
 
         HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//span[contains(concat(' ',normalize-space(@class),' '),' detail-info-right-title-font ')]");
         string sortName = titleNode.InnerText;
         
-        List<string> authors = document.DocumentNode
+        List<string> authorNames = document.DocumentNode
             .SelectNodes("//p[contains(concat(' ',normalize-space(@class),' '),' detail-info-right-say ')]/a")
             .Select(node => node.InnerText)
             .ToList();
+        Author[] authors = authorNames.Select(n => new Author(n)).ToArray();
 
         HashSet<string> tags = document.DocumentNode
             .SelectNodes("//p[contains(concat(' ',normalize-space(@class),' '),' detail-info-right-tag-list ')]/a")
             .Select(node => node.InnerText)
             .ToHashSet();
+        MangaTag[] mangaTags = tags.Select(n => new MangaTag(n)).ToArray();
 
         status = document.DocumentNode.SelectSingleNode("//span[contains(concat(' ',normalize-space(@class),' '),' detail-info-right-title-tip ')]").InnerText;
         switch (status.ToLower())
@@ -97,8 +99,15 @@ public class MangaHere : MangaConnector
             .SelectSingleNode("//p[contains(concat(' ',normalize-space(@class),' '),' fullcontent ')]");
         string description = descriptionNode.InnerText;
 
-        Manga manga =//TODO
-        return manga;
+        Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, 0,
+            originalLanguage, releaseStatus, -1, null, null,
+            this.Name, 
+            authors.Select(a => a.AuthorId).ToArray(), 
+            mangaTags.Select(t => t.Tag).ToArray(), 
+            [],
+            []);
+		
+        return (manga, authors, mangaTags, [], []);
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")

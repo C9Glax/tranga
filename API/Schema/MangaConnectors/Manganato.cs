@@ -13,7 +13,7 @@ public class Manganato : MangaConnector
         this.downloadClient = new HttpDownloadClient();
     }
 
-    public override Manga[] GetManga(string publicationTitle = "")
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
@@ -21,11 +21,11 @@ public class Manganato : MangaConnector
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 ||requestResult.htmlDocument is null)
             return [];
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
 
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         List<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("search-story-item")).ToList();
         List<string> urls = new();
@@ -35,23 +35,23 @@ public class Manganato : MangaConnector
                 .First(a => a.Name == "href").Value);
         }
 
-        HashSet<Manga> ret = new();
+        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
         foreach (string url in urls)
         {
-            Manga? manga = GetMangaFromUrl(url);
-            if (manga is not null)
-                ret.Add(manga);
+            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+            if (manga is { } x)
+                ret.Add(x);
         }
 
         return ret.ToArray();
     }
 
-    public override Manga? GetMangaFromId(string publicationId)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://chapmanganato.com/{publicationId}");
     }
 
-    public override Manga? GetMangaFromUrl(string url)
+    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
     {
         RequestResult requestResult =
             downloadClient.MakeRequest(url, RequestType.MangaInfo);
@@ -63,12 +63,12 @@ public class Manganato : MangaConnector
         return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1], url);
     }
 
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
-        Dictionary<string, string> altTitles = new();
+        Dictionary<string, string> altTitlesDict = new();
         Dictionary<string, string>? links = null;
         HashSet<string> tags = new();
-        string[] authors = Array.Empty<string>();
+        string[] authorNames = [];
         string originalLanguage = "";
         MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 
@@ -89,12 +89,12 @@ public class Manganato : MangaConnector
                 case "alternative":
                     string[] alts = value.Split(" ; ");
                     for(int i = 0; i < alts.Length; i++)
-                        altTitles.Add(i.ToString(), alts[i]);
+                        altTitlesDict.Add(i.ToString(), alts[i]);
                     break;
                 case "authors":
-                    authors = value.Split('-');
-                    for (int i = 0; i < authors.Length; i++)
-                        authors[i] = authors[i].Replace("\r\n", "");
+                    authorNames = value.Split('-');
+                    for (int i = 0; i < authorNames.Length; i++)
+                        authorNames[i] = authorNames[i].Replace("\r\n", "");
                     break;
                 case "status":
                     switch (value.ToLower())
@@ -111,8 +111,11 @@ public class Manganato : MangaConnector
                     break;
             }
         }
+        Author[] authors = authorNames.Select(n => new Author(n)).ToArray();
+        MangaTag[] mangaTags = tags.Select(n => new MangaTag(n)).ToArray();
+        MangaAltTitle[] mangaAltTitles = altTitlesDict.Select(a => new MangaAltTitle(a.Key, a.Value)).ToArray();
 
-        string posterUrl = document.DocumentNode.Descendants("span").First(s => s.HasClass("info-image")).Descendants("img").First()
+        string coverUrl = document.DocumentNode.Descendants("span").First(s => s.HasClass("info-image")).Descendants("img").First()
             .GetAttributes().First(a => a.Name == "src").Value;
 
         string description = document.DocumentNode.Descendants("div").First(d => d.HasClass("panel-story-info-description"))
@@ -128,11 +131,18 @@ public class Manganato : MangaConnector
                     CultureInfo.InvariantCulture).Millisecond);
 
 
-        int year = DateTime.ParseExact(oldestChapter?.GetAttributeValue("title", "Dec 31 2400, 23:59")??"Dec 31 2400, 23:59", pattern,
+        uint year = (uint)DateTime.ParseExact(oldestChapter?.GetAttributeValue("title", "Dec 31 2400, 23:59")??"Dec 31 2400, 23:59", pattern,
             CultureInfo.InvariantCulture).Year;
         
-        Manga manga = //TODO
-        return manga;
+        Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
+            originalLanguage, releaseStatus, -1, null, null,
+            this.Name, 
+            authors.Select(a => a.AuthorId).ToArray(), 
+            mangaTags.Select(t => t.Tag).ToArray(), 
+            [],
+            mangaAltTitles.Select(a => a.AltTitleId).ToArray());
+		
+        return (manga, authors, mangaTags, [], mangaAltTitles);
     }
 
     public override Chapter[] GetChapters(Manga manga, string language="en")

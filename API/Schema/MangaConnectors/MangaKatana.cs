@@ -11,14 +11,14 @@ public class MangaKatana : MangaConnector
 		this.downloadClient = new HttpDownloadClient();
 	}
 
-	public override Manga[] GetManga(string publicationTitle = "")
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
 	{
 		string sanitizedTitle = string.Join("%20", Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
 		RequestResult requestResult =
 			downloadClient.MakeRequest(requestUrl, RequestType.Default);
 		if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-			return Array.Empty<Manga>();
+			return [];
 
 		// ReSharper disable once MergeIntoPattern
 		// If a single result is found, the user will be redirected to the results directly instead of a result page
@@ -29,16 +29,16 @@ public class MangaKatana : MangaConnector
 			return new [] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.redirectedToUrl.Split('/')[^1], requestResult.redirectedToUrl) };
 		}
 
-		Manga[] publications = ParsePublicationsFromHtml(requestResult.result);
+		(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.result);
 		return publications;
 	}
 
-	public override Manga? GetMangaFromId(string publicationId)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
 	{
 		return GetMangaFromUrl($"https://mangakatana.com/manga/{publicationId}");
 	}
 
-	public override Manga? GetMangaFromUrl(string url)
+	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
 	{
 		RequestResult requestResult =
 			downloadClient.MakeRequest(url, RequestType.MangaInfo);
@@ -47,7 +47,7 @@ public class MangaKatana : MangaConnector
 		return ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1], url);
 	}
 
-	private Manga[] ParsePublicationsFromHtml(Stream html)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(Stream html)
 	{
 		StreamReader reader = new(html);
 		string htmlString = reader.ReadToEnd();
@@ -55,7 +55,7 @@ public class MangaKatana : MangaConnector
 		document.LoadHtml(htmlString);
 		IEnumerable<HtmlNode> searchResults = document.DocumentNode.SelectNodes("//*[@id='book_list']/div");
 		if (searchResults is null || !searchResults.Any())
-			return Array.Empty<Manga>();
+			return [];
 		List<string> urls = new();
 		foreach (HtmlNode mangaResult in searchResults)
 		{
@@ -63,27 +63,27 @@ public class MangaKatana : MangaConnector
 				.First(a => a.Name == "href").Value);
 		}
 
-		HashSet<Manga> ret = new();
+		HashSet<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
 		foreach (string url in urls)
 		{
-			Manga? manga = GetMangaFromUrl(url);
-			if (manga is not null)
-				ret.Add((Manga)manga);
+			(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+			if (manga is { } x)
+				ret.Add(x);
 		}
 
 		return ret.ToArray();
 	}
 
-	private Manga ParseSinglePublicationFromHtml(Stream html, string publicationId, string websiteUrl)
+	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(Stream html, string publicationId, string websiteUrl)
 	{
 		StreamReader reader = new(html);
 		string htmlString = reader.ReadToEnd();
 		HtmlDocument document = new();
 		document.LoadHtml(htmlString);
-		Dictionary<string, string> altTitles = new();
+		Dictionary<string, string> altTitlesDict = new();
 		Dictionary<string, string>? links = null;
 		HashSet<string> tags = new();
-		string[] authors = Array.Empty<string>();
+		string[] authorNames = [];
 		string originalLanguage = "";
 		MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 
@@ -102,10 +102,10 @@ public class MangaKatana : MangaConnector
 				case "altnames":
 					string[] alts = value.Split(" ; ");
 					for (int i = 0; i < alts.Length; i++)
-						altTitles.Add(i.ToString(), alts[i]);
+						altTitlesDict.Add(i.ToString(), alts[i]);
 					break;
 				case "authorsartists":
-					authors = value.Split(',');
+					authorNames = value.Split(',');
 					break;
 				case "status":
 					switch (value.ToLower())
@@ -120,29 +120,38 @@ public class MangaKatana : MangaConnector
 			}
 		}
 
-		string posterUrl = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[1]/div").Descendants("img").First()
+		string coverUrl = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[1]/div").Descendants("img").First()
 			.GetAttributes().First(a => a.Name == "src").Value;
 
 		string description = document.DocumentNode.SelectSingleNode("//*[@id='single_book']/div[3]/p").InnerText;
 		while (description.StartsWith('\n'))
 			description = description.Substring(1);
 
-		int year = DateTime.Now.Year;
+		uint year = (uint)DateTime.Now.Year;
 		string yearString = infoTable.Descendants("div").First(d => d.HasClass("updateAt"))
 			.InnerText.Split('-')[^1];
 
 		if(yearString.Contains("ago") == false)
 		{
-			year = Convert.ToInt32(yearString);
+			year = uint.Parse(yearString);
 		}
+		Author[] authors = authorNames.Select(n => new Author(n)).ToArray();
+		MangaTag[] mangaTags = tags.Select(n => new MangaTag(n)).ToArray();
+		MangaAltTitle[] altTitles = altTitlesDict.Select(x => new MangaAltTitle(x.Key, x.Value)).ToArray();
 
-		Manga manga =  //TODO
-		return manga;
+		Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
+			originalLanguage, releaseStatus, -1, null, null,
+			this.Name, 
+			authors.Select(a => a.AuthorId).ToArray(), 
+			mangaTags.Select(t => t.Tag).ToArray(), 
+			[],
+			altTitles.Select(a => a.AltTitleId).ToArray());
+		
+		return (manga, authors, mangaTags, [], altTitles);
 	}
 
 	public override Chapter[] GetChapters(Manga manga, string language="en")
 	{
-		Log($"Getting chapters {manga}");
 		string requestUrl = $"https://mangakatana.com/manga/{manga.MangaId}";
 		// Leaving this in for verification if the page exists
 		RequestResult requestResult =
