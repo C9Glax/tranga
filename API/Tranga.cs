@@ -10,7 +10,7 @@ public static class Tranga
 {
     public static Thread NotificationSenderThread { get; } = new (NotificationSender);
     public static Thread JobStarterThread { get; } = new (JobStarter);
-    private static readonly List<Thread> RunningJobs = new();
+    private static readonly Dictionary<Thread, Job> RunningJobs = new();
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
 
     internal static void StartLogger()
@@ -63,6 +63,7 @@ public static class Tranga
         
         string TRANGA = "\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n";
         Log.Info(TRANGA);
+        List<Job> newJobs = new();
         while (true)
         {
             List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
@@ -81,17 +82,22 @@ public static class Tranga
             {
                 Thread t = new (() =>
                 {
-                    IEnumerable<Job> newJobs = job.Run();
-                    context.Jobs.AddRange(newJobs);
+                    newJobs.AddRange(job.Run());
                 });
-                RunningJobs.Add(t);
+                RunningJobs.Add(t, job);
                 t.Start();
                 context.Jobs.Update(job);
             }
-            
-            Thread[] removeFromThreadsList = RunningJobs.Where(t => !t.IsAlive).ToArray();
-            foreach (Thread thread in removeFromThreadsList)
-                RunningJobs.Remove(thread);
+            context.Jobs.AddRange(newJobs);
+            newJobs.Clear();
+
+            (Thread, Job)[] removeFromThreadsList = RunningJobs.Where(t => !t.Key.IsAlive)
+                .Select(t => (t.Key, t.Value)).ToArray();
+            foreach ((Thread thread, Job job) thread in removeFromThreadsList)
+            {
+                RunningJobs.Remove(thread.thread);
+                context.Jobs.Update(thread.job);
+            }
             
             context.SaveChanges();
             Thread.Sleep(2000);
