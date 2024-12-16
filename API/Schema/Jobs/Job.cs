@@ -36,13 +36,13 @@ public abstract class Job
         NextExecution = LastExecution.AddMilliseconds(RecurrenceMs);
     }
 
-    public IEnumerable<Job> Run()
+    public IEnumerable<Job> Run(PgsqlContext context)
     {
         this.state = JobState.Running;
-        IEnumerable<Job> newJobs = RunInternal();
+        IEnumerable<Job> newJobs = RunInternal(context);
         this.state = JobState.Completed;
         return newJobs;
     }
     
-    protected abstract IEnumerable<Job> RunInternal();
+    protected abstract IEnumerable<Job> RunInternal(PgsqlContext context);
 }

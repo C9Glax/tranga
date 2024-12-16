@@ -9,7 +9,7 @@ public class UpdateMetadataJob(ulong recurrenceMs, string mangaId, string? paren
     public string MangaId { get; init; } = mangaId;
     public virtual Manga Manga { get; init; }
     
-    protected override IEnumerable<Job> RunInternal()
+    protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         throw new NotImplementedException();
     }

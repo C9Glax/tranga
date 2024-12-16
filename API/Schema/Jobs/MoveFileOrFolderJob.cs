@@ -6,7 +6,7 @@ public class MoveFileOrFolderJob(string fromLocation, string toLocation, string?
     public string FromLocation { get; init; } = fromLocation;
     public string ToLocation { get; init; } = toLocation;
     
-    protected override IEnumerable<Job> RunInternal()
+    protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         throw new NotImplementedException();
     }

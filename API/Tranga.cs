@@ -63,7 +63,6 @@ public static class Tranga
         
         string TRANGA = "\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n";
         Log.Info(TRANGA);
-        List<Job> newJobs = new();
         while (true)
         {
             List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
@@ -82,14 +81,13 @@ public static class Tranga
             {
                 Thread t = new (() =>
                 {
-                    newJobs.AddRange(job.Run());
+                    IEnumerable<Job> newJobs = job.Run(context);
+                    context.Jobs.AddRange(newJobs);
                 });
                 RunningJobs.Add(t, job);
                 t.Start();
                 context.Jobs.Update(job);
             }
-            context.Jobs.AddRange(newJobs);
-            newJobs.Clear();
 
             (Thread, Job)[] removeFromThreadsList = RunningJobs.Where(t => !t.Key.IsAlive)
                 .Select(t => (t.Key, t.Value)).ToArray();

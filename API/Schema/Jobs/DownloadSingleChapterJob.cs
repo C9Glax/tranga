@@ -18,7 +18,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     public string ChapterId { get; init; } = chapterId;
     public virtual Chapter Chapter { get; init; }
     
-    protected override IEnumerable<Job> RunInternal()
+    protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         MangaConnector connector = Chapter.ParentManga.MangaConnector;
         DownloadChapterImages(Chapter);
@@ -50,8 +50,6 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         //Download all Images to temporary Folder
         if (imageUrls.Length == 0)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute);
             Directory.Delete(tempFolder, true);
             return false;
         }
