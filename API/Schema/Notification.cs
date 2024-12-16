@@ -16,4 +16,6 @@ public class Notification(string title, string message = "", NotificationUrgency
     public string Message { get; init; } = message;
     
     public DateTime Date { get; init; } = date ?? DateTime.UtcNow;
+    
+    public Notification() : this("") { }
 }
