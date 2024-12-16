@@ -39,7 +39,7 @@ public abstract class Job
     public IEnumerable<Job> Run()
     {
         this.state = JobState.Running;
-        IEnumerable<Job>? newJobs = RunInternal();
+        IEnumerable<Job> newJobs = RunInternal();
         this.state = JobState.Completed;
         return newJobs;
     }
