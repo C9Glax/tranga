@@ -19,7 +19,7 @@ public class SearchController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Array of Manga</returns>
-    [HttpPost("Manga/{name}")]
+    [HttpPost("{name}")]
     [ProducesResponseType<Manga[]>(Status500InternalServerError)]
     public IActionResult SearchMangaGlobal(string name)
     {
@@ -49,7 +49,7 @@ public class SearchController(PgsqlContext context) : Controller
     /// <param name="id">Manga-Connector-ID</param>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Manga</returns>
-    [HttpPost("Connector/{id}/Manga/{name}")]
+    [HttpPost("{id}/{name}")]
     [ProducesResponseType<Manga[]>(Status200OK)]
     [ProducesResponseType<ProblemResponse>(Status404NotFound)]
     [ProducesResponseType<ProblemResponse>(Status500InternalServerError)]
