@@ -13,17 +13,6 @@ namespace API.Controllers;
 [Route("v{v:apiVersion}/[controller]")]
 public class SearchController(PgsqlContext context) : Controller
 {
-    /// <summary>
-    /// Get all available Connectors (Scanlation-Sites)
-    /// </summary>
-    /// <returns>Array of MangaConnector</returns>
-    [HttpGet("GetConnectors")]
-    [ProducesResponseType<MangaConnector[]>(Status200OK)]
-    public IActionResult GetConnectors()
-    {
-        MangaConnector[] connectors = context.MangaConnectors.ToArray();
-        return Ok(connectors);
-    }
     
     /// <summary>
     /// Initiate a search for a Manga on all Connectors
