@@ -9,10 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Tranga\Tranga.csproj" />
     </ItemGroup>
 

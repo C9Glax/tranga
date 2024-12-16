@@ -18,6 +18,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     public DbSet<MangaAltTitle> AltTitles { get; set; }
     public DbSet<LibraryConnector> LibraryConnectors { get; set; }
     public DbSet<NotificationConnector> NotificationConnectors { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
