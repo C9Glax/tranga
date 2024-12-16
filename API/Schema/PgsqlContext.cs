@@ -44,12 +44,22 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<Gotify>(NotificationConnectorType.Gotify)
             .HasValue<Ntfy>(NotificationConnectorType.Ntfy)
             .HasValue<Lunasea>(NotificationConnectorType.LunaSea);
+        
         modelBuilder.Entity<Job>()
             .HasDiscriminator<JobType>(j => j.JobType)
             .HasValue<MoveFileOrFolderJob>(JobType.MoveFileOrFolderJob)
             .HasValue<DownloadNewChaptersJob>(JobType.DownloadNewChaptersJob)
             .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
             .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob);
+        modelBuilder.Entity<DownloadNewChaptersJob>()
+            .Navigation(dncj => dncj.Manga)
+            .AutoInclude();
+        modelBuilder.Entity<DownloadSingleChapterJob>()
+            .Navigation(dscj => dscj.Chapter)
+            .AutoInclude();
+        modelBuilder.Entity<UpdateMetadataJob>()
+            .Navigation(umj => umj.Manga)
+            .AutoInclude();
 
         modelBuilder.Entity<Manga>()
             .HasOne<MangaConnector>(m => m.MangaConnector);
