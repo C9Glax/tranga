@@ -22,13 +22,13 @@ public class Manga(
     string? originalLanguage,
     MangaReleaseStatus releaseStatus,
     float ignoreChapterBefore,
-    string? latestChapterDownloadedId,
-    string? latestChapterAvailableId,
-    string mangaConnectorName,
-    string[] authorIds,
-    string[] tagIds,
-    string[] linkIds,
-    string[] altTitleIds)
+    Chapter? latestChapterDownloaded,
+    Chapter? latestChapterAvailable,
+    MangaConnector mangaConnector,
+    Author[] authors,
+    MangaTag[] tags,
+    Link[] links,
+    MangaAltTitle[] altTitles)
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = TokenGen.CreateToken(typeof(Manga), 64);
@@ -46,30 +46,33 @@ public class Manga(
     public string FolderName { get; private set; } = BuildFolderName(name);
     public float IgnoreChapterBefore { get; internal set; } = ignoreChapterBefore;
 
-    public string? LatestChapterDownloadedId { get; internal set; } = latestChapterDownloadedId;
-    public virtual Chapter? LatestChapterDownloaded { get; }
-    
-    public string? LatestChapterAvailableId { get; internal set; } = latestChapterAvailableId;
-    public virtual Chapter? LatestChapterAvailable { get; }
+    public Chapter? LatestChapterDownloaded { get; private set; } = latestChapterDownloaded;
 
-    public string MangaConnectorName { get; init; } = mangaConnectorName;
-    public virtual MangaConnector MangaConnector { get; }
+    public Chapter? LatestChapterAvailable { get; private set; } = latestChapterAvailable;
+
+    public MangaConnector MangaConnector { get; private set; } = mangaConnector;
     
-    public string[] AuthorIds { get; internal set; } = authorIds;
     [ForeignKey("AuthorIds")]
-    public virtual Author[] Authors { get; }
+    public ICollection<Author> Authors { get; internal set; } = authors;
     
-    public string[] TagIds { get; internal set; } = tagIds;
     [ForeignKey("TagIds")]
-    public virtual MangaTag[] Tags { get; }
+    public ICollection<MangaTag> Tags { get; private set; } = tags;
     
-    public string[] LinkIds { get; internal set; } = linkIds;
     [ForeignKey("LinkIds")]
-    public virtual Link[] Links { get; }
+    public ICollection<Link> Links { get; private set; } = links;
     
-    public string[] AltTitleIds { get; internal set; } = altTitleIds;
     [ForeignKey("AltTitleIds")]
-    public virtual MangaAltTitle[] AltTitles { get; }
+    public ICollection<MangaAltTitle> AltTitles { get; private set; } = altTitles;
+
+    public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
+        string? coverFileNameInCache,
+        uint year, string? originalLanguage, MangaReleaseStatus releaseStatus, float ignoreChapterBefore)
+        : this(connectorId, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
+            releaseStatus,
+            ignoreChapterBefore, null, null, null, null, null, null, null)
+    {
+        
+    }
 
     public MoveFileOrFolderJob UpdateFolderName(string downloadLocation, string newName)
     {
@@ -85,11 +88,11 @@ public class Manga(
         this.Description = other.Description;
         this.CoverUrl = other.CoverUrl;
         this.OriginalLanguage = other.OriginalLanguage;
-        this.AuthorIds = other.AuthorIds;
-        this.LinkIds = other.LinkIds;
-        this.TagIds = other.TagIds;
-        this.AltTitleIds = other.AltTitleIds;
-        this.LatestChapterAvailableId = other.LatestChapterAvailableId;
+        this.Authors = other.Authors;
+        this.Links = other.Links;
+        this.Tags = other.Tags;
+        this.AltTitles = other.AltTitles;
+        this.LatestChapterAvailable = other.LatestChapterAvailable;
         this.ReleaseStatus = other.ReleaseStatus;
     }
 

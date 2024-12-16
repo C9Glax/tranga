@@ -43,19 +43,14 @@ public class ConnectorController(PgsqlContext context) : Controller
         {
             try
             {
-                context.Tags.AddRange(tags);
-                context.Authors.AddRange(authors);
-                context.Link.AddRange(links);
-                context.AltTitles.AddRange(altTitles);
-                context.Manga.AddRange(manga);
-                context.SaveChanges();
+                AddMangaToContext(manga, authors, tags, links, altTitles);
             }
             catch (DbUpdateException)
             {
                 return StatusCode(500, new ProblemResponse("An error occurred while processing your request."));
             }
         }
-        return Ok(allManga.Select(m => m.Item1).ToArray());
+        return Ok(allManga.Select(m => context.Manga.Find(m.Item1.MangaId)).ToArray());
     }
     
     /// <summary>
@@ -78,18 +73,49 @@ public class ConnectorController(PgsqlContext context) : Controller
         {
             try
             {
-                context.Tags.AddRange(tags);
-                context.Authors.AddRange(authors);
-                context.Link.AddRange(links);
-                context.AltTitles.AddRange(altTitles);
-                context.Manga.AddRange(manga);
-                context.SaveChanges();
+                AddMangaToContext(manga, authors, tags, links, altTitles);
             }
             catch (DbUpdateException)
             {
                 return StatusCode(500, new ProblemResponse("An error occurred while processing your request."));
             }
         }
-        return Ok(mangas.Select(m => m.Item1).ToArray());
+
+        return Ok(mangas.Select(m => context.Manga.Find(m.Item1.MangaId)).ToArray());
+    }
+
+    private void AddMangaToContext(Manga? manga, Author[]? authors, MangaTag[]? tags, Link[]? links,
+        MangaAltTitle[]? altTitles)
+    {
+        if (manga is null)
+            return;
+
+        if (tags is not null)
+        {
+            IEnumerable<MangaTag> newTags = tags.Where(mt => context.Tags.All(t => !t.Tag.Equals(mt.Tag)));
+            context.Tags.AddRange(newTags);
+        }
+
+        if (authors is not null)
+        {
+            IEnumerable<Author> mergedAuthors = authors.Select(ma =>
+            {
+                Author? inDb = context.Authors.FirstOrDefault(a => a.Equals(ma));
+                return inDb ?? ma;
+            });
+            manga.Authors = mergedAuthors.ToArray();
+            IEnumerable<Author> newAuthors = authors.Where(ma => context.Authors.All(a => !a.Equals(ma)));
+            context.Authors.AddRange(newAuthors);
+        }
+
+        if (links is not null)
+            context.Link.AddRange(links);
+        
+        if(altTitles is not null)
+            context.AltTitles.AddRange(altTitles);
+        
+        context.Manga.Add(manga);
+        
+        context.SaveChanges();
     }
 }

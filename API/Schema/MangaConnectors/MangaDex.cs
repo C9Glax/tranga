@@ -176,11 +176,11 @@ public class MangaDex : MangaConnector
 
         Manga pub = new (publicationId, sortName, description, $"https://mangadex.org/title/{publicationId}", coverUrl, null, year,
             originalLanguage, releaseStatus, -1, null, null,
-            this.Name, 
-            authors.Select(a => a.AuthorId).ToArray(), 
-            mangaTags.Select(t => t.Tag).ToArray(), 
-            links.Select(l => l.LinkId).ToArray(),
-            altTitles.Select(a => a.AltTitleId).ToArray());
+            this, 
+            authors, 
+            mangaTags, 
+            links,
+            altTitles);
 		
         return (pub, authors, mangaTags, links, altTitles);
     }

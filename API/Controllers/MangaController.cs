@@ -149,7 +149,7 @@ public class MangaController(PgsqlContext context) : Controller
         Manga? m = context.Manga.Find(id);
         if (m is null)
             return NotFound("Manga could not be found");
-        Chapter[] ret = context.Chapters.Where(c => c.ParentMangaId == m.MangaId).ToArray();
+        Chapter[] ret = context.Chapters.Where(c => c.ParentManga.MangaId == m.MangaId).ToArray();
         return Ok(ret);
     }
 
@@ -171,7 +171,7 @@ public class MangaController(PgsqlContext context) : Controller
             Manga? ret = context.Manga.Find(id);
             if(ret is null)
                 return NotFound("Manga could not be found");
-            if(chapters.All(c => c.ParentMangaId == ret.MangaId))
+            if(chapters.All(c => c.ParentManga.MangaId == ret.MangaId))
                 return BadRequest("Chapters belong to different Manga.");
             
             context.Chapters.AddRange(chapters);
@@ -197,10 +197,9 @@ public class MangaController(PgsqlContext context) : Controller
         Manga? m = context.Manga.Find(id);
         if (m is null)
             return NotFound("Manga could not be found");
-        Chapter? c = context.Chapters.Find(m.LatestChapterAvailableId);
-        if (c is null)
+        if (m.LatestChapterAvailable is null)
             return NotFound("Chapter could not be found");
-        return Ok(c);
+        return Ok(m.LatestChapterAvailable);
     }
     
     /// <summary>

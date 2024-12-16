@@ -150,9 +150,9 @@ public class Mangasee : MangaConnector
 
         Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
             originalLanguage, releaseStatus, -1, null, null,
-            this.Name, 
-            authors.Select(a => a.AuthorId).ToArray(), 
-            mangaTags.Select(t => t.Tag).ToArray(), 
+            this, 
+            authors, 
+            mangaTags, 
             [],
             []);
 		

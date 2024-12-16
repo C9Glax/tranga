@@ -18,15 +18,13 @@ public class Chapter : IComparable<Chapter>
     public string ArchiveFileName { get; private set; }
     public bool Downloaded { get; internal set; } = false;
     
-    [MaxLength(64)]
-    public string ParentMangaId { get; init; }
-    [ForeignKey("ParentMangaId")]
-    public virtual Manga ParentManga { get; init; }
+    [ForeignKey("MangaId")]
+    public Manga ParentManga { get; init; }
 
-    public Chapter(string parentMangaId, string url, float chapterNumber,
+    public Chapter(Manga parentManga, string url, float chapterNumber,
         float? volumeNumber = null, string? title = null)
     {
-        this.ParentMangaId = parentMangaId;
+        this.ParentManga = parentManga;
         this.Url = url;
         this.ChapterNumber = chapterNumber;
         this.VolumeNumber = volumeNumber;
@@ -34,10 +32,8 @@ public class Chapter : IComparable<Chapter>
         this.ArchiveFileName = BuildArchiveFileName();
     }
 
-    public Chapter(Manga parentManga, string url, float chapterNumber,
-        float? volumeNumber = null, string? title = null) : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
-    {
-    }
+    public Chapter(string url, float chapterNumber, float? volumeNumber = null, string? title = null)
+        : this(null, url, chapterNumber, volumeNumber, title){}
 
     public MoveFileOrFolderJob? UpdateChapterNumber(float chapterNumber)
     {

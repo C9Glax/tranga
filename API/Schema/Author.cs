@@ -10,6 +10,10 @@ public class Author(string authorName)
     public string AuthorId { get; init; } = TokenGen.CreateToken(typeof(Author), 64);
     public string AuthorName { get; init; } = authorName;
 
-    [ForeignKey("MangaIds")]
-    public virtual Manga[] Mangas { get; internal set; } = [];
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Author other)
+            return false;
+        return other.AuthorName == AuthorName;
+    }
 }
