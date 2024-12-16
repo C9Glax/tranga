@@ -30,7 +30,7 @@ public class ConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Array of Manga</returns>
-    [HttpPost("SearchManga")]
+    [HttpPost("SearchManga/{name}")]
     [ProducesResponseType<Manga[]>(Status500InternalServerError)]
     public IActionResult SearchMangaGlobal(string name)
     {
@@ -60,11 +60,11 @@ public class ConnectorController(PgsqlContext context) : Controller
     /// <param name="id">Manga-Connector-ID</param>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Manga</returns>
-    [HttpPost("{id}/SearchManga")]
+    [HttpPost("{id}/SearchManga/{name}")]
     [ProducesResponseType<Manga[]>(Status200OK)]
     [ProducesResponseType<ProblemResponse>(Status404NotFound)]
     [ProducesResponseType<ProblemResponse>(Status500InternalServerError)]
-    public IActionResult SearchManga(string id, [FromBody]string name)
+    public IActionResult SearchManga(string id, string name)
     {
         MangaConnector? connector = context.MangaConnectors.Find(id);
         if (connector is null)
