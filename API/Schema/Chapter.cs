@@ -18,7 +18,6 @@ public class Chapter : IComparable<Chapter>
     public string ArchiveFileName { get; private set; }
     public bool Downloaded { get; internal set; } = false;
     
-    [ForeignKey("MangaId")]
     public Manga ParentManga { get; init; }
 
     public Chapter(Manga parentManga, string url, float chapterNumber,

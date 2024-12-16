@@ -46,10 +46,13 @@ public class Manga(
     public string FolderName { get; private set; } = BuildFolderName(name);
     public float IgnoreChapterBefore { get; internal set; } = ignoreChapterBefore;
 
+    [ForeignKey("LatestChapterDownloadedId")]
     public Chapter? LatestChapterDownloaded { get; private set; } = latestChapterDownloaded;
 
+    [ForeignKey("LatestChapterAvailableId")]
     public Chapter? LatestChapterAvailable { get; private set; } = latestChapterAvailable;
 
+    [ForeignKey("MangaConnectorId")]
     public MangaConnector MangaConnector { get; private set; } = mangaConnector;
     
     [ForeignKey("AuthorIds")]

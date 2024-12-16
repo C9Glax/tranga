@@ -51,18 +51,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
             .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob);
 
-        modelBuilder.Entity<Chapter>()
-            .HasOne<Manga>(c => c.ParentManga);
-        modelBuilder.Entity<Chapter>()
-            .Navigation(c => c.ParentManga)
-            .AutoInclude();
-
-        modelBuilder.Entity<Manga>()
-            .HasOne<Chapter>(m => m.LatestChapterAvailable)
-            .WithOne();
-        modelBuilder.Entity<Manga>()
-            .HasOne<Chapter>(m => m.LatestChapterDownloaded)
-            .WithOne();
         modelBuilder.Entity<Manga>()
             .HasOne<MangaConnector>(m => m.MangaConnector);
         modelBuilder.Entity<Manga>()
@@ -79,14 +67,23 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .Navigation(m => m.Tags)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
-            .HasMany<Link>(m => m.Links);
+            .HasMany<Link>(m => m.Links)
+            .WithOne();
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Links)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
-            .HasMany<MangaAltTitle>(m => m.AltTitles);
+            .HasMany<MangaAltTitle>(m => m.AltTitles)
+            .WithOne();
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.AltTitles)
+            .AutoInclude();
+        
+        modelBuilder.Entity<Chapter>()
+            .HasOne<Manga>(c => c.ParentManga)
+            .WithMany();
+        modelBuilder.Entity<Chapter>()
+            .Navigation(c => c.ParentManga)
             .AutoInclude();
     }
 }
