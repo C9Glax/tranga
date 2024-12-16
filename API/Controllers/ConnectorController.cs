@@ -1,10 +1,8 @@
 ﻿using API.Schema;
-using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace API.Controllers;
@@ -36,21 +34,24 @@ public class ConnectorController(PgsqlContext context) : Controller
     [ProducesResponseType<Manga[]>(Status500InternalServerError)]
     public IActionResult SearchMangaGlobal(string name)
     {
-        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> allManga = new();
+        List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> allManga = new();
         foreach (MangaConnector contextMangaConnector in context.MangaConnectors)
             allManga.AddRange(contextMangaConnector.GetManga(name));
-        foreach ((Manga? manga, Author[]? authors, MangaTag[]? tags, Link[]? links, MangaAltTitle[]? altTitles) in allManga)
+        List<Manga> retMangas = new();
+        foreach ((Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links, List<MangaAltTitle>? altTitles) in allManga)
         {
             try
             {
-                AddMangaToContext(manga, authors, tags, links, altTitles);
+                Manga? add = AddMangaToContext(manga, authors, tags, links, altTitles);
+                if(add is not null)
+                    retMangas.Add(add);
             }
             catch (DbUpdateException)
             {
                 return StatusCode(500, new ProblemResponse("An error occurred while processing your request."));
             }
         }
-        return Ok(allManga.Select(m => context.Manga.Find(m.Item1.MangaId)).ToArray());
+        return Ok(retMangas.ToArray());
     }
     
     /// <summary>
@@ -68,31 +69,41 @@ public class ConnectorController(PgsqlContext context) : Controller
         MangaConnector? connector = context.MangaConnectors.Find(id);
         if (connector is null)
             return NotFound(new ProblemResponse("Connector not found."));
-        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] mangas = connector.GetManga(name);
-        foreach ((Manga? manga, Author[]? authors, MangaTag[]? tags, Link[]? links, MangaAltTitle[]? altTitles) in mangas)
+        (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] mangas = connector.GetManga(name);
+        List<Manga> retMangas = new();
+        foreach ((Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links, List<MangaAltTitle>? altTitles) in mangas)
         {
             try
             {
-                AddMangaToContext(manga, authors, tags, links, altTitles);
+                Manga? add = AddMangaToContext(manga, authors, tags, links, altTitles);
+                if(add is not null)
+                    retMangas.Add(add);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException e)
             {
-                return StatusCode(500, new ProblemResponse("An error occurred while processing your request."));
+                return StatusCode(500, new ProblemResponse("An error occurred while processing your request.", e.Message));
             }
         }
 
-        return Ok(mangas.Select(m => context.Manga.Find(m.Item1.MangaId)).ToArray());
+        return Ok(retMangas.ToArray());
     }
 
-    private void AddMangaToContext(Manga? manga, Author[]? authors, MangaTag[]? tags, Link[]? links,
-        MangaAltTitle[]? altTitles)
+    private Manga? AddMangaToContext(Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links,
+        List<MangaAltTitle>? altTitles)
     {
         if (manga is null)
-            return;
-
+            return null;
+        Manga? existing = context.Manga.FirstOrDefault(m => m.ConnectorId == manga.ConnectorId);
+        
         if (tags is not null)
         {
-            IEnumerable<MangaTag> newTags = tags.Where(mt => context.Tags.All(t => !t.Tag.Equals(mt.Tag)));
+            IEnumerable<MangaTag> mergedTags = tags.Select(mt =>
+            {
+                MangaTag? inDb = context.Tags.FirstOrDefault(t => t.Equals(mt));
+                return inDb ?? mt;
+            });
+            manga.Tags = mergedTags.ToList();
+            IEnumerable<MangaTag> newTags = manga.Tags.Where(mt => !context.Tags.Any(t => t.Tag.Equals(mt.Tag)));
             context.Tags.AddRange(newTags);
         }
 
@@ -100,22 +111,50 @@ public class ConnectorController(PgsqlContext context) : Controller
         {
             IEnumerable<Author> mergedAuthors = authors.Select(ma =>
             {
-                Author? inDb = context.Authors.FirstOrDefault(a => a.Equals(ma));
+                Author? inDb = context.Authors.FirstOrDefault(a => a.AuthorName == ma.AuthorName);
                 return inDb ?? ma;
             });
-            manga.Authors = mergedAuthors.ToArray();
-            IEnumerable<Author> newAuthors = authors.Where(ma => context.Authors.All(a => !a.Equals(ma)));
+            manga.Authors = mergedAuthors.ToList();
+            IEnumerable<Author> newAuthors = manga.Authors.Where(ma => !context.Authors.Any(a =>
+                a.AuthorName == ma.AuthorName));
             context.Authors.AddRange(newAuthors);
         }
 
         if (links is not null)
-            context.Link.AddRange(links);
+        {
+            IEnumerable<Link> mergedLinks = links.Select(ml =>
+            {
+                Link? inDb = context.Link.FirstOrDefault(l =>
+                    l.LinkProvider == ml.LinkProvider && l.LinkUrl == ml.LinkUrl);
+                return inDb ?? ml;
+            });
+            manga.Links = mergedLinks.ToList();
+            IEnumerable<Link> newLinks = manga.Links.Where(ml => !context.Link.Any(l =>
+                l.LinkProvider == ml.LinkProvider && l.LinkUrl == ml.LinkUrl));
+            context.Link.AddRange(newLinks);
+        }
+
+        if (altTitles is not null)
+        {
+            IEnumerable<MangaAltTitle> mergedAltTitles = altTitles.Select(mat =>
+            {
+                MangaAltTitle? inDb = context.AltTitles.FirstOrDefault(at =>
+                    at.Language == mat.Language && at.Title == mat.Title);
+                return inDb ?? mat;
+            });
+            manga.AltTitles = mergedAltTitles.ToList();
+            IEnumerable<MangaAltTitle> newAltTitles = manga.AltTitles.Where(mat =>
+                !context.AltTitles.Any(at => at.Language == mat.Language && at.Title == mat.Title));
+            context.AltTitles.AddRange(newAltTitles);
+        }
         
-        if(altTitles is not null)
-            context.AltTitles.AddRange(altTitles);
-        
-        context.Manga.Add(manga);
+        existing?.UpdateWithInfo(manga);
+        if(existing is not null)
+            context.Manga.Update(existing);
+        else
+            context.Manga.Add(manga);
         
         context.SaveChanges();
+        return existing ?? manga;
     }
 }

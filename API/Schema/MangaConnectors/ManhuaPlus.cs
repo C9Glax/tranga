@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
 using HtmlAgilityPack;
 
@@ -12,7 +11,7 @@ public class ManhuaPlus : MangaConnector
         this.downloadClient = new ChromiumDownloadClient();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://manhuaplus.org/search?keyword={sanitizedTitle}";
@@ -21,11 +20,11 @@ public class ManhuaPlus : MangaConnector
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 || requestResult.htmlDocument is null)
             return [];
         
-        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
     
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (document.DocumentNode.SelectSingleNode("//h1/../..").ChildNodes//I already want to not.
                 .Any(node => node.InnerText.Contains("No manga found")))
@@ -35,10 +34,10 @@ public class ManhuaPlus : MangaConnector
             .SelectNodes("//h1/../..//a[contains(@href, 'https://manhuaplus.org/manga/') and contains(concat(' ',normalize-space(@class),' '),' clamp ') and not(contains(@href, '/chapter'))]")
                 .Select(mangaNode => mangaNode.GetAttributeValue("href", "")).ToList();
 
-        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
+        List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> ret = new();
         foreach (string url in urls)
         {
-            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+            (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? manga = GetMangaFromUrl(url);
             if (manga is { } x)
                 ret.Add(x);
         }
@@ -46,12 +45,12 @@ public class ManhuaPlus : MangaConnector
         return ret.ToArray();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://manhuaplus.org/manga/{publicationId}");
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/manhuaplus.org\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
@@ -62,7 +61,7 @@ public class ManhuaPlus : MangaConnector
         return null;
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -88,7 +87,7 @@ public class ManhuaPlus : MangaConnector
         catch (ArgumentNullException e)
         {
         }
-        Author[] authors = authorNames.Select(a => new Author(a)).ToArray();
+        List<Author> authors = authorNames.Select(a => new Author(a)).ToList();
 
         try
         {
@@ -100,7 +99,7 @@ public class ManhuaPlus : MangaConnector
         catch (ArgumentNullException e)
         {
         }
-        MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
+        List<MangaTag> mangaTags = tags.Select(t => new MangaTag(t)).ToList();
 
         Regex yearRex = new(@"(?:[0-9]{1,2}\/){2}([0-9]{2,4}) [0-9]{1,2}:[0-9]{1,2}");
         HtmlNode yearNode = document.DocumentNode.SelectSingleNode("//aside//i[contains(concat(' ',normalize-space(@class),' '),' fa-clock ')]/../span");

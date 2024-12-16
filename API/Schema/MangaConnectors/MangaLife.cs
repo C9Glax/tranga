@@ -12,7 +12,7 @@ public class MangaLife : MangaConnector
         this.downloadClient = new ChromiumDownloadClient();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = WebUtility.UrlEncode(publicationTitle);
         string requestUrl = $"https://manga4life.com/search/?name={sanitizedTitle}";
@@ -23,16 +23,16 @@ public class MangaLife : MangaConnector
 
         if (requestResult.htmlDocument is null)
             return [];
-        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://manga4life.com/manga/{publicationId}");
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/(www\.)?manga4life.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[2].Value;
@@ -43,7 +43,7 @@ public class MangaLife : MangaConnector
         return null;
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         HtmlNode resultsNode = document.DocumentNode.SelectSingleNode("//div[@class='BoxBody']/div[last()]/div[1]/div");
         if (resultsNode.Descendants("div").Count() == 1 && resultsNode.Descendants("div").First().HasClass("NoResults"))
@@ -51,12 +51,12 @@ public class MangaLife : MangaConnector
             return [];
         }
 
-        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
+        List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> ret = new();
 
         foreach (HtmlNode resultNode in resultsNode.SelectNodes("div"))
         {
             string url = resultNode.Descendants().First(d => d.HasClass("SeriesName")).GetAttributeValue("href", "");
-            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl($"https://manga4life.com{url}");
+            (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? manga = GetMangaFromUrl($"https://manga4life.com{url}");
             if (manga is { } x)
                 ret.Add(x);
         }
@@ -65,7 +65,7 @@ public class MangaLife : MangaConnector
     }
 
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -84,14 +84,14 @@ public class MangaLife : MangaConnector
         List<string> authorNames = new();
         foreach (HtmlNode authorNode in authorsNodes)
             authorNames.Add(authorNode.InnerText);
-        Author[] authors = authorNames.Select(a => new Author(a)).ToArray();
+        List<Author> authors = authorNames.Select(a => new Author(a)).ToList();
 
         HtmlNode[] genreNodes = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Genre(s):']/..").Descendants("a")
             .ToArray();
         foreach (HtmlNode genreNode in genreNodes)
             tags.Add(genreNode.InnerText);
-        MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
+        List<MangaTag> mangaTags = tags.Select(t => new MangaTag(t)).ToList();
 
         HtmlNode yearNode = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Released:']/..").Descendants("a")

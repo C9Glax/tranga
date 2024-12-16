@@ -17,7 +17,7 @@ public class Weebcentral : MangaConnector
         downloadClient = new ChromiumDownloadClient();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         const int limit = 32; //How many values we want returned at once
         var offset = 0; //"Page"
@@ -36,7 +36,7 @@ public class Weebcentral : MangaConnector
         return publications;
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (document.DocumentNode.SelectNodes("//article") == null)
             return [];
@@ -44,7 +44,7 @@ public class Weebcentral : MangaConnector
         var urls = document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover']")
             .Select(elem => elem.GetAttributeValue("href", "")).ToList();
 
-        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
+        List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> ret = new();
         foreach (var url in urls)
         {
             var manga = GetMangaFromUrl(url);
@@ -55,7 +55,7 @@ public class Weebcentral : MangaConnector
         return ret.ToArray();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/weebcentral\.com\/series\/(\w*)\/(.*)");
         var publicationId = publicationIdRex.Match(url).Groups[1].Value;
@@ -67,7 +67,7 @@ public class Weebcentral : MangaConnector
         return null;
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         var posterNode =
             document.DocumentNode.SelectSingleNode("//section[@class='flex items-center justify-center']/picture/img");
@@ -79,12 +79,12 @@ public class Weebcentral : MangaConnector
         HtmlNode[] authorsNodes =
             document.DocumentNode.SelectNodes("//ul/li[strong/text() = 'Author(s): ']/span")?.ToArray() ?? [];
         var authorNames = authorsNodes.Select(n => n.InnerText).ToList();
-        Author[] authors = authorNames.Select(n => new Author(n)).ToArray();
+        List<Author> authors = authorNames.Select(n => new Author(n)).ToList();
 
         HtmlNode[] genreNodes =
             document.DocumentNode.SelectNodes("//ul/li[strong/text() = 'Tags(s): ']/span")?.ToArray() ?? [];
         HashSet<string> tags = genreNodes.Select(n => n.InnerText).ToHashSet();
-        MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
+        List<MangaTag> mangaTags = tags.Select(t => new MangaTag(t)).ToList();
 
         var statusNode = document.DocumentNode.SelectSingleNode("//ul/li[strong/text() = 'Status: ']/a");
         var status = statusNode?.InnerText ?? "";
@@ -108,7 +108,7 @@ public class Weebcentral : MangaConnector
         Dictionary<string, string> altTitlesDict = new(), links = new();
         for (var i = 0; i < altTitleNodes.Length; i++)
             altTitlesDict.Add(i.ToString(), altTitleNodes[i].InnerText);
-        MangaAltTitle[] altTitles = altTitlesDict.Select(a => new MangaAltTitle(a.Key, a.Value)).ToArray();
+        List<MangaAltTitle> altTitles = altTitlesDict.Select(a => new MangaAltTitle(a.Key, a.Value)).ToList();
 
         var originalLanguage = "";
 
@@ -123,7 +123,7 @@ public class Weebcentral : MangaConnector
         return (manga, authors, mangaTags, [], altTitles);
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://weebcentral.com/series/{publicationId}");
     }

@@ -19,23 +19,10 @@ public class JobController(PgsqlContext context) : Controller
     /// <returns>Array of Jobs</returns>
     [HttpPost("WithIDs")]
     [ProducesResponseType<Job[]>(Status200OK)]
-    public IActionResult GetJobs([FromBody] string[] ids)
+    public IActionResult GetJobs([FromBody]string[] ids)
     {
         Job[] ret = context.Jobs.Where(job => ids.Contains(job.JobId)).ToArray();
         return Ok(ret);
-    }
-
-    /// <summary>
-    /// Get all due Jobs (NextExecution > CurrentTime)
-    /// </summary>
-    /// <returns>Array of Jobs</returns>
-    [HttpGet("Due")]
-    [ProducesResponseType<Job[]>(Status200OK)]
-    public IActionResult GetDueJobs()
-    {
-        DateTime now = DateTime.Now.ToUniversalTime();
-        Job[] dueJobs = context.Jobs.Where(job => job.NextExecution < now && job.state < JobState.Running).ToArray();
-        return Ok(dueJobs);
     }
 
     /// <summary>
@@ -56,7 +43,7 @@ public class JobController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="type">Requested Job-Type</param>
     /// <returns>Array of Jobs</returns>
-    [HttpPost("Type/{type}")]
+    [HttpGet("Type/{type}")]
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetJobsOfType(JobType type)
     {
@@ -83,46 +70,71 @@ public class JobController(PgsqlContext context) : Controller
     }
 
     /// <summary>
-    /// Updates the State of a Job
+    /// Create a new CreateNewDownloadChapterJob
     /// </summary>
-    /// <param name="id">Job-ID</param>
-    /// <param name="state">New State</param>
+    /// <param name="request">ID of the Manga, and how often we check again</param>
     /// <returns>Nothing</returns>
-    [HttpPatch("{id}/Status")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType<string>(Status404NotFound)]
-    [ProducesResponseType(Status500InternalServerError)]
-    public IActionResult UpdateJobStatus(string id, [FromBody]JobState state)
+    [HttpPut("NewDownloadChapterJob/{mangaId}")]
+    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status500InternalServerError)]
+    public IActionResult CreateNewDownloadChapterJob(string mangaId, [FromBody]ulong recurrenceTime)
     {
+        Job job = new DownloadNewChaptersJob(recurrenceTime, mangaId);
+        return AddJob(job);
+    }
+
+    /// <summary>
+    /// Create a new DownloadSingleChapterJob
+    /// </summary>
+    /// <param name="chapterId">ID of the Chapter</param>
+    /// <returns>Nothing</returns>
+    [HttpPut("DownloadSingleChapterJob/{chapterId}")]
+    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status500InternalServerError)]
+    public IActionResult CreateNewDownloadChapterJob(string chapterId)
+    {
+        Job job = new DownloadSingleChapterJob(chapterId);
+        return AddJob(job);
+    }
+
+    /// <summary>
+    /// Create a new UpdateMetadataJob
+    /// </summary>
+    /// <param name="mangaId">ID of the Manga</param>
+    /// <returns>Nothing</returns>
+    [HttpPut("UpdateMetadataJob/{mangaId}")]
+    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status500InternalServerError)]
+    public IActionResult CreateUpdateMetadataJob(string mangaId)
+    {
+        Job job = new UpdateMetadataJob(0, mangaId);
+        return AddJob(job);
+    }
+
+    /// <summary>
+    /// Create a new UpdateMetadataJob for all Manga
+    /// </summary>
+    /// <returns>Nothing</returns>
+    [HttpPut("UpdateMetadataJob")]
+    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status500InternalServerError)]
+    public IActionResult CreateUpdateAllMetadataJob()
+    {
+        List<string> ids = context.Manga.Select(m => m.MangaId).ToList();
+        List<UpdateMetadataJob> jobs =  ids.Select(id => new UpdateMetadataJob(0, id)).ToList();
         try
         {
-            Job? ret = context.Jobs.Find(id);
-            switch (ret is not null)
-            {
-                case true:
-                    ret.state = state;
-                    context.Update(ret);
-                    context.SaveChanges();
-                    return Ok();
-                case false: return NotFound();
-            }
+            context.Jobs.AddRange(jobs);
+            context.SaveChanges();
+            return Created();
         }
         catch (Exception e)
         {
             return StatusCode(500, e.Message);
         }
-
     }
-
-    /// <summary>
-    /// Create a new Job
-    /// </summary>
-    /// <param name="job">Job</param>
-    /// <returns>Nothing</returns>
-    [HttpPut]
-    [ProducesResponseType(Status201Created)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
-    public IActionResult CreateJob([FromBody]Job job)
+    
+    private IActionResult AddJob(Job job)
     {
         try
         {

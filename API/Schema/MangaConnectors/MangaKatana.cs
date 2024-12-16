@@ -11,7 +11,7 @@ public class MangaKatana : MangaConnector
 		this.downloadClient = new HttpDownloadClient();
 	}
 
-	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+	public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
 	{
 		string sanitizedTitle = string.Join("%20", Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
 		string requestUrl = $"https://mangakatana.com/?search={sanitizedTitle}&search_by=book_name";
@@ -29,16 +29,16 @@ public class MangaKatana : MangaConnector
 			return new [] { ParseSinglePublicationFromHtml(requestResult.result, requestResult.redirectedToUrl.Split('/')[^1], requestResult.redirectedToUrl) };
 		}
 
-		(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.result);
+		(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] publications = ParsePublicationsFromHtml(requestResult.result);
 		return publications;
 	}
 
-	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+	public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
 	{
 		return GetMangaFromUrl($"https://mangakatana.com/manga/{publicationId}");
 	}
 
-	public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+	public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
 	{
 		RequestResult requestResult =
 			downloadClient.MakeRequest(url, RequestType.MangaInfo);
@@ -47,7 +47,7 @@ public class MangaKatana : MangaConnector
 		return ParseSinglePublicationFromHtml(requestResult.result, url.Split('/')[^1], url);
 	}
 
-	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(Stream html)
+	private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] ParsePublicationsFromHtml(Stream html)
 	{
 		StreamReader reader = new(html);
 		string htmlString = reader.ReadToEnd();
@@ -63,10 +63,10 @@ public class MangaKatana : MangaConnector
 				.First(a => a.Name == "href").Value);
 		}
 
-		HashSet<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
+		HashSet<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> ret = new();
 		foreach (string url in urls)
 		{
-			(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+			(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? manga = GetMangaFromUrl(url);
 			if (manga is { } x)
 				ret.Add(x);
 		}
@@ -74,7 +74,7 @@ public class MangaKatana : MangaConnector
 		return ret.ToArray();
 	}
 
-	private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(Stream html, string publicationId, string websiteUrl)
+	private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?) ParseSinglePublicationFromHtml(Stream html, string publicationId, string websiteUrl)
 	{
 		StreamReader reader = new(html);
 		string htmlString = reader.ReadToEnd();
@@ -135,9 +135,9 @@ public class MangaKatana : MangaConnector
 		{
 			year = uint.Parse(yearString);
 		}
-		Author[] authors = authorNames.Select(n => new Author(n)).ToArray();
-		MangaTag[] mangaTags = tags.Select(n => new MangaTag(n)).ToArray();
-		MangaAltTitle[] altTitles = altTitlesDict.Select(x => new MangaAltTitle(x.Key, x.Value)).ToArray();
+		List<Author> authors = authorNames.Select(n => new Author(n)).ToList();
+		List<MangaTag> mangaTags = tags.Select(n => new MangaTag(n)).ToList();
+		List<MangaAltTitle> altTitles = altTitlesDict.Select(x => new MangaAltTitle(x.Key, x.Value)).ToList();
 
 		Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
 			originalLanguage, releaseStatus, -1, null, null,

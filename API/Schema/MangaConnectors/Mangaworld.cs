@@ -12,7 +12,7 @@ public class Mangaworld : MangaConnector
         this.downloadClient = new HttpDownloadClient();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://www.mangaworld.ac/archive?keyword={sanitizedTitle}";
@@ -23,11 +23,11 @@ public class Mangaworld : MangaConnector
 
         if (requestResult.htmlDocument is null)
             return [];
-        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (!document.DocumentNode.SelectSingleNode("//div[@class='comics-grid']").ChildNodes
                 .Any(node => node.HasClass("entry")))
@@ -38,10 +38,10 @@ public class Mangaworld : MangaConnector
                 "//div[@class='comics-grid']//div[@class='entry']//a[contains(concat(' ',normalize-space(@class),' '),'thumb')]")
             .Select(thumb => thumb.GetAttributeValue("href", "")).ToList();
 
-        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
+        List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> ret = new();
         foreach (string url in urls)
         {
-            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+            (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? manga = GetMangaFromUrl(url);
             if (manga is { } x)
                 ret.Add(x);
         }
@@ -49,12 +49,12 @@ public class Mangaworld : MangaConnector
         return ret.ToArray();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://www.mangaworld.ac/manga/{publicationId}");
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
     {
         RequestResult requestResult =
             downloadClient.MakeRequest(url, RequestType.MangaInfo);
@@ -69,10 +69,9 @@ public class Mangaworld : MangaConnector
         return ParseSinglePublicationFromHtml(requestResult.htmlDocument, id, url);
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         Dictionary<string, string> altTitlesDict = new();
-        Dictionary<string, string>? links = null;
         string originalLanguage = "";
         MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
 
@@ -86,17 +85,17 @@ public class Mangaworld : MangaConnector
         string[] alts = altTitlesNode.InnerText.Split(", ");
         for(int i = 0; i < alts.Length; i++)
             altTitlesDict.Add(i.ToString(), alts[i]);
-        MangaAltTitle[] altTitles = altTitlesDict.Select(a => new MangaAltTitle(a.Key, a.Value)).ToArray();
+        List<MangaAltTitle> altTitles = altTitlesDict.Select(a => new MangaAltTitle(a.Key, a.Value)).ToList();
 
         HtmlNode genresNode =
             metadata.SelectSingleNode("//span[text()='Generi: ' or text()='Genero: ']/..");
         HashSet<string> tags = genresNode.SelectNodes("a").Select(node => node.InnerText).ToHashSet();
-        MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
+        List<MangaTag> mangaTags = tags.Select(t => new MangaTag(t)).ToList();
         
         HtmlNode authorsNode =
             metadata.SelectSingleNode("//span[text()='Autore: ' or text()='Autori: ']/..");
         string[] authorNames = authorsNode.SelectNodes("a").Select(node => node.InnerText).ToArray();
-        Author[] authors = authorNames.Select(n => new Author(n)).ToArray();
+        List<Author> authors = authorNames.Select(n => new Author(n)).ToList();
 
         string status = metadata.SelectSingleNode("//span[text()='Stato: ']/..").SelectNodes("a").First().InnerText;
         // ReSharper disable 5 times StringLiteralTypo

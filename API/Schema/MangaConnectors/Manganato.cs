@@ -13,7 +13,7 @@ public class Manganato : MangaConnector
         this.downloadClient = new HttpDownloadClient();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
         string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
@@ -21,11 +21,11 @@ public class Manganato : MangaConnector
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 ||requestResult.htmlDocument is null)
             return [];
-        (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
+        (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         List<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("search-story-item")).ToList();
         List<string> urls = new();
@@ -35,10 +35,10 @@ public class Manganato : MangaConnector
                 .First(a => a.Name == "href").Value);
         }
 
-        List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> ret = new();
+        List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> ret = new();
         foreach (string url in urls)
         {
-            (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? manga = GetMangaFromUrl(url);
+            (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? manga = GetMangaFromUrl(url);
             if (manga is { } x)
                 ret.Add(x);
         }
@@ -46,12 +46,12 @@ public class Manganato : MangaConnector
         return ret.ToArray();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://chapmanganato.com/{publicationId}");
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
     {
         RequestResult requestResult =
             downloadClient.MakeRequest(url, RequestType.MangaInfo);
@@ -63,7 +63,7 @@ public class Manganato : MangaConnector
         return ParseSinglePublicationFromHtml(requestResult.htmlDocument, url.Split('/')[^1], url);
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         Dictionary<string, string> altTitlesDict = new();
         Dictionary<string, string>? links = null;
@@ -111,9 +111,9 @@ public class Manganato : MangaConnector
                     break;
             }
         }
-        Author[] authors = authorNames.Select(n => new Author(n)).ToArray();
-        MangaTag[] mangaTags = tags.Select(n => new MangaTag(n)).ToArray();
-        MangaAltTitle[] mangaAltTitles = altTitlesDict.Select(a => new MangaAltTitle(a.Key, a.Value)).ToArray();
+        List<Author> authors = authorNames.Select(n => new Author(n)).ToList();
+        List<MangaTag> mangaTags = tags.Select(n => new MangaTag(n)).ToList();
+        List<MangaAltTitle> mangaAltTitles = altTitlesDict.Select(a => new MangaAltTitle(a.Key, a.Value)).ToList();
 
         string coverUrl = document.DocumentNode.Descendants("span").First(s => s.HasClass("info-image")).Descendants("img").First()
             .GetAttributes().First(a => a.Name == "src").Value;

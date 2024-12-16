@@ -23,7 +23,7 @@ public class Mangasee : MangaConnector
         public string[] a { get; set; }
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         string requestUrl = "https://mangasee123.com/_search.php";
         RequestResult requestResult =
@@ -41,10 +41,10 @@ public class Mangasee : MangaConnector
             
 
             string[] urls = filteredResults.Select(result => $"https://mangasee123.com/manga/{result.i}").ToArray();
-            List<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> searchResultManga = new();
+            List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> searchResultManga = new();
             foreach (string url in urls)
             {
-                (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? newManga = GetMangaFromUrl(url);
+                (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? newManga = GetMangaFromUrl(url);
                 if(newManga is { } manga)
                     searchResultManga.Add(manga);
             }
@@ -79,12 +79,12 @@ public class Mangasee : MangaConnector
         return ret.ToArray();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
         return GetMangaFromUrl($"https://mangasee123.com/manga/{publicationId}");
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
     {
         Regex publicationIdRex = new(@"https:\/\/mangasee123.com\/manga\/(.*)(\/.*)*");
         string publicationId = publicationIdRex.Match(url).Groups[1].Value;
@@ -95,7 +95,7 @@ public class Mangasee : MangaConnector
         return null;
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[]) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         string originalLanguage = "", status = "";
         Dictionary<string, string> altTitles = new(), links = new();
@@ -114,14 +114,14 @@ public class Mangasee : MangaConnector
         List<string> authorNames = new();
         foreach (HtmlNode authorNode in authorsNodes)
             authorNames.Add(authorNode.InnerText);
-        Author[] authors = authorNames.Select(a => new Author(a)).ToArray();
+        List<Author> authors = authorNames.Select(a => new Author(a)).ToList();
 
         HtmlNode[] genreNodes = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Genre(s):']/..").Descendants("a")
             .ToArray();
         foreach (HtmlNode genreNode in genreNodes)
             tags.Add(genreNode.InnerText);
-        MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
+        List<MangaTag> mangaTags = tags.Select(t => new MangaTag(t)).ToList();
 
         HtmlNode yearNode = document.DocumentNode
             .SelectNodes("//div[@class='BoxBody']//div[@class='row']//span[text()='Released:']/..").Descendants("a")

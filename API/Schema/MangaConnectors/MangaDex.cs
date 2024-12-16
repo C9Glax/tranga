@@ -16,12 +16,12 @@ public class MangaDex : MangaConnector
         this.downloadClient = new HttpDownloadClient();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         const int limit = 100; //How many values we want returned at once
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
-        HashSet<(Manga, Author[], MangaTag[], Link[], MangaAltTitle[])> retManga = new();
+        HashSet<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> retManga = new();
         int loadedPublicationData = 0;
         List<JsonNode> results = new();
         
@@ -59,7 +59,7 @@ public class MangaDex : MangaConnector
         return retManga.ToArray();
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
         RequestResult requestResult =
             downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}?includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag", RequestType.MangaInfo);
@@ -71,14 +71,14 @@ public class MangaDex : MangaConnector
         return null;
     }
 
-    public override (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url)
     {
         Regex idRex = new (@"https:\/\/mangadex.org\/title\/([A-z0-9-]*)\/.*");
         string id = idRex.Match(url).Groups[1].Value;
         return GetMangaFromId(id);
     }
 
-    private (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? MangaFromJsonObject(JsonObject manga)
+    private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? MangaFromJsonObject(JsonObject manga)
     {
         if (!manga.TryGetPropertyValue("id", out JsonNode? idNode))
             return null;
@@ -105,7 +105,7 @@ public class MangaDex : MangaConnector
                 altTitlesDict.TryAdd(altTitleNodeObject.First().Key, altTitleNodeObject.First().Value!.GetValue<string>());
             }
         }
-        MangaAltTitle[] altTitles = altTitlesDict.Select(t => new MangaAltTitle(t.Key, t.Value)).ToArray();
+        List<MangaAltTitle> altTitles = altTitlesDict.Select(t => new MangaAltTitle(t.Key, t.Value)).ToList();
 
         if (!attributes.TryGetPropertyValue("description", out JsonNode? descriptionNode))
             return null;
@@ -119,7 +119,7 @@ public class MangaDex : MangaConnector
         if (attributes.TryGetPropertyValue("links", out JsonNode? linksNode) && linksNode is not null)
             foreach (KeyValuePair<string, JsonNode?> linkKv in linksNode!.AsObject())
                 linksDict.TryAdd(linkKv.Key, linkKv.Value.GetValue<string>());
-        Link[] links = linksDict.Select(x => new Link(x.Key, x.Value)).ToArray();
+        List<Link> links = linksDict.Select(x => new Link(x.Key, x.Value)).ToList();
 
         string? originalLanguage =
             attributes.TryGetPropertyValue("originalLanguage", out JsonNode? originalLanguageNode) switch
@@ -151,7 +151,7 @@ public class MangaDex : MangaConnector
         if (attributes.TryGetPropertyValue("tags", out JsonNode? tagsNode))
             foreach (JsonNode? tagNode in tagsNode!.AsArray())
                 tags.Add(tagNode!["attributes"]!["name"]!["en"]!.GetValue<string>());
-        MangaTag[] mangaTags = tags.Select(t => new MangaTag(t)).ToArray();
+        List<MangaTag> mangaTags = tags.Select(t => new MangaTag(t)).ToList();
         
         if (!manga.TryGetPropertyValue("relationships", out JsonNode? relationshipsNode))
             return null;
@@ -172,7 +172,7 @@ public class MangaDex : MangaConnector
             if(!authorNames.Contains(authorName))
                authorNames.Add(authorName);
         }
-        Author[] authors = authorNames.Select(a => new Author(a)).ToArray();
+        List<Author> authors = authorNames.Select(a => new Author(a)).ToList();
 
         Manga pub = new (publicationId, sortName, description, $"https://mangadex.org/title/{publicationId}", coverUrl, null, year,
             originalLanguage, releaseStatus, -1, null, null,

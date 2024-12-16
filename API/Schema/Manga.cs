@@ -25,10 +25,10 @@ public class Manga(
     Chapter? latestChapterDownloaded,
     Chapter? latestChapterAvailable,
     MangaConnector mangaConnector,
-    Author[] authors,
-    MangaTag[] tags,
-    Link[] links,
-    MangaAltTitle[] altTitles)
+    ICollection<Author> authors,
+    ICollection<MangaTag> tags,
+    ICollection<Link> links,
+    ICollection<MangaAltTitle> altTitles)
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = TokenGen.CreateToken(typeof(Manga), 64);
@@ -57,13 +57,11 @@ public class Manga(
     
     public ICollection<Author> Authors { get; internal set; } = authors;
     
-    public ICollection<MangaTag> Tags { get; private set; } = tags;
+    public ICollection<MangaTag> Tags { get; internal set; } = tags;
     
-    [ForeignKey("LinkIds")]
-    public ICollection<Link> Links { get; private set; } = links;
+    public ICollection<Link> Links { get; internal set; } = links;
     
-    [ForeignKey("AltTitleIds")]
-    public ICollection<MangaAltTitle> AltTitles { get; private set; } = altTitles;
+    public ICollection<MangaAltTitle> AltTitles { get; internal set; } = altTitles;
 
     public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
         string? coverFileNameInCache,

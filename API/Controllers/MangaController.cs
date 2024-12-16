@@ -72,59 +72,6 @@ public class MangaController(PgsqlContext context) : Controller
     }
 
     /// <summary>
-    /// Create new Manga
-    /// </summary>
-    /// <param name="manga">Manga</param>
-    /// <returns>Nothing</returns>
-    [HttpPut]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status500InternalServerError)]
-    public IActionResult CreateManga([FromBody] Manga manga)
-    {
-        try
-        {
-            context.Manga.Add(manga);
-            context.SaveChanges();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
-
-    /// <summary>
-    /// Update Manga MetaData
-    /// </summary>
-    /// <param name="id">Manga-ID</param>
-    /// <param name="manga">New Manga-Info</param>
-    /// <returns>Nothing</returns>
-    [HttpPatch("{id}")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status500InternalServerError)]
-    public IActionResult UpdateMangaMetadata(string id, [FromBody]Manga manga)
-    {
-        try
-        {
-            Manga? ret = context.Manga.Find(id);
-            switch (ret is not null)
-            {
-                case true:
-                    ret.UpdateWithInfo(manga);
-                    context.Update(ret);
-                    context.SaveChanges();
-                    return Ok();
-                case false: return NotFound();
-            }
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
-
-    /// <summary>
     /// Returns URL of Cover of Manga
     /// </summary>
     /// <param name="id">Manga-ID</param>
@@ -151,37 +98,6 @@ public class MangaController(PgsqlContext context) : Controller
             return NotFound("Manga could not be found");
         Chapter[] ret = context.Chapters.Where(c => c.ParentManga.MangaId == m.MangaId).ToArray();
         return Ok(ret);
-    }
-
-    /// <summary>
-    /// Adds/Creates new Chapter for Manga
-    /// </summary>
-    /// <param name="id">Manga-ID</param>
-    /// <param name="chapters">Array of Chapters</param>
-    /// <remarks>Manga-ID and all Chapters have to be the same</remarks>
-    /// <returns>Nothing</returns>
-    [HttpPut("{id}")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType<string>(Status404NotFound)]
-    [ProducesResponseType(Status500InternalServerError)]
-    public IActionResult CreateChapters(string id, [FromBody]Chapter[] chapters)
-    {
-        try
-        {
-            Manga? ret = context.Manga.Find(id);
-            if(ret is null)
-                return NotFound("Manga could not be found");
-            if(chapters.All(c => c.ParentManga.MangaId == ret.MangaId))
-                return BadRequest("Chapters belong to different Manga.");
-            
-            context.Chapters.AddRange(chapters);
-            context.SaveChanges();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
     }
     
     /// <summary>

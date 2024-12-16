@@ -14,11 +14,11 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
     public string[] BaseUris { get; init; } = baseUris;
     
-    public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "");
+    public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "");
 
-    public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromUrl(string url);
+    public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url);
 
-    public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])? GetMangaFromId(string publicationId);
+    public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId);
     
     public abstract Chapter[] GetChapters(Manga manga, string language="en");
     
