@@ -36,5 +36,13 @@ public abstract class Job
         NextExecution = LastExecution.AddMilliseconds(RecurrenceMs);
     }
 
-    public abstract IEnumerable<Job> Run();
+    public IEnumerable<Job> Run()
+    {
+        this.state = JobState.Running;
+        IEnumerable<Job>? newJobs = RunInternal();
+        this.state = JobState.Completed;
+        return newJobs;
+    }
+    
+    protected abstract IEnumerable<Job> RunInternal();
 }

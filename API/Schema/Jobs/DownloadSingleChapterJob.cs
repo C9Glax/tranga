@@ -18,7 +18,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     public string ChapterId { get; init; } = chapterId;
     public virtual Chapter Chapter { get; init; }
     
-    public override IEnumerable<Job> Run()
+    protected override IEnumerable<Job> RunInternal()
     {
         MangaConnector connector = Chapter.ParentManga.MangaConnector;
         DownloadChapterImages(Chapter);

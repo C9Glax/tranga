@@ -12,7 +12,7 @@ public class DownloadNewChaptersJob(ulong recurrenceMs, string mangaId, string? 
     public string MangaId { get; init; } = mangaId;
     public virtual Manga Manga { get; init; }
     
-    public override IEnumerable<Job> Run()
+    protected override IEnumerable<Job> RunInternal()
     {
         MangaConnector connector = Manga.MangaConnector;
         Chapter[] newChapters = connector.GetNewChapters(Manga);

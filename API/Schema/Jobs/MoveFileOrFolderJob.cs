@@ -6,7 +6,7 @@ public class MoveFileOrFolderJob(string fromLocation, string toLocation, string?
     public string FromLocation { get; init; } = fromLocation;
     public string ToLocation { get; init; } = toLocation;
     
-    public override IEnumerable<Job> Run()
+    protected override IEnumerable<Job> RunInternal()
     {
         throw new NotImplementedException();
     }
