@@ -4,7 +4,6 @@ using API;
 using API.Schema;
 using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
-using API.Schema.NotificationConnectors;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
@@ -59,14 +58,15 @@ builder.Services.AddSwaggerGen(opt =>
 });
 builder.Services.ConfigureOptions<NamedSwaggerGenOptions>();
 
-
 builder.Services.AddDbContext<PgsqlContext>(options =>
-    options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_Host")??"localhost:5432"}; " +
+    options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_HOST")??"localhost:5432"}; " +
                       $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB")??"postgres"}; " +
                       $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")??"postgres"}; " +
                       $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")??"postgres"}"));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
+
+builder.WebHost.UseUrls("http://*:6531");
 
 var app = builder.Build();
 
@@ -93,6 +93,12 @@ app.UseHttpsRedirection();
 
 using (var scope = app.Services.CreateScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
+    db.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
     PgsqlContext context = scope.ServiceProvider.GetService<PgsqlContext>()!;
     
     MangaConnector[] connectors =
@@ -109,7 +115,7 @@ using (var scope = app.Services.CreateScope())
             new ManhuaPlus(),
             new Weebcentral()
         ];
-    MangaConnector[] newConnectors = context.MangaConnectors.Where(c => !connectors.Contains(c)).ToArray();
+    MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
     
     context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
@@ -118,7 +124,6 @@ using (var scope = app.Services.CreateScope())
     context.Notifications.Add(new Notification("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], 2));
     
     context.SaveChanges();
-    
     
     string TRANGA = "\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n";
     ILog Log = LogManager.GetLogger("Tranga");

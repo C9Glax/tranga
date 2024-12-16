@@ -14,6 +14,7 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
     public string[] BaseUris { get; init; } = baseUris;
 
+    [JsonIgnore]
     [ForeignKey("MangaIds")]
     public virtual Manga[] Mangas { get; internal set; } = [];
     

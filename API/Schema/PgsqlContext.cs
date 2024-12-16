@@ -22,6 +22,19 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<MangaConnector>()
+            .HasDiscriminator(c => c.Name)
+            .HasValue<AsuraToon>("AsuraToon")
+            .HasValue<Bato>("Bato")
+            .HasValue<MangaHere>("MangaHere")
+            .HasValue<MangaKatana>("MangaKatana")
+            .HasValue<MangaLife>("Manga4Life")
+            .HasValue<Manganato>("Manganato")
+            .HasValue<Mangasee>("Mangasee")
+            .HasValue<Mangaworld>("Mangaworld")
+            .HasValue<ManhuaPlus>("ManhuaPlus")
+            .HasValue<Weebcentral>("Weebcentral")
+            .HasValue<MangaDex>("MangaDex");
         modelBuilder.Entity<LibraryConnector>()
             .HasDiscriminator<LibraryType>(l => l.LibraryType)
             .HasValue<Komga>(LibraryType.Komga)
