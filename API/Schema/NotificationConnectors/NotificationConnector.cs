@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace API.Schema.NotificationConnectors;
 
 [PrimaryKey("NotificationConnectorId")]
-public abstract class NotificationConnector(string notificationConnectorId, NotificationConnectorType notificationConnectorType) : APISerializable
+public abstract class NotificationConnector(string notificationConnectorId, NotificationConnectorType notificationConnectorType)
 {
     [MaxLength(64)]
     public string NotificationConnectorId { get; } = notificationConnectorId;

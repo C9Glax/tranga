@@ -52,9 +52,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob);
 
         modelBuilder.Entity<Chapter>()
-            .HasOne<Manga>(c => c.ParentManga)
-            .WithMany(m => m.Chapters)
-            .HasForeignKey(c => c.ParentMangaId);
+            .HasOne<Manga>(c => c.ParentManga);
 
         modelBuilder.Entity<Manga>()
             .HasOne<Chapter>(m => m.LatestChapterAvailable)
@@ -63,30 +61,14 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<Chapter>(m => m.LatestChapterDownloaded)
             .WithOne();
         modelBuilder.Entity<Manga>()
-            .HasOne<MangaConnector>(m => m.MangaConnector)
-            .WithMany(c => c.Mangas)
-            .HasForeignKey(m => m.MangaConnectorName);
+            .HasOne<MangaConnector>(m => m.MangaConnector);
         modelBuilder.Entity<Manga>()
-            .HasMany<Author>(m => m.Authors)
-            .WithMany(a => a.Mangas)
-            .UsingEntity(
-                "MangaAuthor",
-                l => l.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaId").HasPrincipalKey("MangaId"),
-                r => r.HasOne(typeof(Author)).WithMany().HasForeignKey("AuthorId").HasPrincipalKey("AuthorId"),
-                j => j.HasKey("MangaId", "AuthorId"));
+            .HasMany<Author>(m => m.Authors);
         modelBuilder.Entity<Manga>()
-            .HasMany<MangaTag>(m => m.Tags)
-            .WithMany(t => t.Mangas)
-            .UsingEntity(
-                "MangaTag",
-                l => l.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaId").HasPrincipalKey("MangaId"),
-                r => r.HasOne(typeof(MangaTag)).WithMany().HasForeignKey("Tag").HasPrincipalKey("Tag"),
-                j => j.HasKey("MangaId", "Tag"));
+            .HasMany<MangaTag>(m => m.Tags);
         modelBuilder.Entity<Manga>()
-            .HasMany<Link>(m => m.Links)
-            .WithOne(c => c.Manga);
+            .HasMany<Link>(m => m.Links);
         modelBuilder.Entity<Manga>()
-            .HasMany<MangaAltTitle>(m => m.AltTitles)
-            .WithOne(c => c.Manga);
+            .HasMany<MangaAltTitle>(m => m.AltTitles);
     }
 }

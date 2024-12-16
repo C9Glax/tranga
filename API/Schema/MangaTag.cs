@@ -7,7 +7,4 @@ namespace API.Schema;
 public class MangaTag(string tag)
 {
     public string Tag { get; init; } = tag;
-    
-    [ForeignKey("MangaIds")]
-    public virtual Manga[] Mangas { get; internal set; } = [];
 }

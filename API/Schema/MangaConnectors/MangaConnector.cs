@@ -13,11 +13,6 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     public string Name { get; init; } = name;
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
     public string[] BaseUris { get; init; } = baseUris;
-
-    [JsonIgnore]
-    [ForeignKey("MangaIds")]
-    public virtual Manga[] Mangas { get; internal set; } = [];
-    
     
     public abstract (Manga, Author[], MangaTag[], Link[], MangaAltTitle[])[] GetManga(string publicationTitle = "");
 

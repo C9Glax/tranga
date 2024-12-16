@@ -12,7 +12,4 @@ public class MangaAltTitle(string language, string title)
     [MaxLength(8)]
     public string Language { get; init; } = language;
     public string Title { get; set; } = title;
-    
-    [ForeignKey("MangaId")]
-    public virtual Manga Manga { get; init; }
 }

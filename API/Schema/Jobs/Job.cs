@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace API.Schema.Jobs;
 
 [PrimaryKey("JobId")]
-public abstract class Job : APISerializable
+public abstract class Job 
 {
     [MaxLength(64)]
     public string JobId { get; init; }

@@ -70,9 +70,6 @@ public class Manga(
     public string[] AltTitleIds { get; internal set; } = altTitleIds;
     [ForeignKey("AltTitleIds")]
     public virtual MangaAltTitle[] AltTitles { get; }
-    
-    [ForeignKey("ChapterIds")]
-    public virtual Chapter[] Chapters { get; internal set; }
 
     public MoveFileOrFolderJob UpdateFolderName(string downloadLocation, string newName)
     {
