@@ -55,10 +55,8 @@ public class Manga(
     [ForeignKey("MangaConnectorId")]
     public MangaConnector MangaConnector { get; private set; } = mangaConnector;
     
-    [ForeignKey("AuthorIds")]
     public ICollection<Author> Authors { get; internal set; } = authors;
     
-    [ForeignKey("TagIds")]
     public ICollection<MangaTag> Tags { get; private set; } = tags;
     
     [ForeignKey("LinkIds")]

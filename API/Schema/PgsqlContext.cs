@@ -57,12 +57,14 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .Navigation(m => m.MangaConnector)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
-            .HasMany<Author>(m => m.Authors);
+            .HasMany<Author>(m => m.Authors)
+            .WithMany();
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Authors)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
-            .HasMany<MangaTag>(m => m.Tags);
+            .HasMany<MangaTag>(m => m.Tags)
+            .WithMany();
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Tags)
             .AutoInclude();
