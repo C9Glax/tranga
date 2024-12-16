@@ -245,6 +245,10 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text[]");
 
+                    b.Property<string>("WebsiteUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<long>("year")
                         .HasColumnType("bigint");
 
@@ -290,7 +294,7 @@ namespace API.Migrations
                     b.ToTable("AltTitles");
                 });
 
-            modelBuilder.Entity("API.Schema.MangaConnector", b =>
+            modelBuilder.Entity("API.Schema.MangaConnectors.MangaConnector", b =>
                 {
                     b.Property<string>("Name")
                         .HasMaxLength(32)
@@ -307,6 +311,10 @@ namespace API.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("MangaConnectors");
+
+                    b.HasDiscriminator<string>("Name").HasValue("MangaConnector");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("API.Schema.MangaTag", b =>
@@ -317,6 +325,28 @@ namespace API.Migrations
                     b.HasKey("Tag");
 
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("API.Schema.Notification", b =>
+                {
+                    b.Property<string>("NotificationId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte>("Urgency")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("NotificationId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("API.Schema.NotificationConnectors.NotificationConnector", b =>
@@ -382,58 +412,6 @@ namespace API.Migrations
                     b.ToTable("MangaTag");
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.CreateArchiveJob", b =>
-                {
-                    b.HasBaseType("API.Schema.Jobs.Job");
-
-                    b.Property<string>("ChapterId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("ComicInfoLocation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ImagesLocation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasIndex("ChapterId");
-
-                    b.ToTable("Jobs", t =>
-                        {
-                            t.Property("ChapterId")
-                                .HasColumnName("CreateArchiveJob_ChapterId");
-                        });
-
-                    b.HasDiscriminator().HasValue((byte)4);
-                });
-
-            modelBuilder.Entity("API.Schema.Jobs.CreateComicInfoXmlJob", b =>
-                {
-                    b.HasBaseType("API.Schema.Jobs.Job");
-
-                    b.Property<string>("ChapterId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasIndex("ChapterId");
-
-                    b.ToTable("Jobs", t =>
-                        {
-                            t.Property("ChapterId")
-                                .HasColumnName("CreateComicInfoXmlJob_ChapterId");
-                        });
-
-                    b.HasDiscriminator().HasValue((byte)6);
-                });
-
             modelBuilder.Entity("API.Schema.Jobs.DownloadNewChaptersJob", b =>
                 {
                     b.HasBaseType("API.Schema.Jobs.Job");
@@ -477,44 +455,6 @@ namespace API.Migrations
                     b.HasDiscriminator().HasValue((byte)3);
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.ProcessImagesJob", b =>
-                {
-                    b.HasBaseType("API.Schema.Jobs.Job");
-
-                    b.Property<bool>("Bw")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Compression")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.ToTable("Jobs", t =>
-                        {
-                            t.Property("Path")
-                                .HasColumnName("ProcessImagesJob_Path");
-                        });
-
-                    b.HasDiscriminator().HasValue((byte)5);
-                });
-
-            modelBuilder.Entity("API.Schema.Jobs.SearchMangaJob", b =>
-                {
-                    b.HasBaseType("API.Schema.Jobs.Job");
-
-                    b.Property<string>("MangaConnectorName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SearchString")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasDiscriminator().HasValue((byte)7);
-                });
-
             modelBuilder.Entity("API.Schema.Jobs.UpdateMetadataJob", b =>
                 {
                     b.HasBaseType("API.Schema.Jobs.Job");
@@ -547,6 +487,83 @@ namespace API.Migrations
                     b.HasBaseType("API.Schema.LibraryConnectors.LibraryConnector");
 
                     b.HasDiscriminator().HasValue((byte)0);
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.AsuraToon", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("AsuraToon");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.Bato", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("Bato");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.MangaDex", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("MangaDex");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.MangaHere", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("MangaHere");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.MangaKatana", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("MangaKatana");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.MangaLife", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("MangaLife");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.Manganato", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("Manganato");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.Mangasee", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("Mangasee");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.Mangaworld", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("Mangaworld");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.ManhuaPlus", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("ManhuaPlus");
+                });
+
+            modelBuilder.Entity("API.Schema.MangaConnectors.Weebcentral", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("Weebcentral");
                 });
 
             modelBuilder.Entity("API.Schema.NotificationConnectors.Gotify", b =>
@@ -639,7 +656,7 @@ namespace API.Migrations
                         .WithOne()
                         .HasForeignKey("API.Schema.Manga", "LatestChapterDownloadedId");
 
-                    b.HasOne("API.Schema.MangaConnector", "MangaConnector")
+                    b.HasOne("API.Schema.MangaConnectors.MangaConnector", "MangaConnector")
                         .WithMany("Mangas")
                         .HasForeignKey("MangaConnectorName")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -699,28 +716,6 @@ namespace API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.CreateArchiveJob", b =>
-                {
-                    b.HasOne("API.Schema.Chapter", "Chapter")
-                        .WithMany()
-                        .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chapter");
-                });
-
-            modelBuilder.Entity("API.Schema.Jobs.CreateComicInfoXmlJob", b =>
-                {
-                    b.HasOne("API.Schema.Chapter", "Chapter")
-                        .WithMany()
-                        .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chapter");
-                });
-
             modelBuilder.Entity("API.Schema.Jobs.DownloadNewChaptersJob", b =>
                 {
                     b.HasOne("API.Schema.Manga", "Manga")
@@ -768,7 +763,7 @@ namespace API.Migrations
                     b.Navigation("Links");
                 });
 
-            modelBuilder.Entity("API.Schema.MangaConnector", b =>
+            modelBuilder.Entity("API.Schema.MangaConnectors.MangaConnector", b =>
                 {
                     b.Navigation("Mangas");
                 });

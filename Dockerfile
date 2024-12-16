@@ -1,7 +1,7 @@
 ﻿# syntax=docker/dockerfile:1
-ARG DOTNET=8.0
+ARG DOTNET=9.0
 
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/runtime:$DOTNET AS base
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/aspnet:$DOTNET AS base
 WORKDIR /publish
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
@@ -16,9 +16,7 @@ FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
 WORKDIR /src
 
 COPY Tranga.sln /src
-COPY CLI/CLI.csproj /src/CLI/CLI.csproj
-COPY Logging/Logging.csproj /src/Logging/Logging.csproj 
-COPY Tranga/Tranga.csproj /src/Tranga/Tranga.csproj
+COPY API/API.csproj /src/API/API.csproj
 RUN dotnet restore /src/Tranga.sln
 
 COPY . /src/
@@ -40,5 +38,5 @@ USER $UNAME
 WORKDIR /publish
 COPY --chown=1000:1000 --from=build-env /publish .
 USER 0
-ENTRYPOINT ["dotnet", "/publish/Tranga.dll"]
+ENTRYPOINT ["dotnet", "/publish/API.dll"]
 CMD ["-f", "-c", "-l", "/usr/share/tranga-api/logs"]
