@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Schema;
 
 [PrimaryKey("NotificationId")]
-public class Notification(string title, string message = "", byte urgency = 2)
+public class Notification(string title, string message = "", byte urgency = 2, DateTime? date = null)
 {
     [MaxLength(64)]
     public string NotificationId { get; init; } = TokenGen.CreateToken("Notification", 64);
@@ -14,4 +14,6 @@ public class Notification(string title, string message = "", byte urgency = 2)
     public string Title { get; init; } = title;
 
     public string Message { get; init; } = message;
+    
+    public DateTime? Date { get; init; } = date ?? DateTime.UtcNow;
 }
