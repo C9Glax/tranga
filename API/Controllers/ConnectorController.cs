@@ -93,7 +93,8 @@ public class ConnectorController(PgsqlContext context) : Controller
     {
         if (manga is null)
             return null;
-        Manga? existing = context.Manga.FirstOrDefault(m => m.ConnectorId == manga.ConnectorId);
+        Manga? existing = context.Manga.FirstOrDefault(m =>
+            m.MangaConnector == manga.MangaConnector && m.ConnectorId == manga.ConnectorId);
         
         if (tags is not null)
         {
