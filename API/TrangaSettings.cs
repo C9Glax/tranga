@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
+using API.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.IO.UnixFileMode;
@@ -32,6 +33,14 @@ public static class TrangaSettings
         {RequestType.Default, 60}
     };
     public static Dictionary<RequestType, int> requestLimits { get; set; } = DefaultRequestLimits;
+
+    public static TimeSpan NotificationUrgencyDelay(NotificationUrgency urgency) => urgency switch
+    {
+        NotificationUrgency.High => TimeSpan.Zero,
+        NotificationUrgency.Normal => TimeSpan.FromMinutes(5),
+        NotificationUrgency.Low => TimeSpan.FromMinutes(10),
+        _ => TimeSpan.FromHours(1)
+    };
 
     public static void Load()
     {

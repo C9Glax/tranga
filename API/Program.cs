@@ -123,15 +123,13 @@ using (var scope = app.Services.CreateScope())
     context.Notifications.Add(new Notification("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High));
     
     context.SaveChanges();
-    
-    string TRANGA = "\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n";
-    ILog Log = LogManager.GetLogger("Tranga");
-    BasicConfigurator.Configure();
-    
-    Log.Info(TRANGA);
-    TrangaSettings.Load();
-    Log.Info(TrangaSettings.Serialize());
 }
+
+
+TrangaSettings.Load();
+Tranga.StartLogger();
+Tranga.JobStarterThread.Start(app.Services.GetService<PgsqlContext>()!);
+Tranga.NotificationSenderThread.Start(app.Services.GetService<PgsqlContext>()!);
 
 app.UseCors("AllowAll");
 
