@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
 
-[PrimaryKey("AltTitleId")]
+[PrimaryKey("NotificationId")]
 public class Notification(string title, string message = "", byte urgency = 2)
 {
     [MaxLength(64)]
