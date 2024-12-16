@@ -12,6 +12,18 @@ namespace API.Controllers;
 public class MangaController(PgsqlContext context) : Controller
 {
     /// <summary>
+    /// Returns all cached Manga
+    /// </summary>
+    /// <returns>Array of Manga</returns>
+    [HttpGet]
+    [ProducesResponseType<Manga[]>(Status200OK)]
+    public IActionResult GetAllManga()
+    {
+        Manga[] ret = context.Manga.ToArray();
+        return Ok(ret);
+    }
+    
+    /// <summary>
     /// Returns all cached Manga with IDs
     /// </summary>
     /// <param name="ids">Array of Manga-IDs</param>

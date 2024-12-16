@@ -13,6 +13,18 @@ namespace API.Controllers;
 public class JobController(PgsqlContext context) : Controller
 {
     /// <summary>
+    /// Returns all Jobs
+    /// </summary>
+    /// <returns>Array of Jobs</returns>
+    [HttpGet]
+    [ProducesResponseType<Job[]>(Status200OK)]
+    public IActionResult GetAllJobs()
+    {
+        Job[] ret = context.Jobs.ToArray();
+        return Ok(ret);
+    }
+    
+    /// <summary>
     /// Returns Jobs with requested Job-IDs
     /// </summary>
     /// <param name="ids">Array of Job-IDs</param>
