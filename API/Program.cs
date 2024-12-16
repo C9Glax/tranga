@@ -7,9 +7,8 @@ using API.Schema.MangaConnectors;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
-using log4net;
-using log4net.Config;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,11 +22,6 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
-});
-
-builder.Services.AddMvc().AddJsonOptions(opts =>
-{
-    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
 builder.Services.AddApiVersioning(option =>
@@ -63,7 +57,10 @@ builder.Services.AddDbContext<PgsqlContext>(options =>
                       $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")??"postgres"}; " +
                       $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")??"postgres"}"));
 
-builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddControllers().AddNewtonsoftJson(opts =>
+{
+    opts.SerializerSettings.Converters.Add(new StringEnumConverter());
+});
 
 builder.WebHost.UseUrls("http://*:6531");
 
