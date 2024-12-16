@@ -53,6 +53,9 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
 
         modelBuilder.Entity<Chapter>()
             .HasOne<Manga>(c => c.ParentManga);
+        modelBuilder.Entity<Chapter>()
+            .Navigation(c => c.ParentManga)
+            .AutoInclude();
 
         modelBuilder.Entity<Manga>()
             .HasOne<Chapter>(m => m.LatestChapterAvailable)
@@ -63,12 +66,27 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Manga>()
             .HasOne<MangaConnector>(m => m.MangaConnector);
         modelBuilder.Entity<Manga>()
+            .Navigation(m => m.MangaConnector)
+            .AutoInclude();
+        modelBuilder.Entity<Manga>()
             .HasMany<Author>(m => m.Authors);
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Authors)
+            .AutoInclude();
         modelBuilder.Entity<Manga>()
             .HasMany<MangaTag>(m => m.Tags);
         modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Tags)
+            .AutoInclude();
+        modelBuilder.Entity<Manga>()
             .HasMany<Link>(m => m.Links);
         modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Links)
+            .AutoInclude();
+        modelBuilder.Entity<Manga>()
             .HasMany<MangaAltTitle>(m => m.AltTitles);
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.AltTitles)
+            .AutoInclude();
     }
 }
