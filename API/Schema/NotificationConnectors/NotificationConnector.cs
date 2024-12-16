@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace API.Schema.NotificationConnectors;
 
@@ -8,6 +10,11 @@ public abstract class NotificationConnector(string notificationConnectorId, Noti
 {
     [MaxLength(64)]
     public string NotificationConnectorId { get; } = notificationConnectorId;
-
     public NotificationConnectorType NotificationConnectorType { get; init; } = notificationConnectorType;
+    
+    [JsonIgnore]
+    [NotMapped]
+    protected readonly HttpClient _client = new();
+    
+    protected abstract void SendNotificationInternal(string title, string notificationText);
 }
