@@ -11,13 +11,13 @@ namespace API.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
-public class ConnectorController(PgsqlContext context) : Controller
+public class SearchController(PgsqlContext context) : Controller
 {
     /// <summary>
     /// Get all available Connectors (Scanlation-Sites)
     /// </summary>
     /// <returns>Array of MangaConnector</returns>
-    [HttpGet]
+    [HttpGet("GetConnectors")]
     [ProducesResponseType<MangaConnector[]>(Status200OK)]
     public IActionResult GetConnectors()
     {
@@ -30,7 +30,7 @@ public class ConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Array of Manga</returns>
-    [HttpPost("SearchManga/{name}")]
+    [HttpPost("Manga/{name}")]
     [ProducesResponseType<Manga[]>(Status500InternalServerError)]
     public IActionResult SearchMangaGlobal(string name)
     {
@@ -60,7 +60,7 @@ public class ConnectorController(PgsqlContext context) : Controller
     /// <param name="id">Manga-Connector-ID</param>
     /// <param name="name">Name/Title of the Manga</param>
     /// <returns>Manga</returns>
-    [HttpPost("{id}/SearchManga/{name}")]
+    [HttpPost("Connector/{id}/Manga/{name}")]
     [ProducesResponseType<Manga[]>(Status200OK)]
     [ProducesResponseType<ProblemResponse>(Status404NotFound)]
     [ProducesResponseType<ProblemResponse>(Status500InternalServerError)]
