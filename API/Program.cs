@@ -129,6 +129,7 @@ using (var scope = app.Services.CreateScope())
     BasicConfigurator.Configure();
     
     Log.Info(TRANGA);
+    TrangaSettings.Load();
     Log.Info(TrangaSettings.Serialize());
 }
 

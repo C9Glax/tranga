@@ -8,24 +8,21 @@ namespace API;
 
 public static class TrangaSettings
 {
-    [JsonIgnore] internal static readonly string DefaultUserAgent = $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
     public static string downloadLocation { get; private set; } = (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
     public static string workingDirectory { get; private set; } = Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
     public static int apiPortNumber { get; private set; } = 6531;
+    [JsonIgnore]
+    internal static readonly string DefaultUserAgent = $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
     public static string userAgent { get; private set; } = DefaultUserAgent;
-    public static bool bufferLibraryUpdates { get; private set; } = false;
-    public static bool bufferNotifications { get; private set; } = false;
     public static int compression{ get; private set; } = 40;
     public static bool bwImages { get; private set; } = false;
-    [JsonIgnore] public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
-    [JsonIgnore] public static string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
-    [JsonIgnore] public static string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
-    [JsonIgnore] public static string jobsFolderPath => Path.Join(workingDirectory, "jobs");
-    [JsonIgnore] public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
-    [JsonIgnore] public static string mangaCacheFolderPath => Path.Join(workingDirectory, "mangaCache");
-    public static ushort? version { get; } = 2;
+    [JsonIgnore]
+    public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
+    [JsonIgnore]
+    public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public static bool aprilFoolsMode { get; private set; } = true;
-    [JsonIgnore]internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
+    [JsonIgnore]
+    internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
         {RequestType.MangaInfo, 250},
         {RequestType.MangaDexFeed, 250},
@@ -34,38 +31,15 @@ public static class TrangaSettings
         {RequestType.MangaCover, 250},
         {RequestType.Default, 60}
     };
-
     public static Dictionary<RequestType, int> requestLimits { get; set; } = DefaultRequestLimits;
 
-    public static void LoadFromWorkingDirectory(string directory)
+    public static void Load()
     {
-        TrangaSettings.workingDirectory = directory;
         if(File.Exists(settingsFilePath))
             Deserialize(File.ReadAllText(settingsFilePath));
         else return;
 
         Directory.CreateDirectory(downloadLocation);
-        Directory.CreateDirectory(workingDirectory);
-        ExportSettings();
-    }
-
-    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null,
-        int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null,
-        bool? pBufferLibraryUpdates = null, bool? pBufferNotifications = null, int? pCompression = null, bool? pbwImages = null)
-    {
-        if(pWorkingDirectory is null && File.Exists(settingsFilePath))
-            LoadFromWorkingDirectory(workingDirectory);
-        downloadLocation = downloadDirectory ?? downloadLocation;
-        workingDirectory = pWorkingDirectory ?? workingDirectory;
-        apiPortNumber = pApiPortNumber ?? apiPortNumber;
-        userAgent = pUserAgent ?? userAgent;
-        aprilFoolsMode = pAprilFoolsMode ?? aprilFoolsMode;
-        bufferLibraryUpdates = pBufferLibraryUpdates ?? bufferLibraryUpdates;
-        bufferNotifications = pBufferNotifications ?? bufferNotifications;
-        compression = pCompression ?? compression;
-        bwImages = pbwImages ?? bwImages;
-        Directory.CreateDirectory(downloadLocation);
-        Directory.CreateDirectory(workingDirectory);
         ExportSettings();
     }
 
@@ -177,10 +151,7 @@ public static class TrangaSettings
         jobj.Add("apiPortNumber", JToken.FromObject(apiPortNumber));
         jobj.Add("userAgent", JToken.FromObject(userAgent));
         jobj.Add("aprilFoolsMode", JToken.FromObject(aprilFoolsMode));
-        jobj.Add("version", JToken.FromObject(version));
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
-        jobj.Add("bufferLibraryUpdates", JToken.FromObject(bufferLibraryUpdates));
-        jobj.Add("bufferNotifications", JToken.FromObject(bufferNotifications));
         jobj.Add("compression", JToken.FromObject(compression));
         jobj.Add("bwImages", JToken.FromObject(bwImages));
         return jobj;
@@ -203,10 +174,6 @@ public static class TrangaSettings
             aprilFoolsMode = afm.Value<bool>()!;
         if (jobj.TryGetValue("requestLimits", out JToken? rl))
             requestLimits = rl.ToObject<Dictionary<RequestType, int>>()!;
-        if (jobj.TryGetValue("bufferLibraryUpdates", out JToken? blu))
-            bufferLibraryUpdates = blu.Value<bool>()!;
-        if (jobj.TryGetValue("bufferNotifications", out JToken? bn))
-            bufferNotifications = bn.Value<bool>()!;
         if (jobj.TryGetValue("compression", out JToken? ci))
             compression = ci.Value<int>()!;
         if (jobj.TryGetValue("bwImages", out JToken? bwi))
