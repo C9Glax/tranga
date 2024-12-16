@@ -3,19 +3,28 @@ using System.Text.Json.Nodes;
 
 namespace API.Schema.LibraryConnectors;
 
-public class Komga(string baseUrl, string auth)
-    : LibraryConnector(TokenGen.CreateToken(typeof(Komga), 64), LibraryType.Komga, baseUrl, auth)
+public class Komga : LibraryConnector
 {
+    public Komga(string baseUrl, string auth) : base(TokenGen.CreateToken(typeof(Komga), 64), LibraryType.Komga,
+        baseUrl, auth)
+    {
+    }
+    
+    public Komga(string baseUrl, string username, string password)
+        : this(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")))
+    {
+    }
+    
     protected override void UpdateLibraryInternal()
     {
         foreach (KomgaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth);
+            NetClient.MakePost($"{BaseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", Auth);
     }
 
     internal override bool Test()
     {
         foreach (KomgaLibrary lib in GetLibraries())
-            if (NetClient.MakePost($"{baseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", auth))
+            if (NetClient.MakePost($"{BaseUrl}/api/v1/libraries/{lib.id}/scan", "Basic", Auth))
                 return true;
         return false;
     }
@@ -26,7 +35,7 @@ public class Komga(string baseUrl, string auth)
     /// <returns>Array of KomgaLibraries</returns>
     private IEnumerable<KomgaLibrary> GetLibraries()
     {
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/v1/libraries", "Basic", auth);
+        Stream data = NetClient.MakeRequest($"{BaseUrl}/api/v1/libraries", "Basic", Auth);
         if (data == Stream.Null)
         {
             return Array.Empty<KomgaLibrary>();

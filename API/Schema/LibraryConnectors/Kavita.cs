@@ -3,9 +3,19 @@ using System.Text.Json.Nodes;
 
 namespace API.Schema.LibraryConnectors;
 
-public class Kavita(string baseUrl, string auth)
-    : LibraryConnector(TokenGen.CreateToken(typeof(Kavita), 64), LibraryType.Kavita, baseUrl, auth)
+public class Kavita : LibraryConnector
 {
+
+    public Kavita(string baseUrl, string auth) : base(TokenGen.CreateToken(typeof(Kavita), 64), LibraryType.Kavita, baseUrl, auth)
+    {
+    }
+    
+    public Kavita(string baseUrl, string username, string password) : 
+        this(baseUrl, GetToken(baseUrl, username, password))
+    {
+    }
+    
+    
     private static string GetToken(string baseUrl, string username, string password)
     {
         HttpClient client = new()
@@ -43,13 +53,13 @@ public class Kavita(string baseUrl, string auth)
     protected override void UpdateLibraryInternal()
     {
         foreach (KavitaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth);
+            NetClient.MakePost($"{BaseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", Auth);
     }
 
     internal override bool Test()
     {
         foreach (KavitaLibrary lib in GetLibraries())
-            if (NetClient.MakePost($"{baseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", auth))
+            if (NetClient.MakePost($"{BaseUrl}/api/Library/scan?libraryId={lib.id}", "Bearer", Auth))
                 return true;
         return false;
     }
@@ -60,7 +70,7 @@ public class Kavita(string baseUrl, string auth)
     /// <returns>Array of KavitaLibrary</returns>
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
-        Stream data = NetClient.MakeRequest($"{baseUrl}/api/Library/libraries", "Bearer", auth);
+        Stream data = NetClient.MakeRequest($"{BaseUrl}/api/Library/libraries", "Bearer", Auth);
         if (data == Stream.Null)
         {
             return Array.Empty<KavitaLibrary>();
