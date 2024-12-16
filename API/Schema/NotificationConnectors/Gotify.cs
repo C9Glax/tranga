@@ -9,7 +9,7 @@ public class Gotify(string endpoint, string appToken)
     public string Endpoint { get; init; } = endpoint;
     public string AppToken { get; init; } = appToken;
     
-    protected override void SendNotificationInternal(string title, string notificationText)
+    public override void SendNotification(string title, string notificationText)
     {
         MessageData message = new(title, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"{endpoint}/message");

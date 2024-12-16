@@ -7,7 +7,7 @@ public class Lunasea(string id)
     : NotificationConnector(TokenGen.CreateToken(typeof(Lunasea), 64), NotificationConnectorType.LunaSea)
 {
     public string Id { get; init; } = id;
-    protected override void SendNotificationInternal(string title, string notificationText)
+    public override void SendNotification(string title, string notificationText)
     {
         MessageData message = new(title, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"https://notify.lunasea.app/v1/custom/{id}");

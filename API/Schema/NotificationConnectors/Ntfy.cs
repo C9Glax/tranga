@@ -45,7 +45,7 @@ public class Ntfy : NotificationConnector
         return ret;
     }
     
-    protected override void SendNotificationInternal(string title, string notificationText)
+    public override void SendNotification(string title, string notificationText)
     {
         MessageData message = new(title, Topic, notificationText);
         HttpRequestMessage request = new(HttpMethod.Post, $"{this.Endpoint}?auth={this.Auth}");

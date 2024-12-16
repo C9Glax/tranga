@@ -16,5 +16,5 @@ public abstract class NotificationConnector(string notificationConnectorId, Noti
     [NotMapped]
     protected readonly HttpClient _client = new();
     
-    protected abstract void SendNotificationInternal(string title, string notificationText);
+    public abstract void SendNotification(string title, string notificationText);
 }
