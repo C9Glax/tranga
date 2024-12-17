@@ -12,10 +12,11 @@ public class DownloadNewChaptersJob(ulong recurrenceMs, string mangaId, string? 
     public string MangaId { get; init; } = mangaId;
     public virtual Manga Manga { get; init; }
     
-    protected override IEnumerable<Job> RunInternal()
+    protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         MangaConnector connector = Manga.MangaConnector;
         Chapter[] newChapters = connector.GetNewChapters(Manga);
+        context.Chapters.AddRangeAsync(newChapters).Wait();
         return newChapters.Select(chapter => new DownloadSingleChapterJob(chapter.ChapterId, this.JobId));
     }
 }
