@@ -22,8 +22,6 @@ public class Manga(
     string? originalLanguage,
     MangaReleaseStatus releaseStatus,
     float ignoreChapterBefore,
-    Chapter? latestChapterDownloaded,
-    Chapter? latestChapterAvailable,
     MangaConnector mangaConnector,
     ICollection<Author> authors,
     ICollection<MangaTag> tags,
@@ -46,12 +44,6 @@ public class Manga(
     public string FolderName { get; private set; } = BuildFolderName(name);
     public float IgnoreChapterBefore { get; internal set; } = ignoreChapterBefore;
 
-    [ForeignKey("LatestChapterDownloadedId")]
-    public Chapter? LatestChapterDownloaded { get; private set; } = latestChapterDownloaded;
-
-    [ForeignKey("LatestChapterAvailableId")]
-    public Chapter? LatestChapterAvailable { get; private set; } = latestChapterAvailable;
-
     [ForeignKey("MangaConnectorId")]
     public MangaConnector MangaConnector { get; private set; } = mangaConnector;
     
@@ -68,7 +60,7 @@ public class Manga(
         uint year, string? originalLanguage, MangaReleaseStatus releaseStatus, float ignoreChapterBefore)
         : this(connectorId, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
             releaseStatus,
-            ignoreChapterBefore, null, null, null, null, null, null, null)
+            ignoreChapterBefore, null, null, null, null, null)
     {
         
     }
@@ -91,7 +83,6 @@ public class Manga(
         this.Links = other.Links;
         this.Tags = other.Tags;
         this.AltTitles = other.AltTitles;
-        this.LatestChapterAvailable = other.LatestChapterAvailable;
         this.ReleaseStatus = other.ReleaseStatus;
     }
 

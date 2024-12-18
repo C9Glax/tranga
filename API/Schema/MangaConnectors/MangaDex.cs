@@ -175,7 +175,7 @@ public class MangaDex : MangaConnector
         List<Author> authors = authorNames.Select(a => new Author(a)).ToList();
 
         Manga pub = new (publicationId, sortName, description, $"https://mangadex.org/title/{publicationId}", coverUrl, null, year,
-            originalLanguage, releaseStatus, -1, null, null,
+            originalLanguage, releaseStatus, -1,
             this, 
             authors, 
             mangaTags, 

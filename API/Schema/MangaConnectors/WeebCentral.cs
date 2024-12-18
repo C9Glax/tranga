@@ -113,7 +113,7 @@ public class Weebcentral : MangaConnector
         var originalLanguage = "";
 
         Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
-            originalLanguage, releaseStatus, -1, null, null,
+            originalLanguage, releaseStatus, -1,
             this, 
             authors, 
             mangaTags, 

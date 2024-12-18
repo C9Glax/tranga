@@ -110,7 +110,7 @@ public class AsuraToon : MangaConnector
 		uint year = uint.Parse(firstChapterNode?.InnerText.Split(' ')[^1] ?? "2000");
 
 		Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
-			originalLanguage, releaseStatus, -1, null, null,
+			originalLanguage, releaseStatus, -1,
 			this, 
 			authors, 
 			mangaTags, 

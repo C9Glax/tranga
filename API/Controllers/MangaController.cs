@@ -125,9 +125,11 @@ public class MangaController(PgsqlContext context) : Controller
         Manga? m = context.Manga.Find(id);
         if (m is null)
             return NotFound("Manga could not be found");
-        if (m.LatestChapterAvailable is null)
+        List<Chapter> chapters = context.Chapters.Where(c => c.ParentManga.MangaId == m.MangaId).ToList();
+        Chapter? max = chapters.Max();
+        if (max is null)
             return NotFound("Chapter could not be found");
-        return Ok(m.LatestChapterAvailable);
+        return Ok(max);
     }
     
     /// <summary>

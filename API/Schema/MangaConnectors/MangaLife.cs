@@ -119,7 +119,7 @@ public class MangaLife : MangaConnector
         string description = descriptionNode.InnerText;
 
         Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
-            originalLanguage, releaseStatus, -1, null, null,
+            originalLanguage, releaseStatus, -1,
             this, 
             authors, 
             mangaTags, 

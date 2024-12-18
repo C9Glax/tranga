@@ -100,7 +100,7 @@ public class MangaHere : MangaConnector
         string description = descriptionNode.InnerText;
 
         Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, 0,
-            originalLanguage, releaseStatus, -1, null, null,
+            originalLanguage, releaseStatus, -1,
             this, 
             authors, 
             mangaTags, 

@@ -90,7 +90,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.AltTitles)
             .AutoInclude();
-        
         modelBuilder.Entity<Chapter>()
             .HasOne<Manga>(c => c.ParentManga)
             .WithMany();
