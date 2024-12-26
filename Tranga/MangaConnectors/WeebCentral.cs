@@ -8,12 +8,10 @@ namespace Tranga.MangaConnectors;
 
 public class Weebcentral : MangaConnector
 {
-    private readonly string _baseUrl = "https://weebcentral.com";
-
     private readonly string[] _filterWords =
         { "a", "the", "of", "as", "to", "no", "for", "on", "with", "be", "and", "in", "wa", "at", "be", "ni" };
 
-    public Weebcentral(GlobalBase clone) : base(clone, "Weebcentral", ["en"])
+    public Weebcentral(GlobalBase clone) : base(clone, "Weebcentral", ["en"], ["https://weebcentral.com"])
     {
         downloadClient = new ChromiumDownloadClient(clone);
     }
@@ -24,7 +22,7 @@ public class Weebcentral : MangaConnector
         const int limit = 32; //How many values we want returned at once
         var offset = 0; //"Page"
         var requestUrl =
-            $"{_baseUrl}/search/data?limit={limit}&offset={offset}&text={publicationTitle}&sort=Best+Match&order=Ascending&official=Any&display_mode=Minimal%20Display";
+            $"{BaseUris[0]}/search/data?limit={limit}&offset={offset}&text={publicationTitle}&sort=Best+Match&order=Ascending&official=Any&display_mode=Minimal%20Display";
         var requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 ||
@@ -115,7 +113,7 @@ public class Weebcentral : MangaConnector
 
         var originalLanguage = "";
 
-        Manga manga = new(sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
+        Manga manga = new(this, sortName, authors.ToList(), description, altTitles, tags.ToArray(), posterUrl,
             coverFileNameInCache, links,
             year, originalLanguage, publicationId, releaseStatus, websiteUrl);
         AddMangaToCache(manga);
@@ -157,7 +155,7 @@ public class Weebcentral : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language = "en")
     {
         Log($"Getting chapters {manga}");
-        var requestUrl = $"{_baseUrl}/series/{manga.publicationId}/full-chapter-list";
+        var requestUrl = $"{BaseUris[0]}/series/{manga.publicationId}/full-chapter-list";
         var requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
