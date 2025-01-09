@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
 using HtmlAgilityPack;
 
@@ -9,7 +8,7 @@ public class Mangaworld : MangaConnector
 {
     public Mangaworld() : base("Mangaworld", ["it"], ["www.mangaworld.ac"])
     {
-        this.downloadClient = new HttpDownloadClient();
+        this.downloadClient = new ChromiumDownloadClient();
     }
 
     public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
