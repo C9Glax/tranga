@@ -203,7 +203,6 @@ public class JobController(PgsqlContext context) : Controller
         Job? ret = context.Jobs.Find(id);
         if (ret is null)
             return NotFound();
-        ret.NextExecution = DateTime.UnixEpoch;
         try
         {
             context.Update(ret);

@@ -12,28 +12,35 @@ public abstract class Job
     public string JobId { get; init; }
     
     [MaxLength(64)]
-    public string? ParentJobId { get; internal set; }
-    internal virtual Job ParentJob { get; }
+    public string? ParentJobId { get; init; }
+    public Job? ParentJob { get; init; }
     
     [MaxLength(64)]
-    public string[]? DependsOnJobIds { get; init; }
-    public virtual Job[] DependsOnJobs { get; init; }
+    public ICollection<string>? DependsOnJobsIds { get; init; }
+    public ICollection<Job>? DependsOnJobs { get; init; }
     
     public JobType JobType { get; init; }
     public ulong RecurrenceMs { get; set; }
     public DateTime LastExecution { get; internal set; } = DateTime.UnixEpoch;
-    public DateTime NextExecution { get; internal set; } 
+    
+    [NotMapped]
+    public DateTime NextExecution => LastExecution.AddMilliseconds(RecurrenceMs);
     public JobState state { get; internal set; } = JobState.Waiting;
 
-    public Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId = null,
-        string[]? dependsOnJobIds = null)
+    public Job(string jobId, JobType jobType, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : this(jobId, jobType, recurrenceMs, parentJob?.JobId, dependsOnJobs?.Select(j => j.JobId).ToList())
+    {
+        this.ParentJob = parentJob;
+        this.DependsOnJobs = dependsOnJobs;
+    }
+
+    public Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
     {
         JobId = jobId;
         ParentJobId = parentJobId;
-        DependsOnJobIds = dependsOnJobIds;
+        DependsOnJobsIds = dependsOnJobsIds;
         JobType = jobType;
         RecurrenceMs = recurrenceMs;
-        NextExecution = LastExecution.AddMilliseconds(RecurrenceMs);
     }
 
     public IEnumerable<Job> Run(PgsqlContext context)

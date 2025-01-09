@@ -47,10 +47,6 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ChapterIds")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<float>("ChapterNumber")
                         .HasColumnType("real");
 
@@ -59,7 +55,6 @@ namespace API.Migrations
 
                     b.Property<string>("ParentMangaId")
                         .IsRequired()
-                        .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("Title")
@@ -85,7 +80,7 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.PrimitiveCollection<string[]>("DependsOnJobIds")
+                    b.PrimitiveCollection<string[]>("DependsOnJobsIds")
                         .HasMaxLength(64)
                         .HasColumnType("text[]");
 
@@ -96,9 +91,6 @@ namespace API.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("LastExecution")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("NextExecution")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ParentJobId")
@@ -114,6 +106,8 @@ namespace API.Migrations
                     b.HasKey("JobId");
 
                     b.HasIndex("JobId1");
+
+                    b.HasIndex("ParentJobId");
 
                     b.ToTable("Jobs");
 
@@ -154,9 +148,6 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("LinkIds")
-                        .HasColumnType("text");
-
                     b.Property<string>("LinkProvider")
                         .IsRequired()
                         .HasColumnType("text");
@@ -166,7 +157,6 @@ namespace API.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MangaId")
-                        .IsRequired()
                         .HasColumnType("character varying(64)");
 
                     b.HasKey("LinkId");
@@ -181,14 +171,6 @@ namespace API.Migrations
                     b.Property<string>("MangaId")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
-
-                    b.PrimitiveCollection<string[]>("AltTitleIds")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
-                    b.PrimitiveCollection<string[]>("AuthorIds")
-                        .IsRequired()
-                        .HasColumnType("text[]");
 
                     b.Property<string>("ConnectorId")
                         .IsRequired()
@@ -213,23 +195,9 @@ namespace API.Migrations
                     b.Property<float>("IgnoreChapterBefore")
                         .HasColumnType("real");
 
-                    b.Property<string>("LatestChapterAvailableId")
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("LatestChapterDownloadedId")
-                        .HasColumnType("character varying(64)");
-
-                    b.PrimitiveCollection<string[]>("LinkIds")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
-                    b.Property<string>("MangaConnectorName")
+                    b.Property<string>("MangaConnectorId")
                         .IsRequired()
                         .HasColumnType("character varying(32)");
-
-                    b.Property<string>("MangaIds")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -241,26 +209,16 @@ namespace API.Migrations
                     b.Property<byte>("ReleaseStatus")
                         .HasColumnType("smallint");
 
-                    b.PrimitiveCollection<string[]>("TagIds")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
                     b.Property<string>("WebsiteUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("year")
+                    b.Property<long>("Year")
                         .HasColumnType("bigint");
 
                     b.HasKey("MangaId");
 
-                    b.HasIndex("LatestChapterAvailableId")
-                        .IsUnique();
-
-                    b.HasIndex("LatestChapterDownloadedId")
-                        .IsUnique();
-
-                    b.HasIndex("MangaConnectorName");
+                    b.HasIndex("MangaConnectorId");
 
                     b.ToTable("Manga");
                 });
@@ -271,16 +229,12 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("AltTitleIds")
-                        .HasColumnType("text");
-
                     b.Property<string>("Language")
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)");
 
                     b.Property<string>("MangaId")
-                        .IsRequired()
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("Title")
@@ -333,6 +287,9 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("text");
@@ -367,49 +324,34 @@ namespace API.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("MangaAuthor", b =>
+            modelBuilder.Entity("AuthorManga", b =>
                 {
+                    b.Property<string>("AuthorsAuthorId")
+                        .HasColumnType("character varying(64)");
+
                     b.Property<string>("MangaId")
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("character varying(64)");
+                    b.HasKey("AuthorsAuthorId", "MangaId");
 
-                    b.Property<string>("AuthorIds")
-                        .HasColumnType("text");
+                    b.HasIndex("MangaId");
 
-                    b.Property<string>("MangaIds")
-                        .HasColumnType("text");
-
-                    b.HasKey("MangaId", "AuthorId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("MangaAuthor");
+                    b.ToTable("AuthorManga");
                 });
 
-            modelBuilder.Entity("MangaTag", b =>
+            modelBuilder.Entity("MangaMangaTag", b =>
                 {
                     b.Property<string>("MangaId")
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("Tag")
+                    b.Property<string>("TagsTag")
                         .HasColumnType("text");
 
-                    b.Property<string>("MangaIds")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.HasKey("MangaId", "TagsTag");
 
-                    b.Property<string>("TagIds")
-                        .HasColumnType("text");
+                    b.HasIndex("TagsTag");
 
-                    b.HasKey("MangaId", "Tag");
-
-                    b.HasIndex("MangaIds");
-
-                    b.HasIndex("Tag");
-
-                    b.ToTable("MangaTag");
+                    b.ToTable("MangaMangaTag");
                 });
 
             modelBuilder.Entity("API.Schema.Jobs.DownloadNewChaptersJob", b =>
@@ -528,7 +470,7 @@ namespace API.Migrations
                 {
                     b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
 
-                    b.HasDiscriminator().HasValue("MangaLife");
+                    b.HasDiscriminator().HasValue("Manga4Life");
                 });
 
             modelBuilder.Entity("API.Schema.MangaConnectors.Manganato", b =>
@@ -620,7 +562,7 @@ namespace API.Migrations
             modelBuilder.Entity("API.Schema.Chapter", b =>
                 {
                     b.HasOne("API.Schema.Manga", "ParentManga")
-                        .WithMany("Chapters")
+                        .WithMany()
                         .HasForeignKey("ParentMangaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -633,58 +575,44 @@ namespace API.Migrations
                     b.HasOne("API.Schema.Jobs.Job", null)
                         .WithMany("DependsOnJobs")
                         .HasForeignKey("JobId1");
+
+                    b.HasOne("API.Schema.Jobs.Job", "ParentJob")
+                        .WithMany()
+                        .HasForeignKey("ParentJobId");
+
+                    b.Navigation("ParentJob");
                 });
 
             modelBuilder.Entity("API.Schema.Link", b =>
                 {
-                    b.HasOne("API.Schema.Manga", "Manga")
+                    b.HasOne("API.Schema.Manga", null)
                         .WithMany("Links")
-                        .HasForeignKey("MangaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manga");
+                        .HasForeignKey("MangaId");
                 });
 
             modelBuilder.Entity("API.Schema.Manga", b =>
                 {
-                    b.HasOne("API.Schema.Chapter", "LatestChapterAvailable")
-                        .WithOne()
-                        .HasForeignKey("API.Schema.Manga", "LatestChapterAvailableId");
-
-                    b.HasOne("API.Schema.Chapter", "LatestChapterDownloaded")
-                        .WithOne()
-                        .HasForeignKey("API.Schema.Manga", "LatestChapterDownloadedId");
-
                     b.HasOne("API.Schema.MangaConnectors.MangaConnector", "MangaConnector")
-                        .WithMany("Mangas")
-                        .HasForeignKey("MangaConnectorName")
+                        .WithMany()
+                        .HasForeignKey("MangaConnectorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("LatestChapterAvailable");
-
-                    b.Navigation("LatestChapterDownloaded");
 
                     b.Navigation("MangaConnector");
                 });
 
             modelBuilder.Entity("API.Schema.MangaAltTitle", b =>
                 {
-                    b.HasOne("API.Schema.Manga", "Manga")
+                    b.HasOne("API.Schema.Manga", null)
                         .WithMany("AltTitles")
-                        .HasForeignKey("MangaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manga");
+                        .HasForeignKey("MangaId");
                 });
 
-            modelBuilder.Entity("MangaAuthor", b =>
+            modelBuilder.Entity("AuthorManga", b =>
                 {
                     b.HasOne("API.Schema.Author", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("AuthorsAuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -695,7 +623,7 @@ namespace API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MangaTag", b =>
+            modelBuilder.Entity("MangaMangaTag", b =>
                 {
                     b.HasOne("API.Schema.Manga", null)
                         .WithMany()
@@ -705,13 +633,7 @@ namespace API.Migrations
 
                     b.HasOne("API.Schema.MangaTag", null)
                         .WithMany()
-                        .HasForeignKey("MangaIds")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Schema.MangaTag", null)
-                        .WithMany()
-                        .HasForeignKey("Tag")
+                        .HasForeignKey("TagsTag")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -758,14 +680,7 @@ namespace API.Migrations
                 {
                     b.Navigation("AltTitles");
 
-                    b.Navigation("Chapters");
-
                     b.Navigation("Links");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectors.MangaConnector", b =>
-                {
-                    b.Navigation("Mangas");
                 });
 #pragma warning restore 612, 618
         }

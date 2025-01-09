@@ -11,58 +11,64 @@ using static System.IO.UnixFileMode;
 namespace API.Schema;
 
 [PrimaryKey("MangaId")]
-public class Manga(
-    string connectorId,
-    string name,
-    string description,
-    string websiteUrl,
-    string coverUrl,
-    string? coverFileNameInCache,
-    uint year,
-    string? originalLanguage,
-    MangaReleaseStatus releaseStatus,
-    float ignoreChapterBefore,
-    MangaConnector mangaConnector,
-    ICollection<Author> authors,
-    ICollection<MangaTag> tags,
-    ICollection<Link> links,
-    ICollection<MangaAltTitle> altTitles)
+public class Manga
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = TokenGen.CreateToken(typeof(Manga), 64);
     [MaxLength(64)]
-    public string ConnectorId { get; init; } = connectorId;
+    public string ConnectorId { get; init; }
 
-    public string Name { get; internal set; } = name;
-    public string Description { get; internal set; } = description;
-    public string WebsiteUrl { get; internal set; } = websiteUrl;
-    public string CoverUrl { get; internal set; } = coverUrl;
-    public string? CoverFileNameInCache { get; internal set; } = coverFileNameInCache;
-    public uint year { get; internal set; } = year;
-    public string? OriginalLanguage { get; internal set; } = originalLanguage;
-    public MangaReleaseStatus ReleaseStatus { get; internal set; } = releaseStatus;
-    public string FolderName { get; private set; } = BuildFolderName(name);
-    public float IgnoreChapterBefore { get; internal set; } = ignoreChapterBefore;
+    public string Name { get; internal set; }
+    public string Description { get; internal set; }
+    public string WebsiteUrl { get; internal set; }
+    public string CoverUrl { get; internal set; }
+    public string? CoverFileNameInCache { get; internal set; }
+    public uint Year { get; internal set; }
+    public string? OriginalLanguage { get; internal set; }
+    public MangaReleaseStatus ReleaseStatus { get; internal set; }
+    public string FolderName { get; private set; }
+    public float IgnoreChapterBefore { get; internal set; }
 
-    [ForeignKey("MangaConnectorId")]
-    public MangaConnector MangaConnector { get; private set; } = mangaConnector;
+    public string MangaConnectorId { get; private set; }
+    public MangaConnector? MangaConnector { get; private set; }
     
-    public ICollection<Author> Authors { get; internal set; } = authors;
+    public ICollection<Author>? Authors { get; internal set; }
     
-    public ICollection<MangaTag> Tags { get; internal set; } = tags;
+    public ICollection<MangaTag>? Tags { get; internal set; }
     
-    public ICollection<Link> Links { get; internal set; } = links;
+    public ICollection<Link>? Links { get; internal set; }
     
-    public ICollection<MangaAltTitle> AltTitles { get; internal set; } = altTitles;
+    public ICollection<MangaAltTitle>? AltTitles { get; internal set; }
 
     public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
-        string? coverFileNameInCache,
-        uint year, string? originalLanguage, MangaReleaseStatus releaseStatus, float ignoreChapterBefore)
+        string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
+        float ignoreChapterBefore, MangaConnector mangaConnector, ICollection<Author> authors,
+        ICollection<MangaTag> tags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles)
         : this(connectorId, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
-            releaseStatus,
-            ignoreChapterBefore, null, null, null, null, null)
+            releaseStatus, ignoreChapterBefore, mangaConnector.Name)
     {
-        
+        this.Authors = authors;
+        this.Tags = tags;
+        this.Links = links;
+        this.AltTitles = altTitles;
+    }
+    
+    public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
+        string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
+        float ignoreChapterBefore, string mangaConnectorId)
+    {
+        ConnectorId = connectorId;
+        Name = name;
+        Description = description;
+        WebsiteUrl = websiteUrl;
+        CoverUrl = coverUrl;
+        CoverFileNameInCache = coverFileNameInCache;
+        Year = year;
+        OriginalLanguage = originalLanguage;
+        ReleaseStatus = releaseStatus;
+        IgnoreChapterBefore = ignoreChapterBefore;
+        MangaConnectorId = mangaConnectorId;
+        FolderName = BuildFolderName(name);
     }
 
     public MoveFileOrFolderJob UpdateFolderName(string downloadLocation, string newName)
@@ -75,7 +81,7 @@ public class Manga(
     internal void UpdateWithInfo(Manga other)
     {
         this.Name = other.Name;
-        this.year = other.year;
+        this.Year = other.Year;
         this.Description = other.Description;
         this.CoverUrl = other.CoverUrl;
         this.OriginalLanguage = other.OriginalLanguage;

@@ -11,8 +11,8 @@ using static System.IO.UnixFileMode;
 
 namespace API.Schema.Jobs;
 
-public class DownloadSingleChapterJob(string chapterId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadSingleChapterJob), 64), JobType.DownloadSingleChapterJob, 0, parentJobId, dependsOnJobsIds)
+public class DownloadMangaCoverJob(string chapterId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
+    : Job(TokenGen.CreateToken(typeof(DownloadMangaCoverJob), 64), JobType.DownloadMangaCoverJob, 0, parentJobId, dependsOnJobsIds)
 {
     [MaxLength(64)]
     public string ChapterId { get; init; } = chapterId;
@@ -20,16 +20,14 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Chapter c = Chapter ?? context.Chapters.Find(ChapterId)!;
-        Manga m = c.ParentManga ?? context.Manga.Find(c.ParentMangaId)!;
-        MangaConnector connector = m.MangaConnector ?? context.MangaConnectors.Find(m.MangaConnectorId)!;
-        DownloadChapterImages(c, connector, m);
+        MangaConnector connector = Chapter.ParentManga?.MangaConnector ?? context.MangaConnectors.Find(context.Manga.Find(Chapter.ParentMangaId)?.MangaId)!;
+        DownloadChapterImages(Chapter, connector);
         return [];
     }
     
-    private bool DownloadChapterImages(Chapter chapter, MangaConnector connector, Manga manga)
+    private bool DownloadChapterImages(Chapter chapter, MangaConnector connector)
     {
-        string[] imageUrls = connector.GetChapterImageUrls(chapter);
+        string[] imageUrls = connector.GetChapterImageUrls(Chapter);
         string saveArchiveFilePath = chapter.GetArchiveFilePath();
         
         //Check if Publication Directory already exists
@@ -64,7 +62,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
                 return false;
         }
 
-        CopyCoverFromCacheToDownloadLocation(manga);
+        CopyCoverFromCacheToDownloadLocation();
         
         File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
         
@@ -92,23 +90,23 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         });
     }
     
-    private void CopyCoverFromCacheToDownloadLocation(Manga manga, int? retries = 1)
+    private void CopyCoverFromCacheToDownloadLocation(int? retries = 1)
     {
         //Check if Publication already has a Folder and cover
-        string publicationFolder = manga.CreatePublicationFolder();
+        string publicationFolder = Chapter.ParentManga.CreatePublicationFolder();
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
             return;
         }
 
-        string? fileInCache = manga.CoverFileNameInCache;
+        string? fileInCache = Chapter.ParentManga.CoverFileNameInCache;
         if (fileInCache is null || !File.Exists(fileInCache))
         {
-            if (retries > 0)
+            if (retries > 0 && Chapter.ParentManga.CoverUrl is not null)
             {
-                manga.SaveCoverImageToCache();
-                CopyCoverFromCacheToDownloadLocation(manga, --retries);
+                Chapter.ParentManga.SaveCoverImageToCache();
+                CopyCoverFromCacheToDownloadLocation(--retries);
             }
 
             return;

@@ -67,7 +67,7 @@ public static class Tranga
         {
             List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
             foreach (Job job in completedJobs)
-                if(job.RecurrenceMs < 1)
+                if(job.RecurrenceMs <= 0)
                     context.Jobs.Remove(job);
                 else
                 {
@@ -76,7 +76,7 @@ public static class Tranga
                     context.Jobs.Update(job);
                 }
             
-            List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running && j.NextExecution < DateTime.UtcNow).ToList();
+            List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running).ToList().Where(j => j.NextExecution < DateTime.UtcNow).ToList();
             foreach (Job job in runJobs)
             {
                 Thread t = new (() =>

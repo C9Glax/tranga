@@ -51,6 +51,12 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<DownloadNewChaptersJob>(JobType.DownloadNewChaptersJob)
             .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
             .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob);
+        modelBuilder.Entity<Job>()
+            .HasOne<Job>(j => j.ParentJob)
+            .WithMany()
+            .HasForeignKey(j => j.ParentJobId);
+        modelBuilder.Entity<Job>()
+            .HasMany<Job>(j => j.DependsOnJobs);
         modelBuilder.Entity<DownloadNewChaptersJob>()
             .Navigation(dncj => dncj.Manga)
             .AutoInclude();
@@ -62,7 +68,9 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .AutoInclude();
 
         modelBuilder.Entity<Manga>()
-            .HasOne<MangaConnector>(m => m.MangaConnector);
+            .HasOne<MangaConnector>(m => m.MangaConnector)
+            .WithMany()
+            .HasForeignKey(m => m.MangaConnectorId);
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.MangaConnector)
             .AutoInclude();
@@ -92,7 +100,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .AutoInclude();
         modelBuilder.Entity<Chapter>()
             .HasOne<Manga>(c => c.ParentManga)
-            .WithMany();
+            .WithMany()
+            .HasForeignKey(c => c.ParentMangaId);
         modelBuilder.Entity<Chapter>()
             .Navigation(c => c.ParentManga)
             .AutoInclude();

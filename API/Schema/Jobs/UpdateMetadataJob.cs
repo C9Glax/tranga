@@ -2,8 +2,8 @@
 
 namespace API.Schema.Jobs;
 
-public class UpdateMetadataJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, string[]? dependsOnJobIds = null)
-    : Job(TokenGen.CreateToken(typeof(UpdateMetadataJob), 64), JobType.UpdateMetaDataJob, recurrenceMs, parentJobId, dependsOnJobIds)
+public class UpdateMetadataJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
+    : Job(TokenGen.CreateToken(typeof(UpdateMetadataJob), 64), JobType.UpdateMetaDataJob, recurrenceMs, parentJobId, dependsOnJobsIds)
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = mangaId;
