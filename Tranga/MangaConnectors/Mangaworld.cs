@@ -9,7 +9,7 @@ public class Mangaworld: MangaConnector
 {
     public Mangaworld(GlobalBase clone) : base(clone, "Mangaworld", ["it"])
     {
-        this.downloadClient = new HttpDownloadClient(clone);
+        this.downloadClient = new ChromiumDownloadClient(clone);
     }
 
     public override Manga[] GetManga(string publicationTitle = "")
