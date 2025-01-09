@@ -171,8 +171,10 @@ public class Mangasee : MangaConnector
             {
                 string url = chapter.Descendants("link").First().Value;
                 Match m = chVolRex.Match(url);
-                float? volumeNumber = m.Groups[2].Success ? float.Parse(m.Groups[2].Value) : null;
-                float chapterNumber = float.Parse(m.Groups[1].Value);
+                int? volumeNumber = m.Groups[2].Success ? int.Parse(m.Groups[2].Value) : null;
+                if(!ChapterNumber.CanParse(m.Groups[1].Value))
+                    continue;
+                ChapterNumber chapterNumber = new(m.Groups[1].Value);
 
                 string chapterUrl = Regex.Replace(url, @"-page-[0-9]+(\.html)", ".html");
                 try

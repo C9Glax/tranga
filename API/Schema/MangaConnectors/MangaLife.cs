@@ -147,9 +147,13 @@ public class MangaLife : MangaConnector
         {
             Match rexMatch = urlRex.Match(url);
 
-            float? volumeNumber = rexMatch.Groups[3].Success && rexMatch.Groups[3].Value.Length > 0 ?
-                float.Parse(rexMatch.Groups[3].Value) : null;
-            float chapterNumber = float.Parse(rexMatch.Groups[1].Value);
+            int? volumeNumber = rexMatch.Groups[3].Success && rexMatch.Groups[3].Value.Length > 0
+                ? int.Parse(rexMatch.Groups[3].Value)
+                : null;
+            
+            if(!ChapterNumber.CanParse(rexMatch.Groups[1].Value))
+                continue;
+            ChapterNumber chapterNumber = new(rexMatch.Groups[1].Value);
             string fullUrl = $"https://manga4life.com{url}";
             fullUrl = fullUrl.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
             try

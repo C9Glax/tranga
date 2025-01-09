@@ -184,8 +184,10 @@ public class MangaKatana : MangaConnector
 			string url = chapterInfo.Descendants("a").First()
 				.GetAttributeValue("href", "");
 
-			float? volumeNumber = volumeRex.IsMatch(url) ? float.Parse(volumeRex.Match(url).Groups[1].Value) : null;
-			float chapterNumber = float.Parse(chapterNumRex.Match(url).Groups[1].Value);
+			int? volumeNumber = volumeRex.IsMatch(url) ? int.Parse(volumeRex.Match(url).Groups[1].Value) : null;
+			if(!ChapterNumber.CanParse(chapterNumRex.Match(url).Groups[1].Value))
+				continue;
+			ChapterNumber chapterNumber = new(chapterNumRex.Match(url).Groups[1].Value);
 			string chapterName = chapterNameRex.Match(fullString).Groups[1].Value;
 			try
 			{

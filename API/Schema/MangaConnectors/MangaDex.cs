@@ -221,13 +221,17 @@ public class MangaDex : MangaConnector
                     ? attributes["title"]!.GetValue<string>()
                     : null;
                 
-                float? volume = attributes.ContainsKey("volume") && attributes["volume"] is not null
-                    ? float.Parse(attributes["volume"]!.GetValue<string>())
+                int? volume = attributes.ContainsKey("volume") && attributes["volume"] is not null
+                    ? int.Parse(attributes["volume"]!.GetValue<string>())
                     : null;
                 
-                float chapterNum = attributes.ContainsKey("chapter") && attributes["chapter"] is not null
-                    ? float.Parse(attributes["chapter"]!.GetValue<string>())
-                    : 0;
+                string? chapterNumStr = attributes.ContainsKey("chapter") && attributes["chapter"] is not null
+                    ? attributes["chapter"]!.GetValue<string>()
+                    : null;
+                
+                if(chapterNumStr is null || ChapterNumber.CanParse(chapterNumStr))
+                    continue;
+                ChapterNumber chapterNumber = new(chapterNumStr);
                 
                 
                 if (attributes.ContainsKey("pages") && attributes["pages"] is not null &&
@@ -238,7 +242,7 @@ public class MangaDex : MangaConnector
                 
                 try
                 {
-                    Chapter newChapter = new Chapter(manga, url, chapterNum, volume, title);
+                    Chapter newChapter = new Chapter(manga, url, chapterNumber, volume, title);
                     if(!chapters.Contains(newChapter))
                         chapters.Add(newChapter);
                 }

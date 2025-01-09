@@ -152,7 +152,9 @@ public class AsuraToon : MangaConnector
 			string chapterUrl = chapterInfo.GetAttributeValue("href", "");
 
 			Match match = infoRex.Match(chapterInfo.InnerText);
-			float chapterNumber = float.Parse(match.Groups[1].Value);
+			if(!ChapterNumber.CanParse(match.Groups[1].Value))
+				continue;
+			ChapterNumber chapterNumber = new(match.Groups[1].Value);
 			string? chapterName = match.Groups[2].Success && match.Groups[2].Length > 1 ? match.Groups[2].Value : null;
 			string url = $"https://asuracomic.net/series/{chapterUrl}";
 			try

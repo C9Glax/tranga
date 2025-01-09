@@ -178,8 +178,12 @@ public class Manganato : MangaConnector
             string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
                 .GetAttributeValue("href", "");
             
-            float? volumeNumber = volRex.IsMatch(fullString) ? float.Parse(volRex.Match(fullString).Groups[1].Value) : null;
-            float chapterNumber = float.Parse(chapterRex.Match(url).Groups[1].Value);
+            int? volumeNumber = volRex.IsMatch(fullString)
+                ? int.Parse(volRex.Match(fullString).Groups[1].Value)
+                : null;
+            if(!ChapterNumber.CanParse(chapterRex.Match(url).Groups[1].Value))
+                continue;
+            ChapterNumber chapterNumber = new(chapterRex.Match(url).Groups[1].Value);
             string chapterName = nameRex.Match(fullString).Groups[3].Value;
             try
             {

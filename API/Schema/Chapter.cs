@@ -10,19 +10,26 @@ public class Chapter : IComparable<Chapter>
 {
     [MaxLength(64)]
     public string ChapterId { get; init; } = TokenGen.CreateToken(typeof(Chapter), 64);
-    public float? VolumeNumber { get; private set; }
-    public float ChapterNumber { get; private set; }
+    public int? VolumeNumber { get; private set; }
+    public ChapterNumber ChapterNumber { get; private set; }
     public string Url { get; internal set; }
     public string? Title { get; private set; }
     public string ArchiveFileName { get; private set; }
     public bool Downloaded { get; internal set; } = false;
     
-    public Manga ParentManga { get; init; }
+    public string ParentMangaId { get; internal set; }
+    public Manga? ParentManga { get; init; }
 
-    public Chapter(Manga parentManga, string url, float chapterNumber,
-        float? volumeNumber = null, string? title = null)
+    public Chapter(Manga parentManga, string url, ChapterNumber chapterNumber, int? volumeNumber = null, string? title = null)
+        : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
     {
         this.ParentManga = parentManga;
+    }
+    
+    public Chapter(string parentMangaId, string url, ChapterNumber chapterNumber,
+        int? volumeNumber = null, string? title = null)
+    {
+        this.ParentMangaId = parentMangaId;
         this.Url = url;
         this.ChapterNumber = chapterNumber;
         this.VolumeNumber = volumeNumber;
@@ -30,16 +37,13 @@ public class Chapter : IComparable<Chapter>
         this.ArchiveFileName = BuildArchiveFileName();
     }
 
-    public Chapter(string url, float chapterNumber, float? volumeNumber = null, string? title = null)
-        : this(null, url, chapterNumber, volumeNumber, title){}
-
-    public MoveFileOrFolderJob? UpdateChapterNumber(float chapterNumber)
+    public MoveFileOrFolderJob? UpdateChapterNumber(ChapterNumber chapterNumber)
     {
         this.ChapterNumber = chapterNumber;
         return UpdateArchiveFileName();
     }
 
-    public MoveFileOrFolderJob? UpdateVolumeNumber(float? volumeNumber)
+    public MoveFileOrFolderJob? UpdateVolumeNumber(int? volumeNumber)
     {
         this.VolumeNumber = volumeNumber;
         return UpdateArchiveFileName();

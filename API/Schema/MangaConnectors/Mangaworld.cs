@@ -154,17 +154,19 @@ public class Mangaworld : MangaConnector
             foreach (HtmlNode volNode in document.DocumentNode.SelectNodes("//div[contains(concat(' ',normalize-space(@class),' '),'volume-element')]"))
             {
                 string volumeStr = volumeRex.Match(volNode.SelectNodes("div").First(node => node.HasClass("volume")).SelectSingleNode("p").InnerText).Groups[1].Value;
-                float volume = float.Parse(volumeStr);
+                int volume = int.Parse(volumeStr);
                 foreach (HtmlNode chNode in volNode.SelectNodes("div").First(node => node.HasClass("volume-chapters")).SelectNodes("div"))
                 {
 
                     string numberStr = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
-                    float chapter = float.Parse(numberStr);
+                    if(!ChapterNumber.CanParse(numberStr))
+                        continue;
+                    ChapterNumber chapterNumber = new(numberStr);
                     string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                     string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
                     try
                     {
-                        ret.Add(new Chapter(manga, url, chapter, volume, null));
+                        ret.Add(new Chapter(manga, url, chapterNumber, volume, null));
                     }
                     catch (Exception e)
                     {
@@ -177,12 +179,14 @@ public class Mangaworld : MangaConnector
             foreach (HtmlNode chNode in chaptersWrapper.SelectNodes("div").Where(node => node.HasClass("chapter")))
             {
                 string numberStr = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
-                float chapter = float.Parse(numberStr);
+                if(!ChapterNumber.CanParse(numberStr))
+                    continue;
+                ChapterNumber chapterNumber = new(numberStr);
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                 string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
                 try
                 {
-                    ret.Add(new Chapter(manga, url, chapter, null, null));
+                    ret.Add(new Chapter(manga, url, chapterNumber, null, null));
                 }
                 catch (Exception e)
                 {

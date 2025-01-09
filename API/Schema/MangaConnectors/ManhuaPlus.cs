@@ -148,7 +148,9 @@ public class ManhuaPlus : MangaConnector
         {
             Match rexMatch = urlRex.Match(url);
 
-            float chapterNumber = float.Parse(rexMatch.Groups[1].Value);
+            if(!ChapterNumber.CanParse(rexMatch.Groups[1].Value))
+                continue;
+            ChapterNumber chapterNumber = new(rexMatch.Groups[1].Value);
             string fullUrl = url;
             try
             {

@@ -127,8 +127,10 @@ public class MangaHere : MangaConnector
         {
             Match rexMatch = chapterRex.Match(url);
 
-            float? volumeNumber = rexMatch.Groups[1].Value == "TBD" ? null : float.Parse(rexMatch.Groups[1].Value);
-            float chapterNumber = float.Parse(rexMatch.Groups[2].Value);
+            int? volumeNumber = rexMatch.Groups[1].Value == "TBD" ? null : int.Parse(rexMatch.Groups[1].Value);
+            if(!ChapterNumber.CanParse(rexMatch.Groups[2].Value))
+                continue;
+            ChapterNumber chapterNumber = new(rexMatch.Groups[2].Value);
             string fullUrl = $"https://www.mangahere.cc{url}";
                 
             try
