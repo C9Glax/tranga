@@ -17,11 +17,14 @@ public static class TrangaSettings
     public static string userAgent { get; private set; } = DefaultUserAgent;
     public static bool bufferLibraryUpdates { get; private set; } = false;
     public static bool bufferNotifications { get; private set; } = false;
+    public static int compression{ get; private set; } = 40;
+    public static bool bwImages { get; private set; } = false;
     [JsonIgnore] public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore] public static string libraryConnectorsFilePath => Path.Join(workingDirectory, "libraryConnectors.json");
     [JsonIgnore] public static string notificationConnectorsFilePath => Path.Join(workingDirectory, "notificationConnectors.json");
     [JsonIgnore] public static string jobsFolderPath => Path.Join(workingDirectory, "jobs");
     [JsonIgnore] public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
+    [JsonIgnore] public static string mangaCacheFolderPath => Path.Join(workingDirectory, "mangaCache");
     public static ushort? version { get; } = 2;
     public static bool aprilFoolsMode { get; private set; } = true;
     [JsonIgnore]internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
@@ -48,7 +51,9 @@ public static class TrangaSettings
         ExportSettings();
     }
 
-    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null, int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null, bool? pBufferLibraryUpdates = null, bool? pBufferNotifications = null)
+    public static void CreateOrUpdate(string? downloadDirectory = null, string? pWorkingDirectory = null,
+        int? pApiPortNumber = null, string? pUserAgent = null, bool? pAprilFoolsMode = null,
+        bool? pBufferLibraryUpdates = null, bool? pBufferNotifications = null, int? pCompression = null, bool? pbwImages = null)
     {
         if(pWorkingDirectory is null && File.Exists(settingsFilePath))
             LoadFromWorkingDirectory(workingDirectory);
@@ -59,6 +64,8 @@ public static class TrangaSettings
         aprilFoolsMode = pAprilFoolsMode ?? aprilFoolsMode;
         bufferLibraryUpdates = pBufferLibraryUpdates ?? bufferLibraryUpdates;
         bufferNotifications = pBufferNotifications ?? bufferNotifications;
+        compression = pCompression ?? compression;
+        bwImages = pbwImages ?? bwImages;
         Directory.CreateDirectory(downloadLocation);
         Directory.CreateDirectory(workingDirectory);
         ExportSettings();
@@ -98,31 +105,65 @@ public static class TrangaSettings
         ExportSettings();
     }
 
+    public static void UpdateCompressImages(int value)
+    {
+        compression = int.Clamp(value, 1, 100);
+        ExportSettings();
+    }
+
+    public static void UpdateBwImages(bool enabled)
+    {
+        bwImages = enabled;
+        ExportSettings();
+    }
+
     public static void UpdateDownloadLocation(string newPath, bool moveFiles = true)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Directory.CreateDirectory(newPath,
-                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+            Directory.CreateDirectory(newPath, GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
         else
             Directory.CreateDirectory(newPath);
         
-        if (moveFiles && Directory.Exists(downloadLocation))
-            Directory.Move(downloadLocation, newPath);
-
-        downloadLocation = newPath;
+        if (moveFiles)
+            MoveContentsOfDirectoryTo(TrangaSettings.downloadLocation, newPath);
+        
+        TrangaSettings.downloadLocation = newPath;
         ExportSettings();
     }
 
     public static void UpdateWorkingDirectory(string newPath)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Directory.CreateDirectory(newPath,
-                GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
+            Directory.CreateDirectory(newPath, GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
         else
             Directory.CreateDirectory(newPath);
-        Directory.Move(workingDirectory, newPath);
-        workingDirectory = newPath;
+        
+        MoveContentsOfDirectoryTo(TrangaSettings.workingDirectory, newPath);
+        
+        TrangaSettings.workingDirectory = newPath;
         ExportSettings();
+    }
+
+    private static void MoveContentsOfDirectoryTo(string oldDir, string newDir)
+    {
+        string[] directoryPaths = Directory.GetDirectories(oldDir);
+        string[] filePaths = Directory.GetFiles(oldDir);
+        foreach (string file in filePaths)
+        {
+            string newPath = Path.Join(newDir, Path.GetFileName(file));
+            File.Move(file, newPath, true);
+        }
+        foreach(string directory in directoryPaths)
+        {
+            string? dirName = Path.GetDirectoryName(directory);
+            if(dirName is null)
+                continue;
+            string newPath = Path.Join(newDir, dirName);
+            if(Directory.Exists(newPath))
+                MoveContentsOfDirectoryTo(directory, newPath);
+            else
+                Directory.Move(directory, newPath);
+        }
     }
 
     public static void UpdateUserAgent(string? customUserAgent)
@@ -167,6 +208,8 @@ public static class TrangaSettings
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
         jobj.Add("bufferLibraryUpdates", JToken.FromObject(bufferLibraryUpdates));
         jobj.Add("bufferNotifications", JToken.FromObject(bufferNotifications));
+        jobj.Add("compression", JToken.FromObject(compression));
+        jobj.Add("bwImages", JToken.FromObject(bwImages));
         return jobj;
     }
 
@@ -191,5 +234,9 @@ public static class TrangaSettings
             bufferLibraryUpdates = blu.Value<bool>()!;
         if (jobj.TryGetValue("bufferNotifications", out JToken? bn))
             bufferNotifications = bn.Value<bool>()!;
+        if (jobj.TryGetValue("compression", out JToken? ci))
+            compression = ci.Value<int>()!;
+        if (jobj.TryGetValue("bwImages", out JToken? bwi))
+            bwImages = bwi.Value<bool>()!;
     }
 }
