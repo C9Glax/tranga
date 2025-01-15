@@ -169,6 +169,8 @@ public static class TrangaSettings
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
         jobj.Add("bufferLibraryUpdates", JToken.FromObject(bufferLibraryUpdates));
         jobj.Add("bufferNotifications", JToken.FromObject(bufferNotifications));
+        jobj.Add("chromiumStartTimeout", JToken.FromObject(ChromiumStartupTimeoutMs));
+        jobj.Add("chromiumPageTimeout", JToken.FromObject(ChromiumPageTimeoutMs));
         return jobj;
     }
 
@@ -193,5 +195,9 @@ public static class TrangaSettings
             bufferLibraryUpdates = blu.Value<bool>()!;
         if (jobj.TryGetValue("bufferNotifications", out JToken? bn))
             bufferNotifications = bn.Value<bool>()!;
+        if (jobj.TryGetValue("chromiumStartTimeout", out JToken? cst))
+            ChromiumStartupTimeoutMs = cst.Value<int>();
+        if (jobj.TryGetValue("chromiumPageTimeout", out JToken? cpt))
+            ChromiumPageTimeoutMs = cpt.Value<int>();
     }
 }
