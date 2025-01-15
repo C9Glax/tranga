@@ -73,7 +73,7 @@ internal class ChromiumDownloadClient : DownloadClient
         IResponse response;
         try
         {
-            response = page.GoToAsync(url, WaitUntilNavigation.Load).Result;
+            response = page.GoToAsync(url, WaitUntilNavigation.Networkidle0).Result;
             //Log($"Page loaded. {url}");
         }
         catch (Exception e)
