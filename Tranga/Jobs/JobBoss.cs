@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Tranga.MangaConnectors;
@@ -145,26 +146,24 @@ public class JobBoss : GlobalBase
 
     private void LoadJobsList(HashSet<MangaConnector> connectors)
     {
-        Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
         if (!Directory.Exists(TrangaSettings.jobsFolderPath)) //No jobs to load
+        {
+            Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
             return;
+        }
 
         //Load json-job-files
         foreach (FileInfo file in Directory.GetFiles(TrangaSettings.jobsFolderPath, "*.json").Select(f => new FileInfo(f)))
         {
             Log($"Adding {file.Name}");
-            Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
-                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)));
-            if (job is null)
+            try
             {
-                string newName = file.FullName + ".failed";
-                Log($"Failed loading file {file.Name}.\nMoving to {newName}");
-                File.Move(file.FullName, newName);
-            }
-            else
-            {
+                Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                    new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)));
+                if (job is null) throw new NullReferenceException();
+                
                 Log($"Adding Job {job}");
                 if (!AddJob(job, file.FullName)) //If we detect a duplicate, delete the file.
                 {
@@ -172,6 +171,16 @@ public class JobBoss : GlobalBase
                     file.MoveTo(path);
                     Log($"Duplicate detected or otherwise not able to add job to list.\nMoved job {job} to {path}");
                 }
+            }
+            catch (Exception e)
+            {
+                if (e is not UnreachableException or NullReferenceException)
+                    throw;
+                Log(e.Message);
+                string newName = file.FullName + ".failed";
+                Log($"Failed loading file {file.Name}.\nMoving to {newName}");
+                File.Move(file.FullName, newName);
+                continue;
             }
         }
 
