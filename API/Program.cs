@@ -106,7 +106,6 @@ using (var scope = app.Services.CreateScope())
             new MangaKatana(),
             new MangaLife(),
             new Manganato(),
-            new Mangasee(),
             new Mangaworld(),
             new ManhuaPlus(),
             new Weebcentral()

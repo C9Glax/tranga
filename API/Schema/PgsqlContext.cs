@@ -30,7 +30,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<MangaKatana>("MangaKatana")
             .HasValue<MangaLife>("Manga4Life")
             .HasValue<Manganato>("Manganato")
-            .HasValue<Mangasee>("Mangasee")
             .HasValue<Mangaworld>("Mangaworld")
             .HasValue<ManhuaPlus>("ManhuaPlus")
             .HasValue<Weebcentral>("Weebcentral")
