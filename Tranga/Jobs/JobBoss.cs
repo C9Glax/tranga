@@ -178,7 +178,8 @@ public class JobBoss : GlobalBase
                     throw;
                 Log(e.Message);
                 string newName = file.FullName + ".failed";
-                Log($"Failed loading file {file.Name}.\nMoving to {newName}");
+                Log($"Failed loading file {file.Name}.\nMoving to {newName}.\n" +
+                    $"If you think this is a bug, upload contents of the file to the Bugreport!");
                 File.Move(file.FullName, newName);
                 continue;
             }
