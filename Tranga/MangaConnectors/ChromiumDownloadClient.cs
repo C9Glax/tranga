@@ -76,12 +76,12 @@ internal class ChromiumDownloadClient : DownloadClient
         IResponse response;
         try
         {
-            response = page.GoToAsync(url, WaitUntilNavigation.Networkidle0).Result;
-            Log("Page loaded.");
+            response = page.GoToAsync(url, WaitUntilNavigation.Load).Result;
+            Log($"Page loaded. {url}");
         }
         catch (Exception e)
         {
-            Log($"Could not load Page:\n{e.Message}");
+            Log($"Could not load Page {url}\n{e.Message}");
             page.CloseAsync();
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         }
