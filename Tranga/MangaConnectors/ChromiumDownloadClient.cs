@@ -10,7 +10,6 @@ namespace Tranga.MangaConnectors;
 internal class ChromiumDownloadClient : DownloadClient
 {
     private static IBrowser? _browser;
-    private const int StartTimeoutMs = 10000;
     private readonly HttpDownloadClient _httpDownloadClient;
     
     private static async Task<IBrowser> StartBrowser(Logging.Logger? logger = null)
@@ -24,7 +23,7 @@ internal class ChromiumDownloadClient : DownloadClient
                 "--disable-dev-shm-usage",
                 "--disable-setuid-sandbox",
                 "--no-sandbox"},
-            Timeout = StartTimeoutMs
+            Timeout = TrangaSettings.ChromiumStartupTimeoutMs
         }, new LoggerFactory([new LogProvider(logger)]));
     }
 
@@ -70,8 +69,10 @@ internal class ChromiumDownloadClient : DownloadClient
 
     private RequestResult MakeRequestBrowser(string url, string? referrer = null, string? clickButton = null)
     {
+        if (_browser is null)
+            return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         IPage page = _browser.NewPageAsync().Result;
-        page.DefaultTimeout = 10000;
+        page.DefaultTimeout = TrangaSettings.ChromiumPageTimeoutMs;
         IResponse response;
         try
         {
