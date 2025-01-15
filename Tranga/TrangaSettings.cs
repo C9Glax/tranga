@@ -35,6 +35,8 @@ public static class TrangaSettings
     };
 
     public static Dictionary<RequestType, int> requestLimits { get; set; } = DefaultRequestLimits;
+    public static int ChromiumStartupTimeoutMs { get; set; } = 30000;
+    public static int ChromiumPageTimeoutMs { get; set; } = 30000;
 
     public static void LoadFromWorkingDirectory(string directory)
     {
