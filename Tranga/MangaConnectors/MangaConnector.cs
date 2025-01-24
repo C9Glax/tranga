@@ -60,7 +60,7 @@ public abstract class MangaConnector : GlobalBase
             return Array.Empty<Chapter>();
         
         Log($"Checking for duplicates {manga}");
-        List<Chapter> newChaptersList = allChapters.Where(nChapter => nChapter.chapterNumber > manga.ignoreChaptersBelow
+        List<Chapter> newChaptersList = allChapters.Where(nChapter => nChapter.chapterNumber >= manga.ignoreChaptersBelow
                                                                       && !nChapter.CheckChapterIsDownloaded()).ToList();
         Log($"{newChaptersList.Count} new chapters. {manga}");
         try
