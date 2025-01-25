@@ -175,7 +175,7 @@ public class Weebcentral : MangaConnector
     {
         var chaptersWrapper = document.DocumentNode.SelectSingleNode("/html/body");
 
-        Regex chapterRex = new(@"(\d+(?:.\d+)*)");
+        Regex chapterRex = new(@"(\d+(?:\.\d+)*)");
         Regex idRex = new(@"https:\/\/weebcentral\.com\/chapters\/(\w*)");
 
         var ret = chaptersWrapper.Descendants("a").Select(elem =>
