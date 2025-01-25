@@ -229,9 +229,7 @@ public class MangaDex : MangaConnector
                     ? attributes["chapter"]!.GetValue<string>()
                     : null;
                 
-                if(chapterNumStr is null || ChapterNumber.CanParse(chapterNumStr))
-                    continue;
-                ChapterNumber chapterNumber = new(chapterNumStr);
+                string chapterNumber = new(chapterNumStr);
                 
                 
                 if (attributes.ContainsKey("pages") && attributes["pages"] is not null &&

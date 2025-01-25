@@ -181,9 +181,7 @@ public class Manganato : MangaConnector
             int? volumeNumber = volRex.IsMatch(fullString)
                 ? int.Parse(volRex.Match(fullString).Groups[1].Value)
                 : null;
-            if(!ChapterNumber.CanParse(chapterRex.Match(url).Groups[1].Value))
-                continue;
-            ChapterNumber chapterNumber = new(chapterRex.Match(url).Groups[1].Value);
+            string chapterNumber = new(chapterRex.Match(url).Groups[1].Value);
             string chapterName = nameRex.Match(fullString).Groups[3].Value;
             try
             {

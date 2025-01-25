@@ -159,9 +159,7 @@ public class Bato : MangaConnector
 			Match match = numberRex.Match(chapterUrl);
 			string id = match.Groups[1].Value;
 			int? volumeNumber = match.Groups[2].Success ? int.Parse(match.Groups[2].Value) : null;
-			if(ChapterNumber.CanParse(match.Groups[3].Value))
-				continue;
-			ChapterNumber chapterNumber = new(match.Groups[3].Value);
+			string chapterNumber = new(match.Groups[3].Value);
 			string url = $"https://bato.to{chapterUrl}?load=2";
 			try
 			{

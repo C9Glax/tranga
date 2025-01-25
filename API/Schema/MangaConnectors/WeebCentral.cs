@@ -157,7 +157,7 @@ public class Weebcentral : MangaConnector
 
     public override Chapter[] GetChapters(Manga manga, string language = "en")
     {
-        var requestUrl = $"{_baseUrl}/series/{manga.MangaId}/full-chapter-list";
+        var requestUrl = $"{_baseUrl}/series/{manga.ConnectorId}/full-chapter-list";
         var requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -182,7 +182,7 @@ public class Weebcentral : MangaConnector
             var url = elem.GetAttributeValue("href", "") ?? "Undefined";
 
             if (!url.StartsWith("https://") && !url.StartsWith("http://"))
-                return new Chapter(manga, "undefined", new ChapterNumber(-1), null, null);
+                return new Chapter(manga, "undefined", "-1", null, null);
 
             var idMatch = idRex.Match(url);
             var id = idMatch.Success ? idMatch.Groups[1].Value : null;
@@ -192,12 +192,13 @@ public class Weebcentral : MangaConnector
 
             var chapterNumberMatch = chapterRex.Match(chapterNode);
 
-            if(!chapterNumberMatch.Success || !ChapterNumber.CanParse(chapterNumberMatch.Groups[1].Value))
-                return new Chapter(manga, "undefined", new ChapterNumber(-1), null, null);
-            ChapterNumber chapterNumber = new(chapterNumberMatch.Groups[1].Value);
+            if(!chapterNumberMatch.Success)
+                return new Chapter(manga, "undefined",  "-1", null, null);
             
-            return new Chapter(manga, url, chapterNumber, null, null);
-        }).Where(elem => elem.ChapterNumber < ChapterNumber.Zero && elem.Url != "undefined").ToList();
+            string chapterNumber = new(chapterNumberMatch.Groups[1].Value);
+            var chapter = new Chapter(manga, url, chapterNumber, null, null);
+            return chapter;
+        }).Where(elem => elem.ChapterNumber.CompareTo("-1") != 0 && elem.Url != "undefined").ToList();
 
         ret.Reverse();
         return ret;

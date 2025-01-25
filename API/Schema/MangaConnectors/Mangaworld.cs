@@ -158,9 +158,8 @@ public class Mangaworld : MangaConnector
                 {
 
                     string numberStr = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
-                    if(!ChapterNumber.CanParse(numberStr))
-                        continue;
-                    ChapterNumber chapterNumber = new(numberStr);
+                    
+                    string chapterNumber = new(numberStr);
                     string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                     string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
                     try
@@ -178,9 +177,8 @@ public class Mangaworld : MangaConnector
             foreach (HtmlNode chNode in chaptersWrapper.SelectNodes("div").Where(node => node.HasClass("chapter")))
             {
                 string numberStr = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
-                if(!ChapterNumber.CanParse(numberStr))
-                    continue;
-                ChapterNumber chapterNumber = new(numberStr);
+                
+                string chapterNumber = new(numberStr);
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                 string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
                 try

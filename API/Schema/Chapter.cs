@@ -8,71 +8,84 @@ namespace API.Schema;
 [PrimaryKey("ChapterId")]
 public class Chapter : IComparable<Chapter>
 {
-    [MaxLength(64)]
-    public string ChapterId { get; init; } = TokenGen.CreateToken(typeof(Chapter), 64);
+    public Chapter(Manga parentManga, string url, string chapterNumber, int? volumeNumber = null, string? title = null)
+        : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
+    {
+        ParentManga = parentManga;
+        ArchiveFileName = BuildArchiveFileName();
+    }
+
+    public Chapter(string parentMangaId, string url, string chapterNumber,
+        int? volumeNumber = null, string? title = null)
+    {
+        ChapterId = TokenGen.CreateToken(typeof(Chapter), string.Join(parentMangaId, volumeNumber ?? 0, chapterNumber));
+        ParentMangaId = parentMangaId;
+        Url = url;
+        ChapterNumber = chapterNumber;
+        VolumeNumber = volumeNumber;
+        Title = title;
+    }
+
+    [MaxLength(64)] public string ChapterId { get; init; }
+
     public int? VolumeNumber { get; private set; }
-    public ChapterNumber ChapterNumber { get; private set; }
+
+    [MaxLength(10)] public string ChapterNumber { get; private set; }
+
     public string Url { get; internal set; }
     public string? Title { get; private set; }
     public string ArchiveFileName { get; private set; }
     public bool Downloaded { get; internal set; } = false;
-    
+
     public string ParentMangaId { get; internal set; }
     public Manga? ParentManga { get; init; }
 
-    public Chapter(Manga parentManga, string url, ChapterNumber chapterNumber, int? volumeNumber = null, string? title = null)
-        : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
+    public int CompareTo(Chapter? other)
     {
-        this.ParentManga = parentManga;
-    }
-    
-    public Chapter(string parentMangaId, string url, ChapterNumber chapterNumber,
-        int? volumeNumber = null, string? title = null)
-    {
-        this.ParentMangaId = parentMangaId;
-        this.Url = url;
-        this.ChapterNumber = chapterNumber;
-        this.VolumeNumber = volumeNumber;
-        this.Title = title;
-        this.ArchiveFileName = BuildArchiveFileName();
+        if (other is not { } otherChapter)
+            throw new ArgumentException($"{other} can not be compared to {this}");
+        return VolumeNumber?.CompareTo(otherChapter.VolumeNumber) switch
+        {
+            < 0 => -1,
+            > 0 => 1,
+            _ => CompareChapterNumbers(ChapterNumber, otherChapter.ChapterNumber)
+        };
     }
 
-    public MoveFileOrFolderJob? UpdateChapterNumber(ChapterNumber chapterNumber)
+    public MoveFileOrFolderJob? UpdateChapterNumber(string chapterNumber)
     {
-        this.ChapterNumber = chapterNumber;
+        ChapterNumber = chapterNumber;
         return UpdateArchiveFileName();
     }
 
     public MoveFileOrFolderJob? UpdateVolumeNumber(int? volumeNumber)
     {
-        this.VolumeNumber = volumeNumber;
+        VolumeNumber = volumeNumber;
         return UpdateArchiveFileName();
     }
 
     public MoveFileOrFolderJob? UpdateTitle(string? title)
     {
-        this.Title = title;
+        Title = title;
         return UpdateArchiveFileName();
     }
 
     private string BuildArchiveFileName()
     {
-        return $"{this.ParentManga.Name} - Vol.{this.VolumeNumber ?? 0} Ch.{this.ChapterNumber}{(this.Title is null ? "" : $" - {this.Title}")}.cbz";
+        return
+            $"{ParentManga.Name} - Vol.{VolumeNumber ?? 0} Ch.{ChapterNumber}{(Title is null ? "" : $" - {Title}")}.cbz";
     }
 
     private MoveFileOrFolderJob? UpdateArchiveFileName()
     {
         string oldPath = GetArchiveFilePath();
-        this.ArchiveFileName = BuildArchiveFileName();
-        if (Downloaded)
-        {
-            return new MoveFileOrFolderJob(oldPath, GetArchiveFilePath());
-        }
+        ArchiveFileName = BuildArchiveFileName();
+        if (Downloaded) return new MoveFileOrFolderJob(oldPath, GetArchiveFilePath());
         return null;
     }
-    
+
     /// <summary>
-    /// Creates full file path of chapter-archive
+    ///     Creates full file path of chapter-archive
     /// </summary>
     /// <returns>Filepath</returns>
     internal string GetArchiveFilePath()
@@ -86,27 +99,35 @@ public class Chapter : IComparable<Chapter>
         return File.Exists(path);
     }
 
-    public int CompareTo(Chapter? other)
+    private static int CompareChapterNumbers(string ch1, string ch2)
     {
-        if(other is not { } otherChapter)
-            throw new ArgumentException($"{other} can not be compared to {this}");
-        return this.VolumeNumber?.CompareTo(otherChapter.VolumeNumber) switch
+        int[] ch1Arr = ch1.Split('.').Select(c => int.Parse(c)).ToArray();
+        int[] ch2Arr = ch2.Split('.').Select(c => int.Parse(c)).ToArray();
+
+        int i = 0, j = 0;
+
+        while (i < ch1Arr.Length && j < ch2Arr.Length)
         {
-            <0 => -1,
-            >0 => 1,
-            _ => this.ChapterNumber.CompareTo(otherChapter.ChapterNumber)
-        };
+            if (ch1Arr[i] < ch2Arr[j])
+                return -1;
+            if (ch1Arr[i] > ch2Arr[j])
+                return 1;
+            i++;
+            j++;
+        }
+
+        return 0;
     }
-    
+
     internal string GetComicInfoXmlString()
     {
-        XElement comicInfo = new XElement("ComicInfo",
+        XElement comicInfo = new("ComicInfo",
             new XElement("Tags", string.Join(',', ParentManga.Tags.Select(tag => tag.Tag))),
             new XElement("LanguageISO", ParentManga.OriginalLanguage),
-            new XElement("Title", this.Title),
+            new XElement("Title", Title),
             new XElement("Writer", string.Join(',', ParentManga.Authors.Select(author => author.AuthorName))),
-            new XElement("Volume", this.VolumeNumber),
-            new XElement("Number", this.ChapterNumber)
+            new XElement("Volume", VolumeNumber),
+            new XElement("Number", ChapterNumber)
         );
         return comicInfo.ToString();
     }

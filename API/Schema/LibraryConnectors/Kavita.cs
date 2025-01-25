@@ -6,7 +6,7 @@ namespace API.Schema.LibraryConnectors;
 public class Kavita : LibraryConnector
 {
 
-    public Kavita(string baseUrl, string auth) : base(TokenGen.CreateToken(typeof(Kavita), 64), LibraryType.Kavita, baseUrl, auth)
+    public Kavita(string baseUrl, string auth) : base(TokenGen.CreateToken(typeof(Kavita), baseUrl), LibraryType.Kavita, baseUrl, auth)
     {
     }
     

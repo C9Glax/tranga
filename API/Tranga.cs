@@ -79,6 +79,9 @@ public static class Tranga
             List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running).ToList().Where(j => j.NextExecution < DateTime.UtcNow).ToList();
             foreach (Job job in runJobs)
             {
+                // If the job is already running, skip it
+                if (RunningJobs.Values.Any(j => j.JobId == job.JobId)) continue;
+                
                 Thread t = new (() =>
                 {
                     IEnumerable<Job> newJobs = job.Run(context);
