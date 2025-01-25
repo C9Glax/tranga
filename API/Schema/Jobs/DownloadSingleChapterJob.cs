@@ -12,7 +12,7 @@ using static System.IO.UnixFileMode;
 namespace API.Schema.Jobs;
 
 public class DownloadSingleChapterJob(string chapterId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadSingleChapterJob), 64), JobType.DownloadSingleChapterJob, 0, parentJobId, dependsOnJobsIds)
+    : Job(TokenGen.CreateToken(typeof(DownloadSingleChapterJob), ""), JobType.DownloadSingleChapterJob, 0, parentJobId, dependsOnJobsIds)
 {
     [MaxLength(64)]
     public string ChapterId { get; init; } = chapterId;

@@ -151,9 +151,8 @@ public class MangaLife : MangaConnector
                 ? int.Parse(rexMatch.Groups[3].Value)
                 : null;
             
-            if(!ChapterNumber.CanParse(rexMatch.Groups[1].Value))
-                continue;
-            ChapterNumber chapterNumber = new(rexMatch.Groups[1].Value);
+          
+            string chapterNumber = new(rexMatch.Groups[1].Value);
             string fullUrl = $"https://manga4life.com{url}";
             fullUrl = fullUrl.Replace(Regex.Match(url,"(-page-[0-9])").Value,"");
             try

@@ -14,7 +14,7 @@ namespace API.Schema;
 public class Manga
 {
     [MaxLength(64)]
-    public string MangaId { get; init; } = TokenGen.CreateToken(typeof(Manga), 64);
+    public string MangaId { get; init; }
     [MaxLength(64)]
     public string ConnectorId { get; init; }
 
@@ -57,6 +57,7 @@ public class Manga
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
         float ignoreChapterBefore, string mangaConnectorId)
     {
+        MangaId = TokenGen.CreateToken(typeof(Manga), string.Join(MangaConnectorId, ConnectorId));
         ConnectorId = connectorId;
         Name = name;
         Description = description;
