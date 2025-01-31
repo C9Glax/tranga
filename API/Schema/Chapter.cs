@@ -18,7 +18,7 @@ public class Chapter : IComparable<Chapter>
     public Chapter(string parentMangaId, string url, string chapterNumber,
         int? volumeNumber = null, string? title = null)
     {
-        ChapterId = TokenGen.CreateToken(typeof(Chapter), string.Join(parentMangaId, volumeNumber ?? 0, chapterNumber));
+        ChapterId = TokenGen.CreateToken(typeof(Chapter), parentMangaId, (volumeNumber ?? 0).ToString(), chapterNumber);
         ParentMangaId = parentMangaId;
         Url = url;
         ChapterNumber = chapterNumber;

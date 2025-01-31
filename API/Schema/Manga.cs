@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -57,7 +57,7 @@ public class Manga
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
         float ignoreChapterBefore, string mangaConnectorId)
     {
-        MangaId = TokenGen.CreateToken(typeof(Manga), string.Join(MangaConnectorId, ConnectorId));
+        MangaId = TokenGen.CreateToken(typeof(Manga), MangaConnectorId, ConnectorId);
         ConnectorId = connectorId;
         Name = name;
         Description = description;

@@ -9,9 +9,9 @@ public static class TokenGen
     private const int MaximumLength = 64;
     private const string Chars = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    public static string CreateToken(Type t, string identifier) => CreateToken(t.Name, identifier);
+    public static string CreateToken(Type t, params string[] identifiers) => CreateToken(t.Name, identifiers);
     
-    public static string CreateToken(string prefix, string identifier)
+    public static string CreateToken(string prefix, params string[] identifiers)
     {
         
         
@@ -20,7 +20,7 @@ public static class TokenGen
         
         int tokenLength = MaximumLength - prefix.Length - 1;
         
-        if (string.IsNullOrWhiteSpace(identifier))
+        if (identifiers.Length == 0)
         {
             // No identifier, just create a random token
             byte[] rng = new byte[tokenLength];
@@ -31,7 +31,7 @@ public static class TokenGen
         }
 
         // Identifier provided, create a token based on the identifier hashed
-        byte[] hash = MD5.HashData(Encoding.UTF8.GetBytes(identifier));
+        byte[] hash = MD5.HashData(Encoding.UTF8.GetBytes(string.Join("", identifiers)));
         string token = Convert.ToHexStringLower(hash);
         
         return string.Join('-', prefix, token);

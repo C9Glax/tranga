@@ -4,7 +4,7 @@ using API.Schema.MangaConnectors;
 namespace API.Schema.Jobs;
 
 public class DownloadNewChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadNewChaptersJob), ""), JobType.DownloadNewChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
+    : Job(TokenGen.CreateToken(typeof(DownloadNewChaptersJob)), JobType.DownloadNewChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = mangaId;
