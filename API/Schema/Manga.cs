@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -30,6 +30,7 @@ public class Manga
     public float IgnoreChapterBefore { get; internal set; }
 
     public string MangaConnectorId { get; private set; }
+    
     public MangaConnector? MangaConnector { get; private set; }
     
     public ICollection<Author>? Authors { get; internal set; }

@@ -79,7 +79,6 @@ public class DownloadMangaCoverJob(string chapterId, string? parentJobId = null,
     {
         if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
             return;
-        DateTime start = DateTime.Now;
         using Image image = Image.Load(imagePath);
         File.Delete(imagePath);
         if(TrangaSettings.bwImages) 

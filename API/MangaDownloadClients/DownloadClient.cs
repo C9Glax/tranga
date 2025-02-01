@@ -24,9 +24,9 @@ internal abstract class DownloadClient
             : TrangaSettings.requestLimits[requestType];
         
         TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
-        _lastExecutedRateLimit.TryAdd(requestType, DateTime.Now.Subtract(timeBetweenRequests));
+        _lastExecutedRateLimit.TryAdd(requestType, DateTime.UtcNow.Subtract(timeBetweenRequests));
 
-        TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(DateTime.Now.Subtract(_lastExecutedRateLimit[requestType]));
+        TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(DateTime.UtcNow.Subtract(_lastExecutedRateLimit[requestType]));
 
         if (rateLimitTimeout > TimeSpan.Zero)
         {
@@ -34,7 +34,7 @@ internal abstract class DownloadClient
         }
 
         RequestResult result = MakeRequestInternal(url, referrer, clickButton);
-        _lastExecutedRateLimit[requestType] = DateTime.Now;
+        _lastExecutedRateLimit[requestType] = DateTime.UtcNow;
         return result;
     }
 

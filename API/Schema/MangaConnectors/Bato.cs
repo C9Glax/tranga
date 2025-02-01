@@ -97,7 +97,7 @@ public class Bato : MangaConnector
 		if (!uint.TryParse(
 			    document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..").LastChild.InnerText.Split('-')[0],
 			    out uint year))
-			year = (uint)DateTime.Now.Year;
+			year = (uint)DateTime.UtcNow.Year;
 
 		string status = document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..")
 			.ChildNodes[2].InnerText;

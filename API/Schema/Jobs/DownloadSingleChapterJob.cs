@@ -81,7 +81,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     {
         if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
             return;
-        DateTime start = DateTime.Now;
+        DateTime start = DateTime.UtcNow;
         using Image image = Image.Load(imagePath);
         File.Delete(imagePath);
         if(TrangaSettings.bwImages) 

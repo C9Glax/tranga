@@ -43,7 +43,7 @@ public static class Tranga
         if (notifications.Any())
         {
             DateTime max = notifications.MaxBy(n => n.Date)!.Date;
-            if (DateTime.Now.Subtract(max) > TrangaSettings.NotificationUrgencyDelay(urgency))
+            if (DateTime.UtcNow.Subtract(max) > TrangaSettings.NotificationUrgencyDelay(urgency))
             {
                 foreach (NotificationConnector notificationConnector in context.NotificationConnectors)
                 {
