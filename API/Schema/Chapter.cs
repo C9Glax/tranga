@@ -80,8 +80,7 @@ public class Chapter : IComparable<Chapter>
     {
         string oldPath = GetArchiveFilePath();
         ArchiveFileName = BuildArchiveFileName();
-        if (Downloaded) return new MoveFileOrFolderJob(oldPath, GetArchiveFilePath());
-        return null;
+        return Downloaded ? new MoveFileOrFolderJob(oldPath, GetArchiveFilePath()) : null;
     }
 
     /// <summary>
@@ -101,9 +100,12 @@ public class Chapter : IComparable<Chapter>
 
     private static int CompareChapterNumbers(string ch1, string ch2)
     {
-        int[] ch1Arr = ch1.Split('.').Select(c => int.Parse(c)).ToArray();
-        int[] ch2Arr = ch2.Split('.').Select(c => int.Parse(c)).ToArray();
-
+        int[] ch1Arr = ch1.Split('.').Select(c => int.TryParse(c, out int result) ? result : -1).ToArray();
+        int[] ch2Arr = ch2.Split('.').Select(c => int.TryParse(c, out int result) ? result : -1).ToArray();
+        
+        if (ch1Arr.Contains(-1) || ch2Arr.Contains(-1))
+            throw new ArgumentException("Chapter number is not in correct format");
+        
         int i = 0, j = 0;
 
         while (i < ch1Arr.Length && j < ch2Arr.Length)
