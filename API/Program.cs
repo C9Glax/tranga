@@ -124,7 +124,7 @@ using (var scope = app.Services.CreateScope())
 
 TrangaSettings.Load();
 Tranga.StartLogger();
-Tranga.JobStarterThread.Start(app.Services.CreateScope().ServiceProvider.GetService<PgsqlContext>());
+Tranga.JobStarterThread.Start(app.Services);
 Tranga.NotificationSenderThread.Start(app.Services.CreateScope().ServiceProvider.GetService<PgsqlContext>());
 
 app.UseCors("AllowAll");
