@@ -213,7 +213,7 @@ public abstract class MangaConnector : GlobalBase
         return HttpStatusCode.OK;
     }
     
-    protected string SaveCoverImageToCache(string url, string mangaInternalId, RequestType requestType)
+    protected string SaveCoverImageToCache(string url, string mangaInternalId, RequestType requestType, string? refferer = null)
     {
         Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
         //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
@@ -224,7 +224,7 @@ public abstract class MangaConnector : GlobalBase
         if (File.Exists(saveImagePath))
             return saveImagePath;
         
-        RequestResult coverResult = downloadClient.MakeRequest(url, requestType);
+        RequestResult coverResult = downloadClient.MakeRequest(url, requestType, referrer);
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
         Directory.CreateDirectory(TrangaSettings.coverImageCache);

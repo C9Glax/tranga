@@ -39,6 +39,7 @@ public class MangaConnectorJsonConverter : JsonConverter
             "MangaHere" => this._connectors.First(c => c is MangaHere),
             "AsuraToon" => this._connectors.First(c => c is AsuraToon),
             "Weebcentral" => this._connectors.First(c => c is Weebcentral),
+            "Webtoons" => this._connectors.First(c => c is Webtoons),
             _ => throw new UnreachableException($"Could not find Connector with name {connectorName}")
         };
     }
