@@ -73,6 +73,7 @@ internal class ChromiumDownloadClient : DownloadClient
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         IPage page = _browser.NewPageAsync().Result;
         page.DefaultTimeout = TrangaSettings.ChromiumPageTimeoutMs;
+        page.SetExtraHttpHeadersAsync(new() { { "Referer", referrer } });
         IResponse response;
         try
         {
