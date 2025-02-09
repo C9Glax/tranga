@@ -28,7 +28,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<Bato>("Bato")
             .HasValue<MangaHere>("MangaHere")
             .HasValue<MangaKatana>("MangaKatana")
-            .HasValue<MangaLife>("Manga4Life")
             .HasValue<Manganato>("Manganato")
             .HasValue<Mangaworld>("Mangaworld")
             .HasValue<ManhuaPlus>("ManhuaPlus")
