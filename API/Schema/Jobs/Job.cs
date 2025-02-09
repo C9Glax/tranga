@@ -43,8 +43,11 @@ public abstract class Job
         RecurrenceMs = recurrenceMs;
     }
 
-    public IEnumerable<Job> Run(PgsqlContext context)
+    public IEnumerable<Job> Run(IServiceProvider serviceProvider)
     {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
+        
         this.state = JobState.Running;
         IEnumerable<Job> newJobs = RunInternal(context);
         this.state = JobState.Completed;

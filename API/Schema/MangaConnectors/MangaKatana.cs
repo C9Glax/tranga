@@ -127,7 +127,7 @@ public class MangaKatana : MangaConnector
 		while (description.StartsWith('\n'))
 			description = description.Substring(1);
 
-		uint year = (uint)DateTime.Now.Year;
+		uint year = (uint)DateTime.UtcNow.Year;
 		string yearString = infoTable.Descendants("div").First(d => d.HasClass("updateAt"))
 			.InnerText.Split('-')[^1];
 
@@ -185,9 +185,8 @@ public class MangaKatana : MangaConnector
 				.GetAttributeValue("href", "");
 
 			int? volumeNumber = volumeRex.IsMatch(url) ? int.Parse(volumeRex.Match(url).Groups[1].Value) : null;
-			if(!ChapterNumber.CanParse(chapterNumRex.Match(url).Groups[1].Value))
-				continue;
-			ChapterNumber chapterNumber = new(chapterNumRex.Match(url).Groups[1].Value);
+			
+			string chapterNumber = new(chapterNumRex.Match(url).Groups[1].Value);
 			string chapterName = chapterNameRex.Match(fullString).Groups[1].Value;
 			try
 			{

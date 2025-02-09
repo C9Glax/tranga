@@ -43,7 +43,7 @@ public static class Tranga
         if (notifications.Any())
         {
             DateTime max = notifications.MaxBy(n => n.Date)!.Date;
-            if (DateTime.Now.Subtract(max) > TrangaSettings.NotificationUrgencyDelay(urgency))
+            if (DateTime.UtcNow.Subtract(max) > TrangaSettings.NotificationUrgencyDelay(urgency))
             {
                 foreach (NotificationConnector notificationConnector in context.NotificationConnectors)
                 {
@@ -56,18 +56,22 @@ public static class Tranga
         context.SaveChanges();
     }
 
-    private static void JobStarter(object? pgsqlContext)
+    private static void JobStarter(object? serviceProviderObj)
     {
-        if(pgsqlContext is null) return;
-        PgsqlContext context = (PgsqlContext)pgsqlContext;
-        
-        string TRANGA = "\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n";
+        if(serviceProviderObj is null) return;
+        IServiceProvider serviceProvider = (IServiceProvider)serviceProviderObj;
+        using IServiceScope scope = serviceProvider.CreateScope();
+        PgsqlContext? context = scope.ServiceProvider.GetService<PgsqlContext>();
+        if (context is null) return;
+
+        string TRANGA =
+            "\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n";
         Log.Info(TRANGA);
         while (true)
         {
             List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
             foreach (Job job in completedJobs)
-                if(job.RecurrenceMs <= 0)
+                if (job.RecurrenceMs <= 0)
                     context.Jobs.Remove(job);
                 else
                 {
@@ -75,13 +79,17 @@ public static class Tranga
                     job.state = JobState.Waiting;
                     context.Jobs.Update(job);
                 }
-            
-            List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running).ToList().Where(j => j.NextExecution < DateTime.UtcNow).ToList();
+
+            List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running).ToList()
+                .Where(j => j.NextExecution < DateTime.UtcNow).ToList();
             foreach (Job job in runJobs)
             {
-                Thread t = new (() =>
+                // If the job is already running, skip it
+                if (RunningJobs.Values.Any(j => j.JobId == job.JobId)) continue;
+
+                Thread t = new(() =>
                 {
-                    IEnumerable<Job> newJobs = job.Run(context);
+                    IEnumerable<Job> newJobs = job.Run(serviceProvider);
                     context.Jobs.AddRange(newJobs);
                 });
                 RunningJobs.Add(t, job);
@@ -96,7 +104,7 @@ public static class Tranga
                 RunningJobs.Remove(thread.thread);
                 context.Jobs.Update(thread.job);
             }
-            
+
             context.SaveChanges();
             Thread.Sleep(2000);
         }

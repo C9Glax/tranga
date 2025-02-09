@@ -12,7 +12,7 @@ using static System.IO.UnixFileMode;
 namespace API.Schema.Jobs;
 
 public class DownloadMangaCoverJob(string chapterId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadMangaCoverJob), 64), JobType.DownloadMangaCoverJob, 0, parentJobId, dependsOnJobsIds)
+    : Job(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJobId, dependsOnJobsIds)
 {
     [MaxLength(64)]
     public string ChapterId { get; init; } = chapterId;
@@ -79,7 +79,6 @@ public class DownloadMangaCoverJob(string chapterId, string? parentJobId = null,
     {
         if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
             return;
-        DateTime start = DateTime.Now;
         using Image image = Image.Load(imagePath);
         File.Delete(imagePath);
         if(TrangaSettings.bwImages) 

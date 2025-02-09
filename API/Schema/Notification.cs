@@ -7,7 +7,7 @@ namespace API.Schema;
 public class Notification(string title, string message = "", NotificationUrgency urgency = NotificationUrgency.Normal, DateTime? date = null)
 {
     [MaxLength(64)]
-    public string NotificationId { get; init; } = TokenGen.CreateToken("Notification", 64);
+    public string NotificationId { get; init; } = TokenGen.CreateToken("Notification");
 
     public NotificationUrgency Urgency { get; init; } = urgency;
 

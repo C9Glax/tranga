@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -14,7 +14,7 @@ namespace API.Schema;
 public class Manga
 {
     [MaxLength(64)]
-    public string MangaId { get; init; } = TokenGen.CreateToken(typeof(Manga), 64);
+    public string MangaId { get; init; }
     [MaxLength(64)]
     public string ConnectorId { get; init; }
 
@@ -30,6 +30,7 @@ public class Manga
     public float IgnoreChapterBefore { get; internal set; }
 
     public string MangaConnectorId { get; private set; }
+    
     public MangaConnector? MangaConnector { get; private set; }
     
     public ICollection<Author>? Authors { get; internal set; }
@@ -57,6 +58,7 @@ public class Manga
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
         float ignoreChapterBefore, string mangaConnectorId)
     {
+        MangaId = TokenGen.CreateToken(typeof(Manga), mangaConnectorId, connectorId);
         ConnectorId = connectorId;
         Name = name;
         Description = description;

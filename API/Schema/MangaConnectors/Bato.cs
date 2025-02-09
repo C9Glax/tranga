@@ -97,7 +97,7 @@ public class Bato : MangaConnector
 		if (!uint.TryParse(
 			    document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..").LastChild.InnerText.Split('-')[0],
 			    out uint year))
-			year = (uint)DateTime.Now.Year;
+			year = (uint)DateTime.UtcNow.Year;
 
 		string status = document.DocumentNode.SelectSingleNode("//span[text()='Original Publication:']/..")
 			.ChildNodes[2].InnerText;
@@ -159,9 +159,7 @@ public class Bato : MangaConnector
 			Match match = numberRex.Match(chapterUrl);
 			string id = match.Groups[1].Value;
 			int? volumeNumber = match.Groups[2].Success ? int.Parse(match.Groups[2].Value) : null;
-			if(ChapterNumber.CanParse(match.Groups[3].Value))
-				continue;
-			ChapterNumber chapterNumber = new(match.Groups[3].Value);
+			string chapterNumber = new(match.Groups[3].Value);
 			string url = $"https://bato.to{chapterUrl}?load=2";
 			try
 			{

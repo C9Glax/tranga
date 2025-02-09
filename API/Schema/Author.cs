@@ -7,6 +7,6 @@ namespace API.Schema;
 public class Author(string authorName)
 {
     [MaxLength(64)]
-    public string AuthorId { get; init; } = TokenGen.CreateToken(typeof(Author), 64);
+    public string AuthorId { get; init; } = TokenGen.CreateToken(typeof(Author), authorName);
     public string AuthorName { get; init; } = authorName;
 }

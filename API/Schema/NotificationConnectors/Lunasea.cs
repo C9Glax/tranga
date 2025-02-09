@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace API.Schema.NotificationConnectors;
 
 public class Lunasea(string id)
-    : NotificationConnector(TokenGen.CreateToken(typeof(Lunasea), 64), NotificationConnectorType.LunaSea)
+    : NotificationConnector(TokenGen.CreateToken(typeof(Lunasea), id), NotificationConnectorType.LunaSea)
 {
     public string Id { get; init; } = id;
     public override void SendNotification(string title, string notificationText)

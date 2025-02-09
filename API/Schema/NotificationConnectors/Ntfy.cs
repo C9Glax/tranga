@@ -11,7 +11,7 @@ public class Ntfy : NotificationConnector
     public string Auth { get; init; }
     public string Topic { get; init; }
 
-    public Ntfy(string endpoint, string auth, string topic): base(TokenGen.CreateToken(typeof(Ntfy), 64), NotificationConnectorType.Ntfy)
+    public Ntfy(string endpoint, string auth, string topic): base(TokenGen.CreateToken(typeof(Ntfy), endpoint), NotificationConnectorType.Ntfy)
     {
         Endpoint = endpoint;
         Auth = auth;

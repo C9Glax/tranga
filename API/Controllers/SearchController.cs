@@ -1,4 +1,4 @@
-﻿using API.Schema;
+using API.Schema;
 using API.Schema.MangaConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -82,8 +82,9 @@ public class SearchController(PgsqlContext context) : Controller
     {
         if (manga is null)
             return null;
+        
         Manga? existing = context.Manga.FirstOrDefault(m =>
-            m.MangaConnector == manga.MangaConnector && m.ConnectorId == manga.ConnectorId);
+            m.MangaId == manga.MangaId);
         
         if (tags is not null)
         {

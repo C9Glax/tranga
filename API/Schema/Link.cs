@@ -7,7 +7,7 @@ namespace API.Schema;
 public class Link(string linkProvider, string linkUrl)
 {
     [MaxLength(64)]
-    public string LinkId { get; init; } = TokenGen.CreateToken(typeof(Link), 64);
+    public string LinkId { get; init; } = TokenGen.CreateToken(typeof(Link), linkProvider, linkUrl);
     public string LinkProvider { get; init; } = linkProvider;
     public string LinkUrl { get; init; } = linkUrl;
 

@@ -8,7 +8,7 @@ namespace API.Schema;
 public class MangaAltTitle(string language, string title)
 {
     [MaxLength(64)]
-    public string AltTitleId { get; init; } = TokenGen.CreateToken("AltTitle", 64);
+    public string AltTitleId { get; init; } = TokenGen.CreateToken("AltTitle", language, title);
     [MaxLength(8)]
     public string Language { get; init; } = language;
     public string Title { get; set; } = title;
