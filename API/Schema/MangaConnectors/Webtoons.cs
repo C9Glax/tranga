@@ -1,51 +1,48 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
+using API.MangaDownloadClients;
 using HtmlAgilityPack;
-using Tranga.Jobs;
 
-namespace Tranga.MangaConnectors;
+namespace API.Schema.MangaConnectors;
 
 public class Webtoons : MangaConnector
 {
 
-    public Webtoons(GlobalBase clone) : base(clone, "Webtoons", ["en"])
+    public Webtoons() : base("Webtoons", ["en"], ["https://www.webtoons.com"])
     {
-        this.downloadClient = new HttpDownloadClient(clone);
+        this.downloadClient = new HttpDownloadClient();
     }
 
     // Done
-    public override Manga[] GetManga(string publicationTitle = "")
+    public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "")
     {
         string sanitizedTitle = string.Join(' ', Regex.Matches(publicationTitle, "[A-z]*").Where(m => m.Value.Length > 0)).ToLower();
-        Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string requestUrl = $"https://www.webtoons.com/en/search?keyword={sanitizedTitle}&searchType=WEBTOON";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300) {
-            Log($"Failed to retrieve site");
-            return Array.Empty<Manga>();
+            return [];
         }
 
         if (requestResult.htmlDocument is null)
         {
-            Log($"Failed to retrieve site");
-            return Array.Empty<Manga>();
+            return [];
         }
 
-        Manga[] publications = ParsePublicationsFromHtml(requestResult.htmlDocument);
-        Log($"Retrieved {publications.Length} publications. Term=\"{publicationTitle}\"");
+        (Manga, List<Author>, List<MangaTag>, List<Link>, List<MangaAltTitle>)[] publications =
+            ParsePublicationsFromHtml(requestResult.htmlDocument);
         return publications;
     }
 
     // Done
-    public override Manga? GetMangaFromId(string publicationId)
+    public override (Manga, List<Author>, List<MangaTag>, List<Link>, List<MangaAltTitle>)? GetMangaFromId(string publicationId)
     {
         PublicationManager pb = new PublicationManager(publicationId);
         return GetMangaFromUrl($"https://www.webtoons.com/en/{pb.Category}/{pb.Title}/list?title_no={pb.Id}");
     }
 
     // Done
-    public override Manga? GetMangaFromUrl(string url)
+    public override (Manga, List<Author>, List<MangaTag>, List<Link>, List<MangaAltTitle>)? GetMangaFromUrl(string url)
     {
         RequestResult requestResult = downloadClient.MakeRequest(url, RequestType.MangaInfo);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300) {
@@ -53,7 +50,6 @@ public class Webtoons : MangaConnector
         }
         if (requestResult.htmlDocument is null)
         {
-            Log($"Failed to retrieve site");
             return null;
         }
         Regex regex = new Regex(@".*webtoons\.com/en/(?<category>[^/]+)/(?<title>[^/]+)/list\?title_no=(?<id>\d+).*");
@@ -63,17 +59,15 @@ public class Webtoons : MangaConnector
             PublicationManager pm = new PublicationManager(match.Groups["title"].Value, match.Groups["category"].Value, match.Groups["id"].Value);
             return ParseSinglePublicationFromHtml(requestResult.htmlDocument, pm.getPublicationId(), url);
         }
-        Log($"Failed match Regex ID");
         return null;
     }
 
     // Done
-    private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
+    private (Manga, List<Author>, List<MangaTag>, List<Link>, List<MangaAltTitle>)[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         HtmlNode mangaList = document.DocumentNode.SelectSingleNode("//ul[contains(@class, 'card_lst')]");
         if (!mangaList.ChildNodes.Any(node => node.Name == "li")) {
-            Log($"Failed to parse publication");
-            return Array.Empty<Manga>();
+            return [];
         }
 
         List<string> urls = document.DocumentNode
@@ -81,12 +75,12 @@ public class Webtoons : MangaConnector
                             .Select(node => node.GetAttributeValue("href", "https://www.webtoons.com"))
                             .ToList();
 
-        HashSet<Manga> ret = new();
+        List<(Manga, List<Author>, List<MangaTag>, List<Link>, List<MangaAltTitle>)> ret = new();
         foreach (string url in urls)
         {
-            Manga? manga = GetMangaFromUrl(url);
-            if (manga is not null)
-                ret.Add((Manga)manga);
+            (Manga, List<Author>, List<MangaTag>, List<Link>, List<MangaAltTitle>)? manga = GetMangaFromUrl(url);
+            if(manga is { } m)
+                ret.Add(m);
         }
 
         return ret.ToArray();
@@ -99,7 +93,7 @@ public class Webtoons : MangaConnector
     }
 
     // Done
-    private Manga ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
+    private (Manga, List<Author>, List<MangaTag>, List<Link>, List<MangaAltTitle>) ParseSinglePublicationFromHtml(HtmlDocument document, string publicationId, string websiteUrl)
     {
         HtmlNode infoNode1 = document.DocumentNode.SelectSingleNode("//*[@id='content']/div[2]/div[1]/div[1]");
         HtmlNode infoNode2 = document.DocumentNode.SelectSingleNode("//*[@id='content']/div[2]/div[2]/div[2]");
@@ -113,39 +107,43 @@ public class Webtoons : MangaConnector
         Regex regex = new Regex(@"url\((?<url>.*?)\)");
         Match match = regex.Match(posterNode.GetAttributeValue("style", ""));
 
-        string posterUrl = match.Groups["url"].Value;
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover, websiteUrl);
+        string coverUrl = match.Groups["url"].Value;
 
         string genre = infoNode1.SelectSingleNode(".//h2[contains(@class, 'genre')]")
                             .InnerText.Trim();
-        string[] tags = [ genre ];
+        List<MangaTag> mangaTags = [new MangaTag(genre)];
 
         List<HtmlNode> authorsNodes = infoNode1.SelectSingleNode(".//div[contains(@class, 'author_area')]").Descendants("a").ToList();
-        List<string> authors = authorsNodes.Select(node => node.InnerText.Trim()).ToList();
+        List<Author> authors = authorsNodes.Select(node => new Author(node.InnerText.Trim())).ToList();
 
         string originalLanguage = "";
 
-        int year = DateTime.Now.Year;
+        uint year = 0;
 
         string status1 = infoNode2.SelectSingleNode(".//p").InnerText;
         string status2 = infoNode2.SelectSingleNode(".//p/span").InnerText;
-        Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
+        MangaReleaseStatus releaseStatus = MangaReleaseStatus.Unreleased;
         if(status2.Length == 0 || status1.ToLower() == "completed") {
-            releaseStatus = Manga.ReleaseStatusByte.Completed;
+            releaseStatus = MangaReleaseStatus.Completed;
         } else if(status2.ToLower() == "up") {
-            releaseStatus = Manga.ReleaseStatusByte.Continuing;
+            releaseStatus = MangaReleaseStatus.Continuing;
         }
 
-        Manga manga = new(sortName, authors, description, new Dictionary<string, string>(), tags, posterUrl, coverFileNameInCache, new Dictionary<string, string>(),
-            year, originalLanguage, publicationId, releaseStatus, websiteUrl: websiteUrl);
-        AddMangaToCache(manga);
-        return manga;
+        Manga manga = new (publicationId, sortName, description, websiteUrl, coverUrl, null, year,
+            originalLanguage, releaseStatus, -1,
+            this, 
+            authors, 
+            mangaTags, 
+            [],
+            []);
+		
+        return (manga, authors, mangaTags, [], []);
     }
 
     // Done
     public override Chapter[] GetChapters(Manga manga, string language = "en")
     {
-        PublicationManager pm = new PublicationManager(manga.publicationId);
+        PublicationManager pm = new(manga.MangaId);
         string requestUrl = $"https://www.webtoons.com/en/{pm.Category}/{pm.Title}/list?title_no={pm.Id}";
         // Leaving this in for verification if the page exists
         RequestResult requestResult =
@@ -163,7 +161,6 @@ public class Webtoons : MangaConnector
             chapters.AddRange(ParseChaptersFromHtml(manga, pageRequestUrl));
         }
 
-        Log($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
 
@@ -173,7 +170,6 @@ public class Webtoons : MangaConnector
         RequestResult result = downloadClient.MakeRequest(mangaUrl, RequestType.Default);
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300 || result.htmlDocument is null)
         {
-            Log("Failed to load site");
             return new List<Chapter>();
         }
 
@@ -186,38 +182,28 @@ public class Webtoons : MangaConnector
 
             string id = chapterInfo.GetAttributeValue("id", "");
             if(id == "") continue;
-            string? volumeNumber = null;
             string chapterNumber = chapterInfo.GetAttributeValue("data-episode-no", "");
             if(chapterNumber == "") continue;
             string chapterName = infoNode.SelectSingleNode(".//span[contains(@class, 'subj')]/span").InnerText.Trim();
-            ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
+            ret.Add(new Chapter(manga, url, chapterNumber, null, chapterName));
         }
 
         return ret;
     }
 
-    public override HttpStatusCode DownloadChapter(Chapter chapter, ProgressToken? progressToken = null)
+    internal override string[] GetChapterImageUrls(Chapter chapter)
     {
-        if (progressToken?.cancellationRequested ?? false)
-        {
-            progressToken.Cancel();
-            return HttpStatusCode.RequestTimeout;
-        }
-
-        Manga chapterParentManga = chapter.parentManga;
-        Log($"Retrieving chapter-info {chapter} {chapterParentManga}");
-        string requestUrl = chapter.url;
+        string requestUrl = chapter.Url;
         // Leaving this in to check if the page exists
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
-            progressToken?.Cancel();
-            return requestResult.statusCode;
+            return [];
         }
 
         string[] imageUrls = ParseImageUrlsFromHtml(requestUrl);
-		return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage, progressToken:progressToken, referrer: requestUrl);
+        return imageUrls;
     }
 
     private string[] ParseImageUrlsFromHtml(string mangaUrl)
@@ -226,12 +212,11 @@ public class Webtoons : MangaConnector
             downloadClient.MakeRequest(mangaUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
-            return Array.Empty<string>();
+            return [];
         }
         if (requestResult.htmlDocument is null)
         {
-            Log($"Failed to retrieve site");
-            return Array.Empty<string>();
+            return [];
         }
 
         return requestResult.htmlDocument.DocumentNode
