@@ -69,6 +69,7 @@ internal class ChromiumDownloadClient : DownloadClient
         if (_browser is null)
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         IPage page = _browser.NewPageAsync().Result;
+        page.SetExtraHttpHeadersAsync(new() { { "Referer", referrer } });
         page.DefaultTimeout = 10000;
         IResponse response;
         try

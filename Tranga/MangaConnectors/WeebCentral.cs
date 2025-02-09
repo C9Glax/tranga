@@ -43,7 +43,7 @@ public class Weebcentral : MangaConnector
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
         if (document.DocumentNode.SelectNodes("//article") == null)
-            return Array.Empty<Manga>();
+            return [];
 
         var urls = document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover']")
             .Select(elem => elem.GetAttributeValue("href", "")).ToList();
@@ -127,33 +127,6 @@ public class Weebcentral : MangaConnector
         return GetMangaFromUrl($"https://weebcentral.com/series/{publicationId}");
     }
 
-    private string ToFilteredString(string input)
-    {
-        return string.Join(' ', input.ToLower().Split(' ').Where(word => _filterWords.Contains(word) == false));
-    }
-
-    private SearchResult[] FilteredResults(string publicationTitle, SearchResult[] unfilteredSearchResults)
-    {
-        Dictionary<SearchResult, int> similarity = new();
-        foreach (var sr in unfilteredSearchResults)
-        {
-            List<int> scores = new();
-            var filteredPublicationString = ToFilteredString(publicationTitle);
-            var filteredSString = ToFilteredString(sr.s);
-            scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(filteredSString, filteredPublicationString));
-            foreach (var srA in sr.a)
-            {
-                var filteredAString = ToFilteredString(srA);
-                scores.Add(NeedlemanWunschStringUtil.CalculateSimilarity(filteredAString, filteredPublicationString));
-            }
-
-            similarity.Add(sr, scores.Sum() / scores.Count);
-        }
-
-        var ret = similarity.OrderBy(s => s.Value).Take(10).Select(s => s.Key).ToList();
-        return ret.ToArray();
-    }
-
     public override Chapter[] GetChapters(Manga manga, string language = "en")
     {
         Log($"Getting chapters {manga}");
@@ -161,11 +134,11 @@ public class Weebcentral : MangaConnector
         var requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return Array.Empty<Chapter>();
+            return [];
 
         //Return Chapters ordered by Chapter-Number
         if (requestResult.htmlDocument is null)
-            return Array.Empty<Chapter>();
+            return [];
         var chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
         Log($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
@@ -232,12 +205,5 @@ public class Weebcentral : MangaConnector
         var urls = imageNodes.Select(imgNode => imgNode.GetAttributeValue("src", "")).ToArray();
 
         return DownloadChapterImages(urls, chapter, RequestType.MangaImage, progressToken: progressToken);
-    }
-
-    private struct SearchResult
-    {
-        public string i { get; set; }
-        public string s { get; set; }
-        public string[] a { get; set; }
     }
 }
