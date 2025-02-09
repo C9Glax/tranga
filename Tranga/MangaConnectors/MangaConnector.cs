@@ -213,7 +213,7 @@ public abstract class MangaConnector : GlobalBase
         return HttpStatusCode.OK;
     }
     
-    protected string SaveCoverImageToCache(string url, string mangaInternalId, RequestType requestType, string? refferer = null)
+    protected string SaveCoverImageToCache(string url, string mangaInternalId, RequestType requestType, string? referrer = null)
     {
         Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
         //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
