@@ -167,9 +167,10 @@ public class JobBoss : GlobalBase
                 Log($"Adding Job {job}");
                 if (!AddJob(job, file.FullName)) //If we detect a duplicate, delete the file.
                 {
-                    string path = string.Concat(file.FullName, ".duplicate");
-                    file.MoveTo(path);
-                    Log($"Duplicate detected or otherwise not able to add job to list.\nMoved job {job} to {path}");
+                    //string path = string.Concat(file.FullName, ".duplicate");
+                    //file.MoveTo(path);
+                    //Log($"Duplicate detected or otherwise not able to add job to list.\nMoved job {job} to {path}");
+                    Log($"Duplicate detected or otherwise not able to add job to list. Removed the file {file.FullName} {job}");
                 }
             }
             catch (Exception e)
