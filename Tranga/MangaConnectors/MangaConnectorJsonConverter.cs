@@ -34,7 +34,6 @@ public class MangaConnectorJsonConverter : JsonConverter
             "MangaKatana" => this._connectors.First(c => c is MangaKatana),
             "Mangaworld" => this._connectors.First(c => c is Mangaworld),
             "Bato" => this._connectors.First(c => c is Bato),
-            "Manga4Life" => this._connectors.First(c => c is MangaLife),
             "ManhuaPlus" => this._connectors.First(c => c is ManhuaPlus),
             "MangaHere" => this._connectors.First(c => c is MangaHere),
             "AsuraToon" => this._connectors.First(c => c is AsuraToon),

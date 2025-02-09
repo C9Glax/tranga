@@ -22,7 +22,6 @@ public partial class Tranga : GlobalBase
             new MangaKatana(this),
             new Mangaworld(this),
             new Bato(this),
-            new MangaLife(this),
             new ManhuaPlus(this),
             new MangaHere(this),
             new AsuraToon(this),
