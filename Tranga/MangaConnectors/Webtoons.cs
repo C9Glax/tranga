@@ -154,15 +154,16 @@ public class Webtoons : MangaConnector
             return Array.Empty<Chapter>();
 
         // Get number of pages
-        int pages = requestResult.htmlDocument.DocumentNode.SelectSingleNode("//div[contains(@class, 'paginate')]").ChildNodes.ToArray().Length;
+        int pages = requestResult.htmlDocument.DocumentNode
+                            .SelectNodes("//div[contains(@class, 'paginate')]/a")
+                            .ToList()
+                            .Count;
         List<Chapter> chapters = new List<Chapter>();
         
         for(int page = 1; page <= pages; page++) {
             string pageRequestUrl = $"{requestUrl}&page={page}";
-
             chapters.AddRange(ParseChaptersFromHtml(manga, pageRequestUrl));
         }
-
         Log($"Got {chapters.Count} chapters. {manga}");
         return chapters.Order().ToArray();
     }
