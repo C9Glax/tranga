@@ -118,6 +118,15 @@ public class Server : GlobalBase
             case "Connectors":
                 SendResponse(HttpStatusCode.OK, response, _parent.GetConnectors().Select(con => con.name).ToArray());
                 break;
+            case "Languages":
+                if (!requestVariables.TryGetValue("connector", out connectorName) ||
+                    !_parent.TryGetConnector(connectorName, out connector))
+                {
+                    SendResponse(HttpStatusCode.BadRequest, response);
+                    break;
+                }
+                SendResponse(HttpStatusCode.OK, response, connector);
+                break;
             case "Manga/Cover":
                 if (!requestVariables.TryGetValue("internalId", out internalId) ||
                     !_parent.TryGetPublicationById(internalId, out manga))
