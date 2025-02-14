@@ -10,7 +10,6 @@ namespace Tranga.MangaConnectors;
 internal class ChromiumDownloadClient : DownloadClient
 {
     private static IBrowser? _browser;
-    private const int StartTimeoutMs = 10000;
     private readonly HttpDownloadClient _httpDownloadClient;
     
     private static async Task<IBrowser> StartBrowser(Logging.Logger? logger = null)
@@ -24,7 +23,7 @@ internal class ChromiumDownloadClient : DownloadClient
                 "--disable-dev-shm-usage",
                 "--disable-setuid-sandbox",
                 "--no-sandbox"},
-            Timeout = StartTimeoutMs
+            Timeout = TrangaSettings.ChromiumStartupTimeoutMs
         }, new LoggerFactory([new LogProvider(logger)]));
     }
 
@@ -43,6 +42,8 @@ internal class ChromiumDownloadClient : DownloadClient
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
+            if (logLevel <= LogLevel.Information)
+                return;
             logger?.WriteLine("Puppeteer", formatter.Invoke(state, exception));
         }
 
@@ -68,17 +69,20 @@ internal class ChromiumDownloadClient : DownloadClient
 
     private RequestResult MakeRequestBrowser(string url, string? referrer = null, string? clickButton = null)
     {
+        if (_browser is null)
+            return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         IPage page = _browser.NewPageAsync().Result;
-        page.DefaultTimeout = 10000;
+        page.DefaultTimeout = TrangaSettings.ChromiumPageTimeoutMs;
+        page.SetExtraHttpHeadersAsync(new() { { "Referer", referrer } });
         IResponse response;
         try
         {
             response = page.GoToAsync(url, WaitUntilNavigation.Networkidle0).Result;
-            Log("Page loaded.");
+            Log($"Page loaded. {url}");
         }
         catch (Exception e)
         {
-            Log($"Could not load Page:\n{e.Message}");
+            Log($"Could not load Page {url}\n{e.Message}");
             page.CloseAsync();
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         }

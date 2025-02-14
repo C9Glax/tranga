@@ -9,7 +9,7 @@ public class Mangaworld: MangaConnector
 {
     public Mangaworld(GlobalBase clone) : base(clone, "Mangaworld", ["it"])
     {
-        this.downloadClient = new HttpDownloadClient(clone);
+        this.downloadClient = new ChromiumDownloadClient(clone);
     }
 
     public override Manga[] GetManga(string publicationTitle = "")
@@ -163,7 +163,14 @@ public class Mangaworld: MangaConnector
                     string number = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
                     string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                     string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
-                    ret.Add(new Chapter(manga, null, volume, number, url, id));
+                    try
+                    {
+                        ret.Add(new Chapter(manga, null, volume, number, url, id));
+                    }
+                    catch (Exception e)
+                    {
+                        Log($"Failed to load chapter {number}: {e.Message}");
+                    }
                 }
             }
         }
@@ -174,7 +181,14 @@ public class Mangaworld: MangaConnector
                 string number = chapterRex.Match(chNode.SelectSingleNode("a").SelectSingleNode("span").InnerText).Groups[1].Value;
                 string url = chNode.SelectSingleNode("a").GetAttributeValue("href", "");
                 string id = idRex.Match(chNode.SelectSingleNode("a").GetAttributeValue("href", "")).Groups[1].Value;
-                ret.Add(new Chapter(manga, null, null, number, url, id));
+                try
+                {
+                    ret.Add(new Chapter(manga, null, null, number, url, id));
+                }
+                catch (Exception e)
+                {
+                    Log($"Failed to load chapter {number}: {e.Message}");
+                }
             }
         }
 

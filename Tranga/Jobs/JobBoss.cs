@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Tranga.MangaConnectors;
@@ -70,7 +71,7 @@ public class JobBoss : GlobalBase
                 RemoveJob(job);
     }
 
-    public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, string? chapterNumber = null)
+    public IEnumerable<Job> GetJobsLike(string? connectorName = null, string? internalId = null, float? chapterNumber = null)
     {
         IEnumerable<Job> ret = this.jobs;
         if (connectorName is not null)
@@ -82,7 +83,7 @@ public class JobBoss : GlobalBase
                 if (jjob is not DownloadChapter job)
                     return false;
                 return job.chapter.parentManga.internalId == internalId &&
-                       job.chapter.chapterNumber == chapterNumber;
+                       job.chapter.chapterNumber.Equals(chapterNumber);
             });
         else if (internalId is not null)
             ret = ret.Where(jjob =>
@@ -145,33 +146,43 @@ public class JobBoss : GlobalBase
 
     private void LoadJobsList(HashSet<MangaConnector> connectors)
     {
-        Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
         if (!Directory.Exists(TrangaSettings.jobsFolderPath)) //No jobs to load
+        {
+            Directory.CreateDirectory(TrangaSettings.jobsFolderPath);
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                File.SetUnixFileMode(TrangaSettings.jobsFolderPath, UserRead | UserWrite | UserExecute | GroupRead | OtherRead);
             return;
+        }
 
         //Load json-job-files
         foreach (FileInfo file in Directory.GetFiles(TrangaSettings.jobsFolderPath, "*.json").Select(f => new FileInfo(f)))
         {
             Log($"Adding {file.Name}");
-            Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
-                new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)));
-            if (job is null)
+            try
             {
-                string newName = file.FullName + ".failed";
-                Log($"Failed loading file {file.Name}.\nMoving to {newName}");
-                File.Move(file.FullName, newName);
-            }
-            else
-            {
+                Job? job = JsonConvert.DeserializeObject<Job>(File.ReadAllText(file.FullName),
+                    new JobJsonConverter(this, new MangaConnectorJsonConverter(this, connectors)));
+                if (job is null) throw new NullReferenceException();
+                
                 Log($"Adding Job {job}");
                 if (!AddJob(job, file.FullName)) //If we detect a duplicate, delete the file.
                 {
-                    string path = string.Concat(file.FullName, ".duplicate");
-                    file.MoveTo(path);
-                    Log($"Duplicate detected or otherwise not able to add job to list.\nMoved job {job} to {path}");
+                    //string path = string.Concat(file.FullName, ".duplicate");
+                    //file.MoveTo(path);
+                    //Log($"Duplicate detected or otherwise not able to add job to list.\nMoved job {job} to {path}");
+                    Log($"Duplicate detected or otherwise not able to add job to list. Removed the file {file.FullName} {job}");
                 }
+            }
+            catch (Exception e)
+            {
+                if (e is not UnreachableException or NullReferenceException)
+                    throw;
+                Log(e.Message);
+                string newName = file.FullName + ".failed";
+                Log($"Failed loading file {file.Name}.\nMoving to {newName}.\n" +
+                    $"If you think this is a bug, upload contents of the file to the Bugreport!");
+                File.Move(file.FullName, newName);
+                continue;
             }
         }
 
@@ -197,7 +208,7 @@ public class JobBoss : GlobalBase
     internal void UpdateJobFile(Job job, string? oldFile = null)
     {
         string newJobFilePath = Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
-        string oldFilePath = Path.Join(TrangaSettings.jobsFolderPath, oldFile??$"{job.id}.json");
+        string oldFilePath = oldFile??Path.Join(TrangaSettings.jobsFolderPath, $"{job.id}.json");
 
         //Delete old file
         if (File.Exists(oldFilePath))

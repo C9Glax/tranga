@@ -163,7 +163,14 @@ public class Bato : MangaConnector
 			string chapterNumber = match.Groups[3].Value;
 			string chapterName = chapterNumber;
 			string url = $"https://bato.to{chapterUrl}?load=2";
-			ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
+			try
+			{
+				ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
+			}
+			catch (Exception e)
+			{
+				Log($"Failed to load chapter {chapterNumber}: {e.Message}");
+			}
 		}
 		
 		return ret;
