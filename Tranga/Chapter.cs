@@ -44,7 +44,7 @@ public readonly struct Chapter : IComparable
         if (name is not null && name.Length > 0)
         {
             string chapterName = IllegalStrings.Replace(string.Concat(LegalCharacters.Matches(name)), "");
-            this.fileName = $"{chapterVolNumStr} - {chapterName}";
+            this.fileName = chapterName.Length > 0 ? $"{chapterVolNumStr} - {chapterName}" : chapterVolNumStr;
         }
         else
             this.fileName = chapterVolNumStr;
