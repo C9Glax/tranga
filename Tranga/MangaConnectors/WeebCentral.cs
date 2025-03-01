@@ -164,10 +164,14 @@ public class Weebcentral : MangaConnector
             string chapterNode = elem.SelectSingleNode("span[@class='grow flex items-center gap-2']/span")?.InnerText ??
                                  "Undefined";
 
-            Match chapterNumberMatch = chapterRex.Match(chapterNode);
-            string chapterNumber = chapterNumberMatch.Success ? chapterNumberMatch.Groups[1].Value : "-1";
-            Match chapterNameMatch = chapterNameRex.Match(chapterNode);
-            string chapterName = chapterNameMatch.Success ? chapterNameMatch.Groups[1].Value.Trim() : "";
+            MatchCollection chapterNumberMatch = chapterRex.Matches(chapterNode);
+            string chapterNumber = chapterNumberMatch.Count > 0 ? chapterNumberMatch[^1].Groups[1].Value : "-1";
+            MatchCollection chapterNameMatch = chapterNameRex.Matches(chapterNode);
+            string chapterName = chapterNameMatch.Count > 0
+                ? string.Join(" - ",
+                    chapterNameMatch.Select(m => m.Groups[1].Value.Trim())
+                        .Where(name => name.Length > 0 && !name.Equals("Chapter", StringComparison.OrdinalIgnoreCase)).ToArray()).Trim()
+                : "";
 
             return new Chapter(manga, chapterName != "" ? chapterName : null, null, chapterNumber, url, id);
         }).Where(elem => elem.chapterNumber != -1 && elem.url != "undefined").ToList();
