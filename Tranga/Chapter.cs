@@ -44,7 +44,7 @@ public readonly struct Chapter : IComparable
         if (name is not null && name.Length > 0)
         {
             string chapterName = IllegalStrings.Replace(string.Concat(LegalCharacters.Matches(name)), "");
-            this.fileName = $"{chapterVolNumStr} - {chapterName}";
+            this.fileName = chapterName.Length > 0 ? $"{chapterVolNumStr} - {chapterName}" : chapterVolNumStr;
         }
         else
             this.fileName = chapterVolNumStr;
@@ -96,17 +96,20 @@ public readonly struct Chapter : IComparable
         if(mangaArchive is null)
         {
             FileInfo[] archives = new DirectoryInfo(mangaDirectory).GetFiles("*.cbz");
-            Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
+            Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)(?: - (.*))?.cbz");
 
             Chapter t = this;
             mangaArchive = archives.FirstOrDefault(archive =>
             {
                 Match m = volChRex.Match(archive.Name);
-                if (m.Groups[1].Success)
-                    return m.Groups[1].Value == t.volumeNumber.ToString(GlobalBase.numberFormatDecimalPoint) &&
-                           m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint);
-                else
-                    return m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint);
+                /*
+                 * 1. If the volumeNumber is not present in the filename, it is not checked.
+                 * 2. Check the chapterNumber in the chapter against the one in the filename.
+                 * 3. The chpaterName has to either be absent both in the chapter and the filename or match.
+                 */
+                return (!m.Groups[1].Success || m.Groups[1].Value == t.volumeNumber.ToString(GlobalBase.numberFormatDecimalPoint)) &&
+                       m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint) &&
+                       ((!m.Groups[3].Success && string.IsNullOrEmpty(t.name)) || m.Groups[3].Value == t.name);
             });
         }
         
