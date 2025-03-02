@@ -140,7 +140,7 @@ public class Weebcentral : MangaConnector
             return [];
         List<Chapter> chapters = ParseChaptersFromHtml(manga, requestResult.htmlDocument);
         Log($"Got {chapters.Count} chapters. {manga}");
-        return chapters.OrderBy(c => c.name).ThenBy(c => c.volumeNumber).ThenBy(c => c.chapterNumber).ToArray();
+        return chapters.OrderByDescending(c => c.name).ThenBy(c => c.volumeNumber).ThenBy(c => c.chapterNumber).ToArray();
     }
 
     private List<Chapter> ParseChaptersFromHtml(Manga manga, HtmlDocument document)
