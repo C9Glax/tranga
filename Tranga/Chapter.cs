@@ -102,9 +102,14 @@ public readonly struct Chapter : IComparable
             mangaArchive = archives.FirstOrDefault(archive =>
             {
                 Match m = volChRex.Match(archive.Name);
+                /*
+                 * 1. If the volumeNumber is not present in the filename, it is not checked.
+                 * 2. Check the chapterNumber in the chapter against the one in the filename.
+                 * 3. The chpaterName has to either be absent both in the chapter and the filename or match.
+                 */
                 return (!m.Groups[1].Success || m.Groups[1].Value == t.volumeNumber.ToString(GlobalBase.numberFormatDecimalPoint)) &&
                        m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint) &&
-                       (t.name == null || m.Groups[3].Value == t.name);
+                       ((!m.Groups[3].Success && string.IsNullOrEmpty(t.name)) || m.Groups[3].Value == t.name);
             });
         }
         
