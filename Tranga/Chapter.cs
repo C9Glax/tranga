@@ -96,17 +96,15 @@ public readonly struct Chapter : IComparable
         if(mangaArchive is null)
         {
             FileInfo[] archives = new DirectoryInfo(mangaDirectory).GetFiles("*.cbz");
-            Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)");
+            Regex volChRex = new(@"(?:Vol(?:ume)?\.([0-9]+)\D*)?Ch(?:apter)?\.([0-9]+(?:\.[0-9]+)*)(?: - (.*))?.cbz");
 
             Chapter t = this;
             mangaArchive = archives.FirstOrDefault(archive =>
             {
                 Match m = volChRex.Match(archive.Name);
-                if (m.Groups[1].Success)
-                    return m.Groups[1].Value == t.volumeNumber.ToString(GlobalBase.numberFormatDecimalPoint) &&
-                           m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint);
-                else
-                    return m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint);
+                return (!m.Groups[1].Success || m.Groups[1].Value == t.volumeNumber.ToString(GlobalBase.numberFormatDecimalPoint)) &&
+                       m.Groups[2].Value == t.chapterNumber.ToString(GlobalBase.numberFormatDecimalPoint) &&
+                       (t.name == null || m.Groups[3].Value == t.name);
             });
         }
         
