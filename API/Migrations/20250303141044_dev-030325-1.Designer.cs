@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(PgsqlContext))]
-    [Migration("20250111180034_ChapterNumber")]
-    partial class ChapterNumber
+    [Migration("20250303141044_dev-030325-1")]
+    partial class dev0303251
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -469,27 +469,6 @@ namespace API.Migrations
                     b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
 
                     b.HasDiscriminator().HasValue("MangaKatana");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectors.MangaLife", b =>
-                {
-                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
-
-                    b.HasDiscriminator().HasValue("Manga4Life");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectors.Manganato", b =>
-                {
-                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
-
-                    b.HasDiscriminator().HasValue("Manganato");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectors.Mangasee", b =>
-                {
-                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
-
-                    b.HasDiscriminator().HasValue("Mangasee");
                 });
 
             modelBuilder.Entity("API.Schema.MangaConnectors.Mangaworld", b =>
