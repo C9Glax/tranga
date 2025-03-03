@@ -49,8 +49,10 @@ public abstract class Job
         PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
         
         this.state = JobState.Running;
+        context.SaveChanges();
         IEnumerable<Job> newJobs = RunInternal(context);
         this.state = JobState.Completed;
+        context.SaveChanges();
         return newJobs;
     }
     

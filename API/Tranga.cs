@@ -69,7 +69,7 @@ public static class Tranga
         Log.Info(TRANGA);
         while (true)
         {
-            List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
+            List<Job> completedJobs = context.Jobs.Where(j => j.state >= JobState.Completed && j.state < JobState.Failed).ToList();
             foreach (Job job in completedJobs)
                 if (job.RecurrenceMs <= 0)
                     context.Jobs.Remove(job);
@@ -86,6 +86,25 @@ public static class Tranga
             {
                 // If the job is already running, skip it
                 if (RunningJobs.Values.Any(j => j.JobId == job.JobId)) continue;
+
+                if (job is DownloadNewChaptersJob dncj)
+                {
+                    if (RunningJobs.Values.Any(j =>
+                            j is DownloadNewChaptersJob rdncj &&
+                            rdncj.Manga?.MangaConnector == dncj.Manga?.MangaConnector))
+                    {
+                        continue;
+                    }
+                }
+                else if (job is DownloadSingleChapterJob dscj)
+                {
+                    if (RunningJobs.Values.Any(j =>
+                            j is DownloadSingleChapterJob rdscj && rdscj.Chapter?.ParentManga?.MangaConnector ==
+                            dscj.Chapter?.ParentManga?.MangaConnector))
+                    {
+                        continue;
+                    }
+                }
 
                 Thread t = new(() =>
                 {

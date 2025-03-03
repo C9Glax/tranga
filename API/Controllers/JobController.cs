@@ -152,7 +152,7 @@ public class JobController(PgsqlContext context) : Controller
         {
             context.Jobs.Add(job);
             context.SaveChanges();
-            return Created();
+            return new CreatedResult(job.JobId, job);
         }
         catch (Exception e)
         {
@@ -193,11 +193,15 @@ public class JobController(PgsqlContext context) : Controller
     /// Starts the Job with the requested ID
     /// </summary>
     /// <param name="id">Job-ID</param>
-    /// <returns>Nothing</returns>
+    /// <response code="202">Job started</response>
+    /// <response code="404">Job with ID not found</response>
+    /// <response code="409">Job was already running</response>
+    /// <response code="500">Internal Error</response>
     [HttpPost("{id}/Start")]
-    [ProducesResponseType(Status202Accepted)]
-    [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status500InternalServerError)]
+    [ProducesResponseType<AcceptedResult>(Status202Accepted)]
+    [ProducesResponseType<NotFoundResult>(Status404NotFound)]
+    [ProducesResponseType<ConflictResult>(Status409Conflict)]
+    [ProducesResponseType<ObjectResult>(Status500InternalServerError)]
     public IActionResult StartJob(string id)
     {
         Job? ret = context.Jobs.Find(id);
@@ -205,7 +209,9 @@ public class JobController(PgsqlContext context) : Controller
             return NotFound();
         try
         {
-            context.Update(ret);
+            if (ret.state >= JobState.Running && ret.state < JobState.Completed)
+                return new ConflictResult();
+            ret.LastExecution = DateTime.UnixEpoch;
             context.SaveChanges();
             return Accepted();
         }
@@ -215,6 +221,19 @@ public class JobController(PgsqlContext context) : Controller
         }
     }
 
+    /// <summary>
+    /// NOT IMPLEMENTED. Stops the Job with the requested ID
+    /// </summary>
+    /// <param name="id">Job-ID</param>
+    /// <response code="202">Job started</response>
+    /// <response code="404">Job with ID not found</response>
+    /// <response code="409">Job was not running</response>
+    /// <response code="500">Internal Error</response>
+    /// <remarks>NOT IMPLEMENTED</remarks>
+    [ProducesResponseType<AcceptedResult>(Status202Accepted)]
+    [ProducesResponseType<NotFoundResult>(Status404NotFound)]
+    [ProducesResponseType<ConflictResult>(Status409Conflict)]
+    [ProducesResponseType<ObjectResult>(Status500InternalServerError)]
     [HttpPost("{id}/Stop")]
     public IActionResult StopJob(string id)
     {
