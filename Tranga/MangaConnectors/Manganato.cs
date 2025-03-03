@@ -37,8 +37,14 @@ public class Manganato : MangaConnector
         List<string> urls = new();
         foreach (HtmlNode mangaResult in searchResults)
         {
+            try
+            {
             urls.Add(mangaResult.Descendants("h3").First(n => n.HasClass("story_name"))
                 .Descendants("a").First().GetAttributeValue("href", ""));
+            } catch
+            {
+                //failed to get a url, send it to the void
+            }
         }
 
         HashSet<Manga> ret = new();
