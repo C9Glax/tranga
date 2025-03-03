@@ -82,8 +82,6 @@ public class Manganato : MangaConnector
 
         string sortName = infoNode.Descendants("h1").First().InnerText;
 
-        //HtmlNode infoTable = infoNode.Descendants().First(d => d.Name == "table");
-        
         foreach (HtmlNode li in infoNode.Descendants("li"))
         {
             string text = li.InnerText.Trim().ToLower();
