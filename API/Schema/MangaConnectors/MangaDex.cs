@@ -256,8 +256,11 @@ public class MangaDex : MangaConnector
 
     internal override string[] GetChapterImageUrls(Chapter chapter)
     {//Request URLs for Chapter-Images
+        Match m = Regex.Match(chapter.Url, @"https?:\/\/mangadex.org\/chapter\/([0-9\-a-z]+)");
+        if (!m.Success)
+            return [];
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{chapter.ChapterId}?forcePort443=false", RequestType.MangaDexImage);
+            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{m.Groups[1].Value}?forcePort443=false", RequestType.MangaDexImage);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
             return [];
