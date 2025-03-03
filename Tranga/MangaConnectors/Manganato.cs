@@ -17,7 +17,7 @@ public class Manganato : MangaConnector
     {
         Log($"Searching Publications. Term=\"{publicationTitle}\"");
         string sanitizedTitle = string.Join('_', Regex.Matches(publicationTitle, "[A-z]*").Where(str => str.Length > 0)).ToLower();
-        string requestUrl = $"https://manganato.com/search/story/{sanitizedTitle}";
+        string requestUrl = $"https://manganato.gg/search/story/{sanitizedTitle}";
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -32,13 +32,13 @@ public class Manganato : MangaConnector
 
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
-        List<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("search-story-item")).ToList();
+        List<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("panel_story_list")).ToList();
         Log($"{searchResults.Count} items.");
         List<string> urls = new();
         foreach (HtmlNode mangaResult in searchResults)
         {
-            urls.Add(mangaResult.Descendants("a").First(n => n.HasClass("item-title")).GetAttributes()
-                .First(a => a.Name == "href").Value);
+            urls.Add(mangaResult.Descendants("h3").First(n => n.HasClass("story_name"))
+                .Descendants("a").First().GetAttributeValue("href", ""));
         }
 
         HashSet<Manga> ret = new();
@@ -78,61 +78,49 @@ public class Manganato : MangaConnector
         string originalLanguage = "";
         Manga.ReleaseStatusByte releaseStatus = Manga.ReleaseStatusByte.Unreleased;
 
-        HtmlNode infoNode = document.DocumentNode.Descendants("div").First(d => d.HasClass("story-info-right"));
+        HtmlNode infoNode = document.DocumentNode.Descendants("ul").First(d => d.HasClass("manga-info-text"));
 
         string sortName = infoNode.Descendants("h1").First().InnerText;
 
-        HtmlNode infoTable = infoNode.Descendants().First(d => d.Name == "table");
+        //HtmlNode infoTable = infoNode.Descendants().First(d => d.Name == "table");
         
-        foreach (HtmlNode row in infoTable.Descendants("tr"))
+        foreach (HtmlNode li in infoNode.Descendants("li"))
         {
-            string key = row.SelectNodes("td").First().InnerText.ToLower();
-            string value = row.SelectNodes("td").Last().InnerText;
-            string keySanitized = string.Concat(Regex.Matches(key, "[a-z]"));
-
-            switch (keySanitized)
+            string text = li.InnerText.Trim().ToLower();
+            
+            if (text.StartsWith("author(s) :"))
             {
-                case "alternative":
-                    string[] alts = value.Split(" ; ");
-                    for(int i = 0; i < alts.Length; i++)
-                        altTitles.Add(i.ToString(), alts[i]);
-                    break;
-                case "authors":
-                    authors = value.Split('-');
-                    for (int i = 0; i < authors.Length; i++)
-                        authors[i] = authors[i].Replace("\r\n", "");
-                    break;
-                case "status":
-                    switch (value.ToLower())
-                    {
-                        case "ongoing": releaseStatus = Manga.ReleaseStatusByte.Continuing; break;
-                        case "completed": releaseStatus = Manga.ReleaseStatusByte.Completed; break;
-                    }
-                    break;
-                case "genres":
-                    string[] genres = value.Split(" - ");
-                    for (int i = 0; i < genres.Length; i++)
-                        genres[i] = genres[i].Replace("\r\n", "");
-                    tags = genres.ToHashSet();
-                    break;
+                authors = li.Descendants("a").Select(a => a.InnerText.Trim()).ToArray();
+            }
+            else if (text.StartsWith("status :"))
+            {
+                string status = text.Replace("status :", "").Trim().ToLower();
+                if (status == "ongoing")
+                    releaseStatus = Manga.ReleaseStatusByte.Continuing;
+                else
+                    releaseStatus = Enum.Parse<Manga.ReleaseStatusByte>(status, true);
+            }
+            else if (li.HasClass("genres"))
+            {
+                tags = li.Descendants("a").Select(a => a.InnerText.Trim()).ToHashSet();
             }
         }
 
-        string posterUrl = document.DocumentNode.Descendants("span").First(s => s.HasClass("info-image")).Descendants("img").First()
+        string posterUrl = document.DocumentNode.Descendants("div").First(s => s.HasClass("manga-info-pic")).Descendants("img").First()
             .GetAttributes().First(a => a.Name == "src").Value;
 
         string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
 
-        string description = document.DocumentNode.Descendants("div").First(d => d.HasClass("panel-story-info-description"))
+        string description = document.DocumentNode.SelectSingleNode("//div[@id='contentBox']")
             .InnerText.Replace("Description :", "");
         while (description.StartsWith('\n'))
             description = description.Substring(1);
         
-        string pattern = "MMM dd,yyyy HH:mm";
+        string pattern = "MMM-dd-yyyy HH:mm";
 
         HtmlNode? oldestChapter = document.DocumentNode
-            .SelectNodes("//span[contains(concat(' ',normalize-space(@class),' '),' chapter-time ')]").MaxBy(
-                node => DateTime.ParseExact(node.GetAttributeValue("title", "Dec 31 2400, 23:59"), pattern,
+            .SelectNodes("//div[contains(concat(' ',normalize-space(@class),' '),' row ')]/span[@title]").MaxBy(
+                node => DateTime.ParseExact(node.GetAttributeValue("title", "Dec-31-2400 23:59"), pattern,
                     CultureInfo.InvariantCulture).Millisecond);
 
 
@@ -148,7 +136,7 @@ public class Manganato : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string language="en")
     {
         Log($"Getting chapters {manga}");
-        string requestUrl = $"https://chapmanganato.com/{manga.publicationId}";
+        string requestUrl = manga.websiteUrl;
         RequestResult requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
@@ -166,21 +154,20 @@ public class Manganato : MangaConnector
     {
         List<Chapter> ret = new();
 
-        HtmlNode chapterList = document.DocumentNode.Descendants("ul").First(l => l.HasClass("row-content-chapter"));
+        HtmlNode chapterList = document.DocumentNode.Descendants("div").First(l => l.HasClass("chapter-list"));
 
         Regex volRex = new(@"Vol\.([0-9]+).*");
         Regex chapterRex = new(@"https:\/\/chapmanganato.[A-z]+\/manga-[A-z0-9]+\/chapter-([0-9\.]+)");
         Regex nameRex = new(@"Chapter ([0-9]+(\.[0-9]+)*){1}:? (.*)");
 
-        foreach (HtmlNode chapterInfo in chapterList.Descendants("li"))
+        foreach (HtmlNode chapterInfo in chapterList.Descendants("div").Where(x => x.HasClass("row")))
         {
-            string fullString = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name")).InnerText;
-
-            string url = chapterInfo.Descendants("a").First(d => d.HasClass("chapter-name"))
-                .GetAttributeValue("href", "");
-            string? volumeNumber = volRex.IsMatch(fullString) ? volRex.Match(fullString).Groups[1].Value : null;
-            string chapterNumber = chapterRex.Match(url).Groups[1].Value;
-            string chapterName = nameRex.Match(fullString).Groups[3].Value;
+            string url = chapterInfo.Descendants("a").First().GetAttributeValue("href", "");
+            string chapterName = chapterInfo.Descendants("a").First().GetAttributeValue("title", "");
+            string chapterNumber = Regex.Match(chapterName, @"Chapter ([0-9]+(\.[0-9]+)*)").Groups[1].Value;
+            string? volumeNumber = Regex.Match(chapterName, @"Vol\.([0-9]+)").Groups[1].Value;
+            if (string.IsNullOrWhiteSpace(volumeNumber))
+                volumeNumber = "0";
             try
             {
                 ret.Add(new Chapter(manga, chapterName, volumeNumber, chapterNumber, url));
