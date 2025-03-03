@@ -109,7 +109,7 @@ public class Manganato : MangaConnector
         string posterUrl = document.DocumentNode.Descendants("div").First(s => s.HasClass("manga-info-pic")).Descendants("img").First()
             .GetAttributes().First(a => a.Name == "src").Value;
 
-        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover);
+        string coverFileNameInCache = SaveCoverImageToCache(posterUrl, publicationId, RequestType.MangaCover, "https://www.manganato.gg/");
 
         string description = document.DocumentNode.SelectSingleNode("//div[@id='contentBox']")
             .InnerText.Replace("Description :", "");
