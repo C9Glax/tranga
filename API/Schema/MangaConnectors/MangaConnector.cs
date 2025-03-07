@@ -14,6 +14,8 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
     public string[] BaseUris { get; init; } = baseUris;
     
+    public bool Enabled { get; internal set; } = true;
+    
     public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "");
 
     public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url);
