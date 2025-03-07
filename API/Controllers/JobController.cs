@@ -174,19 +174,28 @@ public class JobController(PgsqlContext context) : Controller
         try
         {
             Job? ret = context.Jobs.Find(id);
-            switch (ret is not null)
-            {
-                case true:
-                    context.Remove(ret);
-                    context.SaveChanges();
-                    return Ok();
-                case false: return NotFound();
-            }
+            if(ret is null)
+                return NotFound();
+            IQueryable<Job> children = GetChildJobs(id);
+            
+            context.RemoveRange(children);
+            context.Remove(ret);
+            context.SaveChanges();
+            return Ok();
         }
         catch (Exception e)
         {
             return StatusCode(500, e.Message);
         }
+    }
+
+    private IQueryable<Job> GetChildJobs(string parentJobId)
+    {
+        IQueryable<Job> children = context.Jobs.Where(j => j.ParentJobId == parentJobId);
+        foreach (Job child in children)
+            foreach (Job grandChild in GetChildJobs(child.JobId))
+                children.Append(grandChild);
+        return children;
     }
 
     /// <summary>
