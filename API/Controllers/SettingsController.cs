@@ -1,4 +1,6 @@
-﻿using API.Schema;
+﻿using System.Text.Json.Nodes;
+using API.MangaDownloadClients;
+using API.Schema;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -14,136 +16,144 @@ public class SettingsController(PgsqlContext context) : Controller
     /// <summary>
     /// Get all Settings
     /// </summary>
-    /// <returns></returns>
+    /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<JsonObject>(StatusCodes.Status200OK)]
     public IActionResult GetSettings()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        return Ok(TrangaSettings.Serialize());
     }
     
     /// <summary>
     /// Get the current UserAgent used by Tranga
     /// </summary>
-    /// <returns>UserAgent as string</returns>
+    /// <response code="200"></response>
     [HttpGet("UserAgent")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status200OK)]
     public IActionResult GetUserAgent()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        return Ok(TrangaSettings.userAgent);
     }
     
     /// <summary>
     /// Set a new UserAgent
     /// </summary>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
     [HttpPatch("UserAgent")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
-    public IActionResult SetUserAgent()
+    [ProducesResponseType(Status200OK)]
+    public IActionResult SetUserAgent([FromBody]string userAgent)
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        TrangaSettings.UpdateUserAgent(userAgent);
+        return Ok();
     }
     
     /// <summary>
     /// Reset the UserAgent to default
     /// </summary>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
     [HttpDelete("UserAgent")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType(Status200OK)]
     public IActionResult ResetUserAgent()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        TrangaSettings.UpdateUserAgent(TrangaSettings.DefaultUserAgent);
+        return Ok();
     }
     
     /// <summary>
     /// Get all Request-Limits
     /// </summary>
-    /// <returns></returns>
+    /// <response code="200"></response>
     [HttpGet("RequestLimits")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<Dictionary<RequestType,int>>(Status200OK)]
     public IActionResult GetRequestLimits()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        return Ok(TrangaSettings.requestLimits);
     }
     
     /// <summary>
     /// Update all Request-Limits to new values
     /// </summary>
-    /// <returns>Nothing</returns>
+    /// <remarks>NOT IMPLEMENTED</remarks>
     [HttpPatch("RequestLimits")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult SetRequestLimits()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        throw new NotImplementedException();
     }
     
     /// <summary>
     /// Reset all Request-Limits
     /// </summary>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
     [HttpDelete("RequestLimits")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status200OK)]
     public IActionResult ResetRequestLimits()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        TrangaSettings.ResetRequestLimits();
+        return Ok();
     }
     
     /// <summary>
     /// Returns Level of Image-Compression for Images
     /// </summary>
-    /// <returns></returns>
+    /// <response code="200">JPEG compression-level as Integer</response>
     [HttpGet("ImageCompression")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<int>(Status200OK)]
     public IActionResult GetImageCompression()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        return Ok(TrangaSettings.compression);
     }
     
     /// <summary>
     /// Set the Image-Compression-Level for Images
     /// </summary>
-    /// <param name="percentage">100 to disable, 0-99 for JPEG compression-Level</param>
-    /// <returns>Nothing</returns>
+    /// <param name="level">100 to disable, 0-99 for JPEG compression-Level</param>
+    /// <response code="200"></response>
+    /// <response code="400">Level outside permitted range</response>
     [HttpPatch("ImageCompression")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
-    public IActionResult SetImageCompression(int percentage)
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status400BadRequest)]
+    public IActionResult SetImageCompression(int level)
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        if (level < 0 || level > 100)
+            return BadRequest();
+        TrangaSettings.UpdateCompressImages(level);
+        return Ok();
     }
     
     /// <summary>
     /// Get state of Black/White-Image setting
     /// </summary>
-    /// <returns>True if enabled</returns>
+    /// <response code="200">True if enabled</response>
     [HttpGet("BWImages")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<bool>(Status200OK)]
     public IActionResult GetBwImagesToggle()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        return Ok(TrangaSettings.bwImages);
     }
     
     /// <summary>
     /// Enable/Disable conversion of Images to Black and White
     /// </summary>
     /// <param name="enabled">true to enable</param>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
     [HttpPatch("BWImages")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType(Status200OK)]
     public IActionResult SetBwImagesToggle(bool enabled)
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        TrangaSettings.UpdateBwImages(enabled);
+        return Ok();
     }
     
     /// <summary>
     /// Get state of April Fools Mode
     /// </summary>
     /// <remarks>April Fools Mode disables all downloads on April 1st</remarks>
-    /// <returns>True if enabled</returns>
+    /// <response code="200">True if enabled</response>
     [HttpGet("AprilFoolsMode")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<bool>(Status200OK)]
     public IActionResult GetAprilFoolsMode()
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        return Ok(TrangaSettings.aprilFoolsMode);
     }
     
     /// <summary>
@@ -151,11 +161,12 @@ public class SettingsController(PgsqlContext context) : Controller
     /// </summary>
     /// <remarks>April Fools Mode disables all downloads on April 1st</remarks>
     /// <param name="enabled">true to enable</param>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
     [HttpPatch("AprilFoolsMode")]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType(Status200OK)]
     public IActionResult SetAprilFoolsMode(bool enabled)
     {
-        return StatusCode(500, "Not implemented"); //TODO
+        TrangaSettings.UpdateAprilFoolsMode(enabled);
+        return Ok();
     }
 }
