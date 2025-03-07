@@ -57,7 +57,11 @@ builder.Services.AddDbContext<PgsqlContext>(options =>
                       $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")??"postgres"}; " +
                       $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")??"postgres"}"));
 
-builder.Services.AddControllers().AddNewtonsoftJson(opts =>
+builder.Services.AddControllers(options =>
+    {
+        options.AllowEmptyInputInBodyModelBinding = true;
+    })
+    .AddNewtonsoftJson(opts =>
 {
     opts.SerializerSettings.Converters.Add(new StringEnumConverter());
 });
