@@ -15,7 +15,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Gets all configured Notification-Connectors
     /// </summary>
-    /// <returns>Array of configured Notification-Connectors</returns>
+    /// <response code="200"></response>
     [HttpGet]
     [ProducesResponseType<NotificationConnector[]>(Status200OK)]
     public IActionResult GetAllConnectors()
@@ -28,7 +28,8 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// Returns Notification-Connector with requested ID
     /// </summary>
     /// <param name="id">Notification-Connector-ID</param>
-    /// <returns>Notification-Connector</returns>
+    /// <response code="200"></response>
+    /// <response code="404">NotificationConnector with ID not found</response>
     [HttpGet("{id}")]
     [ProducesResponseType<NotificationConnector>(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -46,7 +47,8 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// Creates a new Notification-Connector
     /// </summary>
     /// <param name="notificationConnector">Notification-Connector</param>
-    /// <returns>Nothing</returns>
+    /// <response code="201"></response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPut]
     [ProducesResponseType<NotificationConnector[]>(Status200OK)]
     [ProducesResponseType<string>(Status500InternalServerError)]
@@ -68,7 +70,9 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// Deletes the Notification-Connector with the requested ID
     /// </summary>
     /// <param name="id">Notification-Connector-ID</param>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
+    /// <response code="404">NotificationConnector with ID not found</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -78,14 +82,12 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         try
         {
             NotificationConnector? ret = context.NotificationConnectors.Find(id);
-            switch (ret is not null)
-            {
-                case true:
-                    context.Remove(ret);
-                    context.SaveChanges();
-                    return Ok();
-                case false: return NotFound();
-            }
+            if(ret is null)
+                return NotFound();
+            
+            context.Remove(ret);
+            context.SaveChanges();
+            return Ok();
         }
         catch (Exception e)
         {

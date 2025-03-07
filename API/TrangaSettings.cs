@@ -118,7 +118,7 @@ public static class TrangaSettings
         ExportSettings();
     }
 
-    public static void ResetRateLimits()
+    public static void ResetRequestLimits()
     {
         requestLimits = DefaultRequestLimits;
         ExportSettings();

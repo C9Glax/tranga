@@ -214,7 +214,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="202">Job modified</response>
     /// <response code="400">Malformed request</response>
     /// <response code="404">Job with ID not found</response>
-    /// <response code="500">Internal Error</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{id}/")]
     [ProducesResponseType<Job>(Status202Accepted)]
     [ProducesResponseType(Status400BadRequest)]
@@ -247,7 +247,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="202">Job started</response>
     /// <response code="404">Job with ID not found</response>
     /// <response code="409">Job was already running</response>
-    /// <response code="500">Internal Error</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPost("{id}/Start")]
     [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
@@ -276,19 +276,10 @@ public class JobController(PgsqlContext context) : Controller
     /// Stops the Job with the requested ID
     /// </summary>
     /// <param name="id">Job-ID</param>
-    /// <response code="202">Job started</response>
-    /// <response code="404">Job with ID not found</response>
-    /// <response code="409">Job was not running</response>
-    /// <response code="500">Internal Error</response>
     /// <remarks>NOT IMPLEMENTED</remarks>
-    [ProducesResponseType(Status202Accepted)]
-    [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status409Conflict)]
-    [ProducesResponseType(Status500InternalServerError)]
     [HttpPost("{id}/Stop")]
     public IActionResult StopJob(string id)
     {
         throw new NotImplementedException();
-        return NotFound(new ProblemResponse("Not implemented"));
     }
 }

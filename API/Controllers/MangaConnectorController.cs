@@ -15,7 +15,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Get all available Connectors (Scanlation-Sites)
     /// </summary>
-    /// <response code="200">List of all Connectors</response>
+    /// <response code="200"></response>
     [HttpGet("GetConnectors")]
     [ProducesResponseType<MangaConnector[]>(Status200OK)]
     public IActionResult GetConnectors()
@@ -27,7 +27,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Get all enabled Connectors (Scanlation-Sites)
     /// </summary>
-    /// <response code="200">List of all enabled Connectors</response>
+    /// <response code="200"></response>
     [HttpGet("GetConnectors/enabled")]
     [ProducesResponseType<MangaConnector[]>(Status200OK)]
     public IActionResult GetEnabledConnectors()
@@ -39,7 +39,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Get all disabled Connectors (Scanlation-Sites)
     /// </summary>
-    /// <response code="200">List of all enabled Connectors</response>
+    /// <response code="200"></response>
     [HttpGet("GetConnectors/disabled")]
     [ProducesResponseType<MangaConnector[]>(Status200OK)]
     public IActionResult GetDisabledConnectors()

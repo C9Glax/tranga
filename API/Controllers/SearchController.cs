@@ -18,14 +18,17 @@ public class SearchController(PgsqlContext context) : Controller
     /// Initiate a search for a Manga on all Connectors
     /// </summary>
     /// <param name="name">Name/Title of the Manga</param>
-    /// <returns>Array of Manga</returns>
+    /// <response code="200"></response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPost("{name}")]
-    [ProducesResponseType<Manga[]>(Status500InternalServerError)]
+    [ProducesResponseType<Manga[]>(Status200OK)]
+    [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult SearchMangaGlobal(string name)
     {
         List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> allManga = new();
         foreach (MangaConnector contextMangaConnector in context.MangaConnectors)
             allManga.AddRange(contextMangaConnector.GetManga(name));
+        
         List<Manga> retMangas = new();
         foreach ((Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links, List<MangaAltTitle>? altTitles) in allManga)
         {
@@ -35,9 +38,9 @@ public class SearchController(PgsqlContext context) : Controller
                 if(add is not null)
                     retMangas.Add(add);
             }
-            catch (DbUpdateException)
+            catch (Exception e)
             {
-                return StatusCode(500, new ProblemResponse("An error occurred while processing your request."));
+                return StatusCode(500, e);
             }
         }
         return Ok(retMangas.ToArray());
@@ -48,16 +51,23 @@ public class SearchController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="id">Manga-Connector-ID</param>
     /// <param name="name">Name/Title of the Manga</param>
-    /// <returns>Manga</returns>
+    /// <response code="200"></response>
+    /// <response code="404">MangaConnector with ID not found</response>
+    /// <response code="406">MangaConnector with ID is disabled</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPost("{id}/{name}")]
     [ProducesResponseType<Manga[]>(Status200OK)]
-    [ProducesResponseType<ProblemResponse>(Status404NotFound)]
-    [ProducesResponseType<ProblemResponse>(Status500InternalServerError)]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType(Status406NotAcceptable)]
+    [ProducesResponseType<string>(Status500InternalServerError)]
     public IActionResult SearchManga(string id, string name)
     {
         MangaConnector? connector = context.MangaConnectors.Find(id);
         if (connector is null)
-            return NotFound(new ProblemResponse("Connector not found."));
+            return NotFound();
+        else if (connector.Enabled is false)
+            return StatusCode(406);
+        
         (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] mangas = connector.GetManga(name);
         List<Manga> retMangas = new();
         foreach ((Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links, List<MangaAltTitle>? altTitles) in mangas)
@@ -68,15 +78,15 @@ public class SearchController(PgsqlContext context) : Controller
                 if(add is not null)
                     retMangas.Add(add);
             }
-            catch (DbUpdateException e)
+            catch (Exception e)
             {
-                return StatusCode(500, new ProblemResponse("An error occurred while processing your request.", e.Message));
+                return StatusCode(500, e.Message);
             }
         }
 
         return Ok(retMangas.ToArray());
     }
-
+    
     private Manga? AddMangaToContext(Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links,
         List<MangaAltTitle>? altTitles)
     {
@@ -144,7 +154,7 @@ public class SearchController(PgsqlContext context) : Controller
             context.Manga.Update(existing);
         else
             context.Manga.Add(manga);
-        
+
         context.SaveChanges();
         return existing ?? manga;
     }

@@ -15,7 +15,7 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Gets all configured Library-Connectors
     /// </summary>
-    /// <returns>Array of configured Library-Connectors</returns>
+    /// <response code="200"></response>
     [HttpGet]
     [ProducesResponseType<LibraryConnector[]>(Status200OK)]
     public IActionResult GetAllConnectors()
@@ -28,7 +28,8 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// Returns Library-Connector with requested ID
     /// </summary>
     /// <param name="id">Library-Connector-ID</param>
-    /// <returns>Library-Connector</returns>
+    /// <response code="200"></response>
+    /// <response code="404">Connector with ID not found.</response>
     [HttpGet("{id}")]
     [ProducesResponseType<LibraryConnector>(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -46,7 +47,8 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// Creates a new Library-Connector
     /// </summary>
     /// <param name="libraryConnector">Library-Connector</param>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPut]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status500InternalServerError)]
@@ -68,7 +70,9 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// Deletes the Library-Connector with the requested ID
     /// </summary>
     /// <param name="id">Library-Connector-ID</param>
-    /// <returns>Nothing</returns>
+    /// <response code="200"></response>
+    /// <response code="404">Connector with ID not found.</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
