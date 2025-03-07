@@ -1,4 +1,5 @@
-﻿using API.Schema;
+﻿using API.APIEndpointRecords;
+using API.Schema;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

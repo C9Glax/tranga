@@ -1,7 +1,6 @@
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
 
-namespace API;
+namespace API.APIEndpointRecords;
 
 public record CoverFormatRequestRecord(Size size)
 {

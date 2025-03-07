@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using API.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(PgsqlContext))]
-    partial class PgsqlContextModelSnapshot : ModelSnapshot
+    [Migration("20250307143019_dev-070325-3")]
+    partial class dev0703253
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,7 +321,7 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Schema.NotificationConnectors.NotificationConnector", b =>
                 {
-                    b.Property<string>("Name")
+                    b.Property<string>("NotificationConnectorId")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
@@ -338,7 +341,7 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Name");
+                    b.HasKey("NotificationConnectorId");
 
                     b.ToTable("NotificationConnectors");
                 });

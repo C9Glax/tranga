@@ -36,11 +36,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasDiscriminator<LibraryType>(l => l.LibraryType)
             .HasValue<Komga>(LibraryType.Komga)
             .HasValue<Kavita>(LibraryType.Kavita);
-        modelBuilder.Entity<NotificationConnector>()
-            .HasDiscriminator<NotificationConnectorType>(n => n.NotificationConnectorType)
-            .HasValue<Gotify>(NotificationConnectorType.Gotify)
-            .HasValue<Ntfy>(NotificationConnectorType.Ntfy)
-            .HasValue<Lunasea>(NotificationConnectorType.LunaSea);
         
         modelBuilder.Entity<Job>()
             .HasDiscriminator<JobType>(j => j.JobType)
