@@ -147,14 +147,14 @@ public class MangaController(PgsqlContext context) : Controller
     }
     
     /// <summary>
-    /// Returns the latest Chapter of requested Manga
+    /// Returns the latest Chapter of requested Manga available on Website
     /// </summary>
     /// <param name="id">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
     /// <response code="404">Manga with ID not found.</response>
     /// <response code="500">Could not retrieve the maximum chapter-number</response>
-    [HttpGet("{id}/Chapter/Latest")]
+    [HttpGet("{id}/Chapter/LatestAvailable")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status404NotFound)]
@@ -166,6 +166,36 @@ public class MangaController(PgsqlContext context) : Controller
             return NotFound();
         
         List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId).ToList();
+        if (chapters.Count == 0)
+            return NoContent();
+        
+        Chapter? max = chapters.Max();
+        if (max is null)
+            return StatusCode(500, "Max chapter could not be found");
+        
+        return Ok(max);
+    }
+    
+    /// <summary>
+    /// Returns the latest Chapter of requested Manga that is downloaded
+    /// </summary>
+    /// <param name="id">Manga-ID</param>
+    /// <response code="200"></response>
+    /// <response code="204">No available chapters</response>
+    /// <response code="404">Manga with ID not found.</response>
+    /// <response code="500">Could not retrieve the maximum chapter-number</response>
+    [HttpGet("{id}/Chapter/LatestDownloaded")]
+    [ProducesResponseType<Chapter>(Status200OK, "application/json")]
+    [ProducesResponseType(Status204NoContent)]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult GetLatestChapterDownloaded(string id)
+    {
+        Manga? m = context.Manga.Find(id);
+        if (m is null)
+            return NotFound();
+        
+        List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == true).ToList();
         if (chapters.Count == 0)
             return NoContent();
         
