@@ -1,5 +1,6 @@
 ﻿using API.Schema;
 using API.Schema.Jobs;
+using API.Schema.MangaConnectors;
 using API.Schema.NotificationConnectors;
 using log4net;
 using log4net.Config;
@@ -85,7 +86,7 @@ public static class Tranga
 
             List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running && j.Enabled == true).ToList()
                 .Where(j => j.NextExecution < DateTime.UtcNow).ToList();
-            foreach (Job job in runJobs)
+            foreach (Job job in OrderJobs(runJobs, context))
             {
                 // If the job is already running, skip it
                 if (RunningJobs.Values.Any(j => j.JobId == job.JobId)) continue;
@@ -130,5 +131,66 @@ public static class Tranga
             context.SaveChanges();
             Thread.Sleep(2000);
         }
+    }
+
+    private static IEnumerable<Job> OrderJobs(List<Job> jobs, PgsqlContext context)
+    {
+        Dictionary<JobType, List<Job>> jobsByType = new();
+        foreach (Job job in jobs)
+            if(!jobsByType.TryAdd(job.JobType, [job]))
+                jobsByType[job.JobType].Add(job);
+
+        IEnumerable<Job> ret = new List<Job>();
+        if(jobsByType.ContainsKey(JobType.MoveFileOrFolderJob))
+            ret = ret.Concat(jobsByType[JobType.MoveFileOrFolderJob]);
+        if(jobsByType.ContainsKey(JobType.DownloadMangaCoverJob))
+         ret = ret.Concat(jobsByType[JobType.DownloadMangaCoverJob]);
+
+        Dictionary<MangaConnector, List<Job>> metadataJobsByConnector = new();
+        if (jobsByType.ContainsKey(JobType.DownloadNewChaptersJob))
+        {
+            foreach (DownloadNewChaptersJob job in jobsByType[JobType.DownloadNewChaptersJob])
+            {
+                Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
+                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
+                if(!metadataJobsByConnector.TryAdd(connector, [job]))
+                    metadataJobsByConnector[connector].Add(job);
+            }
+        }
+        if (jobsByType.ContainsKey(JobType.UpdateMetaDataJob))
+        {
+            foreach (UpdateMetadataJob job in jobsByType[JobType.UpdateMetaDataJob])
+            {
+                Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
+                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
+                if(!metadataJobsByConnector.TryAdd(connector, [job]))
+                    metadataJobsByConnector[connector].Add(job);
+            }
+        }
+        foreach (List<Job> metadataJobs in metadataJobsByConnector.Values)
+            ret = ret.Append(metadataJobs.MinBy(j => j.NextExecution))!;
+
+        if (jobsByType.ContainsKey(JobType.DownloadSingleChapterJob))
+        {
+            
+            Dictionary<MangaConnector, List<DownloadSingleChapterJob>> downloadJobsByConnector = new();
+            foreach (DownloadSingleChapterJob job in jobsByType[JobType.DownloadSingleChapterJob])
+            {
+                Chapter chapter = job.Chapter ?? context.Chapters.Find(job.ChapterId)!;
+                Manga manga = chapter.ParentManga ?? context.Manga.Find(chapter.ParentMangaId)!;
+                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
+            
+                if(!downloadJobsByConnector.TryAdd(connector, [job]))
+                    downloadJobsByConnector[connector].Add(job);
+            }
+            //From all jobs select those that are supposed to be executed soonest, then select the minimum chapternumber
+            foreach (List<DownloadSingleChapterJob> downloadJobs in downloadJobsByConnector.Values)
+                ret = ret.Append(
+                    downloadJobs.Where(j => j.NextExecution == downloadJobs
+                            .MinBy(mj => mj.NextExecution)!.NextExecution)
+                        .MinBy(j => j.Chapter ?? context.Chapters.Find(j.ChapterId)!))!;
+        }
+        
+        return ret;
     }
 }
