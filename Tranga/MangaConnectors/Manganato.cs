@@ -212,7 +212,7 @@ public class Manganato : MangaConnector
 
         string[] imageUrls = ParseImageUrlsFromHtml(requestResult.htmlDocument);
         
-        return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage, "https://chapmanganato.com/", progressToken:progressToken);
+        return DownloadChapterImages(imageUrls, chapter, RequestType.MangaImage, "https://www.manganato.gg", progressToken:progressToken);
     }
 
     private string[] ParseImageUrlsFromHtml(HtmlDocument document)
