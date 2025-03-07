@@ -78,7 +78,6 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     {
         if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
             return;
-        DateTime start = DateTime.UtcNow;
         using Image image = Image.Load(imagePath);
         File.Delete(imagePath);
         if(TrangaSettings.bwImages) 
@@ -127,7 +126,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         if (requestResult.result == Stream.Null)
             return false;
 
-        FileStream fs = new (savePath, FileMode.Create);
+        FileStream fs = new (savePath, FileMode.Create, FileAccess.Write, FileShare.None);
         requestResult.result.CopyTo(fs);
         fs.Close();
         ProcessImage(savePath);
