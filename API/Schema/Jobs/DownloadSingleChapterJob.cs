@@ -20,15 +20,9 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Chapter c = Chapter ?? context.Chapters.Find(ChapterId)!;
-        Manga m = c.ParentManga ?? context.Manga.Find(c.ParentMangaId)!;
-        MangaConnector connector = m.MangaConnector ?? context.MangaConnectors.Find(m.MangaConnectorId)!;
-        DownloadChapterImages(c, connector, m);
-        return [];
-    }
-    
-    private bool DownloadChapterImages(Chapter chapter, MangaConnector connector, Manga manga)
-    {
+        Chapter chapter = Chapter ?? context.Chapters.Find(ChapterId)!;
+        Manga manga = chapter.ParentManga ?? context.Manga.Find(chapter.ParentMangaId)!;
+        MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
         string[] imageUrls = connector.GetChapterImageUrls(chapter);
         string saveArchiveFilePath = chapter.GetArchiveFilePath();
         
@@ -52,7 +46,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         if (imageUrls.Length == 0)
         {
             Directory.Delete(tempFolder, true);
-            return false;
+            return [];
         }
         
         foreach (string imageUrl in imageUrls)
@@ -61,10 +55,10 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
             string imagePath = Path.Join(tempFolder, $"{chapterNum++}.{extension}");
             bool status = DownloadImage(imageUrl, imagePath);
             if (status is false)
-                return false;
+                return [];
         }
 
-        CopyCoverFromCacheToDownloadLocation(manga);
+        CopyCoverFromCacheToDownloadLocation(context, manga);
         
         File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
         
@@ -74,7 +68,10 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
             File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
         Directory.Delete(tempFolder, true); //Cleanup
         
-        return true;
+        chapter.Downloaded = true;
+        context.SaveChanges();
+        
+        return [];
     }
     
     private void ProcessImage(string imagePath)
@@ -92,7 +89,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         });
     }
     
-    private void CopyCoverFromCacheToDownloadLocation(Manga manga, int? retries = 1)
+    private void CopyCoverFromCacheToDownloadLocation(PgsqlContext context, Manga manga, int? retries = 1)
     {
         //Check if Publication already has a Folder and cover
         string publicationFolder = manga.CreatePublicationFolder();
@@ -107,8 +104,9 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         {
             if (retries > 0)
             {
-                manga.SaveCoverImageToCache();
-                CopyCoverFromCacheToDownloadLocation(manga, --retries);
+                manga.CoverFileNameInCache = manga.SaveCoverImageToCache();
+                context.SaveChanges();
+                CopyCoverFromCacheToDownloadLocation(context, manga, --retries);
             }
 
             return;
