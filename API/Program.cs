@@ -114,6 +114,10 @@ using (var scope = app.Services.CreateScope())
         ];
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
+
+    IQueryable<string> updateMetadataJobMangaIds = context.Jobs.Where(j => j.JobType == JobType.UpdateMetaDataJob).Select(j => ((UpdateMetadataJob)j).MangaId);
+    Job[] newUpdateMetadataJobs = context.Manga.Where(m => !updateMetadataJobMangaIds.Contains(m.MangaId)).ToList().Select(m => new UpdateMetadataJob(0, m.MangaId)).ToArray();
+    context.Jobs.AddRange(newUpdateMetadataJobs);
     
     context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
     
