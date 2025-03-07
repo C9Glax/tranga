@@ -69,18 +69,21 @@ public static class Tranga
         Log.Info(TRANGA);
         while (true)
         {
-            List<Job> completedJobs = context.Jobs.Where(j => j.state >= JobState.Completed && j.state < JobState.Failed).ToList();
+            List<Job> completedJobs = context.Jobs.Where(j => j.state >= JobState.Completed).ToList();
             foreach (Job job in completedJobs)
                 if (job.RecurrenceMs <= 0)
                     context.Jobs.Remove(job);
                 else
                 {
+                    if (job.state >= JobState.Failed)
+                        job.Enabled = false;
+                    else
+                        job.state = JobState.Waiting;
                     job.LastExecution = DateTime.UtcNow;
-                    job.state = JobState.Waiting;
                     context.Jobs.Update(job);
                 }
 
-            List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running).ToList()
+            List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running && j.Enabled == true).ToList()
                 .Where(j => j.NextExecution < DateTime.UtcNow).ToList();
             foreach (Job job in runJobs)
             {

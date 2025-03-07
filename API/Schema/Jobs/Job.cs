@@ -26,6 +26,7 @@ public abstract class Job
     [NotMapped]
     public DateTime NextExecution => LastExecution.AddMilliseconds(RecurrenceMs);
     public JobState state { get; internal set; } = JobState.Waiting;
+    public bool Enabled { get; internal set; } = true;
 
     public Job(string jobId, JobType jobType, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : this(jobId, jobType, recurrenceMs, parentJob?.JobId, dependsOnJobs?.Select(j => j.JobId).ToList())

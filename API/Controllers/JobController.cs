@@ -212,6 +212,7 @@ public class JobController(PgsqlContext context) : Controller
                 return NotFound();
             
             ret.RecurrenceMs = modifyJobRecord.RecurrenceMs ?? ret.RecurrenceMs;
+            ret.Enabled = modifyJobRecord.Enabled ?? ret.Enabled;
 
             context.SaveChanges();
             return new AcceptedResult(ret.JobId, ret);

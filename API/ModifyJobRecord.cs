@@ -1,3 +1,3 @@
 namespace API;
 
-public record ModifyJobRecord(ulong? RecurrenceMs);
+public record ModifyJobRecord(ulong? RecurrenceMs, bool? Enabled);
