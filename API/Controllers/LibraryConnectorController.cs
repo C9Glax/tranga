@@ -8,7 +8,6 @@ namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
-[Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
 public class LibraryConnectorController(PgsqlContext context) : Controller
 {
@@ -17,7 +16,7 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<LibraryConnector[]>(Status200OK)]
+    [ProducesResponseType<LibraryConnector[]>(Status200OK, "application/json")]
     public IActionResult GetAllConnectors()
     {
         LibraryConnector[] connectors = context.LibraryConnectors.ToArray();
@@ -31,7 +30,7 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
     [HttpGet("{id}")]
-    [ProducesResponseType<LibraryConnector>(Status200OK)]
+    [ProducesResponseType<LibraryConnector>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetConnector(string id)
     {
@@ -47,11 +46,11 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// Creates a new Library-Connector
     /// </summary>
     /// <param name="libraryConnector">Library-Connector</param>
-    /// <response code="200"></response>
+    /// <response code="201"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateConnector([FromBody]LibraryConnector libraryConnector)
     {
         try
@@ -76,20 +75,18 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     [HttpDelete("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteConnector(string id)
     {
         try
         {
             LibraryConnector? ret = context.LibraryConnectors.Find(id);
-            switch (ret is not null)
-            {
-                case true:
-                    context.Remove(ret);
-                    context.SaveChanges();
-                    return Ok();
-                case false: return NotFound();
-            }
+            if (ret is null)
+                return NotFound();
+            
+            context.Remove(ret);
+            context.SaveChanges();
+            return Ok();
         }
         catch (Exception e)
         {

@@ -10,7 +10,6 @@ namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
-[Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
 public class SearchController(PgsqlContext context) : Controller
 {
@@ -22,8 +21,8 @@ public class SearchController(PgsqlContext context) : Controller
     /// <response code="200"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("{name}")]
-    [ProducesResponseType<Manga[]>(Status200OK)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult SearchMangaGlobal(string name)
     {
         List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> allManga = new();
@@ -57,10 +56,10 @@ public class SearchController(PgsqlContext context) : Controller
     /// <response code="406">MangaConnector with ID is disabled</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("{id}/{name}")]
-    [ProducesResponseType<Manga[]>(Status200OK)]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status406NotAcceptable)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult SearchManga(string id, string name)
     {
         MangaConnector? connector = context.MangaConnectors.Find(id);

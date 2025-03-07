@@ -8,7 +8,6 @@ namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
-[Produces("application/json")]
 [Route("v{version:apiVersion}/[controller]")]
 public class JobController(PgsqlContext context) : Controller
 {
@@ -17,7 +16,7 @@ public class JobController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<Job[]>(Status200OK)]
+    [ProducesResponseType<Job[]>(Status200OK, "application/json")]
     public IActionResult GetAllJobs()
     {
         Job[] ret = context.Jobs.ToArray();
@@ -30,7 +29,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <param name="ids">Array of Job-IDs</param>
     /// <response code="200"></response>
     [HttpPost("WithIDs")]
-    [ProducesResponseType<Job[]>(Status200OK)]
+    [ProducesResponseType<Job[]>(Status200OK, "application/json")]
     public IActionResult GetJobs([FromBody]string[] ids)
     {
         Job[] ret = context.Jobs.Where(job => ids.Contains(job.JobId)).ToArray();
@@ -43,7 +42,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <param name="state">Requested Job-State</param>
     /// <response code="200"></response>
     [HttpGet("State/{state}")]
-    [ProducesResponseType<Job[]>(Status200OK)]
+    [ProducesResponseType<Job[]>(Status200OK, "application/json")]
     public IActionResult GetJobsInState(JobState state)
     {
         Job[] jobsInState = context.Jobs.Where(job => job.state == state).ToArray();
@@ -56,7 +55,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <param name="type">Requested Job-Type</param>
     /// <response code="200"></response>
     [HttpGet("Type/{type}")]
-    [ProducesResponseType<Job[]>(Status200OK)]
+    [ProducesResponseType<Job[]>(Status200OK, "application/json")]
     public IActionResult GetJobsOfType(JobType type)
     {
         Job[] jobsOfType = context.Jobs.Where(job => job.JobType == type).ToArray();
@@ -70,7 +69,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="200"></response>
     /// <response code="404">Job with ID could not be found</response>
     [HttpGet("{id}")]
-    [ProducesResponseType<Job>(Status200OK)]
+    [ProducesResponseType<Job>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetJob(string id)
     {
@@ -91,7 +90,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("NewDownloadChapterJob/{mangaId}")]
     [ProducesResponseType(Status201Created)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNewDownloadChapterJob(string mangaId, [FromBody]ulong recurrenceTime)
     {
         Job job = new DownloadNewChaptersJob(recurrenceTime, mangaId);
@@ -106,7 +105,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("DownloadSingleChapterJob/{chapterId}")]
     [ProducesResponseType(Status201Created)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNewDownloadChapterJob(string chapterId)
     {
         Job job = new DownloadSingleChapterJob(chapterId);
@@ -121,7 +120,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateMetadataJob/{mangaId}")]
     [ProducesResponseType(Status201Created)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateMetadataJob(string mangaId)
     {
         Job job = new UpdateMetadataJob(0, mangaId);
@@ -135,7 +134,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateMetadataJob")]
     [ProducesResponseType(Status201Created)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateAllMetadataJob()
     {
         List<string> ids = context.Manga.Select(m => m.MangaId).ToList();
@@ -174,9 +173,9 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="404">Job could not be found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{id}")]
-    [ProducesResponseType<string[]>(Status200OK)]
+    [ProducesResponseType<string[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteJob(string id)
     {
         try
@@ -216,10 +215,10 @@ public class JobController(PgsqlContext context) : Controller
     /// <response code="404">Job with ID not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{id}/")]
-    [ProducesResponseType<Job>(Status202Accepted)]
+    [ProducesResponseType<Job>(Status202Accepted, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult ModifyJob(string id, [FromBody]ModifyJobRecord modifyJobRecord)
     {
         try
@@ -252,7 +251,7 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status409Conflict)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult StartJob(string id)
     {
         Job? ret = context.Jobs.Find(id);

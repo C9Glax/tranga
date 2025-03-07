@@ -17,7 +17,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<NotificationConnector[]>(Status200OK)]
+    [ProducesResponseType<NotificationConnector[]>(Status200OK, "application/json")]
     public IActionResult GetAllConnectors()
     {
         NotificationConnector[] ret = context.NotificationConnectors.ToArray();
@@ -31,7 +31,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// <response code="200"></response>
     /// <response code="404">NotificationConnector with ID not found</response>
     [HttpGet("{id}")]
-    [ProducesResponseType<NotificationConnector>(Status200OK)]
+    [ProducesResponseType<NotificationConnector>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetConnector(string id)
     {
@@ -50,8 +50,8 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// <response code="201"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
-    [ProducesResponseType<NotificationConnector[]>(Status200OK)]
-    [ProducesResponseType<string>(Status500InternalServerError)]
+    [ProducesResponseType<NotificationConnector[]>(Status200OK, "application/json")]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateConnector([FromBody]NotificationConnector notificationConnector)
     {
         try
@@ -76,7 +76,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     [HttpDelete("{id}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status500InternalServerError)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteConnector(string id)
     {
         try

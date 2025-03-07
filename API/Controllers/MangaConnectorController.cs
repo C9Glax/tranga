@@ -8,7 +8,6 @@ namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
-[Produces("application/json")]
 [Route("v{v:apiVersion}")]
 public class MangaConnectorController(PgsqlContext context) : Controller
 {
@@ -17,7 +16,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<MangaConnector[]>(Status200OK)]
+    [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetConnectors()
     {
         MangaConnector[] connectors = context.MangaConnectors.ToArray();
@@ -29,7 +28,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet("enabled")]
-    [ProducesResponseType<MangaConnector[]>(Status200OK)]
+    [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetEnabledConnectors()
     {
         MangaConnector[] connectors = context.MangaConnectors.Where(c => c.Enabled == true).ToArray();
@@ -41,7 +40,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet("disabled")]
-    [ProducesResponseType<MangaConnector[]>(Status200OK)]
+    [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetDisabledConnectors()
     {
         MangaConnector[] connectors = context.MangaConnectors.Where(c => c.Enabled == false).ToArray();
@@ -55,9 +54,11 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// <param name="enabled">Set true to enable</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{id}/SetEnabled/{enabled}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult SetEnabled(string id, bool enabled)
     {
         try

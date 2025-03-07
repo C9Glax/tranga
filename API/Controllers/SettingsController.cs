@@ -9,7 +9,6 @@ namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
-[Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
 public class SettingsController(PgsqlContext context) : Controller
 {
@@ -18,7 +17,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<JsonObject>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
     public IActionResult GetSettings()
     {
         return Ok(TrangaSettings.Serialize());
@@ -29,7 +28,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet("UserAgent")]
-    [ProducesResponseType<string>(Status200OK)]
+    [ProducesResponseType<string>(Status200OK, "text/plain")]
     public IActionResult GetUserAgent()
     {
         return Ok(TrangaSettings.userAgent);
@@ -64,7 +63,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet("RequestLimits")]
-    [ProducesResponseType<Dictionary<RequestType,int>>(Status200OK)]
+    [ProducesResponseType<Dictionary<RequestType,int>>(Status200OK, "application/json")]
     public IActionResult GetRequestLimits()
     {
         return Ok(TrangaSettings.requestLimits);
@@ -97,7 +96,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200">JPEG compression-level as Integer</response>
     [HttpGet("ImageCompression")]
-    [ProducesResponseType<int>(Status200OK)]
+    [ProducesResponseType<int>(Status200OK, "text/plain")]
     public IActionResult GetImageCompression()
     {
         return Ok(TrangaSettings.compression);
@@ -125,7 +124,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200">True if enabled</response>
     [HttpGet("BWImages")]
-    [ProducesResponseType<bool>(Status200OK)]
+    [ProducesResponseType<bool>(Status200OK, "text/plain")]
     public IActionResult GetBwImagesToggle()
     {
         return Ok(TrangaSettings.bwImages);
@@ -150,7 +149,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// <remarks>April Fools Mode disables all downloads on April 1st</remarks>
     /// <response code="200">True if enabled</response>
     [HttpGet("AprilFoolsMode")]
-    [ProducesResponseType<bool>(Status200OK)]
+    [ProducesResponseType<bool>(Status200OK, "text/plain")]
     public IActionResult GetAprilFoolsMode()
     {
         return Ok(TrangaSettings.aprilFoolsMode);
