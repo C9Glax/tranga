@@ -26,7 +26,7 @@ public class SearchController(PgsqlContext context) : Controller
     public IActionResult SearchMangaGlobal(string name)
     {
         List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> allManga = new();
-        foreach (MangaConnector contextMangaConnector in context.MangaConnectors)
+        foreach (MangaConnector contextMangaConnector in context.MangaConnectors.Where(connector => connector.Enabled))
             allManga.AddRange(contextMangaConnector.GetManga(name));
         
         List<Manga> retMangas = new();
