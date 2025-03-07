@@ -6,7 +6,7 @@ namespace API.Schema.MangaConnectors;
 
 public class ManhuaPlus : MangaConnector
 {
-    public ManhuaPlus() : base("ManhuaPlus", ["en"], ["manhuaplus.org"])
+    public ManhuaPlus() : base("ManhuaPlus", ["en"], ["manhuaplus.org"], "https://manhuaplus.org/uploads/images/favicon.png")
     {
         this.downloadClient = new ChromiumDownloadClient();
     }

@@ -6,7 +6,7 @@ namespace API.Schema.MangaConnectors;
 
 public class MangaKatana : MangaConnector
 {
-	public MangaKatana() : base("MangaKatana", ["en"], ["mangakatana.com"])
+	public MangaKatana() : base("MangaKatana", ["en"], ["mangakatana.com"], "https://mangakatana.com/static/img/fav.png")
 	{
 		this.downloadClient = new HttpDownloadClient();
 	}

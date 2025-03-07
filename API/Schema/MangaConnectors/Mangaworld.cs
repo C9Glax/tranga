@@ -6,7 +6,7 @@ namespace API.Schema.MangaConnectors;
 
 public class Mangaworld : MangaConnector
 {
-    public Mangaworld() : base("Mangaworld", ["it"], ["www.mangaworld.ac"])
+    public Mangaworld() : base("Mangaworld", ["it"], ["www.mangaworld.ac", "www.mangaworld.nz"], "https://www.mangaworld.nz/public/assets/seo/android-icon-192x192.png")
     {
         this.downloadClient = new ChromiumDownloadClient();
     }

@@ -8,7 +8,7 @@ namespace API.Schema.MangaConnectors;
 public class Bato : MangaConnector
 {
 	
-	public Bato() : base("Bato", ["en"], ["bato.to"])
+	public Bato() : base("Bato", ["en"], ["bato.to"], "https://bato.to/amsta/img/batoto/favicon.ico")
 	{
 		this.downloadClient = new HttpDownloadClient();
 	}

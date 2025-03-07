@@ -7,7 +7,7 @@ namespace API.Schema.MangaConnectors;
 public class AsuraToon : MangaConnector
 {
 	
-	public AsuraToon() : base("AsuraToon", ["en"], ["https://asuracomic.net"])
+	public AsuraToon() : base("AsuraToon", ["en"], ["asuracomic.net"], "https://asuracomic.net/images/logo.webp")
 	{
 		this.downloadClient = new ChromiumDownloadClient();
 	}

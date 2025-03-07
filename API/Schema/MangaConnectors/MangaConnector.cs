@@ -7,11 +7,12 @@ using Newtonsoft.Json;
 namespace API.Schema.MangaConnectors;
 
 [PrimaryKey("Name")]
-public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris)
+public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)
 {
     [MaxLength(32)]
     public string Name { get; init; } = name;
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
+    public string IconUrl { get; init; } = iconUrl;
     public string[] BaseUris { get; init; } = baseUris;
     
     public bool Enabled { get; internal set; } = true;

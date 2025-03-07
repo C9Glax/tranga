@@ -8,7 +8,7 @@ namespace API.Schema.MangaConnectors;
 public class Webtoons : MangaConnector
 {
 
-    public Webtoons() : base("Webtoons", ["en"], ["https://www.webtoons.com"])
+    public Webtoons() : base("Webtoons", ["en"], ["www.webtoons.com"], "https://webtoons-static.pstatic.net/image/favicon/favicon.ico")
     {
         this.downloadClient = new HttpDownloadClient();
     }

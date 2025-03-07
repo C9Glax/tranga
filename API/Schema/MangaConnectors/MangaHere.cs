@@ -6,7 +6,7 @@ namespace API.Schema.MangaConnectors;
 
 public class MangaHere : MangaConnector
 {
-    public MangaHere() : base("MangaHere", ["en"], ["www.mangahere.cc"])
+    public MangaHere() : base("MangaHere", ["en"], ["www.mangahere.cc"], "http://www.mangahere.cc/favicon.ico")
     {
         this.downloadClient = new ChromiumDownloadClient();
     }
