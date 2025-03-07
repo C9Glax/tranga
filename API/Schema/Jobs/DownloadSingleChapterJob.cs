@@ -58,7 +58,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
                 return [];
         }
 
-        CopyCoverFromCacheToDownloadLocation(context, manga);
+        CopyCoverFromCacheToDownloadLocation(manga);
         
         File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
         
@@ -88,7 +88,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         });
     }
     
-    private void CopyCoverFromCacheToDownloadLocation(PgsqlContext context, Manga manga, int? retries = 1)
+    private void CopyCoverFromCacheToDownloadLocation(Manga manga)
     {
         //Check if Publication already has a Folder and cover
         string publicationFolder = manga.CreatePublicationFolder();
@@ -98,18 +98,10 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
             return;
         }
 
-        string? fileInCache = manga.CoverFileNameInCache;
-        if (fileInCache is null || !File.Exists(fileInCache))
-        {
-            if (retries > 0)
-            {
-                manga.CoverFileNameInCache = manga.SaveCoverImageToCache();
-                context.SaveChanges();
-                CopyCoverFromCacheToDownloadLocation(context, manga, --retries);
-            }
-
+        string? fileInCache = manga.CoverFileNameInCache ?? manga.SaveCoverImageToCache();
+        if (fileInCache is null)
             return;
-        }
+        
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
         File.Copy(fileInCache, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

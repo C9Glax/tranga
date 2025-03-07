@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
@@ -99,8 +99,11 @@ public class Manga
         return mangaName;
     }
     
-    internal string SaveCoverImageToCache()
+    internal string? SaveCoverImageToCache(int retries = 3)
     {
+        if(retries < 0)
+            return null;
+        
         Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
         //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
         Match match = urlRex.Match(CoverUrl);
@@ -111,10 +114,14 @@ public class Manga
             return saveImagePath;
         
         RequestResult coverResult = new HttpDownloadClient().MakeRequest(CoverUrl, RequestType.MangaCover);
+        if (coverResult.statusCode is < HttpStatusCode.Accepted or >= HttpStatusCode.Ambiguous)
+            return SaveCoverImageToCache(--retries);
+            
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);
         Directory.CreateDirectory(TrangaSettings.coverImageCache);
         File.WriteAllBytes(saveImagePath, ms.ToArray());
+        
         return saveImagePath;
     }
     

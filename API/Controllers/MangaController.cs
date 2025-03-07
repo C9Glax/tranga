@@ -106,7 +106,7 @@ public class MangaController(PgsqlContext context) : Controller
         Image image = Image.Load(m.CoverFileNameInCache);
         using MemoryStream ms = new();
         image.Save(ms, new JpegEncoder(){Quality = 100});
-        return File(ms, "image/jpeg");
+        return File(ms.GetBuffer(), "image/jpeg");
     }
 
     /// <summary>
