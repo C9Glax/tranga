@@ -99,7 +99,7 @@ public class Manganato : MangaConnector
             else if (text.StartsWith("status :"))
             {
                 string status = text.Replace("status :", "").Trim().ToLower();
-                if (status == "")
+                if (string.IsNullOrWhiteSpace(status))
                     releaseStatus = Manga.ReleaseStatusByte.Continuing;
                 else if (status == "ongoing")
                     releaseStatus = Manga.ReleaseStatusByte.Continuing;
