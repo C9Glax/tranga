@@ -11,7 +11,6 @@ public static class TrangaSettings
 {
     public static string downloadLocation { get; private set; } = (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
     public static string workingDirectory { get; private set; } = Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
-    public static int apiPortNumber { get; private set; } = 6531;
     [JsonIgnore]
     internal static readonly string DefaultUserAgent = $"Tranga ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")}) / 1.0";
     public static string userAgent { get; private set; } = DefaultUserAgent;
@@ -157,7 +156,6 @@ public static class TrangaSettings
         JObject jobj = new JObject();
         jobj.Add("downloadLocation", JToken.FromObject(downloadLocation));
         jobj.Add("workingDirectory", JToken.FromObject(workingDirectory));
-        jobj.Add("apiPortNumber", JToken.FromObject(apiPortNumber));
         jobj.Add("userAgent", JToken.FromObject(userAgent));
         jobj.Add("aprilFoolsMode", JToken.FromObject(aprilFoolsMode));
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
@@ -175,8 +173,6 @@ public static class TrangaSettings
             downloadLocation = dl.Value<string>()!;
         if (jobj.TryGetValue("workingDirectory", out JToken? wd))
             workingDirectory = wd.Value<string>()!;
-        if (jobj.TryGetValue("apiPortNumber", out JToken? apn))
-            apiPortNumber = apn.Value<int>();
         if (jobj.TryGetValue("userAgent", out JToken? ua))
             userAgent = ua.Value<string>()!;
         if (jobj.TryGetValue("aprilFoolsMode", out JToken? afm))
