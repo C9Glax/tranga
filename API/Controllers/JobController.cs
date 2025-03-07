@@ -15,7 +15,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <summary>
     /// Returns all Jobs
     /// </summary>
-    /// <returns>Array of Jobs</returns>
+    /// <response code="200"></response>
     [HttpGet]
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetAllJobs()
@@ -28,7 +28,7 @@ public class JobController(PgsqlContext context) : Controller
     /// Returns Jobs with requested Job-IDs
     /// </summary>
     /// <param name="ids">Array of Job-IDs</param>
-    /// <returns>Array of Jobs</returns>
+    /// <response code="200"></response>
     [HttpPost("WithIDs")]
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetJobs([FromBody]string[] ids)
@@ -41,7 +41,7 @@ public class JobController(PgsqlContext context) : Controller
     /// Get all Jobs in requested State
     /// </summary>
     /// <param name="state">Requested Job-State</param>
-    /// <returns>Array of Jobs</returns>
+    /// <response code="200"></response>
     [HttpGet("State/{state}")]
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetJobsInState(JobState state)
@@ -54,7 +54,7 @@ public class JobController(PgsqlContext context) : Controller
     /// Returns all Jobs of requested Type
     /// </summary>
     /// <param name="type">Requested Job-Type</param>
-    /// <returns>Array of Jobs</returns>
+    /// <response code="200"></response>
     [HttpGet("Type/{type}")]
     [ProducesResponseType<Job[]>(Status200OK)]
     public IActionResult GetJobsOfType(JobType type)
@@ -67,7 +67,8 @@ public class JobController(PgsqlContext context) : Controller
     /// Return Job with ID
     /// </summary>
     /// <param name="id">Job-ID</param>
-    /// <returns>Job</returns>
+    /// <response code="200"></response>
+    /// <response code="404">Job with ID could not be found</response>
     [HttpGet("{id}")]
     [ProducesResponseType<Job>(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -84,8 +85,10 @@ public class JobController(PgsqlContext context) : Controller
     /// <summary>
     /// Create a new CreateNewDownloadChapterJob
     /// </summary>
-    /// <param name="request">ID of the Manga, and how often we check again</param>
-    /// <returns>Nothing</returns>
+    /// <param name="mangaId">ID of Manga</param>
+    /// <param name="recurrenceTime">How often should we check for new chapters</param>
+    /// <response code="201">Created new Job</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPut("NewDownloadChapterJob/{mangaId}")]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError)]
@@ -99,7 +102,8 @@ public class JobController(PgsqlContext context) : Controller
     /// Create a new DownloadSingleChapterJob
     /// </summary>
     /// <param name="chapterId">ID of the Chapter</param>
-    /// <returns>Nothing</returns>
+    /// <response code="201">Created new Job</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPut("DownloadSingleChapterJob/{chapterId}")]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError)]
@@ -113,7 +117,8 @@ public class JobController(PgsqlContext context) : Controller
     /// Create a new UpdateMetadataJob
     /// </summary>
     /// <param name="mangaId">ID of the Manga</param>
-    /// <returns>Nothing</returns>
+    /// <response code="201">Created new Job</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateMetadataJob/{mangaId}")]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError)]
@@ -126,7 +131,8 @@ public class JobController(PgsqlContext context) : Controller
     /// <summary>
     /// Create a new UpdateMetadataJob for all Manga
     /// </summary>
-    /// <returns>Nothing</returns>
+    /// <response code="201">Created new Job</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateMetadataJob")]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError)]
@@ -161,12 +167,14 @@ public class JobController(PgsqlContext context) : Controller
     }
 
     /// <summary>
-    /// Delete Job with ID
+    /// Delete Job with ID and all children
     /// </summary>
     /// <param name="id">Job-ID</param>
-    /// <returns>Nothing</returns>
+    /// <response code="200">Job(s) deleted</response>
+    /// <response code="404">Job could not be found</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{id}")]
-    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string[]>(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status500InternalServerError)]
     public IActionResult DeleteJob(string id)
@@ -181,7 +189,7 @@ public class JobController(PgsqlContext context) : Controller
             context.RemoveRange(children);
             context.Remove(ret);
             context.SaveChanges();
-            return Ok();
+            return new OkObjectResult(children.Select(x => x.JobId).Append(ret.JobId).ToArray());
         }
         catch (Exception e)
         {
@@ -265,7 +273,7 @@ public class JobController(PgsqlContext context) : Controller
     }
 
     /// <summary>
-    /// NOT IMPLEMENTED. Stops the Job with the requested ID
+    /// Stops the Job with the requested ID
     /// </summary>
     /// <param name="id">Job-ID</param>
     /// <response code="202">Job started</response>
