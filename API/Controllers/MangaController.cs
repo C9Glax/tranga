@@ -1,6 +1,8 @@
 ﻿using API.Schema;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace API.Controllers;
@@ -83,14 +85,28 @@ public class MangaController(PgsqlContext context) : Controller
     }
 
     /// <summary>
-    /// Returns URL of Cover of Manga
+    /// Returns Cover of Manga
     /// </summary>
     /// <param name="id">Manga-ID</param>
-    /// <remarks>NOT IMPLEMENTED</remarks>
+    /// <response code="200">JPEG Image</response>
+    /// <response code="204">Cover not loaded</response>
+    /// <response code="404">Manga with ID not found</response>
     [HttpGet("{id}/Cover")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status204NoContent)]
+    [ProducesResponseType(Status404NotFound)]
     public IActionResult GetCover(string id)
     {
-        throw new NotImplementedException();
+        Manga? m = context.Manga.Find(id);
+        if (m is null)
+            return NotFound();
+        if (!System.IO.File.Exists(m.CoverFileNameInCache))
+            return NoContent();
+
+        Image image = Image.Load(m.CoverFileNameInCache);
+        using MemoryStream ms = new();
+        image.Save(ms, new JpegEncoder(){Quality = 100});
+        return File(ms, "image/jpeg");
     }
 
     /// <summary>
