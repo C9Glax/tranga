@@ -84,7 +84,7 @@ public class Chapter : IComparable<Chapter>
     }
 
     /// <summary>
-    ///     Creates full file path of chapter-archive
+    /// Creates full file path of chapter-archive
     /// </summary>
     /// <returns>Filepath</returns>
     internal string GetArchiveFilePath()
@@ -92,6 +92,10 @@ public class Chapter : IComparable<Chapter>
         return Path.Join(TrangaSettings.downloadLocation, ParentManga.FolderName, ArchiveFileName);
     }
 
+    /// <summary>
+    /// Checks the filesystem if an archive at the ArchiveFilePath exists
+    /// </summary>
+    /// <returns>True if archive exists on disk</returns>
     public bool IsDownloaded()
     {
         string path = GetArchiveFilePath();
