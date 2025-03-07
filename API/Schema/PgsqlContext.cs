@@ -47,6 +47,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<MoveFileOrFolderJob>(JobType.MoveFileOrFolderJob)
             .HasValue<DownloadNewChaptersJob>(JobType.DownloadNewChaptersJob)
             .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
+            .HasValue<DownloadMangaCoverJob>(JobType.DownloadMangaCoverJob)
             .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob);
         modelBuilder.Entity<Job>()
             .HasOne<Job>(j => j.ParentJob)

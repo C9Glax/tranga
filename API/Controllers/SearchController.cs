@@ -1,4 +1,5 @@
 using API.Schema;
+using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -154,6 +155,8 @@ public class SearchController(PgsqlContext context) : Controller
             context.Manga.Update(existing);
         else
             context.Manga.Add(manga);
+
+        context.Jobs.Add(new DownloadMangaCoverJob(manga.MangaId));
 
         context.SaveChanges();
         return existing ?? manga;
