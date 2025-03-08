@@ -41,5 +41,5 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
 
     internal abstract string[] GetChapterImageUrls(Chapter chapter);
 
-    protected bool ValidateUrl(string url) => BaseUris.Any(baseUri => Regex.IsMatch(url, "https?://" + baseUri + "/.*"));
+    public bool ValidateUrl(string url) => BaseUris.Any(baseUri => Regex.IsMatch(url, "https?://" + baseUri + "/.*"));
 }

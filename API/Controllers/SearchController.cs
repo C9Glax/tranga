@@ -86,6 +86,44 @@ public class SearchController(PgsqlContext context) : Controller
 
         return Ok(retMangas.ToArray());
     }
+
+    /// <summary>
+    /// Returns Manga from MangaConnector associated with URL
+    /// </summary>
+    /// <param name="url">Manga-Page URL</param>
+    /// <response code="200"></response>
+    /// <response code="300">Multiple connectors found for URL</response>
+    /// <response code="400">No Manga at URL</response>
+    /// <response code="404">No connector found for URL</response>
+    /// <response code="500">Error during Database Operation</response>
+    [ProducesResponseType<Manga>(Status200OK, "application/json")]
+    [ProducesResponseType(Status300MultipleChoices)]
+    [ProducesResponseType(Status400BadRequest)]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult GetMangaFromUrl(string url)
+    {
+        List<MangaConnector> connectors = context.MangaConnectors.AsEnumerable().Where(c => c.ValidateUrl(url)).ToList();
+        if (connectors.Count == 0)
+            return NotFound();
+        else if (connectors.Count > 1)
+            return StatusCode(Status300MultipleChoices);
+
+        (Manga manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links, List<MangaAltTitle>? altTitles)? x = connectors.First().GetMangaFromUrl(url);
+        if (x is null)
+            return BadRequest();
+        try
+        {
+            Manga? add = AddMangaToContext(x.Value.manga, x.Value.authors, x.Value.tags, x.Value.links, x.Value.altTitles);
+            if (add is not null)
+                return Ok(add);
+            return StatusCode(500);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
     
     private Manga? AddMangaToContext(Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links,
         List<MangaAltTitle>? altTitles)
