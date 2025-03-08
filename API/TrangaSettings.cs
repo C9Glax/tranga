@@ -111,7 +111,7 @@ public static class TrangaSettings
         ExportSettings();
     }
 
-    public static void UpdateRateLimit(RequestType requestType, int newLimit)
+    public static void UpdateRequestLimit(RequestType requestType, int newLimit)
     {
         requestLimits[requestType] = newLimit;
         ExportSettings();

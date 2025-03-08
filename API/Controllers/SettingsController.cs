@@ -79,9 +79,39 @@ public class SettingsController(PgsqlContext context) : Controller
     {
         return StatusCode(501);
     }
+
+    /// <summary>
+    /// Updates a Request-Limit value
+    /// </summary>
+    /// <param name="RequestType">Type of Request</param>
+    /// <param name="requestLimit">New limit in Requests/Minute</param>
+    /// <response code="200"></response>
+    /// <response code="400">Limit needs to be greater than 0</response>
+    [HttpPatch("RequestLimits/{RequestType}")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status400BadRequest)]
+    public IActionResult SetRequestLimit(RequestType RequestType, [FromBody]int requestLimit)
+    {
+        if (requestLimit <= 0)
+            return BadRequest();
+        TrangaSettings.UpdateRequestLimit(RequestType, requestLimit);
+        return Ok();
+    }
     
     /// <summary>
-    /// Reset all Request-Limits
+    /// Reset Request-Limit
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpDelete("RequestLimits/{RequestType}")]
+    [ProducesResponseType<string>(Status200OK)]
+    public IActionResult ResetRequestLimits(RequestType RequestType)
+    {
+        TrangaSettings.UpdateRequestLimit(RequestType, TrangaSettings.DefaultRequestLimits[RequestType]);
+        return Ok();
+    }
+    
+    /// <summary>
+    /// Reset Request-Limit
     /// </summary>
     /// <response code="200"></response>
     [HttpDelete("RequestLimits")]
