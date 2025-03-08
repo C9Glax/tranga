@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -39,4 +40,6 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     }
 
     internal abstract string[] GetChapterImageUrls(Chapter chapter);
+
+    protected bool ValidateUrl(string url) => BaseUris.Any(baseUri => Regex.IsMatch(url, "https?://" + baseUri + "/.*"));
 }
