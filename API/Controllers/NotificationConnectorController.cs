@@ -50,11 +50,11 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// </summary>
     /// <remarks>Formatting placeholders: "%title" and "%text" can be placed in url, header-values and body and will be replaced when notifications are sent</remarks>
     /// <param name="notificationConnector">Notification-Connector</param>
-    /// <response code="201"></response>
+    /// <response code="201">ID of new connector</response>
     /// <response code="409">A NotificationConnector with name already exists</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status201Created, "application/json")]
     [ProducesResponseType(Status409Conflict)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateConnector([FromBody]NotificationConnector notificationConnector)
@@ -65,7 +65,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         {
             context.NotificationConnectors.Add(notificationConnector);
             context.SaveChanges();
-            return Created();
+            return Created(notificationConnector.Name, notificationConnector);
         }
         catch (Exception e)
         {
@@ -77,12 +77,12 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// Creates a new Gotify-Notification-Connector
     /// </summary>
     /// <remarks>Priority needs to be between 0 and 10</remarks>
-    /// <response code="201"></response>
+    /// <response code="201">ID of new connector</response>
     /// <response code="400"></response>
     /// <response code="409">A NotificationConnector with name already exists</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Gotify")]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status201Created, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status409Conflict)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
@@ -103,12 +103,12 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// Creates a new Ntfy-Notification-Connector
     /// </summary>
     /// <remarks>Priority needs to be between 1 and 5</remarks>
-    /// <response code="201"></response>
+    /// <response code="201">ID of new connector</response>
     /// <response code="400"></response>
     /// <response code="409">A NotificationConnector with name already exists</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Ntfy")]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status201Created, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status409Conflict)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
@@ -136,12 +136,12 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// Creates a new Lunasea-Notification-Connector
     /// </summary>
     /// <remarks>https://docs.lunasea.app/lunasea/notifications/custom-notifications for id. Either device/:device_id or user/:user_id</remarks>
-    /// <response code="201"></response>
+    /// <response code="201">ID of new connector</response>
     /// <response code="400"></response>
     /// <response code="409">A NotificationConnector with name already exists</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Lunasea")]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status201Created, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status409Conflict)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]

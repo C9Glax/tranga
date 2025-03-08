@@ -87,7 +87,7 @@ public class JobController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="MangaId">ID of Manga</param>
     /// <param name="recurrenceTime">How often should we check for new chapters</param>
-    /// <response code="201">Created new Job</response>
+    /// <response code="201">Job-IDs</response>
     /// <response code="404">Could not find Manga with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("DownloadAvailableChaptersJob/{MangaId}")]
@@ -107,7 +107,7 @@ public class JobController(PgsqlContext context) : Controller
     /// Create a new DownloadSingleChapterJob
     /// </summary>
     /// <param name="ChapterId">ID of the Chapter</param>
-    /// <response code="201">Created new Job</response>
+    /// <response code="201">Job-IDs</response>
     /// <response code="404">Could not find Chapter with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("DownloadSingleChapterJob/{ChapterId}")]
@@ -126,7 +126,7 @@ public class JobController(PgsqlContext context) : Controller
     /// Create a new UpdateFilesDownloadedJob
     /// </summary>
     /// <param name="MangaId">ID of the Manga</param>
-    /// <response code="201">Created new Job</response>
+    /// <response code="201">Job-IDs</response>
     /// <response code="201">Could not find Manga with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateFilesJob/{MangaId}")]
@@ -144,10 +144,10 @@ public class JobController(PgsqlContext context) : Controller
     /// <summary>
     /// Create a new UpdateMetadataJob for all Manga
     /// </summary>
-    /// <response code="201">Created new Job</response>
+    /// <response code="201">Job-IDs</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateAllFilesJob")]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string[]>(Status201Created, "application/json")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateAllFilesDownloadedJob()
     {
@@ -169,7 +169,7 @@ public class JobController(PgsqlContext context) : Controller
     /// Create a new UpdateMetadataJob
     /// </summary>
     /// <param name="MangaId">ID of the Manga</param>
-    /// <response code="201">Created new Job</response>
+    /// <response code="201">Job-IDs</response>
     /// <response code="404">Could not find Manga with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateMetadataJob/{MangaId}")]
@@ -187,10 +187,10 @@ public class JobController(PgsqlContext context) : Controller
     /// <summary>
     /// Create a new UpdateMetadataJob for all Manga
     /// </summary>
-    /// <response code="201">Created new Job</response>
+    /// <response code="201">Job-IDs</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateAllMetadataJob")]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string[]>(Status201Created, "application/json")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateAllMetadataJob()
     {
@@ -332,10 +332,11 @@ public class JobController(PgsqlContext context) : Controller
     /// Stops the Job with the requested ID
     /// </summary>
     /// <param name="JobId">Job-ID</param>
-    /// <remarks>NOT IMPLEMENTED</remarks>
+    /// <remarks><h1>NOT IMPLEMENTED</h1></remarks>
     [HttpPost("{JobId}/Stop")]
+    [ProducesResponseType(Status501NotImplemented)]
     public IActionResult StopJob(string JobId)
     {
-        throw new NotImplementedException();
+        return StatusCode(501);
     }
 }
