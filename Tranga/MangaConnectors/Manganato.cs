@@ -32,7 +32,7 @@ public class Manganato : MangaConnector
 
     private Manga[] ParsePublicationsFromHtml(HtmlDocument document)
     {
-        List<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("panel_story_list")).ToList();
+        List<HtmlNode> searchResults = document.DocumentNode.Descendants("div").Where(n => n.HasClass("story_item")).ToList();
         Log($"{searchResults.Count} items.");
         List<string> urls = new();
         foreach (HtmlNode mangaResult in searchResults)
@@ -99,7 +99,9 @@ public class Manganato : MangaConnector
             else if (text.StartsWith("status :"))
             {
                 string status = text.Replace("status :", "").Trim().ToLower();
-                if (status == "ongoing")
+                if (string.IsNullOrWhiteSpace(status))
+                    releaseStatus = Manga.ReleaseStatusByte.Continuing;
+                else if (status == "ongoing")
                     releaseStatus = Manga.ReleaseStatusByte.Continuing;
                 else
                     releaseStatus = Enum.Parse<Manga.ReleaseStatusByte>(status, true);
