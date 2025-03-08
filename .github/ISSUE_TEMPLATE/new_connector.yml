@@ -12,7 +12,7 @@ body:
   - type: checkboxes
     attributes:
       label: Is the Website free to access?
-      description: We can't support pay-to-use sites.
+      description: We can't support pay-to-use sites, or captcha-proxied sites as Cloudflare.
       options:
         - label: The Website is freely accessible.
           required: true
