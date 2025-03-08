@@ -20,10 +20,10 @@ public class SearchController(PgsqlContext context) : Controller
     /// <param name="name">Name/Title of the Manga</param>
     /// <response code="200"></response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{name}")]
+    [HttpPost("Name")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult SearchMangaGlobal(string name)
+    public IActionResult SearchMangaGlobal([FromBody]string name)
     {
         List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> allManga = new();
         foreach (MangaConnector contextMangaConnector in context.MangaConnectors.Where(connector => connector.Enabled))
@@ -55,7 +55,7 @@ public class SearchController(PgsqlContext context) : Controller
     /// <response code="404">MangaConnector with ID not found</response>
     /// <response code="406">MangaConnector with ID is disabled</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{id}/{name}")]
+    [HttpPost("{MangaConnectorName}/{SearchName}")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status406NotAcceptable)]
@@ -96,12 +96,13 @@ public class SearchController(PgsqlContext context) : Controller
     /// <response code="400">No Manga at URL</response>
     /// <response code="404">No connector found for URL</response>
     /// <response code="500">Error during Database Operation</response>
+    [HttpPost("Url")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
     [ProducesResponseType(Status300MultipleChoices)]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult GetMangaFromUrl(string url)
+    public IActionResult GetMangaFromUrl([FromBody]string url)
     {
         List<MangaConnector> connectors = context.MangaConnectors.AsEnumerable().Where(c => c.ValidateUrl(url)).ToList();
         if (connectors.Count == 0)
