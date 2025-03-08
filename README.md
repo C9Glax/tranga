@@ -44,24 +44,24 @@
 Tranga can download Chapters and Metadata from "Scanlation" sites such as 
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
-- [Manganato.com](https://manganato.com/) (en)
+- [Manganato.gg](https://manganato.com/) (en)
 - [MangaKatana.com](https://mangakatana.com) (en)
 - [Mangaworld.bz](https://www.mangaworld.bz/) (it)
 - [Bato.to](https://bato.to/v3x) (en)
 - [ManhuaPlus](https://manhuaplus.org/) (en)
 - [MangaHere](https://www.mangahere.cc/) (en) (Their covers aren't scrapeable.)
 - [Weebcentral](https://weebcentral.com) (en)
-- [Webtoons](https://www.webtoons.com/en/)
+- [Webtoons](https://www.webtoons.com/en/) (en)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
 Notifications can be sent to your devices using [Gotify](https://gotify.net/), [LunaSea](https://www.lunasea.app/) or [Ntfy](https://ntfy.sh/
-).
+), or any other service that can use REST Webhooks.
 
 ### What this does and doesn't do
 
 Tranga (this git-repo) will open a port (standard 6531) and listen for requests to add Jobs to Monitor and/or download specific Manga.
-The configuration is all done through HTTP-Requests. [Documentation](docs/API_Calls_v2.md)
+The configuration is all done through HTTP-Requests.
 
 _**For a web-frontend use [tranga-website](https://github.com/C9Glax/tranga-website).**_
 
@@ -91,7 +91,6 @@ That is why I wanted to create my own project, in a language I understand, and t
 - [Html Agility Pack (HAP)](https://html-agility-pack.net/)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
-- [zstd-wrapper](https://github.com/oleg-st/ZstdSharp) [zstd](https://github.com/facebook/zstd)
 - 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -120,10 +119,7 @@ access the folder.
 
 ### Prerequisites
 
-#### To Build
-[.NET-Core 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-#### To Run
-[.NET-Core 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) scroll down a bit, should be on the right the second item.
+.NET-9.0
 
 See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list of proposed features (and known issues).
 

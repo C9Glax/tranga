@@ -119,7 +119,7 @@ public class Manga
         if (File.Exists(saveImagePath))
             return saveImagePath;
         
-        RequestResult coverResult = new HttpDownloadClient().MakeRequest(CoverUrl, RequestType.MangaCover);
+        RequestResult coverResult = new HttpDownloadClient().MakeRequest(CoverUrl, RequestType.MangaCover, this.WebsiteUrl);
         if (coverResult.statusCode is < HttpStatusCode.Accepted or >= HttpStatusCode.Ambiguous)
             return SaveCoverImageToCache(--retries);
             
