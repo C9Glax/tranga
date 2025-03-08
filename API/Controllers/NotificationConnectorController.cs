@@ -29,15 +29,15 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Returns Notification-Connector with requested ID
     /// </summary>
-    /// <param name="id">Notification-Connector-ID</param>
+    /// <param name="NotificationConnectorId">Notification-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">NotificationConnector with ID not found</response>
-    [HttpGet("{id}")]
+    [HttpGet("{NotificationConnectorId}")]
     [ProducesResponseType<NotificationConnector>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetConnector(string id)
+    public IActionResult GetConnector(string NotificationConnectorId)
     {
-        NotificationConnector? ret = context.NotificationConnectors.Find(id);
+        NotificationConnector? ret = context.NotificationConnectors.Find(NotificationConnectorId);
         return (ret is not null) switch
         {
             true => Ok(ret),
@@ -161,19 +161,19 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Deletes the Notification-Connector with the requested ID
     /// </summary>
-    /// <param name="id">Notification-Connector-ID</param>
+    /// <param name="NotificationConnectorId">Notification-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">NotificationConnector with ID not found</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpDelete("{id}")]
+    [HttpDelete("{NotificationConnectorId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult DeleteConnector(string id)
+    public IActionResult DeleteConnector(string NotificationConnectorId)
     {
         try
         {
-            NotificationConnector? ret = context.NotificationConnectors.Find(id);
+            NotificationConnector? ret = context.NotificationConnectors.Find(NotificationConnectorId);
             if(ret is null)
                 return NotFound();
             

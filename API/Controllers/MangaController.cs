@@ -44,15 +44,15 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Return Manga with ID
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Manga with ID not found</response>
-    [HttpGet("{id}")]
+    [HttpGet("{MangaId}")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetManga(string id)
+    public IActionResult GetManga(string MangaId)
     {
-        Manga? ret = context.Manga.Find(id);
+        Manga? ret = context.Manga.Find(MangaId);
         if (ret is null)
             return NotFound();
         return Ok(ret);
@@ -61,19 +61,19 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Delete Manga with ID
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Manga with ID not found</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpDelete("{id}")]
+    [HttpDelete("{MangaId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult DeleteManga(string id)
+    public IActionResult DeleteManga(string MangaId)
     {
         try
         {
-            Manga? ret = context.Manga.Find(id);
+            Manga? ret = context.Manga.Find(MangaId);
             if (ret is null)
                 return NotFound();
             
@@ -90,20 +90,20 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Returns Cover of Manga
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <param name="formatRequest">Formatting/Resizing Request</param>
     /// <response code="200">JPEG Image</response>
     /// <response code="204">Cover not loaded</response>
     /// <response code="400">The formatting-request was invalid</response>
     /// <response code="404">Manga with ID not found</response>
-    [HttpPost("{id}/Cover")]
+    [HttpPost("{MangaId}/Cover")]
     [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetCover(string id, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]CoverFormatRequestRecord? formatRequest)
+    public IActionResult GetCover(string MangaId, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]CoverFormatRequestRecord? formatRequest)
     {
-        Manga? m = context.Manga.Find(id);
+        Manga? m = context.Manga.Find(MangaId);
         if (m is null)
             return NotFound();
         if (!System.IO.File.Exists(m.CoverFileNameInCache))
@@ -130,15 +130,15 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Returns all Chapters of Manga
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Manga with ID not found</response>
-    [HttpGet("{id}/Chapters")]
+    [HttpGet("{MangaId}/Chapters")]
     [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetChapters(string id)
+    public IActionResult GetChapters(string MangaId)
     {
-        Manga? m = context.Manga.Find(id);
+        Manga? m = context.Manga.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -149,19 +149,19 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Returns the latest Chapter of requested Manga available on Website
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
     /// <response code="404">Manga with ID not found.</response>
     /// <response code="500">Could not retrieve the maximum chapter-number</response>
-    [HttpGet("{id}/Chapter/LatestAvailable")]
+    [HttpGet("{MangaId}/Chapter/LatestAvailable")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult GetLatestChapter(string id)
+    public IActionResult GetLatestChapter(string MangaId)
     {
-        Manga? m = context.Manga.Find(id);
+        Manga? m = context.Manga.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -179,19 +179,19 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Returns the latest Chapter of requested Manga that is downloaded
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
     /// <response code="404">Manga with ID not found.</response>
     /// <response code="500">Could not retrieve the maximum chapter-number</response>
-    [HttpGet("{id}/Chapter/LatestDownloaded")]
+    [HttpGet("{MangaId}/Chapter/LatestDownloaded")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult GetLatestChapterDownloaded(string id)
+    public IActionResult GetLatestChapterDownloaded(string MangaId)
     {
-        Manga? m = context.Manga.Find(id);
+        Manga? m = context.Manga.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -209,15 +209,15 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Configure the cut-off for Manga
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Manga with ID not found.</response>
-    [HttpPatch("{id}/IgnoreChaptersBefore")]
+    [HttpPatch("{MangaId}/IgnoreChaptersBefore")]
     [ProducesResponseType<float>(Status200OK, "text/plain")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult IgnoreChaptersBefore(string id)
+    public IActionResult IgnoreChaptersBefore(string MangaId)
     {
-        Manga? m = context.Manga.Find(id);
+        Manga? m = context.Manga.Find(MangaId);
         if (m is null)
             return NotFound();
         return Ok(m.IgnoreChapterBefore);
@@ -226,11 +226,11 @@ public class MangaController(PgsqlContext context) : Controller
     /// <summary>
     /// Move the Directory the .cbz-files are located in
     /// </summary>
-    /// <param name="id">Manga-ID</param>
+    /// <param name="MangaId">Manga-ID</param>
     /// <param name="folder">New Directory-Path</param>
     /// <remarks>NOT IMPLEMENTED</remarks>
-    [HttpPost("{id}/MoveFolder")]
-    public IActionResult MoveFolder(string id, [FromBody]string folder)
+    [HttpPost("{MangaId}/MoveFolder")]
+    public IActionResult MoveFolder(string MangaId, [FromBody]string folder)
     {
         throw new NotImplementedException();
     }

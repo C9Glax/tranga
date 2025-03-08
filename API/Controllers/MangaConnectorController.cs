@@ -55,7 +55,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPatch("{id}/SetEnabled/{enabled}")]
+    [HttpPatch("{MangaConnectorName}/SetEnabled/{enabled}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]

@@ -26,15 +26,15 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Returns Library-Connector with requested ID
     /// </summary>
-    /// <param name="id">Library-Connector-ID</param>
+    /// <param name="LibraryControllerId">Library-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
-    [HttpGet("{id}")]
+    [HttpGet("{LibraryControllerId}")]
     [ProducesResponseType<LibraryConnector>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetConnector(string id)
+    public IActionResult GetConnector(string LibraryControllerId)
     {
-        LibraryConnector? ret = context.LibraryConnectors.Find(id);
+        LibraryConnector? ret = context.LibraryConnectors.Find(LibraryControllerId);
         return (ret is not null) switch
         {
             true => Ok(ret),
@@ -68,19 +68,19 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Deletes the Library-Connector with the requested ID
     /// </summary>
-    /// <param name="id">Library-Connector-ID</param>
+    /// <param name="LibraryControllerId">Library-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpDelete("{id}")]
+    [HttpDelete("{LibraryControllerId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult DeleteConnector(string id)
+    public IActionResult DeleteConnector(string LibraryControllerId)
     {
         try
         {
-            LibraryConnector? ret = context.LibraryConnectors.Find(id);
+            LibraryConnector? ret = context.LibraryConnectors.Find(LibraryControllerId);
             if (ret is null)
                 return NotFound();
             
