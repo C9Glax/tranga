@@ -13,10 +13,12 @@ public abstract class Job
     
     [MaxLength(64)]
     public string? ParentJobId { get; init; }
+    [JsonIgnore]
     public Job? ParentJob { get; init; }
     
     [MaxLength(64)]
     public ICollection<string>? DependsOnJobsIds { get; init; }
+    [JsonIgnore]
     public ICollection<Job>? DependsOnJobs { get; init; }
     
     public JobType JobType { get; init; }

@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
 using API.Schema.MangaConnectors;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -16,6 +17,7 @@ public class DownloadMangaCoverJob(string mangaId, string? parentJobId = null, I
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = mangaId;
+    [JsonIgnore]
     public Manga? Manga { get; init; }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using API.Schema.MangaConnectors;
+using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
@@ -8,6 +9,8 @@ public class UpdateMetadataJob(ulong recurrenceMs, string mangaId, string? paren
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = mangaId;
+    
+    [JsonIgnore]
     public virtual Manga? Manga { get; init; }
     
     /// <summary>

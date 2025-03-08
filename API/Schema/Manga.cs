@@ -1,3 +1,4 @@
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -6,6 +7,7 @@ using API.MangaDownloadClients;
 using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using static System.IO.UnixFileMode;
 
 namespace API.Schema;
@@ -30,15 +32,23 @@ public class Manga
     public float IgnoreChapterBefore { get; internal set; }
 
     public string MangaConnectorId { get; private set; }
-    
+    [JsonIgnore]
     public MangaConnector? MangaConnector { get; private set; }
     
+    public ICollection<string> AuthorIds { get; internal set; }
+    [JsonIgnore]
     public ICollection<Author>? Authors { get; internal set; }
     
+    public ICollection<string> TagIds { get; internal set; }
+    [JsonIgnore]
     public ICollection<MangaTag>? Tags { get; internal set; }
     
+    public ICollection<string> LinkIds { get; internal set; }
+    [JsonIgnore]
     public ICollection<Link>? Links { get; internal set; }
     
+    public ICollection<string> AltTitleIds { get; internal set; }
+    [JsonIgnore]
     public ICollection<MangaAltTitle>? AltTitles { get; internal set; }
 
     public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
@@ -48,9 +58,13 @@ public class Manga
         : this(connectorId, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
             releaseStatus, ignoreChapterBefore, mangaConnector.Name)
     {
+        this.AuthorIds = authors.Select(a => a.AuthorId) as ICollection<string>;
         this.Authors = authors;
+        this.TagIds = tags.Select(t => t.Tag) as ICollection<string>;
         this.Tags = tags;
+        this.LinkIds = links.Select(l => l.LinkId) as ICollection<string>;
         this.Links = links;
+        this.AltTitleIds = altTitles.Select(t => t.AltTitleId) as ICollection<string>;
         this.AltTitles = altTitles;
     }
     

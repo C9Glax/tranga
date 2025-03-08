@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using API.Schema.Jobs;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace API.Schema;
 
@@ -38,6 +39,7 @@ public class Chapter : IComparable<Chapter>
     public bool Downloaded { get; internal set; } = false;
 
     public string ParentMangaId { get; internal set; }
+    [JsonIgnore]
     public Manga? ParentManga { get; init; }
 
     public int CompareTo(Chapter? other)
