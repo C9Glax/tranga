@@ -72,11 +72,12 @@ public class SettingsController(PgsqlContext context) : Controller
     /// <summary>
     /// Update all Request-Limits to new values
     /// </summary>
-    /// <remarks>NOT IMPLEMENTED</remarks>
+    /// <remarks><h1>NOT IMPLEMENTED</h1></remarks>
     [HttpPatch("RequestLimits")]
+    [ProducesResponseType(Status501NotImplemented)]
     public IActionResult SetRequestLimits()
     {
-        throw new NotImplementedException();
+        return StatusCode(501);
     }
     
     /// <summary>

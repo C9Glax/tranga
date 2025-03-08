@@ -21,6 +21,6 @@ public class UpdateMetadataJob(ulong recurrenceMs, string mangaId, string? paren
     /// <param name="context"></param>
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        throw new NotImplementedException();
+        return [];//TODO
     }
 }
