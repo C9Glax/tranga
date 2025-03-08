@@ -4,8 +4,10 @@
 public enum JobType : byte
 {
     DownloadSingleChapterJob = 0, 
-    DownloadNewChaptersJob = 1, 
+    DownloadAvailableChaptersJob = 1, 
     UpdateMetaDataJob = 2,
     MoveFileOrFolderJob = 3,
-    DownloadMangaCoverJob = 4
+    DownloadMangaCoverJob = 4,
+    RetrieveChaptersJob = 5,
+    UpdateFilesDownloadedJob = 6
 }

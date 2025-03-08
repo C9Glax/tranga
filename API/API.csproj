@@ -27,6 +27,7 @@
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
         <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.920" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="7.3.1" />
         <PackageReference Include="System.Drawing.Common" Version="9.0.2" />
     </ItemGroup>
 

@@ -36,21 +36,23 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasDiscriminator<LibraryType>(l => l.LibraryType)
             .HasValue<Komga>(LibraryType.Komga)
             .HasValue<Kavita>(LibraryType.Kavita);
-        
+
         modelBuilder.Entity<Job>()
             .HasDiscriminator<JobType>(j => j.JobType)
             .HasValue<MoveFileOrFolderJob>(JobType.MoveFileOrFolderJob)
-            .HasValue<DownloadNewChaptersJob>(JobType.DownloadNewChaptersJob)
+            .HasValue<DownloadAvailableChaptersJob>(JobType.DownloadAvailableChaptersJob)
             .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
             .HasValue<DownloadMangaCoverJob>(JobType.DownloadMangaCoverJob)
-            .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob);
+            .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob)
+            .HasValue<RetrieveChaptersJob>(JobType.RetrieveChaptersJob)
+            .HasValue<UpdateFilesDownloadedJob>(JobType.UpdateFilesDownloadedJob);
         modelBuilder.Entity<Job>()
             .HasOne<Job>(j => j.ParentJob)
             .WithMany()
             .HasForeignKey(j => j.ParentJobId);
         modelBuilder.Entity<Job>()
             .HasMany<Job>(j => j.DependsOnJobs);
-        modelBuilder.Entity<DownloadNewChaptersJob>()
+        modelBuilder.Entity<DownloadAvailableChaptersJob>()
             .Navigation(dncj => dncj.Manga)
             .AutoInclude();
         modelBuilder.Entity<DownloadSingleChapterJob>()
@@ -74,10 +76,10 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .Navigation(m => m.Authors)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
-            .HasMany<MangaTag>(m => m.Tags)
+            .HasMany<MangaTag>(m => m.MangaTags)
             .WithMany();
         modelBuilder.Entity<Manga>()
-            .Navigation(m => m.Tags)
+            .Navigation(m => m.MangaTags)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
             .HasMany<Link>(m => m.Links)

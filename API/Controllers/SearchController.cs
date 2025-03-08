@@ -142,8 +142,8 @@ public class SearchController(PgsqlContext context) : Controller
                 MangaTag? inDb = context.Tags.FirstOrDefault(t => t.Equals(mt));
                 return inDb ?? mt;
             });
-            manga.Tags = mergedTags.ToList();
-            IEnumerable<MangaTag> newTags = manga.Tags.Where(mt => !context.Tags.Any(t => t.Tag.Equals(mt.Tag)));
+            manga.MangaTags = mergedTags.ToList();
+            IEnumerable<MangaTag> newTags = manga.MangaTags.Where(mt => !context.Tags.Any(t => t.Tag.Equals(mt.Tag)));
             context.Tags.AddRange(newTags);
         }
 
@@ -195,6 +195,7 @@ public class SearchController(PgsqlContext context) : Controller
             context.Manga.Add(manga);
 
         context.Jobs.Add(new DownloadMangaCoverJob(manga.MangaId));
+        context.Jobs.Add(new RetrieveChaptersJob(0, manga.MangaId));
 
         context.SaveChanges();
         return existing ?? manga;

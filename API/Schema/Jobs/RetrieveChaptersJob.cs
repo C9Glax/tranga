@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using API.Schema.MangaConnectors;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class DownloadNewChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadNewChaptersJob)), JobType.DownloadNewChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
+public class RetrieveChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
+    : Job(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
 {
     [MaxLength(64)]
     public string MangaId { get; init; } = mangaId;
@@ -30,7 +30,7 @@ public class DownloadNewChaptersJob(ulong recurrenceMs, string mangaId, string? 
         Chapter[] newChapters = allNewChapters.Where(chapter => !chapterIds.Contains(chapter.ChapterId)).ToArray();
         context.Chapters.AddRangeAsync(newChapters).Wait();
         context.SaveChangesAsync().Wait();
-        
-        return allNewChapters.Select(chapter => new DownloadSingleChapterJob(chapter.ChapterId, this.JobId));
+
+        return [];
     }
 }

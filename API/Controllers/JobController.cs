@@ -83,19 +83,24 @@ public class JobController(PgsqlContext context) : Controller
     }
 
     /// <summary>
-    /// Create a new CreateNewDownloadChapterJob
+    /// Create a new DownloadAvailableChaptersJob
     /// </summary>
     /// <param name="MangaId">ID of Manga</param>
     /// <param name="recurrenceTime">How often should we check for new chapters</param>
     /// <response code="201">Created new Job</response>
+    /// <response code="404">Could not find Manga with ID</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPut("NewDownloadChapterJob/{MangaId}")]
-    [ProducesResponseType(Status201Created)]
+    [HttpPut("DownloadAvailableChaptersJob/{MangaId}")]
+    [ProducesResponseType<string[]>(Status201Created, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNewDownloadChapterJob(string MangaId, [FromBody]ulong recurrenceTime)
     {
-        Job job = new DownloadNewChaptersJob(recurrenceTime, MangaId);
-        return AddJob(job);
+        if (context.Manga.Find(MangaId) is null)
+            return NotFound();
+        Job dep = new RetrieveChaptersJob(recurrenceTime, MangaId);
+        Job job = new DownloadAvailableChaptersJob(recurrenceTime, MangaId, null, [dep.JobId]);
+        return AddJobs([dep, job]);
     }
 
     /// <summary>
@@ -103,29 +108,37 @@ public class JobController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="ChapterId">ID of the Chapter</param>
     /// <response code="201">Created new Job</response>
+    /// <response code="404">Could not find Chapter with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("DownloadSingleChapterJob/{ChapterId}")]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string[]>(Status201Created, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNewDownloadChapterJob(string ChapterId)
     {
+        if(context.Chapters.Find(ChapterId) is null)
+            return NotFound();
         Job job = new DownloadSingleChapterJob(ChapterId);
-        return AddJob(job);
+        return AddJobs([job]);
     }
 
     /// <summary>
-    /// Create a new UpdateMetadataJob
+    /// Create a new UpdateFilesDownloadedJob
     /// </summary>
     /// <param name="MangaId">ID of the Manga</param>
     /// <response code="201">Created new Job</response>
+    /// <response code="201">Could not find Manga with ID</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPut("UpdateMetadataJob/{MangaId}")]
-    [ProducesResponseType(Status201Created)]
+    [HttpPut("UpdateFilesJob/{MangaId}")]
+    [ProducesResponseType<string[]>(Status201Created, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateUpdateMetadataJob(string MangaId)
+    public IActionResult CreateUpdateFilesDownloadedJob(string MangaId)
     {
-        Job job = new UpdateMetadataJob(0, MangaId);
-        return AddJob(job);
+        if(context.Manga.Find(MangaId) is null)
+            return NotFound();
+        Job job = new UpdateFilesDownloadedJob(0, MangaId);
+        return AddJobs([job]);
     }
 
     /// <summary>
@@ -133,7 +146,50 @@ public class JobController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="201">Created new Job</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPut("UpdateMetadataJob")]
+    [HttpPut("UpdateAllFilesJob")]
+    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult CreateUpdateAllFilesDownloadedJob()
+    {
+        List<string> ids = context.Manga.Select(m => m.MangaId).ToList();
+        List<UpdateFilesDownloadedJob> jobs =  ids.Select(id => new UpdateFilesDownloadedJob(0, id)).ToList();
+        try
+        {
+            context.Jobs.AddRange(jobs);
+            context.SaveChanges();
+            return Created();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    /// <summary>
+    /// Create a new UpdateMetadataJob
+    /// </summary>
+    /// <param name="MangaId">ID of the Manga</param>
+    /// <response code="201">Created new Job</response>
+    /// <response code="404">Could not find Manga with ID</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPut("UpdateMetadataJob/{MangaId}")]
+    [ProducesResponseType<string[]>(Status201Created, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult CreateUpdateMetadataJob(string MangaId)
+    {
+        if(context.Manga.Find(MangaId) is null)
+            return NotFound();
+        Job job = new UpdateMetadataJob(0, MangaId);
+        return AddJobs([job]);
+    }
+
+    /// <summary>
+    /// Create a new UpdateMetadataJob for all Manga
+    /// </summary>
+    /// <response code="201">Created new Job</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPut("UpdateAllMetadataJob")]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateAllMetadataJob()
@@ -152,13 +208,13 @@ public class JobController(PgsqlContext context) : Controller
         }
     }
     
-    private IActionResult AddJob(Job job)
+    private IActionResult AddJobs(Job[] jobs)
     {
         try
         {
-            context.Jobs.Add(job);
+            context.Jobs.AddRange(jobs);
             context.SaveChanges();
-            return new CreatedResult(job.JobId, job);
+            return new CreatedResult((string?)null, jobs.Select(j => j.JobId).ToArray());
         }
         catch (Exception e)
         {

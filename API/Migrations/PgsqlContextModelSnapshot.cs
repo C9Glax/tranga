@@ -367,17 +367,17 @@ namespace API.Migrations
                     b.Property<string>("MangaId")
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("TagsTag")
+                    b.Property<string>("MangaTagsTag")
                         .HasColumnType("text");
 
-                    b.HasKey("MangaId", "TagsTag");
+                    b.HasKey("MangaId", "MangaTagsTag");
 
-                    b.HasIndex("TagsTag");
+                    b.HasIndex("MangaTagsTag");
 
                     b.ToTable("MangaMangaTag");
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.DownloadMangaCoverJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.DownloadAvailableChaptersJob", b =>
                 {
                     b.HasBaseType("API.Schema.Jobs.Job");
 
@@ -391,13 +391,13 @@ namespace API.Migrations
                     b.ToTable("Jobs", t =>
                         {
                             t.Property("MangaId")
-                                .HasColumnName("DownloadMangaCoverJob_MangaId");
+                                .HasColumnName("DownloadAvailableChaptersJob_MangaId");
                         });
 
-                    b.HasDiscriminator().HasValue((byte)4);
+                    b.HasDiscriminator().HasValue((byte)1);
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.DownloadNewChaptersJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.DownloadMangaCoverJob", b =>
                 {
                     b.HasBaseType("API.Schema.Jobs.Job");
 
@@ -408,7 +408,7 @@ namespace API.Migrations
 
                     b.HasIndex("MangaId");
 
-                    b.HasDiscriminator().HasValue((byte)1);
+                    b.HasDiscriminator().HasValue((byte)4);
                 });
 
             modelBuilder.Entity("API.Schema.Jobs.DownloadSingleChapterJob", b =>
@@ -438,6 +438,46 @@ namespace API.Migrations
                         .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue((byte)3);
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.RetrieveChaptersJob", b =>
+                {
+                    b.HasBaseType("API.Schema.Jobs.Job");
+
+                    b.Property<string>("MangaId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasIndex("MangaId");
+
+                    b.ToTable("Jobs", t =>
+                        {
+                            t.Property("MangaId")
+                                .HasColumnName("RetrieveChaptersJob_MangaId");
+                        });
+
+                    b.HasDiscriminator().HasValue((byte)5);
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.UpdateFilesDownloadedJob", b =>
+                {
+                    b.HasBaseType("API.Schema.Jobs.Job");
+
+                    b.Property<string>("MangaId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasIndex("MangaId");
+
+                    b.ToTable("Jobs", t =>
+                        {
+                            t.Property("MangaId")
+                                .HasColumnName("UpdateFilesDownloadedJob_MangaId");
+                        });
+
+                    b.HasDiscriminator().HasValue((byte)6);
                 });
 
             modelBuilder.Entity("API.Schema.Jobs.UpdateMetadataJob", b =>
@@ -604,12 +644,12 @@ namespace API.Migrations
 
                     b.HasOne("API.Schema.MangaTag", null)
                         .WithMany()
-                        .HasForeignKey("TagsTag")
+                        .HasForeignKey("MangaTagsTag")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.DownloadMangaCoverJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.DownloadAvailableChaptersJob", b =>
                 {
                     b.HasOne("API.Schema.Manga", "Manga")
                         .WithMany()
@@ -620,7 +660,7 @@ namespace API.Migrations
                     b.Navigation("Manga");
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.DownloadNewChaptersJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.DownloadMangaCoverJob", b =>
                 {
                     b.HasOne("API.Schema.Manga", "Manga")
                         .WithMany()
@@ -640,6 +680,28 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.Navigation("Chapter");
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.RetrieveChaptersJob", b =>
+                {
+                    b.HasOne("API.Schema.Manga", "Manga")
+                        .WithMany()
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manga");
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.UpdateFilesDownloadedJob", b =>
+                {
+                    b.HasOne("API.Schema.Manga", "Manga")
+                        .WithMany()
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manga");
                 });
 
             modelBuilder.Entity("API.Schema.Jobs.UpdateMetadataJob", b =>

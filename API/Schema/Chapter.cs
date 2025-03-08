@@ -39,8 +39,7 @@ public class Chapter : IComparable<Chapter>
     public bool Downloaded { get; internal set; } = false;
 
     public string ParentMangaId { get; internal set; }
-    [JsonIgnore]
-    public Manga? ParentManga { get; init; }
+    [JsonIgnore] public Manga? ParentManga { get; init; }
 
     public int CompareTo(Chapter? other)
     {
@@ -130,7 +129,7 @@ public class Chapter : IComparable<Chapter>
     internal string GetComicInfoXmlString()
     {
         XElement comicInfo = new("ComicInfo",
-            new XElement("Tags", string.Join(',', ParentManga.Tags.Select(tag => tag.Tag))),
+            new XElement("Tags", string.Join(',', ParentManga.MangaTags.Select(tag => tag.Tag))),
             new XElement("LanguageISO", ParentManga.OriginalLanguage),
             new XElement("Title", Title),
             new XElement("Writer", string.Join(',', ParentManga.Authors.Select(author => author.AuthorName))),

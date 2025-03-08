@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -6,6 +7,7 @@ using API.MangaDownloadClients;
 using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using static System.IO.UnixFileMode;
 
 namespace API.Schema;
@@ -30,26 +32,30 @@ public class Manga
     public float IgnoreChapterBefore { get; internal set; }
 
     public string MangaConnectorId { get; private set; }
+    [JsonIgnore] public MangaConnector? MangaConnector { get; private set; }
     
-    public MangaConnector? MangaConnector { get; private set; }
+    [JsonIgnore] public ICollection<Author>? Authors { get; internal set; }
+    [NotMapped] public IEnumerable<string> AuthorIds => Authors?.Select(a => a.AuthorId) ?? [];
     
-    public ICollection<Author>? Authors { get; internal set; }
+    [JsonIgnore] public ICollection<MangaTag>? MangaTags { get; internal set; }
+    [NotMapped] public IEnumerable<string> Tags => MangaTags.Select(t => t.Tag);
     
-    public ICollection<MangaTag>? Tags { get; internal set; }
     
-    public ICollection<Link>? Links { get; internal set; }
+    [JsonIgnore] public ICollection<Link>? Links { get; internal set; }
+    [NotMapped] public IEnumerable<string> LinkIds => Links?.Select(l => l.LinkId) ?? [];
     
-    public ICollection<MangaAltTitle>? AltTitles { get; internal set; }
+    [JsonIgnore] public ICollection<MangaAltTitle>? AltTitles { get; internal set; }
+    [NotMapped] public IEnumerable<string> AltTitleIds => AltTitles?.Select(a => a.AltTitleId) ?? [];
 
     public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
         float ignoreChapterBefore, MangaConnector mangaConnector, ICollection<Author> authors,
-        ICollection<MangaTag> tags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles)
+        ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles)
         : this(connectorId, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
             releaseStatus, ignoreChapterBefore, mangaConnector.Name)
     {
         this.Authors = authors;
-        this.Tags = tags;
+        this.MangaTags = mangaTags;
         this.Links = links;
         this.AltTitles = altTitles;
     }
@@ -89,7 +95,7 @@ public class Manga
         this.OriginalLanguage = other.OriginalLanguage;
         this.Authors = other.Authors;
         this.Links = other.Links;
-        this.Tags = other.Tags;
+        this.MangaTags = other.MangaTags;
         this.AltTitles = other.AltTitles;
         this.ReleaseStatus = other.ReleaseStatus;
     }

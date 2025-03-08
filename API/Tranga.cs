@@ -91,10 +91,10 @@ public static class Tranga
                 // If the job is already running, skip it
                 if (RunningJobs.Values.Any(j => j.JobId == job.JobId)) continue;
 
-                if (job is DownloadNewChaptersJob dncj)
+                if (job is DownloadAvailableChaptersJob dncj)
                 {
                     if (RunningJobs.Values.Any(j =>
-                            j is DownloadNewChaptersJob rdncj &&
+                            j is DownloadAvailableChaptersJob rdncj &&
                             rdncj.Manga?.MangaConnector == dncj.Manga?.MangaConnector))
                     {
                         continue;
@@ -143,13 +143,15 @@ public static class Tranga
         IEnumerable<Job> ret = new List<Job>();
         if(jobsByType.ContainsKey(JobType.MoveFileOrFolderJob))
             ret = ret.Concat(jobsByType[JobType.MoveFileOrFolderJob]);
-        if(jobsByType.ContainsKey(JobType.DownloadMangaCoverJob))
-         ret = ret.Concat(jobsByType[JobType.DownloadMangaCoverJob]);
+        if(jobsByType.ContainsKey(JobType.DownloadMangaCoverJob)) 
+            ret = ret.Concat(jobsByType[JobType.DownloadMangaCoverJob]);
+        if(jobsByType.ContainsKey(JobType.UpdateFilesDownloadedJob))
+            ret = ret.Concat(jobsByType[JobType.UpdateFilesDownloadedJob]);
 
         Dictionary<MangaConnector, List<Job>> metadataJobsByConnector = new();
-        if (jobsByType.ContainsKey(JobType.DownloadNewChaptersJob))
+        if (jobsByType.ContainsKey(JobType.DownloadAvailableChaptersJob))
         {
-            foreach (DownloadNewChaptersJob job in jobsByType[JobType.DownloadNewChaptersJob])
+            foreach (DownloadAvailableChaptersJob job in jobsByType[JobType.DownloadAvailableChaptersJob])
             {
                 Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
                 MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
@@ -160,6 +162,16 @@ public static class Tranga
         if (jobsByType.ContainsKey(JobType.UpdateMetaDataJob))
         {
             foreach (UpdateMetadataJob job in jobsByType[JobType.UpdateMetaDataJob])
+            {
+                Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
+                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
+                if(!metadataJobsByConnector.TryAdd(connector, [job]))
+                    metadataJobsByConnector[connector].Add(job);
+            }
+        }
+        if (jobsByType.ContainsKey(JobType.RetrieveChaptersJob))
+        {
+            foreach (RetrieveChaptersJob job in jobsByType[JobType.RetrieveChaptersJob])
             {
                 Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
                 MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;

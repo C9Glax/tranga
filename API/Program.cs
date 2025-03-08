@@ -8,6 +8,7 @@ using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,25 +26,27 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddApiVersioning(option =>
-{
-    option.AssumeDefaultVersionWhenUnspecified = true;
-    option.DefaultApiVersion = new ApiVersion(2); 
-    option.ReportApiVersions = true; 
-    option.ApiVersionReader = ApiVersionReader.Combine(
-        new UrlSegmentApiVersionReader(),
-        new QueryStringApiVersionReader("api-version"),
-        new HeaderApiVersionReader("X-Version"),
-        new MediaTypeApiVersionReader("x-version"));
-})
-.AddMvc(options =>
-{
-    options.Conventions.Add(new VersionByNamespaceConvention());
-})
-    .AddApiExplorer(options => {
-    options.GroupNameFormat = "'v'V";
-    options.SubstituteApiVersionInUrl = true;
-});
+    {
+        option.AssumeDefaultVersionWhenUnspecified = true;
+        option.DefaultApiVersion = new ApiVersion(2);
+        option.ReportApiVersions = true;
+        option.ApiVersionReader = ApiVersionReader.Combine(
+            new UrlSegmentApiVersionReader(),
+            new QueryStringApiVersionReader("api-version"),
+            new HeaderApiVersionReader("X-Version"),
+            new MediaTypeApiVersionReader("x-version"));
+    })
+    .AddMvc(options =>
+    {
+        options.Conventions.Add(new VersionByNamespaceConvention());
+    })
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'V";
+        options.SubstituteApiVersionInUrl = true;
+    });
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGenNewtonsoftSupport();
 builder.Services.AddSwaggerGen(opt =>
 {
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -58,12 +61,13 @@ builder.Services.AddDbContext<PgsqlContext>(options =>
                       $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")??"postgres"}"));
 
 builder.Services.AddControllers(options =>
-    {
-        options.AllowEmptyInputInBodyModelBinding = true;
-    })
-    .AddNewtonsoftJson(opts =>
+{
+    options.AllowEmptyInputInBodyModelBinding = true;
+});
+builder.Services.AddControllers().AddNewtonsoftJson(opts =>
 {
     opts.SerializerSettings.Converters.Add(new StringEnumConverter());
+    opts.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 });
 
 builder.WebHost.UseUrls("http://*:6531");
@@ -115,9 +119,7 @@ using (var scope = app.Services.CreateScope())
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
 
-    IQueryable<string> updateMetadataJobMangaIds = context.Jobs.Where(j => j.JobType == JobType.UpdateMetaDataJob).Select(j => ((UpdateMetadataJob)j).MangaId);
-    Job[] newUpdateMetadataJobs = context.Manga.Where(m => !updateMetadataJobMangaIds.Contains(m.MangaId)).ToList().Select(m => new UpdateMetadataJob(0, m.MangaId)).ToArray();
-    context.Jobs.AddRange(newUpdateMetadataJobs);
+    context.Jobs.AddRange(context.Manga.AsEnumerable().Select(m => new UpdateFilesDownloadedJob(0, m.MangaId)));
     
     context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
     

@@ -21,14 +21,6 @@ public class UpdateMetadataJob(ulong recurrenceMs, string mangaId, string? paren
     /// <param name="context"></param>
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        //Manga manga = Manga ?? context.Manga.Find(MangaId)!;
-        IQueryable<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == MangaId);
-        foreach (Chapter chapter in chapters)
-            chapter.Downloaded = chapter.IsDownloaded();
-
-        context.SaveChanges();
-        return [];
-        
-        //TODO implement Metadata-Update from MangaConnector
+        throw new NotImplementedException();
     }
 }
