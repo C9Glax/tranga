@@ -10,6 +10,10 @@ services:
       - ./settings:/usr/share/tranga-api
     ports:
       - "6531:6531"
+    depends_on:
+      - tranga-pg
+    environment:
+      - POSTGRES_HOST=tranga-pg
     restart: unless-stopped
   tranga-website:
     image: glax/tranga-website:latest
@@ -18,4 +22,12 @@ services:
       - "9555:80"
     depends_on: 
       - tranga-api
+    restart: unless-stopped
+  tranga-pg:
+    image: postgres:latest
+    container_name: tranga-pg
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
     restart: unless-stopped

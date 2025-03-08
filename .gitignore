@@ -20,6 +20,8 @@ riderModule.iml
 cover.jpg
 cover.png
 /.vscode
+/.vs/
+Tranga/Properties/launchSettings.json
 /Manga
 /settings
 *.DotSettings.user
