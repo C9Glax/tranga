@@ -49,8 +49,8 @@ public class SearchController(PgsqlContext context) : Controller
     /// <summary>
     /// Initiate a search for a Manga on a specific Connector
     /// </summary>
-    /// <param name="id">Manga-Connector-ID</param>
-    /// <param name="name">Name/Title of the Manga</param>
+    /// <param name="MangaConnectorName">Manga-Connector-ID</param>
+    /// <param name="SearchName">Name/Title of the Manga</param>
     /// <response code="200"></response>
     /// <response code="404">MangaConnector with ID not found</response>
     /// <response code="406">MangaConnector with ID is disabled</response>
@@ -60,15 +60,15 @@ public class SearchController(PgsqlContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status406NotAcceptable)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult SearchManga(string id, string name)
+    public IActionResult SearchManga(string MangaConnectorName, string SearchName)
     {
-        MangaConnector? connector = context.MangaConnectors.Find(id);
+        MangaConnector? connector = context.MangaConnectors.Find(MangaConnectorName);
         if (connector is null)
             return NotFound();
         else if (connector.Enabled is false)
             return StatusCode(406);
         
-        (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] mangas = connector.GetManga(name);
+        (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] mangas = connector.GetManga(SearchName);
         List<Manga> retMangas = new();
         foreach ((Manga? manga, List<Author>? authors, List<MangaTag>? tags, List<Link>? links, List<MangaAltTitle>? altTitles) in mangas)
         {
