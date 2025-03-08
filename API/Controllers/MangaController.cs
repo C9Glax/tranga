@@ -1,5 +1,6 @@
 ﻿using API.APIEndpointRecords;
 using API.Schema;
+using API.Schema.Jobs;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -228,10 +229,28 @@ public class MangaController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="MangaId">Manga-ID</param>
     /// <param name="folder">New Directory-Path</param>
-    /// <remarks>NOT IMPLEMENTED</remarks>
+    /// <response code="202">Folder is going to be moved</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPost("{MangaId}/MoveFolder")]
+    [ProducesResponseType(Status202Accepted)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult MoveFolder(string MangaId, [FromBody]string folder)
     {
-        throw new NotImplementedException();
+        Manga? manga = context.Manga.Find(MangaId);
+        if (manga is null)
+            return NotFound();
+        MoveFileOrFolderJob dep = manga.UpdateFolderName(TrangaSettings.downloadLocation, folder);
+        UpdateFilesDownloadedJob up = new UpdateFilesDownloadedJob(0, manga.MangaId, null, [dep.JobId]);
+        
+        try
+        {
+            context.Jobs.AddRange([dep, up]);
+            context.SaveChanges();
+            return Accepted();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
 }
