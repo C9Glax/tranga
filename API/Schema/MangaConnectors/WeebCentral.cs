@@ -20,7 +20,7 @@ public class Weebcentral : MangaConnector
         const int limit = 32; //How many values we want returned at once
         var offset = 0; //"Page"
         var requestUrl =
-            $"{BaseUris[0]}/search/data?limit={limit}&offset={offset}&text={publicationTitle}&sort=Best+Match&order=Ascending&official=Any&display_mode=Minimal%20Display";
+            $"https://{BaseUris[0]}/search/data?limit={limit}&offset={offset}&text={publicationTitle}&sort=Best+Match&order=Ascending&official=Any&display_mode=Minimal%20Display";
         var requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300 ||
@@ -110,12 +110,12 @@ public class Weebcentral : MangaConnector
 
     public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
-        return GetMangaFromUrl($"https://weebcentral.com/series/{publicationId}");
+        return GetMangaFromUrl($"https://{BaseUris[0]}/series/{publicationId}");
     }
 
     public override Chapter[] GetChapters(Manga manga, string language = "en")
     {
-                var requestUrl = $"{BaseUris[0]}/series/{manga.MangaConnectorId}/full-chapter-list";
+                var requestUrl = $"https://{BaseUris[0]}/series/{manga.MangaConnectorId}/full-chapter-list";
         var requestResult =
             downloadClient.MakeRequest(requestUrl, RequestType.Default);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
