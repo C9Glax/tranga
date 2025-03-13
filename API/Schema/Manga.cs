@@ -18,12 +18,14 @@ public class Manga
     [MaxLength(64)]
     public string MangaId { get; init; }
     [MaxLength(64)]
-    public string ConnectorId { get; init; }
+    public string IdOnConnectorSite { get; init; }
 
     public string Name { get; internal set; }
     public string Description { get; internal set; }
     public string WebsiteUrl { get; internal set; }
+    [JsonIgnore]
     public string CoverUrl { get; internal set; }
+    [JsonIgnore]
     public string? CoverFileNameInCache { get; internal set; }
     public uint Year { get; internal set; }
     public string? OriginalLanguage { get; internal set; }
@@ -47,11 +49,11 @@ public class Manga
     [JsonIgnore] public ICollection<MangaAltTitle>? AltTitles { get; internal set; }
     [NotMapped] public IEnumerable<string> AltTitleIds => AltTitles?.Select(a => a.AltTitleId) ?? [];
 
-    public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
+    public Manga(string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl,
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
         float ignoreChapterBefore, MangaConnector mangaConnector, ICollection<Author> authors,
         ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles)
-        : this(connectorId, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
+        : this(idOnConnectorSite, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
             releaseStatus, ignoreChapterBefore, mangaConnector.Name)
     {
         this.Authors = authors;
@@ -60,12 +62,12 @@ public class Manga
         this.AltTitles = altTitles;
     }
     
-    public Manga(string connectorId, string name, string description, string websiteUrl, string coverUrl,
+    public Manga(string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl,
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
         float ignoreChapterBefore, string mangaConnectorId)
     {
-        MangaId = TokenGen.CreateToken(typeof(Manga), mangaConnectorId, connectorId);
-        ConnectorId = connectorId;
+        MangaId = TokenGen.CreateToken(typeof(Manga), mangaConnectorId, idOnConnectorSite);
+        IdOnConnectorSite = idOnConnectorSite;
         Name = name;
         Description = description;
         WebsiteUrl = websiteUrl;
