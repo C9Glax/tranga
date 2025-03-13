@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "Server-V2" ]
+    branches: [ "postgres-Server-V2" ]
   workflow_dispatch:
 
 jobs:
