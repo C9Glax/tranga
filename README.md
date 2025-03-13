@@ -59,6 +59,8 @@ This repository *does not* include a frontend. A frontend can take many forms, s
 When downloading a chapter (meaning the images that make-up the manga) from a Scanlation-Website, Tranga will
 additionally try and scrape Metadata from the same website ~~or enhance it from third-party sources~~
 (tbd https://github.com/C9Glax/tranga/issues/280).
+Downloaded images can be jpeg-compressed and/or made black and white to save on diskspace
+(measured at least a 50% reduction in size, without a significant loss of quality).
 
 Tranga will then package the contents of each chapter in a `.cbz`-archive and place it in a common folder per Manga.
 If specified, Tranga will then notify library-Managers such as [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/) to trigger a scan for new
