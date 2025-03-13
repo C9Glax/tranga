@@ -15,14 +15,6 @@ services:
     environment:
       - POSTGRES_HOST=tranga-pg
     restart: unless-stopped
-  tranga-website:
-    image: glax/tranga-website:latest
-    container_name: tranga-website
-    ports:
-      - "9555:80"
-    depends_on: 
-      - tranga-api
-    restart: unless-stopped
   tranga-pg:
     image: postgres:latest
     container_name: tranga-pg

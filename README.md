@@ -31,7 +31,7 @@
 Tranga can download Chapters and Metadata from "Scanlation" sites such as 
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
-- [Manganato.gg](https://manganato.com/) (en)
+- [Manganato.gg](https://manganato.com/) (en) (or natomanga.com, mangakakalot, nelomanga, ...)
 - [MangaKatana.com](https://mangakatana.com) (en)
 - [Mangaworld.bz](https://www.mangaworld.bz/) (it)
 - [Bato.to](https://bato.to/v3x) (en)
@@ -69,7 +69,7 @@ chapters. Tranga can also send notifications to your devices via third-party ser
 
 This repository has no frontend, however checkout [tranga-website](https://github.com/C9Glax/tranga-website) for a default!
 
-### Inspiration:
+## Inspiration:
 
 Because [Kaizoku](https://github.com/oae/kaizoku) was relying on [mangal](https://github.com/metafates/mangal) and mangal
 hasn't received bugfixes for its issues with Titles not showing up, or throwing errors because of illegal characters,
