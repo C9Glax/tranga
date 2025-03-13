@@ -31,7 +31,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<Mangaworld>("Mangaworld")
             .HasValue<ManhuaPlus>("ManhuaPlus")
             .HasValue<Weebcentral>("Weebcentral")
-            .HasValue<Weebcentral>("Manganato")
+            .HasValue<Manganato>("Manganato")
             .HasValue<MangaDex>("MangaDex");
         modelBuilder.Entity<LibraryConnector>()
             .HasDiscriminator<LibraryType>(l => l.LibraryType)
