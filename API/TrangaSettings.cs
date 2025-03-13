@@ -21,7 +21,7 @@ public static class TrangaSettings
     [JsonIgnore]
     public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public static bool aprilFoolsMode { get; private set; } = true;
-    public static int startNewJobTimeoutMs { get; private set; } = 10000;
+    public static int startNewJobTimeoutMs { get; private set; } = 1000;
     [JsonIgnore]
     internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {

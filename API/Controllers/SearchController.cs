@@ -130,19 +130,19 @@ public class SearchController(PgsqlContext context) : Controller
     {
         if (manga is null)
             return null;
-        
-        Manga? existing = context.Manga.FirstOrDefault(m =>
-            m.MangaId == manga.MangaId);
+
+        Manga? existing = context.Manga.Find(manga.MangaId);
         
         if (tags is not null)
         {
             IEnumerable<MangaTag> mergedTags = tags.Select(mt =>
             {
-                MangaTag? inDb = context.Tags.FirstOrDefault(t => t.Equals(mt));
+                MangaTag? inDb = context.Tags.Find(mt.Tag);
                 return inDb ?? mt;
             });
             manga.MangaTags = mergedTags.ToList();
-            IEnumerable<MangaTag> newTags = manga.MangaTags.Where(mt => !context.Tags.Any(t => t.Tag.Equals(mt.Tag)));
+            IEnumerable<MangaTag> newTags = manga.MangaTags
+                .Where(mt => !context.Tags.Select(t => t.Tag).Contains(mt.Tag));
             context.Tags.AddRange(newTags);
         }
 
@@ -150,12 +150,12 @@ public class SearchController(PgsqlContext context) : Controller
         {
             IEnumerable<Author> mergedAuthors = authors.Select(ma =>
             {
-                Author? inDb = context.Authors.FirstOrDefault(a => a.AuthorName == ma.AuthorName);
+                Author? inDb = context.Authors.Find(ma.AuthorId);
                 return inDb ?? ma;
             });
             manga.Authors = mergedAuthors.ToList();
-            IEnumerable<Author> newAuthors = manga.Authors.Where(ma => !context.Authors.Any(a =>
-                a.AuthorName == ma.AuthorName));
+            IEnumerable<Author> newAuthors = manga.Authors
+                .Where(ma => !context.Authors.Select(a => a.AuthorId).Contains(ma.AuthorId));
             context.Authors.AddRange(newAuthors);
         }
 
@@ -163,13 +163,12 @@ public class SearchController(PgsqlContext context) : Controller
         {
             IEnumerable<Link> mergedLinks = links.Select(ml =>
             {
-                Link? inDb = context.Link.FirstOrDefault(l =>
-                    l.LinkProvider == ml.LinkProvider && l.LinkUrl == ml.LinkUrl);
+                Link? inDb = context.Link.Find(ml.LinkId);
                 return inDb ?? ml;
             });
             manga.Links = mergedLinks.ToList();
-            IEnumerable<Link> newLinks = manga.Links.Where(ml => !context.Link.Any(l =>
-                l.LinkProvider == ml.LinkProvider && l.LinkUrl == ml.LinkUrl));
+            IEnumerable<Link> newLinks = manga.Links
+                .Where(ml => !context.Link.Select(l => l.LinkId).Contains(ml.LinkId));
             context.Link.AddRange(newLinks);
         }
 
@@ -177,13 +176,12 @@ public class SearchController(PgsqlContext context) : Controller
         {
             IEnumerable<MangaAltTitle> mergedAltTitles = altTitles.Select(mat =>
             {
-                MangaAltTitle? inDb = context.AltTitles.FirstOrDefault(at =>
-                    at.Language == mat.Language && at.Title == mat.Title);
+                MangaAltTitle? inDb = context.AltTitles.Find(mat.AltTitleId);
                 return inDb ?? mat;
             });
             manga.AltTitles = mergedAltTitles.ToList();
-            IEnumerable<MangaAltTitle> newAltTitles = manga.AltTitles.Where(mat =>
-                !context.AltTitles.Any(at => at.Language == mat.Language && at.Title == mat.Title));
+            IEnumerable<MangaAltTitle> newAltTitles = manga.AltTitles
+                .Where(mat => !context.AltTitles.Select(at => at.AltTitleId).Contains(mat.AltTitleId));
             context.AltTitles.AddRange(newAltTitles);
         }
         

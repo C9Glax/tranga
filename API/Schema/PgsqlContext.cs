@@ -50,9 +50,11 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Job>()
             .HasOne<Job>(j => j.ParentJob)
             .WithMany()
-            .HasForeignKey(j => j.ParentJobId);
+            .HasForeignKey(j => j.ParentJobId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Job>()
-            .HasMany<Job>(j => j.DependsOnJobs);
+            .HasMany<Job>(j => j.DependsOnJobs)
+            .WithMany();
         modelBuilder.Entity<DownloadAvailableChaptersJob>()
             .Navigation(dncj => dncj.Manga)
             .AutoInclude();

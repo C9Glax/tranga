@@ -16,11 +16,4 @@ public class Link(string linkProvider, string linkUrl)
     [Required]
     [Url]
     public string LinkUrl { get; init; } = linkUrl;
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not Link other)
-            return false;
-        return other.LinkProvider == LinkProvider && other.LinkUrl == LinkUrl;
-    }
 }
