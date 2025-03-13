@@ -11,11 +11,11 @@
 
     <ItemGroup>
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.74" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.0" />
         <PackageReference Include="log4net" Version="3.0.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.2" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -25,10 +25,10 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
         <PackageReference Include="PuppeteerSharp" Version="20.1.3" />
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
-        <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.920" />
+        <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.929" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="7.3.1" />
-        <PackageReference Include="System.Drawing.Common" Version="9.0.2" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
     </ItemGroup>
 
     <ItemGroup>
