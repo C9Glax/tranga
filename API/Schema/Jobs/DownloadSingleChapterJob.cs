@@ -73,8 +73,8 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         
         chapter.Downloaded = true;
         context.SaveChanges();
-        
-        return [];
+
+        return [new UpdateFilesDownloadedJob(0, manga.MangaId, this.JobId)];
     }
     
     private void ProcessImage(string imagePath)
