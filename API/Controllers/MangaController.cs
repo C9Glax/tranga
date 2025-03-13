@@ -1,9 +1,7 @@
-﻿using API.APIEndpointRecords;
-using API.Schema;
+﻿using API.Schema;
 using API.Schema.Jobs;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
