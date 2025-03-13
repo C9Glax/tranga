@@ -3,7 +3,6 @@ using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace API.Controllers;

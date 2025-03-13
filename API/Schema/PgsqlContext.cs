@@ -66,7 +66,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Manga>()
             .HasOne<MangaConnector>(m => m.MangaConnector)
             .WithMany()
-            .HasForeignKey(m => m.MangaConnectorId);
+            .HasForeignKey(m => m.MangaConnectorId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.MangaConnector)
             .AutoInclude();
@@ -84,20 +85,23 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .AutoInclude();
         modelBuilder.Entity<Manga>()
             .HasMany<Link>(m => m.Links)
-            .WithOne();
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Links)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
             .HasMany<MangaAltTitle>(m => m.AltTitles)
-            .WithOne();
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.AltTitles)
             .AutoInclude();
         modelBuilder.Entity<Chapter>()
             .HasOne<Manga>(c => c.ParentManga)
             .WithMany()
-            .HasForeignKey(c => c.ParentMangaId);
+            .HasForeignKey(c => c.ParentMangaId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Chapter>()
             .Navigation(c => c.ParentManga)
             .AutoInclude();
