@@ -1,42 +1,29 @@
-<!-- PROJECT LOGO -->
-<br />
+<span id="readme-top"></span>
 <div align="center">
 
-<h3 align="center">Tranga v2</h3>
-
+  <h1 align="center">Tranga v2</h1>
   <p align="center">
     Automatic Manga and Metadata downloader 
   </p>
-  <p align="center">
-    This is the API for <a href="https://github.com/C9Glax/tranga-website">Tranga-Website</a>  
-  </p>
+  
+  ![GitHub License](https://img.shields.io/github/license/C9glax/tranga)
+  
+  <table>
+    <tr>
+      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/master?label=master"></th>
+      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-master.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
+    </tr>
+    <tr>
+      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/cuttingedge?label=cuttingedge"></th>
+      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-cuttingedge.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
+    </tr>
+    <tr>
+      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/postgres-Server-V2?label=postgres-Server-V2"></th>
+      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-serverv2.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
+    </tr>
+  </table>
+
 </div>
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Usage</a></li>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-      </ul>
-    </li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
-
-
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -49,7 +36,7 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [Mangaworld.bz](https://www.mangaworld.bz/) (it)
 - [Bato.to](https://bato.to/v3x) (en)
 - [ManhuaPlus](https://manhuaplus.org/) (en)
-- [MangaHere](https://www.mangahere.cc/) (en) (Their covers aren't scrapeable.)
+- [MangaHere](https://www.mangahere.cc/) (en)
 - [Weebcentral](https://weebcentral.com) (en)
 - [Webtoons](https://www.webtoons.com/en/) (en)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
@@ -58,20 +45,29 @@ and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https:/
 Notifications can be sent to your devices using [Gotify](https://gotify.net/), [LunaSea](https://www.lunasea.app/) or [Ntfy](https://ntfy.sh/
 ), or any other service that can use REST Webhooks.
 
-### What this does and doesn't do
+## What this program does and does *not* do
 
-Tranga (this git-repo) will open a port (standard 6531) and listen for requests to add Jobs to Monitor and/or download specific Manga.
-The configuration is all done through HTTP-Requests.
+Tranga (the program in this repository) is a REST-API and worker in one. Meaning it will open a network-port
+to listen for requests, and then work through these. Requests include searches for Manga, starting "Jobs" such
+as downloading available chapters, creating a monitoring job (that will periodically do the aforementioned),
+update metadata, and more.
 
-_**For a web-frontend use [tranga-website](https://github.com/C9Glax/tranga-website).**_
+This repository *does not* include a frontend. A frontend can take many forms, such as a website:
 
-This project downloads the images for a Manga from the specified Scanlation-Website and packages them with some metadata - from that same website - in a .cbz-archive (per chapter).  
-It does this on an interval, and checks for any Chapters (.cbz-Archive) not already existing in your specified Download-Location. (If you rename or move files, it will download those again)  
-Tranga can (if configured) trigger a scan in Komga or Kavita, however the directory in which the Manga reside has to be available to both Tranga and Komga/Kavita.
+[tranga-website](https://github.com/C9Glax/tranga-website)
 
-The project doesn't manage metadata, and doesn't curate, change or enhance any information that isn't available on the selected Scanlation-Site.  
-It will blindly use whatever is scrapes (yes this is a glorified Web-scraper).
+When downloading a chapter (meaning the images that make-up the manga) from a Scanlation-Website, Tranga will
+additionally try and scrape Metadata from the same website ~~or enhance it from third-party sources~~
+(tbd https://github.com/C9Glax/tranga/issues/280).
 
+Tranga will then package the contents of each chapter in a `.cbz`-archive and place it in a common folder per Manga.
+If specified, Tranga will then notify library-Managers such as [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/) to trigger a scan for new
+chapters. Tranga can also send notifications to your devices via third-party services such as [Gotify](https://gotify.net/), [LunaSea](https://www.lunasea.app/) or [Ntfy](https://ntfy.sh/
+).
+
+## Screenshots
+
+This repository has no frontend, however checkout [tranga-website](https://github.com/C9Glax/tranga-website) for a default!
 
 ### Inspiration:
 
@@ -83,13 +79,22 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Built With
+## Endpoint Documentation
 
-- .NET-Core
-- Newtonsoft.JSON
-- [PuppeteerSharp](https://www.puppeteersharp.com/)
-- [Html Agility Pack (HAP)](https://html-agility-pack.net/)
-- [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch)
+Endpoints are documented in Swagger. Just spin up an instance, and go to `http://<url>/swagger`.
+
+## Built With
+
+- .NET
+  - ASP.NET
+  - Entity Framework
+- [PostgreSQL](https://www.postgresql.org/about/licence/)
+- [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
+- [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
+- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md)
+- [PuppeteerSharp](https://github.com/hardkoded/puppeteer-sharp/blob/master/LICENSE)
+- [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
+- [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - 💙 Blåhaj 🦈
 
@@ -110,57 +115,72 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 ### Docker
 
-Download [docker-compose.yaml](https://git.bernloehr.eu/glax/Tranga/src/branch/master/docker-compose.yaml) and configure to your needs.  
-Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives) downloaded (where Komga/Kavita can access them).  
-The `docker-compose` also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the repo README.
+An example `docker-compose.yaml` is provided. Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives)
+downloaded (where Komga/Kavita can access them for example).  
+The file also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the
+[Tranga-Website Repository](https://github.com/C9Glax/tranga-website) README.
 
 For compatibility do not execute the compose as root (which you should not do anyways...) but as user that can
-access the folder.
+access the folder. Permission conflicts with Komga and Kavita should thus be limited.
 
-### Prerequisites
+### Bare-Metal
 
-.NET-9.0
+While not supported/currently built, Tranga will also run Bare-Metal without issue.
 
-See the [open issues](https://github.com/C9Glax/tranga/issues) for a full list of proposed features (and known issues).
+Configuration-Files will be stored per OS:
+- Linux `/usr/share/tranga-api`
+- Windows `%appdata%/tranga-api`
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Downloads (default) are stored in - but this can be configured in `settings.json`:
+- Linux `/Manga`
+- Windows `%currentDirectory%/Downloads`
 
+#### Prerequisits
 
+[.NET-Core 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-The following is copy & pasted:
+If you want to contribute, please feel free to fork and create a Pull-Request!
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+General rules:
+- Strongly-type your variables. This improves readability.
+```csharp
+var xyz = Object.GetSomething(); //Do not do this. What type is xyz?
+Manga[] zyx = Object.GetAnotherThing(); //I can now easily see that zyx is an Array.
+```
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+**A broad overview of where is what:**<br />
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- `Program.cs` Configuration for ASP.NET, Swagger (also in `NamedSwaggerGenOptions.cs`, Npgsql
+- `Tranga.cs` Job(worker)-Logic
+- `Schema/` Entity-Framework
+  - `Schema/Jobs/` + Logic for Jobs
+  - `Schema/**/` + Logic for **
+  - `Schema/PgsqlContext.cs` EF configuration
+- `MangaDownloadClients/` Networking-Clients for Scraping
+- `Controllers/` ASP.NET Controllers (Endpoints)
+- `APIEndpointRecords/` Records for API-Requests with specific Request-Types (Body)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
+If you want to add a new Scanlationsite-Connector: <br />
+1. Copy one of the existing connectors, or start from scratch and inherit from `API.Schema.MangaConnectors.MangaConnector`.
+2. Add the new Connector as Object-Instance in `Program.cs` to the MangaConnector-Array `connectors`.
+3. In `Schema/PgsqlContext.cs` add the Discriminator for the Connector (the value is the name of the connector, as defined
+in the constructor).
 
 <!-- LICENSE -->
 ## License
 
-Distributed under the GNU GPLv3  License. See `LICENSE.txt` for more information.
+Distributed under the GNU GPLv3  License. See [LICENSE.txt](https://github.com/C9Glax/tranga/blob/master/LICENSE.txt) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 * [Choose an Open Source License](https://choosealicense.com)
-* [Font Awesome](https://fontawesome.com)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template/tree/master)
+* [Shields.io](https://shields.io/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
