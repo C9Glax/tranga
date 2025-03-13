@@ -147,6 +147,54 @@ public class MangaController(PgsqlContext context) : Controller
     }
     
     /// <summary>
+    /// Returns all downloaded Chapters for Manga with ID
+    /// </summary>
+    /// <param name="MangaId">Manga-ID</param>
+    /// <response code="200"></response>
+    /// <response code="204">No available chapters</response>
+    /// <response code="404">Manga with ID not found.</response>
+    [HttpGet("{MangaId}/Chapters/Downloaded")]
+    [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
+    [ProducesResponseType(Status204NoContent)]
+    [ProducesResponseType(Status404NotFound)]
+    public IActionResult GetChaptersDownloaded(string MangaId)
+    {
+        Manga? m = context.Manga.Find(MangaId);
+        if (m is null)
+            return NotFound();
+        
+        List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == true).ToList();
+        if (chapters.Count == 0)
+            return NoContent();
+        
+        return Ok(chapters);
+    }
+    
+    /// <summary>
+    /// Returns all Chapters not downloaded for Manga with ID
+    /// </summary>
+    /// <param name="MangaId">Manga-ID</param>
+    /// <response code="200"></response>
+    /// <response code="204">No available chapters</response>
+    /// <response code="404">Manga with ID not found.</response>
+    [HttpGet("{MangaId}/Chapters/NotDownloaded")]
+    [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
+    [ProducesResponseType(Status204NoContent)]
+    [ProducesResponseType(Status404NotFound)]
+    public IActionResult GetChaptersNotDownloaded(string MangaId)
+    {
+        Manga? m = context.Manga.Find(MangaId);
+        if (m is null)
+            return NotFound();
+        
+        List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == false).ToList();
+        if (chapters.Count == 0)
+            return NoContent();
+        
+        return Ok(chapters);
+    }
+    
+    /// <summary>
     /// Returns the latest Chapter of requested Manga available on Website
     /// </summary>
     /// <param name="MangaId">Manga-ID</param>
