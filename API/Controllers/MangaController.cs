@@ -98,7 +98,7 @@ public class MangaController(PgsqlContext context) : Controller
     /// <response code="204">Cover not loaded</response>
     /// <response code="400">The formatting-request was invalid</response>
     /// <response code="404">Manga with ID not found</response>
-    [HttpPost("{MangaId}/Cover")]
+    [HttpGet("{MangaId}/Cover")]
     [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status400BadRequest)]
