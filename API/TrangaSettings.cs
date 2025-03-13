@@ -21,6 +21,7 @@ public static class TrangaSettings
     [JsonIgnore]
     public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public static bool aprilFoolsMode { get; private set; } = true;
+    public static int startNewJobTimeoutMs { get; private set; } = 10000;
     [JsonIgnore]
     internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
@@ -161,6 +162,7 @@ public static class TrangaSettings
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
         jobj.Add("compression", JToken.FromObject(compression));
         jobj.Add("bwImages", JToken.FromObject(bwImages));
+        jobj.Add("startNewJobTimeoutMs", JToken.FromObject(startNewJobTimeoutMs));
         return jobj;
     }
 
@@ -183,5 +185,7 @@ public static class TrangaSettings
             compression = ci.Value<int>()!;
         if (jobj.TryGetValue("bwImages", out JToken? bwi))
             bwImages = bwi.Value<bool>()!;
+        if (jobj.TryGetValue("startNewJobTimeoutMs", out JToken? snjt))
+            startNewJobTimeoutMs = snjt.Value<int>()!;
     }
 }

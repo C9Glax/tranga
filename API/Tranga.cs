@@ -128,7 +128,7 @@ public static class Tranga
             }
 
             context.SaveChanges();
-            Thread.Sleep(2000);
+            Thread.Sleep(TrangaSettings.startNewJobTimeoutMs);
         }
     }
 
