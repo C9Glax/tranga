@@ -15,7 +15,8 @@ namespace API.Schema.Jobs;
 public class DownloadSingleChapterJob(string chapterId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
     : Job(TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, parentJobId, dependsOnJobsIds)
 {
-    [MaxLength(64)]
+    [StringLength(64)]
+    [Required]
     public string ChapterId { get; init; } = chapterId;
     
     [JsonIgnore]

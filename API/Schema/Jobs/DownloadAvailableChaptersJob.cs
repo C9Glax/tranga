@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using API.Schema.MangaConnectors;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -7,7 +6,8 @@ namespace API.Schema.Jobs;
 public class DownloadAvailableChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
     : Job(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
 {
-    [MaxLength(64)]
+    [StringLength(64)]
+    [Required]
     public string MangaId { get; init; } = mangaId;
     
     [JsonIgnore]

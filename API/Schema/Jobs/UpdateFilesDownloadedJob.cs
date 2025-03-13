@@ -6,7 +6,8 @@ namespace API.Schema.Jobs;
 public class UpdateFilesDownloadedJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
     : Job(TokenGen.CreateToken(typeof(UpdateFilesDownloadedJob)), JobType.UpdateFilesDownloadedJob, recurrenceMs, parentJobId, dependsOnJobsIds)
 {
-    [MaxLength(64)]
+    [StringLength(64)]
+    [Required]
     public string MangaId { get; init; } = mangaId;
     
     [JsonIgnore]

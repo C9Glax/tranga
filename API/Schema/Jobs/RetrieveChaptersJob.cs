@@ -7,7 +7,8 @@ namespace API.Schema.Jobs;
 public class RetrieveChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
     : Job(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
 {
-    [MaxLength(64)]
+    [StringLength(64)]
+    [Required]
     public string MangaId { get; init; } = mangaId;
     
     [JsonIgnore]

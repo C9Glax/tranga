@@ -1,9 +1,15 @@
-﻿namespace API.Schema.Jobs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.Schema.Jobs;
 
 public class MoveFileOrFolderJob(string fromLocation, string toLocation, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
     : Job(TokenGen.CreateToken(typeof(MoveFileOrFolderJob)), JobType.MoveFileOrFolderJob, 0, parentJobId, dependsOnJobsIds)
 {
+    [StringLength(256)]
+    [Required]
     public string FromLocation { get; init; } = fromLocation;
+    [StringLength(256)]
+    [Required]
     public string ToLocation { get; init; } = toLocation;
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
