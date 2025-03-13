@@ -113,7 +113,6 @@ public static class Tranga
                 Thread t = new(() =>
                 {
                     IEnumerable<Job> newJobs = job.Run(serviceProvider);
-                    context.Jobs.AddRange(newJobs);
                 });
                 RunningJobs.Add(t, job);
                 t.Start();

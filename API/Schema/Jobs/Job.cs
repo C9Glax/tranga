@@ -58,8 +58,9 @@ public abstract class Job
         
         this.state = JobState.Running;
         context.SaveChanges();
-        IEnumerable<Job> newJobs = RunInternal(context);
+        Job[] newJobs = RunInternal(context).ToArray();
         this.state = JobState.Completed;
+        context.Jobs.AddRange(newJobs);
         context.SaveChanges();
         return newJobs;
     }
