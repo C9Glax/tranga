@@ -31,7 +31,7 @@ public static class TrangaSettings
         {RequestType.MangaCover, 250},
         {RequestType.Default, 60}
     };
-    public static Dictionary<RequestType, int> requestLimits { get; set; } = DefaultRequestLimits;
+    public static Dictionary<RequestType, int> requestLimits { get; private set; } = DefaultRequestLimits;
 
     public static TimeSpan NotificationUrgencyDelay(NotificationUrgency urgency) => urgency switch
     {
@@ -39,7 +39,7 @@ public static class TrangaSettings
         NotificationUrgency.Normal => TimeSpan.FromMinutes(5),
         NotificationUrgency.Low => TimeSpan.FromMinutes(10),
         _ => TimeSpan.FromHours(1)
-    };
+    }; //TODO make this a setting?
 
     public static void Load()
     {
