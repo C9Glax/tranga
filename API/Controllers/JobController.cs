@@ -64,6 +64,20 @@ public class JobController(PgsqlContext context) : Controller
     }
 
     /// <summary>
+    /// Returns all Jobs of requested Type and State
+    /// </summary>
+    /// <param name="JobType">Requested Job-Type</param>
+    /// <param name="JobState">Requested Job-State</param>
+    /// <response code="200"></response>
+    [HttpGet("TypeAndState/{JobType}/{JobState}")]
+    [ProducesResponseType<Job[]>(Status200OK, "application/json")]
+    public IActionResult GetJobsOfType(JobType JobType, JobState JobState)
+    {
+        Job[] jobsOfType = context.Jobs.Where(job => job.JobType == JobType && job.state == JobState).ToArray();
+        return Ok(jobsOfType);
+    }
+
+    /// <summary>
     /// Return Job with ID
     /// </summary>
     /// <param name="JobId">Job-ID</param>
