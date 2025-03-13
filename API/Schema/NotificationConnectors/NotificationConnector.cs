@@ -9,15 +9,24 @@ namespace API.Schema.NotificationConnectors;
 [PrimaryKey("Name")]
 public class NotificationConnector(string name, string url, Dictionary<string, string> headers, string httpMethod, string body)
 {
-    [MaxLength(64)]
+    [StringLength(64)]
+    [Required]
     public string Name { get; init; } = name;
     
+    [StringLength(256)]
+    [Required]
+    [Url]
     public string Url { get; internal set; } = url;
 
+    [Required]
     public Dictionary<string, string> Headers { get; internal set; } = headers;
 
+    [StringLength(8)]
+    [Required]
     public string HttpMethod { get; internal set; } = httpMethod;
 
+    [StringLength(512)]
+    [Required]
     public string Body { get; internal set; } = body;
 
     [JsonIgnore]

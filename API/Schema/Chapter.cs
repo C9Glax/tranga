@@ -27,19 +27,30 @@ public class Chapter : IComparable<Chapter>
         Title = title;
     }
 
-    [MaxLength(64)] public string ChapterId { get; init; }
-
+    [StringLength(64)]
+    [Required]
+    public string ChapterId { get; init; }
     public int? VolumeNumber { get; private set; }
+    [StringLength(10)]
+    [Required]
+    public string ChapterNumber { get; private set; }
 
-    [MaxLength(10)] public string ChapterNumber { get; private set; }
-
+    [StringLength(256)]
+    [Required]
+    [Url]
     public string Url { get; internal set; }
+    [StringLength(256)]
     public string? Title { get; private set; }
+    [StringLength(256)]
+    [Required]
     public string ArchiveFileName { get; private set; }
+    [Required]
     public bool Downloaded { get; internal set; } = false;
-
+    [Required]
+    [StringLength(64)]
     public string ParentMangaId { get; internal set; }
-    [JsonIgnore] public Manga? ParentManga { get; init; }
+    [JsonIgnore]
+    public Manga? ParentManga { get; init; }
 
     public int CompareTo(Chapter? other)
     {

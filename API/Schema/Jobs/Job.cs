@@ -8,26 +8,31 @@ namespace API.Schema.Jobs;
 [PrimaryKey("JobId")]
 public abstract class Job 
 {
-    [MaxLength(64)]
+    [StringLength(64)]
+    [Required]
     public string JobId { get; init; }
-    
-    [MaxLength(64)]
+    [StringLength(64)]
     public string? ParentJobId { get; init; }
     [JsonIgnore]
     public Job? ParentJob { get; init; }
-    
-    [MaxLength(64)]
+    [StringLength(64)]
     public ICollection<string>? DependsOnJobsIds { get; init; }
     [JsonIgnore]
     public ICollection<Job>? DependsOnJobs { get; init; }
     
+    [Required]
     public JobType JobType { get; init; }
+    [Required]
     public ulong RecurrenceMs { get; set; }
+    [Required]
     public DateTime LastExecution { get; internal set; } = DateTime.UnixEpoch;
     
     [NotMapped]
+    [Required]
     public DateTime NextExecution => LastExecution.AddMilliseconds(RecurrenceMs);
+    [Required]
     public JobState state { get; internal set; } = JobState.Waiting;
+    [Required]
     public bool Enabled { get; internal set; } = true;
 
     public Job(string jobId, JobType jobType, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)

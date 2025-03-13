@@ -10,12 +10,19 @@ namespace API.Schema.MangaConnectors;
 [PrimaryKey("Name")]
 public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)
 {
-    [MaxLength(32)]
+    [StringLength(32)]
+    [Required]
     public string Name { get; init; } = name;
+    [StringLength(8)]
+    [Required]
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
+    [StringLength(256)]
+    [Required]
     public string IconUrl { get; init; } = iconUrl;
+    [StringLength(256)]
+    [Required]
     public string[] BaseUris { get; init; } = baseUris;
-    
+    [Required]
     public bool Enabled { get; internal set; } = true;
     
     public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "");

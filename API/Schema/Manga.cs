@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
@@ -15,39 +17,66 @@ namespace API.Schema;
 [PrimaryKey("MangaId")]
 public class Manga
 {
-    [MaxLength(64)]
+    [StringLength(64)]
+    [Required]
     public string MangaId { get; init; }
-    [MaxLength(64)]
+    [StringLength(128)]
+    [Required]
     public string IdOnConnectorSite { get; init; }
-
+    [StringLength(256)]
+    [Required]
     public string Name { get; internal set; }
+    [Required]
     public string Description { get; internal set; }
+    [Url]
+    [StringLength(256)]
+    [Required]
     public string WebsiteUrl { get; internal set; }
     [JsonIgnore]
+    [Url]
     public string CoverUrl { get; internal set; }
     [JsonIgnore]
     public string? CoverFileNameInCache { get; internal set; }
+    [Required]
     public uint Year { get; internal set; }
+    [StringLength(8)]
+    [Required]
     public string? OriginalLanguage { get; internal set; }
+    [Required]
     public MangaReleaseStatus ReleaseStatus { get; internal set; }
+    [Required]
     public string FolderName { get; private set; }
+    [Required]
     public float IgnoreChapterBefore { get; internal set; }
-
+    [StringLength(64)]
+    [Required]
     public string MangaConnectorId { get; private set; }
     [JsonIgnore] public MangaConnector? MangaConnector { get; private set; }
     
     [JsonIgnore] public ICollection<Author>? Authors { get; internal set; }
-    [NotMapped] public IEnumerable<string> AuthorIds => Authors?.Select(a => a.AuthorId) ?? [];
+    [NotMapped]
+    [StringLength(64)]
+    [Required]
+    public IEnumerable<string> AuthorIds => Authors?.Select(a => a.AuthorId) ?? [];
     
     [JsonIgnore] public ICollection<MangaTag>? MangaTags { get; internal set; }
-    [NotMapped] public IEnumerable<string> Tags => MangaTags.Select(t => t.Tag);
+    [NotMapped]
+    [StringLength(64)]
+    [Required]
+    public IEnumerable<string> Tags => MangaTags?.Select(t => t.Tag) ?? [];
     
     
     [JsonIgnore] public ICollection<Link>? Links { get; internal set; }
-    [NotMapped] public IEnumerable<string> LinkIds => Links?.Select(l => l.LinkId) ?? [];
+    [NotMapped]
+    [StringLength(64)]
+    [Required]
+    public IEnumerable<string> LinkIds => Links?.Select(l => l.LinkId) ?? [];
     
     [JsonIgnore] public ICollection<MangaAltTitle>? AltTitles { get; internal set; }
-    [NotMapped] public IEnumerable<string> AltTitleIds => AltTitles?.Select(a => a.AltTitleId) ?? [];
+    [NotMapped]
+    [StringLength(64)]
+    [Required]
+    public IEnumerable<string> AltTitleIds => AltTitles?.Select(a => a.AltTitleId) ?? [];
 
     public Manga(string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl,
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
