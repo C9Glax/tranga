@@ -115,6 +115,8 @@ public class MangaController(PgsqlContext context) : Controller
 
         if (width is { } w && height is { } h)
         {
+            if (width < 10 || height < 10 || width > 65535 || height > 65535)
+                return BadRequest();
             image.Mutate(i => i.ApplyProcessor(new ResizeProcessor(new ResizeOptions()
             {
                 Mode = ResizeMode.Max,
