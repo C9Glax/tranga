@@ -13,7 +13,7 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
     [Required]
     public string Name { get; init; } = name;
     
-    [StringLength(256)]
+    [StringLength(2048)]
     [Required]
     [Url]
     public string Url { get; internal set; } = url;
@@ -25,7 +25,7 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
     [Required]
     public string HttpMethod { get; internal set; } = httpMethod;
 
-    [StringLength(512)]
+    [StringLength(4096)]
     [Required]
     public string Body { get; internal set; } = body;
 

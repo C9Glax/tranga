@@ -13,8 +13,6 @@ public static class TokenGen
     
     public static string CreateToken(string prefix, params string[] identifiers)
     {
-        
-        
         if (prefix.Length + 1 >= MaximumLength - MinimumLength)
             throw new ArgumentException("Prefix to long to create Token of meaningful length.");
         

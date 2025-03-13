@@ -16,7 +16,7 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     [StringLength(8)]
     [Required]
     public string[] SupportedLanguages { get; init; } = supportedLanguages;
-    [StringLength(256)]
+    [StringLength(2048)]
     [Required]
     public string IconUrl { get; init; } = iconUrl;
     [StringLength(256)]

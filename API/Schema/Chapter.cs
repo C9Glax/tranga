@@ -35,7 +35,7 @@ public class Chapter : IComparable<Chapter>
     [Required]
     public string ChapterNumber { get; private set; }
 
-    [StringLength(256)]
+    [StringLength(2048)]
     [Required]
     [Url]
     public string Url { get; internal set; }

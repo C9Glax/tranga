@@ -9,10 +9,10 @@ public class Link(string linkProvider, string linkUrl)
     [StringLength(64)]
     [Required]
     public string LinkId { get; init; } = TokenGen.CreateToken(typeof(Link), linkProvider, linkUrl);
-    [StringLength(128)]
+    [StringLength(64)]
     [Required]
     public string LinkProvider { get; init; } = linkProvider;
-    [StringLength(128)]
+    [StringLength(2048)]
     [Required]
     [Url]
     public string LinkUrl { get; init; } = linkUrl;
