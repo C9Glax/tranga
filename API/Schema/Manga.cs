@@ -150,8 +150,8 @@ public class Manga
         if (File.Exists(saveImagePath))
             return saveImagePath;
         
-        RequestResult coverResult = new HttpDownloadClient().MakeRequest(CoverUrl, RequestType.MangaCover, this.WebsiteUrl);
-        if (coverResult.statusCode is < HttpStatusCode.Accepted or >= HttpStatusCode.Ambiguous)
+        RequestResult coverResult = new HttpDownloadClient().MakeRequest(CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}");
+        if (coverResult.statusCode is < HttpStatusCode.OK or >= HttpStatusCode.Ambiguous)
             return SaveCoverImageToCache(--retries);
             
         using MemoryStream ms = new();
