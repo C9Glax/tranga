@@ -10,7 +10,7 @@ public class Weebcentral : MangaConnector
     private readonly string[] _filterWords =
         { "a", "the", "of", "as", "to", "no", "for", "on", "with", "be", "and", "in", "wa", "at", "be", "ni" };
 
-    public Weebcentral() : base("Weebcentral", ["en"], ["https://weebcentral.com"], "https://weebcentral.com/favicon.ico")
+    public Weebcentral() : base("Weebcentral", ["en"], ["weebcentral.com"], "https://weebcentral.com/favicon.ico")
     {
         downloadClient = new ChromiumDownloadClient();
     }
