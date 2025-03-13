@@ -109,7 +109,17 @@ public class MangaController(PgsqlContext context) : Controller
         if (m is null)
             return NotFound();
         if (!System.IO.File.Exists(m.CoverFileNameInCache))
-            return NoContent();
+        {
+            bool coverIsBeingDownloaded = false;
+            do
+            {
+                coverIsBeingDownloaded = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).AsEnumerable()
+                    .Any(j => j is DownloadMangaCoverJob dmcj && dmcj.MangaId == MangaId);
+                Thread.Sleep(100);
+            } while (coverIsBeingDownloaded);
+            if (!System.IO.File.Exists(m.CoverFileNameInCache))
+                return NoContent();
+        }
 
         Image image = Image.Load(m.CoverFileNameInCache);
 
