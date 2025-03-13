@@ -260,15 +260,27 @@ public class MangaController(PgsqlContext context) : Controller
     /// <param name="MangaId">Manga-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Manga with ID not found.</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{MangaId}/IgnoreChaptersBefore")]
-    [ProducesResponseType<float>(Status200OK, "text/plain")]
+    [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult IgnoreChaptersBefore(string MangaId)
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult IgnoreChaptersBefore(string MangaId, [FromBody]float chapterThreshold)
     {
         Manga? m = context.Manga.Find(MangaId);
         if (m is null)
             return NotFound();
-        return Ok(m.IgnoreChapterBefore);
+        
+        try
+        {
+            m.IgnoreChapterBefore = chapterThreshold;
+            context.SaveChanges();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
     
     /// <summary>
