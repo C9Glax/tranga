@@ -24,13 +24,13 @@ public class RetrieveChaptersJob(ulong recurrenceMs, string mangaId, string? par
         Manga m = context.Manga.Find(MangaId)!; 
         MangaConnector connector = context.MangaConnectors.Find(m.MangaConnectorId)!;
         // This gets all chapters that are not downloaded
-        Chapter[] allNewChapters = connector.GetNewChapters(m);
+        Chapter[] allNewChapters = connector.GetNewChapters(m).DistinctBy(c => c.ChapterId).ToArray();
         
         // This filters out chapters that are not downloaded but already exist in the DB
         string[] chapterIds = context.Chapters.Where(chapter => chapter.ParentMangaId == m.MangaId).Select(chapter => chapter.ChapterId).ToArray();
         Chapter[] newChapters = allNewChapters.Where(chapter => !chapterIds.Contains(chapter.ChapterId)).ToArray();
-        context.Chapters.AddRangeAsync(newChapters).Wait();
-        context.SaveChangesAsync().Wait();
+        context.Chapters.AddRange(newChapters);
+        context.SaveChanges();
 
         return [];
     }
