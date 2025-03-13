@@ -92,7 +92,8 @@ public class MangaController(PgsqlContext context) : Controller
     /// Returns Cover of Manga
     /// </summary>
     /// <param name="MangaId">Manga-ID</param>
-    /// <param name="formatRequest">Formatting/Resizing Request</param>
+    /// <param name="width">If width is provided, height needs to also be provided</param>
+    /// <param name="height">If height is provided, width needs to also be provided</param>
     /// <response code="200">JPEG Image</response>
     /// <response code="204">Cover not loaded</response>
     /// <response code="400">The formatting-request was invalid</response>
@@ -102,7 +103,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetCover(string MangaId, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]CoverFormatRequestRecord? formatRequest)
+    public IActionResult GetCover(string MangaId, [FromQuery]int? width, [FromQuery]int? height)
     {
         Manga? m = context.Manga.Find(MangaId);
         if (m is null)
@@ -112,14 +113,12 @@ public class MangaController(PgsqlContext context) : Controller
 
         Image image = Image.Load(m.CoverFileNameInCache);
 
-        if (formatRequest is not null)
+        if (width is { } w && height is { } h)
         {
-            if(!formatRequest.Validate())
-                return BadRequest();
             image.Mutate(i => i.ApplyProcessor(new ResizeProcessor(new ResizeOptions()
             {
                 Mode = ResizeMode.Max,
-                Size = formatRequest.size
+                Size = new Size(w, h)
             }, image.Size)));
         }
         
