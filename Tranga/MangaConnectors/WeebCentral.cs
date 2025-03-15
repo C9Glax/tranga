@@ -210,6 +210,6 @@ public class Weebcentral : MangaConnector
             document.DocumentNode.SelectNodes($"//section[@hx-get='{chapter.url}/images']/img")?.ToArray() ?? [];
         string[] urls = imageNodes.Select(imgNode => imgNode.GetAttributeValue("src", "")).ToArray();
 
-        return DownloadChapterImages(urls, chapter, RequestType.MangaImage, progressToken: progressToken);
+        return DownloadChapterImages(urls, chapter, RequestType.MangaImage, progressToken: progressToken, referrer: "https://weebcentral.com/");
     }
 }
