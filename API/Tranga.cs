@@ -153,7 +153,7 @@ public static class Tranga
         {
             foreach (DownloadAvailableChaptersJob job in jobsByType[JobType.DownloadAvailableChaptersJob])
             {
-                Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
+                Manga manga = job.Manga ?? context.Mangas.Find(job.MangaId)!;
                 MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
                 if(!metadataJobsByConnector.TryAdd(connector, [job]))
                     metadataJobsByConnector[connector].Add(job);
@@ -163,7 +163,7 @@ public static class Tranga
         {
             foreach (UpdateMetadataJob job in jobsByType[JobType.UpdateMetaDataJob])
             {
-                Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
+                Manga manga = job.Manga ?? context.Mangas.Find(job.MangaId)!;
                 MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
                 if(!metadataJobsByConnector.TryAdd(connector, [job]))
                     metadataJobsByConnector[connector].Add(job);
@@ -173,7 +173,7 @@ public static class Tranga
         {
             foreach (RetrieveChaptersJob job in jobsByType[JobType.RetrieveChaptersJob])
             {
-                Manga manga = job.Manga ?? context.Manga.Find(job.MangaId)!;
+                Manga manga = job.Manga ?? context.Mangas.Find(job.MangaId)!;
                 MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
                 if(!metadataJobsByConnector.TryAdd(connector, [job]))
                     metadataJobsByConnector[connector].Add(job);
@@ -189,7 +189,7 @@ public static class Tranga
             foreach (DownloadSingleChapterJob job in jobsByType[JobType.DownloadSingleChapterJob])
             {
                 Chapter chapter = job.Chapter ?? context.Chapters.Find(job.ChapterId)!;
-                Manga manga = chapter.ParentManga ?? context.Manga.Find(chapter.ParentMangaId)!;
+                Manga manga = chapter.ParentManga ?? context.Mangas.Find(chapter.ParentMangaId)!;
                 MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
             
                 if(!downloadJobsByConnector.TryAdd(connector, [job]))

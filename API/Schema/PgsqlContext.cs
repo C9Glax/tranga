@@ -10,10 +10,11 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
 {
     public DbSet<Job> Jobs { get; set; }
     public DbSet<MangaConnector> MangaConnectors { get; set; }
-    public DbSet<Manga> Manga { get; set; }
+    public DbSet<Manga> Mangas { get; set; }
+    public DbSet<LocalLibrary> LocalLibraries { get; set; }
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<Author> Authors { get; set; }
-    public DbSet<Link> Link { get; set; }
+    public DbSet<Link> Links { get; set; }
     public DbSet<MangaTag> Tags { get; set; }
     public DbSet<MangaAltTitle> AltTitles { get; set; }
     public DbSet<LibraryConnector> LibraryConnectors { get; set; }
@@ -72,6 +73,13 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.MangaConnector)
+            .AutoInclude();
+        modelBuilder.Entity<Manga>()
+            .HasOne<LocalLibrary>(m => m.Library)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Library)
             .AutoInclude();
         modelBuilder.Entity<Manga>()
             .HasMany<Author>(m => m.Authors)

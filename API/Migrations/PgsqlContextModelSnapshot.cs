@@ -46,11 +46,6 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("ArchiveFileName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
                     b.Property<string>("ChapterNumber")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -58,6 +53,11 @@ namespace API.Migrations
 
                     b.Property<bool>("Downloaded")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("ParentMangaId")
                         .IsRequired()
@@ -174,7 +174,28 @@ namespace API.Migrations
 
                     b.HasIndex("MangaId");
 
-                    b.ToTable("Link");
+                    b.ToTable("Links");
+                });
+
+            modelBuilder.Entity("API.Schema.LocalLibrary", b =>
+                {
+                    b.Property<string>("LocalLibraryId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("BasePath")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("LibraryName")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("LocalLibraryId");
+
+                    b.ToTable("LocalLibraries");
                 });
 
             modelBuilder.Entity("API.Schema.Manga", b =>
@@ -194,9 +215,10 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("FolderName")
+                    b.Property<string>("DirectoryName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("IdOnConnectorSite")
                         .IsRequired()
@@ -205,6 +227,9 @@ namespace API.Migrations
 
                     b.Property<float>("IgnoreChapterBefore")
                         .HasColumnType("real");
+
+                    b.Property<string>("LibraryLocalLibraryId")
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("MangaConnectorId")
                         .IsRequired()
@@ -234,9 +259,11 @@ namespace API.Migrations
 
                     b.HasKey("MangaId");
 
+                    b.HasIndex("LibraryLocalLibraryId");
+
                     b.HasIndex("MangaConnectorId");
 
-                    b.ToTable("Manga");
+                    b.ToTable("Mangas");
                 });
 
             modelBuilder.Entity("API.Schema.MangaAltTitle", b =>
@@ -644,11 +671,18 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Schema.Manga", b =>
                 {
+                    b.HasOne("API.Schema.LocalLibrary", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryLocalLibraryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("API.Schema.MangaConnectors.MangaConnector", "MangaConnector")
                         .WithMany()
                         .HasForeignKey("MangaConnectorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Library");
 
                     b.Navigation("MangaConnector");
                 });

@@ -13,15 +13,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(PgsqlContext))]
-    [Migration("20250308170713_dev-080325-4")]
-    partial class dev0803254
+    [Migration("20250316150158_dev-160325-2")]
+    partial class dev1603252
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "hstore");
@@ -35,7 +35,8 @@ namespace API.Migrations
 
                     b.Property<string>("AuthorName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("AuthorId");
 
@@ -48,10 +49,6 @@ namespace API.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("ArchiveFileName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ChapterNumber")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -60,16 +57,24 @@ namespace API.Migrations
                     b.Property<bool>("Downloaded")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<string>("ParentMangaId")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<int?>("VolumeNumber")
                         .HasColumnType("integer");
@@ -94,9 +99,6 @@ namespace API.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("JobId1")
-                        .HasColumnType("character varying(64)");
-
                     b.Property<byte>("JobType")
                         .HasColumnType("smallint");
 
@@ -115,8 +117,6 @@ namespace API.Migrations
 
                     b.HasKey("JobId");
 
-                    b.HasIndex("JobId1");
-
                     b.HasIndex("ParentJobId");
 
                     b.ToTable("Jobs");
@@ -134,11 +134,13 @@ namespace API.Migrations
 
                     b.Property<string>("Auth")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("BaseUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<byte>("LibraryType")
                         .HasColumnType("smallint");
@@ -160,11 +162,13 @@ namespace API.Migrations
 
                     b.Property<string>("LinkProvider")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("LinkUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<string>("MangaId")
                         .HasColumnType("character varying(64)");
@@ -173,17 +177,33 @@ namespace API.Migrations
 
                     b.HasIndex("MangaId");
 
-                    b.ToTable("Link");
+                    b.ToTable("Links");
+                });
+
+            modelBuilder.Entity("API.Schema.LocalLibrary", b =>
+                {
+                    b.Property<string>("LocalLibraryId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("BasePath")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("LibraryName")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("LocalLibraryId");
+
+                    b.ToTable("LocalLibraries");
                 });
 
             modelBuilder.Entity("API.Schema.Manga", b =>
                 {
                     b.Property<string>("MangaId")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("ConnectorId")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
@@ -198,39 +218,55 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("FolderName")
+                    b.Property<string>("DirectoryName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("IdOnConnectorSite")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<float>("IgnoreChapterBefore")
                         .HasColumnType("real");
 
+                    b.Property<string>("LibraryLocalLibraryId")
+                        .HasColumnType("character varying(64)");
+
                     b.Property<string>("MangaConnectorId")
                         .IsRequired()
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("OriginalLanguage")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<byte>("ReleaseStatus")
                         .HasColumnType("smallint");
 
                     b.Property<string>("WebsiteUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<long>("Year")
                         .HasColumnType("bigint");
 
                     b.HasKey("MangaId");
 
+                    b.HasIndex("LibraryLocalLibraryId");
+
                     b.HasIndex("MangaConnectorId");
 
-                    b.ToTable("Manga");
+                    b.ToTable("Mangas");
                 });
 
             modelBuilder.Entity("API.Schema.MangaAltTitle", b =>
@@ -249,7 +285,8 @@ namespace API.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("AltTitleId");
 
@@ -266,6 +303,7 @@ namespace API.Migrations
 
                     b.PrimitiveCollection<string[]>("BaseUris")
                         .IsRequired()
+                        .HasMaxLength(256)
                         .HasColumnType("text[]");
 
                     b.Property<bool>("Enabled")
@@ -273,10 +311,12 @@ namespace API.Migrations
 
                     b.Property<string>("IconUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.PrimitiveCollection<string[]>("SupportedLanguages")
                         .IsRequired()
+                        .HasMaxLength(8)
                         .HasColumnType("text[]");
 
                     b.HasKey("Name");
@@ -291,7 +331,8 @@ namespace API.Migrations
             modelBuilder.Entity("API.Schema.MangaTag", b =>
                 {
                     b.Property<string>("Tag")
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.HasKey("Tag");
 
@@ -309,11 +350,13 @@ namespace API.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<byte>("Urgency")
                         .HasColumnType("smallint");
@@ -331,7 +374,8 @@ namespace API.Migrations
 
                     b.Property<string>("Body")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
 
                     b.Property<Dictionary<string, string>>("Headers")
                         .IsRequired()
@@ -339,11 +383,13 @@ namespace API.Migrations
 
                     b.Property<string>("HttpMethod")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.HasKey("Name");
 
@@ -365,13 +411,28 @@ namespace API.Migrations
                     b.ToTable("AuthorManga");
                 });
 
+            modelBuilder.Entity("JobJob", b =>
+                {
+                    b.Property<string>("DependsOnJobsJobId")
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("JobId")
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("DependsOnJobsJobId", "JobId");
+
+                    b.HasIndex("JobId");
+
+                    b.ToTable("JobJob");
+                });
+
             modelBuilder.Entity("MangaMangaTag", b =>
                 {
                     b.Property<string>("MangaId")
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("MangaTagsTag")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(64)");
 
                     b.HasKey("MangaId", "MangaTagsTag");
 
@@ -434,11 +495,13 @@ namespace API.Migrations
 
                     b.Property<string>("FromLocation")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("ToLocation")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasDiscriminator().HasValue((byte)3);
                 });
@@ -552,6 +615,13 @@ namespace API.Migrations
                     b.HasDiscriminator().HasValue("MangaKatana");
                 });
 
+            modelBuilder.Entity("API.Schema.MangaConnectors.Manganato", b =>
+                {
+                    b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
+
+                    b.HasDiscriminator().HasValue("Manganato");
+                });
+
             modelBuilder.Entity("API.Schema.MangaConnectors.Mangaworld", b =>
                 {
                     b.HasBaseType("API.Schema.MangaConnectors.MangaConnector");
@@ -586,13 +656,10 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Schema.Jobs.Job", b =>
                 {
-                    b.HasOne("API.Schema.Jobs.Job", null)
-                        .WithMany("DependsOnJobs")
-                        .HasForeignKey("JobId1");
-
                     b.HasOne("API.Schema.Jobs.Job", "ParentJob")
                         .WithMany()
-                        .HasForeignKey("ParentJobId");
+                        .HasForeignKey("ParentJobId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ParentJob");
                 });
@@ -601,16 +668,24 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Schema.Manga", null)
                         .WithMany("Links")
-                        .HasForeignKey("MangaId");
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("API.Schema.Manga", b =>
                 {
+                    b.HasOne("API.Schema.LocalLibrary", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryLocalLibraryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("API.Schema.MangaConnectors.MangaConnector", "MangaConnector")
                         .WithMany()
                         .HasForeignKey("MangaConnectorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Library");
 
                     b.Navigation("MangaConnector");
                 });
@@ -619,7 +694,8 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Schema.Manga", null)
                         .WithMany("AltTitles")
-                        .HasForeignKey("MangaId");
+                        .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AuthorManga", b =>
@@ -633,6 +709,21 @@ namespace API.Migrations
                     b.HasOne("API.Schema.Manga", null)
                         .WithMany()
                         .HasForeignKey("MangaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("JobJob", b =>
+                {
+                    b.HasOne("API.Schema.Jobs.Job", null)
+                        .WithMany()
+                        .HasForeignKey("DependsOnJobsJobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Schema.Jobs.Job", null)
+                        .WithMany()
+                        .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -716,11 +807,6 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.Navigation("Manga");
-                });
-
-            modelBuilder.Entity("API.Schema.Jobs.Job", b =>
-                {
-                    b.Navigation("DependsOnJobs");
                 });
 
             modelBuilder.Entity("API.Schema.Manga", b =>

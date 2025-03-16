@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 using API.Schema.Jobs;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,6 @@ public class Chapter : IComparable<Chapter>
         : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
     {
         ParentManga = parentManga;
-        ArchiveFileName = BuildArchiveFileName();
     }
 
     public Chapter(string parentMangaId, string url, string chapterNumber,
@@ -25,6 +25,7 @@ public class Chapter : IComparable<Chapter>
         ChapterNumber = chapterNumber;
         VolumeNumber = volumeNumber;
         Title = title;
+        FileName = GetArchiveFilePath();
     }
 
     [StringLength(64)]
@@ -43,7 +44,10 @@ public class Chapter : IComparable<Chapter>
     public string? Title { get; private set; }
     [StringLength(256)]
     [Required]
-    public string ArchiveFileName { get; private set; }
+    public string FileName { get; private set; }
+    [JsonIgnore]
+    [NotMapped]
+    public string? FullArchiveFilePath => ParentManga is { } m ? Path.Join(m.FullDirectoryPath, FileName) : null;
     [Required]
     public bool Downloaded { get; internal set; } = false;
     [Required]
@@ -82,26 +86,14 @@ public class Chapter : IComparable<Chapter>
         return UpdateArchiveFileName();
     }
 
-    private string BuildArchiveFileName()
-    {
-        return
-            $"{ParentManga.Name} - Vol.{VolumeNumber ?? 0} Ch.{ChapterNumber}{(Title is null ? "" : $" - {Title}")}.cbz";
-    }
-
     private MoveFileOrFolderJob? UpdateArchiveFileName()
     {
-        string oldPath = GetArchiveFilePath();
-        ArchiveFileName = BuildArchiveFileName();
-        return Downloaded ? new MoveFileOrFolderJob(oldPath, GetArchiveFilePath()) : null;
-    }
-
-    /// <summary>
-    /// Creates full file path of chapter-archive
-    /// </summary>
-    /// <returns>Filepath</returns>
-    internal string GetArchiveFilePath()
-    {
-        return Path.Join(TrangaSettings.downloadLocation, ParentManga.FolderName, ArchiveFileName);
+        string? oldPath = FullArchiveFilePath;
+        if (oldPath is null)
+            return null;
+        string newPath = GetArchiveFilePath();
+        FileName = newPath;
+        return Downloaded ? new MoveFileOrFolderJob(oldPath, newPath) : null;
     }
 
     /// <summary>
@@ -112,6 +104,11 @@ public class Chapter : IComparable<Chapter>
     {
         string path = GetArchiveFilePath();
         return File.Exists(path);
+    }
+
+    private string GetArchiveFilePath()
+    {
+        return $"{ParentManga!.Name} - Vol.{VolumeNumber ?? 0} Ch.{ChapterNumber}{(Title is null ? "" : $" - {Title}")}.cbz";
     }
 
     private static int CompareChapterNumbers(string ch1, string ch2)

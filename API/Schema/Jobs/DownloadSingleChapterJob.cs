@@ -25,10 +25,10 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         Chapter chapter = Chapter ?? context.Chapters.Find(ChapterId)!;
-        Manga manga = chapter.ParentManga ?? context.Manga.Find(chapter.ParentMangaId)!;
+        Manga manga = chapter.ParentManga ?? context.Mangas.Find(chapter.ParentMangaId)!;
         MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
         string[] imageUrls = connector.GetChapterImageUrls(chapter);
-        string saveArchiveFilePath = chapter.GetArchiveFilePath();
+        string saveArchiveFilePath = chapter.FullArchiveFilePath;
         
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;

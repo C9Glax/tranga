@@ -36,7 +36,7 @@ public class QueryController(PgsqlContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangaWithAuthorIds(string AuthorId)
     {
-        return Ok(context.Manga.Where(m => m.AuthorIds.Contains(AuthorId)));
+        return Ok(context.Mangas.Where(m => m.AuthorIds.Contains(AuthorId)));
     }
     
     /// <summary>
@@ -50,7 +50,7 @@ public class QueryController(PgsqlContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetLink(string LinkId)
     {
-        Link? ret = context.Link.Find(LinkId);
+        Link? ret = context.Links.Find(LinkId);
         if (ret is null)
             return NotFound();
         return Ok(ret);
@@ -82,7 +82,7 @@ public class QueryController(PgsqlContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangasWithTag(string Tag)
     {
-        return Ok(context.Manga.Where(m => m.Tags.Contains(Tag)));
+        return Ok(context.Mangas.Where(m => m.Tags.Contains(Tag)));
     }
     
     /// <summary>

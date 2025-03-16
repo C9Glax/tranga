@@ -23,7 +23,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetAllManga()
     {
-        Manga[] ret = context.Manga.ToArray();
+        Manga[] ret = context.Mangas.ToArray();
         return Ok(ret);
     }
     
@@ -36,7 +36,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetManga([FromBody]string[] ids)
     {
-        Manga[] ret = context.Manga.Where(m => ids.Contains(m.MangaId)).ToArray();
+        Manga[] ret = context.Mangas.Where(m => ids.Contains(m.MangaId)).ToArray();
         return Ok(ret);
     }
 
@@ -51,7 +51,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetManga(string MangaId)
     {
-        Manga? ret = context.Manga.Find(MangaId);
+        Manga? ret = context.Mangas.Find(MangaId);
         if (ret is null)
             return NotFound();
         return Ok(ret);
@@ -72,7 +72,7 @@ public class MangaController(PgsqlContext context) : Controller
     {
         try
         {
-            Manga? ret = context.Manga.Find(MangaId);
+            Manga? ret = context.Mangas.Find(MangaId);
             if (ret is null)
                 return NotFound();
             
@@ -103,7 +103,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetCover(string MangaId, [FromQuery]int? width, [FromQuery]int? height)
     {
-        Manga? m = context.Manga.Find(MangaId);
+        Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
         if (!System.IO.File.Exists(m.CoverFileNameInCache))
@@ -148,7 +148,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChapters(string MangaId)
     {
-        Manga? m = context.Manga.Find(MangaId);
+        Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -169,7 +169,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersDownloaded(string MangaId)
     {
-        Manga? m = context.Manga.Find(MangaId);
+        Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -193,7 +193,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersNotDownloaded(string MangaId)
     {
-        Manga? m = context.Manga.Find(MangaId);
+        Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -219,7 +219,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult GetLatestChapter(string MangaId)
     {
-        Manga? m = context.Manga.Find(MangaId);
+        Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -249,7 +249,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult GetLatestChapterDownloaded(string MangaId)
     {
-        Manga? m = context.Manga.Find(MangaId);
+        Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -277,7 +277,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult IgnoreChaptersBefore(string MangaId, [FromBody]float chapterThreshold)
     {
-        Manga? m = context.Manga.Find(MangaId);
+        Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
         
@@ -305,7 +305,7 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult MoveFolder(string MangaId, [FromBody]string folder)
     {
-        Manga? manga = context.Manga.Find(MangaId);
+        Manga? manga = context.Mangas.Find(MangaId);
         if (manga is null)
             return NotFound();
         MoveFileOrFolderJob dep = manga.UpdateFolderName(TrangaSettings.downloadLocation, folder);

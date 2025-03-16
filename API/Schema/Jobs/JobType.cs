@@ -9,5 +9,6 @@ public enum JobType : byte
     MoveFileOrFolderJob = 3,
     DownloadMangaCoverJob = 4,
     RetrieveChaptersJob = 5,
-    UpdateFilesDownloadedJob = 6
+    UpdateFilesDownloadedJob = 6,
+    MoveMangaLibraryJob = 7
 }

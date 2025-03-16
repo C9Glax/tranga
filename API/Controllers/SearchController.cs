@@ -131,7 +131,7 @@ public class SearchController(PgsqlContext context) : Controller
         if (manga is null)
             return null;
 
-        Manga? existing = context.Manga.Find(manga.MangaId);
+        Manga? existing = context.Mangas.Find(manga.MangaId);
         
         if (tags is not null)
         {
@@ -163,13 +163,13 @@ public class SearchController(PgsqlContext context) : Controller
         {
             IEnumerable<Link> mergedLinks = links.Select(ml =>
             {
-                Link? inDb = context.Link.Find(ml.LinkId);
+                Link? inDb = context.Links.Find(ml.LinkId);
                 return inDb ?? ml;
             });
             manga.Links = mergedLinks.ToList();
             IEnumerable<Link> newLinks = manga.Links
-                .Where(ml => !context.Link.Select(l => l.LinkId).Contains(ml.LinkId));
-            context.Link.AddRange(newLinks);
+                .Where(ml => !context.Links.Select(l => l.LinkId).Contains(ml.LinkId));
+            context.Links.AddRange(newLinks);
         }
 
         if (altTitles is not null)
@@ -187,9 +187,9 @@ public class SearchController(PgsqlContext context) : Controller
         
         existing?.UpdateWithInfo(manga);
         if(existing is not null)
-            context.Manga.Update(existing);
+            context.Mangas.Update(existing);
         else
-            context.Manga.Add(manga);
+            context.Mangas.Add(manga);
 
         context.Jobs.Add(new DownloadMangaCoverJob(manga.MangaId));
         context.Jobs.Add(new RetrieveChaptersJob(0, manga.MangaId));

@@ -14,7 +14,7 @@ public class DownloadMangaCoverJob(string mangaId, string? parentJobId = null, I
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Manga? manga = Manga ?? context.Manga.Find(this.MangaId);
+        Manga? manga = Manga ?? context.Mangas.Find(this.MangaId);
         if (manga is null)
             return [];
         

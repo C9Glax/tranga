@@ -44,8 +44,16 @@ public class Manga
     public string? OriginalLanguage { get; internal set; }
     [Required]
     public MangaReleaseStatus ReleaseStatus { get; internal set; }
+    [StringLength(256)]
     [Required]
-    public string FolderName { get; private set; }
+    public string DirectoryName { get; private set; }
+    public LocalLibrary? Library { get; internal set; }
+    [JsonIgnore]
+    [NotMapped]
+    public string LibraryPath => Library is null ? TrangaSettings.downloadLocation : Library.BasePath;
+    [JsonIgnore]
+    [NotMapped]
+    public string FullDirectoryPath => Path.Join(LibraryPath, DirectoryName);
     [Required]
     public float IgnoreChapterBefore { get; internal set; }
     [StringLength(64)]
@@ -81,7 +89,8 @@ public class Manga
     public Manga(string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl,
         string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
         float ignoreChapterBefore, MangaConnector mangaConnector, ICollection<Author> authors,
-        ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles)
+        ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles,
+        LocalLibrary? library = null)
         : this(idOnConnectorSite, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
             releaseStatus, ignoreChapterBefore, mangaConnector.Name)
     {
@@ -89,6 +98,7 @@ public class Manga
         this.MangaTags = mangaTags;
         this.Links = links;
         this.AltTitles = altTitles;
+        this.Library = library;
     }
     
     public Manga(string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl,
@@ -107,14 +117,14 @@ public class Manga
         ReleaseStatus = releaseStatus;
         IgnoreChapterBefore = ignoreChapterBefore;
         MangaConnectorId = mangaConnectorId;
-        FolderName = BuildFolderName(name);
+        DirectoryName = BuildFolderName(name);
     }
 
     public MoveFileOrFolderJob UpdateFolderName(string downloadLocation, string newName)
     {
-        string oldName = this.FolderName;
-        this.FolderName = newName;
-        return new MoveFileOrFolderJob(Path.Join(downloadLocation, oldName), Path.Join(downloadLocation, this.FolderName));
+        string oldName = this.DirectoryName;
+        this.DirectoryName = newName;
+        return new MoveFileOrFolderJob(Path.Join(downloadLocation, oldName), Path.Join(downloadLocation, this.DirectoryName));
     }
 
     internal void UpdateWithInfo(Manga other)
@@ -164,7 +174,7 @@ public class Manga
     
     public string CreatePublicationFolder()
     {
-        string publicationFolder = Path.Join(TrangaSettings.downloadLocation, this.FolderName);
+        string publicationFolder = Path.Join(LibraryPath, this.DirectoryName);
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

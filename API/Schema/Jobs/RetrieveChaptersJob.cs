@@ -21,7 +21,7 @@ public class RetrieveChaptersJob(ulong recurrenceMs, string mangaId, string? par
          * Manga as a new entity and Postgres throws a Duplicate PK exception.
          * m.MangaConnector does not have this issue (IDK why).
          */ 
-        Manga m = context.Manga.Find(MangaId)!; 
+        Manga m = context.Mangas.Find(MangaId)!; 
         MangaConnector connector = context.MangaConnectors.Find(m.MangaConnectorId)!;
         // This gets all chapters that are not downloaded
         Chapter[] allNewChapters = connector.GetNewChapters(m).DistinctBy(c => c.ChapterId).ToArray();
