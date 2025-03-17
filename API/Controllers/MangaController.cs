@@ -292,24 +292,30 @@ public class MangaController(PgsqlContext context) : Controller
             return StatusCode(500, e.Message);
         }
     }
-    
+
     /// <summary>
-    /// Move the Directory the .cbz-files are located in
+    /// Move Manga to different Library
     /// </summary>
     /// <param name="MangaId">Manga-ID</param>
-    /// <param name="folder">New Directory-Path</param>
+    /// <param name="LibraryId">Library-Id</param>
     /// <response code="202">Folder is going to be moved</response>
+    /// <response code="404">MangaId or LibraryId not found</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{MangaId}/MoveFolder")]
+    [HttpPost("{MangaId}/ChangeLibrary/{LibraryId}")]
     [ProducesResponseType(Status202Accepted)]
+    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult MoveFolder(string MangaId, [FromBody]string folder)
+    public IActionResult MoveFolder(string MangaId, string LibraryId)
     {
         Manga? manga = context.Mangas.Find(MangaId);
         if (manga is null)
             return NotFound();
-        MoveFileOrFolderJob dep = manga.UpdateFolderName(TrangaSettings.downloadLocation, folder);
-        UpdateFilesDownloadedJob up = new UpdateFilesDownloadedJob(0, manga.MangaId, null, [dep.JobId]);
+        LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
+        if (library is null)
+            return NotFound();
+        
+        MoveMangaLibraryJob dep = new (MangaId, LibraryId);
+        UpdateFilesDownloadedJob up = new (0, manga.MangaId, null, [dep.JobId]);
         
         try
         {
