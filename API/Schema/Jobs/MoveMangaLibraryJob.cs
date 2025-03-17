@@ -1,0 +1,30 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.Schema.Jobs;
+
+public class MoveMangaLibraryJob(string mangaId, string toLibraryId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
+    : Job(TokenGen.CreateToken(typeof(MoveMangaLibraryJob)), JobType.MoveMangaLibraryJob, 0, parentJobId, dependsOnJobsIds)
+{
+    [StringLength(64)]
+    [Required]
+    public string MangaId { get; init; } = mangaId;
+    [StringLength(64)]
+    [Required]
+    public string ToLibraryId { get; init; } = toLibraryId;
+    
+    protected override IEnumerable<Job> RunInternal(PgsqlContext context)
+    {
+        Manga? manga = context.Mangas.Find(MangaId);
+        if(manga is null)
+            throw new KeyNotFoundException();
+        LocalLibrary? library = context.LocalLibraries.Find(ToLibraryId);
+        if(library is null)
+            throw new KeyNotFoundException();
+        Chapter[] chapters = context.Chapters.Where(c => c.ParentMangaId == MangaId).ToArray();
+        Dictionary<Chapter, string> oldPath = chapters.ToDictionary(c => c, c => c.FullArchiveFilePath!);
+        manga.Library = library;
+        context.SaveChanges();
+
+        return chapters.Select(c => new MoveFileOrFolderJob(oldPath[c], c.FullArchiveFilePath!));
+    }
+}
