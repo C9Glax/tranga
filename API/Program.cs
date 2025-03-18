@@ -95,6 +95,8 @@ app.UseSwaggerUI(options =>
 
 app.UseHttpsRedirection();
 
+//app.UseMiddleware<RequestTimeMiddleware>();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
