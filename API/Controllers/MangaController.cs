@@ -96,29 +96,32 @@ public class MangaController(PgsqlContext context) : Controller
     /// <response code="204">Cover not loaded</response>
     /// <response code="400">The formatting-request was invalid</response>
     /// <response code="404">Manga with ID not found</response>
+    /// <response code="503">Retry later, downloading cover</response>
     [HttpGet("{MangaId}/Cover")]
     [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetCover(string MangaId, [FromQuery]int? width, [FromQuery]int? height)
     {
+        DateTime requestStarted = HttpContext.Features.Get<IHttpRequestTimeFeature>()?.RequestTime ?? DateTime.Now;
         Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
+        
         if (!System.IO.File.Exists(m.CoverFileNameInCache))
         {
-            bool coverIsBeingDownloaded = false;
-            do
+            List<Job> coverDownloadJobs = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).ToList();
+            if (coverDownloadJobs.Any(j => j is DownloadMangaCoverJob dmc && dmc.MangaId == MangaId))
             {
-                coverIsBeingDownloaded = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).AsEnumerable()
-                    .Any(j => j is DownloadMangaCoverJob dmcj && dmcj.MangaId == MangaId);
-                Thread.Sleep(100);
-            } while (coverIsBeingDownloaded);
-            if (!System.IO.File.Exists(m.CoverFileNameInCache))
-                return NoContent();
+                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() / 1000);
+            }
         }
 
+        if (!System.IO.File.Exists(m.CoverFileNameInCache))
+            return NoContent();
         Image image = Image.Load(m.CoverFileNameInCache);
 
         if (width is { } w && height is { } h)
@@ -212,16 +215,25 @@ public class MangaController(PgsqlContext context) : Controller
     /// <response code="204">No available chapters</response>
     /// <response code="404">Manga with ID not found.</response>
     /// <response code="500">Could not retrieve the maximum chapter-number</response>
+    /// <response code="503">Retry after timeout, updating value</response>
     [HttpGet("{MangaId}/Chapter/LatestAvailable")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
-    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapter(string MangaId)
     {
         Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
+
+        List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
+        if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
+        {
+            Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000:D}");
+            return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000);
+        }
         
         List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId).ToList();
         if (chapters.Count == 0)
@@ -242,16 +254,25 @@ public class MangaController(PgsqlContext context) : Controller
     /// <response code="204">No available chapters</response>
     /// <response code="404">Manga with ID not found.</response>
     /// <response code="500">Could not retrieve the maximum chapter-number</response>
+    /// <response code="503">Retry after timeout, updating value</response>
     [HttpGet("{MangaId}/Chapter/LatestDownloaded")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapterDownloaded(string MangaId)
     {
         Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
+        
+        List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
+        if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
+        {
+            Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000:D}");
+            return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000);
+        }
         
         List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == true).ToList();
         if (chapters.Count == 0)
