@@ -56,7 +56,7 @@ public class Webtoons : MangaConnector
             Log($"Failed to retrieve site");
             return null;
         }
-        Regex regex = new Regex(@".*webtoons\.com/en/(?<category>[^/]+)/(?<title>[^/]+)/list\?title_no=(?<id>\d+).*");
+        Regex regex = new Regex(@".*webtoons\.com\/en\/(?<category>[^\/]+)\/(?<title>[^\/]+)\/list\?title_no=(?<id>\d+).*");
         Match match = regex.Match(url);
 
         if(match.Success) {
@@ -110,7 +110,7 @@ public class Webtoons : MangaConnector
 
         HtmlNode posterNode = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'detail_body') and contains(@class, 'banner')]");
 
-        Regex regex = new Regex(@"url\((?<url>.*?)\)");
+        Regex regex = new Regex(@"url\('(?<url>.*?)'\)");
         Match match = regex.Match(posterNode.GetAttributeValue("style", ""));
 
         string posterUrl = match.Groups["url"].Value;

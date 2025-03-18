@@ -44,7 +44,7 @@ public class Weebcentral : MangaConnector
         if (document.DocumentNode.SelectNodes("//article") == null)
             return [];
 
-        List<string> urls = document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover']")
+        List<string> urls = document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover tooltip tooltip-bottom']")
             .Select(elem => elem.GetAttributeValue("href", "")).ToList();
 
         HashSet<Manga> ret = new();
@@ -210,6 +210,6 @@ public class Weebcentral : MangaConnector
             document.DocumentNode.SelectNodes($"//section[@hx-get='{chapter.url}/images']/img")?.ToArray() ?? [];
         string[] urls = imageNodes.Select(imgNode => imgNode.GetAttributeValue("src", "")).ToArray();
 
-        return DownloadChapterImages(urls, chapter, RequestType.MangaImage, progressToken: progressToken);
+        return DownloadChapterImages(urls, chapter, RequestType.MangaImage, progressToken: progressToken, referrer: "https://weebcentral.com/");
     }
 }
