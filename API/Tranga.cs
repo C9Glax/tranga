@@ -141,6 +141,8 @@ public static class Tranga
                 jobsByType[job.JobType].Add(job);
 
         IEnumerable<Job> ret = new List<Job>();
+        if(jobsByType.ContainsKey(JobType.MoveMangaLibraryJob))
+            ret = ret.Concat(jobsByType[JobType.MoveMangaLibraryJob]);
         if(jobsByType.ContainsKey(JobType.MoveFileOrFolderJob))
             ret = ret.Concat(jobsByType[JobType.MoveFileOrFolderJob]);
         if(jobsByType.ContainsKey(JobType.DownloadMangaCoverJob)) 
