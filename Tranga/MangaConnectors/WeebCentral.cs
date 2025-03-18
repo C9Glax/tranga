@@ -44,7 +44,7 @@ public class Weebcentral : MangaConnector
         if (document.DocumentNode.SelectNodes("//article") == null)
             return [];
 
-        List<string> urls = document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover']")
+        List<string> urls = document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover tooltip tooltip-bottom']")
             .Select(elem => elem.GetAttributeValue("href", "")).ToList();
 
         HashSet<Manga> ret = new();
