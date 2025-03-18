@@ -14,6 +14,7 @@ public class Chapter : IComparable<Chapter>
         : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
     {
         ParentManga = parentManga;
+        FileName = GetArchiveFilePath(parentManga.Name);
     }
 
     public Chapter(string parentMangaId, string url, string chapterNumber,
@@ -25,7 +26,6 @@ public class Chapter : IComparable<Chapter>
         ChapterNumber = chapterNumber;
         VolumeNumber = volumeNumber;
         Title = title;
-        FileName = GetArchiveFilePath();
     }
 
     [StringLength(64)]
@@ -106,9 +106,9 @@ public class Chapter : IComparable<Chapter>
         return File.Exists(path);
     }
 
-    private string GetArchiveFilePath()
+    private string GetArchiveFilePath(string? parentMangaName = null)
     {
-        return $"{ParentManga!.Name} - Vol.{VolumeNumber ?? 0} Ch.{ChapterNumber}{(Title is null ? "" : $" - {Title}")}.cbz";
+        return $"{parentMangaName ?? ParentManga?.Name ?? ""} - Vol.{VolumeNumber ?? 0} Ch.{ChapterNumber}{(Title is null ? "" : $" - {Title}")}.cbz";
     }
 
     private static int CompareChapterNumbers(string ch1, string ch2)
