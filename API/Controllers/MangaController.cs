@@ -115,13 +115,13 @@ public class MangaController(PgsqlContext context) : Controller
             List<Job> coverDownloadJobs = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).ToList();
             if (coverDownloadJobs.Any(j => j is DownloadMangaCoverJob dmc && dmc.MangaId == MangaId))
             {
-                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() / 1000:D}");
-                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() / 1000);
+                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000);
             }
+            else
+                return NoContent();
         }
 
-        if (!System.IO.File.Exists(m.CoverFileNameInCache))
-            return NoContent();
         Image image = Image.Load(m.CoverFileNameInCache);
 
         if (width is { } w && height is { } h)
@@ -227,17 +227,18 @@ public class MangaController(PgsqlContext context) : Controller
         Manga? m = context.Mangas.Find(MangaId);
         if (m is null)
             return NotFound();
-
-        List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
-        if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
-        {
-            Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000:D}");
-            return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000);
-        }
         
         List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId).ToList();
         if (chapters.Count == 0)
-            return NoContent();
+        {
+            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
+            if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
+            {
+                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2 / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2/ 1000);
+            }else
+                return NoContent();
+        }
         
         Chapter? max = chapters.Max();
         if (max is null)
@@ -267,16 +268,18 @@ public class MangaController(PgsqlContext context) : Controller
         if (m is null)
             return NotFound();
         
-        List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
-        if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
-        {
-            Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000:D}");
-            return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() / 1000);
-        }
         
         List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == true).ToList();
         if (chapters.Count == 0)
-            return NoContent();
+        {
+            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
+            if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
+            {
+                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000);
+            }else
+                return NoContent();
+        }
         
         Chapter? max = chapters.Max();
         if (max is null)
