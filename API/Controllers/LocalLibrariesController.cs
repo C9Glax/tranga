@@ -29,6 +29,33 @@ public class LocalLibrariesController(PgsqlContext context) : Controller
         return Ok(library);
     }
 
+    [HttpPatch("{LibraryId}")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType(Status400BadRequest)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult UpdateLocalLibrary(string LibraryId, [FromBody]NewLibraryRecord record)
+    {
+        LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
+        if (library is null)
+            return NotFound();
+        if (record.Validate() == false)
+            return BadRequest();
+        
+        try
+        {
+            library.LibraryName = record.name;
+            library.BasePath = record.path;
+            context.SaveChanges();
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     [HttpPatch("{LibraryId}/ChangeBasePath")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -85,9 +112,12 @@ public class LocalLibrariesController(PgsqlContext context) : Controller
 
     [HttpPut]
     [ProducesResponseType<LocalLibrary>(Status200OK, "application/json")]
+    [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateNewLibrary([FromBody] NewLibraryRecord library)
+    public IActionResult CreateNewLibrary([FromBody]NewLibraryRecord library)
     {
+        if (library.Validate() == false)
+            return BadRequest();
         try
         {
             LocalLibrary newLibrary = new (library.path, library.name);
