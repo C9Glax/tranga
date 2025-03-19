@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Nodes;
-using API.MangaDownloadClients;
+﻿using API.MangaDownloadClients;
 using API.Schema;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace API.Controllers;
@@ -17,10 +17,10 @@ public class SettingsController(PgsqlContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType<JObject>(Status200OK, "application/json")]
     public IActionResult GetSettings()
     {
-        return Ok(TrangaSettings.Serialize());
+        return Ok(JObject.Parse(TrangaSettings.Serialize()));
     }
     
     /// <summary>
