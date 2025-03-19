@@ -142,7 +142,7 @@ public class SettingsController(PgsqlContext context) : Controller
     [HttpPatch("ImageCompression")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status400BadRequest)]
-    public IActionResult SetImageCompression(int level)
+    public IActionResult SetImageCompression([FromBody]int level)
     {
         if (level < 0 || level > 100)
             return BadRequest();
@@ -168,7 +168,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// <response code="200"></response>
     [HttpPatch("BWImages")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetBwImagesToggle(bool enabled)
+    public IActionResult SetBwImagesToggle([FromBody]bool enabled)
     {
         TrangaSettings.UpdateBwImages(enabled);
         return Ok();
@@ -194,7 +194,7 @@ public class SettingsController(PgsqlContext context) : Controller
     /// <response code="200"></response>
     [HttpPatch("AprilFoolsMode")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetAprilFoolsMode(bool enabled)
+    public IActionResult SetAprilFoolsMode([FromBody]bool enabled)
     {
         TrangaSettings.UpdateAprilFoolsMode(enabled);
         return Ok();
