@@ -144,7 +144,7 @@ public class SettingsController(PgsqlContext context) : Controller
     [ProducesResponseType(Status400BadRequest)]
     public IActionResult SetImageCompression([FromBody]int level)
     {
-        if (level < 0 || level > 100)
+        if (level < 1 || level > 100)
             return BadRequest();
         TrangaSettings.UpdateCompressImages(level);
         return Ok();
