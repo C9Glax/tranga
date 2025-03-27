@@ -25,6 +25,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     {
         modelBuilder.Entity<MangaConnector>()
             .HasDiscriminator(c => c.Name)
+            .HasValue<Global>("Global")
             .HasValue<AsuraToon>("AsuraToon")
             .HasValue<Bato>("Bato")
             .HasValue<MangaHere>("MangaHere")

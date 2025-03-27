@@ -117,7 +117,8 @@ using (var scope = app.Services.CreateScope())
             new Mangaworld(),
             new ManhuaPlus(),
             new Weebcentral(),
-            new Manganato()
+            new Manganato(),
+            new Global(scope.ServiceProvider.GetService<PgsqlContext>()!)
         ];
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
