@@ -4,6 +4,7 @@ using API.Schema.MangaConnectors;
 using API.Schema.NotificationConnectors;
 using log4net;
 using log4net.Config;
+using Microsoft.EntityFrameworkCore;
 
 namespace API;
 
@@ -128,7 +129,14 @@ public static class Tranga
                     context.Jobs.Update(thread.job);
             }
 
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbUpdateException e)
+            {
+                
+            }
             Thread.Sleep(TrangaSettings.startNewJobTimeoutMs);
         }
     }
