@@ -10,6 +10,8 @@ internal class ChromiumDownloadClient : DownloadClient
 {
     private static IBrowser? _browser;
     private readonly HttpDownloadClient _httpDownloadClient;
+    private readonly Thread _closeStalePagesThread;
+    private readonly List<KeyValuePair<IPage, DateTime>> _openPages = new ();
     
     private static async Task<IBrowser> StartBrowser()
     {
@@ -22,31 +24,7 @@ internal class ChromiumDownloadClient : DownloadClient
                 "--disable-setuid-sandbox",
                 "--no-sandbox"},
             Timeout = 30000
-        }, new LoggerFactory([new LogProvider()])); //TODO
-    }
-
-    private class LogProvider : ILoggerProvider
-    {
-        //TODO
-        public void Dispose() { }
-
-        public ILogger CreateLogger(string categoryName) => new Logger();
-    }
-
-    private class Logger : ILogger
-    {
-        public Logger() : base() { }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-        {
-            if (logLevel <= LogLevel.Information)
-                return;
-            //TODO
-        }
-
-        public bool IsEnabled(LogLevel logLevel) => true;
-
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+        });
     }
 
     public ChromiumDownloadClient()
@@ -54,6 +32,20 @@ internal class ChromiumDownloadClient : DownloadClient
         _httpDownloadClient = new();
         if(_browser is null)
             _browser = StartBrowser().Result;
+        _closeStalePagesThread = new Thread(CheckStalePages);
+        _closeStalePagesThread.Start();
+    }
+
+    private void CheckStalePages()
+    {
+        while (true)
+        {
+            Thread.Sleep(TimeSpan.FromHours(1));
+            foreach ((IPage? key, DateTime value) in _openPages.Where(kv => kv.Value.Subtract(DateTime.Now) > TimeSpan.FromHours(1)))
+            {
+                key.CloseAsync().Wait();
+            }
+        }
     }
 
     private readonly Regex _imageUrlRex = new(@"https?:\/\/.*\.(?:p?jpe?g|gif|a?png|bmp|avif|webp)(\?.*)?");
@@ -69,8 +61,9 @@ internal class ChromiumDownloadClient : DownloadClient
         if (_browser is null)
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         IPage page = _browser.NewPageAsync().Result;
+        _openPages.Add(new(page, DateTime.Now));
         page.SetExtraHttpHeadersAsync(new() { { "Referer", referrer } });
-        page.DefaultTimeout = 10000;
+        page.DefaultTimeout = 30000;
         IResponse response;
         try
         {
@@ -81,6 +74,7 @@ internal class ChromiumDownloadClient : DownloadClient
         {
             //Log($"Could not load Page {url}\n{e.Message}");
             page.CloseAsync();
+            _openPages.Remove(_openPages.Find(i => i.Key == page));
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         }
 
@@ -104,11 +98,13 @@ internal class ChromiumDownloadClient : DownloadClient
         }
         else
         {
-            page.CloseAsync();
+            page.CloseAsync().Wait();
+            _openPages.Remove(_openPages.Find(i => i.Key == page));
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
         }
         
-        page.CloseAsync();
+        page.CloseAsync().Wait();
+        _openPages.Remove(_openPages.Find(i => i.Key == page));
         return new RequestResult(response.Status, document, stream, false, "");
     }
 }
