@@ -50,7 +50,7 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     /// <summary>
     /// Enabled or disables a Connector
     /// </summary>
-    /// <param name="id">ID of the connector</param>
+    /// <param name="MangaConnectorName">ID of the connector</param>
     /// <param name="enabled">Set true to enable</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
@@ -59,11 +59,11 @@ public class MangaConnectorController(PgsqlContext context) : Controller
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult SetEnabled(string id, bool enabled)
+    public IActionResult SetEnabled(string MangaConnectorName, bool enabled)
     {
         try
         {
-            MangaConnector? connector = context.MangaConnectors.Find(id);
+            MangaConnector? connector = context.MangaConnectors.Find(MangaConnectorName);
             if (connector is null)
                 return NotFound();
             
