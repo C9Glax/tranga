@@ -120,7 +120,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         string authHeader = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ntfyRecord.username}:{ntfyRecord.password}"));
         string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(authHeader)).Replace("=","");
         
-        NotificationConnector ntfyConnector = new NotificationConnector(TokenGen.CreateToken("Ntfy"),
+        NotificationConnector ntfyConnector = new (TokenGen.CreateToken("Ntfy"),
             $"{ntfyRecord.endpoint}?auth={auth}", 
             new Dictionary<string, string>()
             {
@@ -150,12 +150,38 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         if(!lunaseaRecord.Validate())
             return BadRequest();
         
-        NotificationConnector lunaseaConnector = new NotificationConnector(TokenGen.CreateToken("Lunasea"),
+        NotificationConnector lunaseaConnector = new (TokenGen.CreateToken("Lunasea"),
             $"https://notify.lunasea.app/v1/custom/{lunaseaRecord.id}", 
             new Dictionary<string, string>(),
             "POST", 
             "{\"title\": \"%title\", \"body\": \"%text\"}");
         return CreateConnector(lunaseaConnector);
+    }
+    
+    /// <summary>
+    /// Creates a new Pushover-Notification-Connector
+    /// </summary>
+    /// <remarks>https://pushover.net/api</remarks>
+    /// <response code="201">ID of new connector</response>
+    /// <response code="400"></response>
+    /// <response code="409">A NotificationConnector with name already exists</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPut("Pushover")]
+    [ProducesResponseType<string>(Status201Created, "application/json")]
+    [ProducesResponseType(Status400BadRequest)]
+    [ProducesResponseType(Status409Conflict)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult CreatePushoverConnector([FromBody]PushoverRecord pushoverRecord)
+    {
+        if(!pushoverRecord.Validate())
+            return BadRequest();
+        
+        NotificationConnector pushoverConnector = new  (TokenGen.CreateToken("Pushover"),
+            $"https://api.pushover.net/1/messages.json", 
+            new Dictionary<string, string>(),
+            "POST", 
+            $"{{\"token\": \"{pushoverRecord.apptoken}\", \"user\": \"{pushoverRecord.user}\", \"message:\":\"%text\", \"%title\" }}");
+        return CreateConnector(pushoverConnector);
     }
     
     /// <summary>
