@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using API.Schema.Jobs;
 using Microsoft.EntityFrameworkCore;
@@ -86,7 +88,7 @@ public class Chapter : IComparable<Chapter>
         return UpdateArchiveFileName();
     }
 
-    private MoveFileOrFolderJob? UpdateArchiveFileName()
+    internal MoveFileOrFolderJob? UpdateArchiveFileName()
     {
         string? oldPath = FullArchiveFilePath;
         if (oldPath is null)
@@ -106,9 +108,76 @@ public class Chapter : IComparable<Chapter>
         return File.Exists(path);
     }
 
+    /// Placeholders:
+    /// %M Manga Name
+    /// %V Volume
+    /// %C Chapter
+    /// %T Title
+    /// %A Author (first in list)
+    /// %I Chapter Internal ID
+    /// %i Manga Internal ID
+    /// %Y Year (Manga)
+    private static readonly Regex NullableRex = new(@"\?([a-zA-Z])\(([^\)]*)\)|(.+?)");
+    private static readonly Regex ReplaceRexx = new(@"%([a-zA-Z])|(.+?)");
     private string GetArchiveFilePath(string? parentMangaName = null)
     {
-        return $"{parentMangaName ?? ParentManga?.Name ?? ""} - Vol.{VolumeNumber ?? 0} Ch.{ChapterNumber}{(Title is null ? "" : $" - {Title}")}.cbz";
+        string archiveNamingScheme = TrangaSettings.chapterNamingScheme;
+        StringBuilder stringBuilder = new();
+        foreach (Match nullable in  NullableRex.Matches(archiveNamingScheme))
+        {
+            if (nullable.Groups[3].Success)
+            {
+                stringBuilder.Append(nullable.Groups[3].Value);
+                continue;
+            }
+
+            char placeholder = nullable.Groups[1].Value[0];
+            bool isNull = placeholder switch
+            {
+                'M' => ParentManga?.Name is null && parentMangaName is null,
+                'V' => VolumeNumber is null,
+                'C' => ChapterNumber is null,
+                'T' => Title is null,
+                'A' => ParentManga?.Authors?.FirstOrDefault()?.AuthorName is null,
+                'I' => ChapterId is null,
+                'i' => ParentMangaId is null,
+                'Y' => ParentManga?.Year is null,
+                _ => true
+            };
+            if(!isNull)
+                stringBuilder.Append(nullable.Groups[2].Value);
+        }
+        
+        string checkedString = stringBuilder.ToString();
+        stringBuilder = new();
+        
+        foreach (Match replace in ReplaceRexx.Matches(checkedString))
+        {
+            if (replace.Groups[2].Success)
+            {
+                stringBuilder.Append(replace.Groups[2].Value);
+                continue;
+            }
+            
+            char placeholder = replace.Groups[1].Value[0];
+            string? value = placeholder switch
+            {
+                'M' => ParentManga?.Name ?? parentMangaName,
+                'V' => VolumeNumber?.ToString(),
+                'C' => ChapterNumber,
+                'T' => Title,
+                'A' => ParentManga?.Authors?.FirstOrDefault()?.AuthorName,
+                'I' => ChapterId,
+                'i' => ParentMangaId,
+                'Y' => ParentManga?.Year.ToString(),
+                _ => null
+            };
+            stringBuilder.Append(value);
+        }
+
+        stringBuilder.Append(".cbz");
+
+        return stringBuilder.ToString();
     }
 
     private static int CompareChapterNumbers(string ch1, string ch2)

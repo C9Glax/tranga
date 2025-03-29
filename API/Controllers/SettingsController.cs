@@ -1,5 +1,6 @@
 ﻿using API.MangaDownloadClients;
 using API.Schema;
+using API.Schema.Jobs;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -198,5 +199,68 @@ public class SettingsController(PgsqlContext context) : Controller
     {
         TrangaSettings.UpdateAprilFoolsMode(enabled);
         return Ok();
+    }
+    
+    /// <summary>
+    /// Gets the Chapter Naming Scheme
+    /// </summary>
+    /// <remarks>
+    /// Placeholders:
+    /// %M Manga Name
+    /// %V Volume
+    /// %C Chapter
+    /// %T Title
+    /// %A Author (first in list)
+    /// %I Chapter Internal ID
+    /// %i Manga Internal ID
+    /// %Y Year (Manga)
+    ///
+    /// ?_(...) replace _ with a value from above:
+    /// Everything inside the braces will only be added if the value of %_ is not null
+    /// </remarks>
+    /// <response code="200"></response>
+    [HttpGet("ChapterNamingScheme")]
+    [ProducesResponseType<string>(Status200OK, "text/plain")]
+    public IActionResult GetCustomNamingScheme()
+    {
+        return Ok(TrangaSettings.chapterNamingScheme);
+    }
+    
+    /// <summary>
+    /// Sets the Chapter Naming Scheme
+    /// </summary>
+    /// <remarks>
+    /// Placeholders:
+    /// %M Manga Name
+    /// %V Volume
+    /// %C Chapter
+    /// %T Title
+    /// %A Author (first in list)
+    /// %I Chapter Internal ID
+    /// %i Manga Internal ID
+    /// %Y Year (Manga)
+    ///
+    /// ?_(...) replace _ with a value from above:
+    /// Everything inside the braces will only be added if the value of %_ is not null
+    /// </remarks>
+    /// <response code="200"></response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPatch("ChapterNamingScheme")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult SetCustomNamingScheme([FromBody]string namingScheme)
+    {
+        try
+        {
+            TrangaSettings.UpdateChapterNamingScheme(namingScheme);
+            MoveFileOrFolderJob[] newJobs =
+                context.Chapters.Where(c => c.Downloaded).Select(c => c.UpdateArchiveFileName()).Where(x => x != null).ToArray()!;
+            context.Jobs.AddRange(newJobs);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e);
+        }
     }
 }

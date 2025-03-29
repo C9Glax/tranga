@@ -3,7 +3,6 @@ using API.MangaDownloadClients;
 using API.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static System.IO.UnixFileMode;
 
 namespace API;
 
@@ -16,6 +15,21 @@ public static class TrangaSettings
     public static string userAgent { get; private set; } = DefaultUserAgent;
     public static int compression{ get; private set; } = 40;
     public static bool bwImages { get; private set; } = false;
+    /// <summary>
+    /// Placeholders:
+    /// %M Manga Name
+    /// %V Volume
+    /// %C Chapter
+    /// %T Title
+    /// %A Author (first in list)
+    /// %I Chapter Internal ID
+    /// %i Manga Internal ID
+    /// %Y Year (Manga)
+    ///
+    /// ?_(...) replace _ with a value from above:
+    /// Everything inside the braces will only be added if the value of %_ is not null
+    /// </summary>
+    public static string chapterNamingScheme { get; private set; } = "%M - ?V(Vol.%V )Ch.%C?T( - %T)";
     [JsonIgnore]
     public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
     [JsonIgnore]
@@ -70,42 +84,6 @@ public static class TrangaSettings
         ExportSettings();
     }
 
-    public static void UpdateDownloadLocation(string newPath, bool moveFiles = true)
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Directory.CreateDirectory(newPath, GroupRead | GroupWrite | None | OtherRead | OtherWrite | UserRead | UserWrite);
-        else
-            Directory.CreateDirectory(newPath);
-        
-        if (moveFiles)
-            MoveContentsOfDirectoryTo(TrangaSettings.downloadLocation, newPath);
-        
-        TrangaSettings.downloadLocation = newPath;
-        ExportSettings();
-    }
-
-    private static void MoveContentsOfDirectoryTo(string oldDir, string newDir)
-    {
-        string[] directoryPaths = Directory.GetDirectories(oldDir);
-        string[] filePaths = Directory.GetFiles(oldDir);
-        foreach (string file in filePaths)
-        {
-            string newPath = Path.Join(newDir, Path.GetFileName(file));
-            File.Move(file, newPath, true);
-        }
-        foreach(string directory in directoryPaths)
-        {
-            string? dirName = Path.GetDirectoryName(directory);
-            if(dirName is null)
-                continue;
-            string newPath = Path.Join(newDir, dirName);
-            if(Directory.Exists(newPath))
-                MoveContentsOfDirectoryTo(directory, newPath);
-            else
-                Directory.Move(directory, newPath);
-        }
-    }
-
     public static void UpdateUserAgent(string? customUserAgent)
     {
         userAgent = customUserAgent ?? DefaultUserAgent;
@@ -115,6 +93,12 @@ public static class TrangaSettings
     public static void UpdateRequestLimit(RequestType requestType, int newLimit)
     {
         requestLimits[requestType] = newLimit;
+        ExportSettings();
+    }
+
+    public static void UpdateChapterNamingScheme(string namingScheme)
+    {
+        chapterNamingScheme = namingScheme;
         ExportSettings();
     }
 
@@ -154,7 +138,7 @@ public static class TrangaSettings
 
     public static JObject AsJObject()
     {
-        JObject jobj = new JObject();
+        JObject jobj = new ();
         jobj.Add("downloadLocation", JToken.FromObject(downloadLocation));
         jobj.Add("workingDirectory", JToken.FromObject(workingDirectory));
         jobj.Add("userAgent", JToken.FromObject(userAgent));
@@ -163,6 +147,7 @@ public static class TrangaSettings
         jobj.Add("compression", JToken.FromObject(compression));
         jobj.Add("bwImages", JToken.FromObject(bwImages));
         jobj.Add("startNewJobTimeoutMs", JToken.FromObject(startNewJobTimeoutMs));
+        jobj.Add("chapterNamingScheme", JToken.FromObject(chapterNamingScheme));
         return jobj;
     }
 
@@ -187,5 +172,7 @@ public static class TrangaSettings
             bwImages = bwi.Value<bool>()!;
         if (jobj.TryGetValue("startNewJobTimeoutMs", out JToken? snjt))
             startNewJobTimeoutMs = snjt.Value<int>()!;
+        if (jobj.TryGetValue("chapterNamingScheme", out JToken? cns))
+            chapterNamingScheme = cns.Value<string>()!;
     }
 }
