@@ -16,11 +16,18 @@ public class MoveFileOrFolderJob(string fromLocation, string toLocation, string?
     {
         try
         {
-            FileInfo fi = new FileInfo(FromLocation);
+            FileInfo fi = new (FromLocation);
             if (!fi.Exists)
+            {
+                Log.Error($"File does not exist at {FromLocation}");
                 return [];
+            }
+
             if (File.Exists(ToLocation))//Do not override existing
+            {
+                Log.Error($"File already exists at {ToLocation}");
                 return [];
+            } 
             if(fi.Attributes.HasFlag(FileAttributes.Directory))
                 MoveDirectory(fi, ToLocation);
             else
@@ -28,7 +35,7 @@ public class MoveFileOrFolderJob(string fromLocation, string toLocation, string?
         }
         catch (Exception e)
         {
-            
+            Log.Error(e);
         }
 
         return [];

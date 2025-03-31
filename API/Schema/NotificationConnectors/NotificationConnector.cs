@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using log4net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -35,10 +36,15 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
     {
         DefaultRequestHeaders = { { "User-Agent", TrangaSettings.userAgent } }
     };
+    
+    [JsonIgnore]
+    [NotMapped]
+    protected ILog Log = LogManager.GetLogger(name);
 
     public void SendNotification(string title, string notificationText)
     {
-        CustomWebhookFormatProvider formatProvider = new CustomWebhookFormatProvider(title, notificationText);
+        Log.Info($"Sending notification: {title} - {notificationText}");
+        CustomWebhookFormatProvider formatProvider = new (title, notificationText);
         string formattedUrl = string.Format(formatProvider, Url);
         string formattedBody = string.Format(formatProvider, Body, title, notificationText);
         Dictionary<string, string> formattedHeaders = Headers.ToDictionary(h => h.Key, 
@@ -48,8 +54,10 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
         foreach (var (key, value) in formattedHeaders)
             request.Headers.Add(key, value);
         request.Content = new StringContent(formattedBody);
+        Log.Debug($"Request: {request}");
 
         HttpResponseMessage response = Client.Send(request);
+        Log.Debug($"Response status code: {response.StatusCode}");
     }
 
     private class CustomWebhookFormatProvider(string title, string text) : IFormatProvider

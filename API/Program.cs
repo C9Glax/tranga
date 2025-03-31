@@ -95,7 +95,7 @@ app.UseSwaggerUI(options =>
 
 app.UseHttpsRedirection();
 
-//app.UseMiddleware<RequestTimeMiddleware>();
+app.UseMiddleware<RequestTimeMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -140,7 +140,7 @@ using (var scope = app.Services.CreateScope())
 TrangaSettings.Load();
 Tranga.StartLogger();
 Tranga.JobStarterThread.Start(app.Services);
-Tranga.NotificationSenderThread.Start(app.Services.CreateScope().ServiceProvider.GetService<PgsqlContext>());
+Tranga.NotificationSenderThread.Start(app.Services);
 
 app.UseCors("AllowAll");
 

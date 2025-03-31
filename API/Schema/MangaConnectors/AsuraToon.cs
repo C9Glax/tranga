@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
 using HtmlAgilityPack;
+using log4net;
 
 namespace API.Schema.MangaConnectors;
 

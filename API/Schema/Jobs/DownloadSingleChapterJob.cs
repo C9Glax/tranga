@@ -24,48 +24,80 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Chapter chapter = Chapter ?? context.Chapters.Find(ChapterId)!;
-        Manga manga = chapter.ParentManga ?? context.Mangas.Find(chapter.ParentMangaId)!;
-        MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
+        Chapter? chapter = Chapter ?? context.Chapters.Find(ChapterId);
+        if (chapter is null)
+        {
+            Log.Error("Chapter is null.");
+            return [];
+        }
+        Manga? manga = chapter.ParentManga ?? context.Mangas.Find(chapter.ParentMangaId);
+        if (manga is null)
+        {
+            Log.Error("Manga is null.");
+            return [];
+        }
+        MangaConnector? connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId);
+        if (connector is null)
+        {
+            Log.Error("Connector is null.");
+            return [];
+        }
         string[] imageUrls = connector.GetChapterImageUrls(chapter);
-        string saveArchiveFilePath = chapter.FullArchiveFilePath;
+        if (imageUrls.Length < 1)
+        {
+            Log.Info($"No imageUrls for chapter {chapterId}");
+            return [];
+        }
+        string? saveArchiveFilePath = chapter.FullArchiveFilePath;
+        if (saveArchiveFilePath is null)
+        {
+            Log.Error("saveArchiveFilePath is null.");
+            return [];
+        }
         
         //Check if Publication Directory already exists
         string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
         if (!Directory.Exists(directoryPath))
+        {
+            Log.Info($"Creating publication Directory: {directoryPath}");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 Directory.CreateDirectory(directoryPath,
                     UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
             else
                 Directory.CreateDirectory(directoryPath);
+        }
 
         if (File.Exists(saveArchiveFilePath)) //Don't download twice. Redownload
+        {
+            Log.Info($"Archive {saveArchiveFilePath} already existed, but deleting and re-downloading.");
             File.Delete(saveArchiveFilePath);
+        }
         
         //Create a temporary folder to store images
         string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
+        Log.Debug($"Created temp folder: {tempFolder}");
 
+        Log.Info($"Downloading images: {ChapterId}");
         int chapterNum = 0;
         //Download all Images to temporary Folder
-        if (imageUrls.Length == 0)
-        {
-            Directory.Delete(tempFolder, true);
-            return [];
-        }
-        
         foreach (string imageUrl in imageUrls)
         {
             string extension = imageUrl.Split('.')[^1].Split('?')[0];
             string imagePath = Path.Join(tempFolder, $"{chapterNum++}.{extension}");
             bool status = DownloadImage(imageUrl, imagePath);
             if (status is false)
+            {
+                Log.Error($"Failed to download image: {imageUrl}");
                 return [];
+            }
         }
-
+        
         CopyCoverFromCacheToDownloadLocation(manga);
         
+        Log.Debug($"Creating ComicInfo.xml {ChapterId}");
         File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
         
+        Log.Debug($"Packaging images to archive {ChapterId}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -81,7 +113,13 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     private void ProcessImage(string imagePath)
     {
         if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
+        {
+            Log.Debug($"No processing requested for image");
             return;
+        }
+        
+        Log.Debug($"Processing image: {imagePath}");
+        
         using Image image = Image.Load(imagePath);
         File.Delete(imagePath);
         if(TrangaSettings.bwImages) 
@@ -99,17 +137,23 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         DirectoryInfo dirInfo = new (publicationFolder);
         if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
         {
+            Log.Debug($"Cover already exists at {publicationFolder}");
             return;
         }
 
+        Log.Info($"Copying cover to {publicationFolder}");
         string? fileInCache = manga.CoverFileNameInCache ?? manga.SaveCoverImageToCache();
         if (fileInCache is null)
+        {
+            Log.Error($"File {fileInCache} does not exist");
             return;
+        }
         
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
         File.Copy(fileInCache, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite);
+        Log.Debug($"Copied cover from {fileInCache} to {newFilePath}");
     }
     
     private bool DownloadImage(string imageUrl, string savePath)

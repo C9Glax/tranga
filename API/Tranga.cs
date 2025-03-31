@@ -12,66 +12,115 @@ public static class Tranga
 {
     public static Thread NotificationSenderThread { get; } = new (NotificationSender);
     public static Thread JobStarterThread { get; } = new (JobStarter);
-    private static readonly Dictionary<Thread, Job> RunningJobs = new();
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
 
     internal static void StartLogger()
     {
         BasicConfigurator.Configure();
+        Log.Info("Logger Configured.");
     }
 
-    private static void NotificationSender(object? pgsqlContext)
+    private static void NotificationSender(object? serviceProviderObj)
     {
-        if(pgsqlContext is null) return;
-        PgsqlContext context = (PgsqlContext)pgsqlContext;
+        if (serviceProviderObj is null)
+        {
+            Log.Error("serviceProviderObj is null");
+            return;
+        }
+        IServiceProvider serviceProvider = (IServiceProvider)serviceProviderObj!;
+        using IServiceScope scope = serviceProvider.CreateScope();
+        PgsqlContext? context = scope.ServiceProvider.GetService<PgsqlContext>();
+        if (context is null)
+        {
+            Log.Error("PgsqlContext is null");
+            return;
+        }
 
-        IQueryable<Notification> staleNotifications = context.Notifications.Where(n => n.Urgency < NotificationUrgency.Normal);
-        context.Notifications.RemoveRange(staleNotifications);
-        context.SaveChanges();
+        try
+        {
+            //Removing Notifications from previous runs
+            IQueryable<Notification> staleNotifications =
+                context.Notifications.Where(n => n.Urgency < NotificationUrgency.Normal);
+            context.Notifications.RemoveRange(staleNotifications);
+            context.SaveChanges();
+        }
+        catch (DbUpdateException e)
+        {
+            Log.Error("Error removing stale notifications.", e);
+        }
+        
         while (true)
         {
-            SendNotifications(context, NotificationUrgency.High);
-            SendNotifications(context, NotificationUrgency.Normal);
-            SendNotifications(context, NotificationUrgency.Low);
+            SendNotifications(serviceProvider, NotificationUrgency.High);
+            SendNotifications(serviceProvider, NotificationUrgency.Normal);
+            SendNotifications(serviceProvider, NotificationUrgency.Low);
             
-            context.SaveChanges();
             Thread.Sleep(2000);
         }
     }
 
-    private static void SendNotifications(PgsqlContext context, NotificationUrgency urgency)
+    private static void SendNotifications(IServiceProvider serviceProvider, NotificationUrgency urgency)
     {
-        List<Notification> notifications = context.Notifications.Where(n => n.Urgency == urgency).ToList();
-        if (notifications.Any())
+        Log.Info($"Sending notifications for {urgency}");
+        using IServiceScope scope = serviceProvider.CreateScope();
+        PgsqlContext? context = scope.ServiceProvider.GetService<PgsqlContext>();
+        if (context is null)
         {
-            DateTime max = notifications.MaxBy(n => n.Date)!.Date;
-            if (DateTime.UtcNow.Subtract(max) > TrangaSettings.NotificationUrgencyDelay(urgency))
-            {
-                foreach (NotificationConnector notificationConnector in context.NotificationConnectors)
-                {
-                    foreach (Notification notification in notifications)
-                        notificationConnector.SendNotification(notification.Title, notification.Message);
-                }
-                context.Notifications.RemoveRange(notifications);
-            }
+            Log.Error("PgsqlContext is null");
+            return;
         }
-        context.SaveChanges();
+        
+        List<Notification> notifications = context.Notifications.Where(n => n.Urgency == urgency).ToList();
+        if (!notifications.Any())
+            return;
+
+        try
+        {
+            foreach (NotificationConnector notificationConnector in context.NotificationConnectors)
+            {
+                foreach (Notification notification in notifications)
+                    notificationConnector.SendNotification(notification.Title, notification.Message);
+            }
+
+            context.Notifications.RemoveRange(notifications);
+            context.SaveChangesAsync();
+        }
+        catch (DbUpdateException e)
+        {
+            Log.Error("Error sending notifications.", e);
+        }
     }
 
+    private const string TRANGA = 
+        "\n\n" +
+        " _______                                   \n" +
+        "|_     _|.----..---.-..-----..-----..---.-.\n" +
+        "  |   |  |   _||  _  ||     ||  _  ||  _  |\n" +
+        "  |___|  |__|  |___._||__|__||___  ||___._|\n" +
+        "                             |_____|       \n\n";
+    private static readonly Dictionary<Thread, Job> RunningJobs = new();
     private static void JobStarter(object? serviceProviderObj)
     {
-        if(serviceProviderObj is null) return;
+        if (serviceProviderObj is null)
+        {
+            Log.Error("serviceProviderObj is null");
+            return;
+        }
         IServiceProvider serviceProvider = (IServiceProvider)serviceProviderObj;
         using IServiceScope scope = serviceProvider.CreateScope();
         PgsqlContext? context = scope.ServiceProvider.GetService<PgsqlContext>();
-        if (context is null) return;
+        if (context is null)
+        {
+            Log.Error("PgsqlContext is null");
+            return;
+        }
 
-        string TRANGA =
-            "\n\n _______                                   \n|_     _|.----..---.-..-----..-----..---.-.\n  |   |  |   _||  _  ||     ||  _  ||  _  |\n  |___|  |__|  |___._||__|__||___  ||___._|\n                             |_____|       \n\n";
         Log.Info(TRANGA);
+        Log.Info("JobStarter Thread running.");
         while (true)
         {
             List<Job> completedJobs = context.Jobs.Where(j => j.state >= JobState.Completed).ToList();
+            Log.Debug($"Completed jobs: {completedJobs.Count}");
             foreach (Job job in completedJobs)
                 if (job.RecurrenceMs <= 0)
                     context.Jobs.Remove(job);
@@ -82,16 +131,20 @@ public static class Tranga
                     else
                         job.state = JobState.Waiting;
                     job.LastExecution = DateTime.UtcNow;
-                    context.Jobs.Update(job);
                 }
 
             List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running && j.Enabled == true).ToList()
                 .Where(j => j.NextExecution < DateTime.UtcNow).ToList();
-            foreach (Job job in OrderJobs(runJobs, context))
+            Log.Debug($"Due jobs: {runJobs.Count}");
+            Log.Debug($"Running jobs: {RunningJobs.Count}");
+            IEnumerable<Job> orderedJobs = OrderJobs(runJobs, context).ToList();
+            Log.Debug($"Ordered jobs: {orderedJobs.Count()}");
+            foreach (Job job in orderedJobs)
             {
                 // If the job is already running, skip it
                 if (RunningJobs.Values.Any(j => j.JobId == job.JobId)) continue;
 
+                //If a Job for that connector is already running, skip it
                 if (job is DownloadAvailableChaptersJob dncj)
                 {
                     if (RunningJobs.Values.Any(j =>
@@ -113,15 +166,15 @@ public static class Tranga
 
                 Thread t = new(() =>
                 {
-                    IEnumerable<Job> newJobs = job.Run(serviceProvider);
+                    job.Run(serviceProvider);
                 });
                 RunningJobs.Add(t, job);
                 t.Start();
-                context.Jobs.Update(job);
             }
 
             (Thread, Job)[] removeFromThreadsList = RunningJobs.Where(t => !t.Key.IsAlive)
                 .Select(t => (t.Key, t.Value)).ToArray();
+            Log.Debug($"Remove from Threads List: {removeFromThreadsList.Length}");
             foreach ((Thread thread, Job job) thread in removeFromThreadsList)
             {
                 RunningJobs.Remove(thread.thread);
@@ -135,7 +188,7 @@ public static class Tranga
             }
             catch (DbUpdateException e)
             {
-                
+                Log.Error("Failed saving Job changes.", e);
             }
             Thread.Sleep(TrangaSettings.startNewJobTimeoutMs);
         }

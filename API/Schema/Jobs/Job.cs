@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using log4net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -34,6 +35,10 @@ public abstract class Job
     public JobState state { get; internal set; } = JobState.Waiting;
     [Required]
     public bool Enabled { get; internal set; } = true;
+    
+    [NotMapped]
+    [JsonIgnore]
+    protected ILog Log { get; init; }
 
     public Job(string jobId, JobType jobType, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : this(jobId, jobType, recurrenceMs, parentJob?.JobId, dependsOnJobs?.Select(j => j.JobId).ToList())
@@ -44,6 +49,7 @@ public abstract class Job
 
     public Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
     {
+        Log = LogManager.GetLogger(GetType());
         JobId = jobId;
         ParentJobId = parentJobId;
         DependsOnJobsIds = dependsOnJobsIds;
@@ -53,16 +59,27 @@ public abstract class Job
 
     public IEnumerable<Job> Run(IServiceProvider serviceProvider)
     {
+        Log.Debug($"Running job {JobId}");
         using IServiceScope scope = serviceProvider.CreateScope();
         PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-        
-        this.state = JobState.Running;
-        context.SaveChanges();
-        Job[] newJobs = RunInternal(context).ToArray();
-        this.state = JobState.Completed;
-        context.Jobs.AddRange(newJobs);
-        context.SaveChanges();
-        return newJobs;
+
+        try
+        {
+            this.state = JobState.Running;
+            context.SaveChanges();
+            Job[] newJobs = RunInternal(context).ToArray();
+            this.state = JobState.Completed;
+            context.Jobs.AddRange(newJobs);
+            context.SaveChanges();
+            Log.Info($"Job {JobId} completed. Generated {newJobs.Length} new jobs.");
+            return newJobs;
+        }
+        catch (DbUpdateException e)
+        {
+            this.state = JobState.Failed;
+            Log.Error($"Failed to run job {JobId}", e);
+            return [];
+        }
     }
     
     protected abstract IEnumerable<Job> RunInternal(PgsqlContext context);

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
+using log4net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -36,6 +37,10 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     [JsonIgnore]
     [NotMapped]
     internal DownloadClient downloadClient { get; init; } = null!;
+
+    [JsonIgnore]
+    [NotMapped]
+    protected ILog Log { get; init; } = LogManager.GetLogger(name);
     
     public Chapter[] GetNewChapters(Manga manga)
     {
