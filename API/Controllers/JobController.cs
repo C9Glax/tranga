@@ -129,8 +129,9 @@ public class JobController(PgsqlContext context) : Controller
                 return StatusCode(500, e.Message);
             }
         }
-        Job dep = new RetrieveChaptersJob(record.recurrenceTimeMs, MangaId);
-        Job job = new DownloadAvailableChaptersJob(record.recurrenceTimeMs, MangaId, null, [dep.JobId]);
+        Job job = new DownloadAvailableChaptersJob(record.recurrenceTimeMs, MangaId);
+        Job dep = new RetrieveChaptersJob(record.recurrenceTimeMs, MangaId, job.JobId);
+        job.DependsOnJobsIds?.Add(dep.JobId);
         return AddJobs([dep, job]);
     }
 
@@ -257,11 +258,11 @@ public class JobController(PgsqlContext context) : Controller
     /// Delete Job with ID and all children
     /// </summary>
     /// <param name="JobId">Job-ID</param>
-    /// <response code="200">Job(s) deleted</response>
+    /// <response code="200"></response>
     /// <response code="404">Job could not be found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{JobId}")]
-    [ProducesResponseType<string[]>(Status200OK, "application/json")]
+    [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteJob(string JobId)
@@ -271,12 +272,10 @@ public class JobController(PgsqlContext context) : Controller
             Job? ret = context.Jobs.Find(JobId);
             if(ret is null)
                 return NotFound();
-            IQueryable<Job> children = GetChildJobs(JobId);
             
-            context.RemoveRange(children);
             context.Remove(ret);
             context.SaveChanges();
-            return new OkObjectResult(children.Select(x => x.JobId).Append(ret.JobId).ToArray());
+            return Ok();
         }
         catch (Exception e)
         {

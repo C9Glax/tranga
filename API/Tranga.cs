@@ -178,8 +178,6 @@ public static class Tranga
             foreach ((Thread thread, Job job) thread in removeFromThreadsList)
             {
                 RunningJobs.Remove(thread.thread);
-                if(context.Jobs.Find(thread.job.JobId) is not null)
-                    context.Jobs.Update(thread.job);
             }
 
             try

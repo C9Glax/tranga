@@ -50,9 +50,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<RetrieveChaptersJob>(JobType.RetrieveChaptersJob)
             .HasValue<UpdateFilesDownloadedJob>(JobType.UpdateFilesDownloadedJob);
         modelBuilder.Entity<Job>()
-            .HasOne<Job>(j => j.ParentJob)
-            .WithMany()
-            .HasForeignKey(j => j.ParentJobId)
+            .HasMany<Job>()
+            .WithOne(j => j.ParentJob)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Job>()
             .HasMany<Job>(j => j.DependsOnJobs)
