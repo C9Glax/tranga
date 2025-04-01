@@ -40,7 +40,6 @@ public class Manga
     [Required]
     public uint Year { get; internal set; }
     [StringLength(8)]
-    [Required]
     public string? OriginalLanguage { get; internal set; }
     [Required]
     public MangaReleaseStatus ReleaseStatus { get; internal set; }

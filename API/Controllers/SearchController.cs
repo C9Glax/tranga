@@ -3,6 +3,7 @@ using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace API.Controllers;
@@ -37,7 +38,7 @@ public class SearchController(PgsqlContext context) : Controller
                 if(add is not null)
                     retMangas.Add(add);
             }
-            catch (Exception e)
+            catch (DbUpdateException e)
             {
                 return StatusCode(500, e);
             }
@@ -77,7 +78,7 @@ public class SearchController(PgsqlContext context) : Controller
                 if(add is not null)
                     retMangas.Add(add);
             }
-            catch (Exception e)
+            catch (DbUpdateException e)
             {
                 return StatusCode(500, e.Message);
             }
@@ -119,7 +120,7 @@ public class SearchController(PgsqlContext context) : Controller
                 return Ok(add);
             return StatusCode(500);
         }
-        catch (Exception e)
+        catch (DbUpdateException e)
         {
             return StatusCode(500, e.Message);
         }
