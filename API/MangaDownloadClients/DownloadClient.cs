@@ -1,14 +1,16 @@
 ﻿using System.Net;
-using API.Schema;
+using log4net;
 
 namespace API.MangaDownloadClients;
 
 internal abstract class DownloadClient
 {
     private readonly Dictionary<RequestType, DateTime> _lastExecutedRateLimit;
+    protected ILog Log { get; init; }
 
     protected DownloadClient()
     {
+        this.Log = LogManager.GetLogger(GetType());
         this._lastExecutedRateLimit = new();
     }
     

@@ -48,8 +48,17 @@ internal class HttpDownloadClient : DownloadClient
         {
             return new RequestResult(response.StatusCode,  null, Stream.Null);
         }
-        
-        Stream stream = response.Content.ReadAsStream();
+
+        Stream stream;
+        try
+        {
+            stream = response.Content.ReadAsStream();
+        }
+        catch (Exception e)
+        {
+            Log.Error(e);
+            return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
+        }
 
         HtmlDocument? document = null;
 
