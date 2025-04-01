@@ -20,16 +20,16 @@ public class Manga
     [StringLength(64)]
     [Required]
     public string MangaId { get; init; }
-    [StringLength(128)]
+    [StringLength(256)]
     [Required]
     public string IdOnConnectorSite { get; init; }
-    [StringLength(256)]
+    [StringLength(512)]
     [Required]
     public string Name { get; internal set; }
     [Required]
     public string Description { get; internal set; }
     [Url]
-    [StringLength(256)]
+    [StringLength(512)]
     [Required]
     public string WebsiteUrl { get; internal set; }
     [JsonIgnore]
@@ -43,7 +43,7 @@ public class Manga
     public string? OriginalLanguage { get; internal set; }
     [Required]
     public MangaReleaseStatus ReleaseStatus { get; internal set; }
-    [StringLength(256)]
+    [StringLength(1024)]
     [Required]
     public string DirectoryName { get; private set; }
     public LocalLibrary? Library { get; internal set; }
