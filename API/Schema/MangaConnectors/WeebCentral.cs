@@ -36,10 +36,10 @@ public class Weebcentral : MangaConnector
 
     private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] ParsePublicationsFromHtml(HtmlDocument document)
     {
-        if (document.DocumentNode.SelectNodes("//article") == null)
+        if (document.DocumentNode.SelectNodes("//article").Count < 1)
             return [];
 
-        var urls = document.DocumentNode.SelectNodes("/html/body/article/a[@class='link link-hover']")
+        var urls = document.DocumentNode.SelectNodes("/html/body/article/a[contains(concat(' ',normalize-space(@class),' '),' link ')]")
             .Select(elem => elem.GetAttributeValue("href", "")).ToList();
 
         List<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> ret = new();
