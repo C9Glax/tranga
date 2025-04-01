@@ -75,12 +75,12 @@ public class Weebcentral : MangaConnector
         string sortName = titleNode?.InnerText ?? "Undefined";
 
         HtmlNode[] authorsNodes =
-            document.DocumentNode.SelectNodes("//ul/li[strong/text() = 'Author(s): ']/span")?.ToArray() ?? [];
+            document.DocumentNode.SelectNodes("//ul/li[strong/text() = 'Author(s): ']/span").ToArray();
         List<Author> authors = authorsNodes.Select(n => new Author(n.InnerText)).ToList();
 
         HtmlNode[] genreNodes =
-            document.DocumentNode.SelectNodes("//ul/li[strong/text() = 'Tags(s): ']/span")?.ToArray() ?? [];
-        List<MangaTag> tags = genreNodes.Select(n => new MangaTag(n.InnerText)).ToList();
+            document.DocumentNode.SelectNodes("//ul/li[strong/text() = 'Tags(s): ']/span").ToArray();
+        List<MangaTag> tags = genreNodes.Select(n => new MangaTag(n.InnerText.EndsWith(',') ? n.InnerText.Substring(0,n.InnerText.Length-1) : n.InnerText)).ToList();
 
         HtmlNode statusNode = document.DocumentNode.SelectSingleNode("//ul/li[strong/text() = 'Status: ']/a");
         string statusText = statusNode?.InnerText ?? "";
