@@ -17,7 +17,7 @@ public class RetrieveChaptersJob(ulong recurrenceMs, string mangaId, string? par
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Manga? manga = Manga ?? context.Mangas.Find(MangaId);
+        Manga? manga = context.Mangas.Find(MangaId) ?? Manga;
         if (manga is null)
         {
             Log.Error("Manga is null.");

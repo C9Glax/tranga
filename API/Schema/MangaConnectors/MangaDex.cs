@@ -240,7 +240,7 @@ public class MangaDex : MangaConnector
                 
                 try
                 {
-                    Chapter newChapter = new Chapter(manga, url, chapterNumber, volume, title);
+                    Chapter newChapter = new(manga, url, chapterNumber, volume, title);
                     if(!chapters.Contains(newChapter))
                         chapters.Add(newChapter);
                 }
@@ -251,7 +251,7 @@ public class MangaDex : MangaConnector
         }
 
         //Return Chapters ordered by Chapter-Number
-        return chapters.Order().ToArray();
+        return chapters.ToArray();
     }
 
     internal override string[] GetChapterImageUrls(Chapter chapter)
