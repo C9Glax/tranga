@@ -56,12 +56,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Job>()
             .HasMany<Job>(j => j.DependsOnJobs)
             .WithMany();
-        modelBuilder.Entity<DownloadAvailableChaptersJob>()
-            .Navigation(dncj => dncj.Manga)
-            .AutoInclude();
-        modelBuilder.Entity<DownloadSingleChapterJob>()
-            .Navigation(dscj => dscj.Chapter)
-            .AutoInclude();
         modelBuilder.Entity<UpdateMetadataJob>()
             .Navigation(umj => umj.Manga)
             .AutoInclude();

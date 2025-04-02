@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
@@ -9,9 +8,6 @@ public class DownloadAvailableChaptersJob(ulong recurrenceMs, string mangaId, st
     [StringLength(64)]
     [Required]
     public string MangaId { get; init; } = mangaId;
-    
-    [JsonIgnore]
-    public Manga? Manga { get; init; }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {

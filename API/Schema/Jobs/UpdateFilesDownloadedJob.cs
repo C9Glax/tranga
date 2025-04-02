@@ -10,9 +10,6 @@ public class UpdateFilesDownloadedJob(ulong recurrenceMs, string mangaId, string
     [Required]
     public string MangaId { get; init; } = mangaId;
     
-    [JsonIgnore]
-    public virtual Manga? Manga { get; init; }
-    
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         IQueryable<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == MangaId);

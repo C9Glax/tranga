@@ -3,7 +3,6 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
 using API.Schema.MangaConnectors;
-using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -19,24 +18,21 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
     [Required]
     public string ChapterId { get; init; } = chapterId;
     
-    [JsonIgnore]
-    public Chapter? Chapter { get; init; }
-    
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Chapter? chapter = Chapter ?? context.Chapters.Find(ChapterId);
+        Chapter? chapter = context.Chapters.Find(ChapterId);
         if (chapter is null)
         {
             Log.Error("Chapter is null.");
             return [];
         }
-        Manga? manga = chapter.ParentManga ?? context.Mangas.Find(chapter.ParentMangaId);
+        Manga? manga = context.Mangas.Find(chapter.ParentMangaId) ?? chapter.ParentManga;
         if (manga is null)
         {
             Log.Error("Manga is null.");
             return [];
         }
-        MangaConnector? connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId);
+        MangaConnector? connector = context.MangaConnectors.Find(manga.MangaConnectorId) ?? manga.MangaConnector;
         if (connector is null)
         {
             Log.Error("Connector is null.");
@@ -45,7 +41,7 @@ public class DownloadSingleChapterJob(string chapterId, string? parentJobId = nu
         string[] imageUrls = connector.GetChapterImageUrls(chapter);
         if (imageUrls.Length < 1)
         {
-            Log.Info($"No imageUrls for chapter {chapterId}");
+            Log.Info($"No imageUrls for chapter {ChapterId}");
             return [];
         }
         string? saveArchiveFilePath = chapter.FullArchiveFilePath;

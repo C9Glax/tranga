@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
@@ -12,12 +11,9 @@ public class RetrieveChaptersJob(ulong recurrenceMs, string mangaId, string? par
     [Required]
     public string MangaId { get; init; } = mangaId;
     
-    [JsonIgnore]
-    public Manga? Manga { get; init; }
-    
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Manga? manga = context.Mangas.Find(MangaId) ?? Manga;
+        Manga? manga = context.Mangas.Find(MangaId);
         if (manga is null)
         {
             Log.Error("Manga is null.");
