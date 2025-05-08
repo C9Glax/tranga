@@ -38,12 +38,14 @@ public class Komga : LibraryConnector
         Stream data = NetClient.MakeRequest($"{BaseUrl}/api/v1/libraries", "Basic", Auth);
         if (data == Stream.Null)
         {
-            return Array.Empty<KomgaLibrary>();
+            Log.Info("No libraries found");
+            return [];
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            return Array.Empty<KomgaLibrary>();
+            Log.Info("No libraries found");
+            return [];
         }
 
         HashSet<KomgaLibrary> ret = new();

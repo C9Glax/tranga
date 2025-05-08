@@ -31,7 +31,7 @@ internal abstract class DownloadClient
         _lastExecutedRateLimit.TryAdd(requestType, now.Subtract(timeBetweenRequests));
 
         TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(now.Subtract(_lastExecutedRateLimit[requestType]));
-        Log.Debug($"Request limit {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests} Timeout: {rateLimitTimeout}");
+        Log.Debug($"Request limit {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests:ss.fff} Timeout: {rateLimitTimeout:ss.fff}");
         
         if (rateLimitTimeout > TimeSpan.Zero)
         {

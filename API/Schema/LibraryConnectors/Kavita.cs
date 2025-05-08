@@ -73,12 +73,14 @@ public class Kavita : LibraryConnector
         Stream data = NetClient.MakeRequest($"{BaseUrl}/api/Library/libraries", "Bearer", Auth);
         if (data == Stream.Null)
         {
-            return Array.Empty<KavitaLibrary>();
+            Log.Info("No libraries found");
+            return [];
         }
         JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
         if (result is null)
         {
-            return Array.Empty<KavitaLibrary>();
+            Log.Info("No libraries found");
+            return [];
         }
 
         List<KavitaLibrary> ret = new();

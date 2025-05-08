@@ -1,5 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using log4net;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace API.Schema.LibraryConnectors;
 
@@ -19,6 +22,10 @@ public abstract class LibraryConnector(string libraryConnectorId, LibraryType li
     [StringLength(256)]
     [Required]
     public string Auth { get; init; } = auth;
+    
+    [JsonIgnore]
+    [NotMapped]
+    protected ILog Log { get; init; } = LogManager.GetLogger($"{libraryType.ToString()} {baseUrl}");
     
     protected abstract void UpdateLibraryInternal();
     internal abstract bool Test();
