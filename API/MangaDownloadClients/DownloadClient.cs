@@ -25,17 +25,16 @@ internal abstract class DownloadClient
         int rateLimit = TrangaSettings.userAgent == TrangaSettings.DefaultUserAgent
             ? TrangaSettings.DefaultRequestLimits[requestType]
             : TrangaSettings.requestLimits[requestType];
-        Log.Debug($"Request limit {rateLimit}");
         
         TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
-        _lastExecutedRateLimit.TryAdd(requestType, DateTime.UtcNow.Subtract(timeBetweenRequests));
+        DateTime now = DateTime.Now;
+        _lastExecutedRateLimit.TryAdd(requestType, now.Subtract(timeBetweenRequests));
 
-        TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(DateTime.UtcNow.Subtract(_lastExecutedRateLimit[requestType]));
-
+        TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(now.Subtract(_lastExecutedRateLimit[requestType]));
+        Log.Debug($"Request limit {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests} Timeout: {rateLimitTimeout}");
         
         if (rateLimitTimeout > TimeSpan.Zero)
         {
-            Log.Debug($"Timeout: {rateLimitTimeout}");
             Thread.Sleep(rateLimitTimeout);
         }
 

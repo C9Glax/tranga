@@ -135,10 +135,8 @@ public static class Tranga
 
             List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running && j.Enabled == true).ToList()
                 .Where(j => j.NextExecution < DateTime.UtcNow).ToList();
-            Log.Debug($"Due jobs: {runJobs.Count}");
-            Log.Debug($"Running jobs: {RunningJobs.Count}");
             IEnumerable<Job> orderedJobs = OrderJobs(runJobs, context).ToList();
-            Log.Debug($"Ordered jobs: {orderedJobs.Count()}");
+            Log.Debug($"Jobs Due: {runJobs.Count} Running: {RunningJobs.Count} Ordered: {orderedJobs.Count()}");
             foreach (Job job in orderedJobs)
             {
                 // If the job is already running, skip it
