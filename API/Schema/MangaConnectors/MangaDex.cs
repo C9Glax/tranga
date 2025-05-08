@@ -23,8 +23,6 @@ public class MangaDex : MangaConnector
         int total = int.MaxValue; //How many total results are there, is updated on first request
         HashSet<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> retManga = new();
         List<JsonNode> results = new();
-
-        publicationTitle = publicationTitle.Replace(" ", "%20");
         
         //Request all search-results
         while (offset < total) //As long as we haven't requested all "Pages"
