@@ -16,6 +16,7 @@ internal abstract class DownloadClient
     
     public RequestResult MakeRequest(string url, RequestType requestType, string? referrer = null, string? clickButton = null)
     {
+        Log.Debug($"Requesting {url}");
         if (!TrangaSettings.requestLimits.ContainsKey(requestType))
         {
             return new RequestResult(HttpStatusCode.NotAcceptable, null, Stream.Null);
@@ -24,14 +25,17 @@ internal abstract class DownloadClient
         int rateLimit = TrangaSettings.userAgent == TrangaSettings.DefaultUserAgent
             ? TrangaSettings.DefaultRequestLimits[requestType]
             : TrangaSettings.requestLimits[requestType];
+        Log.Debug($"Request limit {rateLimit}");
         
         TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
         _lastExecutedRateLimit.TryAdd(requestType, DateTime.UtcNow.Subtract(timeBetweenRequests));
 
         TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(DateTime.UtcNow.Subtract(_lastExecutedRateLimit[requestType]));
 
+        
         if (rateLimitTimeout > TimeSpan.Zero)
         {
+            Log.Debug($"Timeout: {rateLimitTimeout}");
             Thread.Sleep(rateLimitTimeout);
         }
 

@@ -22,26 +22,32 @@ public class MangaDex : MangaConnector
         int offset = 0; //"Page"
         int total = int.MaxValue; //How many total results are there, is updated on first request
         HashSet<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> retManga = new();
-        int loadedPublicationData = 0;
         List<JsonNode> results = new();
         
         //Request all search-results
         while (offset < total) //As long as we haven't requested all "Pages"
         {
             //Request next Page
-            RequestResult requestResult = downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}" +
-                    $"&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica" +
-                    $"&contentRating%5B%5D=pornographic" +
-                    $"&includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author" +
-                    $"&includes%5B%5D=artist&includes%5B%5D=tag", RequestType.MangaInfo);
+            string requestUrl =
+                $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}" +
+                $"&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica" +
+                $"&contentRating%5B%5D=pornographic" +
+                $"&includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author" +
+                $"&includes%5B%5D=artist&includes%5B%5D=tag";
+            RequestResult requestResult = downloadClient.MakeRequest(requestUrl, RequestType.MangaInfo);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+            {
+                Log.Info($"{requestResult.statusCode}: {requestUrl}");
                 break;
+            }
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             
             offset += limit;
             if (result is null)
+            {
+                Log.Info($"result was null: {requestUrl}");
                 break;
+            }
             
             if(result.ContainsKey("total"))
                 total = result["total"]!.GetValue<int>(); //Update the total number of Publications
@@ -61,13 +67,18 @@ public class MangaDex : MangaConnector
 
     public override (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId)
     {
-        RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/manga/{publicationId}?includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag", RequestType.MangaInfo);
+        string url = $"https://api.mangadex.org/manga/{publicationId}" +
+                     $"?includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag";
+        RequestResult requestResult = downloadClient.MakeRequest(url, RequestType.MangaInfo);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        {
+            Log.Info($"{requestResult.statusCode}: {url}");
             return null;
+        }
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if(result is not null)
             return MangaFromJsonObject(result["data"]!.AsObject());
+        Log.Info($"result was null: {url}");
         return null;
     }
 
@@ -81,15 +92,24 @@ public class MangaDex : MangaConnector
     private (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? MangaFromJsonObject(JsonObject manga)
     {
         if (!manga.TryGetPropertyValue("id", out JsonNode? idNode))
+        {
+            Log.Info("id was null");
             return null;
+        }
         string publicationId = idNode!.GetValue<string>();
             
         if (!manga.TryGetPropertyValue("attributes", out JsonNode? attributesNode))
+        {
+            Log.Info("attributes was null");
             return null;
+        }
         JsonObject attributes = attributesNode!.AsObject();
 
         if (!attributes.TryGetPropertyValue("title", out JsonNode? titleNode))
+        {
+            Log.Info("title was null");
             return null;
+        }
         string sortName = titleNode!.AsObject().ContainsKey("en") switch
         {
             true => titleNode.AsObject()["en"]!.GetValue<string>(),
@@ -108,7 +128,10 @@ public class MangaDex : MangaConnector
         List<MangaAltTitle> altTitles = altTitlesDict.Select(t => new MangaAltTitle(t.Key, t.Value)).ToList();
 
         if (!attributes.TryGetPropertyValue("description", out JsonNode? descriptionNode))
+        {
+            Log.Info("description was null");
             return null;
+        }
         string description = descriptionNode!.AsObject().ContainsKey("en") switch
         {
             true => descriptionNode.AsObject()["en"]!.GetValue<string>(),
@@ -154,12 +177,18 @@ public class MangaDex : MangaConnector
         List<MangaTag> mangaTags = tags.Select(t => new MangaTag(t)).ToList();
         
         if (!manga.TryGetPropertyValue("relationships", out JsonNode? relationshipsNode))
+        {
+            Log.Info("relationships was null");
             return null;
+        }
         
         JsonNode? coverNode = relationshipsNode!.AsArray()
             .FirstOrDefault(rel => rel!["type"]!.GetValue<string>().Equals("cover_art"));
         if (coverNode is null)
+        {
+            Log.Info("coverNode was null");
             return null;
+        }
         string fileName = coverNode["attributes"]!["fileName"]!.GetValue<string>();
         string coverUrl = $"https://uploads.mangadex.org/covers/{publicationId}/{fileName}";
         
@@ -195,16 +224,22 @@ public class MangaDex : MangaConnector
         while (offset < total)
         {
             //Request next "Page"
-            RequestResult requestResult =
-                downloadClient.MakeRequest(
-                    $"https://api.mangadex.org/manga/{manga.IdOnConnectorSite}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&contentRating%5B%5D=pornographic", RequestType.MangaDexFeed);
+            string requestUrl = $"https://api.mangadex.org/manga/{manga.IdOnConnectorSite}/feed?limit={limit}&offset={offset}&translatedLanguage%5B%5D={language}" +
+                                $"&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&contentRating%5B%5D=pornographic";
+            RequestResult requestResult = downloadClient.MakeRequest(requestUrl, RequestType.MangaDexFeed);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+            {
+                Log.Info($"{requestResult.statusCode}: {requestUrl}");
                 break;
+            }
             JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
             
             offset += limit;
             if (result is null)
+            {
+                Log.Info($"result was null: {requestUrl}");
                 break;
+            }
             
             total = result["total"]!.GetValue<int>();
             JsonArray chaptersInResult = result["data"]!.AsArray();
@@ -235,6 +270,7 @@ public class MangaDex : MangaConnector
                 if (attributes.ContainsKey("pages") && attributes["pages"] is not null &&
                     attributes["pages"]!.GetValue<int>() < 1)
                 {
+                    Log.Info($"No pages: {chapterId}");
                     continue;
                 }
                 
@@ -246,6 +282,7 @@ public class MangaDex : MangaConnector
                 }
                 catch (Exception e)
                 {
+                    Log.Debug(e);
                 }
             }
         }
@@ -258,16 +295,23 @@ public class MangaDex : MangaConnector
     {//Request URLs for Chapter-Images
         Match m = Regex.Match(chapter.Url, @"https?:\/\/mangadex.org\/chapter\/([0-9\-a-z]+)");
         if (!m.Success)
+        {
+            Log.Error($"Could not parse Chapter ID: {chapter.Url}");
             return [];
+        }
+
+        string url = $"https://api.mangadex.org/at-home/server/{m.Groups[1].Value}?forcePort443=false";
         RequestResult requestResult =
-            downloadClient.MakeRequest($"https://api.mangadex.org/at-home/server/{m.Groups[1].Value}?forcePort443=false", RequestType.MangaDexImage);
+            downloadClient.MakeRequest(url, RequestType.MangaDexImage);
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
         {
+            Log.Info($"{requestResult.statusCode}: {url}");
             return [];
         }
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(requestResult.result);
         if (result is null)
         {
+            Log.Info($"Result was null: {url}");
             return [];
         }
         string baseUrl = result["baseUrl"]!.GetValue<string>();

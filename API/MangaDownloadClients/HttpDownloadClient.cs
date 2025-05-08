@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using API.Schema;
 using HtmlAgilityPack;
 
 namespace API.MangaDownloadClients;
@@ -18,16 +17,15 @@ internal class HttpDownloadClient : DownloadClient
     
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
-        //TODO
-        //if (clickButton is not null)
-            //Log("Can not click button on static site.");
+        if (clickButton is not null)
+            Log.Warn("Can not click button on static site.");
         HttpResponseMessage? response = null;
         while (response is null)
         {
             HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
             if (referrer is not null)
                 requestMessage.Headers.Referrer = new Uri(referrer);
-            //Log($"Requesting {requestType} {url}");
+            Log.Debug($"Requesting {url}");
             try
             {
                 response = Client.Send(requestMessage);

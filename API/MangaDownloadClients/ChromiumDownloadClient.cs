@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using log4net;
 using PuppeteerSharp;
 
 namespace API.MangaDownloadClients;
@@ -13,7 +14,7 @@ internal class ChromiumDownloadClient : DownloadClient
     private readonly Thread _closeStalePagesThread;
     private readonly List<KeyValuePair<IPage, DateTime>> _openPages = new ();
     
-    private static async Task<IBrowser> StartBrowser()
+    private static async Task<IBrowser> StartBrowser(ILog log)
     {
         return await Puppeteer.LaunchAsync(new LaunchOptions
         {
@@ -24,14 +25,14 @@ internal class ChromiumDownloadClient : DownloadClient
                 "--disable-setuid-sandbox",
                 "--no-sandbox"},
             Timeout = 30000
-        });
+        }, new LoggerFactory([new Provider(log)]));
     }
 
     public ChromiumDownloadClient()
     {
         _httpDownloadClient = new();
         if(_browser is null)
-            _browser = StartBrowser().Result;
+            _browser = StartBrowser(Log).Result;
         _closeStalePagesThread = new Thread(CheckStalePages);
         _closeStalePagesThread.Start();
     }
@@ -41,8 +42,10 @@ internal class ChromiumDownloadClient : DownloadClient
         while (true)
         {
             Thread.Sleep(TimeSpan.FromHours(1));
+            Log.Debug("Removing stale pages");
             foreach ((IPage? key, DateTime value) in _openPages.Where(kv => kv.Value.Subtract(DateTime.Now) > TimeSpan.FromHours(1)))
             {
+                Log.Debug($"Closing {key.Url}");
                 key.CloseAsync().Wait();
             }
         }
@@ -51,6 +54,7 @@ internal class ChromiumDownloadClient : DownloadClient
     private readonly Regex _imageUrlRex = new(@"https?:\/\/.*\.(?:p?jpe?g|gif|a?png|bmp|avif|webp)(\?.*)?");
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
+        Log.Debug($"Requesting {url}");
         return _imageUrlRex.IsMatch(url)
             ? _httpDownloadClient.MakeRequestInternal(url, referrer)
             : MakeRequestBrowser(url, referrer, clickButton);
@@ -68,11 +72,11 @@ internal class ChromiumDownloadClient : DownloadClient
         try
         {
             response = page.GoToAsync(url, WaitUntilNavigation.Networkidle0).Result;
-            //Log($"Page loaded. {url}");
+            Log.Debug($"Page loaded. {url}");
         }
         catch (Exception e)
         {
-            //Log($"Could not load Page {url}\n{e.Message}");
+            Log.Info($"Could not load Page {url}\n{e.Message}");
             page.CloseAsync();
             _openPages.Remove(_openPages.Find(i => i.Key == page));
             return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
@@ -106,5 +110,42 @@ internal class ChromiumDownloadClient : DownloadClient
         page.CloseAsync().Wait();
         _openPages.Remove(_openPages.Find(i => i.Key == page));
         return new RequestResult(response.Status, document, stream, false, "");
+    }
+
+    private class Provider(ILog log) : ILoggerProvider
+    {
+        public void Dispose()
+        {
+            
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return new ChromiumLogger(log);
+        }
+    }
+
+    private class ChromiumLogger(ILog log) : ILogger
+    {
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            string message = formatter.Invoke(state, exception);
+            switch(logLevel)
+            {
+                case LogLevel.Critical: log.Fatal(message); break;
+                case LogLevel.Error: log.Error(message); break;
+                case LogLevel.Warning: log.Warn(message); break;
+                case LogLevel.Information: log.Info(message); break;
+                case LogLevel.Debug: log.Debug(message); break;
+                default: log.Info(message); break;
+            }
+        }
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+        {
+            return null;
+        }
     }
 }
