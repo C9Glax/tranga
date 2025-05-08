@@ -5,13 +5,12 @@ namespace API.MangaDownloadClients;
 
 internal abstract class DownloadClient
 {
-    private readonly Dictionary<RequestType, DateTime> _lastExecutedRateLimit;
+    private static readonly Dictionary<RequestType, DateTime> LastExecutedRateLimit = new();
     protected ILog Log { get; init; }
 
     protected DownloadClient()
     {
         this.Log = LogManager.GetLogger(GetType());
-        this._lastExecutedRateLimit = new();
     }
     
     public RequestResult MakeRequest(string url, RequestType requestType, string? referrer = null, string? clickButton = null)
@@ -28,9 +27,9 @@ internal abstract class DownloadClient
         
         TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
         DateTime now = DateTime.Now;
-        _lastExecutedRateLimit.TryAdd(requestType, now.Subtract(timeBetweenRequests));
+        LastExecutedRateLimit.TryAdd(requestType, now.Subtract(timeBetweenRequests));
 
-        TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(now.Subtract(_lastExecutedRateLimit[requestType]));
+        TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(now.Subtract(LastExecutedRateLimit[requestType]));
         Log.Debug($"Request limit {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests:ss'.'fffff} Timeout: {rateLimitTimeout:ss'.'fffff}");
         
         if (rateLimitTimeout > TimeSpan.Zero)
@@ -39,7 +38,7 @@ internal abstract class DownloadClient
         }
 
         RequestResult result = MakeRequestInternal(url, referrer, clickButton);
-        _lastExecutedRateLimit[requestType] = DateTime.UtcNow;
+        LastExecutedRateLimit[requestType] = DateTime.UtcNow;
         return result;
     }
 
