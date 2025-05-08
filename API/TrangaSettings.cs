@@ -39,11 +39,11 @@ public static class TrangaSettings
     [JsonIgnore]
     internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
-        {RequestType.MangaInfo, 250},
-        {RequestType.MangaDexFeed, 250},
+        {RequestType.MangaInfo, 60},
+        {RequestType.MangaDexFeed, 60},
         {RequestType.MangaDexImage, 40},
         {RequestType.MangaImage, 60},
-        {RequestType.MangaCover, 250},
+        {RequestType.MangaCover, 60},
         {RequestType.Default, 60}
     };
     public static Dictionary<RequestType, int> requestLimits { get; private set; } = DefaultRequestLimits;

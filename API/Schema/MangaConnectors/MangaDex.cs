@@ -23,6 +23,8 @@ public class MangaDex : MangaConnector
         int total = int.MaxValue; //How many total results are there, is updated on first request
         HashSet<(Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)> retManga = new();
         List<JsonNode> results = new();
+
+        publicationTitle = publicationTitle.Replace(" ", "%20");
         
         //Request all search-results
         while (offset < total) //As long as we haven't requested all "Pages"
@@ -30,10 +32,7 @@ public class MangaDex : MangaConnector
             //Request next Page
             string requestUrl =
                 $"https://api.mangadex.org/manga?limit={limit}&title={publicationTitle}&offset={offset}" +
-                $"&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica" +
-                $"&contentRating%5B%5D=pornographic" +
-                $"&includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author" +
-                $"&includes%5B%5D=artist&includes%5B%5D=tag";
+                $"&includes[]=manga&includes[]=cover_art&includes[]=author&includes[]=artist&includes[]=tag";
             RequestResult requestResult = downloadClient.MakeRequest(requestUrl, RequestType.MangaInfo);
             if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             {
