@@ -9,4 +9,9 @@ public class MangaTag(string tag)
     [StringLength(64)]
     [Required]
     public string Tag { get; init; } = tag;
+
+    public override string ToString()
+    {
+        return $"{Tag}";
+    }
 }

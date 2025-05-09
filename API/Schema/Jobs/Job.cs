@@ -84,4 +84,9 @@ public abstract class Job
     }
     
     protected abstract IEnumerable<Job> RunInternal(PgsqlContext context);
+
+    public override string ToString()
+    {
+        return $"{JobId}";
+    }
 }

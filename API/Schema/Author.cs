@@ -12,4 +12,9 @@ public class Author(string authorName)
     [StringLength(128)]
     [Required]
     public string AuthorName { get; init; } = authorName;
+
+    public override string ToString()
+    {
+        return $"{AuthorId} {AuthorName}";
+    }
 }

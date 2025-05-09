@@ -15,4 +15,9 @@ public class MangaAltTitle(string language, string title)
     [StringLength(256)]
     [Required]
     public string Title { get; set; } = title;
+
+    public override string ToString()
+    {
+        return $"{AltTitleId} {Language} {Title}";
+    }
 }
