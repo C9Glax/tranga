@@ -5,6 +5,7 @@ using API.Schema.NotificationConnectors;
 using log4net;
 using log4net.Config;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace API;
 
@@ -119,6 +120,8 @@ public static class Tranga
         Log.Info("JobStarter Thread running.");
         while (true)
         {
+            foreach (EntityEntry entityEntry in context.ChangeTracker.Entries().ToArray())
+                entityEntry.Reload();
             //Update finished Jobs to new states
             List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
             foreach (Job completedJob in completedJobs)
