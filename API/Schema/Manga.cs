@@ -140,4 +140,9 @@ public class Manga
         }
         return sb.ToString();
     }
+
+    public override string ToString()
+    {
+        return $"{MangaId} {Name}";
+    }
 }

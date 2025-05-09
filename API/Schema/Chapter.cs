@@ -181,4 +181,9 @@ public class Chapter : IComparable<Chapter>
         );
         return comicInfo.ToString();
     }
+
+    public override string ToString()
+    {
+        return $"{ChapterId} Vol.{VolumeNumber} Ch.{ChapterNumber} - {Title}";
+    }
 }
