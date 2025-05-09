@@ -87,6 +87,15 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<RetrieveChaptersJob>()
             .Navigation(j => j.Manga)
             .AutoInclude();
+        modelBuilder.Entity<UpdateFilesDownloadedJob>()
+            .HasOne<Manga>(j => j.Manga)
+            .WithMany()
+            .HasForeignKey(j => j.MangaId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UpdateFilesDownloadedJob>()
+            .Navigation(j => j.Manga)
+            .AutoInclude();
         
         //Job has possible ParentJob
         modelBuilder.Entity<Job>()
