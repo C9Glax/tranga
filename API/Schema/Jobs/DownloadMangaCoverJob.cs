@@ -19,7 +19,7 @@ public class DownloadMangaCoverJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public DownloadMangaCoverJob(string mangaId, string? parentJobId = null)
+    internal DownloadMangaCoverJob(string mangaId, string? parentJobId)
         : base(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJobId)
     {
         this.MangaId = mangaId;

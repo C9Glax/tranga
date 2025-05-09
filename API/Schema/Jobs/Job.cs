@@ -47,7 +47,7 @@ public abstract class Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    protected Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId)
+    protected internal Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId)
     {
         this.JobId = jobId;
         this.JobType = jobType;

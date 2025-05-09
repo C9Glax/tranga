@@ -27,8 +27,8 @@ public class DownloadSingleChapterJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public DownloadSingleChapterJob(string chapterId, string? parentJobId = null)
-        : base(TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0)
+    internal DownloadSingleChapterJob(string chapterId, string? parentJobId)
+        : base(TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, parentJobId)
     {
         this.ChapterId = chapterId;
     }

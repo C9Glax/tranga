@@ -23,7 +23,7 @@ public class MoveMangaLibraryJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public MoveMangaLibraryJob(string mangaId, string toLibraryId, string? parentJobId = null)
+    internal MoveMangaLibraryJob(string mangaId, string toLibraryId, string? parentJobId)
         : base(TokenGen.CreateToken(typeof(MoveMangaLibraryJob)), JobType.MoveMangaLibraryJob, 0, parentJobId)
     {
         this.MangaId = mangaId;

@@ -21,7 +21,7 @@ public class MoveFileOrFolderJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public MoveFileOrFolderJob(string jobId, string fromLocation, string toLocation, string? parentJobId = null)
+    internal MoveFileOrFolderJob(string jobId, string fromLocation, string toLocation, string? parentJobId)
         : base(jobId, JobType.MoveFileOrFolderJob, 0, parentJobId)
     {
         this.FromLocation = fromLocation;

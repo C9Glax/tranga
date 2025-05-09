@@ -22,7 +22,7 @@ public class RetrieveChaptersJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public RetrieveChaptersJob(string mangaId, string language, ulong recurrenceMs, string? parentJobId = null)
+    internal RetrieveChaptersJob(string mangaId, string language, ulong recurrenceMs, string? parentJobId)
         : base(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;

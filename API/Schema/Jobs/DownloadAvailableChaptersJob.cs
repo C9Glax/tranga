@@ -18,7 +18,7 @@ public class DownloadAvailableChaptersJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public DownloadAvailableChaptersJob(string mangaId, ulong recurrenceMs, string? parentJobId = null)
+    internal DownloadAvailableChaptersJob(string mangaId, ulong recurrenceMs, string? parentJobId)
         : base(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;

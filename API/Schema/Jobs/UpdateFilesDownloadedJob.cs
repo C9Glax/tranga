@@ -19,7 +19,7 @@ public class UpdateFilesDownloadedJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public UpdateFilesDownloadedJob(string mangaId, ulong recurrenceMs, string? parentJobId = null)
+    internal UpdateFilesDownloadedJob(string mangaId, ulong recurrenceMs, string? parentJobId)
         : base(TokenGen.CreateToken(typeof(UpdateFilesDownloadedJob)), JobType.UpdateFilesDownloadedJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
