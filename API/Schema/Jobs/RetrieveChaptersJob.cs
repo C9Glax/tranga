@@ -1,40 +1,43 @@
 using System.ComponentModel.DataAnnotations;
 using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class RetrieveChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
+public class RetrieveChaptersJob : Job
 {
-    [StringLength(64)]
-    [Required]
-    public string MangaId { get; init; } = mangaId;
+    [StringLength(64)] [Required] public string MangaId { get; init; }
+    [JsonIgnore] public Manga Manga { get; init; } = null!;
+    [StringLength(8)] [Required] public string Language { get; private set; }
+    
+    public RetrieveChaptersJob(Manga manga, string language, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJob, dependsOnJobs)
+    {
+        this.MangaId = manga.MangaId;
+        this.Manga = manga;
+        this.Language = language;
+    }
+    
+    /// <summary>
+    /// EF ONLY!!!
+    /// </summary>
+    public RetrieveChaptersJob(string mangaId, string language, ulong recurrenceMs, string? parentJobId = null)
+        : base(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId)
+    {
+        this.MangaId = mangaId;
+        this.Language = language;
+    }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Manga? manga = context.Mangas.Find(MangaId);
-        if (manga is null)
-        {
-            Log.Error("Manga is null.");
-            return [];
-        }
-        MangaConnector? connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId);
-        if (connector is null)
-        {
-            Log.Error("Connector is null.");
-            return [];
-        }
         // This gets all chapters that are not downloaded
-        Chapter[] allNewChapters = connector.GetNewChapters(manga).DistinctBy(c => c.ChapterId).ToArray();
-        Log.Info($"{allNewChapters.Length} new chapters.");
+        Chapter[] allChapters = Manga.MangaConnector.GetChapters(Manga, Language);
+        Chapter[] newChapters = allChapters.Where(chapter => context.Chapters.Contains(chapter) == false).ToArray();
+        Log.Info($"{newChapters.Length} new chapters.");
 
         try
         {
-            // This filters out chapters that are not downloaded but already exist in the DB
-            string[] chapterIds = context.Chapters.Where(chapter => chapter.ParentMangaId == manga.MangaId)
-                .Select(chapter => chapter.ChapterId).ToArray();
-            Chapter[] newChapters = allNewChapters.Where(chapter => !chapterIds.Contains(chapter.ChapterId)).ToArray();
             context.Chapters.AddRange(newChapters);
             context.SaveChanges();
         }

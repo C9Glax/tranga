@@ -3,6 +3,7 @@ using API.APIEndpointRecords;
 using API.Schema;
 using API.Schema.NotificationConnectors;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -12,7 +13,7 @@ namespace API.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
-public class NotificationConnectorController(PgsqlContext context) : Controller
+public class NotificationConnectorController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Gets all configured Notification-Connectors
@@ -69,6 +70,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -209,6 +211,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }

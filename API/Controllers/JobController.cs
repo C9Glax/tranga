@@ -2,15 +2,17 @@
 using API.Schema;
 using API.Schema.Jobs;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+// ReSharper disable InconsistentNaming
 
 namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
 [Route("v{version:apiVersion}/[controller]")]
-public class JobController(PgsqlContext context) : Controller
+public class JobController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Returns all Jobs
@@ -102,7 +104,7 @@ public class JobController(PgsqlContext context) : Controller
     /// <param name="MangaId">ID of Manga</param>
     /// <param name="record">Job-Configuration</param>
     /// <response code="201">Job-IDs</response>
-    /// <response code="400">Could not find Library with ID</response>
+    /// <response code="400">Could not find ToLibrary with ID</response>
     /// <response code="404">Could not find Manga with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("DownloadAvailableChaptersJob/{MangaId}")]
@@ -110,7 +112,7 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateDownloadAvailableChaptersJob(string MangaId, [FromBody]DownloadAvailableJobsRecord record)
+    public IActionResult CreateDownloadAvailableChaptersJob(string MangaId, [FromBody]DownloadAvailableChaptersJobRecord record)
     {
         if (context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
@@ -126,13 +128,13 @@ public class JobController(PgsqlContext context) : Controller
             }
             catch (Exception e)
             {
+                Log.Error(e);
                 return StatusCode(500, e.Message);
             }
         }
-        Job job = new DownloadAvailableChaptersJob(record.recurrenceTimeMs, MangaId);
-        Job dep = new RetrieveChaptersJob(record.recurrenceTimeMs, MangaId, job.JobId);
-        job.DependsOnJobsIds?.Add(dep.JobId);
-        return AddJobs([dep, job]);
+        Job retrieveChapters = new RetrieveChaptersJob(m, record.language, record.recurrenceTimeMs);
+        Job downloadChapters = new DownloadAvailableChaptersJob(m, record.recurrenceTimeMs, dependsOnJobs: [retrieveChapters]);
+        return AddJobs([retrieveChapters, downloadChapters]);
     }
 
     /// <summary>
@@ -148,9 +150,9 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNewDownloadChapterJob(string ChapterId)
     {
-        if(context.Chapters.Find(ChapterId) is null)
+        if(context.Chapters.Find(ChapterId) is not { } c)
             return NotFound();
-        Job job = new DownloadSingleChapterJob(ChapterId);
+        Job job = new DownloadSingleChapterJob(c);
         return AddJobs([job]);
     }
 
@@ -167,9 +169,9 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateFilesDownloadedJob(string MangaId)
     {
-        if(context.Mangas.Find(MangaId) is null)
+        if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
-        Job job = new UpdateFilesDownloadedJob(0, MangaId);
+        Job job = new UpdateFilesDownloadedJob(m, 0);
         return AddJobs([job]);
     }
 
@@ -183,8 +185,7 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateAllFilesDownloadedJob()
     {
-        List<string> ids = context.Mangas.Select(m => m.MangaId).ToList();
-        List<UpdateFilesDownloadedJob> jobs =  ids.Select(id => new UpdateFilesDownloadedJob(0, id)).ToList();
+        List<UpdateFilesDownloadedJob> jobs = context.Mangas.Select(m => new UpdateFilesDownloadedJob(m, 0, null, null)).ToList();
         try
         {
             context.Jobs.AddRange(jobs);
@@ -193,12 +194,13 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
 
     /// <summary>
-    /// Create a new UpdateMetadataJob
+    /// Not Implemented: Create a new UpdateMetadataJob
     /// </summary>
     /// <param name="MangaId">ID of the Manga</param>
     /// <response code="201">Job-IDs</response>
@@ -210,14 +212,11 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateMetadataJob(string MangaId)
     {
-        if(context.Mangas.Find(MangaId) is null)
-            return NotFound();
-        Job job = new UpdateMetadataJob(0, MangaId);
-        return AddJobs([job]);
+        return StatusCode(Status501NotImplemented);
     }
 
     /// <summary>
-    /// Create a new UpdateMetadataJob for all Manga
+    /// Not Implemented: Create a new UpdateMetadataJob for all Manga
     /// </summary>
     /// <response code="201">Job-IDs</response>
     /// <response code="500">Error during Database Operation</response>
@@ -226,18 +225,7 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateAllMetadataJob()
     {
-        List<string> ids = context.Mangas.Select(m => m.MangaId).ToList();
-        List<UpdateMetadataJob> jobs =  ids.Select(id => new UpdateMetadataJob(0, id)).ToList();
-        try
-        {
-            context.Jobs.AddRange(jobs);
-            context.SaveChanges();
-            return Created();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
+        return StatusCode(Status501NotImplemented);
     }
     
     private IActionResult AddJobs(Job[] jobs)
@@ -250,6 +238,7 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -269,8 +258,7 @@ public class JobController(PgsqlContext context) : Controller
     {
         try
         {
-            Job? ret = context.Jobs.Find(JobId);
-            if(ret is null)
+            if(context.Jobs.Find(JobId) is not { } ret)
                 return NotFound();
             
             context.Remove(ret);
@@ -279,6 +267,7 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -322,6 +311,7 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -354,6 +344,7 @@ public class JobController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -367,6 +358,6 @@ public class JobController(PgsqlContext context) : Controller
     [ProducesResponseType(Status501NotImplemented)]
     public IActionResult StopJob(string JobId)
     {
-        return StatusCode(501);
+        return StatusCode(Status501NotImplemented);
     }
 }

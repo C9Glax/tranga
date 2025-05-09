@@ -119,50 +119,35 @@ public static class Tranga
         Log.Info("JobStarter Thread running.");
         while (true)
         {
-            List<Job> completedJobs = context.Jobs.Where(j => j.state >= JobState.Completed).ToList();
-            Log.Debug($"Completed jobs: {completedJobs.Count}");
-            foreach (Job job in completedJobs)
-                if (job.RecurrenceMs <= 0)
-                    context.Jobs.Remove(job);
+            //Update finished Jobs to new states
+            List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
+            foreach (Job completedJob in completedJobs)
+                if (completedJob.RecurrenceMs <= 0)
+                    context.Jobs.Remove(completedJob);
                 else
                 {
-                    if (job.state >= JobState.Failed)
-                        job.Enabled = false;
-                    else
-                        job.state = JobState.Waiting;
-                    job.LastExecution = DateTime.UtcNow;
+                    completedJob.state = JobState.CompletedWaiting;
+                    completedJob.LastExecution = DateTime.UtcNow;
                 }
-
-            List<Job> runJobs = context.Jobs.Where(j => j.state <= JobState.Running && j.Enabled == true).ToList()
-                .Where(j => j.NextExecution < DateTime.UtcNow).ToList();
-            IEnumerable<Job> orderedJobs = OrderJobs(runJobs, context).ToList();
-            Log.Debug($"Jobs Due: {runJobs.Count} Running: {RunningJobs.Count} Ordered: {orderedJobs.Count()}");
-            foreach (Job job in orderedJobs)
+            List<Job> failedJobs = context.Jobs.Where(j => j.state == JobState.Failed).ToList();
+            foreach (Job failedJob in failedJobs)
             {
-                // If the job is already running, skip it
-                if (RunningJobs.Values.Any(j => j.JobId == job.JobId)) continue;
+                failedJob.Enabled = false;
+                failedJob.LastExecution = DateTime.UtcNow;
+            }
 
-                //If a Job for that connector is already running, skip it
-                if (job is DownloadAvailableChaptersJob dncj)
-                {
-                    if (RunningJobs.Values.Any(j =>
-                            j is DownloadAvailableChaptersJob rdncj && 
-                            context.Mangas.Find(rdncj.MangaId)?.MangaConnector == context.Mangas.Find(dncj.MangaId)?.MangaConnector))
-                    {
-                        continue;
-                    }
-                }
-                else if (job is DownloadSingleChapterJob dscj)
-                {
-                    if (RunningJobs.Values.Any(j =>
-                            j is DownloadSingleChapterJob rdscj &&
-                            context.Chapters.Find(rdscj.ChapterId)?.ParentManga?.MangaConnector ==
-                            context.Chapters.Find(dscj.ChapterId)?.ParentManga?.MangaConnector))
-                    {
-                        continue;
-                    }
-                }
+            //Retrieve waiting and due Jobs
+            List<Job> waitingJobs = context.Jobs.Where(j =>
+                j.Enabled && (j.state == JobState.FirstExecution || j.state == JobState.CompletedWaiting)).ToList();
+            List<Job> runningJobs = context.Jobs.Where(j => j.state == JobState.Running).ToList();
+            List<Job> dueJobs = waitingJobs.Where(j => j.NextExecution < DateTime.UtcNow).ToList();
 
+            List<MangaConnector> busyConnectors = GetBusyConnectors(runningJobs);
+            List<Job> startJobs = FilterJobPreconditions(dueJobs, busyConnectors);
+            
+            //Start Jobs that are allowed to run (preconditions match)
+            foreach (Job job in startJobs)
+            {
                 Thread t = new(() =>
                 {
                     job.Run(serviceProvider);
@@ -170,6 +155,10 @@ public static class Tranga
                 RunningJobs.Add(t, job);
                 t.Start();
             }
+            Log.Debug($"Jobs Completed: {completedJobs.Count} Failed: {failedJobs.Count} Running: {runningJobs.Count}\n" +
+                      $"Waiting: {waitingJobs.Count}\n" +
+                      $"\tof which Due: {dueJobs.Count}\n" +
+                      $"\t\tof which Started: {startJobs.Count}");
 
             (Thread, Job)[] removeFromThreadsList = RunningJobs.Where(t => !t.Key.IsAlive)
                 .Select(t => (t.Key, t.Value)).ToArray();
@@ -191,84 +180,39 @@ public static class Tranga
         }
     }
 
-    private static IEnumerable<Job> OrderJobs(List<Job> jobs, PgsqlContext context)
+    private static List<MangaConnector> GetBusyConnectors(List<Job> runningJobs)
     {
-        Dictionary<JobType, List<Job>> jobsByType = new();
-        foreach (Job job in jobs)
-            if(!jobsByType.TryAdd(job.JobType, [job]))
-                jobsByType[job.JobType].Add(job);
+        HashSet<MangaConnector> busyConnectors = new();
+        foreach (Job runningJob in runningJobs)
+        {
+            if(GetJobConnector(runningJob) is { } mangaConnector)
+                busyConnectors.Add(mangaConnector);
+        }
+        return busyConnectors.ToList();
+    }
 
-        IEnumerable<Job> ret = new List<Job>();
-        if(jobsByType.ContainsKey(JobType.MoveMangaLibraryJob))
-            ret = ret.Concat(jobsByType[JobType.MoveMangaLibraryJob]);
-        if(jobsByType.ContainsKey(JobType.MoveFileOrFolderJob))
-            ret = ret.Concat(jobsByType[JobType.MoveFileOrFolderJob]);
-        if(jobsByType.ContainsKey(JobType.DownloadMangaCoverJob)) 
-            ret = ret.Concat(jobsByType[JobType.DownloadMangaCoverJob]);
-        if(jobsByType.ContainsKey(JobType.UpdateFilesDownloadedJob))
-            ret = ret.Concat(jobsByType[JobType.UpdateFilesDownloadedJob]);
+    private static List<Job> FilterJobPreconditions(List<Job> dueJobs, List<MangaConnector> busyConnectors) =>
+        dueJobs
+            .Where(j => j.DependenciesFulfilled)
+            .Where(j =>
+            {
+                //Filter jobs with busy connectors
+                if (GetJobConnector(j) is { } mangaConnector)
+                    return busyConnectors.Contains(mangaConnector) == false;
+                return true;
+            })
+            .ToList();
 
-        Dictionary<MangaConnector, List<Job>> metadataJobsByConnector = new();
-        if (jobsByType.ContainsKey(JobType.DownloadAvailableChaptersJob))
-        {
-            foreach (DownloadAvailableChaptersJob job in jobsByType[JobType.DownloadAvailableChaptersJob])
-            {
-                Manga? manga = context.Mangas.Find(job.MangaId);
-                if(manga is null)
-                    continue;
-                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
-                if(!metadataJobsByConnector.TryAdd(connector, [job]))
-                    metadataJobsByConnector[connector].Add(job);
-            }
-        }
-        if (jobsByType.ContainsKey(JobType.UpdateMetaDataJob))
-        {
-            foreach (UpdateMetadataJob job in jobsByType[JobType.UpdateMetaDataJob])
-            {
-                Manga manga = job.Manga ?? context.Mangas.Find(job.MangaId)!;
-                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
-                if(!metadataJobsByConnector.TryAdd(connector, [job]))
-                    metadataJobsByConnector[connector].Add(job);
-            }
-        }
-        if (jobsByType.ContainsKey(JobType.RetrieveChaptersJob))
-        {
-            foreach (RetrieveChaptersJob job in jobsByType[JobType.RetrieveChaptersJob])
-            {
-                Manga? manga = context.Mangas.Find(job.MangaId);
-                if(manga is null)
-                    continue;
-                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
-                if(!metadataJobsByConnector.TryAdd(connector, [job]))
-                    metadataJobsByConnector[connector].Add(job);
-            }
-        }
-        foreach (List<Job> metadataJobs in metadataJobsByConnector.Values)
-            ret = ret.Append(metadataJobs.MinBy(j => j.NextExecution))!;
-
-        if (jobsByType.ContainsKey(JobType.DownloadSingleChapterJob))
-        {
-            
-            Dictionary<MangaConnector, List<DownloadSingleChapterJob>> downloadJobsByConnector = new();
-            foreach (DownloadSingleChapterJob job in jobsByType[JobType.DownloadSingleChapterJob])
-            {
-                Chapter? chapter = context.Chapters.Find(job.ChapterId);
-                if(chapter is null)
-                    continue;
-                Manga manga = chapter.ParentManga ?? context.Mangas.Find(chapter.ParentMangaId)!;
-                MangaConnector connector = manga.MangaConnector ?? context.MangaConnectors.Find(manga.MangaConnectorId)!;
-            
-                if(!downloadJobsByConnector.TryAdd(connector, [job]))
-                    downloadJobsByConnector[connector].Add(job);
-            }
-            //From all jobs select those that are supposed to be executed soonest, then select the minimum chapternumber
-            foreach (List<DownloadSingleChapterJob> downloadJobs in downloadJobsByConnector.Values)
-                ret = ret.Append(
-                    downloadJobs.Where(j => j.NextExecution == downloadJobs
-                            .MinBy(mj => mj.NextExecution)!.NextExecution)
-                        .MinBy(j => context.Chapters.Find(j.ChapterId)!))!;
-        }
-        
-        return ret;
+    private static MangaConnector? GetJobConnector(Job job)
+    {
+        if (job is DownloadAvailableChaptersJob dacj)
+            return dacj.Manga.MangaConnector;
+        if (job is DownloadMangaCoverJob dmcj)
+            return  dmcj.Manga.MangaConnector;
+        if (job is DownloadSingleChapterJob dscj)
+            return  dscj.Chapter.ParentManga.MangaConnector;
+        if (job is RetrieveChaptersJob rcj)
+            return rcj.Manga.MangaConnector;
+        return null;
     }
 }

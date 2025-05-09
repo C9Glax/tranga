@@ -1,17 +1,31 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class DownloadAvailableChaptersJob(ulong recurrenceMs, string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId, dependsOnJobsIds)
+public class DownloadAvailableChaptersJob : Job
 {
-    [StringLength(64)]
-    [Required]
-    public string MangaId { get; init; } = mangaId;
+    [StringLength(64)] [Required] public string MangaId { get; init; }
+    [JsonIgnore] public Manga Manga { get; init; } = null!;
+    
+    public DownloadAvailableChaptersJob(Manga manga, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJob, dependsOnJobs)
+    {
+        this.MangaId = manga.MangaId;
+        this.Manga = manga;
+    }
+    
+    /// <summary>
+    /// EF ONLY!!!
+    /// </summary>
+    public DownloadAvailableChaptersJob(string mangaId, ulong recurrenceMs, string? parentJobId = null)
+        : base(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId)
+    {
+        this.MangaId = mangaId;
+    }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        return context.Chapters.Where(c => c.ParentMangaId == MangaId).AsEnumerable()
-            .Select(chapter => new DownloadSingleChapterJob(chapter.ChapterId, this.JobId));
+        return Manga.Chapters.Select(chapter => new DownloadSingleChapterJob(chapter, this));
     }
 }

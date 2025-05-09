@@ -1,6 +1,7 @@
 ﻿using API.Schema;
 using API.Schema.LibraryConnectors;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -9,10 +10,10 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class LibraryConnectorController(PgsqlContext context) : Controller
+public class LibraryConnectorController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
-    /// Gets all configured Library-Connectors
+    /// Gets all configured ToLibrary-Connectors
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
@@ -24,9 +25,9 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     }
     
     /// <summary>
-    /// Returns Library-Connector with requested ID
+    /// Returns ToLibrary-Connector with requested ID
     /// </summary>
-    /// <param name="LibraryControllerId">Library-Connector-ID</param>
+    /// <param name="LibraryControllerId">ToLibrary-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
     [HttpGet("{LibraryControllerId}")]
@@ -43,9 +44,9 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
     }
     
     /// <summary>
-    /// Creates a new Library-Connector
+    /// Creates a new ToLibrary-Connector
     /// </summary>
-    /// <param name="libraryConnector">Library-Connector</param>
+    /// <param name="libraryConnector">ToLibrary-Connector</param>
     /// <response code="201"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
@@ -61,14 +62,15 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
     
     /// <summary>
-    /// Deletes the Library-Connector with the requested ID
+    /// Deletes the ToLibrary-Connector with the requested ID
     /// </summary>
-    /// <param name="LibraryControllerId">Library-Connector-ID</param>
+    /// <param name="LibraryControllerId">ToLibrary-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
     /// <response code="500">Error during Database Operation</response>
@@ -90,6 +92,7 @@ public class LibraryConnectorController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }

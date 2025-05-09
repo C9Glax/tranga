@@ -1,19 +1,21 @@
 ﻿using API.Schema;
 using API.Schema.Jobs;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+// ReSharper disable InconsistentNaming
 
 namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaController(PgsqlContext context) : Controller
+public class MangaController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Returns all cached Manga
@@ -82,6 +84,7 @@ public class MangaController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -287,11 +290,12 @@ public class MangaController(PgsqlContext context) : Controller
         
         return Ok(max);
     }
-    
+
     /// <summary>
     /// Configure the cut-off for Manga
     /// </summary>
     /// <param name="MangaId">Manga-ID</param>
+    /// <param name="chapterThreshold">Threshold (Chapter Number)</param>
     /// <response code="200"></response>
     /// <response code="404">Manga with ID not found.</response>
     /// <response code="500">Error during Database Operation</response>
@@ -307,21 +311,22 @@ public class MangaController(PgsqlContext context) : Controller
         
         try
         {
-            m.IgnoreChapterBefore = chapterThreshold;
+            m.IgnoreChaptersBefore = chapterThreshold;
             context.SaveChanges();
             return Ok();
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
 
     /// <summary>
-    /// Move Manga to different Library
+    /// Move Manga to different ToLibrary
     /// </summary>
     /// <param name="MangaId">Manga-ID</param>
-    /// <param name="LibraryId">Library-Id</param>
+    /// <param name="LibraryId">ToLibrary-Id</param>
     /// <response code="202">Folder is going to be moved</response>
     /// <response code="404">MangaId or LibraryId not found</response>
     /// <response code="500">Error during Database Operation</response>
@@ -331,24 +336,23 @@ public class MangaController(PgsqlContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult MoveFolder(string MangaId, string LibraryId)
     {
-        Manga? manga = context.Mangas.Find(MangaId);
-        if (manga is null)
+        if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound();
-        LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
-        if (library is null)
+        if(context.LocalLibraries.Find(LibraryId) is not { } library)
             return NotFound();
-        
-        MoveMangaLibraryJob dep = new (MangaId, LibraryId);
-        UpdateFilesDownloadedJob up = new (0, manga.MangaId, null, [dep.JobId]);
+
+        MoveMangaLibraryJob moveLibrary = new(manga, library);
+        UpdateFilesDownloadedJob updateDownloadedFiles = new(manga, 0, dependsOnJobs: [moveLibrary]);
         
         try
         {
-            context.Jobs.AddRange([dep, up]);
+            context.Jobs.AddRange(moveLibrary, updateDownloadedFiles);
             context.SaveChanges();
             return Accepted();
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }

@@ -2,15 +2,31 @@
 
 namespace API.Schema.Jobs;
 
-public class MoveFileOrFolderJob(string fromLocation, string toLocation, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(MoveFileOrFolderJob)), JobType.MoveFileOrFolderJob, 0, parentJobId, dependsOnJobsIds)
+public class MoveFileOrFolderJob : Job
 {
     [StringLength(256)]
     [Required]
-    public string FromLocation { get; init; } = fromLocation;
+    public string FromLocation { get; init; }
     [StringLength(256)]
     [Required]
-    public string ToLocation { get; init; } = toLocation;
+    public string ToLocation { get; init; }
+    
+    public MoveFileOrFolderJob(string fromLocation, string toLocation, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(MoveFileOrFolderJob)), JobType.MoveFileOrFolderJob, 0, parentJob, dependsOnJobs)
+    {
+        this.FromLocation = fromLocation;
+        this.ToLocation = toLocation;
+    }
+    
+    /// <summary>
+    /// EF ONLY!!!
+    /// </summary>
+    public MoveFileOrFolderJob(string jobId, string fromLocation, string toLocation, string? parentJobId = null)
+        : base(jobId, JobType.MoveFileOrFolderJob, 0, parentJobId)
+    {
+        this.FromLocation = fromLocation;
+        this.ToLocation = toLocation;
+    }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {

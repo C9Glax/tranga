@@ -1,12 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using API.MangaDownloadClients;
-using API.Schema.Jobs;
+using System.Text;
 using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -20,166 +15,129 @@ public class Manga
     [StringLength(64)]
     [Required]
     public string MangaId { get; init; }
-    [StringLength(256)]
-    [Required]
-    public string IdOnConnectorSite { get; init; }
-    [StringLength(512)]
-    [Required]
-    public string Name { get; internal set; }
-    [Required]
-    public string Description { get; internal set; }
-    [Url]
-    [StringLength(512)]
-    [Required]
-    public string WebsiteUrl { get; internal set; }
-    [JsonIgnore]
-    [Url]
-    public string CoverUrl { get; internal set; }
-    [JsonIgnore]
-    public string? CoverFileNameInCache { get; internal set; }
-    [Required]
-    public uint Year { get; internal set; }
-    [StringLength(8)]
-    public string? OriginalLanguage { get; internal set; }
-    [Required]
-    public MangaReleaseStatus ReleaseStatus { get; internal set; }
-    [StringLength(1024)]
-    [Required]
-    public string DirectoryName { get; private set; }
-    public LocalLibrary? Library { get; internal set; }
-    [JsonIgnore]
-    [NotMapped]
-    public string LibraryPath => Library is null ? TrangaSettings.downloadLocation : Library.BasePath;
-    [JsonIgnore]
-    [NotMapped]
-    public string FullDirectoryPath => Path.Join(LibraryPath, DirectoryName);
-    [Required]
-    public float IgnoreChapterBefore { get; internal set; }
-    [StringLength(64)]
-    [Required]
-    public string MangaConnectorId { get; private set; }
-    [JsonIgnore] public MangaConnector? MangaConnector { get; private set; }
+    [StringLength(256)] [Required] public string IdOnConnectorSite { get; init; }
+    [StringLength(512)] [Required] public string Name { get; internal set; }
+    [Required] public string Description { get; internal set; }
+    [Url] [StringLength(512)] [Required] public string WebsiteUrl { get; internal init; }
+    [JsonIgnore] [Url] [StringLength(512)] public string CoverUrl { get; internal set; }
+    [Required] public MangaReleaseStatus ReleaseStatus { get; internal set; }
     
-    [JsonIgnore] public ICollection<Author>? Authors { get; internal set; }
-    [NotMapped]
-    [StringLength(64)]
-    [Required]
-    public IEnumerable<string> AuthorIds => Authors?.Select(a => a.AuthorId) ?? [];
+    [StringLength(64)] 
+    public string? LibraryId { get; init; }
+    [JsonIgnore] public LocalLibrary? Library { get; internal set; }
     
-    [JsonIgnore] public ICollection<MangaTag>? MangaTags { get; internal set; }
-    [NotMapped]
-    [StringLength(64)]
+    [StringLength(32)]
     [Required]
-    public IEnumerable<string> Tags => MangaTags?.Select(t => t.Tag) ?? [];
-    
-    
-    [JsonIgnore] public ICollection<Link>? Links { get; internal set; }
-    [NotMapped]
-    [StringLength(64)]
-    [Required]
-    public IEnumerable<string> LinkIds => Links?.Select(l => l.LinkId) ?? [];
-    
-    [JsonIgnore] public ICollection<MangaAltTitle>? AltTitles { get; internal set; }
-    [NotMapped]
-    [StringLength(64)]
-    [Required]
-    public IEnumerable<string> AltTitleIds => AltTitles?.Select(a => a.AltTitleId) ?? [];
+    public string MangaConnectorName { get; init; }
+    [JsonIgnore] public MangaConnector MangaConnector { get; init; } = null!;
 
-    public Manga(string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl,
-        string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
-        float ignoreChapterBefore, MangaConnector mangaConnector, ICollection<Author> authors,
-        ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles,
-        LocalLibrary? library = null)
-        : this(idOnConnectorSite, name, description, websiteUrl, coverUrl, coverFileNameInCache, year, originalLanguage,
-            releaseStatus, ignoreChapterBefore, mangaConnector.Name)
+    public ICollection<Author> Authors { get; internal set; }= null!;
+    public ICollection<MangaTag> MangaTags { get; internal set; }= null!;
+    public ICollection<Link> Links { get; internal set; }= null!;
+    public ICollection<MangaAltTitle> AltTitles { get; internal set; } = null!;
+    [Required] public float IgnoreChaptersBefore { get; internal set; }
+    [StringLength(1024)] [Required] public string DirectoryName { get; private set; }
+
+    [JsonIgnore] [StringLength(512)] public string? CoverFileNameInCache { get; internal set; } = null;
+    [Required] public uint? Year { get; internal init; }
+    [StringLength(8)] public string? OriginalLanguage { get; internal init; }
+
+    [JsonIgnore]
+    [NotMapped]
+    public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
+    
+    [JsonIgnore] public ICollection<Chapter> Chapters { get; internal set; } = [];
+
+    public Manga(string idOnConnector, string name, string description, string websiteUrl, string coverUrl, MangaReleaseStatus releaseStatus,
+        MangaConnector mangaConnector, ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles,
+        LocalLibrary? library = null, float ignoreChaptersBefore = 0f, uint? year = null, string? originalLanguage = null)
     {
+        this.MangaId = TokenGen.CreateToken(typeof(Manga), mangaConnector.Name, idOnConnector);
+        this.IdOnConnectorSite = idOnConnector;
+        this.Name = name;
+        this.Description = description;
+        this.WebsiteUrl = websiteUrl;
+        this.CoverUrl = coverUrl;
+        this.ReleaseStatus = releaseStatus;
+        this.LibraryId = library?.LocalLibraryId;
+        this.Library = library;
+        this.MangaConnectorName = mangaConnector.Name;
+        this.MangaConnector = mangaConnector;
         this.Authors = authors;
         this.MangaTags = mangaTags;
         this.Links = links;
         this.AltTitles = altTitles;
-        this.Library = library;
+        this.IgnoreChaptersBefore = ignoreChaptersBefore;
+        this.DirectoryName = CleanDirectoryName(name);
+        this.Year = year;
+        this.OriginalLanguage = originalLanguage;
+    }
+
+    /// <summary>
+    /// EF ONLY!!!
+    /// </summary>
+    public Manga(string mangaId, string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl, MangaReleaseStatus releaseStatus,
+        string mangaConnectorName, string directoryName, float ignoreChaptersBefore, string? libraryId, uint? year, string? originalLanguage)
+    {
+        this.MangaId = mangaId;
+        this.IdOnConnectorSite = idOnConnectorSite;
+        this.Name = name;
+        this.Description = description;
+        this.WebsiteUrl = websiteUrl;
+        this.CoverUrl = coverUrl;
+        this.ReleaseStatus = releaseStatus;
+        this.MangaConnectorName = mangaConnectorName;
+        this.DirectoryName = directoryName;
+        this.LibraryId = libraryId;
+        this.IgnoreChaptersBefore = ignoreChaptersBefore;
+        this.Year = year;
+        this.OriginalLanguage = originalLanguage;
     }
     
-    public Manga(string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl,
-        string? coverFileNameInCache, uint year, string? originalLanguage, MangaReleaseStatus releaseStatus,
-        float ignoreChapterBefore, string mangaConnectorId)
-    {
-        MangaId = TokenGen.CreateToken(typeof(Manga), mangaConnectorId, idOnConnectorSite);
-        IdOnConnectorSite = idOnConnectorSite;
-        Name = name;
-        Description = description;
-        WebsiteUrl = websiteUrl;
-        CoverUrl = coverUrl;
-        CoverFileNameInCache = coverFileNameInCache;
-        Year = year;
-        OriginalLanguage = originalLanguage;
-        ReleaseStatus = releaseStatus;
-        IgnoreChapterBefore = ignoreChapterBefore;
-        MangaConnectorId = mangaConnectorId;
-        DirectoryName = BuildFolderName(name);
-    }
-
-    public MoveFileOrFolderJob UpdateFolderName(string downloadLocation, string newName)
-    {
-        string oldName = this.DirectoryName;
-        this.DirectoryName = newName;
-        return new MoveFileOrFolderJob(Path.Join(downloadLocation, oldName), Path.Join(downloadLocation, this.DirectoryName));
-    }
-
-    internal void UpdateWithInfo(Manga other)
-    {
-        this.Name = other.Name;
-        this.Year = other.Year;
-        this.Description = other.Description;
-        this.CoverUrl = other.CoverUrl;
-        this.OriginalLanguage = other.OriginalLanguage;
-        this.Authors = other.Authors;
-        this.Links = other.Links;
-        this.MangaTags = other.MangaTags;
-        this.AltTitles = other.AltTitles;
-        this.ReleaseStatus = other.ReleaseStatus;
-    }
-
-    private static string BuildFolderName(string mangaName)
-    {
-        return mangaName;
-    }
-    
-    internal string? SaveCoverImageToCache(int retries = 3)
-    {
-        if(retries < 0)
-            return null;
-        
-        Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
-        //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
-        Match match = urlRex.Match(CoverUrl);
-        string filename = $"{match.Groups[1].Value}-{MangaId}.{match.Groups[3].Value}";
-        string saveImagePath = Path.Join(TrangaSettings.coverImageCache, filename);
-
-        if (File.Exists(saveImagePath))
-            return saveImagePath;
-        
-        RequestResult coverResult = new HttpDownloadClient().MakeRequest(CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}");
-        if (coverResult.statusCode is < HttpStatusCode.OK or >= HttpStatusCode.Ambiguous)
-            return SaveCoverImageToCache(--retries);
-            
-        using MemoryStream ms = new();
-        coverResult.result.CopyTo(ms);
-        Directory.CreateDirectory(TrangaSettings.coverImageCache);
-        File.WriteAllBytes(saveImagePath, ms.ToArray());
-        
-        return saveImagePath;
-    }
     
     public string CreatePublicationFolder()
     {
-        string publicationFolder = Path.Join(LibraryPath, this.DirectoryName);
+        string publicationFolder = FullDirectoryPath;
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(publicationFolder, GroupRead | GroupWrite | GroupExecute | OtherRead | OtherWrite | OtherExecute | UserRead | UserWrite | UserExecute);
         return publicationFolder;
     }
-    
-    //TODO onchanges create job to update metadata files in archives, etc.
+
+    //https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+    //less than 32 is control *forbidden*
+    //34 is " *forbidden*
+    //42 is * *forbidden*
+    //47 is / *forbidden*
+    //58 is : *forbidden*
+    //60 is < *forbidden*
+    //62 is > *forbidden*
+    //63 is ? *forbidden*
+    //92 is \ *forbidden*
+    //124 is | *forbidden*
+    //127 is delete *forbidden*
+    //Below 127 all except *******
+    private static readonly int[] ForbiddenCharsBelow127 = [34, 42, 47, 58, 60, 62, 63, 92, 124, 127];
+    //Above 127 none except *******
+    private static readonly int[] IncludeCharsAbove127 = [128, 138, 142];
+    //128 is € include
+    //138 is Š include
+    //142 is Ž include
+    //152 through 255 looks fine except 157, 172, 173, 175 *******
+    private static readonly int[] ForbiddenCharsAbove152 = [157, 172, 173, 175];
+    private static string CleanDirectoryName(string name)
+    {
+        StringBuilder sb = new ();
+        foreach (char c in name)
+        {
+            if (c > 32 && c < 127 && ForbiddenCharsBelow127.Contains(c) == false)
+                sb.Append(c);
+            else if (c > 127 && c < 152 && IncludeCharsAbove127.Contains(c))
+                sb.Append(c);
+            else if(c >= 152 && c <= 255 && ForbiddenCharsAbove152.Contains(c) == false)
+                sb.Append(c);
+        }
+        return sb.ToString();
+    }
 }

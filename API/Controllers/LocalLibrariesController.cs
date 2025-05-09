@@ -1,6 +1,7 @@
 ﻿using API.APIEndpointRecords;
 using API.Schema;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -9,7 +10,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class LocalLibrariesController(PgsqlContext context) : Controller
+public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controller
 {
     [HttpGet]
     [ProducesResponseType<LocalLibrary[]>(Status200OK, "application/json")]
@@ -52,6 +53,7 @@ public class LocalLibrariesController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -79,6 +81,7 @@ public class LocalLibrariesController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -106,6 +109,7 @@ public class LocalLibrariesController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -128,6 +132,7 @@ public class LocalLibrariesController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -151,6 +156,7 @@ public class LocalLibrariesController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }

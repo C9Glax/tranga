@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class dev160325Initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -115,32 +115,32 @@ namespace API.Migrations
                 columns: table => new
                 {
                     MangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    IdOnConnectorSite = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    IdOnConnectorSite = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    WebsiteUrl = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    CoverUrl = table.Column<string>(type: "text", nullable: false),
-                    CoverFileNameInCache = table.Column<string>(type: "text", nullable: true),
-                    Year = table.Column<long>(type: "bigint", nullable: false),
-                    OriginalLanguage = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
+                    WebsiteUrl = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    CoverUrl = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     ReleaseStatus = table.Column<byte>(type: "smallint", nullable: false),
-                    DirectoryName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    LibraryLocalLibraryId = table.Column<string>(type: "character varying(64)", nullable: true),
-                    IgnoreChapterBefore = table.Column<float>(type: "real", nullable: false),
-                    MangaConnectorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                    LibraryId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    MangaConnectorName = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    IgnoreChaptersBefore = table.Column<float>(type: "real", nullable: false),
+                    DirectoryName = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    CoverFileNameInCache = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    Year = table.Column<long>(type: "bigint", nullable: false),
+                    OriginalLanguage = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Mangas", x => x.MangaId);
                     table.ForeignKey(
-                        name: "FK_Mangas_LocalLibraries_LibraryLocalLibraryId",
-                        column: x => x.LibraryLocalLibraryId,
+                        name: "FK_Mangas_LocalLibraries_LibraryId",
+                        column: x => x.LibraryId,
                         principalTable: "LocalLibraries",
                         principalColumn: "LocalLibraryId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Mangas_MangaConnectors_MangaConnectorId",
-                        column: x => x.MangaConnectorId,
+                        name: "FK_Mangas_MangaConnectors_MangaConnectorName",
+                        column: x => x.MangaConnectorName,
                         principalTable: "MangaConnectors",
                         principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);
@@ -153,7 +153,7 @@ namespace API.Migrations
                     AltTitleId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Language = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     Title = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    MangaId = table.Column<string>(type: "character varying(64)", nullable: true)
+                    MangaId = table.Column<string>(type: "character varying(64)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -167,24 +167,24 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AuthorManga",
+                name: "AuthorToManga",
                 columns: table => new
                 {
-                    AuthorsAuthorId = table.Column<string>(type: "character varying(64)", nullable: false),
-                    MangaId = table.Column<string>(type: "character varying(64)", nullable: false)
+                    AuthorIds = table.Column<string>(type: "character varying(64)", nullable: false),
+                    MangaIds = table.Column<string>(type: "character varying(64)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuthorManga", x => new { x.AuthorsAuthorId, x.MangaId });
+                    table.PrimaryKey("PK_AuthorToManga", x => new { x.AuthorIds, x.MangaIds });
                     table.ForeignKey(
-                        name: "FK_AuthorManga_Authors_AuthorsAuthorId",
-                        column: x => x.AuthorsAuthorId,
+                        name: "FK_AuthorToManga_Authors_AuthorIds",
+                        column: x => x.AuthorIds,
                         principalTable: "Authors",
                         principalColumn: "AuthorId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AuthorManga_Mangas_MangaId",
-                        column: x => x.MangaId,
+                        name: "FK_AuthorToManga_Mangas_MangaIds",
+                        column: x => x.MangaIds,
                         principalTable: "Mangas",
                         principalColumn: "MangaId",
                         onDelete: ReferentialAction.Cascade);
@@ -195,13 +195,13 @@ namespace API.Migrations
                 columns: table => new
                 {
                     ChapterId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    ParentMangaId = table.Column<string>(type: "character varying(64)", nullable: false),
                     VolumeNumber = table.Column<int>(type: "integer", nullable: true),
                     ChapterNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Url = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: false),
                     Title = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     FileName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Downloaded = table.Column<bool>(type: "boolean", nullable: false),
-                    ParentMangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                    Downloaded = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -221,7 +221,7 @@ namespace API.Migrations
                     LinkId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     LinkProvider = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     LinkUrl = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: false),
-                    MangaId = table.Column<string>(type: "character varying(64)", nullable: true)
+                    MangaId = table.Column<string>(type: "character varying(64)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -235,24 +235,24 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MangaMangaTag",
+                name: "MangaTagToManga",
                 columns: table => new
                 {
-                    MangaId = table.Column<string>(type: "character varying(64)", nullable: false),
-                    MangaTagsTag = table.Column<string>(type: "character varying(64)", nullable: false)
+                    MangaTagIds = table.Column<string>(type: "character varying(64)", nullable: false),
+                    MangaIds = table.Column<string>(type: "character varying(64)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MangaMangaTag", x => new { x.MangaId, x.MangaTagsTag });
+                    table.PrimaryKey("PK_MangaTagToManga", x => new { x.MangaTagIds, x.MangaIds });
                     table.ForeignKey(
-                        name: "FK_MangaMangaTag_Mangas_MangaId",
-                        column: x => x.MangaId,
+                        name: "FK_MangaTagToManga_Mangas_MangaIds",
+                        column: x => x.MangaIds,
                         principalTable: "Mangas",
                         principalColumn: "MangaId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MangaMangaTag_Tags_MangaTagsTag",
-                        column: x => x.MangaTagsTag,
+                        name: "FK_MangaTagToManga_Tags_MangaTagIds",
+                        column: x => x.MangaTagIds,
                         principalTable: "Tags",
                         principalColumn: "Tag",
                         onDelete: ReferentialAction.Cascade);
@@ -263,8 +263,7 @@ namespace API.Migrations
                 columns: table => new
                 {
                     JobId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    ParentJobId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    DependsOnJobsIds = table.Column<string[]>(type: "text[]", maxLength: 64, nullable: true),
+                    ParentJobId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     JobType = table.Column<byte>(type: "smallint", nullable: false),
                     RecurrenceMs = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     LastExecution = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -275,9 +274,11 @@ namespace API.Migrations
                     ChapterId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     FromLocation = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ToLocation = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    MoveMangaLibraryJob_MangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    ToLibraryId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     RetrieveChaptersJob_MangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    UpdateFilesDownloadedJob_MangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    UpdateMetadataJob_MangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                    Language = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: true),
+                    UpdateFilesDownloadedJob_MangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -295,6 +296,12 @@ namespace API.Migrations
                         principalColumn: "JobId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Jobs_LocalLibraries_ToLibraryId",
+                        column: x => x.ToLibraryId,
+                        principalTable: "LocalLibraries",
+                        principalColumn: "LocalLibraryId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Jobs_Mangas_DownloadAvailableChaptersJob_MangaId",
                         column: x => x.DownloadAvailableChaptersJob_MangaId,
                         principalTable: "Mangas",
@@ -307,6 +314,12 @@ namespace API.Migrations
                         principalColumn: "MangaId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Jobs_Mangas_MoveMangaLibraryJob_MangaId",
+                        column: x => x.MoveMangaLibraryJob_MangaId,
+                        principalTable: "Mangas",
+                        principalColumn: "MangaId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Jobs_Mangas_RetrieveChaptersJob_MangaId",
                         column: x => x.RetrieveChaptersJob_MangaId,
                         principalTable: "Mangas",
@@ -315,12 +328,6 @@ namespace API.Migrations
                     table.ForeignKey(
                         name: "FK_Jobs_Mangas_UpdateFilesDownloadedJob_MangaId",
                         column: x => x.UpdateFilesDownloadedJob_MangaId,
-                        principalTable: "Mangas",
-                        principalColumn: "MangaId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Jobs_Mangas_UpdateMetadataJob_MangaId",
-                        column: x => x.UpdateMetadataJob_MangaId,
                         principalTable: "Mangas",
                         principalColumn: "MangaId",
                         onDelete: ReferentialAction.Cascade);
@@ -356,9 +363,9 @@ namespace API.Migrations
                 column: "MangaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuthorManga_MangaId",
-                table: "AuthorManga",
-                column: "MangaId");
+                name: "IX_AuthorToManga_MangaIds",
+                table: "AuthorToManga",
+                column: "MangaIds");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chapters_ParentMangaId",
@@ -386,6 +393,11 @@ namespace API.Migrations
                 column: "MangaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Jobs_MoveMangaLibraryJob_MangaId",
+                table: "Jobs",
+                column: "MoveMangaLibraryJob_MangaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Jobs_ParentJobId",
                 table: "Jobs",
                 column: "ParentJobId");
@@ -396,14 +408,14 @@ namespace API.Migrations
                 column: "RetrieveChaptersJob_MangaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Jobs_ToLibraryId",
+                table: "Jobs",
+                column: "ToLibraryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Jobs_UpdateFilesDownloadedJob_MangaId",
                 table: "Jobs",
                 column: "UpdateFilesDownloadedJob_MangaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Jobs_UpdateMetadataJob_MangaId",
-                table: "Jobs",
-                column: "UpdateMetadataJob_MangaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Links_MangaId",
@@ -411,19 +423,19 @@ namespace API.Migrations
                 column: "MangaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MangaMangaTag_MangaTagsTag",
-                table: "MangaMangaTag",
-                column: "MangaTagsTag");
+                name: "IX_Mangas_LibraryId",
+                table: "Mangas",
+                column: "LibraryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Mangas_LibraryLocalLibraryId",
+                name: "IX_Mangas_MangaConnectorName",
                 table: "Mangas",
-                column: "LibraryLocalLibraryId");
+                column: "MangaConnectorName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Mangas_MangaConnectorId",
-                table: "Mangas",
-                column: "MangaConnectorId");
+                name: "IX_MangaTagToManga_MangaIds",
+                table: "MangaTagToManga",
+                column: "MangaIds");
         }
 
         /// <inheritdoc />
@@ -433,7 +445,7 @@ namespace API.Migrations
                 name: "AltTitles");
 
             migrationBuilder.DropTable(
-                name: "AuthorManga");
+                name: "AuthorToManga");
 
             migrationBuilder.DropTable(
                 name: "JobJob");
@@ -445,7 +457,7 @@ namespace API.Migrations
                 name: "Links");
 
             migrationBuilder.DropTable(
-                name: "MangaMangaTag");
+                name: "MangaTagToManga");
 
             migrationBuilder.DropTable(
                 name: "NotificationConnectors");

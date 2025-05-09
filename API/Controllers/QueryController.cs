@@ -1,14 +1,16 @@
 ﻿using API.Schema;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+// ReSharper disable InconsistentNaming
 
 namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class QueryController(PgsqlContext context) : Controller
+public class QueryController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Returns the Author-Information for Author-ID
@@ -32,13 +34,16 @@ public class QueryController(PgsqlContext context) : Controller
     /// </summary>
     /// <param name="AuthorId">Author-ID</param>
     /// <response code="200"></response>
+    /// <response code="404">Author not found</response>
     [HttpGet("Mangas/WithAuthorId/{AuthorId}")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangaWithAuthorIds(string AuthorId)
     {
-        return Ok(context.Mangas.Where(m => m.AuthorIds.Contains(AuthorId)));
+        if(context.Authors.Find(AuthorId) is not { } a)
+            return NotFound();
+        return Ok(context.Mangas.Where(m => m.Authors.Contains(a)));
     }
-    
+    /*
     /// <summary>
     /// Returns Link-Information for Link-Id
     /// </summary>
@@ -71,18 +76,21 @@ public class QueryController(PgsqlContext context) : Controller
         if (ret is null)
             return NotFound();
         return Ok(ret);
-    }
+    }*/
     
     /// <summary>
     /// Returns all Manga with Tag
     /// </summary>
     /// <param name="Tag"></param>
     /// <response code="200"></response>
+    /// <response code="404">Tag not found</response>
     [HttpGet("Mangas/WithTag/{Tag}")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangasWithTag(string Tag)
     {
-        return Ok(context.Mangas.Where(m => m.Tags.Contains(Tag)));
+        if(context.Tags.Find(Tag) is not { } t)
+            return NotFound();
+        return Ok(context.Mangas.Where(m => m.MangaTags.Contains(t)));
     }
     
     /// <summary>

@@ -14,100 +14,159 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     public DbSet<LocalLibrary> LocalLibraries { get; set; }
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<Author> Authors { get; set; }
-    public DbSet<Link> Links { get; set; }
     public DbSet<MangaTag> Tags { get; set; }
-    public DbSet<MangaAltTitle> AltTitles { get; set; }
     public DbSet<LibraryConnector> LibraryConnectors { get; set; }
     public DbSet<NotificationConnector> NotificationConnectors { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<MangaConnector>()
-            .HasDiscriminator(c => c.Name)
-            .HasValue<Global>("Global")
-            .HasValue<AsuraToon>("AsuraToon")
-            .HasValue<Bato>("Bato")
-            .HasValue<MangaHere>("MangaHere")
-            .HasValue<MangaKatana>("MangaKatana")
-            .HasValue<Mangaworld>("Mangaworld")
-            .HasValue<ManhuaPlus>("ManhuaPlus")
-            .HasValue<Weebcentral>("Weebcentral")
-            .HasValue<Manganato>("Manganato")
-            .HasValue<MangaDex>("MangaDex");
-        modelBuilder.Entity<LibraryConnector>()
-            .HasDiscriminator<LibraryType>(l => l.LibraryType)
-            .HasValue<Komga>(LibraryType.Komga)
-            .HasValue<Kavita>(LibraryType.Kavita);
-
+        //Job Types
         modelBuilder.Entity<Job>()
-            .HasDiscriminator<JobType>(j => j.JobType)
+            .HasDiscriminator(j => j.JobType)
             .HasValue<MoveFileOrFolderJob>(JobType.MoveFileOrFolderJob)
+            .HasValue<MoveMangaLibraryJob>(JobType.MoveMangaLibraryJob)
             .HasValue<DownloadAvailableChaptersJob>(JobType.DownloadAvailableChaptersJob)
             .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
             .HasValue<DownloadMangaCoverJob>(JobType.DownloadMangaCoverJob)
-            .HasValue<UpdateMetadataJob>(JobType.UpdateMetaDataJob)
             .HasValue<RetrieveChaptersJob>(JobType.RetrieveChaptersJob)
             .HasValue<UpdateFilesDownloadedJob>(JobType.UpdateFilesDownloadedJob);
+        
+        //Job specification
+        modelBuilder.Entity<DownloadAvailableChaptersJob>()
+            .HasOne<Manga>(j => j.Manga)
+            .WithMany()
+            .HasForeignKey(j => j.MangaId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<DownloadAvailableChaptersJob>()
+            .Navigation(j => j.Manga)
+            .AutoInclude();
+        modelBuilder.Entity<DownloadMangaCoverJob>()
+            .HasOne<Manga>(j => j.Manga)
+            .WithMany()
+            .HasForeignKey(j => j.MangaId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<DownloadMangaCoverJob>()
+            .Navigation(j => j.Manga)
+            .AutoInclude();
+        modelBuilder.Entity<DownloadSingleChapterJob>()
+            .HasOne<Chapter>(j => j.Chapter)
+            .WithMany()
+            .HasForeignKey(j => j.ChapterId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<DownloadSingleChapterJob>()
+            .Navigation(j => j.Chapter)
+            .AutoInclude();
+        modelBuilder.Entity<MoveMangaLibraryJob>()
+            .HasOne<Manga>(j => j.Manga)
+            .WithMany()
+            .HasForeignKey(j => j.MangaId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MoveMangaLibraryJob>()
+            .Navigation(j => j.Manga)
+            .AutoInclude();
+        modelBuilder.Entity<MoveMangaLibraryJob>()
+            .HasOne<LocalLibrary>(j => j.ToLibrary)
+            .WithMany()
+            .HasForeignKey(j => j.ToLibraryId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MoveMangaLibraryJob>()
+            .Navigation(j => j.ToLibrary)
+            .AutoInclude();
+        modelBuilder.Entity<RetrieveChaptersJob>()
+            .HasOne<Manga>(j => j.Manga)
+            .WithMany()
+            .HasForeignKey(j => j.MangaId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<RetrieveChaptersJob>()
+            .Navigation(j => j.Manga)
+            .AutoInclude();
+        
+        //Job has possible ParentJob
         modelBuilder.Entity<Job>()
             .HasMany<Job>()
-            .WithOne(j => j.ParentJob)
+            .WithOne(childJob => childJob.ParentJob)
+            .HasForeignKey(childjob => childjob.ParentJobId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
+        //Job might be dependent on other Jobs
         modelBuilder.Entity<Job>()
-            .HasMany<Job>(j => j.DependsOnJobs)
+            .HasMany<Job>(root => root.DependsOnJobs)
             .WithMany();
-        modelBuilder.Entity<UpdateMetadataJob>()
-            .Navigation(umj => umj.Manga)
-            .AutoInclude();
-
-        modelBuilder.Entity<Manga>()
-            .HasOne<MangaConnector>(m => m.MangaConnector)
-            .WithMany()
-            .HasForeignKey(m => m.MangaConnectorId)
+        modelBuilder.Entity<Job>()
+            .Navigation(root => root.DependsOnJobs)
+            .AutoInclude(false);
+        
+        //MangaConnector Types
+        modelBuilder.Entity<MangaConnector>()
+            .HasDiscriminator(c => c.Name)
+            .HasValue<Global>("Global")
+            .HasValue<MangaDex>("MangaDex");
+        //MangaConnector is responsible for many Manga
+        modelBuilder.Entity<MangaConnector>()
+            .HasMany<Manga>()
+            .WithOne(m => m.MangaConnector)
+            .HasForeignKey(m => m.MangaConnectorName)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.MangaConnector)
             .AutoInclude();
+
+        //Manga has many Chapters
         modelBuilder.Entity<Manga>()
-            .HasOne<LocalLibrary>(m => m.Library)
-            .WithMany()
-            .OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.Library)
-            .AutoInclude();
-        modelBuilder.Entity<Manga>()
-            .HasMany<Author>(m => m.Authors)
-            .WithMany();
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.Authors)
-            .AutoInclude();
-        modelBuilder.Entity<Manga>()
-            .HasMany<MangaTag>(m => m.MangaTags)
-            .WithMany();
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.MangaTags)
-            .AutoInclude();
-        modelBuilder.Entity<Manga>()
-            .HasMany<Link>(m => m.Links)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.Links)
-            .AutoInclude();
-        modelBuilder.Entity<Manga>()
-            .HasMany<MangaAltTitle>(m => m.AltTitles)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.AltTitles)
-            .AutoInclude();
-        modelBuilder.Entity<Chapter>()
-            .HasOne<Manga>(c => c.ParentManga)
-            .WithMany()
+            .HasMany<Chapter>(m => m.Chapters)
+            .WithOne(c => c.ParentManga)
             .HasForeignKey(c => c.ParentMangaId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Chapter>()
             .Navigation(c => c.ParentManga)
             .AutoInclude();
+        //Manga owns MangaAltTitles
+        modelBuilder.Entity<Manga>()
+            .OwnsMany<MangaAltTitle>(m => m.AltTitles)
+            .WithOwner();
+        //Manga owns Links
+        modelBuilder.Entity<Manga>()
+            .OwnsMany<Link>(m => m.Links)
+            .WithOwner();
+        //Manga has many Tags associated with many Manga
+        modelBuilder.Entity<Manga>()
+            .HasMany<MangaTag>(m => m.MangaTags)
+            .WithMany()
+            .UsingEntity("MangaTagToManga",
+                l=> l.HasOne(typeof(MangaTag)).WithMany().HasForeignKey("MangaTagIds").HasPrincipalKey(nameof(MangaTag.Tag)),
+                r => r.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaIds").HasPrincipalKey(nameof(Manga.MangaId)),
+                j => j.HasKey("MangaTagIds", "MangaIds")
+            );
+        //Manga has many Authors associated with many Manga
+        modelBuilder.Entity<Manga>()
+            .HasMany<Author>(m => m.Authors)
+            .WithMany()
+            .UsingEntity("AuthorToManga",
+                l=> l.HasOne(typeof(Author)).WithMany().HasForeignKey("AuthorIds").HasPrincipalKey(nameof(Author.AuthorId)),
+                r => r.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaIds").HasPrincipalKey(nameof(Manga.MangaId)),
+                j => j.HasKey("AuthorIds", "MangaIds")
+            );
+        
+        //LocalLibrary has many Mangas
+        modelBuilder.Entity<LocalLibrary>()
+            .HasMany<Manga>()
+            .WithOne(m => m.Library)
+            .HasForeignKey(m => m.LibraryId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
+        //LibraryConnector Types
+        modelBuilder.Entity<LibraryConnector>()
+            .HasDiscriminator(l => l.LibraryType)
+            .HasValue<Komga>(LibraryType.Komga)
+            .HasValue<Kavita>(LibraryType.Kavita);
     }
 }
