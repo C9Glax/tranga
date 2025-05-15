@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using API.Schema.Contexts;
 
 namespace API.Schema.Jobs;
 

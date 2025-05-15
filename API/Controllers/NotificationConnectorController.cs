@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using API.APIEndpointRecords;
-using API.Schema;
+using API.Schema.Contexts;
 using API.Schema.NotificationConnectors;
 using Asp.Versioning;
 using log4net;
@@ -13,7 +13,7 @@ namespace API.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
-public class NotificationConnectorController(PgsqlContext context, ILog Log) : Controller
+public class NotificationConnectorController(NotificationsContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Gets all configured Notification-Connectors

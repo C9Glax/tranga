@@ -1,7 +1,7 @@
 using System.Reflection;
-using System.Text.Json.Serialization;
 using API;
 using API.Schema;
+using API.Schema.Contexts;
 using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using Asp.Versioning;
@@ -55,11 +55,17 @@ builder.Services.AddSwaggerGen(opt =>
 });
 builder.Services.ConfigureOptions<NamedSwaggerGenOptions>();
 
+string ConnectionString = $"Host={Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost:5432"}; " +
+                          $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "postgres"}; " +
+                          $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres"}; " +
+                          $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres"}";
+
 builder.Services.AddDbContext<PgsqlContext>(options =>
-    options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_HOST")??"localhost:5432"}; " +
-                      $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB")??"postgres"}; " +
-                      $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")??"postgres"}; " +
-                      $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")??"postgres"}"));
+    options.UseNpgsql(ConnectionString));
+builder.Services.AddDbContext<NotificationsContext>(options =>
+    options.UseNpgsql(ConnectionString));
+builder.Services.AddDbContext<LibraryContext>(options =>
+    options.UseNpgsql(ConnectionString));
 
 builder.Services.AddControllers(options =>
 {
@@ -99,30 +105,42 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<RequestTimeMiddleware>();
 
-using (var scope = app.Services.CreateScope())
+using (IServiceScope scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-    db.Database.Migrate();
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    PgsqlContext context = scope.ServiceProvider.GetService<PgsqlContext>()!;
+    PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
+    context.Database.Migrate();
     
     MangaConnector[] connectors =
-        [
-            new MangaDex(),
-            new Global(scope.ServiceProvider.GetService<PgsqlContext>()!)
-        ];
+    [
+        new MangaDex(),
+        new Global(scope.ServiceProvider.GetService<PgsqlContext>()!)
+    ];
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
-
-    context.Jobs.AddRange(context.Mangas.AsEnumerable().Select(m => new UpdateFilesDownloadedJob(m, 0)));
-    
-    context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
-
     if (!context.LocalLibraries.Any())
-        context.LocalLibraries.Add(new LocalLibrary(TrangaSettings.downloadLocation, "Default ToLibrary"));
+        context.LocalLibraries.Add(new LocalLibrary(TrangaSettings.downloadLocation, "Default Library"));
+
+    context.Jobs.AddRange(context.Jobs.Where(j => j.JobType == JobType.DownloadAvailableChaptersJob)
+        .AsEnumerable()
+        .Select(dacj =>
+        {
+            DownloadAvailableChaptersJob? j = dacj as DownloadAvailableChaptersJob;
+            return new UpdateFilesDownloadedJob(j!.Manga, 0);
+        }));
+    context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
+    foreach (Job job in context.Jobs.Where(j => j.state == JobState.Running))
+    {
+        job.state = JobState.FirstExecution;
+        job.LastExecution = DateTime.UnixEpoch;
+    }
+    
+    context.SaveChanges();
+}
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
+    context.Database.Migrate();
     
     string[] emojis = { "(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=", "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~","૮ \u00b4• ﻌ \u00b4• ა", "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"};
     context.Notifications.Add(new Notification("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High));

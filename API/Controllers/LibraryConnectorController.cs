@@ -1,4 +1,5 @@
 ﻿using API.Schema;
+using API.Schema.Contexts;
 using API.Schema.LibraryConnectors;
 using Asp.Versioning;
 using log4net;
@@ -10,7 +11,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class LibraryConnectorController(PgsqlContext context, ILog Log) : Controller
+public class LibraryConnectorController(LibraryContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Gets all configured ToLibrary-Connectors

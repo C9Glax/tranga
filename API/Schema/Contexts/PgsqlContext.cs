@@ -1,10 +1,9 @@
 ﻿using API.Schema.Jobs;
 using API.Schema.LibraryConnectors;
 using API.Schema.MangaConnectors;
-using API.Schema.NotificationConnectors;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Schema;
+namespace API.Schema.Contexts;
 
 public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(options)
 {
@@ -15,9 +14,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<Author> Authors { get; set; }
     public DbSet<MangaTag> Tags { get; set; }
-    public DbSet<LibraryConnector> LibraryConnectors { get; set; }
-    public DbSet<NotificationConnector> NotificationConnectors { get; set; }
-    public DbSet<Notification> Notifications { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -109,7 +105,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasMany<Job>(root => root.DependsOnJobs)
             .WithMany();
         modelBuilder.Entity<Job>()
-            .Navigation(root => root.DependsOnJobs)
+            .Navigation(j => j.DependsOnJobs)
             .AutoInclude(false);
         
         //MangaConnector Types
@@ -138,14 +134,23 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Chapter>()
             .Navigation(c => c.ParentManga)
             .AutoInclude();
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Chapters)
+            .AutoInclude();
         //Manga owns MangaAltTitles
         modelBuilder.Entity<Manga>()
             .OwnsMany<MangaAltTitle>(m => m.AltTitles)
             .WithOwner();
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.AltTitles)
+            .AutoInclude();
         //Manga owns Links
         modelBuilder.Entity<Manga>()
             .OwnsMany<Link>(m => m.Links)
             .WithOwner();
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Links)
+            .AutoInclude();
         //Manga has many Tags associated with many Manga
         modelBuilder.Entity<Manga>()
             .HasMany<MangaTag>(m => m.MangaTags)
@@ -155,6 +160,9 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
                 r => r.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaIds").HasPrincipalKey(nameof(Manga.MangaId)),
                 j => j.HasKey("MangaTagIds", "MangaIds")
             );
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.MangaTags)
+            .AutoInclude();
         //Manga has many Authors associated with many Manga
         modelBuilder.Entity<Manga>()
             .HasMany<Author>(m => m.Authors)
@@ -164,6 +172,9 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
                 r => r.HasOne(typeof(Manga)).WithMany().HasForeignKey("MangaIds").HasPrincipalKey(nameof(Manga.MangaId)),
                 j => j.HasKey("AuthorIds", "MangaIds")
             );
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Authors)
+            .AutoInclude();
         
         //LocalLibrary has many Mangas
         modelBuilder.Entity<LocalLibrary>()
@@ -171,11 +182,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .WithOne(m => m.Library)
             .HasForeignKey(m => m.LibraryId)
             .OnDelete(DeleteBehavior.SetNull);
-        
-        //LibraryConnector Types
-        modelBuilder.Entity<LibraryConnector>()
-            .HasDiscriminator(l => l.LibraryType)
-            .HasValue<Komga>(LibraryType.Komga)
-            .HasValue<Kavita>(LibraryType.Kavita);
+        modelBuilder.Entity<Manga>()
+            .Navigation(m => m.Library)
+            .AutoInclude();
     }
 }

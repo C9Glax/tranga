@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using API.Schema.Contexts;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -26,6 +27,7 @@ public class DownloadAvailableChaptersJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        context.Attach(Manga);
         return Manga.Chapters.Select(chapter => new DownloadSingleChapterJob(chapter, this));
     }
 }

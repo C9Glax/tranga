@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -27,6 +28,7 @@ public class DownloadMangaCoverJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        context.Attach(Manga);
         try
         {
             Manga.CoverFileNameInCache = Manga.MangaConnector.SaveCoverImageToCache(Manga);

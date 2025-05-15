@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using API.Schema.Contexts;
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -62,14 +63,16 @@ public abstract class Job
     {
         Log.Debug($"Running job {JobId}");
         using IServiceScope scope = serviceProvider.CreateScope();
-        PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
 
         try
         {
+            PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
+            context.Attach(this);
             this.state = JobState.Running;
             context.SaveChanges();
             Job[] newJobs = RunInternal(context).ToArray();
             this.state = JobState.Completed;
+            context.SaveChanges();
             context.Jobs.AddRange(newJobs);
             context.SaveChanges();
             Log.Info($"Job {JobId} completed. Generated {newJobs.Length} new jobs.");

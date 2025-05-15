@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using API.Schema.MangaConnectors;
+using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -31,6 +31,7 @@ public class RetrieveChaptersJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        context.Attach(Manga);
         // This gets all chapters that are not downloaded
         Chapter[] allChapters = Manga.MangaConnector.GetChapters(Manga, Language);
         Chapter[] newChapters = allChapters.Where(chapter => context.Chapters.Contains(chapter) == false).ToArray();

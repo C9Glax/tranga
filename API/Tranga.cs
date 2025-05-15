@@ -1,4 +1,5 @@
 ﻿using API.Schema;
+using API.Schema.Contexts;
 using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
 using API.Schema.NotificationConnectors;
@@ -30,12 +31,7 @@ public static class Tranga
         }
         IServiceProvider serviceProvider = (IServiceProvider)serviceProviderObj!;
         using IServiceScope scope = serviceProvider.CreateScope();
-        PgsqlContext? context = scope.ServiceProvider.GetService<PgsqlContext>();
-        if (context is null)
-        {
-            Log.Error("PgsqlContext is null");
-            return;
-        }
+        NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
 
         try
         {
@@ -64,12 +60,7 @@ public static class Tranga
     {
         Log.Info($"Sending notifications for {urgency}");
         using IServiceScope scope = serviceProvider.CreateScope();
-        PgsqlContext? context = scope.ServiceProvider.GetService<PgsqlContext>();
-        if (context is null)
-        {
-            Log.Error("PgsqlContext is null");
-            return;
-        }
+        NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
         
         List<Notification> notifications = context.Notifications.Where(n => n.Urgency == urgency).ToList();
         if (!notifications.Any())
@@ -117,6 +108,8 @@ public static class Tranga
         }
 
         Log.Info(TRANGA);
+        Log.Info("Loading Jobs");
+        context.Jobs.Load();
         Log.Info("JobStarter Thread running.");
         while (true)
         {
@@ -146,7 +139,7 @@ public static class Tranga
             List<Job> dueJobs = waitingJobs.Where(j => j.NextExecution < DateTime.UtcNow).ToList();
 
             List<MangaConnector> busyConnectors = GetBusyConnectors(runningJobs);
-            List<Job> startJobs = FilterJobPreconditions(dueJobs, busyConnectors);
+            List<Job> startJobs = FilterJobPreconditions(context, dueJobs, busyConnectors);
             
             //Start Jobs that are allowed to run (preconditions match)
             foreach (Job job in startJobs)
@@ -194,9 +187,13 @@ public static class Tranga
         return busyConnectors.ToList();
     }
 
-    private static List<Job> FilterJobPreconditions(List<Job> dueJobs, List<MangaConnector> busyConnectors) =>
+    private static List<Job> FilterJobPreconditions(PgsqlContext context, List<Job> dueJobs, List<MangaConnector> busyConnectors) =>
         dueJobs
-            .Where(j => j.DependenciesFulfilled)
+            .Where(j =>
+            {
+                context.Entry(j).Collection(j => j.DependsOnJobs).Load(LoadOptions.ForceIdentityResolution);
+                return j.DependenciesFulfilled;
+            })
             .Where(j =>
             {
                 //Filter jobs with busy connectors

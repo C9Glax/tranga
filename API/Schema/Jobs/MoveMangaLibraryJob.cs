@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -32,6 +33,7 @@ public class MoveMangaLibraryJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        context.Attach(Manga);
         Dictionary<Chapter, string> oldPath = Manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
         Manga.Library = ToLibrary;
         try

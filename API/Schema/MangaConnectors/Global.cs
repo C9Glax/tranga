@@ -1,4 +1,6 @@
-﻿namespace API.Schema.MangaConnectors;
+﻿using API.Schema.Contexts;
+
+namespace API.Schema.MangaConnectors;
 
 public class Global : MangaConnector
 {

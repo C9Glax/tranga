@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -27,6 +28,7 @@ public class UpdateFilesDownloadedJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        context.Attach(Manga);
         foreach (Chapter chapter in Manga.Chapters)
             chapter.Downloaded = chapter.CheckDownloaded();
 
