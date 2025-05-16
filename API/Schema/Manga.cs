@@ -39,7 +39,7 @@ public class Manga
     [StringLength(1024)] [Required] public string DirectoryName { get; private set; }
 
     [JsonIgnore] [StringLength(512)] public string? CoverFileNameInCache { get; internal set; } = null;
-    [Required] public uint? Year { get; internal init; }
+    public uint? Year { get; internal init; }
     [StringLength(8)] public string? OriginalLanguage { get; internal init; }
 
     [JsonIgnore]
