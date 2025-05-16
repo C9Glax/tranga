@@ -25,7 +25,7 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
     /// <response code="404">MangaConnector with ID not found</response>
     /// <response code="406">MangaConnector with ID is disabled</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{MangaConnectorName}/{Query}")]
+    [HttpGet("{MangaConnectorName}/{Query}")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status406NotAcceptable)]
