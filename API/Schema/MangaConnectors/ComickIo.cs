@@ -63,7 +63,7 @@ public class ComickIo : MangaConnector
     {
         string requestUrl = $"https://api.comick.fun/comic/{mangaIdOnSite}";
 
-        RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.Default);
+        RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.MangaInfo);
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
         {
             Log.Error("Request failed");
@@ -84,7 +84,7 @@ public class ComickIo : MangaConnector
         {
             string requestUrl = $"https://api.comick.fun/comic/{manga.IdOnConnectorSite}/chapters?limit=100&page={page}&lang={language}";
 
-            RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.Default);
+            RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.MangaInfo);
             if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
             {
                 Log.Error("Request failed");
@@ -119,7 +119,7 @@ public class ComickIo : MangaConnector
         string hid = m.Groups[1].Value;
         
         string requestUrl = $"https://api.comick.fun/chapter/{hid}/get_images";
-        RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.Default);
+        RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.MangaInfo);
         if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
         {
             Log.Error("Request failed");
