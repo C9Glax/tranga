@@ -67,30 +67,25 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("Url")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
-    [ProducesResponseType(Status300MultipleChoices)]
     [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult GetMangaFromUrl([FromBody]string url)
     {
-        List<MangaConnector> connectors = context.MangaConnectors.AsEnumerable().Where(c => c.UrlMatchesConnector(url)).ToList();
-        if (connectors.Count == 0)
-            return NotFound();
-        else if (connectors.Count > 1)
-            return StatusCode(Status300MultipleChoices);
+        if (context.MangaConnectors.Find("Global") is not { } connector)
+            return StatusCode(Status500InternalServerError, "Could not find Global Connector.");
 
-        if(connectors.First().GetMangaFromUrl(url) is not { } manga)
+        if(connector.GetMangaFromUrl(url) is not { } manga)
             return BadRequest();
         try
         {
             if(AddMangaToContext(manga) is { } add)
                 return Ok(add);
-            return StatusCode(500);
+            return StatusCode(Status500InternalServerError);
         }
         catch (DbUpdateException e)
         {
             Log.Error(e);
-            return StatusCode(500, e.Message);
+            return StatusCode(Status500InternalServerError, e.Message);
         }
     }
     
