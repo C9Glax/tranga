@@ -134,8 +134,10 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
             }
         }
         Job retrieveChapters = new RetrieveChaptersJob(m, record.language, record.recurrenceTimeMs);
-        Job downloadChapters = new DownloadAvailableChaptersJob(m, record.recurrenceTimeMs, dependsOnJobs: [retrieveChapters]);
-        return AddJobs([retrieveChapters, downloadChapters]);
+        Job updateFilesDownloaded =
+            new UpdateChaptersDownloadedJob(m, record.recurrenceTimeMs, dependsOnJobs: [retrieveChapters]);
+        Job downloadChapters = new DownloadAvailableChaptersJob(m, record.recurrenceTimeMs, dependsOnJobs: [retrieveChapters, updateFilesDownloaded]);
+        return AddJobs([retrieveChapters, downloadChapters, updateFilesDownloaded]);
     }
 
     /// <summary>
