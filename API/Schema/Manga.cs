@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 using static System.IO.UnixFileMode;
 
@@ -45,8 +46,16 @@ public class Manga
     [JsonIgnore]
     [NotMapped]
     public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
-    
-    [JsonIgnore] public ICollection<Chapter> Chapters { get; internal set; } = [];
+
+    [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.ChapterId).ToList();
+    private readonly ILazyLoader _lazyLoader = null!;
+    private ICollection<Chapter> _chapters = null!;
+    [JsonIgnore] 
+    public ICollection<Chapter> Chapters 
+    {
+        get => _lazyLoader.Load(this, ref _chapters);
+        init => _chapters = value;
+    }
 
     public Manga(string idOnConnector, string name, string description, string websiteUrl, string coverUrl, MangaReleaseStatus releaseStatus,
         MangaConnector mangaConnector, ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles,
@@ -71,14 +80,16 @@ public class Manga
         this.DirectoryName = CleanDirectoryName(name);
         this.Year = year;
         this.OriginalLanguage = originalLanguage;
+        this.Chapters = [];
     }
 
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public Manga(string mangaId, string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl, MangaReleaseStatus releaseStatus,
+    public Manga(ILazyLoader lazyLoader, string mangaId, string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl, MangaReleaseStatus releaseStatus,
         string mangaConnectorName, string directoryName, float ignoreChaptersBefore, string? libraryId, uint? year, string? originalLanguage)
     {
+        this._lazyLoader = lazyLoader;
         this.MangaId = mangaId;
         this.IdOnConnectorSite = idOnConnectorSite;
         this.Name = name;

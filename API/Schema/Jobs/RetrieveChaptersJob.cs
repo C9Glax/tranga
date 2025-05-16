@@ -40,7 +40,6 @@ public class RetrieveChaptersJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        context.Entry(Manga).Collection<Chapter>(m => m.Chapters).Load();
         // This gets all chapters that are not downloaded
         Chapter[] allChapters = Manga.MangaConnector.GetChapters(Manga, Language);
         Chapter[] newChapters = allChapters.Where(chapter => Manga.Chapters.Contains(chapter) == false).ToArray();

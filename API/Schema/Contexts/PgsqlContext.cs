@@ -118,7 +118,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .WithMany();
         modelBuilder.Entity<Job>()
             .Navigation(j => j.DependsOnJobs)
-            .AutoInclude(false);
+            .AutoInclude(false)
+            .EnableLazyLoading();
         
         //MangaConnector Types
         modelBuilder.Entity<MangaConnector>()
@@ -149,7 +150,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .AutoInclude();
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Chapters)
-            .AutoInclude(false);
+            .AutoInclude(false)
+            .EnableLazyLoading();
         //Manga owns MangaAltTitles
         modelBuilder.Entity<Manga>()
             .OwnsMany<MangaAltTitle>(m => m.AltTitles)

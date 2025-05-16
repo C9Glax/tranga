@@ -17,7 +17,12 @@ public abstract class Job
 
     [StringLength(64)] public string? ParentJobId { get; init; }
     [JsonIgnore] public Job? ParentJob { get; init; }
-    [JsonIgnore] public ICollection<Job> DependsOnJobs { get; init; }
+    private ICollection<Job> _dependsOnJobs = null!;
+    [JsonIgnore] public ICollection<Job> DependsOnJobs
+    {
+        get => LazyLoader.Load(this, ref _dependsOnJobs);
+        init => _dependsOnJobs = value;
+    }
 
     [Required] public JobType JobType { get; init; }
 
@@ -68,41 +73,31 @@ public abstract class Job
         DateTime jobStart = DateTime.UtcNow;
         Job[]? ret = null;
 
+        using IServiceScope scope = serviceProvider.CreateScope();
+        PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
         try
         {
-
-            using IServiceScope scope = serviceProvider.CreateScope();
-            PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-            try
-            {
-                context.Attach(this);
-                this.state = JobState.Running;
-                context.SaveChanges();
-                ret = RunInternal(context).ToArray();
-                this.state = JobState.Completed;
-                context.Jobs.AddRange(ret);
-                Log.Info($"Job {JobId} completed. Generated {ret.Length} new jobs.");
-            }
-            catch (Exception e)
-            {
-                if (e is not DbUpdateException dbEx)
-                {
-                    this.state = JobState.Failed;
-                    Log.Error($"Failed to run job {JobId}", e);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            finally
-            {
-                context.SaveChanges();
-            }
+            context.Attach(this);
+            this.state = JobState.Running;
+            context.SaveChanges();
+            ret = RunInternal(context).ToArray();
+            this.state = JobState.Completed;
+            context.Jobs.AddRange(ret);
+            Log.Info($"Job {JobId} completed. Generated {ret.Length} new jobs.");
+            context.SaveChanges();
         }
-        catch (DbUpdateException e)
+        catch (Exception e)
         {
-            Log.Error($"Failed to update Database {JobId}", e);
+            if (e is not DbUpdateException)
+            {
+                this.state = JobState.Failed;
+                Log.Error($"Failed to run job {JobId}", e);
+                context.SaveChanges();
+            }
+            else
+            {
+                Log.Error($"Failed to update Database {JobId}", e);
+            }
         }
         
         Log.Info($"Finished Job {JobId}! (took {DateTime.UtcNow.Subtract(jobStart).TotalMilliseconds}ms)");
