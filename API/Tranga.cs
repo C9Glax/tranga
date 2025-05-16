@@ -191,7 +191,9 @@ public static class Tranga
         dueJobs
             .Where(j =>
             {
-                context.Entry(j).Collection(j => j.DependsOnJobs).Load(LoadOptions.ForceIdentityResolution);
+                Log.Debug($"Loading Job Preconditions {j}...");
+                context.Entry(j).Collection(j => j.DependsOnJobs).Load();
+                Log.Debug($"Loaded Job Preconditions {j}!");
                 return j.DependenciesFulfilled;
             })
             .Where(j =>
