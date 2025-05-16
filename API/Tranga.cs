@@ -58,7 +58,7 @@ public static class Tranga
 
     private static void SendNotifications(IServiceProvider serviceProvider, NotificationUrgency urgency)
     {
-        Log.Info($"Sending notifications for {urgency}");
+        Log.Debug($"Sending notifications for {urgency}");
         using IServiceScope scope = serviceProvider.CreateScope();
         NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
         
