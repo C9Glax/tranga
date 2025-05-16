@@ -64,29 +64,49 @@ public abstract class Job
 
     public IEnumerable<Job> Run(IServiceProvider serviceProvider)
     {
-        Log.Debug($"Running job {JobId}");
-        using IServiceScope scope = serviceProvider.CreateScope();
+        Log.Info($"Running job {JobId}");
+        DateTime jobStart = DateTime.UtcNow;
+        Job[]? ret = null;
 
         try
         {
+
+            using IServiceScope scope = serviceProvider.CreateScope();
             PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-            context.Attach(this);
-            this.state = JobState.Running;
-            context.SaveChanges();
-            Job[] newJobs = RunInternal(context).ToArray();
-            this.state = JobState.Completed;
-            context.SaveChanges();
-            context.Jobs.AddRange(newJobs);
-            context.SaveChanges();
-            Log.Info($"Job {JobId} completed. Generated {newJobs.Length} new jobs.");
-            return newJobs;
+            try
+            {
+                context.Attach(this);
+                this.state = JobState.Running;
+                context.SaveChanges();
+                ret = RunInternal(context).ToArray();
+                this.state = JobState.Completed;
+                context.Jobs.AddRange(ret);
+                Log.Info($"Job {JobId} completed. Generated {ret.Length} new jobs.");
+            }
+            catch (Exception e)
+            {
+                if (e is not DbUpdateException dbEx)
+                {
+                    this.state = JobState.Failed;
+                    Log.Error($"Failed to run job {JobId}", e);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            finally
+            {
+                context.SaveChanges();
+            }
         }
-        catch (Exception e)
+        catch (DbUpdateException e)
         {
-            this.state = JobState.Failed;
-            Log.Error($"Failed to run job {JobId}", e);
-            return [];
+            Log.Error($"Failed to update Database {JobId}", e);
         }
+        
+        Log.Info($"Finished Job {JobId}! (took {DateTime.UtcNow.Subtract(jobStart).TotalMilliseconds}ms)");
+        return ret ?? [];
     }
     
     protected abstract IEnumerable<Job> RunInternal(PgsqlContext context);
