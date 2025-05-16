@@ -145,6 +145,7 @@ public static class Tranga
             List<Job> jobsWithoutDownloading =
                 jobsWithoutMissingDependencies
                     .Where(j => j.JobType != JobType.DownloadSingleChapterJob)
+                    .DistinctBy(j => j.JobType)
                     .ToList();
             List<Job> firstChapterPerConnector =
                 jobsWithoutMissingDependencies
