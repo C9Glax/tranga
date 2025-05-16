@@ -102,14 +102,14 @@ public class DownloadSingleChapterJob : Job
         context.Jobs.Load();
         if (context.Jobs.AsEnumerable().Any(j =>
             {
-                if (j.JobType != JobType.UpdateFilesDownloadedJob)
+                if (j.JobType != JobType.UpdateChaptersDownloadedJob)
                     return false;
-                UpdateFilesDownloadedJob job = (UpdateFilesDownloadedJob)j;
+                UpdateChaptersDownloadedJob job = (UpdateChaptersDownloadedJob)j;
                 return job.MangaId == this.Chapter.ParentMangaId;
             }))
             return [];
 
-        return [new UpdateFilesDownloadedJob(Chapter.ParentManga, 0, this.ParentJob)];
+        return [new UpdateChaptersDownloadedJob(Chapter.ParentManga, 0, this.ParentJob)];
     }
     
     private void ProcessImage(string imagePath)

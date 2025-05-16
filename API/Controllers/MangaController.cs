@@ -343,7 +343,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
             return NotFound();
 
         MoveMangaLibraryJob moveLibrary = new(manga, library);
-        UpdateFilesDownloadedJob updateDownloadedFiles = new(manga, 0, dependsOnJobs: [moveLibrary]);
+        UpdateChaptersDownloadedJob updateDownloadedFiles = new(manga, 0, dependsOnJobs: [moveLibrary]);
         
         try
         {

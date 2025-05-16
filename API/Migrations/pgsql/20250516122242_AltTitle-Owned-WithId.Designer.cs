@@ -416,7 +416,7 @@ namespace API.Migrations.pgsql
                     b.HasDiscriminator().HasValue((byte)5);
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.UpdateFilesDownloadedJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.UpdateChaptersDownloadedJob", b =>
                 {
                     b.HasBaseType("API.Schema.Jobs.Job");
 
@@ -668,7 +668,7 @@ namespace API.Migrations.pgsql
                     b.Navigation("Manga");
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.UpdateFilesDownloadedJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.UpdateChaptersDownloadedJob", b =>
                 {
                     b.HasOne("API.Schema.Manga", "Manga")
                         .WithMany()

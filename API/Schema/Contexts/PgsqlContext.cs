@@ -38,7 +38,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<DownloadSingleChapterJob>(JobType.DownloadSingleChapterJob)
             .HasValue<DownloadMangaCoverJob>(JobType.DownloadMangaCoverJob)
             .HasValue<RetrieveChaptersJob>(JobType.RetrieveChaptersJob)
-            .HasValue<UpdateFilesDownloadedJob>(JobType.UpdateFilesDownloadedJob);
+            .HasValue<UpdateChaptersDownloadedJob>(JobType.UpdateChaptersDownloadedJob)
+            .HasValue<UpdateSingleChapterDownloadedJob>(JobType.UpdateSingleChapterDownloadedJob);
         
         //Job specification
         modelBuilder.Entity<DownloadAvailableChaptersJob>()
@@ -95,13 +96,13 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<RetrieveChaptersJob>()
             .Navigation(j => j.Manga)
             .AutoInclude();
-        modelBuilder.Entity<UpdateFilesDownloadedJob>()
+        modelBuilder.Entity<UpdateChaptersDownloadedJob>()
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
             .HasForeignKey(j => j.MangaId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<UpdateFilesDownloadedJob>()
+        modelBuilder.Entity<UpdateChaptersDownloadedJob>()
             .Navigation(j => j.Manga)
             .AutoInclude();
         

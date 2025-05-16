@@ -5,7 +5,7 @@ namespace API;
 
 public static class TokenGen
 {
-    private const int MinimumLength = 32;
+    private const int MinimumLength = 16;
     private const int MaximumLength = 64;
     private const string Chars = "abcdefghijklmnopqrstuvwxyz0123456789";
 

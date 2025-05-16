@@ -413,7 +413,7 @@ namespace API.Migrations.pgsql
                     b.HasDiscriminator().HasValue((byte)5);
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.UpdateFilesDownloadedJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.UpdateChaptersDownloadedJob", b =>
                 {
                     b.HasBaseType("API.Schema.Jobs.Job");
 
@@ -427,10 +427,30 @@ namespace API.Migrations.pgsql
                     b.ToTable("Jobs", t =>
                         {
                             t.Property("MangaId")
-                                .HasColumnName("UpdateFilesDownloadedJob_MangaId");
+                                .HasColumnName("UpdateChaptersDownloadedJob_MangaId");
                         });
 
                     b.HasDiscriminator().HasValue((byte)6);
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.UpdateSingleChapterDownloadedJob", b =>
+                {
+                    b.HasBaseType("API.Schema.Jobs.Job");
+
+                    b.Property<string>("ChapterId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasIndex("ChapterId");
+
+                    b.ToTable("Jobs", t =>
+                        {
+                            t.Property("ChapterId")
+                                .HasColumnName("UpdateSingleChapterDownloadedJob_ChapterId");
+                        });
+
+                    b.HasDiscriminator().HasValue((byte)8);
                 });
 
             modelBuilder.Entity("API.Schema.MangaConnectors.ComickIo", b =>
@@ -665,7 +685,7 @@ namespace API.Migrations.pgsql
                     b.Navigation("Manga");
                 });
 
-            modelBuilder.Entity("API.Schema.Jobs.UpdateFilesDownloadedJob", b =>
+            modelBuilder.Entity("API.Schema.Jobs.UpdateChaptersDownloadedJob", b =>
                 {
                     b.HasOne("API.Schema.Manga", "Manga")
                         .WithMany()
@@ -674,6 +694,17 @@ namespace API.Migrations.pgsql
                         .IsRequired();
 
                     b.Navigation("Manga");
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.UpdateSingleChapterDownloadedJob", b =>
+                {
+                    b.HasOne("API.Schema.Chapter", "Chapter")
+                        .WithMany()
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
                 });
 
             modelBuilder.Entity("API.Schema.Manga", b =>

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations.pgsql
 {
     [DbContext(typeof(PgsqlContext))]
-    [Migration("20250516121725_Manga-Year-Nullable")]
-    partial class MangaYearNullable
+    [Migration("20250516180953_Split-UpdateChaptersDownloadedJob-Into-UpdateSingleChapterDownloadedJob")]
+    partial class SplitUpdateChaptersDownloadedJobIntoUpdateSingleChapterDownloadedJob
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -430,10 +430,30 @@ namespace API.Migrations.pgsql
                     b.ToTable("Jobs", t =>
                         {
                             t.Property("MangaId")
-                                .HasColumnName("UpdateFilesDownloadedJob_MangaId");
+                                .HasColumnName("UpdateChaptersDownloadedJob_MangaId");
                         });
 
                     b.HasDiscriminator().HasValue((byte)6);
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.UpdateSingleChapterDownloadedJob", b =>
+                {
+                    b.HasBaseType("API.Schema.Jobs.Job");
+
+                    b.Property<string>("ChapterId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasIndex("ChapterId");
+
+                    b.ToTable("Jobs", t =>
+                        {
+                            t.Property("ChapterId")
+                                .HasColumnName("UpdateSingleChapterDownloadedJob_ChapterId");
+                        });
+
+                    b.HasDiscriminator().HasValue((byte)8);
                 });
 
             modelBuilder.Entity("API.Schema.MangaConnectors.ComickIo", b =>
@@ -523,26 +543,27 @@ namespace API.Migrations.pgsql
 
                     b.OwnsMany("API.Schema.MangaAltTitle", "AltTitles", b1 =>
                         {
-                            b1.Property<string>("MangaId")
+                            b1.Property<string>("AltTitleId")
+                                .HasMaxLength(64)
                                 .HasColumnType("character varying(64)");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
 
                             b1.Property<string>("Language")
                                 .IsRequired()
                                 .HasMaxLength(8)
                                 .HasColumnType("character varying(8)");
 
+                            b1.Property<string>("MangaId")
+                                .IsRequired()
+                                .HasColumnType("character varying(64)");
+
                             b1.Property<string>("Title")
                                 .IsRequired()
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
-                            b1.HasKey("MangaId", "Id");
+                            b1.HasKey("AltTitleId");
+
+                            b1.HasIndex("MangaId");
 
                             b1.ToTable("MangaAltTitle");
 
@@ -676,6 +697,17 @@ namespace API.Migrations.pgsql
                         .IsRequired();
 
                     b.Navigation("Manga");
+                });
+
+            modelBuilder.Entity("API.Schema.Jobs.UpdateSingleChapterDownloadedJob", b =>
+                {
+                    b.HasOne("API.Schema.Chapter", "Chapter")
+                        .WithMany()
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
                 });
 
             modelBuilder.Entity("API.Schema.Manga", b =>

@@ -158,7 +158,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Create a new UpdateFilesDownloadedJob
+    /// Create a new UpdateChaptersDownloadedJob
     /// </summary>
     /// <param name="MangaId">ID of the Manga</param>
     /// <response code="201">Job-IDs</response>
@@ -172,7 +172,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     {
         if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
-        Job job = new UpdateFilesDownloadedJob(m, 0);
+        Job job = new UpdateChaptersDownloadedJob(m, 0);
         return AddJobs([job]);
     }
 
@@ -186,7 +186,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateUpdateAllFilesDownloadedJob()
     {
-        List<UpdateFilesDownloadedJob> jobs = context.Mangas.Select(m => new UpdateFilesDownloadedJob(m, 0, null, null)).ToList();
+        List<UpdateChaptersDownloadedJob> jobs = context.Mangas.Select(m => new UpdateChaptersDownloadedJob(m, 0, null, null)).ToList();
         try
         {
             context.Jobs.AddRange(jobs);
