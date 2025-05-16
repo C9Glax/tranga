@@ -82,7 +82,7 @@ public class ComickIo : MangaConnector
         int page = 1;
         while(page < 50)
         {
-            string requestUrl = $"https://api.comick.fun/comic/{manga.IdOnConnectorSite}/chapters?limit=100&page={page}";
+            string requestUrl = $"https://api.comick.fun/comic/{manga.IdOnConnectorSite}/chapters?limit=100&page={page}&lang={language}";
 
             RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.Default);
             if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
@@ -92,12 +92,13 @@ public class ComickIo : MangaConnector
             }
 
             using StreamReader sr = new (result.result);
-            JArray data = JArray.Parse(sr.ReadToEnd());
+            JToken data = JToken.Parse(sr.ReadToEnd());
+            JArray? chaptersArray = data["chapters"] as JArray;
 
-            if (data.Count < 1)
+            if (chaptersArray?.Count < 1)
                 break;
             
-            chapterHids.AddRange(data.Select(token => token.Value<string>("hid")!));
+            chapterHids.AddRange(chaptersArray?.Select(token => token.Value<string>("hid")!)!);
 
             page++;
         }
