@@ -36,7 +36,6 @@ public class UpdateChaptersDownloadedJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        context.Attach(Manga);
         context.Entry(Manga).Collection<Chapter>(m => m.Chapters).Load();
         return Manga.Chapters.Select(c => new UpdateSingleChapterDownloadedJob(c, this));
     }

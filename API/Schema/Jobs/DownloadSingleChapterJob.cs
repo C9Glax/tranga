@@ -45,8 +45,6 @@ public class DownloadSingleChapterJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        context.Attach(Chapter);
-        context.Attach(Chapter.ParentManga);
         string[] imageUrls = Chapter.ParentManga.MangaConnector.GetChapterImageUrls(Chapter);
         if (imageUrls.Length < 1)
         {
@@ -107,8 +105,7 @@ public class DownloadSingleChapterJob : Job
         Chapter.Downloaded = true;
         context.SaveChanges();
 
-        context.Jobs.Load();
-        if (context.Jobs.AsEnumerable().Any(j =>
+        if (context.Jobs.ToList().Any(j =>
             {
                 if (j.JobType != JobType.UpdateChaptersDownloadedJob)
                     return false;

@@ -37,7 +37,6 @@ public class DownloadMangaCoverJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        context.Attach(Manga);
         try
         {
             Manga.CoverFileNameInCache = Manga.MangaConnector.SaveCoverImageToCache(Manga);

@@ -37,7 +37,6 @@ public class UpdateSingleChapterDownloadedJob : Job
 
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        context.Attach(Chapter);
         Chapter.Downloaded = Chapter.CheckDownloaded();
 
         try
