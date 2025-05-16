@@ -105,20 +105,16 @@ public static class Tranga
         IServiceProvider serviceProvider = (IServiceProvider)serviceProviderObj;
         using IServiceScope scope = serviceProvider.CreateScope();
         PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-
-        DateTime lastContextUpdate = DateTime.UnixEpoch;
         
         while (true)
         {
-            if (lastContextUpdate.AddMilliseconds(TrangaSettings.startNewJobTimeoutMs * 10) < DateTime.UtcNow)
-            {
-                Log.Info("Loading Jobs...");
-                context.Jobs.Load();
-                lastContextUpdate = DateTime.UtcNow;
-                Log.Info("Jobs Loaded!");
-            }
+            Log.Info("Loading Jobs...");
+            DateTime loadStart = DateTime.UtcNow;
+            context.Jobs.Load();
+            Log.Info("Updating Entries...");
             foreach (EntityEntry entityEntry in context.ChangeTracker.Entries().ToArray())
                 entityEntry.Reload();
+            Log.Info($"Jobs Loaded! (took {DateTime.UtcNow.Subtract(loadStart).TotalMilliseconds}ms)");
             //Update finished Jobs to new states
             List<Job> completedJobs = context.Jobs.Local.Where(j => j.state == JobState.Completed).ToList();
             foreach (Job completedJob in completedJobs)
