@@ -96,7 +96,10 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
     
     private Manga? AddMangaToContext(Manga manga)
     {
-        Manga? existing = context.Mangas.Find(manga.MangaId);
+        context.Mangas.Load();
+        context.Authors.Load();
+        context.Tags.Load();
+        context.MangaConnectors.Load();
         
         IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
         {
@@ -112,21 +115,6 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
         });
         manga.Authors = mergedAuthors.ToList();
 
-        /*
-        IEnumerable<Link> mergedLinks = manga.Links.Select(ml =>
-        {
-            Link? inDb = context.Links.Find(ml.LinkId);
-            return inDb ?? ml;
-        });
-        manga.Links = mergedLinks.ToList();
-
-        IEnumerable<MangaAltTitle> mergedAltTitles = manga.AltTitles.Select(mat =>
-        {
-            MangaAltTitle? inDb = context.AltTitles.Find(mat.AltTitleId);
-            return inDb ?? mat;
-        });
-        manga.AltTitles = mergedAltTitles.ToList();
-*/
         try
         {
 
