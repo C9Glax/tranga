@@ -116,7 +116,8 @@ public static class Tranga
             foreach (EntityEntry entityEntry in context.ChangeTracker.Entries().ToArray())
                 entityEntry.Reload();
             //Update finished Jobs to new states
-            List<Job> completedJobs = context.Jobs.Where(j => j.state == JobState.Completed).ToList();
+            context.Jobs.Load();
+            List<Job> completedJobs = context.Jobs.Local.Where(j => j.state == JobState.Completed).ToList();
             foreach (Job completedJob in completedJobs)
                 if (completedJob.RecurrenceMs <= 0)
                     context.Jobs.Remove(completedJob);
@@ -125,7 +126,7 @@ public static class Tranga
                     completedJob.state = JobState.CompletedWaiting;
                     completedJob.LastExecution = DateTime.UtcNow;
                 }
-            List<Job> failedJobs = context.Jobs.Where(j => j.state == JobState.Failed).ToList();
+            List<Job> failedJobs = context.Jobs.Local.Where(j => j.state == JobState.Failed).ToList();
             foreach (Job failedJob in failedJobs)
             {
                 failedJob.Enabled = false;
@@ -133,9 +134,9 @@ public static class Tranga
             }
 
             //Retrieve waiting and due Jobs
-            List<Job> waitingJobs = context.Jobs.Where(j =>
+            List<Job> waitingJobs = context.Jobs.Local.Where(j =>
                 j.Enabled && (j.state == JobState.FirstExecution || j.state == JobState.CompletedWaiting)).ToList();
-            List<Job> runningJobs = context.Jobs.Where(j => j.state == JobState.Running).ToList();
+            List<Job> runningJobs = context.Jobs.Local.Where(j => j.state == JobState.Running).ToList();
             List<Job> dueJobs = waitingJobs.Where(j => j.NextExecution < DateTime.UtcNow).ToList();
 
             List<MangaConnector> busyConnectors = GetBusyConnectors(runningJobs);
@@ -203,6 +204,7 @@ public static class Tranga
                     return busyConnectors.Contains(mangaConnector) == false;
                 return true;
             })
+            .DistinctBy(j => j.JobType)
             .ToList();
 
     private static MangaConnector? GetJobConnector(Job job)
