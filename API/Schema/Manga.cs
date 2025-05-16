@@ -97,7 +97,9 @@ public class Manga
     
     public string CreatePublicationFolder()
     {
-        string publicationFolder = FullDirectoryPath;
+        string? publicationFolder = FullDirectoryPath;
+        if (publicationFolder is null)
+            throw new DirectoryNotFoundException("Publication folder not found");
         if(!Directory.Exists(publicationFolder))
             Directory.CreateDirectory(publicationFolder);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -131,7 +133,7 @@ public class Manga
         StringBuilder sb = new ();
         foreach (char c in name)
         {
-            if (c > 32 && c < 127 && ForbiddenCharsBelow127.Contains(c) == false)
+            if (c >= 32 && c < 127 && ForbiddenCharsBelow127.Contains(c) == false)
                 sb.Append(c);
             else if (c > 127 && c < 152 && IncludeCharsAbove127.Contains(c))
                 sb.Append(c);
