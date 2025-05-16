@@ -8,7 +8,7 @@ public class MangaAltTitle(string language, string title)
 {
     [StringLength(64)]
     [Required]
-    public string AltTitleId { get; init; } = TokenGen.CreateToken("AltTitle", language, title);
+    public string AltTitleId { get; init; } = TokenGen.CreateToken("AltTitle");
     [StringLength(8)]
     [Required]
     public string Language { get; init; } = language;
