@@ -107,14 +107,13 @@ public static class Tranga
         PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
         
         while (true)
-        {
-            Log.Info("Loading Jobs...");
+        {            Log.Debug("Loading Jobs...");
             DateTime loadStart = DateTime.UtcNow;
             context.Jobs.Load();
-            Log.Info("Updating Entries...");
+            Log.Debug("Updating Entries...");
             foreach (EntityEntry entityEntry in context.ChangeTracker.Entries().ToArray())
                 entityEntry.Reload();
-            Log.Info($"Jobs Loaded! (took {DateTime.UtcNow.Subtract(loadStart).TotalMilliseconds}ms)");
+            Log.Debug($"Jobs Loaded! (took {DateTime.UtcNow.Subtract(loadStart).TotalMilliseconds}ms)");
             //Update finished Jobs to new states
             List<Job> completedJobs = context.Jobs.Local.Where(j => j.state == JobState.Completed).ToList();
             foreach (Job completedJob in completedJobs)
@@ -135,6 +134,8 @@ public static class Tranga
             //Retrieve waiting and due Jobs
             List<Job> runningJobs = context.Jobs.Local.Where(j => j.state == JobState.Running).ToList();
             
+            DateTime filterStart = DateTime.UtcNow;
+            Log.Debug("Filtering Jobs...");
             List<MangaConnector> busyConnectors = GetBusyConnectors(runningJobs);
 
             List<Job> waitingJobs = GetWaitingJobs(context.Jobs.Local.ToList());
@@ -163,6 +164,8 @@ public static class Tranga
                     .ToList();
 
             List<Job> startJobs = jobsWithoutDownloading.Concat(firstChapterPerConnector).ToList();
+            Log.Debug($"Jobs Filtered! (took {DateTime.UtcNow.Subtract(filterStart).TotalMilliseconds}ms)");
+            
             
             //Start Jobs that are allowed to run (preconditions match)
             foreach (Job job in startJobs)
