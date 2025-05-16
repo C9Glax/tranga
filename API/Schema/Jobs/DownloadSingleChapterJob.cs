@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
 using API.Schema.Contexts;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -37,6 +38,7 @@ public class DownloadSingleChapterJob : Job
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         context.Attach(Chapter);
+        context.Attach(Chapter.ParentManga);
         string[] imageUrls = Chapter.ParentManga.MangaConnector.GetChapterImageUrls(Chapter);
         if (imageUrls.Length < 1)
         {
@@ -97,6 +99,7 @@ public class DownloadSingleChapterJob : Job
         Chapter.Downloaded = true;
         context.SaveChanges();
 
+        context.Jobs.Load();
         if (context.Jobs.AsEnumerable().Any(j =>
             {
                 if (j.JobType != JobType.UpdateFilesDownloadedJob)
