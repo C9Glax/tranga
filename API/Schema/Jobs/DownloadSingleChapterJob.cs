@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
 using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -17,7 +18,14 @@ public class DownloadSingleChapterJob : Job
 {
     [StringLength(64)] [Required] public string ChapterId { get; init; }
 
-    [JsonIgnore] public Chapter Chapter { get; init; } = null!;
+    private Chapter _chapter = null!;
+    
+    [JsonIgnore]
+    public Chapter Chapter 
+    {
+        get => LazyLoader.Load(this, ref _chapter);
+        init => _chapter = value;
+    }
 
     public DownloadSingleChapterJob(Chapter chapter, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : base(TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, parentJob, dependsOnJobs)
@@ -29,8 +37,8 @@ public class DownloadSingleChapterJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadSingleChapterJob(string chapterId, string? parentJobId)
-        : base(TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, parentJobId)
+    internal DownloadSingleChapterJob(ILazyLoader lazyLoader, string chapterId, string? parentJobId)
+        : base(lazyLoader, TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, parentJobId)
     {
         this.ChapterId = chapterId;
     }

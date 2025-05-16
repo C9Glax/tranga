@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -8,7 +9,15 @@ namespace API.Schema.Jobs;
 public class RetrieveChaptersJob : Job
 {
     [StringLength(64)] [Required] public string MangaId { get; init; }
-    [JsonIgnore] public Manga Manga { get; init; } = null!;
+
+    private Manga _manga = null!;
+    
+    [JsonIgnore]
+    public Manga Manga 
+    {
+        get => LazyLoader.Load(this, ref _manga);
+        init => _manga = value;
+    }
     [StringLength(8)] [Required] public string Language { get; private set; }
     
     public RetrieveChaptersJob(Manga manga, string language, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
@@ -22,8 +31,8 @@ public class RetrieveChaptersJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal RetrieveChaptersJob(string mangaId, string language, ulong recurrenceMs, string? parentJobId)
-        : base(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId)
+    internal RetrieveChaptersJob(ILazyLoader lazyLoader, string mangaId, string language, ulong recurrenceMs, string? parentJobId)
+        : base(lazyLoader, TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
         this.Language = language;

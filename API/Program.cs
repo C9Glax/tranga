@@ -122,12 +122,9 @@ using (IServiceScope scope = app.Services.CreateScope())
         context.LocalLibraries.Add(new LocalLibrary(TrangaSettings.downloadLocation, "Default Library"));
 
     context.Jobs.AddRange(context.Jobs.Where(j => j.JobType == JobType.DownloadAvailableChaptersJob)
-        .AsEnumerable()
-        .Select(dacj =>
-        {
-            DownloadAvailableChaptersJob? j = dacj as DownloadAvailableChaptersJob;
-            return new UpdateChaptersDownloadedJob(j!.Manga, 0);
-        }));
+        .Include(downloadAvailableChaptersJob => ((DownloadAvailableChaptersJob)downloadAvailableChaptersJob).Manga)
+        .ToList()
+        .Select(dacj => new UpdateChaptersDownloadedJob(((DownloadAvailableChaptersJob)dacj).Manga, 0)));
     context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
     foreach (Job job in context.Jobs.Where(j => j.state == JobState.Running))
     {
@@ -153,7 +150,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 TrangaSettings.Load();
 Tranga.StartLogger();
 Tranga.JobStarterThread.Start(app.Services);
-Tranga.NotificationSenderThread.Start(app.Services);
+//Tranga.NotificationSenderThread.Start(app.Services); //TODO RE-ENABLE
 
 app.UseCors("AllowAll");
 

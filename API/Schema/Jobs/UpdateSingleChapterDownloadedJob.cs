@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -8,7 +9,15 @@ namespace API.Schema.Jobs;
 public class UpdateSingleChapterDownloadedJob : Job
 {
     [StringLength(64)] [Required] public string ChapterId { get; init; }
-    [JsonIgnore] public Chapter Chapter { get; init; } = null!;
+
+    private Chapter _chapter = null!;
+    
+    [JsonIgnore]
+    public Chapter Chapter 
+    {
+        get => LazyLoader.Load(this, ref _chapter);
+        init => _chapter = value;
+    }
     
     public UpdateSingleChapterDownloadedJob(Chapter chapter, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : base(TokenGen.CreateToken(typeof(UpdateSingleChapterDownloadedJob)), JobType.UpdateSingleChapterDownloadedJob, 0, parentJob, dependsOnJobs)
@@ -20,8 +29,8 @@ public class UpdateSingleChapterDownloadedJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal UpdateSingleChapterDownloadedJob(string chapterId, string? parentJobId) 
-        : base(TokenGen.CreateToken(typeof(UpdateSingleChapterDownloadedJob)), JobType.UpdateSingleChapterDownloadedJob, 0, parentJobId)
+    internal UpdateSingleChapterDownloadedJob(ILazyLoader lazyLoader, string chapterId, string? parentJobId) 
+        : base(lazyLoader, TokenGen.CreateToken(typeof(UpdateSingleChapterDownloadedJob)), JobType.UpdateSingleChapterDownloadedJob, 0, parentJobId)
     {
         this.ChapterId = chapterId;
     }

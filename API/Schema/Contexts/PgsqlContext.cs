@@ -50,7 +50,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadAvailableChaptersJob>()
             .Navigation(j => j.Manga)
-            .AutoInclude();
+            .EnableLazyLoading();
         modelBuilder.Entity<DownloadMangaCoverJob>()
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
@@ -59,7 +59,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadMangaCoverJob>()
             .Navigation(j => j.Manga)
-            .AutoInclude();
+            .EnableLazyLoading();
         modelBuilder.Entity<DownloadSingleChapterJob>()
             .HasOne<Chapter>(j => j.Chapter)
             .WithMany()
@@ -68,7 +68,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadSingleChapterJob>()
             .Navigation(j => j.Chapter)
-            .AutoInclude();
+            .EnableLazyLoading();
         modelBuilder.Entity<MoveMangaLibraryJob>()
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
@@ -77,7 +77,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MoveMangaLibraryJob>()
             .Navigation(j => j.Manga)
-            .AutoInclude();
+            .EnableLazyLoading();
         modelBuilder.Entity<MoveMangaLibraryJob>()
             .HasOne<LocalLibrary>(j => j.ToLibrary)
             .WithMany()
@@ -86,7 +86,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MoveMangaLibraryJob>()
             .Navigation(j => j.ToLibrary)
-            .AutoInclude();
+            .EnableLazyLoading();
         modelBuilder.Entity<RetrieveChaptersJob>()
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
@@ -95,7 +95,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<RetrieveChaptersJob>()
             .Navigation(j => j.Manga)
-            .AutoInclude();
+            .EnableLazyLoading();
         modelBuilder.Entity<UpdateChaptersDownloadedJob>()
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
@@ -104,14 +104,13 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<UpdateChaptersDownloadedJob>()
             .Navigation(j => j.Manga)
-            .AutoInclude();
+            .EnableLazyLoading();
         
         //Job has possible ParentJob
         modelBuilder.Entity<Job>()
-            .HasMany<Job>()
-            .WithOne(childJob => childJob.ParentJob)
+            .HasOne<Job>(childJob => childJob.ParentJob)
+            .WithMany()
             .HasForeignKey(childjob => childjob.ParentJobId)
-            .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
         //Job might be dependent on other Jobs
         modelBuilder.Entity<Job>()

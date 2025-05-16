@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using API.Schema.Contexts;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -7,7 +8,15 @@ namespace API.Schema.Jobs;
 public class DownloadAvailableChaptersJob : Job
 {
     [StringLength(64)] [Required] public string MangaId { get; init; }
-    [JsonIgnore] public Manga Manga { get; init; } = null!;
+
+    private Manga _manga = null!;
+    
+    [JsonIgnore]
+    public Manga Manga 
+    {
+        get => LazyLoader.Load(this, ref _manga);
+        init => _manga = value;
+    }
     
     public DownloadAvailableChaptersJob(Manga manga, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : base(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJob, dependsOnJobs)
@@ -19,8 +28,8 @@ public class DownloadAvailableChaptersJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadAvailableChaptersJob(string mangaId, ulong recurrenceMs, string? parentJobId)
-        : base(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId)
+    internal DownloadAvailableChaptersJob(ILazyLoader lazyLoader, string mangaId, ulong recurrenceMs, string? parentJobId)
+        : base(lazyLoader, TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
     }

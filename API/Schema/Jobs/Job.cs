@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using API.Schema.Contexts;
 using log4net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -32,6 +33,7 @@ public abstract class Job
     [JsonIgnore] [NotMapped] internal bool DependenciesFulfilled => DependsOnJobs.All(j => j.IsCompleted);
 
     [NotMapped] [JsonIgnore] protected ILog Log { get; init; }
+    [NotMapped] [JsonIgnore] protected ILazyLoader LazyLoader { get; init; }
 
     protected Job(string jobId, JobType jobType, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
     {
@@ -48,8 +50,9 @@ public abstract class Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    protected internal Job(string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId)
+    protected internal Job(ILazyLoader lazyLoader, string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId)
     {
+        this.LazyLoader = lazyLoader;
         this.JobId = jobId;
         this.JobType = jobType;
         this.RecurrenceMs = recurrenceMs;

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -8,7 +9,15 @@ namespace API.Schema.Jobs;
 public class MoveMangaLibraryJob : Job
 {
     [StringLength(64)] [Required] public string MangaId { get; init; }
-    [JsonIgnore] public Manga Manga { get; init; } = null!;
+
+    private Manga _manga = null!;
+    
+    [JsonIgnore]
+    public Manga Manga 
+    {
+        get => LazyLoader.Load(this, ref _manga);
+        init => _manga = value;
+    }
     [StringLength(64)] [Required] public string ToLibraryId { get; init; }
     public LocalLibrary ToLibrary { get; init; } = null!;
     
@@ -24,8 +33,8 @@ public class MoveMangaLibraryJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal MoveMangaLibraryJob(string mangaId, string toLibraryId, string? parentJobId)
-        : base(TokenGen.CreateToken(typeof(MoveMangaLibraryJob)), JobType.MoveMangaLibraryJob, 0, parentJobId)
+    internal MoveMangaLibraryJob(ILazyLoader lazyLoader, string mangaId, string toLibraryId, string? parentJobId)
+        : base(lazyLoader, TokenGen.CreateToken(typeof(MoveMangaLibraryJob)), JobType.MoveMangaLibraryJob, 0, parentJobId)
     {
         this.MangaId = mangaId;
         this.ToLibraryId = toLibraryId;

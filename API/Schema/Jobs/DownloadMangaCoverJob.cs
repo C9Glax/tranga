@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
@@ -8,7 +9,15 @@ namespace API.Schema.Jobs;
 public class DownloadMangaCoverJob : Job
 {
     [StringLength(64)] [Required] public string MangaId { get; init; }
-    [JsonIgnore] public Manga Manga { get; init; } = null!;
+
+    private Manga _manga = null!;
+    
+    [JsonIgnore]
+    public Manga Manga 
+    {
+        get => LazyLoader.Load(this, ref _manga);
+        init => _manga = value;
+    }
 
     public DownloadMangaCoverJob(Manga manga, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : base(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJob, dependsOnJobs)
@@ -20,8 +29,8 @@ public class DownloadMangaCoverJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadMangaCoverJob(string mangaId, string? parentJobId)
-        : base(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJobId)
+    internal DownloadMangaCoverJob(ILazyLoader lazyLoader, string mangaId, string? parentJobId)
+        : base(lazyLoader, TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJobId)
     {
         this.MangaId = mangaId;
     }

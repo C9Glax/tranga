@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using API.Schema.Contexts;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace API.Schema.Jobs;
 
@@ -22,8 +23,8 @@ public class MoveFileOrFolderJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal MoveFileOrFolderJob(string jobId, string fromLocation, string toLocation, string? parentJobId)
-        : base(jobId, JobType.MoveFileOrFolderJob, 0, parentJobId)
+    internal MoveFileOrFolderJob(ILazyLoader lazyLoader, string jobId, string fromLocation, string toLocation, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.MoveFileOrFolderJob, 0, parentJobId)
     {
         this.FromLocation = fromLocation;
         this.ToLocation = toLocation;
