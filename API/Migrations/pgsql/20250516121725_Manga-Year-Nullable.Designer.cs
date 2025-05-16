@@ -3,6 +3,7 @@ using System;
 using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations.pgsql
 {
     [DbContext(typeof(PgsqlContext))]
-    partial class PgsqlContextModelSnapshot : ModelSnapshot
+    [Migration("20250516121725_Manga-Year-Nullable")]
+    partial class MangaYearNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -520,27 +523,26 @@ namespace API.Migrations.pgsql
 
                     b.OwnsMany("API.Schema.MangaAltTitle", "AltTitles", b1 =>
                         {
-                            b1.Property<string>("AltTitleId")
-                                .HasMaxLength(64)
+                            b1.Property<string>("MangaId")
                                 .HasColumnType("character varying(64)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
 
                             b1.Property<string>("Language")
                                 .IsRequired()
                                 .HasMaxLength(8)
                                 .HasColumnType("character varying(8)");
 
-                            b1.Property<string>("MangaId")
-                                .IsRequired()
-                                .HasColumnType("character varying(64)");
-
                             b1.Property<string>("Title")
                                 .IsRequired()
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
-                            b1.HasKey("AltTitleId");
-
-                            b1.HasIndex("MangaId");
+                            b1.HasKey("MangaId", "Id");
 
                             b1.ToTable("MangaAltTitle");
 

@@ -113,6 +113,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     MangaConnector[] connectors =
     [
         new MangaDex(),
+        new ComickIo(),
         new Global(scope.ServiceProvider.GetService<PgsqlContext>()!)
     ];
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();

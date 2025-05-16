@@ -1,5 +1,4 @@
 ﻿using API.Schema.Jobs;
-using API.Schema.LibraryConnectors;
 using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
 
@@ -112,7 +111,8 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<MangaConnector>()
             .HasDiscriminator(c => c.Name)
             .HasValue<Global>("Global")
-            .HasValue<MangaDex>("MangaDex");
+            .HasValue<MangaDex>("MangaDex")
+            .HasValue<ComickIo>("ComickIo");
         //MangaConnector is responsible for many Manga
         modelBuilder.Entity<MangaConnector>()
             .HasMany<Manga>()
