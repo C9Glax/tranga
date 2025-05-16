@@ -26,7 +26,7 @@ public class Chapter : IComparable<Chapter>
     [StringLength(256)] [Required] public string FileName { get; private set; }
 
     [Required] public bool Downloaded { get; internal set; }
-    [JsonIgnore] [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
+    [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
 
     public Chapter(Manga parentManga, string url, string chapterNumber, int? volumeNumber = null, string? title = null)
     {
