@@ -107,7 +107,10 @@ public static class Tranga
         PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
         
         while (true)
-        {            Log.Debug("Loading Jobs...");
+        {            
+            Log.Debug("Starting Job-Cycle...");
+            DateTime cycleStart = DateTime.UtcNow;
+            Log.Debug("Loading Jobs...");
             DateTime loadStart = DateTime.UtcNow;
             context.Jobs.Load();
             Log.Debug("Updating Entries...");
@@ -198,6 +201,7 @@ public static class Tranga
             {
                 Log.Error("Failed saving Job changes.", e);
             }
+            Log.Debug($"Job-Cycle over! (took {DateTime.UtcNow.Subtract(cycleStart).TotalMilliseconds}ms)");
             Thread.Sleep(TrangaSettings.startNewJobTimeoutMs);
         }
     }
