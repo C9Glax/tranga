@@ -36,6 +36,6 @@ public class DownloadAvailableChaptersJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        return Manga.Chapters.Select(chapter => new DownloadSingleChapterJob(chapter, this));
+        return Manga.Chapters.Where(c => c.Downloaded == false).Select(chapter => new DownloadSingleChapterJob(chapter, this));
     }
 }
