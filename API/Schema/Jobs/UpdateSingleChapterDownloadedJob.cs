@@ -39,7 +39,6 @@ public class UpdateSingleChapterDownloadedJob : Job
     {
         context.Attach(Chapter);
         Chapter.Downloaded = Chapter.CheckDownloaded();
-        context.SaveChanges();
 
         try
         {
