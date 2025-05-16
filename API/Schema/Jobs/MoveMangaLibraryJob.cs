@@ -34,6 +34,7 @@ public class MoveMangaLibraryJob : Job
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         context.Attach(Manga);
+        context.Entry(Manga).Collection<Chapter>(m => m.Chapters).Load();
         Dictionary<Chapter, string> oldPath = Manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
         Manga.Library = ToLibrary;
         try

@@ -136,7 +136,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .AutoInclude();
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Chapters)
-            .AutoInclude();
+            .AutoInclude(false);
         //Manga owns MangaAltTitles
         modelBuilder.Entity<Manga>()
             .OwnsMany<MangaAltTitle>(m => m.AltTitles)

@@ -29,6 +29,7 @@ public class UpdateFilesDownloadedJob : Job
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         context.Attach(Manga);
+        context.Entry(Manga).Collection<Chapter>(m => m.Chapters).Load();
         foreach (Chapter chapter in Manga.Chapters)
             chapter.Downloaded = chapter.CheckDownloaded();
 
