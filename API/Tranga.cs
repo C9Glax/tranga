@@ -134,13 +134,35 @@ public static class Tranga
             }
 
             //Retrieve waiting and due Jobs
-            List<Job> waitingJobs = context.Jobs.Local.Where(j =>
-                j.Enabled && (j.state == JobState.FirstExecution || j.state == JobState.CompletedWaiting)).ToList();
             List<Job> runningJobs = context.Jobs.Local.Where(j => j.state == JobState.Running).ToList();
-            List<Job> dueJobs = waitingJobs.Where(j => j.NextExecution < DateTime.UtcNow).ToList();
-
+            
             List<MangaConnector> busyConnectors = GetBusyConnectors(runningJobs);
-            List<Job> startJobs = FilterJobPreconditions(context, dueJobs, busyConnectors);
+
+            List<Job> waitingJobs = GetWaitingJobs(context.Jobs.Local.ToList());
+            List<Job> dueJobs = FilterDueJobs(waitingJobs);
+            List<Job> jobsWithoutBusyConnectors = FilterJobWithBusyConnectors(dueJobs, busyConnectors);
+            List<Job> jobsWithoutMissingDependencies = FilterJobDependencies(context, jobsWithoutBusyConnectors);
+
+            List<Job> jobsWithoutDownloading =
+                jobsWithoutMissingDependencies
+                    .Where(j => j.JobType != JobType.DownloadSingleChapterJob)
+                    .ToList();
+            List<Job> firstChapterPerConnector =
+                jobsWithoutMissingDependencies
+                    .Where(j => j.JobType == JobType.DownloadSingleChapterJob)
+                    .OrderBy(j =>
+                    {
+                        DownloadSingleChapterJob dscj = (DownloadSingleChapterJob)j;
+                        return dscj.Chapter;
+                    })
+                    .DistinctBy(j =>
+                    {
+                        DownloadSingleChapterJob dscj = (DownloadSingleChapterJob)j;
+                        return dscj.Chapter.ParentManga.MangaConnector;
+                    })
+                    .ToList();
+
+            List<Job> startJobs = jobsWithoutDownloading.Concat(firstChapterPerConnector).ToList();
             
             //Start Jobs that are allowed to run (preconditions match)
             foreach (Job job in startJobs)
@@ -155,7 +177,7 @@ public static class Tranga
             Log.Debug($"Jobs Completed: {completedJobs.Count} Failed: {failedJobs.Count} Running: {runningJobs.Count}\n" +
                       $"Waiting: {waitingJobs.Count}\n" +
                       $"\tof which Due: {dueJobs.Count}\n" +
-                      $"\t\tof which Started: {startJobs.Count}");
+                      $"\t\tof which Started: {jobsWithoutMissingDependencies.Count}");
 
             (Thread, Job)[] removeFromThreadsList = RunningJobs.Where(t => !t.Key.IsAlive)
                 .Select(t => (t.Key, t.Value)).ToArray();
@@ -187,9 +209,21 @@ public static class Tranga
         }
         return busyConnectors.ToList();
     }
+    
+    private static List<Job> GetWaitingJobs(List<Job> jobs) =>
+        jobs
+            .Where(j =>
+                j.Enabled &&
+                (j.state == JobState.FirstExecution || j.state == JobState.CompletedWaiting))
+            .ToList();
 
-    private static List<Job> FilterJobPreconditions(PgsqlContext context, List<Job> dueJobs, List<MangaConnector> busyConnectors) =>
-        dueJobs
+    private static List<Job> FilterDueJobs(List<Job> jobs) =>
+        jobs
+            .Where(j => j.NextExecution < DateTime.UtcNow)
+            .ToList();
+
+    private static List<Job> FilterJobDependencies(PgsqlContext context, List<Job> jobs) =>
+        jobs
             .Where(j =>
             {
                 Log.Debug($"Loading Job Preconditions {j}...");
@@ -197,6 +231,10 @@ public static class Tranga
                 Log.Debug($"Loaded Job Preconditions {j}!");
                 return j.DependenciesFulfilled;
             })
+            .ToList();
+
+    private static List<Job> FilterJobWithBusyConnectors(List<Job> jobs, List<MangaConnector> busyConnectors) =>
+        jobs
             .Where(j =>
             {
                 //Filter jobs with busy connectors
@@ -204,7 +242,6 @@ public static class Tranga
                     return busyConnectors.Contains(mangaConnector) == false;
                 return true;
             })
-            .DistinctBy(j => j.JobType)
             .ToList();
 
     private static MangaConnector? GetJobConnector(Job job)
