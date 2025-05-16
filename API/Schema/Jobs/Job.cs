@@ -81,7 +81,7 @@ public abstract class Job
             Log.Info($"Job {JobId} completed. Generated {newJobs.Length} new jobs.");
             return newJobs;
         }
-        catch (DbUpdateException e)
+        catch (Exception e)
         {
             this.state = JobState.Failed;
             Log.Error($"Failed to run job {JobId}", e);
