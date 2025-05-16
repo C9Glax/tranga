@@ -12,6 +12,16 @@ namespace API;
 
 public static class Tranga
 {
+
+    // ReSharper disable once InconsistentNaming
+    private const string TRANGA = 
+        "\n\n" +
+        " _______                                 v2\n" +
+        "|_     _|.----..---.-..-----..-----..---.-.\n" +
+        "  |   |  |   _||  _  ||     ||  _  ||  _  |\n" +
+        "  |___|  |__|  |___._||__|__||___  ||___._|\n" +
+        "                             |_____|       \n\n";
+    
     public static Thread NotificationSenderThread { get; } = new (NotificationSender);
     public static Thread JobStarterThread { get; } = new (JobStarter);
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
@@ -20,6 +30,7 @@ public static class Tranga
     {
         BasicConfigurator.Configure();
         Log.Info("Logger Configured.");
+        Log.Info(TRANGA);
     }
 
     private static void NotificationSender(object? serviceProviderObj)
@@ -82,14 +93,6 @@ public static class Tranga
             Log.Error("Error sending notifications.", e);
         }
     }
-
-    private const string TRANGA = 
-        "\n\n" +
-        " _______                                   \n" +
-        "|_     _|.----..---.-..-----..-----..---.-.\n" +
-        "  |   |  |   _||  _  ||     ||  _  ||  _  |\n" +
-        "  |___|  |__|  |___._||__|__||___  ||___._|\n" +
-        "                             |_____|       \n\n";
     private static readonly Dictionary<Thread, Job> RunningJobs = new();
     private static void JobStarter(object? serviceProviderObj)
     {
