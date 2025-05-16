@@ -96,6 +96,7 @@ public static class Tranga
     private static readonly Dictionary<Thread, Job> RunningJobs = new();
     private static void JobStarter(object? serviceProviderObj)
     {
+        Log.Info("JobStarter Thread running.");
         if (serviceProviderObj is null)
         {
             Log.Error("serviceProviderObj is null");
@@ -103,23 +104,22 @@ public static class Tranga
         }
         IServiceProvider serviceProvider = (IServiceProvider)serviceProviderObj;
         using IServiceScope scope = serviceProvider.CreateScope();
-        PgsqlContext? context = scope.ServiceProvider.GetService<PgsqlContext>();
-        if (context is null)
-        {
-            Log.Error("PgsqlContext is null");
-            return;
-        }
+        PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
 
-        Log.Info(TRANGA);
-        Log.Info("Loading Jobs");
-        context.Jobs.Load();
-        Log.Info("JobStarter Thread running.");
+        DateTime lastContextUpdate = DateTime.UnixEpoch;
+        
         while (true)
         {
+            if (lastContextUpdate.AddMilliseconds(TrangaSettings.startNewJobTimeoutMs * 10) < DateTime.UtcNow)
+            {
+                Log.Info("Loading Jobs...");
+                context.Jobs.Load();
+                lastContextUpdate = DateTime.UtcNow;
+                Log.Info("Jobs Loaded!");
+            }
             foreach (EntityEntry entityEntry in context.ChangeTracker.Entries().ToArray())
                 entityEntry.Reload();
             //Update finished Jobs to new states
-            context.Jobs.Load();
             List<Job> completedJobs = context.Jobs.Local.Where(j => j.state == JobState.Completed).ToList();
             foreach (Job completedJob in completedJobs)
                 if (completedJob.RecurrenceMs <= 0)
