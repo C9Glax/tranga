@@ -11,6 +11,14 @@ namespace API.Schema.MangaConnectors;
 [PrimaryKey("Name")]
 public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)
 {
+    [JsonIgnore]
+    [NotMapped]
+    internal DownloadClient downloadClient { get; init; } = null!;
+
+    [JsonIgnore]
+    [NotMapped]
+    protected ILog Log { get; init; } = LogManager.GetLogger(name);
+    
     [StringLength(32)]
     [Required]
     public string Name { get; init; } = name;
@@ -26,32 +34,41 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     [Required]
     public bool Enabled { get; internal set; } = true;
     
-    public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)[] GetManga(string publicationTitle = "");
+    public abstract Manga[] SearchManga(string mangaSearchName);
 
-    public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromUrl(string url);
+    public abstract Manga? GetMangaFromUrl(string url);
 
-    public abstract (Manga, List<Author>?, List<MangaTag>?, List<Link>?, List<MangaAltTitle>?)? GetMangaFromId(string publicationId);
+    public abstract Manga? GetMangaFromId(string mangaIdOnSite);
     
-    public abstract Chapter[] GetChapters(Manga manga, string language="en");
-    
-    [JsonIgnore]
-    [NotMapped]
-    internal DownloadClient downloadClient { get; init; } = null!;
-
-    [JsonIgnore]
-    [NotMapped]
-    protected ILog Log { get; init; } = LogManager.GetLogger(name);
-    
-    public Chapter[] GetNewChapters(Manga manga)
-    {
-        Chapter[] allChapters = GetChapters(manga);
-        if (allChapters.Length < 1)
-            return [];
-        
-        return allChapters.Where(chapter => !chapter.IsDownloaded()).ToArray();
-    }
+    public abstract Chapter[] GetChapters(Manga manga, string? language = null);
 
     internal abstract string[] GetChapterImageUrls(Chapter chapter);
 
-    public bool ValidateUrl(string url) => BaseUris.Any(baseUri => Regex.IsMatch(url, "https?://" + baseUri + "/.*"));
+    public bool UrlMatchesConnector(string url) => BaseUris.Any(baseUri => Regex.IsMatch(url, "https?://" + baseUri + "/.*"));
+    
+    internal string? SaveCoverImageToCache(Manga manga, int retries = 3)
+    {
+        if(retries < 0)
+            return null;
+        
+        Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
+        //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
+        Match match = urlRex.Match(manga.CoverUrl);
+        string filename = $"{match.Groups[1].Value}-{manga.MangaId}.{match.Groups[3].Value}";
+        string saveImagePath = Path.Join(TrangaSettings.coverImageCache, filename);
+
+        if (File.Exists(saveImagePath))
+            return saveImagePath;
+        
+        RequestResult coverResult = downloadClient.MakeRequest(manga.CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}");
+        if ((int)coverResult.statusCode < 200 || (int)coverResult.statusCode >= 300)
+            return SaveCoverImageToCache(manga, --retries);
+            
+        using MemoryStream ms = new();
+        coverResult.result.CopyTo(ms);
+        Directory.CreateDirectory(TrangaSettings.coverImageCache);
+        File.WriteAllBytes(saveImagePath, ms.ToArray());
+        
+        return saveImagePath;
+    }
 }

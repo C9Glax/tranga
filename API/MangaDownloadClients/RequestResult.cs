@@ -24,4 +24,10 @@ public struct RequestResult
         this.hasBeenRedirected = hasBeenRedirected;
         redirectedToUrl = redirectedTo;
     }
+
+    public override string ToString()
+    {
+        return
+            $"{(int)statusCode} {statusCode.ToString()} {(hasBeenRedirected ? "Redirected: " : "")} {redirectedToUrl}";
+    }
 }

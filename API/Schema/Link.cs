@@ -16,4 +16,9 @@ public class Link(string linkProvider, string linkUrl)
     [Required]
     [Url]
     public string LinkUrl { get; init; } = linkUrl;
+
+    public override string ToString()
+    {
+        return $"{LinkId} {LinkProvider} {LinkUrl}";
+    }
 }

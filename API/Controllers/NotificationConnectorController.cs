@@ -1,8 +1,9 @@
 ﻿using System.Text;
 using API.APIEndpointRecords;
-using API.Schema;
+using API.Schema.Contexts;
 using API.Schema.NotificationConnectors;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -12,7 +13,7 @@ namespace API.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
-public class NotificationConnectorController(PgsqlContext context) : Controller
+public class NotificationConnectorController(NotificationsContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Gets all configured Notification-Connectors
@@ -69,6 +70,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }
@@ -133,32 +135,6 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
     }
     
     /// <summary>
-    /// Creates a new Lunasea-Notification-Connector
-    /// </summary>
-    /// <remarks>https://docs.lunasea.app/lunasea/notifications/custom-notifications for id. Either device/:device_id or user/:user_id</remarks>
-    /// <response code="201">ID of new connector</response>
-    /// <response code="400"></response>
-    /// <response code="409">A NotificationConnector with name already exists</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPut("Lunasea")]
-    [ProducesResponseType<string>(Status201Created, "application/json")]
-    [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status409Conflict)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateLunaseaConnector([FromBody]LunaseaRecord lunaseaRecord)
-    {
-        if(!lunaseaRecord.Validate())
-            return BadRequest();
-        
-        NotificationConnector lunaseaConnector = new (TokenGen.CreateToken("Lunasea"),
-            $"https://notify.lunasea.app/v1/custom/{lunaseaRecord.id}", 
-            new Dictionary<string, string>(),
-            "POST", 
-            "{\"title\": \"%title\", \"body\": \"%text\"}");
-        return CreateConnector(lunaseaConnector);
-    }
-    
-    /// <summary>
     /// Creates a new Pushover-Notification-Connector
     /// </summary>
     /// <remarks>https://pushover.net/api</remarks>
@@ -209,6 +185,7 @@ public class NotificationConnectorController(PgsqlContext context) : Controller
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e.Message);
         }
     }

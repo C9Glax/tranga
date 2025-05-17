@@ -1,7 +1,9 @@
 ﻿using API.MangaDownloadClients;
 using API.Schema;
+using API.Schema.Contexts;
 using API.Schema.Jobs;
 using Asp.Versioning;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -11,7 +13,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SettingsController(PgsqlContext context) : Controller
+public class SettingsController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Get all Settings
@@ -252,14 +254,16 @@ public class SettingsController(PgsqlContext context) : Controller
     {
         try
         {
+            Dictionary<Chapter, string> oldPaths = context.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
             TrangaSettings.UpdateChapterNamingScheme(namingScheme);
-            MoveFileOrFolderJob[] newJobs =
-                context.Chapters.Where(c => c.Downloaded).Select(c => c.UpdateArchiveFileName()).Where(x => x != null).ToArray()!;
+            MoveFileOrFolderJob[] newJobs = oldPaths
+                .Select(kv => new MoveFileOrFolderJob(kv.Value, kv.Key.FullArchiveFilePath)).ToArray();
             context.Jobs.AddRange(newJobs);
             return Ok();
         }
         catch (Exception e)
         {
+            Log.Error(e);
             return StatusCode(500, e);
         }
     }

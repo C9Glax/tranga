@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
@@ -9,11 +8,16 @@ public class MangaAltTitle(string language, string title)
 {
     [StringLength(64)]
     [Required]
-    public string AltTitleId { get; init; } = TokenGen.CreateToken("AltTitle", language, title);
+    public string AltTitleId { get; init; } = TokenGen.CreateToken("AltTitle");
     [StringLength(8)]
     [Required]
     public string Language { get; init; } = language;
     [StringLength(256)]
     [Required]
     public string Title { get; set; } = title;
+
+    public override string ToString()
+    {
+        return $"{AltTitleId} {Language} {Title}";
+    }
 }

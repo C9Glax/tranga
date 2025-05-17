@@ -1,26 +1,51 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using API.Schema.Contexts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class DownloadMangaCoverJob(string mangaId, string? parentJobId = null, ICollection<string>? dependsOnJobsIds = null)
-    : Job(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJobId, dependsOnJobsIds)
+public class DownloadMangaCoverJob : Job
 {
-    [StringLength(64)]
-    [Required]
-    public string MangaId { get; init; } = mangaId;
+    [StringLength(64)] [Required] public string MangaId { get; init; }
+
+    private Manga _manga = null!;
+    
+    [JsonIgnore]
+    public Manga Manga 
+    {
+        get => LazyLoader.Load(this, ref _manga);
+        init => _manga = value;
+    }
+
+    public DownloadMangaCoverJob(Manga manga, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJob, dependsOnJobs)
+    {
+        this.MangaId = manga.MangaId;
+        this.Manga = manga;
+    }
+    
+    /// <summary>
+    /// EF ONLY!!!
+    /// </summary>
+    internal DownloadMangaCoverJob(ILazyLoader lazyLoader, string mangaId, string? parentJobId)
+        : base(lazyLoader, TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJobId)
+    {
+        this.MangaId = mangaId;
+    }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        Manga? manga = context.Mangas.Find(this.MangaId);
-        if (manga is null)
+        try
         {
-            Log.Error($"Manga {this.MangaId} not found.");
-            return [];
+            Manga.CoverFileNameInCache = Manga.MangaConnector.SaveCoverImageToCache(Manga);
+            context.SaveChanges();
         }
-        
-        manga.CoverFileNameInCache = manga.SaveCoverImageToCache();
-        context.SaveChanges();
-        Log.Info($"Saved cover for Manga {this.MangaId} to cache at {manga.CoverFileNameInCache}.");
+        catch (DbUpdateException e)
+        {
+            Log.Error(e);
+        }
         return [];
     }
 }

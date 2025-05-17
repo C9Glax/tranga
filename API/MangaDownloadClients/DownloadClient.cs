@@ -15,7 +15,7 @@ internal abstract class DownloadClient
     
     public RequestResult MakeRequest(string url, RequestType requestType, string? referrer = null, string? clickButton = null)
     {
-        Log.Debug($"Requesting {url}");
+        Log.Debug($"Requesting {requestType} {url}");
         if (!TrangaSettings.requestLimits.ContainsKey(requestType))
         {
             return new RequestResult(HttpStatusCode.NotAcceptable, null, Stream.Null);
@@ -30,7 +30,7 @@ internal abstract class DownloadClient
         LastExecutedRateLimit.TryAdd(requestType, now.Subtract(timeBetweenRequests));
 
         TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(now.Subtract(LastExecutedRateLimit[requestType]));
-        Log.Debug($"Request limit {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests:ss'.'fffff} Timeout: {rateLimitTimeout:ss'.'fffff}");
+        Log.Debug($"Request limit {requestType} {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests:ss'.'fffff} Timeout: {rateLimitTimeout:ss'.'fffff}");
         
         if (rateLimitTimeout > TimeSpan.Zero)
         {
@@ -39,6 +39,7 @@ internal abstract class DownloadClient
 
         RequestResult result = MakeRequestInternal(url, referrer, clickButton);
         LastExecutedRateLimit[requestType] = DateTime.UtcNow;
+        Log.Debug($"Result {url}: {result}");
         return result;
     }
 

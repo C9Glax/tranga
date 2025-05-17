@@ -14,4 +14,9 @@ public class LocalLibrary(string basePath, string libraryName)
     [StringLength(512)]
     [Required]
     public string LibraryName { get; internal set; } = libraryName;
+
+    public override string ToString()
+    {
+        return $"{LocalLibraryId} {LibraryName} - {BasePath}";
+    }
 }

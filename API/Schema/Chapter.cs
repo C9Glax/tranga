@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using API.Schema.Jobs;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -12,51 +11,50 @@ namespace API.Schema;
 [PrimaryKey("ChapterId")]
 public class Chapter : IComparable<Chapter>
 {
-    public Chapter(Manga parentManga, string url, string chapterNumber, int? volumeNumber = null, string? title = null)
-        : this(parentManga.MangaId, url, chapterNumber, volumeNumber, title)
-    {
-        ParentManga = parentManga;
-        FileName = GetArchiveFilePath(parentManga.Name);
-    }
+    [StringLength(64)] [Required] public string ChapterId { get; init; }
 
-    public Chapter(string parentMangaId, string url, string chapterNumber,
-        int? volumeNumber = null, string? title = null)
-    {
-        ChapterId = TokenGen.CreateToken(typeof(Chapter), parentMangaId, (volumeNumber ?? 0).ToString(), chapterNumber);
-        ParentMangaId = parentMangaId;
-        Url = url;
-        ChapterNumber = chapterNumber;
-        VolumeNumber = volumeNumber;
-        Title = title;
-    }
+    public string ParentMangaId { get; init; }
+    [JsonIgnore] public Manga ParentManga { get; init; } = null!;
 
-    [StringLength(64)]
-    [Required]
-    public string ChapterId { get; init; }
     public int? VolumeNumber { get; private set; }
-    [StringLength(10)]
-    [Required]
-    public string ChapterNumber { get; private set; }
+    [StringLength(10)] [Required] public string ChapterNumber { get; private set; }
 
-    [StringLength(2048)]
-    [Required]
-    [Url]
-    public string Url { get; internal set; }
-    [StringLength(256)]
-    public string? Title { get; private set; }
-    [StringLength(256)]
-    [Required]
-    public string FileName { get; private set; }
-    [JsonIgnore]
-    [NotMapped]
-    public string? FullArchiveFilePath => ParentManga is { } m ? Path.Join(m.FullDirectoryPath, FileName) : null;
-    [Required]
-    public bool Downloaded { get; internal set; } = false;
-    [Required]
-    [StringLength(64)]
-    public string ParentMangaId { get; internal set; }
-    [JsonIgnore]
-    public Manga? ParentManga { get; init; }
+    [StringLength(2048)] [Required] [Url] public string Url { get; internal set; }
+
+    [StringLength(256)] public string? Title { get; private set; }
+
+    [StringLength(256)] [Required] public string FileName { get; private set; }
+
+    [Required] public bool Downloaded { get; internal set; }
+    [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
+
+    public Chapter(Manga parentManga, string url, string chapterNumber, int? volumeNumber = null, string? title = null)
+    {
+        this.ChapterId = TokenGen.CreateToken(typeof(Chapter), parentManga.MangaId, chapterNumber);
+        this.ParentMangaId = parentManga.MangaId;
+        this.ParentManga = parentManga;
+        this.VolumeNumber = volumeNumber;
+        this.ChapterNumber = chapterNumber;
+        this.Url = url;
+        this.Title = title;
+        this.FileName = GetArchiveFilePath();
+        this.Downloaded = false;
+    }
+
+    /// <summary>
+    /// EF ONLY!!!
+    /// </summary>
+    internal Chapter(string chapterId, string parentMangaId, int? volumeNumber, string chapterNumber, string url, string? title, string fileName, bool downloaded)
+    {
+        this.ChapterId = chapterId;
+        this.ParentMangaId = parentMangaId;
+        this.VolumeNumber = volumeNumber;
+        this.ChapterNumber = chapterNumber;
+        this.Url = url;
+        this.Title = title;
+        this.FileName = fileName;
+        this.Downloaded = downloaded;
+    }
 
     public int CompareTo(Chapter? other)
     {
@@ -70,43 +68,11 @@ public class Chapter : IComparable<Chapter>
         };
     }
 
-    public MoveFileOrFolderJob? UpdateChapterNumber(string chapterNumber)
-    {
-        ChapterNumber = chapterNumber;
-        return UpdateArchiveFileName();
-    }
-
-    public MoveFileOrFolderJob? UpdateVolumeNumber(int? volumeNumber)
-    {
-        VolumeNumber = volumeNumber;
-        return UpdateArchiveFileName();
-    }
-
-    public MoveFileOrFolderJob? UpdateTitle(string? title)
-    {
-        Title = title;
-        return UpdateArchiveFileName();
-    }
-
-    internal MoveFileOrFolderJob? UpdateArchiveFileName()
-    {
-        string? oldPath = FullArchiveFilePath;
-        if (oldPath is null)
-            return null;
-        string newPath = GetArchiveFilePath();
-        FileName = newPath;
-        return Downloaded ? new MoveFileOrFolderJob(oldPath, newPath) : null;
-    }
-
     /// <summary>
     /// Checks the filesystem if an archive at the ArchiveFilePath exists
     /// </summary>
     /// <returns>True if archive exists on disk</returns>
-    public bool IsDownloaded()
-    {
-        string path = GetArchiveFilePath();
-        return File.Exists(path);
-    }
+    public bool CheckDownloaded() => File.Exists(FullArchiveFilePath);
 
     /// Placeholders:
     /// %M Manga Name
@@ -119,7 +85,7 @@ public class Chapter : IComparable<Chapter>
     /// %Y Year (Manga)
     private static readonly Regex NullableRex = new(@"\?([a-zA-Z])\(([^\)]*)\)|(.+?)");
     private static readonly Regex ReplaceRexx = new(@"%([a-zA-Z])|(.+?)");
-    private string GetArchiveFilePath(string? parentMangaName = null)
+    private string GetArchiveFilePath()
     {
         string archiveNamingScheme = TrangaSettings.chapterNamingScheme;
         StringBuilder stringBuilder = new();
@@ -134,13 +100,13 @@ public class Chapter : IComparable<Chapter>
             char placeholder = nullable.Groups[1].Value[0];
             bool isNull = placeholder switch
             {
-                'M' => ParentManga?.Name is null && parentMangaName is null,
+                'M' => ParentManga?.Name is null,
                 'V' => VolumeNumber is null,
                 'C' => ChapterNumber is null,
                 'T' => Title is null,
                 'A' => ParentManga?.Authors?.FirstOrDefault()?.AuthorName is null,
                 'I' => ChapterId is null,
-                'i' => ParentMangaId is null,
+                'i' => ParentManga?.MangaId is null,
                 'Y' => ParentManga?.Year is null,
                 _ => true
             };
@@ -162,13 +128,13 @@ public class Chapter : IComparable<Chapter>
             char placeholder = replace.Groups[1].Value[0];
             string? value = placeholder switch
             {
-                'M' => ParentManga?.Name ?? parentMangaName,
+                'M' => ParentManga?.Name,
                 'V' => VolumeNumber?.ToString(),
                 'C' => ChapterNumber,
                 'T' => Title,
                 'A' => ParentManga?.Authors?.FirstOrDefault()?.AuthorName,
                 'I' => ChapterId,
-                'i' => ParentMangaId,
+                'i' => ParentManga?.MangaId,
                 'Y' => ParentManga?.Year.ToString(),
                 _ => null
             };
@@ -214,5 +180,10 @@ public class Chapter : IComparable<Chapter>
             new XElement("Number", ChapterNumber)
         );
         return comicInfo.ToString();
+    }
+
+    public override string ToString()
+    {
+        return $"{ChapterId} Vol.{VolumeNumber} Ch.{ChapterNumber} - {Title}";
     }
 }
