@@ -109,9 +109,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetCover(string MangaId, [FromQuery]int? width, [FromQuery]int? height)
     {
-        DateTime requestStarted = HttpContext.Features.Get<IHttpRequestTimeFeature>()?.RequestTime ?? DateTime.Now;
-        Manga? m = context.Mangas.Find(MangaId);
-        if (m is null)
+        if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
         
         if (!System.IO.File.Exists(m.CoverFileNameInCache))
@@ -119,7 +117,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
             List<Job> coverDownloadJobs = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).ToList();
             if (coverDownloadJobs.Any(j => j is DownloadMangaCoverJob dmc && dmc.MangaId == MangaId))
             {
-                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000:D}");
+                Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000:D}");
                 return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000);
             }
             else
@@ -238,7 +236,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
             List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
             if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
             {
-                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2 / 1000:D}");
+                Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2 / 1000:D}");
                 return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2/ 1000);
             }else
                 return NoContent();
@@ -279,7 +277,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
             List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
             if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId))
             {
-                Response.Headers.Add("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000:D}");
+                Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000:D}");
                 return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000);
             }else
                 return NoContent();
