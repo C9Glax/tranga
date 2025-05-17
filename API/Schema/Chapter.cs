@@ -172,13 +172,18 @@ public class Chapter : IComparable<Chapter>
     internal string GetComicInfoXmlString()
     {
         XElement comicInfo = new("ComicInfo",
-            new XElement("Tags", string.Join(',', ParentManga.MangaTags.Select(tag => tag.Tag))),
-            new XElement("LanguageISO", ParentManga.OriginalLanguage),
-            new XElement("Title", Title),
-            new XElement("Writer", string.Join(',', ParentManga.Authors.Select(author => author.AuthorName))),
-            new XElement("Volume", VolumeNumber),
             new XElement("Number", ChapterNumber)
         );
+        if(Title is not null)
+            comicInfo.Add(new XElement("Title", Title));
+        if(ParentManga.MangaTags.Count > 0)
+            comicInfo.Add(new XElement("Tags", string.Join(',', ParentManga.MangaTags.Select(tag => tag.Tag))));
+        if(VolumeNumber is not null)
+            comicInfo.Add(new XElement("Volume", VolumeNumber));
+        if(ParentManga.Authors.Count > 0)
+            comicInfo.Add(new XElement("Writer", string.Join(',', ParentManga.Authors.Select(author => author.AuthorName))));
+        if(ParentManga.OriginalLanguage is not null)
+            comicInfo.Add(new XElement("LanguageISO", ParentManga.OriginalLanguage));
         return comicInfo.ToString();
     }
 
