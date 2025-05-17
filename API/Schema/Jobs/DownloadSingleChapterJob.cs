@@ -51,6 +51,7 @@ public class DownloadSingleChapterJob : Job
             Log.Info($"No imageUrls for chapter {ChapterId}");
             return [];
         }
+        context.Entry(Chapter.ParentManga).Reference<LocalLibrary>(m => m.Library).Load(); //Need to explicitly load, because we are not accessing navigation directly...
         string saveArchiveFilePath = Chapter.FullArchiveFilePath;
         Log.Debug($"Chapter path: {saveArchiveFilePath}");
         
