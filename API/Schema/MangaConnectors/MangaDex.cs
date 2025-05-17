@@ -228,8 +228,8 @@ public class MangaDex : MangaConnector
         string? id = jToken.Value<string>("id");
         
         JObject? attributes = jToken["attributes"] as JObject;
-        string? name = attributes?["title"]?.Value<string>("en")??attributes?["title"]?.First?.Value<string>();
-        string? description = attributes?["description"]?.Value<string>("en")??attributes?["description"]?.First?.Value<string>();
+        string? name = attributes?["title"]?.Value<string>("en") ?? attributes?["title"]?.First?.First?.Value<string>();
+        string? description = attributes?["description"]?.Value<string>("en")??attributes?["description"]?.First?.First?.Value<string>();
         string? status = attributes?["status"]?.Value<string>();
         uint? year = attributes?["year"]?.Value<uint>();
         string? originalLanguage = attributes?["originalLanguage"]?.Value<string>();
@@ -288,7 +288,7 @@ public class MangaDex : MangaConnector
         
         List<MangaTag> tags = tagsJArray
             .Where(t => t.Value<string>("type") == "tag")
-            .Select(t => t["attributes"]?["name"]?.Value<string>("en")??t["attributes"]?["name"]?.First?.Value<string>())
+            .Select(t => t["attributes"]?["name"]?.Value<string>("en")??t["attributes"]?["name"]?.First?.First?.Value<string>())
             .Select(str => str is not null ? new MangaTag(str) : null)
             .Where(x => x is not null).ToList()!;
         
