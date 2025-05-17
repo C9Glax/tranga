@@ -52,9 +52,16 @@ public class DownloadSingleChapterJob : Job
             return [];
         }
         string saveArchiveFilePath = Chapter.FullArchiveFilePath;
+        Log.Debug($"Chapter path: {saveArchiveFilePath}");
         
         //Check if Publication Directory already exists
-        string directoryPath = Path.GetDirectoryName(saveArchiveFilePath)!;
+        string? directoryPath = Path.GetDirectoryName(saveArchiveFilePath);
+        if (directoryPath is null)
+        {
+            Log.Error($"Directory path could not be found: {saveArchiveFilePath}");
+            this.state = JobState.Failed;
+            return [];
+        }
         if (!Directory.Exists(directoryPath))
         {
             Log.Info($"Creating publication Directory: {directoryPath}");
