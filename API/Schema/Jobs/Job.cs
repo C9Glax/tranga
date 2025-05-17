@@ -15,8 +15,8 @@ public abstract class Job
     [Required]
     public string JobId { get; init; }
 
-    [StringLength(64)] public string? ParentJobId { get; init; }
-    [JsonIgnore] public Job? ParentJob { get; init; }
+    [StringLength(64)] public string? ParentJobId { get; private set; }
+    [JsonIgnore] public Job? ParentJob { get; internal set; }
     private ICollection<Job> _dependsOnJobs = null!;
     [JsonIgnore] public ICollection<Job> DependsOnJobs
     {

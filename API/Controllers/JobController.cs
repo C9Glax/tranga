@@ -137,6 +137,8 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
         Job updateFilesDownloaded =
             new UpdateChaptersDownloadedJob(m, record.recurrenceTimeMs, dependsOnJobs: [retrieveChapters]);
         Job downloadChapters = new DownloadAvailableChaptersJob(m, record.recurrenceTimeMs, dependsOnJobs: [retrieveChapters, updateFilesDownloaded]);
+        retrieveChapters.ParentJob = downloadChapters;
+        updateFilesDownloaded.ParentJob = retrieveChapters;
         return AddJobs([retrieveChapters, downloadChapters, updateFilesDownloaded]);
     }
 
