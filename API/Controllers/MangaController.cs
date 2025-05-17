@@ -153,12 +153,11 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChapters(string MangaId)
     {
-        Manga? m = context.Mangas.Find(MangaId);
-        if (m is null)
+        if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
         
-        Chapter[] ret = context.Chapters.Where(c => c.ParentMangaId == m.MangaId).ToArray();
-        return Ok(ret);
+        Chapter[] chapters = m.Chapters.ToArray();
+        return Ok(chapters);
     }
     
     /// <summary>
@@ -174,11 +173,10 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersDownloaded(string MangaId)
     {
-        Manga? m = context.Mangas.Find(MangaId);
-        if (m is null)
+        if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
         
-        List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == true).ToList();
+        List<Chapter> chapters = m.Chapters.ToList();
         if (chapters.Count == 0)
             return NoContent();
         
@@ -198,11 +196,10 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersNotDownloaded(string MangaId)
     {
-        Manga? m = context.Mangas.Find(MangaId);
-        if (m is null)
+        if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
         
-        List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == false).ToList();
+        List<Chapter> chapters = m.Chapters.ToList();
         if (chapters.Count == 0)
             return NoContent();
         
@@ -226,11 +223,10 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapter(string MangaId)
     {
-        Manga? m = context.Mangas.Find(MangaId);
-        if (m is null)
+        if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
         
-        List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId).ToList();
+        List<Chapter> chapters = m.Chapters.ToList();
         if (chapters.Count == 0)
         {
             List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
@@ -266,12 +262,10 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapterDownloaded(string MangaId)
     {
-        Manga? m = context.Mangas.Find(MangaId);
-        if (m is null)
+        if(context.Mangas.Find(MangaId) is not { } m)
             return NotFound();
         
-        
-        List<Chapter> chapters = context.Chapters.Where(c => c.ParentMangaId == m.MangaId && c.Downloaded == true).ToList();
+        List<Chapter> chapters = m.Chapters.ToList();
         if (chapters.Count == 0)
         {
             List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
