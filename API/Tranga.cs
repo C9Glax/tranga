@@ -117,32 +117,21 @@ public static class Tranga
             return;
         }
         IServiceProvider serviceProvider = (IServiceProvider)serviceProviderObj;
-        using IServiceScope scope = serviceProvider.CreateScope();
         
         while (true)
         {            
             Log.Debug("Starting Job-Cycle...");
             DateTime cycleStart = DateTime.UtcNow;
+            using IServiceScope scope = serviceProvider.CreateScope();
             PgsqlContext cycleContext = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-            Log.Debug("Loading Jobs...");
-            DateTime loadStart = DateTime.UtcNow;
-            Log.Debug($"Jobs Loaded! (took {DateTime.UtcNow.Subtract(loadStart).TotalMilliseconds}ms)");
-            //Update finished Jobs to new states
-            IQueryable<Job> completedJobs = cycleContext.Jobs.Where(j => j.state == JobState.Completed);
-            foreach (Job completedJob in completedJobs)
-                if (completedJob.RecurrenceMs <= 0)
-                {
-                    cycleContext.Jobs.Remove(completedJob);
-                }
 
-            //Retrieve waiting and due Jobs
-            IQueryable<Job> runningJobs = cycleContext.Jobs.Where(j => j.state == JobState.Running);
+            List<Job> runningJobs = cycleContext.Jobs.Where(j => j.state == JobState.Running).ToList();
             
             DateTime filterStart = DateTime.UtcNow;
             Log.Debug("Filtering Jobs...");
             List<MangaConnector> busyConnectors = GetBusyConnectors(runningJobs);
 
-            IQueryable<Job> waitingJobs = cycleContext.Jobs.Where(j => j.state == JobState.CompletedWaiting || j.state == JobState.FirstExecution);
+            List<Job> waitingJobs = cycleContext.Jobs.Where(j => j.state == JobState.CompletedWaiting || j.state == JobState.FirstExecution).ToList();
             List<Job> dueJobs = FilterDueJobs(waitingJobs);
             List<Job> jobsWithoutBusyConnectors = FilterJobWithBusyConnectors(dueJobs, busyConnectors);
             List<Job> jobsWithoutMissingDependencies = FilterJobDependencies(jobsWithoutBusyConnectors);
@@ -175,16 +164,21 @@ public static class Tranga
             //Start Jobs that are allowed to run (preconditions match)
             foreach (Job job in startJobs)
             {
+                bool running = false;
                 Thread t = new(() =>
                 {
                     using IServiceScope jobScope = serviceProvider.CreateScope();
                     PgsqlContext jobContext = jobScope.ServiceProvider.GetRequiredService<PgsqlContext>();
-                    jobContext.Jobs.Find(job.JobId)?.Run(jobContext); //FIND the job IN THE NEW CONTEXT!!!!!!! SO WE DON'T GET TRACKING PROBLEMS AND AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                    if (jobContext.Jobs.Find(job.JobId) is not { } inContext)
+                        return;
+                    inContext.Run(jobContext, ref running); //FIND the job IN THE NEW CONTEXT!!!!!!! SO WE DON'T GET TRACKING PROBLEMS AND AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                 });
                 RunningJobs.Add(t, job);
                 t.Start();
+                while(!running)
+                    Thread.Sleep(10);
             }
-            Log.Debug($"Jobs Completed: {completedJobs.Count()} Running: {runningJobs.Count()}\n" +
+            Log.Debug($"Running: {runningJobs.Count()}\n" +
                       $"Waiting: {waitingJobs.Count()}\n" +
                       $"\tof which Due: {dueJobs.Count()}\n" +
                       $"\t\tof which can be started: {jobsWithoutMissingDependencies.Count()}\n" +
@@ -211,7 +205,7 @@ public static class Tranga
         }
     }
 
-    private static List<MangaConnector> GetBusyConnectors(IQueryable<Job> runningJobs)
+    private static List<MangaConnector> GetBusyConnectors(List<Job> runningJobs)
     {
         HashSet<MangaConnector> busyConnectors = new();
         foreach (Job runningJob in runningJobs)
@@ -222,7 +216,7 @@ public static class Tranga
         return busyConnectors.ToList();
     }
 
-    private static List<Job> FilterDueJobs(IQueryable<Job> jobs) =>
+    private static List<Job> FilterDueJobs(List<Job> jobs) =>
         jobs.ToList()
             .Where(j => j.NextExecution < DateTime.UtcNow)
             .ToList();

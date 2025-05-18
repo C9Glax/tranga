@@ -66,38 +66,50 @@ public abstract class Job
         this.Log = LogManager.GetLogger(this.GetType());
     }
 
-    public IEnumerable<Job> Run(PgsqlContext context)
+    public IEnumerable<Job> Run(PgsqlContext context, ref bool running)
     {
         Log.Info($"Running job {JobId}");
         DateTime jobStart = DateTime.UtcNow;
-        context.Attach(this);
         Job[]? ret = null;
 
         try
         {
             this.state = JobState.Running;
             context.SaveChanges();
+            running = true;
             ret = RunInternal(context).ToArray();
+            Log.Info($"Job {JobId} completed. Generated {ret.Length} new jobs.");
             this.state = this.RecurrenceMs > 0 ? JobState.CompletedWaiting : JobState.Completed;
             this.LastExecution = DateTime.UtcNow;
-            context.Jobs.AddRange(ret);
-            Log.Info($"Job {JobId} completed. Generated {ret.Length} new jobs.");
             context.SaveChanges();
         }
         catch (Exception e)
         {
             if (e is not DbUpdateException)
             {
+                Log.Error($"Failed to run job {JobId}", e);
                 this.state = JobState.Failed;
                 this.Enabled = false;
                 this.LastExecution = DateTime.UtcNow;
-                Log.Error($"Failed to run job {JobId}", e);
                 context.SaveChanges();
             }
             else
             {
                 Log.Error($"Failed to update Database {JobId}", e);
             }
+        }
+
+        try
+        {
+            if (ret != null)
+            {
+                context.Jobs.AddRange(ret);
+                context.SaveChanges();
+            }
+        }
+        catch (DbUpdateException e)
+        {
+            Log.Error($"Failed to update Database {JobId}", e);
         }
         
         Log.Info($"Finished Job {JobId}! (took {DateTime.UtcNow.Subtract(jobStart).TotalMilliseconds}ms)");

@@ -124,7 +124,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     context.Jobs.AddRange(context.Jobs.Where(j => j.JobType == JobType.DownloadAvailableChaptersJob)
         .Include(downloadAvailableChaptersJob => ((DownloadAvailableChaptersJob)downloadAvailableChaptersJob).Manga)
         .ToList()
-        .Select(dacj => new UpdateChaptersDownloadedJob(((DownloadAvailableChaptersJob)dacj).Manga, 0)));
+        .Select(dacj => new UpdateChaptersDownloadedJob(((DownloadAvailableChaptersJob)dacj).Manga, 0, dacj)));
     context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
     foreach (Job job in context.Jobs.Where(j => j.state == JobState.Running))
     {
