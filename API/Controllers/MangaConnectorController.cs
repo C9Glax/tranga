@@ -23,6 +23,31 @@ public class MangaConnectorController(PgsqlContext context, ILog Log) : Controll
         MangaConnector[] connectors = context.MangaConnectors.ToArray();
         return Ok(connectors);
     }
+
+    /// <summary>
+    /// Returns the MangaConnector with the requested Name
+    /// </summary>
+    /// <param name="MangaConnectorName"></param>
+    /// <response code="200"></response>
+    /// <response code="404">Connector with ID not found.</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpGet("{MangaConnectorName}")]
+    [ProducesResponseType<MangaConnector>(Status200OK, "application/json")]
+    public IActionResult GetConnector(string MangaConnectorName)
+    {
+        try
+        {
+            if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
+                return NotFound();
+
+            return Ok(connector);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e);
+            return StatusCode(500, e.Message);
+        }
+    }
     
     /// <summary>
     /// Get all enabled Connectors (Scanlation-Sites)
