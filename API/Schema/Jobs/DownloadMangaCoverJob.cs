@@ -29,8 +29,8 @@ public class DownloadMangaCoverJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadMangaCoverJob(ILazyLoader lazyLoader, string mangaId, string? parentJobId)
-        : base(lazyLoader, TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJobId)
+    internal DownloadMangaCoverJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.DownloadMangaCoverJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
     }

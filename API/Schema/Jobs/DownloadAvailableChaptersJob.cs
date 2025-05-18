@@ -28,8 +28,8 @@ public class DownloadAvailableChaptersJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadAvailableChaptersJob(ILazyLoader lazyLoader, string mangaId, ulong recurrenceMs, string? parentJobId)
-        : base(lazyLoader, TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId)
+    internal DownloadAvailableChaptersJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
     }

@@ -33,8 +33,8 @@ public class MoveMangaLibraryJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal MoveMangaLibraryJob(ILazyLoader lazyLoader, string mangaId, string toLibraryId, string? parentJobId)
-        : base(lazyLoader, TokenGen.CreateToken(typeof(MoveMangaLibraryJob)), JobType.MoveMangaLibraryJob, 0, parentJobId)
+    internal MoveMangaLibraryJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string toLibraryId, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.MoveMangaLibraryJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
         this.ToLibraryId = toLibraryId;

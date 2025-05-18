@@ -31,8 +31,8 @@ public class RetrieveChaptersJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal RetrieveChaptersJob(ILazyLoader lazyLoader, string mangaId, string language, ulong recurrenceMs, string? parentJobId)
-        : base(lazyLoader, TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJobId)
+    internal RetrieveChaptersJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string language, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.RetrieveChaptersJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
         this.Language = language;

@@ -37,8 +37,8 @@ public class DownloadSingleChapterJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadSingleChapterJob(ILazyLoader lazyLoader, string chapterId, string? parentJobId)
-        : base(lazyLoader, TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, parentJobId)
+    internal DownloadSingleChapterJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string chapterId, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.DownloadSingleChapterJob, recurrenceMs, parentJobId)
     {
         this.ChapterId = chapterId;
     }

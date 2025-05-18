@@ -29,8 +29,8 @@ public class UpdateSingleChapterDownloadedJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal UpdateSingleChapterDownloadedJob(ILazyLoader lazyLoader, string chapterId, string? parentJobId) 
-        : base(lazyLoader, TokenGen.CreateToken(typeof(UpdateSingleChapterDownloadedJob)), JobType.UpdateSingleChapterDownloadedJob, 0, parentJobId)
+    internal UpdateSingleChapterDownloadedJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string chapterId, string? parentJobId) 
+        : base(lazyLoader, jobId, JobType.UpdateSingleChapterDownloadedJob, recurrenceMs, parentJobId)
     {
         this.ChapterId = chapterId;
     }
