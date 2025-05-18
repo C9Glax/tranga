@@ -15,6 +15,7 @@ public class NotificationsContext(DbContextOptions<NotificationsContext> options
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         optionsBuilder.LogTo(s =>
         {
             Log.Debug(s);
