@@ -6,6 +6,7 @@ using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -54,6 +55,27 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
         }
 
         return Ok(retMangas.ToArray());
+    }
+    
+    /// <summary>
+    /// Initiate a search for a Manga on a specific Connector
+    /// </summary>
+    /// <param name="Query"></param>
+    /// <response code="200"></response>
+    /// <response code="404">MangaConnector with ID not found</response>
+    /// <response code="406">MangaConnector with ID is disabled</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpGet("Local/{Query}")]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType(Status406NotAcceptable)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult SearchMangaLocally(string Query)
+    {
+        Dictionary<Manga, double> distance = context.Mangas
+            .ToArray()
+            .ToDictionary(m => m, m => NeedlemanWunschStringUtil.CalculateSimilarityPercentage(Query, m.Name));
+        return Ok(distance.Where(kv => kv.Value > 50).ToArray());
     }
 
     /// <summary>
