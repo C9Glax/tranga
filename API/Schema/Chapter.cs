@@ -60,9 +60,6 @@ public class Chapter : IComparable<Chapter>
     {
         if (other is not { } otherChapter)
             throw new ArgumentException($"{other} can not be compared to {this}");
-        //Compare Ids for Collection-Comparisons
-        if(other.ChapterId.Equals(this.ChapterId))
-            return 0;
         return VolumeNumber?.CompareTo(otherChapter.VolumeNumber) switch
         {
             < 0 => -1,
