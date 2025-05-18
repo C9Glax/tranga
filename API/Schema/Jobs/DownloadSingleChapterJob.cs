@@ -167,7 +167,7 @@ public class DownloadSingleChapterJob : Job
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
         File.Copy(fileInCache, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite);
+            File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite | OtherRead | OtherWrite);
         Log.Debug($"Copied cover from {fileInCache} to {newFilePath}");
     }
     
