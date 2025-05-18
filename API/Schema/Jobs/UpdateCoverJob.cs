@@ -21,7 +21,7 @@ public class UpdateCoverJob : Job
     
     
     public UpdateCoverJob(Manga manga, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
-        : base(TokenGen.CreateToken(typeof(UpdateCoverJob)), JobType.UpdateCoversJob, recurrenceMs, parentJob, dependsOnJobs)
+        : base(TokenGen.CreateToken(typeof(UpdateCoverJob)), JobType.UpdateCoverJob, recurrenceMs, parentJob, dependsOnJobs)
     {
         this.MangaId = manga.MangaId;
         this.Manga = manga;
@@ -31,7 +31,7 @@ public class UpdateCoverJob : Job
     /// EF ONLY!!!
     /// </summary>
     internal UpdateCoverJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.UpdateCoversJob, recurrenceMs, parentJobId)
+        : base(lazyLoader, jobId, JobType.UpdateCoverJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
     }
