@@ -15,7 +15,7 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.EnableSensitiveDataLogging();
-        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
         optionsBuilder.LogTo(s =>
         {
             Log.Debug(s);
