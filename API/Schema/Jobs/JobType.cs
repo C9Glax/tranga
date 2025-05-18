@@ -12,4 +12,5 @@ public enum JobType : byte
     UpdateChaptersDownloadedJob = 6,
     MoveMangaLibraryJob = 7,
     UpdateSingleChapterDownloadedJob = 8,
+    UpdateCoversJob = 9,
 }

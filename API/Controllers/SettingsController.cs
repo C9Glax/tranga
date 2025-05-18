@@ -267,4 +267,28 @@ public class SettingsController(PgsqlContext context, ILog Log) : Controller
             return StatusCode(500, e);
         }
     }
+
+    /// <summary>
+    /// Creates a UpdateCoverJob for all Manga
+    /// </summary>
+    /// <response code="200">Array of JobIds</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPost("CleanupCovers")]
+    [ProducesResponseType<string[]>(Status200OK)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult CleanupCovers()
+    {
+        try
+        {
+            Tranga.RemoveStaleFiles(context);
+            List<UpdateCoverJob> newJobs = context.Mangas.ToList().Select(m => new UpdateCoverJob(m, 0)).ToList();
+            context.Jobs.AddRange(newJobs);
+            return Ok(newJobs.Select(j => j.JobId));
+        }
+        catch (Exception e)
+        {
+            Log.Error(e);
+            return StatusCode(500, e);
+        }
+    }
 }

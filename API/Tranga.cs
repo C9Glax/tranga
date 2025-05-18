@@ -32,11 +32,9 @@ public static class Tranga
         Log.Info(TRANGA);
     }
 
-    internal static void RemoveStaleFiles(IServiceProvider serviceProvider)
+    internal static void RemoveStaleFiles(PgsqlContext context)
     {
         Log.Info($"Removing stale files...");
-        using IServiceScope scope = serviceProvider.CreateScope();
-        PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
         string[] usedFiles = context.Mangas.Select(m => m.CoverFileNameInCache).Where(s => s != null).ToArray()!;
         string[] extraneousFiles = new DirectoryInfo(TrangaSettings.coverImageCache).GetFiles()
             .Where(f => usedFiles.Contains(f.FullName) == false)

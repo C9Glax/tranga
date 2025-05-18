@@ -149,7 +149,12 @@ using (IServiceScope scope = app.Services.CreateScope())
 
 TrangaSettings.Load();
 Tranga.StartLogger();
-Tranga.RemoveStaleFiles(app.Services);
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
+    Tranga.RemoveStaleFiles(context);
+}
 Tranga.JobStarterThread.Start(app.Services);
 //Tranga.NotificationSenderThread.Start(app.Services); //TODO RE-ENABLE
 
