@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using API.Schema.Contexts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
@@ -36,6 +37,20 @@ public class UpdateChaptersDownloadedJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        return Manga.Chapters.Select(c => new UpdateSingleChapterDownloadedJob(c, this));
+        context.Entry(Manga).Reference<LocalLibrary>(m => m.Library).Load();
+        foreach (Chapter mangaChapter in Manga.Chapters)
+        {
+            mangaChapter.Downloaded = mangaChapter.CheckDownloaded();
+        }
+
+        try
+        {
+            context.SaveChanges();
+        }
+        catch (DbUpdateException e)
+        {
+            Log.Error(e);
+        }
+        return [];
     }
 }

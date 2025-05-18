@@ -39,8 +39,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<DownloadMangaCoverJob>(JobType.DownloadMangaCoverJob)
             .HasValue<RetrieveChaptersJob>(JobType.RetrieveChaptersJob)
             .HasValue<UpdateCoverJob>(JobType.UpdateCoverJob)
-            .HasValue<UpdateChaptersDownloadedJob>(JobType.UpdateChaptersDownloadedJob)
-            .HasValue<UpdateSingleChapterDownloadedJob>(JobType.UpdateSingleChapterDownloadedJob);
+            .HasValue<UpdateChaptersDownloadedJob>(JobType.UpdateChaptersDownloadedJob);
         
         //Job specification
         modelBuilder.Entity<DownloadAvailableChaptersJob>()
