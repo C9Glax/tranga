@@ -231,7 +231,7 @@ public class MangaDex : MangaConnector
         string? name = attributes?["title"]?.Value<string>("en") ?? attributes?["title"]?.First?.First?.Value<string>();
         string? description = attributes?["description"]?.Value<string>("en")??attributes?["description"]?.First?.First?.Value<string>();
         string? status = attributes?["status"]?.Value<string>();
-        uint? year = attributes?["year"]?.Value<uint>();
+        uint? year = attributes?["year"]?.Value<uint?>();
         string? originalLanguage = attributes?["originalLanguage"]?.Value<string>();
         JArray? altTitlesJArray = attributes?["altTitles"] as JArray;
         JArray? tagsJArray = attributes?["tags"] as JArray;
