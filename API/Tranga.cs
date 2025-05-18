@@ -113,9 +113,6 @@ public static class Tranga
             Log.Debug("Loading Jobs...");
             DateTime loadStart = DateTime.UtcNow;
             context.Jobs.Load();
-            Log.Debug("Updating Entries...");
-            foreach (EntityEntry entityEntry in context.ChangeTracker.Entries().ToArray())
-                entityEntry.Reload();
             Log.Debug($"Jobs Loaded! (took {DateTime.UtcNow.Subtract(loadStart).TotalMilliseconds}ms)");
             //Update finished Jobs to new states
             List<Job> completedJobs = context.Jobs.Local.Where(j => j.state == JobState.Completed).ToList();

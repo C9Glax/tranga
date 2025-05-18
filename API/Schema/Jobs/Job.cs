@@ -77,7 +77,6 @@ public abstract class Job
         PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
         try
         {
-            context.Attach(this);
             this.state = JobState.Running;
             context.SaveChanges();
             ret = RunInternal(context).ToArray();
