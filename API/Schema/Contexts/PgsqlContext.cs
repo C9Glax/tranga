@@ -46,7 +46,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
             .HasForeignKey(j => j.MangaId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadAvailableChaptersJob>()
             .Navigation(j => j.Manga)
@@ -55,7 +54,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
             .HasForeignKey(j => j.MangaId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadMangaCoverJob>()
             .Navigation(j => j.Manga)
@@ -64,7 +62,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<Chapter>(j => j.Chapter)
             .WithMany()
             .HasForeignKey(j => j.ChapterId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadSingleChapterJob>()
             .Navigation(j => j.Chapter)
@@ -73,7 +70,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
             .HasForeignKey(j => j.MangaId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MoveMangaLibraryJob>()
             .Navigation(j => j.Manga)
@@ -82,7 +78,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<LocalLibrary>(j => j.ToLibrary)
             .WithMany()
             .HasForeignKey(j => j.ToLibraryId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MoveMangaLibraryJob>()
             .Navigation(j => j.ToLibrary)
@@ -91,7 +86,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
             .HasForeignKey(j => j.MangaId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<RetrieveChaptersJob>()
             .Navigation(j => j.Manga)
@@ -100,7 +94,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasOne<Manga>(j => j.Manga)
             .WithMany()
             .HasForeignKey(j => j.MangaId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<UpdateChaptersDownloadedJob>()
             .Navigation(j => j.Manga)
@@ -132,7 +125,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasMany<Manga>()
             .WithOne(m => m.MangaConnector)
             .HasForeignKey(m => m.MangaConnectorName)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.MangaConnector)
@@ -143,7 +135,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasMany<Chapter>(m => m.Chapters)
             .WithOne(c => c.ParentManga)
             .HasForeignKey(c => c.ParentMangaId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Chapter>()
             .Navigation(c => c.ParentManga)
