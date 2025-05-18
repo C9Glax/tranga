@@ -35,7 +35,6 @@ public abstract class Job
     [Required] public bool Enabled { get; internal set; } = true;
 
     [JsonIgnore] [NotMapped] internal bool IsCompleted => state is >= (JobState)128 and < (JobState)192;
-    [JsonIgnore] [NotMapped] internal bool DependenciesFulfilled => DependsOnJobs.All(j => j.IsCompleted);
 
     [NotMapped] [JsonIgnore] protected ILog Log { get; init; }
     [NotMapped] [JsonIgnore] protected ILazyLoader LazyLoader { get; init; }
