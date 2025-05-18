@@ -31,14 +31,7 @@
 Tranga can download Chapters and Metadata from "Scanlation" sites such as 
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
-- [Manganato.gg](https://manganato.com/) (en) (or natomanga.com, mangakakalot, nelomanga, ...)
-- [MangaKatana.com](https://mangakatana.com) (en)
-- [Mangaworld.bz](https://www.mangaworld.bz/) (it)
-- [Bato.to](https://bato.to/v3x) (en)
-- [ManhuaPlus](https://manhuaplus.org/) (en)
-- [MangaHere](https://www.mangahere.cc/) (en)
-- [Weebcentral](https://weebcentral.com) (en)
-- [Webtoons](https://www.webtoons.com/en/) (en)
+- [Comick.io](https://comick.io/)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
@@ -47,25 +40,29 @@ Notifications can be sent to your devices using [Gotify](https://gotify.net/), [
 
 ## What this program does and does *not* do
 
-Tranga (the program in this repository) is a REST-API and worker in one. Meaning it will open a network-port
-to listen for requests, and then work through these. Requests include searches for Manga, starting "Jobs" such
-as downloading available chapters, creating a monitoring job (that will periodically do the aforementioned),
-update metadata, and more.
+DOES: Download Images from a Website.<br />
+DOES: Create Archives.<br />
+
+### how:
+
+Tranga (this repository) is a REST-API and worker in one. Tranga provides REST-Endpoints to configure workers (Jobs).
+Requests include searches for Manga, creating and starting Jobs such as downloading available chapters.
+For available endpoints check `<hostedInstance>/swagger`
 
 This repository *does not* include a frontend. A frontend can take many forms, such as a website:
 
 [tranga-website](https://github.com/C9Glax/tranga-website)
 
-When downloading a chapter (meaning the images that make-up the manga) from a Scanlation-Website, Tranga will
+When downloading a chapter (meaning the images that make-up the manga) from a Website, Tranga will
 additionally try and scrape Metadata from the same website ~~or enhance it from third-party sources~~
-(tbd https://github.com/C9Glax/tranga/issues/280).
+([tbd issue](https://github.com/C9Glax/tranga/issues/280)).
 Downloaded images can be jpeg-compressed and/or made black and white to save on diskspace
 (measured at least a 50% reduction in size, without a significant loss of quality).
 
 Tranga will then package the contents of each chapter in a `.cbz`-archive and place it in a common folder per Manga.
 If specified, Tranga will then notify library-Managers such as [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/) to trigger a scan for new
-chapters. Tranga can also send notifications to your devices via third-party services such as [Gotify](https://gotify.net/), [LunaSea](https://www.lunasea.app/) or [Ntfy](https://ntfy.sh/
-).
+chapters. Tranga can also send notifications to your devices via third-party services such as [Gotify](https://gotify.net/), [Ntfy](https://ntfy.sh/),
+or any other REST Webhook.
 
 ## Screenshots
 
@@ -117,6 +114,8 @@ Endpoints are documented in Swagger. Just spin up an instance, and go to `http:/
 
 ### Docker
 
+Built for AMD64 (and ARM64, maybe, if it feels like it).
+
 An example `docker-compose.yaml` is provided. Mount `/Manga` to wherever you want your chapters (`.cbz`-Archives)
 downloaded (where Komga/Kavita can access them for example).  
 The file also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the
@@ -155,21 +154,22 @@ Manga[] zyx = Object.GetAnotherThing(); //I can now easily see that zyx is an Ar
 
 **A broad overview of where is what:**<br />
 
-- `Program.cs` Configuration for ASP.NET, Swagger (also in `NamedSwaggerGenOptions.cs`, Npgsql
-- `Tranga.cs` Job(worker)-Logic
+- `Program.cs` Configuration for ASP.NET, Swagger (also in `NamedSwaggerGenOptions.cs`)
+- `Tranga.cs` Worker-Logic
 - `Schema/` Entity-Framework
   - `Schema/Jobs/` + Logic for Jobs
   - `Schema/**/` + Logic for **
-  - `Schema/PgsqlContext.cs` EF configuration
+  - `Schema/Contexts/` EF configuration
 - `MangaDownloadClients/` Networking-Clients for Scraping
 - `Controllers/` ASP.NET Controllers (Endpoints)
 - `APIEndpointRecords/` Records for API-Requests with specific Request-Types (Body)
 
-If you want to add a new Scanlationsite-Connector: <br />
+If you want to add a new Website-Connector: <br />
 1. Copy one of the existing connectors, or start from scratch and inherit from `API.Schema.MangaConnectors.MangaConnector`.
 2. Add the new Connector as Object-Instance in `Program.cs` to the MangaConnector-Array `connectors`.
-3. In `Schema/PgsqlContext.cs` add the Discriminator for the Connector (the value is the name of the connector, as defined
+3. In `PgsqlContext.cs` add the Discriminator for the Connector (the value is the name of the connector, as defined
 in the constructor).
+4. In `Program.cs` add a new Object to the Array.
 
 <!-- LICENSE -->
 ## License
