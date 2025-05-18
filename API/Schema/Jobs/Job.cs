@@ -67,14 +67,13 @@ public abstract class Job
         this.Log = LogManager.GetLogger(this.GetType());
     }
 
-    public IEnumerable<Job> Run(IServiceProvider serviceProvider)
+    public IEnumerable<Job> Run(PgsqlContext context)
     {
         Log.Info($"Running job {JobId}");
         DateTime jobStart = DateTime.UtcNow;
+        context.Attach(this);
         Job[]? ret = null;
 
-        using IServiceScope scope = serviceProvider.CreateScope();
-        PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
         try
         {
             this.state = JobState.Running;

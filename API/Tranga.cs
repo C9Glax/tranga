@@ -172,7 +172,9 @@ public static class Tranga
             {
                 Thread t = new(() =>
                 {
-                    job.Run(serviceProvider);
+                    using IServiceScope jobScope = serviceProvider.CreateScope();
+                    PgsqlContext jobContext = jobScope.ServiceProvider.GetRequiredService<PgsqlContext>();
+                    job.Run(jobContext);
                 });
                 RunningJobs.Add(t, job);
                 t.Start();
