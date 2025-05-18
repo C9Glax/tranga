@@ -32,6 +32,23 @@ public static class Tranga
         Log.Info(TRANGA);
     }
 
+    internal static void RemoveStaleFiles(IServiceProvider serviceProvider)
+    {
+        Log.Info($"Removing stale files...");
+        using IServiceScope scope = serviceProvider.CreateScope();
+        PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
+        string[] usedFiles = context.Mangas.Select(m => m.CoverFileNameInCache).Where(s => s != null).ToArray()!;
+        string[] extraneousFiles = new DirectoryInfo(TrangaSettings.coverImageCache).GetFiles()
+            .Where(f => usedFiles.Contains(f.FullName) == false)
+            .Select(f => f.FullName)
+            .ToArray();
+        foreach (string path in extraneousFiles)
+        {
+            Log.Info($"Deleting {path}");
+            File.Delete(path);
+        }
+    }
+    
     private static void NotificationSender(object? serviceProviderObj)
     {
         if (serviceProviderObj is null)

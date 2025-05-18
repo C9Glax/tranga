@@ -149,6 +149,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 
 TrangaSettings.Load();
 Tranga.StartLogger();
+Tranga.RemoveStaleFiles(app.Services);
 Tranga.JobStarterThread.Start(app.Services);
 //Tranga.NotificationSenderThread.Start(app.Services); //TODO RE-ENABLE
 
