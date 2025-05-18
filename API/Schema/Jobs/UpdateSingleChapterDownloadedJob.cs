@@ -37,6 +37,8 @@ public class UpdateSingleChapterDownloadedJob : Job
 
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        context.Entry(Chapter).Reference<Manga>(c => c.ParentManga).Load();
+        context.Entry(Chapter.ParentManga).Reference<LocalLibrary>(m => m.Library).Load();
         Chapter.Downloaded = Chapter.CheckDownloaded();
 
         try
