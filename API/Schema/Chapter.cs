@@ -13,6 +13,7 @@ public class Chapter : IComparable<Chapter>
 {
     [StringLength(64)] [Required] public string ChapterId { get; init; }
 
+    [StringLength(256)]public string? IdOnConnectorSite { get; init; }
     public string ParentMangaId { get; init; }
     [JsonIgnore] public Manga ParentManga { get; init; } = null!;
 
@@ -28,9 +29,10 @@ public class Chapter : IComparable<Chapter>
     [Required] public bool Downloaded { get; internal set; }
     [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
 
-    public Chapter(Manga parentManga, string url, string chapterNumber, int? volumeNumber = null, string? title = null)
+    public Chapter(Manga parentManga, string url, string chapterNumber, int? volumeNumber = null, string? idOnConnectorSite = null, string? title = null)
     {
         this.ChapterId = TokenGen.CreateToken(typeof(Chapter), parentManga.MangaId, chapterNumber);
+        this.IdOnConnectorSite = idOnConnectorSite;
         this.ParentMangaId = parentManga.MangaId;
         this.ParentManga = parentManga;
         this.VolumeNumber = volumeNumber;
@@ -44,9 +46,10 @@ public class Chapter : IComparable<Chapter>
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal Chapter(string chapterId, string parentMangaId, int? volumeNumber, string chapterNumber, string url, string? title, string fileName, bool downloaded)
+    internal Chapter(string chapterId, string parentMangaId, int? volumeNumber, string chapterNumber, string url, string? idOnConnectorSite, string? title, string fileName, bool downloaded)
     {
         this.ChapterId = chapterId;
+        this.IdOnConnectorSite = idOnConnectorSite;
         this.ParentMangaId = parentMangaId;
         this.VolumeNumber = volumeNumber;
         this.ChapterNumber = chapterNumber;

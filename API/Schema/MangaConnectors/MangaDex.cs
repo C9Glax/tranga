@@ -330,6 +330,6 @@ public class MangaDex : MangaConnector
             volume = int.Parse(volumeStr);
         
         string url = $"https://mangadex.org/chapter/{id}";
-        return new Chapter(parentManga, url, chapter, volume, title);
+        return new Chapter(parentManga, url, chapter, volume, id, title);
     }
 }

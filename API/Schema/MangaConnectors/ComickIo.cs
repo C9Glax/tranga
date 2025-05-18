@@ -242,6 +242,6 @@ public class ComickIo : MangaConnector
             throw new Exception("chapterNum is null");
 
         string url = $"https://comick.io{canonical}";
-        return new Chapter(parentManga, url, chapterNum, volumeNum, title);
+        return new Chapter(parentManga, url, chapterNum, volumeNum, hid, title);
     }
 }
