@@ -78,7 +78,8 @@ public abstract class Job
             this.state = JobState.Running;
             context.SaveChanges();
             ret = RunInternal(context).ToArray();
-            this.state = JobState.Completed;
+            this.state = this.RecurrenceMs > 0 ? JobState.CompletedWaiting : JobState.Completed;
+            this.LastExecution = DateTime.UtcNow;
             context.Jobs.AddRange(ret);
             Log.Info($"Job {JobId} completed. Generated {ret.Length} new jobs.");
             context.SaveChanges();
@@ -88,6 +89,8 @@ public abstract class Job
             if (e is not DbUpdateException)
             {
                 this.state = JobState.Failed;
+                this.Enabled = false;
+                this.LastExecution = DateTime.UtcNow;
                 Log.Error($"Failed to run job {JobId}", e);
                 context.SaveChanges();
             }
