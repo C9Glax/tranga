@@ -173,6 +173,10 @@ public static class Tranga
                       $"\t{jobsNotHeldBackByConnector.Count} not held back by Connector\n" +
                       $"{startJobs.Count} were started.");
 
+            if (Log.IsDebugEnabled && dueJobs.Count < 1)
+                if(waitingJobs.MinBy(j => j.NextExecution) is { } nextJob)
+                    Log.Debug($"Next job in {nextJob.NextExecution.Subtract(DateTime.UtcNow)} (at {nextJob.NextExecution}): {nextJob.JobId}");
+
             (Thread, Job)[] removeFromThreadsList = RunningJobs.Where(t => !t.Key.IsAlive)
                 .Select(t => (t.Key, t.Value)).ToArray();
             Log.Debug($"Remove from Threads List: {removeFromThreadsList.Length}");
