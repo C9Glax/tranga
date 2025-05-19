@@ -5,6 +5,7 @@ using API.Schema.Jobs;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -326,6 +327,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     /// Starts the Job with the requested ID
     /// </summary>
     /// <param name="JobId">Job-ID</param>
+    /// <param name="startDependencies">Start Jobs necessary for execution</param>
     /// <response code="202">Job started</response>
     /// <response code="404">Job with ID not found</response>
     /// <response code="409">Job was already running</response>
@@ -335,16 +337,22 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status409Conflict)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult StartJob(string JobId)
+    public IActionResult StartJob(string JobId, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]bool startDependencies = false)
     {
         Job? ret = context.Jobs.Find(JobId);
         if (ret is null)
             return NotFound();
+        List<Job> dependencies = startDependencies ? ret.GetDependenciesAndSelf() : [ret];
+        
         try
         {
-            if (ret.state >= JobState.Running && ret.state < JobState.Completed)
+            if(dependencies.Any(d => d.state >= JobState.Running && d.state < JobState.Completed))
                 return new ConflictResult();
-            ret.LastExecution = DateTime.UnixEpoch;
+            dependencies.ForEach(d =>
+            {
+                d.LastExecution = DateTime.UnixEpoch;
+                d.state = JobState.CompletedWaiting;
+            });
             context.SaveChanges();
             return Accepted();
         }

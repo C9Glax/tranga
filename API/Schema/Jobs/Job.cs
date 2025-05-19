@@ -118,6 +118,17 @@ public abstract class Job
     
     protected abstract IEnumerable<Job> RunInternal(PgsqlContext context);
 
+    public List<Job> GetDependenciesAndSelf()
+    {
+        List<Job> ret = new ();
+        foreach (Job job in DependsOnJobs)
+        {
+            ret.AddRange(job.GetDependenciesAndSelf());
+        }
+        ret.Add(this);
+        return ret;
+    }
+
     public override string ToString()
     {
         return $"{JobId}";
