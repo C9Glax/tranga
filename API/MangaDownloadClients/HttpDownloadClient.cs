@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using HtmlAgilityPack;
 
 namespace API.MangaDownloadClients;
@@ -13,7 +14,8 @@ internal class HttpDownloadClient : DownloadClient
 
     public HttpDownloadClient()
     {
-        Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", TrangaSettings.userAgent);
+        if(Client.DefaultRequestHeaders.UserAgent.Count < 1)
+            Client.DefaultRequestHeaders.UserAgent.Add(new ("Tranga", "2.0"));
     }
     
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
