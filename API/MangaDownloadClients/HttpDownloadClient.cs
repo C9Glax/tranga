@@ -40,6 +40,7 @@ internal class HttpDownloadClient : DownloadClient
 
         if (!response.IsSuccessStatusCode)
         {
+            Log.Debug($"Request returned status code {response.StatusCode} {response.ReasonPhrase}:\n{response.Content.ReadAsStringAsync()}");
             return new (response.StatusCode,  null, Stream.Null);
         }
 
