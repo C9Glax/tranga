@@ -42,11 +42,11 @@ internal class HttpDownloadClient : DownloadClient
                       $"\tRequest:\n" +
                       $"{requestMessage.Method} {requestMessage.RequestUri}\n" +
                       $"{requestMessage.Version} {requestMessage.VersionPolicy}\n" +
-                      $"Headers:\n\t{string.Join("\n\t", requestMessage.Headers)}\n" +
+                      $"Headers:\n\t{string.Join("\n\t", requestMessage.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
                       $"{requestMessage.Content?.ReadAsStringAsync().Result}" +
                       $"\tResponse:\n" +
                       $"{response.Version}\n" +
-                      $"Headers:\n\t{string.Join("\n\t", response.Headers)}\n" +
+                      $"Headers:\n\t{string.Join("\n\t", response.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
                       $"{response.Content.ReadAsStringAsync().Result}");
             return new (response.StatusCode,  null, Stream.Null);
         }
