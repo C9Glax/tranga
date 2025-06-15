@@ -226,22 +226,25 @@ public class MangaDex : MangaConnector
     private Manga ParseMangaFromJToken(JToken jToken)
     {
         string? id = jToken.Value<string>("id");
+        if(id is null)
+            throw new Exception("jToken was not in expected format");
         
         JObject? attributes = jToken["attributes"] as JObject;
-        string? name = attributes?["title"]?.Value<string>("en") ?? attributes?["title"]?.First?.First?.Value<string>();
-        string? description = attributes?["description"]?.Value<string>("en")??attributes?["description"]?.First?.First?.Value<string>();
-        string? status = attributes?["status"]?.Value<string>();
-        uint? year = attributes?["year"]?.Value<uint?>();
-        string? originalLanguage = attributes?["originalLanguage"]?.Value<string>();
-        JArray? altTitlesJArray = attributes?["altTitles"] as JArray;
-        JArray? tagsJArray = attributes?["tags"] as JArray;
-        
+        if(attributes is null)
+            throw new Exception("jToken was not in expected format");
+        string? name = attributes["title"]?.Value<string>("en") ?? attributes["title"]?.First?.First?.Value<string>();
+        string description = attributes["description"]?.Value<string>("en")??attributes["description"]?.First?.First?.Value<string>()??"";
+        string? status = attributes["status"]?.Value<string>();
+        uint? year = attributes["year"]?.Value<uint?>();
+        string? originalLanguage = attributes["originalLanguage"]?.Value<string>();
+        JArray? altTitlesJArray = attributes.TryGetValue("altTitles", out JToken? altTitlesArray) ? altTitlesArray as JArray : null;
+        JArray? tagsJArray = attributes.TryGetValue("tags", out JToken? tagsArray) ? tagsArray as JArray : null;
         JArray? relationships = jToken["relationships"] as JArray;
-        string? coverFileName =
-            relationships?.FirstOrDefault(r => r["type"]?.Value<string>() == "cover_art")?["attributes"]?.Value<string>("fileName");
-
-        if (id is null || attributes is null || name is null || description is null || status is null ||
-            altTitlesJArray is null || tagsJArray is null || relationships is null || coverFileName is null)
+        if (name is null || status is null || relationships is null)
+            throw new Exception("jToken was not in expected format");
+        
+        string? coverFileName = relationships.FirstOrDefault(r => r["type"]?.Value<string>() == "cover_art")?["attributes"]?.Value<string>("fileName");
+        if(coverFileName is null)
             throw new Exception("jToken was not in expected format");
         
         List<Link> links = attributes["links"]?
@@ -276,7 +279,7 @@ public class MangaDex : MangaConnector
                 return new Link(key, url);
             }).ToList()!;
 
-        List<MangaAltTitle> altTitles = altTitlesJArray
+        List<MangaAltTitle> altTitles = (altTitlesJArray??[])
             .Select(t =>
             {
                 JObject? j = t as JObject;
@@ -286,7 +289,7 @@ public class MangaDex : MangaConnector
                 return new MangaAltTitle(p.Name, p.Value.ToString());
             }).Where(x => x is not null).ToList()!;
         
-        List<MangaTag> tags = tagsJArray
+        List<MangaTag> tags = (tagsJArray??[])
             .Where(t => t.Value<string>("type") == "tag")
             .Select(t => t["attributes"]?["name"]?.Value<string>("en")??t["attributes"]?["name"]?.First?.First?.Value<string>())
             .Select(str => str is not null ? new MangaTag(str) : null)
