@@ -38,13 +38,15 @@ internal class HttpDownloadClient : DownloadClient
 
         if (!response.IsSuccessStatusCode)
         {
-            Log.Debug($"Request returned status code {response.StatusCode}:\n" +
-                      $"\tRequest:\n" +
+            Log.Debug($"Request returned status code {(int)response.StatusCode} {response.StatusCode}:\n" +
+                      $"=====\n" +
+                      $"Request:\n" +
                       $"{requestMessage.Method} {requestMessage.RequestUri}\n" +
                       $"{requestMessage.Version} {requestMessage.VersionPolicy}\n" +
                       $"Headers:\n\t{string.Join("\n\t", requestMessage.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
                       $"{requestMessage.Content?.ReadAsStringAsync().Result}" +
-                      $"\tResponse:\n" +
+                      $"=====\n" +
+                      $"Response:\n" +
                       $"{response.Version}\n" +
                       $"Headers:\n\t{string.Join("\n\t", response.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
                       $"{response.Content.ReadAsStringAsync().Result}");
