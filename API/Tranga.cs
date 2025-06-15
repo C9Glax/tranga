@@ -34,7 +34,9 @@ public static class Tranga
 
     internal static void RemoveStaleFiles(PgsqlContext context)
     {
-        Log.Info($"Removing stale files...");
+        Log.Info("Removing stale files...");
+        if (!Directory.Exists(TrangaSettings.coverImageCache))
+            return;
         string[] usedFiles = context.Mangas.Select(m => m.CoverFileNameInCache).Where(s => s != null).ToArray()!;
         string[] extraneousFiles = new DirectoryInfo(TrangaSettings.coverImageCache).GetFiles()
             .Where(f => usedFiles.Contains(f.FullName) == false)
