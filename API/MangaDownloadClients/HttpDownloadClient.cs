@@ -18,33 +18,28 @@ internal class HttpDownloadClient : DownloadClient
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         if (clickButton is not null)
-            Log.Warn("Can not click button on static site.");
+            Log.Warn("Client can not click button");
         HttpResponseMessage? response = null;
         while (response is null)
         {
             HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
             if (referrer is not null)
-                requestMessage.Headers.Referrer = new Uri(referrer);
+                requestMessage.Headers.Referrer = new (referrer);
             Log.Debug($"Requesting {url}");
             try
             {
                 response = Client.Send(requestMessage);
             }
-            catch (Exception e)
+            catch (HttpRequestException e)
             {
-                switch (e)
-                {
-                    case TaskCanceledException:
-                        return new RequestResult(HttpStatusCode.RequestTimeout, null, Stream.Null);
-                    case HttpRequestException:
-                        return new RequestResult(HttpStatusCode.BadRequest, null, Stream.Null);
-                }
+                Log.Error(e);
+                return new (HttpStatusCode.Unused, null, Stream.Null);
             }
         }
 
         if (!response.IsSuccessStatusCode)
         {
-            return new RequestResult(response.StatusCode,  null, Stream.Null);
+            return new (response.StatusCode,  null, Stream.Null);
         }
 
         Stream stream;
@@ -55,7 +50,7 @@ internal class HttpDownloadClient : DownloadClient
         catch (Exception e)
         {
             Log.Error(e);
-            return new RequestResult(HttpStatusCode.InternalServerError, null, Stream.Null);
+            return new (HttpStatusCode.Unused, null, Stream.Null);
         }
 
         HtmlDocument? document = null;
@@ -71,10 +66,9 @@ internal class HttpDownloadClient : DownloadClient
         // Request has been redirected to another page. For example, it redirects directly to the results when there is only 1 result
         if (response.RequestMessage is not null && response.RequestMessage.RequestUri is not null)
         {
-            return new RequestResult(response.StatusCode, document, stream, true,
-                response.RequestMessage.RequestUri.AbsoluteUri);
+            return new (response.StatusCode, document, stream, true, response.RequestMessage.RequestUri.AbsoluteUri);
         }
 
-        return new RequestResult(response.StatusCode, document, stream);
+        return new (response.StatusCode, document, stream);
     }
 }
