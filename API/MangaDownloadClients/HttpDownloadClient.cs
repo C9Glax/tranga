@@ -20,9 +20,10 @@ internal class HttpDownloadClient : DownloadClient
         if (clickButton is not null)
             Log.Warn("Client can not click button");
         HttpResponseMessage? response = null;
+        Uri uri = new(url);
         while (response is null)
         {
-            HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
+            HttpRequestMessage requestMessage = new(HttpMethod.Get, uri);
             if (referrer is not null)
                 requestMessage.Headers.Referrer = new (referrer);
             Log.Debug($"Requesting {url}");
@@ -64,7 +65,7 @@ internal class HttpDownloadClient : DownloadClient
         }
 
         // Request has been redirected to another page. For example, it redirects directly to the results when there is only 1 result
-        if (response.RequestMessage is not null && response.RequestMessage.RequestUri is not null)
+        if (response.RequestMessage is not null && response.RequestMessage.RequestUri is not null && response.RequestMessage.RequestUri != uri)
         {
             return new (response.StatusCode, document, stream, true, response.RequestMessage.RequestUri.AbsoluteUri);
         }
