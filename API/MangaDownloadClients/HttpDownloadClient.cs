@@ -13,6 +13,7 @@ internal class HttpDownloadClient : DownloadClient
     public HttpDownloadClient()
     {
         Client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", TrangaSettings.userAgent);
+        Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
     }
     
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
