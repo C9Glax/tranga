@@ -86,12 +86,13 @@ Endpoints are documented in Swagger. Just spin up an instance, and go to `http:/
 
 - .NET
   - ASP.NET
-  - Entity Framework
+  - Entity Framework Core
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
 - [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
 - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md)
 - [PuppeteerSharp](https://github.com/hardkoded/puppeteer-sharp/blob/master/LICENSE)
+- [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)

@@ -1,27 +1,22 @@
 ﻿using System.Net;
+using FlareSolverrSharp;
 using HtmlAgilityPack;
 
 namespace API.MangaDownloadClients;
 
 internal class HttpDownloadClient : DownloadClient
 {
-    private static readonly HttpClient Client = new()
-    {
-        Timeout = TimeSpan.FromSeconds(10),
-        DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher
-    };
-
-    public HttpDownloadClient()
-    {
-        if(Client.DefaultRequestHeaders.UserAgent.Count < 1)
-            Client.DefaultRequestHeaders.UserAgent.ParseAdd(TrangaSettings.userAgent);
-    }
-    
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         if (clickButton is not null)
             Log.Warn("Client can not click button");
-        HttpResponseMessage? response = null;
+        HttpClient client = TrangaSettings.flareSolverrUrl == string.Empty
+            ? new ()
+            : new (new ClearanceHandler(TrangaSettings.flareSolverrUrl));
+        client.Timeout = TimeSpan.FromSeconds(10);
+        client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+        client.DefaultRequestHeaders.Add("User-Agent", TrangaSettings.userAgent);
+        HttpResponseMessage? response;
         Uri uri = new(url);
         HttpRequestMessage requestMessage = new(HttpMethod.Get, uri);
         if (referrer is not null)
@@ -29,7 +24,7 @@ internal class HttpDownloadClient : DownloadClient
         Log.Debug($"Requesting {url}");
         try
         {
-            response = Client.Send(requestMessage);
+            response = client.Send(requestMessage);
         }
         catch (HttpRequestException e)
         {

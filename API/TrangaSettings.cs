@@ -15,6 +15,7 @@ public static class TrangaSettings
     public static string userAgent { get; private set; } = DefaultUserAgent;
     public static int compression{ get; private set; } = 40;
     public static bool bwImages { get; private set; } = false;
+    public static string flareSolverrUrl { get; private set; } = string.Empty;
     /// <summary>
     /// Placeholders:
     /// %M Manga Name
@@ -102,6 +103,12 @@ public static class TrangaSettings
         ExportSettings();
     }
 
+    public static void UpdateFlareSolverrUrl(string url)
+    {
+        flareSolverrUrl = url;
+        ExportSettings();
+    }
+
     public static void ResetRequestLimits()
     {
         requestLimits = DefaultRequestLimits;
@@ -148,6 +155,7 @@ public static class TrangaSettings
         jobj.Add("bwImages", JToken.FromObject(bwImages));
         jobj.Add("startNewJobTimeoutMs", JToken.FromObject(startNewJobTimeoutMs));
         jobj.Add("chapterNamingScheme", JToken.FromObject(chapterNamingScheme));
+        jobj.Add("flareSolverrUrl", JToken.FromObject(flareSolverrUrl));
         return jobj;
     }
 
@@ -174,5 +182,7 @@ public static class TrangaSettings
             startNewJobTimeoutMs = snjt.Value<int>()!;
         if (jobj.TryGetValue("chapterNamingScheme", out JToken? cns))
             chapterNamingScheme = cns.Value<string>()!;
+        if (jobj.TryGetValue("flareSolverrUrl", out JToken? fsu))
+            flareSolverrUrl = fsu.Value<string>()!;
     }
 }

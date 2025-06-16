@@ -1,10 +1,13 @@
-﻿using API.MangaDownloadClients;
+﻿using System.Net.Http.Headers;
+using API.MangaDownloadClients;
 using API.Schema;
 using API.Schema.Contexts;
 using API.Schema.Jobs;
 using Asp.Versioning;
+using FlareSolverrSharp;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -289,6 +292,72 @@ public class SettingsController(PgsqlContext context, ILog Log) : Controller
         {
             Log.Error(e);
             return StatusCode(500, e);
+        }
+    }
+
+    /// <summary>
+    /// Sets the FlareSolverr-URL
+    /// </summary>
+    /// <param name="flareSolverrUrl">URL of FlareSolverr-Instance</param>
+    /// <response code="200"></response>
+    [HttpPost("FlareSolverr/Url")]
+    [ProducesResponseType(Status200OK)]
+    public IActionResult SetFlareSolverrUrl([FromBody]string flareSolverrUrl)
+    {
+        TrangaSettings.UpdateFlareSolverrUrl(flareSolverrUrl);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Resets the FlareSolverr-URL (HttpClient does not use FlareSolverr anymore)
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpDelete("FlareSolverr/Url")]
+    [ProducesResponseType(Status200OK)]
+    public IActionResult ClearFlareSolverrUrl()
+    {
+        TrangaSettings.UpdateFlareSolverrUrl(string.Empty);
+        return Ok();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <response code="200">FlareSolverr is working!</response>
+    /// <response code="400">FlareSolverr URL is malformed</response>
+    /// <response code="500">FlareSolverr is not working</response>
+    /// <response code="503">FlareSolverr could not be reached</response>
+    [HttpPost("FlareSolverr/Test")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status400BadRequest)]
+    [ProducesResponseType(Status500InternalServerError)]
+    [ProducesResponseType(Status503ServiceUnavailable)]
+    public IActionResult TestFlareSolverrReachable()
+    {
+        const string knownProtectedUrl = "https://prowlarr.servarr.com/v1/ping";
+        HttpClient client = new();
+        if (!Uri.TryCreate(new(TrangaSettings.flareSolverrUrl), "v1", out Uri? uri))
+            return BadRequest();
+        HttpRequestMessage request = new(HttpMethod.Post, uri);
+        JObject data = new()
+        {
+            ["cmd"] = "request.get",
+            ["url"] = knownProtectedUrl
+        };
+        request.Content = new StringContent(JsonConvert.SerializeObject(data));
+        request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+        HttpResponseMessage response = client.Send(request);
+        if (!response.IsSuccessStatusCode)
+            return StatusCode(Status503ServiceUnavailable);
+        client = new(new ClearanceHandler(TrangaSettings.flareSolverrUrl));
+        try
+        {
+            client.GetStringAsync(knownProtectedUrl).Wait();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(Status500InternalServerError);
         }
     }
 }
