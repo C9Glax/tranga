@@ -1,4 +1,4 @@
-﻿version: '3'
+version: '3'
 services:
   tranga-api:
     image: glax/tranga-api:latest
@@ -9,7 +9,8 @@ services:
     ports:
       - "6531:6531"
     depends_on:
-      - tranga-pg
+      tranga-pg:
+        condition: service_healthy
     environment:
       - POSTGRES_HOST=tranga-pg
     restart: unless-stopped
@@ -28,4 +29,10 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
     restart: unless-stopped
