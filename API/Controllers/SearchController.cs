@@ -78,12 +78,11 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
     /// <param name="url">Manga-Page URL</param>
     /// <response code="200"></response>
     /// <response code="300">Multiple connectors found for URL</response>
-    /// <response code="400">No Manga at URL</response>
-    /// <response code="404">No connector found for URL</response>
+    /// <response code="404">Manga not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("Url")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
-    [ProducesResponseType(Status400BadRequest)]
+    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult GetMangaFromUrl([FromBody]string url)
     {
@@ -91,7 +90,7 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
             return StatusCode(Status500InternalServerError, "Could not find Global Connector.");
 
         if(connector.GetMangaFromUrl(url) is not { } manga)
-            return BadRequest();
+            return NotFound();
         try
         {
             if(AddMangaToContext(manga) is { } add)
