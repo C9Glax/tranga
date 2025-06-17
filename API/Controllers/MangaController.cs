@@ -4,6 +4,7 @@ using API.Schema.Jobs;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -139,7 +140,9 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
         
         using MemoryStream ms = new();
         image.Save(ms, new JpegEncoder(){Quality = 100});
-        return File(ms.GetBuffer(), "image/jpeg");
+        DateTime lastModified = new FileInfo(m.CoverFileNameInCache).LastWriteTime;
+        HttpContext.Response.Headers.CacheControl = "public";
+        return File(ms.GetBuffer(), "image/jpeg", new DateTimeOffset(lastModified), EntityTagHeaderValue.Parse($"\"{lastModified.Ticks}\""));
     }
 
     /// <summary>
