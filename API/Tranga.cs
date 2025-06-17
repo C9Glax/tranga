@@ -137,7 +137,7 @@ public static class Tranga
             List<Job> dueJobs = waitingJobs.FilterDueJobs();
             List<Job> jobsWithoutDependencies = dueJobs.FilterJobDependencies();
 
-            List<Job> jobsWithoutDownloading = jobsWithoutDependencies.Where(j => GetJobConnector(j) is null).ToList();
+            List<Job> jobsWithoutDownloading = jobsWithoutDependencies.FilterJobsWithoutDownloading();
             
             //Match running and waiting jobs per Connector
             Dictionary<MangaConnector, Dictionary<JobType, List<Job>>> runningJobsPerConnector =
