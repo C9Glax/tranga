@@ -168,7 +168,7 @@ public class FlareSolverrDownloadClient : DownloadClient
         HtmlNode pre = document.DocumentNode.SelectSingleNode("//pre");
         try
         {
-            JsonDocument.Parse(pre.InnerText);
+            using JsonDocument _ = JsonDocument.Parse(pre.InnerText);
             jsonString = pre.InnerText;
             return true;
         }
