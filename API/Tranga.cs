@@ -241,8 +241,9 @@ public static class Tranga
 
     private static List<Job> FilterJobsWithoutDownloading(this List<Job> jobs)
     {
+        JobType[] types = [JobType.MoveFileOrFolderJob, JobType.MoveMangaLibraryJob, JobType.UpdateChaptersDownloadedJob];
         DateTime start = DateTime.UtcNow;
-        List<Job> ret = jobs.Where(j => GetJobConnector(j) is null).ToList();
+        List<Job> ret = jobs.Where(j => types.Contains(j.JobType)).ToList();
         DateTime end = DateTime.UtcNow;
         Log.Debug($"Filtering Jobs without Download took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
