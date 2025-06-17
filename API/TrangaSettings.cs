@@ -42,8 +42,8 @@ public static class TrangaSettings
     {
         {RequestType.MangaInfo, 60},
         {RequestType.MangaDexFeed, 60},
-        {RequestType.MangaDexImage, 40},
-        {RequestType.MangaImage, 60},
+        {RequestType.MangaDexImage, 60},
+        {RequestType.MangaImage, 240},
         {RequestType.MangaCover, 60},
         {RequestType.Default, 60}
     };
