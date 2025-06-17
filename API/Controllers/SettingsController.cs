@@ -4,7 +4,6 @@ using API.Schema;
 using API.Schema.Contexts;
 using API.Schema.Jobs;
 using Asp.Versioning;
-using FlareSolverrSharp;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -321,43 +320,18 @@ public class SettingsController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// 
+    /// Test FlareSolverr
     /// </summary>
     /// <response code="200">FlareSolverr is working!</response>
-    /// <response code="400">FlareSolverr URL is malformed</response>
     /// <response code="500">FlareSolverr is not working</response>
-    /// <response code="503">FlareSolverr could not be reached</response>
     [HttpPost("FlareSolverr/Test")]
     [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status500InternalServerError)]
-    [ProducesResponseType(Status503ServiceUnavailable)]
     public IActionResult TestFlareSolverrReachable()
     {
         const string knownProtectedUrl = "https://prowlarr.servarr.com/v1/ping";
-        HttpClient client = new();
-        if (!Uri.TryCreate(new(TrangaSettings.flareSolverrUrl), "v1", out Uri? uri))
-            return BadRequest();
-        HttpRequestMessage request = new(HttpMethod.Post, uri);
-        JObject data = new()
-        {
-            ["cmd"] = "request.get",
-            ["url"] = knownProtectedUrl
-        };
-        request.Content = new StringContent(JsonConvert.SerializeObject(data));
-        request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-        HttpResponseMessage response = client.Send(request);
-        if (!response.IsSuccessStatusCode)
-            return StatusCode(Status503ServiceUnavailable);
-        client = new(new ClearanceHandler(TrangaSettings.flareSolverrUrl));
-        try
-        {
-            client.GetStringAsync(knownProtectedUrl).Wait();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return StatusCode(Status500InternalServerError);
-        }
+        FlareSolverrDownloadClient client = new();
+        RequestResult result = client.MakeRequestInternal(knownProtectedUrl);
+        return (int)result.statusCode >= 200 && (int)result.statusCode < 300 ? Ok() : StatusCode(500, result.statusCode); 
     }
 }

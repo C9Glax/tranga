@@ -3,7 +3,7 @@ using log4net;
 
 namespace API.MangaDownloadClients;
 
-internal abstract class DownloadClient
+public abstract class DownloadClient
 {
     private static readonly Dictionary<RequestType, DateTime> LastExecutedRateLimit = new();
     protected ILog Log { get; init; }

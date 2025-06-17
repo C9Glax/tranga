@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using FlareSolverrSharp;
 using HtmlAgilityPack;
 
 namespace API.MangaDownloadClients;
@@ -10,9 +9,7 @@ internal class HttpDownloadClient : DownloadClient
     {
         if (clickButton is not null)
             Log.Warn("Client can not click button");
-        HttpClient client = TrangaSettings.flareSolverrUrl == string.Empty
-            ? new ()
-            : new (new ClearanceHandler(TrangaSettings.flareSolverrUrl));
+        HttpClient client = new();
         client.Timeout = TimeSpan.FromSeconds(10);
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
         client.DefaultRequestHeaders.Add("User-Agent", TrangaSettings.userAgent);
@@ -46,7 +43,7 @@ internal class HttpDownloadClient : DownloadClient
                       $"{response.Version}\n" +
                       $"Headers:\n\t{string.Join("\n\t", response.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
                       $"{response.Content.ReadAsStringAsync().Result}");
-            return new (response.StatusCode,  null, Stream.Null);
+            return new FlareSolverrDownloadClient().MakeRequestInternal(url, referrer, clickButton);
         }
 
         Stream stream;
