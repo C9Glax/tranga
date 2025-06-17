@@ -195,7 +195,7 @@ public static class Tranga
             {
                 Log.Error("Failed saving Job changes.", e);
             }
-            Log.Debug($"Job-Cycle over! (took {DateTime.UtcNow.Subtract(cycleStart).TotalMilliseconds}ms)");
+            Log.Debug($"Job-Cycle over! (took {DateTime.UtcNow.Subtract(cycleStart).TotalMilliseconds}ms");
             Thread.Sleep(TrangaSettings.startNewJobTimeoutMs);
         }
     }
@@ -205,7 +205,7 @@ public static class Tranga
         DateTime start = DateTime.UtcNow;
         List<Job> ret = jobs.Where(j => j.state == JobState.Running).ToList();
         DateTime end = DateTime.UtcNow;
-        Log.Debug($"Getting running Jobs took {end.Subtract(start).TotalMilliseconds}ms)");
+        Log.Debug($"Getting running Jobs took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
     }
     
@@ -214,7 +214,7 @@ public static class Tranga
         DateTime start = DateTime.UtcNow;
         List<Job> ret = jobs.Where(j => j.state == JobState.CompletedWaiting || j.state == JobState.FirstExecution).ToList();
         DateTime end = DateTime.UtcNow;
-        Log.Debug($"Getting waiting Jobs took {end.Subtract(start).TotalMilliseconds}ms)");
+        Log.Debug($"Getting waiting Jobs took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
     }
         
@@ -224,7 +224,7 @@ public static class Tranga
         DateTime start = DateTime.UtcNow;
         List<Job> ret = jobs.Where(j => j.NextExecution < DateTime.UtcNow).ToList();
         DateTime end = DateTime.UtcNow;
-        Log.Debug($"Filtering Due Jobs took {end.Subtract(start).TotalMilliseconds}ms)");
+        Log.Debug($"Filtering Due Jobs took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
     }
         
@@ -234,10 +234,20 @@ public static class Tranga
         DateTime start = DateTime.UtcNow;
         List<Job> ret = jobs.Where(job => job.DependsOnJobs.All(j => j.IsCompleted)).ToList();
         DateTime end = DateTime.UtcNow;
-        Log.Debug($"Filtering Dependencies took {end.Subtract(start).TotalMilliseconds}ms)");
+        Log.Debug($"Filtering Dependencies took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
     }
-        
+    
+
+    private static List<Job> FilterJobsWithoutDownloading(this List<Job> jobs)
+    {
+        DateTime start = DateTime.UtcNow;
+        List<Job> ret = jobs.Where(j => GetJobConnector(j) is null).ToList();
+        DateTime end = DateTime.UtcNow;
+        Log.Debug($"Filtering Jobs without Download took {end.Subtract(start).TotalMilliseconds}ms");
+        return ret;
+    }
+    
 
     private static Dictionary<MangaConnector, Dictionary<JobType, List<Job>>> GetJobsPerJobTypeAndConnector(this List<Job> jobs)
     {
@@ -254,7 +264,7 @@ public static class Tranga
             ret[connector][job.JobType].Add(job);
         }
         DateTime end = DateTime.UtcNow;
-        Log.Debug($"Fetching connector per Job for jobs took {end.Subtract(start).TotalMilliseconds}ms)");
+        Log.Debug($"Fetching connector per Job for jobs took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
     }
 
@@ -295,7 +305,7 @@ public static class Tranga
             }
         }
         DateTime end = DateTime.UtcNow;
-        Log.Debug($"Getting eligible jobs (not held back by Connector) took {end.Subtract(start).TotalMilliseconds}ms)");
+        Log.Debug($"Getting eligible jobs (not held back by Connector) took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
     }
 
