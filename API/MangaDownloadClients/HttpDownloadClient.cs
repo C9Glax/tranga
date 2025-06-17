@@ -31,19 +31,28 @@ internal class HttpDownloadClient : DownloadClient
 
         if (!response.IsSuccessStatusCode)
         {
-            Log.Debug($"Request returned status code {(int)response.StatusCode} {response.StatusCode}:\n" +
-                      $"=====\n" +
-                      $"Request:\n" +
-                      $"{requestMessage.Method} {requestMessage.RequestUri}\n" +
-                      $"{requestMessage.Version} {requestMessage.VersionPolicy}\n" +
-                      $"Headers:\n\t{string.Join("\n\t", requestMessage.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
-                      $"{requestMessage.Content?.ReadAsStringAsync().Result}" +
-                      $"=====\n" +
-                      $"Response:\n" +
-                      $"{response.Version}\n" +
-                      $"Headers:\n\t{string.Join("\n\t", response.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
-                      $"{response.Content.ReadAsStringAsync().Result}");
-            return new FlareSolverrDownloadClient().MakeRequestInternal(url, referrer, clickButton);
+            Log.Debug($"Request returned status code {(int)response.StatusCode} {response.StatusCode}");
+            if (response.Headers.Server.Any(s =>
+                    (s.Product?.Name ?? "").Contains("cloudflare", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                Log.Debug("Retrying with FlareSolverr!");
+                return new FlareSolverrDownloadClient().MakeRequestInternal(url, referrer, clickButton);
+            }
+            else
+            {
+                Log.Debug($"Request returned status code {(int)response.StatusCode} {response.StatusCode}:\n" +
+                          $"=====\n" +
+                          $"Request:\n" +
+                          $"{requestMessage.Method} {requestMessage.RequestUri}\n" +
+                          $"{requestMessage.Version} {requestMessage.VersionPolicy}\n" +
+                          $"Headers:\n\t{string.Join("\n\t", requestMessage.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
+                          $"{requestMessage.Content?.ReadAsStringAsync().Result}" +
+                          $"=====\n" +
+                          $"Response:\n" +
+                          $"{response.Version}\n" +
+                          $"Headers:\n\t{string.Join("\n\t", response.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
+                          $"{response.Content.ReadAsStringAsync().Result}");
+            }
         }
 
         Stream stream;
