@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -168,7 +168,7 @@ public class FlareSolverrDownloadClient : DownloadClient
         HtmlNode pre = document.DocumentNode.SelectSingleNode("//pre");
         try
         {
-            JObject.Parse(pre.InnerText);
+            JsonDocument.Parse(pre.InnerText);
             jsonString = pre.InnerText;
             return true;
         }
