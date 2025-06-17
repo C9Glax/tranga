@@ -200,23 +200,48 @@ public static class Tranga
         }
     }
     
-    private static List<Job> GetRunningJobs(this IQueryable<Job> jobs) =>
-        jobs.Where(j => j.state == JobState.Running).ToList();
+    private static List<Job> GetRunningJobs(this IQueryable<Job> jobs)
+    {
+        DateTime start = DateTime.UtcNow;
+        List<Job> ret = jobs.Where(j => j.state == JobState.Running).ToList();
+        DateTime end = DateTime.UtcNow;
+        Log.Debug($"Getting running Jobs took {end.Subtract(start).TotalMilliseconds}ms)");
+        return ret;
+    }
     
-    private static List<Job> GetWaitingJobs(this IQueryable<Job> jobs) =>
-        jobs.Where(j => j.state == JobState.CompletedWaiting || j.state == JobState.FirstExecution)
-            .ToList();
+    private static List<Job> GetWaitingJobs(this IQueryable<Job> jobs)
+    {
+        DateTime start = DateTime.UtcNow;
+        List<Job> ret = jobs.Where(j => j.state == JobState.CompletedWaiting || j.state == JobState.FirstExecution).ToList();
+        DateTime end = DateTime.UtcNow;
+        Log.Debug($"Getting waiting Jobs took {end.Subtract(start).TotalMilliseconds}ms)");
+        return ret;
+    }
+        
 
-    private static List<Job> FilterDueJobs(this List<Job> jobs) =>
-        jobs.Where(j => j.NextExecution < DateTime.UtcNow)
-            .ToList();
+    private static List<Job> FilterDueJobs(this List<Job> jobs)
+    {
+        DateTime start = DateTime.UtcNow;
+        List<Job> ret = jobs.Where(j => j.NextExecution < DateTime.UtcNow).ToList();
+        DateTime end = DateTime.UtcNow;
+        Log.Debug($"Filtering Due Jobs took {end.Subtract(start).TotalMilliseconds}ms)");
+        return ret;
+    }
+        
 
-    private static List<Job> FilterJobDependencies(this List<Job> jobs) =>
-        jobs.Where(job => job.DependsOnJobs.All(j => j.IsCompleted))
-            .ToList();
+    private static List<Job> FilterJobDependencies(this List<Job> jobs)
+    {
+        DateTime start = DateTime.UtcNow;
+        List<Job> ret = jobs.Where(job => job.DependsOnJobs.All(j => j.IsCompleted)).ToList();
+        DateTime end = DateTime.UtcNow;
+        Log.Debug($"Filtering Dependencies took {end.Subtract(start).TotalMilliseconds}ms)");
+        return ret;
+    }
+        
 
     private static Dictionary<MangaConnector, Dictionary<JobType, List<Job>>> GetJobsPerJobTypeAndConnector(this List<Job> jobs)
     {
+        DateTime start = DateTime.UtcNow;
         Dictionary<MangaConnector, Dictionary<JobType, List<Job>>> ret = new();
         foreach (Job job in jobs)
         {
@@ -228,12 +253,15 @@ public static class Tranga
                 ret[connector].Add(job.JobType, new());
             ret[connector][job.JobType].Add(job);
         }
+        DateTime end = DateTime.UtcNow;
+        Log.Debug($"Fetching connector per Job for jobs took {end.Subtract(start).TotalMilliseconds}ms)");
         return ret;
     }
 
     private static List<Job> MatchJobsRunningAndWaiting(Dictionary<MangaConnector, Dictionary<JobType, List<Job>>> running,
         Dictionary<MangaConnector, Dictionary<JobType, List<Job>>> waiting)
     {
+        DateTime start = DateTime.UtcNow;
         List<Job> ret = new();
         foreach ((MangaConnector connector, Dictionary<JobType, List<Job>> jobTypeJobsWaiting) in waiting)
         {
@@ -266,7 +294,8 @@ public static class Tranga
                 }
             }
         }
-
+        DateTime end = DateTime.UtcNow;
+        Log.Debug($"Getting eligible jobs (not held back by Connector) took {end.Subtract(start).TotalMilliseconds}ms)");
         return ret;
     }
 
