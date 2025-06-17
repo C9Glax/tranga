@@ -78,7 +78,7 @@ public class ComickIo : MangaConnector
     public override Chapter[] GetChapters(Manga manga, string? language = null)
     {
         Log.Info($"Getting Chapters: {manga.IdOnConnectorSite}");
-        List<string> chapterHids = new();
+        List<Chapter> chapters = new();
         int page = 1;
         while(page < 50)
         {
@@ -95,16 +95,13 @@ public class ComickIo : MangaConnector
             JToken data = JToken.Parse(sr.ReadToEnd());
             JArray? chaptersArray = data["chapters"] as JArray;
 
-            if (chaptersArray?.Count < 1)
+            if (chaptersArray is null || chaptersArray.Count < 1)
                 break;
             
-            chapterHids.AddRange(chaptersArray?.Select(token => token.Value<string>("hid")!)!);
+            chapters.AddRange(ParseChapters(manga, chaptersArray));
 
             page++;
         }
-        Log.Debug($"Getting chapters for {manga.Name} yielded {chapterHids.Count} hids. Requesting chapters now...");
-
-        List<Chapter> chapters = chapterHids.Select(hid => ChapterFromHid(manga, hid)).ToList();
 
         return chapters.ToArray();
     }
@@ -219,29 +216,23 @@ public class ComickIo : MangaConnector
             year: year, originalLanguage: originalLanguage);
     }
 
-    private Chapter ChapterFromHid(Manga parentManga, string hid)
+    private List<Chapter> ParseChapters(Manga parentManga, JArray chaptersArray)
     {
-        string requestUrl = $"https://api.comick.fun/chapter/{hid}";
-        RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.Default);
-        if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
+        List<Chapter> chapters = new ();
+        foreach (JToken chapter in chaptersArray)
         {
-            Log.Error("Request failed");
-            throw new Exception("Request failed");
+            string? chapterNum = chapter.Value<string>("chap");
+            string? volumeNumStr = chapter.Value<string>("vol");
+            int? volumeNum = volumeNumStr is null ? null : int.Parse(volumeNumStr);
+            string? title = chapter.Value<string>("title");
+            string? hid = chapter.Value<string>("hid");
+            string url = $"https://comick.io/comic/{parentManga.IdOnConnectorSite}/{hid}";
+            
+            if(chapterNum is null || hid is null)
+                continue;
+
+            chapters.Add(new (parentManga, url, chapterNum, volumeNum, hid, title));
         }
-        
-        using StreamReader sr = new (result.result);
-        JToken data = JToken.Parse(sr.ReadToEnd());
-
-        string? canonical = data.Value<string>("canonical");
-        string? chapterNum = data["chapter"]?.Value<string>("chap");
-        string? volumeNumStr = data["chapter"]?.Value<string>("vol");
-        int? volumeNum = volumeNumStr is null ? null : int.Parse(volumeNumStr);
-        string? title = data["chapter"]?.Value<string>("title");
-        
-        if(chapterNum is null)
-            throw new Exception("chapterNum is null");
-
-        string url = $"https://comick.io{canonical}";
-        return new Chapter(parentManga, url, chapterNum, volumeNum, hid, title);
+        return chapters;
     }
 }
