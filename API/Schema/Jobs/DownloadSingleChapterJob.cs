@@ -45,6 +45,11 @@ public class DownloadSingleChapterJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        if (Chapter.Downloaded)
+        {
+            Log.Info("Chapter was already downloaded.");
+            return [];
+        }
         string[] imageUrls = Chapter.ParentManga.MangaConnector.GetChapterImageUrls(Chapter);
         if (imageUrls.Length < 1)
         {
