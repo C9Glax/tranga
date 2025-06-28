@@ -276,13 +276,17 @@ public static class Tranga
     private static List<Job> MatchJobsRunningAndWaiting(Dictionary<string, Dictionary<JobType, List<Job>>> running,
         Dictionary<string, Dictionary<JobType, List<Job>>> waiting)
     {
+        Log.Debug($"Matching {running.Count} running Jobs to {waiting.Count} waiting Jobs. Busy Connectors: {string.Join(", ", running.Select(r => r.Key))}");
         DateTime start = DateTime.UtcNow;
         List<Job> ret = new();
+        //Foreach MangaConnector
         foreach ((string connector, Dictionary<JobType, List<Job>> jobTypeJobsWaiting) in waiting)
         {
+            //Check if MangaConnector has a Job running
             if (running.TryGetValue(connector, out Dictionary<JobType, List<Job>>? jobTypeJobsRunning))
-            {   //MangaConnector has running Jobs
-                //Match per JobType
+            {
+                //MangaConnector has running Jobs
+                //Match per JobType (MangaConnector can have 1 Job per Type running at the same time)
                 foreach ((JobType jobType, List<Job> jobsWaiting) in jobTypeJobsWaiting)
                 {
                     if(jobTypeJobsRunning.ContainsKey(jobType))
@@ -297,9 +301,13 @@ public static class Tranga
                 }
             }
             else
-            {   //MangaConnector has no running Jobs
+            {
+                //MangaConnector has no running Jobs
                 foreach ((JobType jobType, List<Job> jobsWaiting) in jobTypeJobsWaiting)
                 {
+                    if(ret.Any(j => j.JobType == jobType))
+                        //Already a job of type to be started
+                        continue;
                     if (jobType is not JobType.DownloadSingleChapterJob)
                         //If it is not a DownloadSingleChapterJob, just add the first
                         ret.Add(jobsWaiting.First());
