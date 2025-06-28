@@ -84,17 +84,16 @@ Endpoints are documented in Swagger. Just spin up an instance, and go to `http:/
 
 ## Built With
 
-- .NET
-  - ASP.NET
+- ASP.NET
   - Entity Framework Core
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
-- [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
 - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
+- [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md)
+- [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - [PuppeteerSharp](https://github.com/hardkoded/puppeteer-sharp/blob/master/LICENSE)
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
-- [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -126,13 +125,13 @@ access the folder. Permission conflicts with Komga and Kavita should thus be lim
 
 ### Bare-Metal
 
-While not supported/currently built, Tranga will also run Bare-Metal without issue.
+While not supported/currently built, Tranga should also run Bare-Metal without issue.
 
 Configuration-Files will be stored per OS:
 - Linux `/usr/share/tranga-api`
 - Windows `%appdata%/tranga-api`
 
-Downloads (default) are stored in - but this can be configured in `settings.json`:
+Downloads (default) are stored in - but this can be configured in `settings.json` (which will be generated on first after first launch):
 - Linux `/Manga`
 - Windows `%currentDirectory%/Downloads`
 
@@ -148,9 +147,10 @@ If you want to contribute, please feel free to fork and create a Pull-Request!
 General rules:
 - Strongly-type your variables. This improves readability.
 ```csharp
-var xyz = Object.GetSomething(); //Do not do this. What type is xyz?
+var xyz = Object.GetSomething(); //Do not do this. What type is xyz (without looking at Method returns etc.)?
 Manga[] zyx = Object.GetAnotherThing(); //I can now easily see that zyx is an Array.
 ```
+Tranga is using a code-first Entity-Framework Core approach. If you modify the db-table structure you need to create a migration.
 
 **A broad overview of where is what:**<br />
 
@@ -170,6 +170,10 @@ If you want to add a new Website-Connector: <br />
 3. In `PgsqlContext.cs` add the Discriminator for the Connector (the value is the name of the connector, as defined
 in the constructor).
 4. In `Program.cs` add a new Object to the Array.
+
+### How to test locally
+
+In the Project root a `docker-compose.local.yaml` file will compile the code and create the container(s).
 
 <!-- LICENSE -->
 ## License
