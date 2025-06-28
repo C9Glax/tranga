@@ -39,4 +39,4 @@ WORKDIR /publish
 COPY --chown=1000:1000 --from=build-env /publish .
 USER 0
 ENTRYPOINT ["dotnet", "/publish/API.dll"]
-CMD ["-f", "-c", "-l", "/usr/share/tranga-api/logs"]
+CMD [""]

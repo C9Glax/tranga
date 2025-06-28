@@ -16,6 +16,11 @@ services:
     environment:
       - POSTGRES_HOST=tranga-pg
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
   tranga-pg:
     image: postgres:latest
     container_name: tranga-pg
@@ -30,3 +35,8 @@ services:
       retries: 5
       start_period: 80s
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
