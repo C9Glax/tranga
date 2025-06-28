@@ -1,5 +1,6 @@
 ﻿using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
+using API.Schema.MetadataFetchers;
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -15,6 +16,7 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<Author> Authors { get; set; }
     public DbSet<MangaTag> Tags { get; set; }
+    public DbSet<MetadataEntry> MetadataEntries { get; set; }
     private ILog Log => LogManager.GetLogger(GetType());
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -191,5 +193,18 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Library)
             .AutoInclude();
+        
+        modelBuilder.Entity<MetadataFetcher>()
+            .HasDiscriminator<string>(nameof(MetadataEntry))
+            .HasValue<MyAnimeList>(nameof(MyAnimeList));
+        //MetadataEntry
+        modelBuilder.Entity<MetadataEntry>()
+            .HasOne<Manga>(entry => entry.Manga)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MetadataEntry>()
+            .HasOne<MetadataFetcher>(entry => entry.MetadataFetcher)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
