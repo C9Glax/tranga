@@ -153,7 +153,6 @@ public class DownloadSingleChapterJob : Job
         }
         catch (Exception e)
         {
-            Log.Error(e);
             if (e is UnknownImageFormatException or NotSupportedException)
             {
                 //If the Image-Format is not processable by ImageSharp, we can't modify it.
@@ -161,6 +160,10 @@ public class DownloadSingleChapterJob : Job
             }else if (e is InvalidImageContentException)
             {
                 Log.Debug($"Unable to process {imagePath}: Invalid Content");
+            }
+            else
+            {
+                Log.Error(e);
             }
         }
     }
