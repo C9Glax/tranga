@@ -134,20 +134,35 @@ public class DownloadSingleChapterJob : Job
     {
         if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
         {
-            Log.Debug($"No processing requested for image");
+            Log.Debug("No processing requested for image");
             return;
         }
         
         Log.Debug($"Processing image: {imagePath}");
-        
-        using Image image = Image.Load(imagePath);
-        File.Delete(imagePath);
-        if(TrangaSettings.bwImages) 
-            image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
-        image.SaveAsJpeg(imagePath, new JpegEncoder()
+
+        try
         {
-            Quality = TrangaSettings.compression
-        });
+            using Image image = Image.Load(imagePath);
+            if (TrangaSettings.bwImages)
+                image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
+            File.Delete(imagePath);
+            image.SaveAsJpeg(imagePath, new JpegEncoder()
+            {
+                Quality = TrangaSettings.compression
+            });
+        }
+        catch (Exception e)
+        {
+            Log.Error(e);
+            if (e is UnknownImageFormatException or NotSupportedException)
+            {
+                //If the Image-Format is not processable by ImageSharp, we can't modify it.
+                Log.Debug($"Unable to process {imagePath}: Not supported image format");
+            }else if (e is InvalidImageContentException)
+            {
+                Log.Debug($"Unable to process {imagePath}: Invalid Content");
+            }
+        }
     }
     
     private void CopyCoverFromCacheToDownloadLocation(Manga manga)
