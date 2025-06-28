@@ -94,6 +94,8 @@ Endpoints are documented in Swagger. Just spin up an instance, and go to `http:/
 - [PuppeteerSharp](https://github.com/hardkoded/puppeteer-sharp/blob/master/LICENSE)
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
+- [Jikan](https://jikan.moe/)
+  - [Jikan.Net](https://github.com/Ervie/jikan.net)
 - 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

@@ -2,6 +2,7 @@
 using API.Schema.Contexts;
 using API.Schema.Jobs;
 using API.Schema.MangaConnectors;
+using API.Schema.MetadataFetchers;
 using API.Schema.NotificationConnectors;
 using log4net;
 using log4net.Config;
@@ -24,6 +25,7 @@ public static class Tranga
     public static Thread NotificationSenderThread { get; } = new (NotificationSender);
     public static Thread JobStarterThread { get; } = new (JobStarter);
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
+    internal static MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
 
     internal static void StartLogger()
     {
