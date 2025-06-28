@@ -169,11 +169,15 @@ public static class Tranga
                 while(!running)
                     Thread.Sleep(10);
             }
-            Log.Debug($"Running: {runningJobs.Count} Waiting: {waitingJobs.Count} Due: {dueJobs.Count} of which \n" +
-                      $"{jobsWithoutDependencies.Count} without missing dependencies, of which\n" +
+            Log.Debug($"Running: {runningJobs.Count}\n" +
+                      $"{string.Join("\n", runningJobs.Select(s => "\t- " + s))}\n" +
+                      $"Waiting: {waitingJobs.Count} Due: {dueJobs.Count}\n" +
+                      $"{string.Join("\n", dueJobs.Select(s => "\t- " + s))}\n" +
+                      $"of which {jobsWithoutDependencies.Count} without missing dependencies, of which\n" +
                       $"\t{jobsWithoutDownloading.Count} without downloading\n" +
                       $"\t{jobsNotHeldBackByConnector.Count} not held back by Connector\n" +
-                      $"{startJobs.Count} were started.");
+                      $"{startJobs.Count} were started:\n" +
+                      $"{string.Join("\n", startJobs.Select(s => "\t- " + s))}");
 
             if (Log.IsDebugEnabled && dueJobs.Count < 1)
                 if(waitingJobs.MinBy(j => j.NextExecution) is { } nextJob)
