@@ -374,4 +374,25 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     {
         return StatusCode(Status501NotImplemented);
     }
+
+    /// <summary>
+    /// Removes failed and completed Jobs (that are not recurring)
+    /// </summary>
+    /// <response code="202">Job started</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPost("Cleanup")]
+    public IActionResult CleanupJobs()
+    {
+        try
+        {
+            context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Failed || j.state == JobState.Completed));
+            context.SaveChanges();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Log.Error(e);
+            return StatusCode(500, e.Message);
+        }
+    }
 }
