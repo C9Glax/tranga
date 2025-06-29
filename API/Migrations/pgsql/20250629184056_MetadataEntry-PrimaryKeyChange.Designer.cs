@@ -3,6 +3,7 @@ using System;
 using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations.pgsql
 {
     [DbContext(typeof(PgsqlContext))]
-    partial class PgsqlContextModelSnapshot : ModelSnapshot
+    [Migration("20250629184056_MetadataEntry-PrimaryKeyChange")]
+    partial class MetadataEntryPrimaryKeyChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,23 +27,25 @@ namespace API.Migrations.pgsql
 
             modelBuilder.Entity("API.Schema.Author", b =>
                 {
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
+                    b.Property<string>("AuthorId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("AuthorName")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
-                    b.HasKey("Key");
+                    b.HasKey("AuthorId");
 
                     b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("API.Schema.Chapter", b =>
                 {
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
+                    b.Property<string>("ChapterId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("ChapterNumber")
                         .IsRequired()
@@ -55,49 +60,38 @@ namespace API.Migrations.pgsql
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<string>("IdOnConnectorSite")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<string>("ParentMangaId")
                         .IsRequired()
-                        .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("Title")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
                     b.Property<int?>("VolumeNumber")
                         .HasColumnType("integer");
 
-                    b.HasKey("Key");
+                    b.HasKey("ChapterId");
 
                     b.HasIndex("ParentMangaId");
 
                     b.ToTable("Chapters");
                 });
 
-            modelBuilder.Entity("API.Schema.FileLibrary", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
-
-                    b.Property<string>("BasePath")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("LibraryName")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("LocalLibraries");
-                });
-
             modelBuilder.Entity("API.Schema.Jobs.Job", b =>
                 {
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
+                    b.Property<string>("JobId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
@@ -118,7 +112,7 @@ namespace API.Migrations.pgsql
                     b.Property<byte>("state")
                         .HasColumnType("smallint");
 
-                    b.HasKey("Key");
+                    b.HasKey("JobId");
 
                     b.HasIndex("ParentJobId");
 
@@ -129,10 +123,32 @@ namespace API.Migrations.pgsql
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("API.Schema.LocalLibrary", b =>
+                {
+                    b.Property<string>("LocalLibraryId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("BasePath")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("LibraryName")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("LocalLibraryId");
+
+                    b.ToTable("LocalLibraries");
+                });
+
             modelBuilder.Entity("API.Schema.Manga", b =>
                 {
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
+                    b.Property<string>("MangaId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("CoverFileNameInCache")
                         .HasMaxLength(512)
@@ -152,12 +168,22 @@ namespace API.Migrations.pgsql
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
+                    b.Property<string>("IdOnConnectorSite")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<float>("IgnoreChaptersBefore")
                         .HasColumnType("real");
 
                     b.Property<string>("LibraryId")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
+
+                    b.Property<string>("MangaConnectorName")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -171,80 +197,21 @@ namespace API.Migrations.pgsql
                     b.Property<byte>("ReleaseStatus")
                         .HasColumnType("smallint");
 
+                    b.Property<string>("WebsiteUrl")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
                     b.Property<long?>("Year")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Key");
+                    b.HasKey("MangaId");
 
                     b.HasIndex("LibraryId");
 
+                    b.HasIndex("MangaConnectorName");
+
                     b.ToTable("Mangas");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectorId<API.Schema.Chapter>", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
-
-                    b.Property<string>("IdOnConnectorSite")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("MangaConnectorName")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
-                    b.Property<string>("ObjId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("WebsiteUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.HasKey("Key");
-
-                    b.HasIndex("MangaConnectorName");
-
-                    b.HasIndex("ObjId");
-
-                    b.ToTable("MangaConnectorToChapter");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectorId<API.Schema.Manga>", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
-
-                    b.Property<string>("IdOnConnectorSite")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("MangaConnectorName")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
-                    b.Property<string>("ObjId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("WebsiteUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.HasKey("Key");
-
-                    b.HasIndex("MangaConnectorName");
-
-                    b.HasIndex("ObjId");
-
-                    b.ToTable("MangaConnectorToManga");
                 });
 
             modelBuilder.Entity("API.Schema.MangaConnectors.MangaConnector", b =>
@@ -332,10 +299,10 @@ namespace API.Migrations.pgsql
             modelBuilder.Entity("AuthorToManga", b =>
                 {
                     b.Property<string>("AuthorIds")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("MangaIds")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(64)");
 
                     b.HasKey("AuthorIds", "MangaIds");
 
@@ -346,15 +313,15 @@ namespace API.Migrations.pgsql
 
             modelBuilder.Entity("JobJob", b =>
                 {
-                    b.Property<string>("DependsOnJobsKey")
-                        .HasColumnType("text");
+                    b.Property<string>("DependsOnJobsJobId")
+                        .HasColumnType("character varying(64)");
 
-                    b.Property<string>("JobKey")
-                        .HasColumnType("text");
+                    b.Property<string>("JobId")
+                        .HasColumnType("character varying(64)");
 
-                    b.HasKey("DependsOnJobsKey", "JobKey");
+                    b.HasKey("DependsOnJobsJobId", "JobId");
 
-                    b.HasIndex("JobKey");
+                    b.HasIndex("JobId");
 
                     b.ToTable("JobJob");
                 });
@@ -365,7 +332,7 @@ namespace API.Migrations.pgsql
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("MangaIds")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(64)");
 
                     b.HasKey("MangaTagIds", "MangaIds");
 
@@ -582,44 +549,22 @@ namespace API.Migrations.pgsql
 
             modelBuilder.Entity("API.Schema.Manga", b =>
                 {
-                    b.HasOne("API.Schema.FileLibrary", "Library")
+                    b.HasOne("API.Schema.LocalLibrary", "Library")
                         .WithMany()
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.OwnsMany("API.Schema.AltTitle", "AltTitles", b1 =>
-                        {
-                            b1.Property<string>("Key")
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Language")
-                                .IsRequired()
-                                .HasMaxLength(8)
-                                .HasColumnType("character varying(8)");
-
-                            b1.Property<string>("MangaKey")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Title")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
-
-                            b1.HasKey("Key");
-
-                            b1.HasIndex("MangaKey");
-
-                            b1.ToTable("AltTitle");
-
-                            b1.WithOwner()
-                                .HasForeignKey("MangaKey");
-                        });
+                    b.HasOne("API.Schema.MangaConnectors.MangaConnector", "MangaConnector")
+                        .WithMany()
+                        .HasForeignKey("MangaConnectorName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsMany("API.Schema.Link", "Links", b1 =>
                         {
-                            b1.Property<string>("Key")
-                                .HasColumnType("text");
+                            b1.Property<string>("LinkId")
+                                .HasMaxLength(64)
+                                .HasColumnType("character varying(64)");
 
                             b1.Property<string>("LinkProvider")
                                 .IsRequired()
@@ -631,18 +576,48 @@ namespace API.Migrations.pgsql
                                 .HasMaxLength(2048)
                                 .HasColumnType("character varying(2048)");
 
-                            b1.Property<string>("MangaKey")
+                            b1.Property<string>("MangaId")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("character varying(64)");
 
-                            b1.HasKey("Key");
+                            b1.HasKey("LinkId");
 
-                            b1.HasIndex("MangaKey");
+                            b1.HasIndex("MangaId");
 
                             b1.ToTable("Link");
 
                             b1.WithOwner()
-                                .HasForeignKey("MangaKey");
+                                .HasForeignKey("MangaId");
+                        });
+
+                    b.OwnsMany("API.Schema.MangaAltTitle", "AltTitles", b1 =>
+                        {
+                            b1.Property<string>("AltTitleId")
+                                .HasMaxLength(64)
+                                .HasColumnType("character varying(64)");
+
+                            b1.Property<string>("Language")
+                                .IsRequired()
+                                .HasMaxLength(8)
+                                .HasColumnType("character varying(8)");
+
+                            b1.Property<string>("MangaId")
+                                .IsRequired()
+                                .HasColumnType("character varying(64)");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
+
+                            b1.HasKey("AltTitleId");
+
+                            b1.HasIndex("MangaId");
+
+                            b1.ToTable("MangaAltTitle");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MangaId");
                         });
 
                     b.Navigation("AltTitles");
@@ -650,44 +625,8 @@ namespace API.Migrations.pgsql
                     b.Navigation("Library");
 
                     b.Navigation("Links");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectorId<API.Schema.Chapter>", b =>
-                {
-                    b.HasOne("API.Schema.MangaConnectors.MangaConnector", "MangaConnector")
-                        .WithMany()
-                        .HasForeignKey("MangaConnectorName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Schema.Chapter", "Obj")
-                        .WithMany("MangaConnectorIds")
-                        .HasForeignKey("ObjId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
 
                     b.Navigation("MangaConnector");
-
-                    b.Navigation("Obj");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaConnectorId<API.Schema.Manga>", b =>
-                {
-                    b.HasOne("API.Schema.MangaConnectors.MangaConnector", "MangaConnector")
-                        .WithMany()
-                        .HasForeignKey("MangaConnectorName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Schema.Manga", "Obj")
-                        .WithMany("MangaConnectorIds")
-                        .HasForeignKey("ObjId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MangaConnector");
-
-                    b.Navigation("Obj");
                 });
 
             modelBuilder.Entity("API.Schema.MetadataFetchers.MetadataEntry", b =>
@@ -728,13 +667,13 @@ namespace API.Migrations.pgsql
                 {
                     b.HasOne("API.Schema.Jobs.Job", null)
                         .WithMany()
-                        .HasForeignKey("DependsOnJobsKey")
+                        .HasForeignKey("DependsOnJobsJobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("API.Schema.Jobs.Job", null)
                         .WithMany()
-                        .HasForeignKey("JobKey")
+                        .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -795,7 +734,7 @@ namespace API.Migrations.pgsql
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Schema.FileLibrary", "ToFileLibrary")
+                    b.HasOne("API.Schema.LocalLibrary", "ToLibrary")
                         .WithMany()
                         .HasForeignKey("ToLibraryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -803,7 +742,7 @@ namespace API.Migrations.pgsql
 
                     b.Navigation("Manga");
 
-                    b.Navigation("ToFileLibrary");
+                    b.Navigation("ToLibrary");
                 });
 
             modelBuilder.Entity("API.Schema.Jobs.RetrieveChaptersJob", b =>
@@ -839,16 +778,9 @@ namespace API.Migrations.pgsql
                     b.Navigation("Manga");
                 });
 
-            modelBuilder.Entity("API.Schema.Chapter", b =>
-                {
-                    b.Navigation("MangaConnectorIds");
-                });
-
             modelBuilder.Entity("API.Schema.Manga", b =>
                 {
                     b.Navigation("Chapters");
-
-                    b.Navigation("MangaConnectorIds");
                 });
 #pragma warning restore 612, 618
         }

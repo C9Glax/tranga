@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace API.Schema.MetadataFetchers;
 
-[PrimaryKey("MangaId", "MetadataFetcherName")]
+[PrimaryKey("MetadataFetcherName", "Identifier")]
 public class MetadataEntry
 {
     [JsonIgnore]
