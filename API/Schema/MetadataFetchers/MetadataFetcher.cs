@@ -22,14 +22,13 @@ public abstract class MetadataFetcher
     {
         this.MetadataFetcherName = metadataFetcherName;
     }
-    
-    public abstract MetadataEntry? FindLinkedMetadataEntry(Manga manga);
 
-    public bool TryGetMetadataEntry(Manga manga, [NotNullWhen(true)] out MetadataEntry? metadataEntry)
-    {
-        metadataEntry = FindLinkedMetadataEntry(manga);
-        return metadataEntry != null;
-    }
+    internal MetadataEntry CreateMetadataEntry(Manga manga, string identifier) =>
+        new (this, manga, identifier);
+    
+    public abstract MetadataSearchResult[] SearchMetadataEntry(Manga manga);
+    
+    public abstract MetadataSearchResult[] SearchMetadataEntry(string searchTerm);
 
     /// <summary>
     /// Updates the Manga linked in the MetadataEntry
