@@ -65,7 +65,7 @@ public class MetadataFetcherController(PgsqlContext context, ILog Log) : Control
         try
         {
             //Unlink previous metadata-entries
-            IQueryable<MetadataEntry> metadataEntries = context.MetadataEntries.Where(e => e.MangaId == MangaId);
+            IQueryable<MetadataEntry> metadataEntries = context.MetadataEntries.Where(e => e.MangaId == MangaId && e.MetadataFetcherName == MetadataFetcherName);
             context.MetadataEntries.RemoveRange(metadataEntries);
             //Add new metadata-entry
             context.MetadataEntries.Add(entry);
@@ -83,17 +83,25 @@ public class MetadataFetcherController(PgsqlContext context, ILog Log) : Control
     /// Tries linking a Manga to a Metadata-Provider-Site
     /// </summary>
     /// <response code="200"></response>
-    /// <response code="400">Manga has no linked entry with MetadataFetcher</response>
+    /// <response code="400">MetadataFetcher Name is invalid</response>
+    /// <response code="404">Manga has no linked entry with MetadataFetcher</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("{MetadataFetcherName}/{MangaId}/UpdateMetadata")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status400BadRequest)]
+    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult UpdateMetadata(string MangaId, string MetadataFetcherName)
     {
-        if(context.MetadataEntries.Find(MangaId, MetadataFetcherName) is not { } entry)
+        if(Tranga.MetadataFetchers
+               .FirstOrDefault(f =>
+                   f.MetadataFetcherName.Equals(MetadataFetcherName, StringComparison.InvariantCultureIgnoreCase)) is not { } fetcher)
             return BadRequest();
-        MetadataFetcher fetcher = Tranga.MetadataFetchers.FirstOrDefault(f => f.MetadataFetcherName == MetadataFetcherName)!;
+        MetadataEntry? entry = context.MetadataEntries
+            .FirstOrDefault(e =>
+                e.MangaId == MangaId && e.MetadataFetcherName.Equals(MetadataFetcherName, StringComparison.InvariantCultureIgnoreCase));
+        if (entry is null)
+            return NotFound();
         try
         {
             fetcher.UpdateMetadata(entry, context);
