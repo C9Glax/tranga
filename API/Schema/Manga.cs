@@ -16,21 +16,22 @@ public class Manga
     [StringLength(64)]
     [Required]
     public string MangaId { get; init; }
-    [StringLength(256)] [Required] public string IdOnConnectorSite { get; init; }
     [StringLength(512)] [Required] public string Name { get; internal set; }
     [Required] public string Description { get; internal set; }
-    [Url] [StringLength(512)] [Required] public string WebsiteUrl { get; internal init; }
     [JsonIgnore] [Url] [StringLength(512)] public string CoverUrl { get; internal set; }
     [Required] public MangaReleaseStatus ReleaseStatus { get; internal set; }
-    
-    [StringLength(64)] 
-    public string? LibraryId { get; init; }
-    [JsonIgnore] public LocalLibrary? Library { get; internal set; }
-    
-    [StringLength(32)]
-    [Required]
-    public string MangaConnectorName { get; init; }
-    [JsonIgnore] public MangaConnector MangaConnector { get; init; } = null!;
+    [StringLength(64)] public string? LibraryId { get; private set; }
+    private LocalLibrary? _library = null!;
+    [JsonIgnore]
+    public LocalLibrary? Library
+    {
+        get => _lazyLoader.Load(this, ref _library);
+        set
+        {
+            LibraryId = value?.LocalLibraryId;
+            _library = value;
+        }
+    }
 
     public ICollection<Author> Authors { get; internal set; }= null!;
     public ICollection<MangaTag> MangaTags { get; internal set; }= null!;
@@ -38,7 +39,6 @@ public class Manga
     public ICollection<MangaAltTitle> AltTitles { get; internal set; } = null!;
     [Required] public float IgnoreChaptersBefore { get; internal set; }
     [StringLength(1024)] [Required] public string DirectoryName { get; private set; }
-
     [JsonIgnore] [StringLength(512)] public string? CoverFileNameInCache { get; internal set; } = null;
     public uint? Year { get; internal init; }
     [StringLength(8)] public string? OriginalLanguage { get; internal init; }
@@ -48,30 +48,37 @@ public class Manga
     public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
 
     [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.ChapterId).ToList();
-    private readonly ILazyLoader _lazyLoader = null!;
-    private ICollection<Chapter> _chapters = null!;
-    [JsonIgnore] 
-    public ICollection<Chapter> Chapters 
+    private ICollection<Chapter>? _chapters = null!;
+    [JsonIgnore]
+    public ICollection<Chapter> Chapters
     {
-        get => _lazyLoader.Load(this, ref _chapters);
+        get => _lazyLoader.Load(this, ref _chapters) ?? throw new InvalidOperationException();
         init => _chapters = value;
     }
 
-    public Manga(string idOnConnector, string name, string description, string websiteUrl, string coverUrl, MangaReleaseStatus releaseStatus,
-        MangaConnector mangaConnector, ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles,
+    [NotMapped]
+    public ICollection<string> LinkedMangaConnectors =>
+        MangaConnectorLinkedToManga.Select(l => l.MangaConnectorName).ToList();
+    private ICollection<MangaConnectorMangaEntry>? _mangaConnectorLinkedToManga = null!;
+    [JsonIgnore]
+    public ICollection<MangaConnectorMangaEntry> MangaConnectorLinkedToManga
+    {
+        get => _lazyLoader.Load(this, ref _mangaConnectorLinkedToManga) ?? throw new InvalidOperationException();
+        init => _mangaConnectorLinkedToManga = value;
+    }
+    
+    private readonly ILazyLoader _lazyLoader = null!;
+
+    public Manga(string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,
+        ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles,
         LocalLibrary? library = null, float ignoreChaptersBefore = 0f, uint? year = null, string? originalLanguage = null)
     {
-        this.MangaId = TokenGen.CreateToken(typeof(Manga), mangaConnector.Name, idOnConnector);
-        this.IdOnConnectorSite = idOnConnector;
+        this.MangaId = TokenGen.CreateToken(typeof(Manga), name);
         this.Name = name;
         this.Description = description;
-        this.WebsiteUrl = websiteUrl;
         this.CoverUrl = coverUrl;
         this.ReleaseStatus = releaseStatus;
-        this.LibraryId = library?.LocalLibraryId;
         this.Library = library;
-        this.MangaConnectorName = mangaConnector.Name;
-        this.MangaConnector = mangaConnector;
         this.Authors = authors;
         this.MangaTags = mangaTags;
         this.Links = links;
@@ -86,18 +93,15 @@ public class Manga
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public Manga(ILazyLoader lazyLoader, string mangaId, string idOnConnectorSite, string name, string description, string websiteUrl, string coverUrl, MangaReleaseStatus releaseStatus,
-        string mangaConnectorName, string directoryName, float ignoreChaptersBefore, string? libraryId, uint? year, string? originalLanguage)
+    public Manga(ILazyLoader lazyLoader, string mangaId, string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,
+        string directoryName, float ignoreChaptersBefore, string? libraryId, uint? year, string? originalLanguage)
     {
         this._lazyLoader = lazyLoader;
         this.MangaId = mangaId;
-        this.IdOnConnectorSite = idOnConnectorSite;
         this.Name = name;
         this.Description = description;
-        this.WebsiteUrl = websiteUrl;
         this.CoverUrl = coverUrl;
         this.ReleaseStatus = releaseStatus;
-        this.MangaConnectorName = mangaConnectorName;
         this.DirectoryName = directoryName;
         this.LibraryId = libraryId;
         this.IgnoreChaptersBefore = ignoreChaptersBefore;

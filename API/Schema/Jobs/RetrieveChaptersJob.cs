@@ -6,49 +6,45 @@ using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class RetrieveChaptersJob : Job
+public class RetrieveChaptersJob : JobWithDownloading
 {
-    [StringLength(64)] [Required] public string MangaId { get; init; }
-
-    private Manga _manga = null!;
-    
+    private MangaConnectorMangaEntry? _mangaConnectorMangaEntry = null!;
     [JsonIgnore]
-    public Manga Manga 
+    public MangaConnectorMangaEntry MangaConnectorMangaEntry
     {
-        get => LazyLoader.Load(this, ref _manga);
-        init => _manga = value;
+        get => LazyLoader.Load(this, ref _mangaConnectorMangaEntry) ?? throw new InvalidOperationException();
+        init => _mangaConnectorMangaEntry = value;
     }
+    
     [StringLength(8)] [Required] public string Language { get; private set; }
     
-    public RetrieveChaptersJob(Manga manga, string language, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
-        : base(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, parentJob, dependsOnJobs)
+    public RetrieveChaptersJob(MangaConnectorMangaEntry mangaConnectorMangaEntry, string language, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(RetrieveChaptersJob)), JobType.RetrieveChaptersJob, recurrenceMs, mangaConnectorMangaEntry.MangaConnector, parentJob, dependsOnJobs)
     {
-        this.MangaId = manga.MangaId;
-        this.Manga = manga;
+        this.MangaConnectorMangaEntry = mangaConnectorMangaEntry;
         this.Language = language;
     }
     
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal RetrieveChaptersJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string language, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.RetrieveChaptersJob, recurrenceMs, parentJobId)
+    internal RetrieveChaptersJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaConnectorName, string language, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.RetrieveChaptersJob, recurrenceMs, mangaConnectorName, parentJobId)
     {
-        this.MangaId = mangaId;
         this.Language = language;
     }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         // This gets all chapters that are not downloaded
-        Chapter[] allChapters = Manga.MangaConnector.GetChapters(Manga, Language).DistinctBy(c => c.ChapterId).ToArray();
-        Chapter[] newChapters = allChapters.Where(chapter => Manga.Chapters.Select(c => c.ChapterId).Contains(chapter.ChapterId) == false).ToArray();
-        Log.Info($"{Manga.Chapters.Count} existing + {newChapters.Length} new chapters.");
+        Chapter[] allChapters = MangaConnectorMangaEntry.MangaConnector.GetChapters(MangaConnectorMangaEntry.Manga, Language).DistinctBy(c => c.ChapterId).ToArray();
+        Chapter[] newChapters = allChapters.Where(chapter => MangaConnectorMangaEntry.Manga.Chapters.Select(c => c.ChapterId).Contains(chapter.ChapterId) == false).ToArray();
+        Log.Info($"{MangaConnectorMangaEntry.Manga.Chapters.Count} existing + {newChapters.Length} new chapters.");
 
         try
         {
             foreach (Chapter newChapter in newChapters)
-                Manga.Chapters.Add(newChapter);
+                MangaConnectorMangaEntry.Manga.Chapters.Add(newChapter);
             context.SaveChanges();
         }
         catch (DbUpdateException e)

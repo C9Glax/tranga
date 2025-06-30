@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema;
@@ -14,8 +15,14 @@ public class Chapter : IComparable<Chapter>
     [StringLength(64)] [Required] public string ChapterId { get; init; }
 
     [StringLength(256)]public string? IdOnConnectorSite { get; init; }
-    public string ParentMangaId { get; init; }
-    [JsonIgnore] public Manga ParentManga { get; init; } = null!;
+    
+    private MangaConnectorMangaEntry? _mangaConnectorMangaEntry = null!;
+    [JsonIgnore]
+    public MangaConnectorMangaEntry MangaConnectorMangaEntry
+    {
+        get => _lazyLoader.Load(this, ref _mangaConnectorMangaEntry) ?? throw new InvalidOperationException();
+        init => _mangaConnectorMangaEntry = value;
+    }
 
     public int? VolumeNumber { get; private set; }
     [StringLength(10)] [Required] public string ChapterNumber { get; private set; }
@@ -27,14 +34,15 @@ public class Chapter : IComparable<Chapter>
     [StringLength(256)] [Required] public string FileName { get; private set; }
 
     [Required] public bool Downloaded { get; internal set; }
-    [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
+    [NotMapped] public string FullArchiveFilePath => Path.Join(MangaConnectorMangaEntry.Manga.FullDirectoryPath, FileName);
 
-    public Chapter(Manga parentManga, string url, string chapterNumber, int? volumeNumber = null, string? idOnConnectorSite = null, string? title = null)
+    private readonly ILazyLoader _lazyLoader = null!;
+
+    public Chapter(MangaConnectorMangaEntry mangaConnectorMangaEntry, string url, string chapterNumber, int? volumeNumber = null, string? idOnConnectorSite = null, string? title = null)
     {
-        this.ChapterId = TokenGen.CreateToken(typeof(Chapter), parentManga.MangaId, chapterNumber);
+        this.ChapterId = TokenGen.CreateToken(typeof(Chapter), mangaConnectorMangaEntry.MangaId, chapterNumber);
+        this.MangaConnectorMangaEntry = mangaConnectorMangaEntry;
         this.IdOnConnectorSite = idOnConnectorSite;
-        this.ParentMangaId = parentManga.MangaId;
-        this.ParentManga = parentManga;
         this.VolumeNumber = volumeNumber;
         this.ChapterNumber = chapterNumber;
         this.Url = url;
@@ -46,11 +54,11 @@ public class Chapter : IComparable<Chapter>
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal Chapter(string chapterId, string parentMangaId, int? volumeNumber, string chapterNumber, string url, string? idOnConnectorSite, string? title, string fileName, bool downloaded)
+    internal Chapter(ILazyLoader lazyLoader, string chapterId, int? volumeNumber, string chapterNumber, string url, string? idOnConnectorSite, string? title, string fileName, bool downloaded)
     {
+        this._lazyLoader = lazyLoader;
         this.ChapterId = chapterId;
         this.IdOnConnectorSite = idOnConnectorSite;
-        this.ParentMangaId = parentMangaId;
         this.VolumeNumber = volumeNumber;
         this.ChapterNumber = chapterNumber;
         this.Url = url;
@@ -103,14 +111,14 @@ public class Chapter : IComparable<Chapter>
             char placeholder = nullable.Groups[1].Value[0];
             bool isNull = placeholder switch
             {
-                'M' => ParentManga?.Name is null,
+                'M' => MangaConnectorMangaEntry.Manga?.Name is null,
                 'V' => VolumeNumber is null,
                 'C' => ChapterNumber is null,
                 'T' => Title is null,
-                'A' => ParentManga?.Authors?.FirstOrDefault()?.AuthorName is null,
+                'A' => MangaConnectorMangaEntry.Manga?.Authors?.FirstOrDefault()?.AuthorName is null,
                 'I' => ChapterId is null,
-                'i' => ParentManga?.MangaId is null,
-                'Y' => ParentManga?.Year is null,
+                'i' => MangaConnectorMangaEntry.Manga?.MangaId is null,
+                'Y' => MangaConnectorMangaEntry.Manga?.Year is null,
                 _ => true
             };
             if(!isNull)
@@ -131,14 +139,14 @@ public class Chapter : IComparable<Chapter>
             char placeholder = replace.Groups[1].Value[0];
             string? value = placeholder switch
             {
-                'M' => ParentManga?.Name,
+                'M' => MangaConnectorMangaEntry.Manga?.Name,
                 'V' => VolumeNumber?.ToString(),
                 'C' => ChapterNumber,
                 'T' => Title,
-                'A' => ParentManga?.Authors?.FirstOrDefault()?.AuthorName,
+                'A' => MangaConnectorMangaEntry.Manga?.Authors?.FirstOrDefault()?.AuthorName,
                 'I' => ChapterId,
-                'i' => ParentManga?.MangaId,
-                'Y' => ParentManga?.Year.ToString(),
+                'i' => MangaConnectorMangaEntry.Manga?.MangaId,
+                'Y' => MangaConnectorMangaEntry.Manga?.Year.ToString(),
                 _ => null
             };
             stringBuilder.Append(value);
@@ -179,16 +187,16 @@ public class Chapter : IComparable<Chapter>
         );
         if(Title is not null)
             comicInfo.Add(new XElement("Title", Title));
-        if(ParentManga.MangaTags.Count > 0)
-            comicInfo.Add(new XElement("Tags", string.Join(',', ParentManga.MangaTags.Select(tag => tag.Tag))));
+        if(MangaConnectorMangaEntry.Manga.MangaTags.Count > 0)
+            comicInfo.Add(new XElement("Tags", string.Join(',', MangaConnectorMangaEntry.Manga.MangaTags.Select(tag => tag.Tag))));
         if(VolumeNumber is not null)
             comicInfo.Add(new XElement("Volume", VolumeNumber));
-        if(ParentManga.Authors.Count > 0)
-            comicInfo.Add(new XElement("Writer", string.Join(',', ParentManga.Authors.Select(author => author.AuthorName))));
-        if(ParentManga.OriginalLanguage is not null)
-            comicInfo.Add(new XElement("LanguageISO", ParentManga.OriginalLanguage));
-        if(ParentManga.Description != string.Empty)
-            comicInfo.Add(new XElement("Summary", ParentManga.Description));
+        if(MangaConnectorMangaEntry.Manga.Authors.Count > 0)
+            comicInfo.Add(new XElement("Writer", string.Join(',', MangaConnectorMangaEntry.Manga.Authors.Select(author => author.AuthorName))));
+        if(MangaConnectorMangaEntry.Manga.OriginalLanguage is not null)
+            comicInfo.Add(new XElement("LanguageISO", MangaConnectorMangaEntry.Manga.OriginalLanguage));
+        if(MangaConnectorMangaEntry.Manga.Description != string.Empty)
+            comicInfo.Add(new XElement("Summary", MangaConnectorMangaEntry.Manga.Description));
         return comicInfo.ToString();
     }
 

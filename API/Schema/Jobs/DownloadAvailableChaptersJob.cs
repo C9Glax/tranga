@@ -1,42 +1,36 @@
-﻿using System.ComponentModel.DataAnnotations;
-using API.Schema.Contexts;
+﻿using API.Schema.Contexts;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-public class DownloadAvailableChaptersJob : Job
+public class DownloadAvailableChaptersJob : JobWithDownloading
 {
-    [StringLength(64)] [Required] public string MangaId { get; init; }
-
-    private Manga _manga = null!;
-    
+    private MangaConnectorMangaEntry? _mangaConnectorMangaEntry = null!;
     [JsonIgnore]
-    public Manga Manga 
+    public MangaConnectorMangaEntry MangaConnectorMangaEntry
     {
-        get => LazyLoader.Load(this, ref _manga);
-        init => _manga = value;
+        get => LazyLoader.Load(this, ref _mangaConnectorMangaEntry) ?? throw new InvalidOperationException();
+        init => _mangaConnectorMangaEntry = value;
     }
     
-    public DownloadAvailableChaptersJob(Manga manga, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
-        : base(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJob, dependsOnJobs)
+    public DownloadAvailableChaptersJob(MangaConnectorMangaEntry mangaConnectorMangaEntry, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(DownloadAvailableChaptersJob)), JobType.DownloadAvailableChaptersJob, recurrenceMs, mangaConnectorMangaEntry.MangaConnector, parentJob, dependsOnJobs)
     {
-        this.MangaId = manga.MangaId;
-        this.Manga = manga;
+        this.MangaConnectorMangaEntry = mangaConnectorMangaEntry;
     }
     
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadAvailableChaptersJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.DownloadAvailableChaptersJob, recurrenceMs, parentJobId)
+    internal DownloadAvailableChaptersJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaConnectorName, string? parentJobId)
+        : base(lazyLoader, jobId, JobType.DownloadAvailableChaptersJob, recurrenceMs, mangaConnectorName, parentJobId)
     {
-        this.MangaId = mangaId;
+        
     }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        context.Entry(Manga).Reference<LocalLibrary>(m => m.Library).Load();
-        return Manga.Chapters.Where(c => c.Downloaded == false).Select(chapter => new DownloadSingleChapterJob(chapter, this));
+        return MangaConnectorMangaEntry.Manga.Chapters.Where(c => c.Downloaded == false).Select(chapter => new DownloadSingleChapterJob(chapter, this.MangaConnectorMangaEntry));
     }
 }

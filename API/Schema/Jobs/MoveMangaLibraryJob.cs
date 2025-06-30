@@ -10,23 +10,33 @@ public class MoveMangaLibraryJob : Job
 {
     [StringLength(64)] [Required] public string MangaId { get; init; }
 
-    private Manga _manga = null!;
+    private Manga? _manga = null!;
     
     [JsonIgnore]
     public Manga Manga 
     {
-        get => LazyLoader.Load(this, ref _manga);
+        get => LazyLoader.Load(this, ref _manga) ?? throw new InvalidOperationException();
         init => _manga = value;
     }
-    [StringLength(64)] [Required] public string ToLibraryId { get; init; }
-    public LocalLibrary ToLibrary { get; init; } = null!;
-    
+
+    [StringLength(64)] [Required] public string ToLibraryId { get; private set; } = null!;
+    private LocalLibrary? _toLibrary = null!;
+    [JsonIgnore]
+    public LocalLibrary ToLibrary
+    {
+        get => LazyLoader.Load(this, ref _toLibrary) ?? throw new InvalidOperationException();
+        init
+        {
+            ToLibraryId = value.LocalLibraryId;
+            _toLibrary = value;
+        }
+    }
+
     public MoveMangaLibraryJob(Manga manga, LocalLibrary toLibrary, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : base(TokenGen.CreateToken(typeof(MoveMangaLibraryJob)), JobType.MoveMangaLibraryJob, 0, parentJob, dependsOnJobs)
     {
         this.MangaId = manga.MangaId;
         this.Manga = manga;
-        this.ToLibraryId = toLibrary.LocalLibraryId;
         this.ToLibrary = toLibrary;
     }
     

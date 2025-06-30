@@ -34,13 +34,13 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     [Required]
     public bool Enabled { get; internal set; } = true;
     
-    public abstract Manga[] SearchManga(string mangaSearchName);
+    public abstract MangaConnectorMangaEntry[] SearchManga(string mangaSearchName);
 
-    public abstract Manga? GetMangaFromUrl(string url);
+    public abstract MangaConnectorMangaEntry? GetMangaFromUrl(string url);
 
-    public abstract Manga? GetMangaFromId(string mangaIdOnSite);
+    public abstract MangaConnectorMangaEntry? GetMangaFromId(string mangaIdOnSite);
     
-    public abstract Chapter[] GetChapters(Manga manga, string? language = null);
+    public abstract Chapter[] GetChapters(MangaConnectorMangaEntry mangaConnectorMangaEntry, string? language = null);
 
     internal abstract string[] GetChapterImageUrls(Chapter chapter);
 
