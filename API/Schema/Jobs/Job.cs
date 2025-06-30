@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace API.Schema.Jobs;
 
 [PrimaryKey("JobId")]
-public abstract class Job 
+public abstract class Job : IComparable<Job>
 {
     [StringLength(64)]
     [Required]
@@ -120,13 +120,36 @@ public abstract class Job
 
     public List<Job> GetDependenciesAndSelf()
     {
+        List<Job> ret = GetDependencies();
+        ret.Add(this);
+        return ret;
+    }
+
+    public List<Job> GetDependencies()
+    {
         List<Job> ret = new ();
         foreach (Job job in DependsOnJobs)
         {
             ret.AddRange(job.GetDependenciesAndSelf());
         }
-        ret.Add(this);
         return ret;
+    }
+
+    public int CompareTo(Job? other)
+    {
+        if (other is null)
+            return -1;
+        // Sort by missing dependencies
+        if (this.GetDependencies().Count(job => !job.IsCompleted) <
+            other.GetDependencies().Count(job => !job.IsCompleted))
+            return -1;
+        // Sort by NextExecution-time
+        if (this.NextExecution < other.NextExecution)
+            return -1;
+        // Sort by JobPriority
+        if (JobQueueSorter.GetPriority(this) > JobQueueSorter.GetPriority(other))
+            return -1;
+        return 1;
     }
 
     public override string ToString()
