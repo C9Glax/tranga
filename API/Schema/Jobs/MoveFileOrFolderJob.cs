@@ -23,8 +23,8 @@ public class MoveFileOrFolderJob : Job
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal MoveFileOrFolderJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string fromLocation, string toLocation, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.MoveFileOrFolderJob, recurrenceMs, parentJobId)
+    internal MoveFileOrFolderJob(ILazyLoader lazyLoader, string key, ulong recurrenceMs, string fromLocation, string toLocation, string? parentJobId)
+        : base(lazyLoader, key, JobType.MoveFileOrFolderJob, recurrenceMs, parentJobId)
     {
         this.FromLocation = fromLocation;
         this.ToLocation = toLocation;

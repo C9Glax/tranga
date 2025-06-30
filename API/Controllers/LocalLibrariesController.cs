@@ -14,18 +14,18 @@ namespace API.Controllers;
 public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controller
 {
     [HttpGet]
-    [ProducesResponseType<LocalLibrary[]>(Status200OK, "application/json")]
+    [ProducesResponseType<FileLibrary[]>(Status200OK, "application/json")]
     public IActionResult GetLocalLibraries()
     {
         return Ok(context.LocalLibraries);
     }
 
     [HttpGet("{LibraryId}")]
-    [ProducesResponseType<LocalLibrary>(Status200OK, "application/json")]
+    [ProducesResponseType<FileLibrary>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetLocalLibrary(string LibraryId)
     {
-        LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
+        FileLibrary? library = context.LocalLibraries.Find(LibraryId);
         if (library is null)
             return NotFound();
         return Ok(library);
@@ -38,7 +38,7 @@ public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controll
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult UpdateLocalLibrary(string LibraryId, [FromBody]NewLibraryRecord record)
     {
-        LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
+        FileLibrary? library = context.LocalLibraries.Find(LibraryId);
         if (library is null)
             return NotFound();
         if (record.Validate() == false)
@@ -68,7 +68,7 @@ public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controll
     {
         try
         {
-            LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
+            FileLibrary? library = context.LocalLibraries.Find(LibraryId);
             if (library is null)
                 return NotFound();
 
@@ -96,7 +96,7 @@ public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controll
     {
         try
         {
-            LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
+            FileLibrary? library = context.LocalLibraries.Find(LibraryId);
             if (library is null)
                 return NotFound();
 
@@ -116,7 +116,7 @@ public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controll
     }
 
     [HttpPut]
-    [ProducesResponseType<LocalLibrary>(Status200OK, "application/json")]
+    [ProducesResponseType<FileLibrary>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNewLibrary([FromBody]NewLibraryRecord library)
@@ -125,11 +125,11 @@ public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controll
             return BadRequest();
         try
         {
-            LocalLibrary newLibrary = new (library.path, library.name);
-            context.LocalLibraries.Add(newLibrary);
+            FileLibrary newFileLibrary = new (library.path, library.name);
+            context.LocalLibraries.Add(newFileLibrary);
             context.SaveChanges();
 
-            return Ok(newLibrary);
+            return Ok(newFileLibrary);
         }
         catch (Exception e)
         {
@@ -147,7 +147,7 @@ public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controll
         
         try
         {
-            LocalLibrary? library = context.LocalLibraries.Find(LibraryId);
+            FileLibrary? library = context.LocalLibraries.Find(LibraryId);
             if (library is null)
                 return NotFound();
             context.Remove(library);

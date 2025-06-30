@@ -8,34 +8,42 @@ namespace API.Schema.Jobs;
 
 public class DownloadMangaCoverJob : JobWithDownloading
 {
-    private MangaConnectorMangaEntry? _mangaConnectorMangaEntry = null!;
-    [JsonIgnore]
-    public MangaConnectorMangaEntry MangaConnectorMangaEntry
-    {
-        get => LazyLoader.Load(this, ref _mangaConnectorMangaEntry) ?? throw new InvalidOperationException();
-        init => _mangaConnectorMangaEntry = value;
-    }
+    [StringLength(64)] [Required] public string MangaId { get; init; } = null!;
+    private Manga? _manga;
 
-    public DownloadMangaCoverJob(MangaConnectorMangaEntry mangaConnectorEntry, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
-        : base(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, mangaConnectorEntry.MangaConnector, parentJob, dependsOnJobs)
+    [JsonIgnore]
+    public Manga Manga
     {
-        this.MangaConnectorMangaEntry = mangaConnectorEntry;
+        get => LazyLoader.Load(this, ref _manga) ?? throw new InvalidOperationException();
+        init
+        {
+            MangaId = value.Key;
+            _manga = value;
+        }
+    }
+    
+    public DownloadMangaCoverJob(Manga manga, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(DownloadMangaCoverJob)), JobType.DownloadMangaCoverJob, 0, parentJob, dependsOnJobs)
+    {
+        this.Manga = manga;
     }
     
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadMangaCoverJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaConnectorName, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.DownloadMangaCoverJob, recurrenceMs, mangaConnectorName, parentJobId)
+    internal DownloadMangaCoverJob(ILazyLoader lazyLoader, string key, string mangaId, ulong recurrenceMs, string? parentJobId)
+        : base(lazyLoader, key, JobType.DownloadMangaCoverJob, recurrenceMs, parentJobId)
     {
-        
+        this.MangaId = mangaId;
     }
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
+        //TODO MangaConnector Selection
+        MangaConnectorId<Manga> mcId = Manga.MangaConnectorIds.First();
         try
         {
-            MangaConnectorMangaEntry.Manga.CoverFileNameInCache = MangaConnectorMangaEntry.MangaConnector.SaveCoverImageToCache(MangaConnectorMangaEntry.Manga);
+            Manga.CoverFileNameInCache = mcId.MangaConnector.SaveCoverImageToCache(mcId);
             context.SaveChanges();
         }
         catch (DbUpdateException e)

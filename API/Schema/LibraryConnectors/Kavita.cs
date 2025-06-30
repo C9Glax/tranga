@@ -44,8 +44,9 @@ public class Kavita : LibraryConnector
             {
             }
         }
-        catch (HttpRequestException e)
+        catch (HttpRequestException)
         {
+            
         }
         return "";
     }
@@ -53,13 +54,13 @@ public class Kavita : LibraryConnector
     protected override void UpdateLibraryInternal()
     {
         foreach (KavitaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{BaseUrl}/api/ToLibrary/scan?libraryId={lib.id}", "Bearer", Auth);
+            NetClient.MakePost($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.id}", "Bearer", Auth);
     }
 
     internal override bool Test()
     {
         foreach (KavitaLibrary lib in GetLibraries())
-            if (NetClient.MakePost($"{BaseUrl}/api/ToLibrary/scan?libraryId={lib.id}", "Bearer", Auth))
+            if (NetClient.MakePost($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.id}", "Bearer", Auth))
                 return true;
         return false;
     }
@@ -70,7 +71,7 @@ public class Kavita : LibraryConnector
     /// <returns>Array of KavitaLibrary</returns>
     private IEnumerable<KavitaLibrary> GetLibraries()
     {
-        Stream data = NetClient.MakeRequest($"{BaseUrl}/api/ToLibrary/libraries", "Bearer", Auth);
+        Stream data = NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/libraries", "Bearer", Auth);
         if (data == Stream.Null)
         {
             Log.Info("No libraries found");
@@ -90,7 +91,7 @@ public class Kavita : LibraryConnector
             JsonObject? jObject = (JsonObject?)jsonNode;
             if(jObject is null)
                 continue;
-            int libraryId = jObject!["id"]!.GetValue<int>();
+            int libraryId = jObject["id"]!.GetValue<int>();
             string libraryName = jObject["name"]!.GetValue<string>();
             ret.Add(new KavitaLibrary(libraryId, libraryName));
         }

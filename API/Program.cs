@@ -1,5 +1,6 @@
 using System.Reflection;
 using API;
+using API.Controllers;
 using API.Schema;
 using API.Schema.Contexts;
 using API.Schema.Jobs;
@@ -108,7 +109,26 @@ app.UseMiddleware<RequestTimeMiddleware>();
 using (IServiceScope scope = app.Services.CreateScope())
 {
     PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-    context.Database.Migrate();
+    if (context.Database.GetMigrations().Contains("20250630182650_OofV2.1") == false)
+    {
+        IQueryable<(string, string)> mangas = context.Database.SqlQuery<(string, string)>($"SELECT MangaConnectorName, IdOnConnectorSite as ID FROM Mangas");
+        context.Database.Migrate();
+        foreach ((string mangaConnectorName, string idOnConnectorSite) manga in mangas)
+        {
+            if(context.MangaConnectors.Find(manga.mangaConnectorName) is not { } mangaConnector)
+                continue;
+            if(mangaConnector.GetMangaFromId(manga.idOnConnectorSite) is not { } result)
+                continue;
+            if (SearchController.AddMangaToContext(result.Item1, result.Item2, context) is { } added)
+            {
+                RetrieveChaptersJob retrieveChaptersJob = new (added, "en", 0);
+                UpdateChaptersDownloadedJob update = new(added, 0, null, [retrieveChaptersJob]);
+                context.Jobs.AddRange([retrieveChaptersJob, update]);
+            }
+        }
+    } else
+        context.Database.Migrate();
+    
     
     MangaConnector[] connectors =
     [
@@ -119,7 +139,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
     if (!context.LocalLibraries.Any())
-        context.LocalLibraries.Add(new LocalLibrary(TrangaSettings.downloadLocation, "Default Library"));
+        context.LocalLibraries.Add(new FileLibrary(TrangaSettings.downloadLocation, "Default FileLibrary"));
 
     context.Jobs.AddRange(context.Jobs.Where(j => j.JobType == JobType.DownloadAvailableChaptersJob)
         .Include(downloadAvailableChaptersJob => ((DownloadAvailableChaptersJob)downloadAvailableChaptersJob).Manga)

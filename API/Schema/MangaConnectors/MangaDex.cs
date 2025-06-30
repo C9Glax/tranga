@@ -18,10 +18,10 @@ public class MangaDex : MangaConnector
     }
 
     private const int Limit = 100;
-    public override MangaConnectorMangaEntry[] SearchManga(string mangaSearchName)
+    public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
-        Log.Info($"Searching Manga: {mangaSearchName}");
-        List<MangaConnectorMangaEntry> mangas = new ();
+        Log.Info($"Searching Obj: {mangaSearchName}");
+        List<(Manga, MangaConnectorId<Manga>)> mangas = new ();
         
         int offset = 0;
         int total = int.MaxValue;
@@ -67,9 +67,9 @@ public class MangaDex : MangaConnector
     }
 
     private static readonly Regex GetMangaIdFromUrl = new(@"https?:\/\/mangadex\.org\/title\/([a-z0-9-]+)\/?.*");
-    public override MangaConnectorMangaEntry? GetMangaFromUrl(string url)
+    public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
-        Log.Info($"Getting Manga: {url}");
+        Log.Info($"Getting Obj: {url}");
         if (!UrlMatchesConnector(url))
         {
             Log.Debug($"Url is not for Connector. {url}");
@@ -87,9 +87,9 @@ public class MangaDex : MangaConnector
         return GetMangaFromId(id);
     }
 
-    public override MangaConnectorMangaEntry? GetMangaFromId(string mangaIdOnSite)
+    public override (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite)
     {
-        Log.Info($"Getting Manga: {mangaIdOnSite}");
+        Log.Info($"Getting Obj: {mangaIdOnSite}");
         string requestUrl =
             $"https://api.mangadex.org/manga/{mangaIdOnSite}" +
             $"?includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag'";
@@ -121,17 +121,17 @@ public class MangaDex : MangaConnector
         return ParseMangaFromJToken(data);
     }
 
-    public override Chapter[] GetChapters(MangaConnectorMangaEntry mangaConnectorMangaEntry, string? language = null)
+    public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga, string? language = null)
     {
-        Log.Info($"Getting Chapters: {mangaConnectorMangaEntry.IdOnConnectorSite}");
-        List<Chapter> chapters = new ();
+        Log.Info($"Getting Chapters: {manga.IdOnConnectorSite}");
+        List<(Chapter, MangaConnectorId<Chapter>)> chapters = new ();
         
         int offset = 0;
         int total = int.MaxValue;
         while(offset < total)
         {
             string requestUrl =
-                $"https://api.mangadex.org/manga/{mangaConnectorMangaEntry.IdOnConnectorSite}/feed?limit={Limit}&offset={offset}&" +
+                $"https://api.mangadex.org/manga/{manga.IdOnConnectorSite}/feed?limit={Limit}&offset={offset}&" +
                 $"translatedLanguage%5B%5D={language}&" +
                 $"contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&includeFutureUpdates=0&includes%5B%5D=";
             offset += Limit;
@@ -162,27 +162,27 @@ public class MangaDex : MangaConnector
                 return [];
             }
             
-            chapters.AddRange(data.Select(d => ParseChapterFromJToken(mangaConnectorMangaEntry, d)));
+            chapters.AddRange(data.Select(d => ParseChapterFromJToken(manga, d)));
         }
         
-        Log.Info($"Request for chapters for {mangaConnectorMangaEntry.Manga.Name} yielded {chapters.Count} results.");
+        Log.Info($"Request for chapters for {manga.Obj.Name} yielded {chapters.Count} results.");
         return chapters.ToArray();
     }
 
     private static readonly Regex GetChapterIdFromUrl = new(@"https?:\/\/mangadex\.org\/chapter\/([a-z0-9-]+)\/?.*");
-    internal override string[] GetChapterImageUrls(Chapter chapter)
+    internal override string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId)
     {
-        Log.Info($"Getting Chapter Image-Urls: {chapter.Url}");
-        if (!UrlMatchesConnector(chapter.Url))
+        Log.Info($"Getting Chapter Image-Urls: {chapterId.Obj}");
+        if (chapterId.WebsiteUrl is null || !UrlMatchesConnector(chapterId.WebsiteUrl))
         {
-            Log.Debug($"Url is not for Connector. {chapter.Url}");
+            Log.Debug($"Url is not for Connector. {chapterId.WebsiteUrl}");
             return [];
         }
 
-        Match match = GetChapterIdFromUrl.Match(chapter.Url);
+        Match match = GetChapterIdFromUrl.Match(chapterId.WebsiteUrl);
         if (!match.Success || !match.Groups[1].Success)
         {
-            Log.Debug($"Url is not for Connector (Could not retrieve id). {chapter.Url}");
+            Log.Debug($"Url is not for Connector (Could not retrieve id). {chapterId.WebsiteUrl}");
             return [];
         }
         
@@ -222,7 +222,7 @@ public class MangaDex : MangaConnector
         return urls.ToArray();
     }
 
-    private MangaConnectorMangaEntry ParseMangaFromJToken(JToken jToken)
+    private (Manga manga, MangaConnectorId<Manga> id) ParseMangaFromJToken(JToken jToken)
     {
         string? id = jToken.Value<string>("id");
         if(id is null)
@@ -266,7 +266,7 @@ public class MangaDex : MangaConnector
                     "al" => "AniList",
                     "ap" => "Anime Planet",
                     "bw" => "BookWalker",
-                    "mu" => "Manga Updates",
+                    "mu" => "Obj Updates",
                     "nu" => "Novel Updates",
                     "kt" => "Kitsu.io",
                     "amz" => "Amazon",
@@ -278,14 +278,14 @@ public class MangaDex : MangaConnector
                 return new Link(key, url);
             }).ToList()!;
 
-        List<MangaAltTitle> altTitles = (altTitlesJArray??[])
+        List<AltTitle> altTitles = (altTitlesJArray??[])
             .Select(t =>
             {
                 JObject? j = t as JObject;
                 JProperty? p = j?.Properties().First();
                 if (p is null)
                     return null;
-                return new MangaAltTitle(p.Name, p.Value.ToString());
+                return new AltTitle(p.Name, p.Value.ToString());
             }).Where(x => x is not null).ToList()!;
         
         List<MangaTag> tags = (tagsJArray??[])
@@ -314,24 +314,25 @@ public class MangaDex : MangaConnector
 
         Manga manga = new Manga(name, description, coverUrl, releaseStatus, authors, tags, links,altTitles,
             null, 0f, year, originalLanguage);
-        return new MangaConnectorMangaEntry(manga, this, id, websiteUrl);
+        return (manga, new MangaConnectorId<Manga>(manga, this, id, websiteUrl));
     }
 
-    private Chapter ParseChapterFromJToken(MangaConnectorMangaEntry mangaConnectorMangaEntry, JToken jToken)
+    private (Chapter chapter, MangaConnectorId<Chapter> id) ParseChapterFromJToken(MangaConnectorId<Manga> mcIdManga, JToken jToken)
     {
         string? id = jToken.Value<string>("id");
         JToken? attributes = jToken["attributes"];
-        string? chapter = attributes?.Value<string>("chapter");
+        string? chapterStr = attributes?.Value<string>("chapter");
         string? volumeStr = attributes?.Value<string>("volume");
-        int? volume = null;
+        int? volumeNumber = null;
         string? title = attributes?.Value<string>("title");
         
-        if(id is null || chapter is null)
+        if(id is null || chapterStr is null)
             throw new Exception("jToken was not in expected format");
         if(volumeStr is not null)
-            volume = int.Parse(volumeStr);
+            volumeNumber = int.Parse(volumeStr);
         
-        string url = $"https://mangadex.org/chapter/{id}";
-        return new Chapter(mangaConnectorMangaEntry, url, chapter, volume, id, title);
+        string websiteUrl = $"https://mangadex.org/chapter/{id}";
+        Chapter chapter = new (mcIdManga.Obj, chapterStr, volumeNumber, title);
+        return (chapter, new MangaConnectorId<Chapter>(chapter, this, id, websiteUrl));
     }
 }

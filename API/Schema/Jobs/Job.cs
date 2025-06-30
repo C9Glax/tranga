@@ -8,19 +8,15 @@ using Newtonsoft.Json;
 
 namespace API.Schema.Jobs;
 
-[PrimaryKey("JobId")]
-public abstract class Job : IComparable<Job>
+[PrimaryKey("Key")]
+public abstract class Job : Identifiable, IComparable<Job>
 {
-    [StringLength(64)]
-    [Required]
-    public string JobId { get; init; }
-
     [StringLength(64)] public string? ParentJobId { get; private set; }
     [JsonIgnore] public Job? ParentJob { get; internal set; }
-    private ICollection<Job> _dependsOnJobs = null!;
+    private ICollection<Job>? _dependsOnJobs;
     [JsonIgnore] public ICollection<Job> DependsOnJobs
     {
-        get => LazyLoader.Load(this, ref _dependsOnJobs);
+        get => LazyLoader.Load(this, ref _dependsOnJobs) ?? throw new InvalidOperationException();
         init => _dependsOnJobs = value;
     }
 
@@ -37,14 +33,14 @@ public abstract class Job : IComparable<Job>
     [JsonIgnore] [NotMapped] internal bool IsCompleted => state is >= (JobState)128 and < (JobState)192;
 
     [NotMapped] [JsonIgnore] protected ILog Log { get; init; }
-    [NotMapped] [JsonIgnore] protected ILazyLoader LazyLoader { get; init; }
+    [NotMapped] [JsonIgnore] protected ILazyLoader LazyLoader { get; init; } = null!;
 
-    protected Job(string jobId, JobType jobType, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+    protected Job(string key, JobType jobType, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(key)
     {
-        this.JobId = jobId;
         this.JobType = jobType;
         this.RecurrenceMs = recurrenceMs;
-        this.ParentJobId = parentJob?.JobId;
+        this.ParentJobId = parentJob?.Key;
         this.ParentJob = parentJob;
         this.DependsOnJobs = dependsOnJobs ?? [];
         
@@ -54,10 +50,10 @@ public abstract class Job : IComparable<Job>
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    protected internal Job(ILazyLoader lazyLoader, string jobId, JobType jobType, ulong recurrenceMs, string? parentJobId)
+    protected internal Job(ILazyLoader lazyLoader, string key, JobType jobType, ulong recurrenceMs, string? parentJobId)
+        : base(key)
     {
         this.LazyLoader = lazyLoader;
-        this.JobId = jobId;
         this.JobType = jobType;
         this.RecurrenceMs = recurrenceMs;
         this.ParentJobId = parentJobId;
@@ -68,7 +64,7 @@ public abstract class Job : IComparable<Job>
 
     public IEnumerable<Job> Run(PgsqlContext context, ref bool running)
     {
-        Log.Info($"Running job {JobId}");
+        Log.Info($"Running job {this}");
         DateTime jobStart = DateTime.UtcNow;
         Job[]? ret = null;
 
@@ -78,7 +74,7 @@ public abstract class Job : IComparable<Job>
             context.SaveChanges();
             running = true;
             ret = RunInternal(context).ToArray();
-            Log.Info($"Job {JobId} completed. Generated {ret.Length} new jobs.");
+            Log.Info($"Job {this} completed. Generated {ret.Length} new jobs.");
             this.state = this.RecurrenceMs > 0 ? JobState.CompletedWaiting : JobState.Completed;
             this.LastExecution = DateTime.UtcNow;
             context.SaveChanges();
@@ -87,7 +83,7 @@ public abstract class Job : IComparable<Job>
         {
             if (e is not DbUpdateException)
             {
-                Log.Error($"Failed to run job {JobId}", e);
+                Log.Error($"Failed to run job {this}", e);
                 this.state = JobState.Failed;
                 this.Enabled = false;
                 this.LastExecution = DateTime.UtcNow;
@@ -95,7 +91,7 @@ public abstract class Job : IComparable<Job>
             }
             else
             {
-                Log.Error($"Failed to update Database {JobId}", e);
+                Log.Error($"Failed to update Database {this}", e);
             }
         }
 
@@ -109,10 +105,10 @@ public abstract class Job : IComparable<Job>
         }
         catch (DbUpdateException e)
         {
-            Log.Error($"Failed to update Database {JobId}", e);
+            Log.Error($"Failed to update Database {this}", e);
         }
         
-        Log.Info($"Finished Job {JobId}! (took {DateTime.UtcNow.Subtract(jobStart).TotalMilliseconds}ms)");
+        Log.Info($"Finished Job {this}! (took {DateTime.UtcNow.Subtract(jobStart).TotalMilliseconds}ms)");
         return ret ?? [];
     }
     
@@ -146,14 +142,8 @@ public abstract class Job : IComparable<Job>
         // Sort by NextExecution-time
         if (this.NextExecution < other.NextExecution)
             return -1;
-        // Sort by JobPriority
-        if (JobQueueSorter.GetPriority(this) > JobQueueSorter.GetPriority(other))
-            return -1;
         return 1;
     }
 
-    public override string ToString()
-    {
-        return $"{JobId}";
-    }
+    public override string ToString() => base.ToString();
 }

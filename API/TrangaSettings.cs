@@ -8,7 +8,7 @@ namespace API;
 
 public static class TrangaSettings
 {
-    public static string downloadLocation { get; private set; } = (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
+    public static string downloadLocation { get; private set; } = (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Obj" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
     public static string workingDirectory { get; private set; } = Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
     [JsonIgnore]
     internal static readonly string DefaultUserAgent = $"Tranga/2.0 ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")})";
@@ -18,14 +18,14 @@ public static class TrangaSettings
     public static string flareSolverrUrl { get; private set; } = string.Empty;
     /// <summary>
     /// Placeholders:
-    /// %M Manga Name
+    /// %M Obj Name
     /// %V Volume
     /// %C Chapter
     /// %T Title
     /// %A Author (first in list)
     /// %I Chapter Internal ID
-    /// %i Manga Internal ID
-    /// %Y Year (Manga)
+    /// %i Obj Internal ID
+    /// %Y Year (Obj)
     ///
     /// ?_(...) replace _ with a value from above:
     /// Everything inside the braces will only be added if the value of %_ is not null

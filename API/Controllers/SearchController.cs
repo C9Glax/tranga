@@ -1,7 +1,5 @@
 using API.Schema;
 using API.Schema.Contexts;
-using API.Schema.Jobs;
-using API.Schema.MangaConnectors;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +16,7 @@ namespace API.Controllers;
 public class SearchController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
-    /// Initiate a search for a Manga on a specific Connector
+    /// Initiate a search for a Obj on a specific Connector
     /// </summary>
     /// <param name="MangaConnectorName"></param>
     /// <param name="Query"></param>
@@ -38,9 +36,9 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
         else if (connector.Enabled is false)
             return StatusCode(Status406NotAcceptable);
         
-        Manga[] mangas = connector.SearchManga(Query);
+        (Manga, MangaConnectorId<Manga>)[] mangas = connector.SearchManga(Query);
         List<Manga> retMangas = new();
-        foreach (Manga manga in mangas)
+        foreach ((Manga manga, MangaConnectorId<Manga> mcId) manga in mangas)
         {
             try
             {
@@ -58,7 +56,7 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Search for a known Manga
+    /// Search for a known Obj
     /// </summary>
     /// <param name="Query"></param>
     /// <response code="200"></response>
@@ -73,12 +71,12 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Returns Manga from MangaConnector associated with URL
+    /// Returns Obj from MangaConnector associated with URL
     /// </summary>
-    /// <param name="url">Manga-Page URL</param>
+    /// <param name="url">Obj-Page URL</param>
     /// <response code="200"></response>
     /// <response code="300">Multiple connectors found for URL</response>
-    /// <response code="404">Manga not found</response>
+    /// <response code="404">Obj not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("Url")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
@@ -104,12 +102,13 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
         }
     }
     
-    private Manga? AddMangaToContext(Manga manga)
+    private Manga? AddMangaToContext((Manga, MangaConnectorId<Manga>) manga) => AddMangaToContext(manga.Item1, manga.Item2, context);
+    
+    internal static Manga? AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, PgsqlContext context)
     {
-        context.Mangas.Load();
-        context.Authors.Load();
-        context.Tags.Load();
-        context.MangaConnectors.Load();
+        Manga manga = context.Mangas.Find(addManga.Key) ?? addManga;
+        MangaConnectorId<Manga> mcId = context.MangaConnectorToManga.Find(addMcId.Key) ?? addMcId;
+        mcId.Obj = manga;
         
         IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
         {
@@ -120,26 +119,19 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
 
         IEnumerable<Author> mergedAuthors = manga.Authors.Select(ma =>
         {
-            Author? inDb = context.Authors.Find(ma.AuthorId);
+            Author? inDb = context.Authors.Find(ma.Key);
             return inDb ?? ma;
         });
         manga.Authors = mergedAuthors.ToList();
-
+        
         try
         {
-
-            if (context.Mangas.Find(manga.MangaId) is { } r)
-            {
-                context.Mangas.Remove(r);
-                context.SaveChanges();
-            }
-            context.Mangas.Add(manga);
-            context.Jobs.Add(new DownloadMangaCoverJob(manga));
+            if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
+                context.MangaConnectorToManga.Add(mcId);
             context.SaveChanges();
         }
         catch (DbUpdateException e)
         {
-            Log.Error(e);
             return null;
         }
         return manga;

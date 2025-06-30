@@ -1,5 +1,4 @@
-﻿using API.Schema;
-using API.Schema.Contexts;
+﻿using API.Schema.Contexts;
 using API.Schema.LibraryConnectors;
 using Asp.Versioning;
 using log4net;
@@ -14,7 +13,7 @@ namespace API.Controllers;
 public class LibraryConnectorController(LibraryContext context, ILog Log) : Controller
 {
     /// <summary>
-    /// Gets all configured ToLibrary-Connectors
+    /// Gets all configured ToFileLibrary-Connectors
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
@@ -26,9 +25,9 @@ public class LibraryConnectorController(LibraryContext context, ILog Log) : Cont
     }
     
     /// <summary>
-    /// Returns ToLibrary-Connector with requested ID
+    /// Returns ToFileLibrary-Connector with requested ID
     /// </summary>
-    /// <param name="LibraryControllerId">ToLibrary-Connector-ID</param>
+    /// <param name="LibraryControllerId">ToFileLibrary-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
     [HttpGet("{LibraryControllerId}")]
@@ -45,9 +44,9 @@ public class LibraryConnectorController(LibraryContext context, ILog Log) : Cont
     }
     
     /// <summary>
-    /// Creates a new ToLibrary-Connector
+    /// Creates a new ToFileLibrary-Connector
     /// </summary>
-    /// <param name="libraryConnector">ToLibrary-Connector</param>
+    /// <param name="libraryConnector">ToFileLibrary-Connector</param>
     /// <response code="201"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
@@ -69,9 +68,9 @@ public class LibraryConnectorController(LibraryContext context, ILog Log) : Cont
     }
     
     /// <summary>
-    /// Deletes the ToLibrary-Connector with the requested ID
+    /// Deletes the ToFileLibrary-Connector with the requested ID
     /// </summary>
-    /// <param name="LibraryControllerId">ToLibrary-Connector-ID</param>
+    /// <param name="LibraryControllerId">ToFileLibrary-Connector-ID</param>
     /// <response code="200"></response>
     /// <response code="404">Connector with ID not found.</response>
     /// <response code="500">Error during Database Operation</response>

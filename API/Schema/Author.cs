@@ -3,18 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
 
-[PrimaryKey("AuthorId")]
-public class Author(string authorName)
+[PrimaryKey("Key")]
+public class Author(string authorName) : Identifiable(TokenGen.CreateToken(typeof(Author), authorName))
 {
-    [StringLength(64)]
-    [Required]
-    public string AuthorId { get; init; } = TokenGen.CreateToken(typeof(Author), authorName);
     [StringLength(128)]
     [Required]
     public string AuthorName { get; init; } = authorName;
 
-    public override string ToString()
-    {
-        return $"{AuthorId} {AuthorName}";
-    }
+    public override string ToString() => $"{base.ToString()} {AuthorName}";
 }

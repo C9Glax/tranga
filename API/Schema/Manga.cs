@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text;
+using API.Schema.Contexts;
+using API.Schema.Jobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
@@ -9,23 +11,22 @@ using static System.IO.UnixFileMode;
 
 namespace API.Schema;
 
-[PrimaryKey("MangaId")]
-public class Manga
+[PrimaryKey("Key")]
+public class Manga : Identifiable
 {
-    [StringLength(64)] [Required] public string MangaId { get; init; }
     [StringLength(512)] [Required] public string Name { get; internal set; }
     [Required] public string Description { get; internal set; }
     [JsonIgnore] [Url] [StringLength(512)] public string CoverUrl { get; internal set; }
     [Required] public MangaReleaseStatus ReleaseStatus { get; internal set; }
     [StringLength(64)] public string? LibraryId { get; private set; }
-    private LocalLibrary? _library = null!;
+    private FileLibrary? _library;
     [JsonIgnore]
-    public LocalLibrary? Library
+    public FileLibrary? Library
     {
         get => _lazyLoader.Load(this, ref _library);
         set
         {
-            LibraryId = value?.LocalLibraryId;
+            LibraryId = value?.Key;
             _library = value;
         }
     }
@@ -33,10 +34,10 @@ public class Manga
     public ICollection<Author> Authors { get; internal set; }= null!;
     public ICollection<MangaTag> MangaTags { get; internal set; }= null!;
     public ICollection<Link> Links { get; internal set; }= null!;
-    public ICollection<MangaAltTitle> AltTitles { get; internal set; } = null!;
+    public ICollection<AltTitle> AltTitles { get; internal set; } = null!;
     [Required] public float IgnoreChaptersBefore { get; internal set; }
     [StringLength(1024)] [Required] public string DirectoryName { get; private set; }
-    [JsonIgnore] [StringLength(512)] public string? CoverFileNameInCache { get; internal set; } = null;
+    [JsonIgnore] [StringLength(512)] public string? CoverFileNameInCache { get; internal set; }
     public uint? Year { get; internal init; }
     [StringLength(8)] public string? OriginalLanguage { get; internal init; }
 
@@ -44,8 +45,8 @@ public class Manga
     [NotMapped]
     public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
 
-    [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.ChapterId).ToList();
-    private ICollection<Chapter>? _chapters = null!;
+    [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.Key).ToList();
+    private ICollection<Chapter>? _chapters;
     [JsonIgnore]
     public ICollection<Chapter> Chapters
     {
@@ -53,24 +54,23 @@ public class Manga
         init => _chapters = value;
     }
 
-    [NotMapped]
-    public ICollection<string> LinkedMangaConnectors =>
-        MangaConnectorLinkedToManga.Select(l => l.MangaConnectorName).ToList();
-    private ICollection<MangaConnectorMangaEntry>? _mangaConnectorLinkedToManga = null!;
+    [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors =>
+        MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
+    private ICollection<MangaConnectorId<Manga>>? _mangaConnectorIds;
     [JsonIgnore]
-    public ICollection<MangaConnectorMangaEntry> MangaConnectorLinkedToManga
+    public ICollection<MangaConnectorId<Manga>> MangaConnectorIds
     {
-        get => _lazyLoader.Load(this, ref _mangaConnectorLinkedToManga) ?? throw new InvalidOperationException();
-        init => _mangaConnectorLinkedToManga = value;
+        get => _lazyLoader.Load(this, ref _mangaConnectorIds) ?? throw new InvalidOperationException();
+        private set => _mangaConnectorIds = value;
     }
-    
+
     private readonly ILazyLoader _lazyLoader = null!;
 
     public Manga(string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,
-        ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<MangaAltTitle> altTitles,
-        LocalLibrary? library = null, float ignoreChaptersBefore = 0f, uint? year = null, string? originalLanguage = null)
+        ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<AltTitle> altTitles,
+        FileLibrary? library = null, float ignoreChaptersBefore = 0f, uint? year = null, string? originalLanguage = null)
+    :base(TokenGen.CreateToken(typeof(Manga), name))
     {
-        this.MangaId = TokenGen.CreateToken(typeof(Manga), name);
         this.Name = name;
         this.Description = description;
         this.CoverUrl = coverUrl;
@@ -90,11 +90,12 @@ public class Manga
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public Manga(ILazyLoader lazyLoader, string mangaId, string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,
+    public Manga(ILazyLoader lazyLoader, string key, string name, string description, string coverUrl,
+        MangaReleaseStatus releaseStatus,
         string directoryName, float ignoreChaptersBefore, string? libraryId, uint? year, string? originalLanguage)
+        : base(key)
     {
         this._lazyLoader = lazyLoader;
-        this.MangaId = mangaId;
         this.Name = name;
         this.Description = description;
         this.CoverUrl = coverUrl;
@@ -155,8 +156,53 @@ public class Manga
         return sb.ToString();
     }
 
-    public override string ToString()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="other"></param>
+    /// <param name="context"></param>
+    /// <exception cref="DbUpdateException"></exception>
+    public void MergeFrom(Manga other, PgsqlContext context)
     {
-        return $"{MangaId} {Name}";
+        try
+        {
+            context.Mangas.Remove(other);
+            List<Job> newJobs = new();
+
+            this.MangaConnectorIds = this.MangaConnectorIds
+                .UnionBy(other.MangaConnectorIds, id => id.MangaConnectorName)
+                .ToList();
+
+            foreach (Chapter otherChapter in other.Chapters)
+            {
+                string oldPath = otherChapter.FullArchiveFilePath;
+                Chapter newChapter = new(this, otherChapter.ChapterNumber, otherChapter.VolumeNumber,
+                    otherChapter.Title);
+                this.Chapters.Add(newChapter);
+                string newPath = newChapter.FullArchiveFilePath;
+                newJobs.Add(new MoveFileOrFolderJob(oldPath, newPath));
+            }
+
+            if (other.Chapters.Count > 0)
+                newJobs.Add(new UpdateChaptersDownloadedJob(this, 0, null, newJobs));
+
+            context.Jobs.AddRange(newJobs);
+            context.SaveChanges();
+        }
+        catch (DbUpdateException e)
+        {
+            throw new DbUpdateException(e.Message, e.InnerException, e.Entries);
+        }
     }
+
+    public override string ToString() => $"{base.ToString()} {Name}";
+}
+
+public enum MangaReleaseStatus : byte
+{
+    Continuing = 0,
+    Completed = 1,
+    OnHiatus = 2,
+    Cancelled = 3,
+    Unreleased = 4
 }

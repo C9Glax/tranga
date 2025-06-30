@@ -17,9 +17,9 @@ public class ComickIo : MangaConnector
         this.downloadClient = new HttpDownloadClient();
     }
 
-    public override MangaConnectorMangaEntry[] SearchManga(string mangaSearchName)
+    public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
-        Log.Info($"Searching Manga: {mangaSearchName}");
+        Log.Info($"Searching Obj: {mangaSearchName}");
 
         List<string> slugs = new();
         int page = 1;
@@ -46,20 +46,26 @@ public class ComickIo : MangaConnector
         }
         Log.Debug($"Search {mangaSearchName} yielded {slugs.Count} slugs. Requesting mangas now...");
 
-        List<MangaConnectorMangaEntry> mangas = slugs.Select(GetMangaFromId).ToList()!;
+
+        List<(Manga, MangaConnectorId<Manga>)> mangas = new ();
+        foreach (string slug in slugs)
+        {
+            if(GetMangaFromId(slug) is { } entry)
+                mangas.Add(entry);
+        }
         
         Log.Info($"Search {mangaSearchName} yielded {mangas.Count} results.");
         return mangas.ToArray();
     }
 
     private readonly Regex _getSlugFromTitleRex = new(@"https?:\/\/comick\.io\/comic\/(.+)(?:\/.*)*");
-    public override MangaConnectorMangaEntry? GetMangaFromUrl(string url)
+    public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
         Match m = _getSlugFromTitleRex.Match(url);
         return m.Groups[1].Success ? GetMangaFromId(m.Groups[1].Value) : null;
     }
 
-    public override MangaConnectorMangaEntry? GetMangaFromId(string mangaIdOnSite)
+    public override (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite)
     {
         string requestUrl = $"https://api.comick.fun/comic/{mangaIdOnSite}";
 
@@ -75,14 +81,15 @@ public class ComickIo : MangaConnector
         return ParseMangaFromJToken(data);
     }
 
-    public override Chapter[] GetChapters(MangaConnectorMangaEntry mangaConnectorMangaEntry, string? language = null)
+    public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> mangaConnectorId,
+        string? language = null)
     {
-        Log.Info($"Getting Chapters: {mangaConnectorMangaEntry.IdOnConnectorSite}");
-        List<Chapter> chapters = new();
+        Log.Info($"Getting Chapters: {mangaConnectorId.IdOnConnectorSite}");
+        List<(Chapter, MangaConnectorId<Chapter>)> chapters = new();
         int page = 1;
         while(page < 50)
         {
-            string requestUrl = $"https://api.comick.fun/comic/{mangaConnectorMangaEntry.IdOnConnectorSite}/chapters?limit=100&page={page}&lang={language}";
+            string requestUrl = $"https://api.comick.fun/comic/{mangaConnectorId.IdOnConnectorSite}/chapters?limit=100&page={page}&lang={language}";
 
             RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.MangaInfo);
             if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
@@ -98,7 +105,7 @@ public class ComickIo : MangaConnector
             if (chaptersArray is null || chaptersArray.Count < 1)
                 break;
             
-            chapters.AddRange(ParseChapters(mangaConnectorMangaEntry, chaptersArray));
+            chapters.AddRange(ParseChapters(mangaConnectorId, chaptersArray));
 
             page++;
         }
@@ -107,11 +114,22 @@ public class ComickIo : MangaConnector
     }
 
     private readonly Regex _hidFromUrl = new(@"https?:\/\/comick\.io\/comic\/.+\/([^-]+).*");
-    internal override string[] GetChapterImageUrls(Chapter chapter)
+    internal override string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId)
     {
-        Match m = _hidFromUrl.Match(chapter.Url);
-        if (!m.Groups[1].Success)
+        
+        Log.Info($"Getting Chapter Image-Urls: {chapterId.Obj}");
+        if (chapterId.WebsiteUrl is null || !UrlMatchesConnector(chapterId.WebsiteUrl))
+        {
+            Log.Debug($"Url is not for Connector. {chapterId.WebsiteUrl}");
             return [];
+        }
+        
+        Match m = _hidFromUrl.Match(chapterId.WebsiteUrl);
+        if (!m.Groups[1].Success)
+        {
+            Log.Debug($"Could not parse hid from url. {chapterId.WebsiteUrl}");
+            return [];
+        }
         
         string hid = m.Groups[1].Value;
         
@@ -133,7 +151,7 @@ public class ComickIo : MangaConnector
         }).ToArray();
     }
 
-    private MangaConnectorMangaEntry ParseMangaFromJToken(JToken json)
+    private (Manga manga, MangaConnectorId<Manga> id) ParseMangaFromJToken(JToken json)
     {
         string? hid = json["comic"]?.Value<string>("hid");
         string? slug = json["comic"]?.Value<string>("slug");
@@ -156,15 +174,15 @@ public class ComickIo : MangaConnector
         JArray? altTitlesArray = json["comic"]?["md_titles"] as JArray;
         //Cant let language be null, so fill with whatever.
         byte whatever = 0;
-        List<MangaAltTitle> altTitles = altTitlesArray?
-            .Select(token => new MangaAltTitle(token.Value<string>("lang")??whatever++.ToString(), token.Value<string>("title")!))
+        List<AltTitle> altTitles = altTitlesArray?
+            .Select(token => new AltTitle(token.Value<string>("lang")??whatever++.ToString(), token.Value<string>("title")!))
             .ToList()!;
         
         JArray? authorsArray = json["authors"] as JArray;
         JArray? artistsArray = json["artists"] as JArray;
         List<Author> authors = authorsArray?.Concat(artistsArray!)
             .Select(token => new Author(token.Value<string>("name")!))
-            .DistinctBy(a => a.AuthorId)
+            .DistinctBy(a => a.Key)
             .ToList()!;
         
         JArray? genreArray = json["comic"]?["md_comic_md_genres"] as JArray;
@@ -192,7 +210,7 @@ public class ComickIo : MangaConnector
                     "al" => "AniList",
                     "ap" => "Anime Planet",
                     "bw" => "BookWalker",
-                    "mu" => "Manga Updates",
+                    "mu" => "Obj Updates",
                     "nu" => "Novel Updates",
                     "kt" => "Kitsu.io",
                     "amz" => "Amazon",
@@ -213,12 +231,12 @@ public class ComickIo : MangaConnector
         
         Manga manga = new (name, description??"", coverUrl, status, authors, tags, links, altTitles,
             year: year, originalLanguage: originalLanguage);
-        return new MangaConnectorMangaEntry(manga, this, hid, url);
+        return (manga, new MangaConnectorId<Manga>(manga, this, hid, url));
     }
 
-    private List<Chapter> ParseChapters(MangaConnectorMangaEntry mangaConnectorMangaEntry, JArray chaptersArray)
+    private List<(Chapter, MangaConnectorId<Chapter>)> ParseChapters(MangaConnectorId<Manga> mcIdManga, JArray chaptersArray)
     {
-        List<Chapter> chapters = new ();
+        List<(Chapter, MangaConnectorId<Chapter>)> chapters = new ();
         foreach (JToken chapter in chaptersArray)
         {
             string? chapterNum = chapter.Value<string>("chap");
@@ -226,12 +244,14 @@ public class ComickIo : MangaConnector
             int? volumeNum = volumeNumStr is null ? null : int.Parse(volumeNumStr);
             string? title = chapter.Value<string>("title");
             string? hid = chapter.Value<string>("hid");
-            string url = $"https://comick.io/comic/{mangaConnectorMangaEntry.IdOnConnectorSite}/{hid}";
+            string url = $"https://comick.io/comic/{mcIdManga.IdOnConnectorSite}/{hid}";
             
             if(chapterNum is null || hid is null)
                 continue;
+            
+            Chapter ch = new (mcIdManga.Obj, chapterNum, volumeNum, title);
 
-            chapters.Add(new (mangaConnectorMangaEntry, url, chapterNum, volumeNum, hid, title));
+            chapters.Add((ch, new (ch, this, hid, url)));
         }
         return chapters;
     }

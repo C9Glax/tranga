@@ -37,7 +37,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<Job[]>(Status200OK, "application/json")]
     public IActionResult GetJobs([FromBody]string[] ids)
     {
-        Job[] ret = context.Jobs.Where(job => ids.Contains(job.JobId)).ToArray();
+        Job[] ret = context.Jobs.Where(job => ids.Contains(job.Key)).ToArray();
         return Ok(ret);
     }
 
@@ -103,11 +103,11 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     /// <summary>
     /// Create a new DownloadAvailableChaptersJob
     /// </summary>
-    /// <param name="MangaId">ID of Manga</param>
+    /// <param name="MangaId">ID of Obj</param>
     /// <param name="record">Job-Configuration</param>
     /// <response code="201">Job-IDs</response>
-    /// <response code="400">Could not find ToLibrary with ID</response>
-    /// <response code="404">Could not find Manga with ID</response>
+    /// <response code="400">Could not find ToFileLibrary with ID</response>
+    /// <response code="404">Could not find Obj with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("DownloadAvailableChaptersJob/{MangaId}")]
     [ProducesResponseType<string[]>(Status201Created, "application/json")]
@@ -122,7 +122,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
         {
             try
             {
-                LocalLibrary? l = context.LocalLibraries.Find(record.localLibraryId);
+                FileLibrary? l = context.LocalLibraries.Find(record.localLibraryId);
                 if (l is null)
                     return BadRequest();
                 m.Library = l;
@@ -166,9 +166,9 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     /// <summary>
     /// Create a new UpdateChaptersDownloadedJob
     /// </summary>
-    /// <param name="MangaId">ID of the Manga</param>
+    /// <param name="MangaId">ID of the Obj</param>
     /// <response code="201">Job-IDs</response>
-    /// <response code="201">Could not find Manga with ID</response>
+    /// <response code="201">Could not find Obj with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateFilesJob/{MangaId}")]
     [ProducesResponseType<string[]>(Status201Created, "application/json")]
@@ -183,7 +183,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Create a new UpdateMetadataJob for all Manga
+    /// Create a new UpdateMetadataJob for all Obj
     /// </summary>
     /// <response code="201">Job-IDs</response>
     /// <response code="500">Error during Database Operation</response>
@@ -209,9 +209,9 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     /// <summary>
     /// Not Implemented: Create a new UpdateMetadataJob
     /// </summary>
-    /// <param name="MangaId">ID of the Manga</param>
+    /// <param name="MangaId">ID of the Obj</param>
     /// <response code="201">Job-IDs</response>
-    /// <response code="404">Could not find Manga with ID</response>
+    /// <response code="404">Could not find Obj with ID</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("UpdateMetadataJob/{MangaId}")]
     [ProducesResponseType<string[]>(Status201Created, "application/json")]
@@ -223,7 +223,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Not Implemented: Create a new UpdateMetadataJob for all Manga
+    /// Not Implemented: Create a new UpdateMetadataJob for all Obj
     /// </summary>
     /// <response code="201">Job-IDs</response>
     /// <response code="500">Error during Database Operation</response>
@@ -241,7 +241,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
         {
             context.Jobs.AddRange(jobs);
             context.SaveChanges();
-            return new CreatedResult((string?)null, jobs.Select(j => j.JobId).ToArray());
+            return new CreatedResult((string?)null, jobs.Select(j => j.Key).ToArray());
         }
         catch (Exception e)
         {
@@ -279,15 +279,6 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
         }
     }
 
-    private IQueryable<Job> GetChildJobs(string parentJobId)
-    {
-        IQueryable<Job> children = context.Jobs.Where(j => j.ParentJobId == parentJobId);
-        foreach (Job child in children)
-            foreach (Job grandChild in GetChildJobs(child.JobId))
-                children.Append(grandChild);
-        return children;
-    }
-
     /// <summary>
     /// Modify Job with ID
     /// </summary>
@@ -314,7 +305,7 @@ public class JobController(PgsqlContext context, ILog Log) : Controller
             ret.Enabled = modifyJobRecord.Enabled ?? ret.Enabled;
 
             context.SaveChanges();
-            return new AcceptedResult(ret.JobId, ret);
+            return new AcceptedResult(ret.Key, ret);
         }
         catch (Exception e)
         {

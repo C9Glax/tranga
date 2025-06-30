@@ -8,41 +8,48 @@ namespace API.Schema.Jobs;
 
 public class UpdateCoverJob : Job
 {
-    private MangaConnectorMangaEntry? _mangaConnectorMangaEntry = null!;
+    [StringLength(64)] [Required] public string MangaId { get; init; } = null!;
+    private Manga? _manga;
+
     [JsonIgnore]
-    public MangaConnectorMangaEntry MangaConnectorMangaEntry
+    public Manga Manga
     {
-        get => LazyLoader.Load(this, ref _mangaConnectorMangaEntry) ?? throw new InvalidOperationException();
-        init => _mangaConnectorMangaEntry = value;
+        get => LazyLoader.Load(this, ref _manga) ?? throw new InvalidOperationException();
+        init
+        {
+            MangaId = value.Key;
+            _manga = value;
+        }
     }
     
     
-    public UpdateCoverJob(MangaConnectorMangaEntry mangaConnectorMangaEntry, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+    public UpdateCoverJob(Manga manga, ulong recurrenceMs, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : base(TokenGen.CreateToken(typeof(UpdateCoverJob)), JobType.UpdateCoverJob, recurrenceMs, parentJob, dependsOnJobs)
     {
-        this.MangaConnectorMangaEntry = mangaConnectorMangaEntry;
+        this.Manga = manga;
     }
     
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal UpdateCoverJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.UpdateCoverJob, recurrenceMs, parentJobId)
+    internal UpdateCoverJob(ILazyLoader lazyLoader, string key, string mangaId, ulong recurrenceMs, string? parentJobId)
+        : base(lazyLoader, key, JobType.UpdateCoverJob, recurrenceMs, parentJobId)
     {
+        this.MangaId = mangaId;
     }
 
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         bool keepCover = context.Jobs
             .Any(job => job.JobType == JobType.DownloadAvailableChaptersJob
-                        && ((DownloadAvailableChaptersJob)job).MangaConnectorMangaEntry.MangaId == MangaConnectorMangaEntry.MangaId);
+                        && ((DownloadAvailableChaptersJob)job).MangaId == MangaId);
         if (!keepCover)
         {
-            if(File.Exists(MangaConnectorMangaEntry.Manga.CoverFileNameInCache))
-                File.Delete(MangaConnectorMangaEntry.Manga.CoverFileNameInCache);
+            if(File.Exists(Manga.CoverFileNameInCache))
+                File.Delete(Manga.CoverFileNameInCache);
             try
             {
-                MangaConnectorMangaEntry.Manga.CoverFileNameInCache = null;
+                Manga.CoverFileNameInCache = null;
                 context.Jobs.Remove(this);
                 context.SaveChanges();
             }
@@ -53,7 +60,7 @@ public class UpdateCoverJob : Job
         }
         else
         {
-            return [new DownloadMangaCoverJob(MangaConnectorMangaEntry, this)];
+            return [new DownloadMangaCoverJob(Manga, this)];
         }
         return [];
     }

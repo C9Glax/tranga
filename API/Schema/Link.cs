@@ -3,12 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
 
-[PrimaryKey("LinkId")]
-public class Link(string linkProvider, string linkUrl)
+[PrimaryKey("Key")]
+public class Link(string linkProvider, string linkUrl) : Identifiable(TokenGen.CreateToken(typeof(Link), linkProvider, linkUrl))
 {
-    [StringLength(64)]
-    [Required]
-    public string LinkId { get; init; } = TokenGen.CreateToken(typeof(Link), linkProvider, linkUrl);
     [StringLength(64)]
     [Required]
     public string LinkProvider { get; init; } = linkProvider;
@@ -17,8 +14,5 @@ public class Link(string linkProvider, string linkUrl)
     [Url]
     public string LinkUrl { get; init; } = linkUrl;
 
-    public override string ToString()
-    {
-        return $"{LinkId} {LinkProvider} {LinkUrl}";
-    }
+    public override string ToString() => $"{base.ToString()} {LinkProvider} {LinkUrl}";
 }

@@ -43,7 +43,7 @@ internal class ChromiumDownloadClient : DownloadClient
         {
             Thread.Sleep(TimeSpan.FromHours(1));
             Log.Debug("Removing stale pages");
-            foreach ((IPage? key, DateTime value) in _openPages.Where(kv => kv.Value.Subtract(DateTime.Now) > TimeSpan.FromHours(1)))
+            foreach ((IPage key, DateTime _) in _openPages.Where(kv => kv.Value.Subtract(DateTime.Now) > TimeSpan.FromHours(1)))
             {
                 Log.Debug($"Closing {key.Url}");
                 key.CloseAsync().Wait();

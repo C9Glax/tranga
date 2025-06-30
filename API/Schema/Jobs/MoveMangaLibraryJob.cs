@@ -8,43 +8,45 @@ namespace API.Schema.Jobs;
 
 public class MoveMangaLibraryJob : Job
 {
-    [StringLength(64)] [Required] public string MangaId { get; init; }
+    [StringLength(64)] [Required] public string MangaId { get; init; } = null!;
+    private Manga? _manga;
 
-    private Manga? _manga = null!;
-    
     [JsonIgnore]
-    public Manga Manga 
+    public Manga Manga
     {
         get => LazyLoader.Load(this, ref _manga) ?? throw new InvalidOperationException();
-        init => _manga = value;
-    }
-
-    [StringLength(64)] [Required] public string ToLibraryId { get; private set; } = null!;
-    private LocalLibrary? _toLibrary = null!;
-    [JsonIgnore]
-    public LocalLibrary ToLibrary
-    {
-        get => LazyLoader.Load(this, ref _toLibrary) ?? throw new InvalidOperationException();
         init
         {
-            ToLibraryId = value.LocalLibraryId;
-            _toLibrary = value;
+            MangaId = value.Key;
+            _manga = value;
         }
     }
 
-    public MoveMangaLibraryJob(Manga manga, LocalLibrary toLibrary, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+    [StringLength(64)] [Required] public string ToLibraryId { get; private set; } = null!;
+    private FileLibrary? _toFileLibrary;
+    [JsonIgnore]
+    public FileLibrary ToFileLibrary
+    {
+        get => LazyLoader.Load(this, ref _toFileLibrary) ?? throw new InvalidOperationException();
+        init
+        {
+            ToLibraryId = value.Key;
+            _toFileLibrary = value;
+        }
+    }
+
+    public MoveMangaLibraryJob(Manga manga, FileLibrary toFileLibrary, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
         : base(TokenGen.CreateToken(typeof(MoveMangaLibraryJob)), JobType.MoveMangaLibraryJob, 0, parentJob, dependsOnJobs)
     {
-        this.MangaId = manga.MangaId;
         this.Manga = manga;
-        this.ToLibrary = toLibrary;
+        this.ToFileLibrary = toFileLibrary;
     }
     
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal MoveMangaLibraryJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaId, string toLibraryId, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.MoveMangaLibraryJob, recurrenceMs, parentJobId)
+    internal MoveMangaLibraryJob(ILazyLoader lazyLoader, string key, ulong recurrenceMs, string mangaId, string toLibraryId, string? parentJobId)
+        : base(lazyLoader, key, JobType.MoveMangaLibraryJob, recurrenceMs, parentJobId)
     {
         this.MangaId = mangaId;
         this.ToLibraryId = toLibraryId;
@@ -52,9 +54,9 @@ public class MoveMangaLibraryJob : Job
     
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
-        context.Entry(Manga).Reference<LocalLibrary>(m => m.Library).Load();
+        context.Entry(Manga).Reference<FileLibrary>(m => m.Library).Load();
         Dictionary<Chapter, string> oldPath = Manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
-        Manga.Library = ToLibrary;
+        Manga.Library = ToFileLibrary;
         try
         {
             context.SaveChanges();

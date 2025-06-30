@@ -34,35 +34,36 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     [Required]
     public bool Enabled { get; internal set; } = true;
     
-    public abstract MangaConnectorMangaEntry[] SearchManga(string mangaSearchName);
+    public abstract (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName);
 
-    public abstract MangaConnectorMangaEntry? GetMangaFromUrl(string url);
+    public abstract (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url);
 
-    public abstract MangaConnectorMangaEntry? GetMangaFromId(string mangaIdOnSite);
+    public abstract (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite);
     
-    public abstract Chapter[] GetChapters(MangaConnectorMangaEntry mangaConnectorMangaEntry, string? language = null);
+    public abstract (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> mangaId,
+        string? language = null);
 
-    internal abstract string[] GetChapterImageUrls(Chapter chapter);
+    internal abstract string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId);
 
     public bool UrlMatchesConnector(string url) => BaseUris.Any(baseUri => Regex.IsMatch(url, "https?://" + baseUri + "/.*"));
     
-    internal string? SaveCoverImageToCache(Manga manga, int retries = 3)
+    internal string? SaveCoverImageToCache(MangaConnectorId<Manga> mangaId, int retries = 3)
     {
         if(retries < 0)
             return null;
         
         Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
         //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
-        Match match = urlRex.Match(manga.CoverUrl);
-        string filename = $"{match.Groups[1].Value}-{manga.MangaId}.{match.Groups[3].Value}";
+        Match match = urlRex.Match(mangaId.Obj.CoverUrl);
+        string filename = $"{match.Groups[1].Value}-{mangaId.Key}.{match.Groups[3].Value}";
         string saveImagePath = Path.Join(TrangaSettings.coverImageCache, filename);
 
         if (File.Exists(saveImagePath))
             return saveImagePath;
         
-        RequestResult coverResult = downloadClient.MakeRequest(manga.CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}");
+        RequestResult coverResult = downloadClient.MakeRequest(mangaId.Obj.CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}");
         if ((int)coverResult.statusCode < 200 || (int)coverResult.statusCode >= 300)
-            return SaveCoverImageToCache(manga, --retries);
+            return SaveCoverImageToCache(mangaId, --retries);
             
         using MemoryStream ms = new();
         coverResult.result.CopyTo(ms);

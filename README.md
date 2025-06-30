@@ -154,6 +154,8 @@ Tranga is using a code-first Entity-Framework Core approach. If you modify the d
 
 **A broad overview of where is what:**<br />
 
+![Image](DB-Layout.png)
+
 - `Program.cs` Configuration for ASP.NET, Swagger (also in `NamedSwaggerGenOptions.cs`)
 - `Tranga.cs` Worker-Logic
 - `Schema/` Entity-Framework

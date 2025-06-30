@@ -137,18 +137,7 @@ public static class Tranga
             List<Job> dueJobs = waitingJobs.FilterDueJobs();
             List<Job> jobsWithoutDependencies = dueJobs.FilterJobDependencies();
 
-            List<Job> jobsWithoutDownloading = jobsWithoutDependencies.FilterJobsWithoutDownloading();
-            
-            //Match running and waiting jobs per Connector
-            Dictionary<string, Dictionary<JobType, List<Job>>> runningJobsPerConnector =
-                runningJobs.GetJobsPerJobTypeAndConnector();
-            Dictionary<string, Dictionary<JobType, List<Job>>> waitingJobsPerConnector =
-                jobsWithoutDependencies.GetJobsPerJobTypeAndConnector();
-            List<Job> jobsNotHeldBackByConnector =
-                MatchJobsRunningAndWaiting(runningJobsPerConnector, waitingJobsPerConnector);
-            
-
-            List<Job> startJobs = jobsWithoutDownloading.Concat(jobsNotHeldBackByConnector).ToList();
+            List<Job> startJobs = dueJobs;
             Log.Debug($"Jobs Filtered! (took {DateTime.UtcNow.Subtract(filterStart).TotalMilliseconds}ms)");
             
             
@@ -160,7 +149,7 @@ public static class Tranga
                 {
                     using IServiceScope jobScope = serviceProvider.CreateScope();
                     PgsqlContext jobContext = jobScope.ServiceProvider.GetRequiredService<PgsqlContext>();
-                    if (jobContext.Jobs.Find(job.JobId) is not { } inContext)
+                    if (jobContext.Jobs.Find(job.Key) is not { } inContext)
                         return;
                     inContext.Run(jobContext, ref running); //FIND the job IN THE NEW CONTEXT!!!!!!! SO WE DON'T GET TRACKING PROBLEMS AND AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                 });
@@ -174,14 +163,12 @@ public static class Tranga
                       $"Waiting: {waitingJobs.Count} Due: {dueJobs.Count}\n" +
                       $"{string.Join("\n", dueJobs.Select(s => "\t- " + s))}\n" +
                       $"of which {jobsWithoutDependencies.Count} without missing dependencies, of which\n" +
-                      $"\t{jobsWithoutDownloading.Count} without downloading\n" +
-                      $"\t{jobsNotHeldBackByConnector.Count} not held back by Connector\n" +
                       $"{startJobs.Count} were started:\n" +
                       $"{string.Join("\n", startJobs.Select(s => "\t- " + s))}");
 
             if (Log.IsDebugEnabled && dueJobs.Count < 1)
                 if(waitingJobs.MinBy(j => j.NextExecution) is { } nextJob)
-                    Log.Debug($"Next job in {nextJob.NextExecution.Subtract(DateTime.UtcNow)} (at {nextJob.NextExecution}): {nextJob.JobId}");
+                    Log.Debug($"Next job in {nextJob.NextExecution.Subtract(DateTime.UtcNow)} (at {nextJob.NextExecution}): {nextJob.Key}");
 
             (Thread, Job)[] removeFromThreadsList = RunningJobs.Where(t => !t.Key.IsAlive)
                 .Select(t => (t.Key, t.Value)).ToArray();
@@ -252,26 +239,6 @@ public static class Tranga
         Log.Debug($"Filtering Jobs without Download took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
     }
-    
-
-    private static Dictionary<string, Dictionary<JobType, List<Job>>> GetJobsPerJobTypeAndConnector(this List<Job> jobs)
-    {
-        DateTime start = DateTime.UtcNow;
-        Dictionary<string, Dictionary<JobType, List<Job>>> ret = new();
-        foreach (Job job in jobs)
-        {
-            if(GetJobConnectorName(job) is not { } connector)
-                continue;
-            if (!ret.ContainsKey(connector))
-                ret.Add(connector, new());
-            if (!ret[connector].ContainsKey(job.JobType))
-                ret[connector].Add(job.JobType, new());
-            ret[connector][job.JobType].Add(job);
-        }
-        DateTime end = DateTime.UtcNow;
-        Log.Debug($"Fetching connector per Job for jobs took {end.Subtract(start).TotalMilliseconds}ms");
-        return ret;
-    }
 
     private static List<Job> MatchJobsRunningAndWaiting(Dictionary<string, Dictionary<JobType, List<Job>>> running,
         Dictionary<string, Dictionary<JobType, List<Job>>> waiting)
@@ -320,19 +287,5 @@ public static class Tranga
         DateTime end = DateTime.UtcNow;
         Log.Debug($"Getting eligible jobs (not held back by Connector) took {end.Subtract(start).TotalMilliseconds}ms");
         return ret;
-    }
-    
-    
-    private static string? GetJobConnectorName(Job job)
-    {
-        if (job is DownloadAvailableChaptersJob dacj)
-            return dacj.Manga.MangaConnectorName;
-        if (job is DownloadMangaCoverJob dmcj)
-            return  dmcj.Manga.MangaConnectorName;
-        if (job is DownloadSingleChapterJob dscj)
-            return  dscj.Chapter.ParentManga.MangaConnectorName;
-        if (job is RetrieveChaptersJob rcj)
-            return rcj.Manga.MangaConnectorName;
-        return null;
     }
 }

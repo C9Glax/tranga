@@ -16,39 +16,30 @@ namespace API.Schema.Jobs;
 public class DownloadSingleChapterJob : JobWithDownloading
 {
     [StringLength(64)] [Required] public string ChapterId { get; init; } = null!;
-    private Chapter? _chapter = null!;
-    
+    private Chapter? _chapter;
+
     [JsonIgnore]
     public Chapter Chapter
     {
         get => LazyLoader.Load(this, ref _chapter) ?? throw new InvalidOperationException();
         init
         {
-            ChapterId = value.ChapterId;
+            ChapterId = value.Key;
             _chapter = value;
         }
     }
 
-    private MangaConnectorMangaEntry? _mangaConnectorMangaEntry = null!;
-    [JsonIgnore]
-    public MangaConnectorMangaEntry MangaConnectorMangaEntry
-    {
-        get => LazyLoader.Load(this, ref _mangaConnectorMangaEntry) ?? throw new InvalidOperationException();
-        init => _mangaConnectorMangaEntry = value;
-    }
-    
-    public DownloadSingleChapterJob(Chapter chapter, MangaConnectorMangaEntry mangaConnectorMangaEntry, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
-        : base(TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, mangaConnectorMangaEntry.MangaConnector, parentJob, dependsOnJobs)
+    public DownloadSingleChapterJob(Chapter chapter, Job? parentJob = null, ICollection<Job>? dependsOnJobs = null)
+        : base(TokenGen.CreateToken(typeof(DownloadSingleChapterJob)), JobType.DownloadSingleChapterJob, 0, parentJob, dependsOnJobs)
     {
         this.Chapter = chapter;
-        this.MangaConnectorMangaEntry = mangaConnectorMangaEntry;
     }
     
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal DownloadSingleChapterJob(ILazyLoader lazyLoader, string jobId, ulong recurrenceMs, string mangaConnectorName, string chapterId, string? parentJobId)
-        : base(lazyLoader, jobId, JobType.DownloadSingleChapterJob, recurrenceMs, mangaConnectorName, parentJobId)
+    internal DownloadSingleChapterJob(ILazyLoader lazyLoader, string key, string chapterId, ulong recurrenceMs, string? parentJobId)
+        : base(lazyLoader, key, JobType.DownloadSingleChapterJob, recurrenceMs, parentJobId)
     {
         this.ChapterId = chapterId;
     }
@@ -60,13 +51,16 @@ public class DownloadSingleChapterJob : JobWithDownloading
             Log.Info("Chapter was already downloaded.");
             return [];
         }
-        string[] imageUrls = MangaConnectorMangaEntry.MangaConnector.GetChapterImageUrls(Chapter);
+        
+        //TODO MangaConnector Selection
+        MangaConnectorId<Chapter> mcId = Chapter.MangaConnectorIds.First();
+        
+        string[] imageUrls = mcId.MangaConnector.GetChapterImageUrls(mcId);
         if (imageUrls.Length < 1)
         {
-            Log.Info($"No imageUrls for chapter {ChapterId}");
+            Log.Info($"No imageUrls for chapter {Chapter}");
             return [];
         }
-        context.Entry(Chapter.MangaConnectorMangaEntry.Manga).Reference<LocalLibrary>(m => m.Library).Load(); //Need to explicitly load, because we are not accessing navigation directly...
         string saveArchiveFilePath = Chapter.FullArchiveFilePath;
         Log.Debug($"Chapter path: {saveArchiveFilePath}");
         
@@ -98,7 +92,7 @@ public class DownloadSingleChapterJob : JobWithDownloading
         string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
         Log.Debug($"Created temp folder: {tempFolder}");
 
-        Log.Info($"Downloading images: {ChapterId}");
+        Log.Info($"Downloading images: {Chapter}");
         int chapterNum = 0;
         //Download all Images to temporary Folder
         foreach (string imageUrl in imageUrls)
@@ -113,12 +107,12 @@ public class DownloadSingleChapterJob : JobWithDownloading
             }
         }
         
-        CopyCoverFromCacheToDownloadLocation(Chapter.MangaConnectorMangaEntry.Manga);
+        CopyCoverFromCacheToDownloadLocation(Chapter.ParentManga);
         
-        Log.Debug($"Creating ComicInfo.xml {ChapterId}");
+        Log.Debug($"Creating ComicInfo.xml {Chapter}");
         File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), Chapter.GetComicInfoXmlString());
         
-        Log.Debug($"Packaging images to archive {ChapterId}");
+        Log.Debug($"Packaging images to archive {Chapter}");
         //ZIP-it and ship-it
         ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -133,11 +127,11 @@ public class DownloadSingleChapterJob : JobWithDownloading
                 if (j.JobType != JobType.UpdateChaptersDownloadedJob)
                     return false;
                 UpdateChaptersDownloadedJob job = (UpdateChaptersDownloadedJob)j;
-                return job.MangaId == this.Chapter.MangaConnectorMangaEntry.MangaId;
+                return job.MangaId == Chapter.ParentMangaId;
             }))
             return [];
 
-        return [new UpdateChaptersDownloadedJob(Chapter.MangaConnectorMangaEntry.Manga, 0, this.ParentJob)];
+        return [new UpdateChaptersDownloadedJob(Chapter.ParentManga, 0, this.ParentJob)];
     }
     
     private void ProcessImage(string imagePath)
@@ -188,9 +182,12 @@ public class DownloadSingleChapterJob : JobWithDownloading
             Log.Debug($"Cover already exists at {publicationFolder}");
             return;
         }
+        
+        //TODO MangaConnector Selection
+        MangaConnectorId<Manga> mcId = manga.MangaConnectorIds.First();
 
         Log.Info($"Copying cover to {publicationFolder}");
-        string? fileInCache = manga.CoverFileNameInCache ?? MangaConnectorMangaEntry.MangaConnector.SaveCoverImageToCache(manga);
+        string? fileInCache = manga.CoverFileNameInCache ?? mcId.MangaConnector.SaveCoverImageToCache(mcId);
         if (fileInCache is null)
         {
             Log.Error($"File {fileInCache} does not exist");

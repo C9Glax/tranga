@@ -10,14 +10,14 @@ public class Global : MangaConnector
         this.context = context;
     }
 
-    public override MangaConnectorMangaEntry[] SearchManga(string mangaSearchName)
+    public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
         //Get all enabled Connectors
         MangaConnector[] enabledConnectors = context.MangaConnectors.Where(c => c.Enabled && c.Name != "Global").ToArray();
         
-        //Create Task for each MangaConnector to search simulatneously
-        Task<MangaConnectorMangaEntry[]>[] tasks =
-            enabledConnectors.Select(c => new Task<MangaConnectorMangaEntry[]>(() => c.SearchManga(mangaSearchName))).ToArray();
+        //Create Task for each MangaConnector to search simultaneously
+        Task<(Manga, MangaConnectorId<Manga>)[]>[] tasks =
+            enabledConnectors.Select(c => new Task<(Manga, MangaConnectorId<Manga>)[]>(() => c.SearchManga(mangaSearchName))).ToArray();
         foreach (var task in tasks)
             task.Start();
         
@@ -28,28 +28,29 @@ public class Global : MangaConnector
         }while(tasks.Any(t => t.Status < TaskStatus.RanToCompletion));
         
         //Concatenate all results into one
-        MangaConnectorMangaEntry[] ret = tasks.Select(t => t.IsCompletedSuccessfully ? t.Result : []).ToArray().SelectMany(i => i).ToArray();
+        (Manga, MangaConnectorId<Manga>)[] ret = tasks.Select(t => t.IsCompletedSuccessfully ? t.Result : []).ToArray().SelectMany(i => i).ToArray();
         return ret;
     }
 
-    public override MangaConnectorMangaEntry? GetMangaFromUrl(string url)
+    public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
         MangaConnector? mc = context.MangaConnectors.ToArray().FirstOrDefault(c => c.UrlMatchesConnector(url));
         return mc?.GetMangaFromUrl(url) ?? null;
     }
 
-    public override MangaConnectorMangaEntry? GetMangaFromId(string mangaIdOnSite)
+    public override (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite)
     {
         return null;
     }
 
-    public override Chapter[] GetChapters(MangaConnectorMangaEntry mangaConnectorMangaEntry, string? language = null)
+    public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga,
+        string? language = null)
     {
-        return mangaConnectorMangaEntry.MangaConnector.GetChapters(mangaConnectorMangaEntry, language);
+        return manga.MangaConnector.GetChapters(manga, language);
     }
 
-    internal override string[] GetChapterImageUrls(Chapter chapter)
+    internal override string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId)
     {
-        return chapter.MangaConnectorMangaEntry.MangaConnector.GetChapterImageUrls(chapter);
+        return chapterId.MangaConnector.GetChapterImageUrls(chapterId);
     }
 }

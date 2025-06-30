@@ -4,6 +4,7 @@ using API.Schema.Jobs;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -20,7 +21,7 @@ namespace API.Controllers;
 public class MangaController(PgsqlContext context, ILog Log) : Controller
 {
     /// <summary>
-    /// Returns all cached Manga
+    /// Returns all cached Obj
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
@@ -32,24 +33,24 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Returns all cached Manga with IDs
+    /// Returns all cached Obj with IDs
     /// </summary>
-    /// <param name="ids">Array of Manga-IDs</param>
+    /// <param name="ids">Array of Obj-IDs</param>
     /// <response code="200"></response>
     [HttpPost("WithIDs")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetManga([FromBody]string[] ids)
     {
-        Manga[] ret = context.Mangas.Where(m => ids.Contains(m.MangaId)).ToArray();
+        Manga[] ret = context.Mangas.Where(m => ids.Contains(m.Key)).ToArray();
         return Ok(ret);
     }
 
     /// <summary>
-    /// Return Manga with ID
+    /// Return Obj with ID
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <response code="200"></response>
-    /// <response code="404">Manga with ID not found</response>
+    /// <response code="404">Obj with ID not found</response>
     [HttpGet("{MangaId}")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
@@ -62,11 +63,11 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Delete Manga with ID
+    /// Delete Obj with ID
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <response code="200"></response>
-    /// <response code="404">Manga with ID not found</response>
+    /// <response code="404">Obj with ID not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{MangaId}")]
     [ProducesResponseType(Status200OK)]
@@ -91,16 +92,45 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
         }
     }
 
+    
     /// <summary>
-    /// Returns Cover of Manga
+    /// Merge two Manga into one. THIS IS NOT REVERSIBLE!
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <response code="200"></response>
+    /// <response code="404">MangaId not found</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPatch("{MangaIdFrom}/MergeInto/{MangaIdTo}")]
+    [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult MergeIntoManga(string MangaIdFrom, string MangaIdTo)
+    {
+        if(context.Mangas.Find(MangaIdFrom) is not { } from)
+            return NotFound(MangaIdFrom);
+        if(context.Mangas.Find(MangaIdTo) is not { } to)
+            return NotFound(MangaIdTo);
+        try
+        {
+            to.MergeFrom(from, context);
+            return Ok();
+        }
+        catch (DbUpdateException e)
+        {
+            Log.Error(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    /// <summary>
+    /// Returns Cover of Obj
+    /// </summary>
+    /// <param name="MangaId">Obj-ID</param>
     /// <param name="width">If width is provided, height needs to also be provided</param>
     /// <param name="height">If height is provided, width needs to also be provided</param>
     /// <response code="200">JPEG Image</response>
     /// <response code="204">Cover not loaded</response>
     /// <response code="400">The formatting-request was invalid</response>
-    /// <response code="404">Manga with ID not found</response>
+    /// <response code="404">Obj with ID not found</response>
     /// <response code="503">Retry later, downloading cover</response>
     [HttpGet("{MangaId}/Cover")]
     [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
@@ -115,7 +145,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
         
         if (!System.IO.File.Exists(m.CoverFileNameInCache))
         {
-            List<Job> coverDownloadJobs = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).ToList();
+            List<Job> coverDownloadJobs = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).Include(j => ((DownloadMangaCoverJob)j).Manga).ToList();
             if (coverDownloadJobs.Any(j => j is DownloadMangaCoverJob dmc && dmc.MangaId == MangaId && dmc.state < JobState.Completed))
             {
                 Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000:D}");
@@ -146,11 +176,11 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Returns all Chapters of Manga
+    /// Returns all Chapters of Obj
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <response code="200"></response>
-    /// <response code="404">Manga with ID not found</response>
+    /// <response code="404">Obj with ID not found</response>
     [HttpGet("{MangaId}/Chapters")]
     [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
@@ -164,12 +194,12 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Returns all downloaded Chapters for Manga with ID
+    /// Returns all downloaded Chapters for Obj with ID
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Manga with ID not found.</response>
+    /// <response code="404">Obj with ID not found.</response>
     [HttpGet("{MangaId}/Chapters/Downloaded")]
     [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
@@ -187,12 +217,12 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Returns all Chapters not downloaded for Manga with ID
+    /// Returns all Chapters not downloaded for Obj with ID
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Manga with ID not found.</response>
+    /// <response code="404">Obj with ID not found.</response>
     [HttpGet("{MangaId}/Chapters/NotDownloaded")]
     [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
@@ -210,12 +240,12 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Returns the latest Chapter of requested Manga available on Website
+    /// Returns the latest Chapter of requested Obj available on Website
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Manga with ID not found.</response>
+    /// <response code="404">Obj with ID not found.</response>
     /// <response code="500">Could not retrieve the maximum chapter-number</response>
     /// <response code="503">Retry after timeout, updating value</response>
     [HttpGet("{MangaId}/Chapter/LatestAvailable")]
@@ -232,7 +262,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
         List<Chapter> chapters = m.Chapters.ToList();
         if (chapters.Count == 0)
         {
-            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
+            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).Include(j => ((RetrieveChaptersJob)j).Manga).ToList();
             if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId && rcj.state < JobState.Completed))
             {
                 Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2 / 1000:D}");
@@ -249,12 +279,12 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Returns the latest Chapter of requested Manga that is downloaded
+    /// Returns the latest Chapter of requested Obj that is downloaded
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Manga with ID not found.</response>
+    /// <response code="404">Obj with ID not found.</response>
     /// <response code="500">Could not retrieve the maximum chapter-number</response>
     /// <response code="503">Retry after timeout, updating value</response>
     [HttpGet("{MangaId}/Chapter/LatestDownloaded")]
@@ -271,7 +301,7 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
         List<Chapter> chapters = m.Chapters.ToList();
         if (chapters.Count == 0)
         {
-            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).ToList();
+            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).Include(j => ((RetrieveChaptersJob)j).Manga).ToList();
             if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId && rcj.state < JobState.Completed))
             {
                 Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000:D}");
@@ -288,12 +318,12 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Configure the cut-off for Manga
+    /// Configure the cut-off for Obj
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
+    /// <param name="MangaId">Obj-ID</param>
     /// <param name="chapterThreshold">Threshold (Chapter Number)</param>
     /// <response code="200"></response>
-    /// <response code="404">Manga with ID not found.</response>
+    /// <response code="404">Obj with ID not found.</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{MangaId}/IgnoreChaptersBefore")]
     [ProducesResponseType(Status200OK)]
@@ -319,10 +349,10 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Move Manga to different ToLibrary
+    /// Move Obj to different ToFileLibrary
     /// </summary>
-    /// <param name="MangaId">Manga-ID</param>
-    /// <param name="LibraryId">ToLibrary-Id</param>
+    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="LibraryId">ToFileLibrary-Id</param>
     /// <response code="202">Folder is going to be moved</response>
     /// <response code="404">MangaId or LibraryId not found</response>
     /// <response code="500">Error during Database Operation</response>

@@ -1,12 +1,10 @@
-﻿using System.Net.Http.Headers;
-using API.MangaDownloadClients;
+﻿using API.MangaDownloadClients;
 using API.Schema;
 using API.Schema.Contexts;
 using API.Schema.Jobs;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -210,14 +208,14 @@ public class SettingsController(PgsqlContext context, ILog Log) : Controller
     /// </summary>
     /// <remarks>
     /// Placeholders:
-    /// %M Manga Name
+    /// %M Obj Name
     /// %V Volume
     /// %C Chapter
     /// %T Title
     /// %A Author (first in list)
     /// %I Chapter Internal ID
-    /// %i Manga Internal ID
-    /// %Y Year (Manga)
+    /// %i Obj Internal ID
+    /// %Y Year (Obj)
     ///
     /// ?_(...) replace _ with a value from above:
     /// Everything inside the braces will only be added if the value of %_ is not null
@@ -235,14 +233,14 @@ public class SettingsController(PgsqlContext context, ILog Log) : Controller
     /// </summary>
     /// <remarks>
     /// Placeholders:
-    /// %M Manga Name
+    /// %M Obj Name
     /// %V Volume
     /// %C Chapter
     /// %T Title
     /// %A Author (first in list)
     /// %I Chapter Internal ID
-    /// %i Manga Internal ID
-    /// %Y Year (Manga)
+    /// %i Obj Internal ID
+    /// %Y Year (Obj)
     ///
     /// ?_(...) replace _ with a value from above:
     /// Everything inside the braces will only be added if the value of %_ is not null
@@ -271,7 +269,7 @@ public class SettingsController(PgsqlContext context, ILog Log) : Controller
     }
 
     /// <summary>
-    /// Creates a UpdateCoverJob for all Manga
+    /// Creates a UpdateCoverJob for all Obj
     /// </summary>
     /// <response code="200">Array of JobIds</response>
     /// <response code="500">Error during Database Operation</response>
@@ -285,7 +283,7 @@ public class SettingsController(PgsqlContext context, ILog Log) : Controller
             Tranga.RemoveStaleFiles(context);
             List<UpdateCoverJob> newJobs = context.Mangas.ToList().Select(m => new UpdateCoverJob(m, 0)).ToList();
             context.Jobs.AddRange(newJobs);
-            return Ok(newJobs.Select(j => j.JobId));
+            return Ok(newJobs.Select(j => j.Key));
         }
         catch (Exception e)
         {

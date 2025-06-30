@@ -69,18 +69,18 @@ public class QueryController(PgsqlContext context, ILog Log) : Controller
     /// <response code="200"></response>
     /// <response code="404">AltTitle with ID not found</response>
     [HttpGet("AltTitle/{AltTitleId}")]
-    [ProducesResponseType<MangaAltTitle>(Status200OK, "application/json")]
+    [ProducesResponseType<AltTitle>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetAltTitle(string AltTitleId)
     {
-        MangaAltTitle? ret = context.AltTitles.Find(AltTitleId);
+        AltTitle? ret = context.AltTitles.Find(AltTitleId);
         if (ret is null)
             return NotFound();
         return Ok(ret);
     }*/
     
     /// <summary>
-    /// Returns all Manga with Tag
+    /// Returns all Obj with Tag
     /// </summary>
     /// <param name="Tag"></param>
     /// <response code="200"></response>

@@ -6,21 +6,25 @@ using Newtonsoft.Json;
 
 namespace API.Schema;
 
-[PrimaryKey("MangaId", "MangaConnectorName")]
-public class MangaConnectorMangaEntry
+[PrimaryKey("Key")]
+public class MangaConnectorId<T> : Identifiable where T : Identifiable
 {
-    [StringLength(64)] [Required] public string MangaId { get; private set; } = null!;
-    [JsonIgnore] private Manga? _manga = null!;
+    [StringLength(64)] [Required] public string ObjId { get; private set; } = null!;
+    [JsonIgnore] private T? _obj;
 
     [JsonIgnore]
-    public Manga Manga
+    public T Obj
     {
-        get => _lazyLoader.Load(this, ref _manga) ?? throw new InvalidOperationException();
-        init => _manga = value;
+        get => _lazyLoader.Load(this, ref _obj) ?? throw new InvalidOperationException();
+        internal set
+        {
+            ObjId = value.Key;
+            _obj = value;
+        }
     }
 
     [StringLength(32)] [Required] public string MangaConnectorName { get; private set; } = null!;
-    [JsonIgnore] private MangaConnector? _mangaConnector = null!;
+    [JsonIgnore] private MangaConnector? _mangaConnector;
     [JsonIgnore]
     public MangaConnector MangaConnector
     {
@@ -33,13 +37,14 @@ public class MangaConnectorMangaEntry
     }
 
     [StringLength(256)] [Required] public string IdOnConnectorSite { get; init; }
-    [Url] [StringLength(512)] [Required] public string WebsiteUrl { get; internal init; }
+    [Url] [StringLength(512)] public string? WebsiteUrl { get; internal init; }
     
     private readonly ILazyLoader _lazyLoader = null!;
 
-    public MangaConnectorMangaEntry(Manga manga, MangaConnector mangaConnector, string idOnConnectorSite, string websiteUrl)
+    public MangaConnectorId(T obj, MangaConnector mangaConnector, string idOnConnectorSite, string? websiteUrl)
+        : base(TokenGen.CreateToken(typeof(MangaConnectorId<T>), mangaConnector.Name, idOnConnectorSite))
     {
-        this.Manga = manga;
+        this.Obj = obj;
         this.MangaConnector = mangaConnector;
         this.IdOnConnectorSite = idOnConnectorSite;
         this.WebsiteUrl = websiteUrl;
@@ -48,12 +53,15 @@ public class MangaConnectorMangaEntry
     /// <summary>
     /// EF CORE ONLY!!!
     /// </summary>
-    public MangaConnectorMangaEntry(ILazyLoader lazyLoader, string mangaId, string mangaConnectorName, string idOnConnectorSite, string websiteUrl)
+    public MangaConnectorId(ILazyLoader lazyLoader, string key, string objId, string mangaConnectorName, string idOnConnectorSite, string? websiteUrl)
+        : base(key)
     {
         this._lazyLoader = lazyLoader;
-        this.MangaId = mangaId;
+        this.ObjId = objId;
         this.MangaConnectorName = mangaConnectorName;
         this.IdOnConnectorSite = idOnConnectorSite;
         this.WebsiteUrl = websiteUrl;
     }
+
+    public override string ToString() => $"{base.ToString()} {_obj}";
 }

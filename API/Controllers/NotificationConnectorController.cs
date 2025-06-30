@@ -95,7 +95,7 @@ public class NotificationConnectorController(NotificationsContext context, ILog 
         
         NotificationConnector gotifyConnector = new NotificationConnector(TokenGen.CreateToken("Gotify"),
             gotifyData.endpoint, 
-            new Dictionary<string, string>() { { "X-Gotify-Key", gotifyData.appToken } }, 
+            new Dictionary<string, string>() { { "X-Gotify-IDOnConnector", gotifyData.appToken } }, 
             "POST", 
             $"{{\"message\": \"%text\", \"title\": \"%title\", \"priority\": {gotifyData.priority}}}");
         return CreateConnector(gotifyConnector);
