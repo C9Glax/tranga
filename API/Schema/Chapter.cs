@@ -15,7 +15,21 @@ public class Chapter : IComparable<Chapter>
     [StringLength(64)] [Required] public string ChapterId { get; init; }
 
     [StringLength(256)]public string? IdOnConnectorSite { get; init; }
-    
+
+    [StringLength(64)] [Required] public string ParentMangaId { get; init; } = null!;
+    private Manga? _parentManga = null!;
+
+    [JsonIgnore]
+    public Manga ParentManga
+    {
+        get => _lazyLoader.Load(this, ref _parentManga) ?? throw new InvalidOperationException();
+        init
+        {
+            ParentMangaId = value.MangaId;
+            _parentManga = value;
+        }
+    }
+
     private MangaConnectorMangaEntry? _mangaConnectorMangaEntry = null!;
     [JsonIgnore]
     public MangaConnectorMangaEntry MangaConnectorMangaEntry

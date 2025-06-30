@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text;
-using API.Schema.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
@@ -13,9 +12,7 @@ namespace API.Schema;
 [PrimaryKey("MangaId")]
 public class Manga
 {
-    [StringLength(64)]
-    [Required]
-    public string MangaId { get; init; }
+    [StringLength(64)] [Required] public string MangaId { get; init; }
     [StringLength(512)] [Required] public string Name { get; internal set; }
     [Required] public string Description { get; internal set; }
     [JsonIgnore] [Url] [StringLength(512)] public string CoverUrl { get; internal set; }

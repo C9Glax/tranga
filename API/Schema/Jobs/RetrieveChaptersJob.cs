@@ -37,7 +37,7 @@ public class RetrieveChaptersJob : JobWithDownloading
     protected override IEnumerable<Job> RunInternal(PgsqlContext context)
     {
         // This gets all chapters that are not downloaded
-        Chapter[] allChapters = MangaConnectorMangaEntry.MangaConnector.GetChapters(MangaConnectorMangaEntry.Manga, Language).DistinctBy(c => c.ChapterId).ToArray();
+        Chapter[] allChapters = MangaConnectorMangaEntry.MangaConnector.GetChapters(MangaConnectorMangaEntry, Language).DistinctBy(c => c.ChapterId).ToArray();
         Chapter[] newChapters = allChapters.Where(chapter => MangaConnectorMangaEntry.Manga.Chapters.Select(c => c.ChapterId).Contains(chapter.ChapterId) == false).ToArray();
         Log.Info($"{MangaConnectorMangaEntry.Manga.Chapters.Count} existing + {newChapters.Length} new chapters.");
 

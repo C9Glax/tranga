@@ -40,31 +40,40 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<RetrieveChaptersJob>(JobType.RetrieveChaptersJob)
             .HasValue<UpdateCoverJob>(JobType.UpdateCoverJob)
             .HasValue<UpdateChaptersDownloadedJob>(JobType.UpdateChaptersDownloadedJob);
+        modelBuilder.Entity<Job>()
+            .HasDiscriminator(j => j.GetType().IsSubclassOf(typeof(JobWithDownloading)))
+            .HasValue<JobWithDownloading>(true);
         
         //Job specification
-        modelBuilder.Entity<DownloadAvailableChaptersJob>()
-            .HasOne<Manga>(j => j.Manga)
+        modelBuilder.Entity<JobWithDownloading>()
+            .HasOne<MangaConnector>(j => j.MangaConnector)
             .WithMany()
-            .HasForeignKey(j => j.MangaId)
+            .HasForeignKey(j => j.MangaConnectorName)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<JobWithDownloading>()
+            .Navigation(j => j.MangaConnector)
+            .EnableLazyLoading();
+
+        modelBuilder.Entity<DownloadAvailableChaptersJob>()
+            .HasOne<MangaConnectorMangaEntry>(j => j.MangaConnectorMangaEntry)
+            .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadAvailableChaptersJob>()
-            .Navigation(j => j.Manga)
+            .Navigation(j => j.MangaConnectorMangaEntry)
             .EnableLazyLoading();
         modelBuilder.Entity<DownloadMangaCoverJob>()
-            .HasOne<Manga>(j => j.Manga)
+            .HasOne<MangaConnectorMangaEntry>(j => j.MangaConnectorMangaEntry)
             .WithMany()
-            .HasForeignKey(j => j.MangaId)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadMangaCoverJob>()
-            .Navigation(j => j.Manga)
+            .Navigation(j => j.MangaConnectorMangaEntry)
             .EnableLazyLoading();
         modelBuilder.Entity<DownloadSingleChapterJob>()
-            .HasOne<Chapter>(j => j.Chapter)
+            .HasOne<MangaConnectorMangaEntry>(j => j.MangaConnectorMangaEntry)
             .WithMany()
-            .HasForeignKey(j => j.ChapterId)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DownloadSingleChapterJob>()
-            .Navigation(j => j.Chapter)
+            .Navigation(j => j.MangaConnectorMangaEntry)
             .EnableLazyLoading();
         modelBuilder.Entity<MoveMangaLibraryJob>()
             .HasOne<Manga>(j => j.Manga)
@@ -83,12 +92,11 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .Navigation(j => j.ToLibrary)
             .EnableLazyLoading();
         modelBuilder.Entity<RetrieveChaptersJob>()
-            .HasOne<Manga>(j => j.Manga)
+            .HasOne<MangaConnectorMangaEntry>(j => j.MangaConnectorMangaEntry)
             .WithMany()
-            .HasForeignKey(j => j.MangaId)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<RetrieveChaptersJob>()
-            .Navigation(j => j.Manga)
+            .Navigation(j => j.MangaConnectorMangaEntry)
             .EnableLazyLoading();
         modelBuilder.Entity<UpdateChaptersDownloadedJob>()
             .HasOne<Manga>(j => j.Manga)
@@ -120,15 +128,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .HasValue<Global>("Global")
             .HasValue<MangaDex>("MangaDex")
             .HasValue<ComickIo>("ComickIo");
-        //MangaConnector is responsible for many Manga
-        modelBuilder.Entity<MangaConnector>()
-            .HasMany<Manga>()
-            .WithOne(m => m.MangaConnector)
-            .HasForeignKey(m => m.MangaConnectorName)
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.MangaConnector)
-            .AutoInclude();
 
         //Manga has many Chapters
         modelBuilder.Entity<Manga>()
@@ -136,9 +135,6 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
             .WithOne(c => c.ParentManga)
             .HasForeignKey(c => c.ParentMangaId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Chapter>()
-            .Navigation(c => c.ParentManga)
-            .AutoInclude();
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Chapters)
             .AutoInclude(false)
@@ -181,6 +177,17 @@ public class PgsqlContext(DbContextOptions<PgsqlContext> options) : DbContext(op
         modelBuilder.Entity<Manga>()
             .Navigation(m => m.Authors)
             .AutoInclude();
+        //Manga has many MangaConnectorMangaEntries with one MangaConnector
+        modelBuilder.Entity<Manga>()
+            .HasMany<MangaConnectorMangaEntry>(m => m.MangaConnectorLinkedToManga)
+            .WithOne(e => e.Manga)
+            .HasForeignKey(e => e.MangaId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MangaConnectorMangaEntry>()
+            .HasOne<MangaConnector>(e => e.MangaConnector)
+            .WithMany()
+            .HasForeignKey(e => e.MangaConnectorName)
+            .OnDelete(DeleteBehavior.Cascade);
         
         //LocalLibrary has many Mangas
         modelBuilder.Entity<LocalLibrary>()
