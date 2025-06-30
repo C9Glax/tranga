@@ -109,6 +109,7 @@ app.UseMiddleware<RequestTimeMiddleware>();
 using (IServiceScope scope = app.Services.CreateScope())
 {
     PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
+    //TODO Remove after migrations complete
     if (context.Database.GetMigrations().Contains("20250630182650_OofV2.1") == false)
     {
         IQueryable<(string, string)> mangas = context.Database.SqlQuery<(string, string)>($"SELECT MangaConnectorName, IdOnConnectorSite as ID FROM Mangas");
