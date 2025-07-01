@@ -3,13 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
 
-[PrimaryKey("NotificationId")]
-public class Notification
+[PrimaryKey(nameof(Key))]
+public class Notification : Identifiable
 {
-    [StringLength(64)]
-    [Required]
-    public string NotificationId { get; init; }
-
     [Required]
     public NotificationUrgency Urgency { get; init; }
 
@@ -25,8 +21,8 @@ public class Notification
     public DateTime Date { get; init; }
 
     public Notification(string title, string message = "", NotificationUrgency urgency = NotificationUrgency.Normal, DateTime? date = null)
+        : base(TokenGen.CreateToken("Notification"))
     {
-        this.NotificationId = TokenGen.CreateToken("Notification");
         this.Title = title;
         this.Message = message;
         this.Urgency = urgency;
@@ -36,17 +32,21 @@ public class Notification
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public Notification(string notificationId, string title, string message, NotificationUrgency urgency, DateTime date)
+    public Notification(string key, string title, string message, NotificationUrgency urgency, DateTime date)
+        : base(key)
     {
-        this.NotificationId = notificationId;
         this.Title = title;
         this.Message = message;
         this.Urgency = urgency;
         this.Date = date;
     }
 
-    public override string ToString()
-    {
-        return $"{NotificationId} {Urgency} {Title}";
-    }
+    public override string ToString() => $"{base.ToString()} {Urgency} {Title}";
+}
+
+public enum NotificationUrgency : byte
+{
+    Low = 1,
+    Normal = 3,
+    High = 5
 }
