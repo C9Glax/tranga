@@ -8,7 +8,7 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
 {
     public DbSet<MangaConnector> MangaConnectors { get; set; }
     public DbSet<Manga> Mangas { get; set; }
-    public DbSet<FileLibrary> LocalLibraries { get; set; }
+    public DbSet<FileLibrary> FileLibraries { get; set; }
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<Author> Authors { get; set; }
     public DbSet<MangaTag> Tags { get; set; }

@@ -1,18 +1,18 @@
 ﻿using API.MangaDownloadClients;
-using API.Schema.JobsContext.Jobs;
 using API.Schema.MangaContext;
+using API.Workers;
 using Asp.Versioning;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+// ReSharper disable InconsistentNaming
 
 namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SettingsController(MangaContext context, ILog Log) : Controller
+public class SettingsController(IServiceScope scope) : Controller
 {
     /// <summary>
     /// Get all Settings
@@ -237,58 +237,25 @@ public class SettingsController(MangaContext context, ILog Log) : Controller
     /// %C Chapter
     /// %T Title
     /// %A Author (first in list)
-    /// %I Chapter Internal ID
-    /// %i Obj Internal ID
     /// %Y Year (Obj)
     ///
     /// ?_(...) replace _ with a value from above:
     /// Everything inside the braces will only be added if the value of %_ is not null
     /// </remarks>
     /// <response code="200"></response>
-    /// <response code="500">Error during Database Operation</response>
     [HttpPatch("ChapterNamingScheme")]
     [ProducesResponseType(Status200OK)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult SetCustomNamingScheme([FromBody]string namingScheme)
     {
-        try
-        {
-            Dictionary<Chapter, string> oldPaths = context.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
-            TrangaSettings.UpdateChapterNamingScheme(namingScheme);
-            MoveFileOrFolderJob[] newJobs = oldPaths
-                .Select(kv => new MoveFileOrFolderJob(kv.Value, kv.Key.FullArchiveFilePath)).ToArray();
-            context.Jobs.AddRange(newJobs);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e);
-        }
-    }
-
-    /// <summary>
-    /// Creates a UpdateCoverJob for all Obj
-    /// </summary>
-    /// <response code="200">Array of JobIds</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPost("CleanupCovers")]
-    [ProducesResponseType<string[]>(Status200OK)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CleanupCovers()
-    {
-        try
-        {
-            Tranga.RemoveStaleFiles(context);
-            List<UpdateCoverJob> newJobs = context.Mangas.ToList().Select(m => new UpdateCoverJob(m, 0)).ToList();
-            context.Jobs.AddRange(newJobs);
-            return Ok(newJobs.Select(j => j.Key));
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e);
-        }
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        
+        Dictionary<Chapter, string> oldPaths = context.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
+        TrangaSettings.UpdateChapterNamingScheme(namingScheme);
+        MoveFileOrFolderWorker[] newJobs = oldPaths
+            .Select(kv => new MoveFileOrFolderWorker(kv.Value, kv.Key.FullArchiveFilePath)).ToArray();
+        Tranga.AddWorkers(newJobs);
+        
+        return Ok();
     }
 
     /// <summary>

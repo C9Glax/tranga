@@ -5,8 +5,7 @@ namespace API.Schema.LibraryContext.LibraryConnectors;
 
 public class Komga : LibraryConnector
 {
-    public Komga(string baseUrl, string auth) : base(TokenGen.CreateToken(typeof(Komga), baseUrl), LibraryType.Komga,
-        baseUrl, auth)
+    public Komga(string baseUrl, string auth) : base(LibraryType.Komga, baseUrl, auth)
     {
     }
     

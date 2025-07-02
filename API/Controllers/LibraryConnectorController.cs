@@ -1,52 +1,54 @@
 ﻿using API.Schema.LibraryContext;
 using API.Schema.LibraryContext.LibraryConnectors;
 using Asp.Versioning;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+// ReSharper disable InconsistentNaming
 
 namespace API.Controllers;
 
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class LibraryConnectorController(LibraryContext context, ILog Log) : Controller
+public class LibraryConnectorController(IServiceScope scope) : Controller
 {
     /// <summary>
-    /// Gets all configured ToFileLibrary-Connectors
+    /// Gets all configured <see cref="LibraryConnector"/>
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
     [ProducesResponseType<LibraryConnector[]>(Status200OK, "application/json")]
     public IActionResult GetAllConnectors()
     {
+        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
+        
         LibraryConnector[] connectors = context.LibraryConnectors.ToArray();
+        
         return Ok(connectors);
     }
     
     /// <summary>
-    /// Returns ToFileLibrary-Connector with requested ID
+    /// Returns <see cref="LibraryConnector"/> with <paramref name="LibraryConnectorId"/>
     /// </summary>
-    /// <param name="LibraryControllerId">ToFileLibrary-Connector-ID</param>
+    /// <param name="LibraryConnectorId"><see cref="LibraryConnector"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404">Connector with ID not found.</response>
-    [HttpGet("{LibraryControllerId}")]
+    /// <response code="404"><see cref="LibraryConnector"/> with <paramref name="LibraryConnectorId"/> not found.</response>
+    [HttpGet("{LibraryConnectorId}")]
     [ProducesResponseType<LibraryConnector>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetConnector(string LibraryControllerId)
+    public IActionResult GetConnector(string LibraryConnectorId)
     {
-        LibraryConnector? ret = context.LibraryConnectors.Find(LibraryControllerId);
-        return (ret is not null) switch
-        {
-            true => Ok(ret),
-            false => NotFound()
-        };
+        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
+        if (context.LibraryConnectors.Find(LibraryConnectorId) is not { } connector)
+            return NotFound();
+        
+        return Ok(connector);
     }
     
     /// <summary>
-    /// Creates a new ToFileLibrary-Connector
+    /// Creates a new <see cref="LibraryConnector"/>
     /// </summary>
-    /// <param name="libraryConnector">ToFileLibrary-Connector</param>
+    /// <param name="libraryConnector"></param>
     /// <response code="201"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
@@ -54,46 +56,36 @@ public class LibraryConnectorController(LibraryContext context, ILog Log) : Cont
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateConnector([FromBody]LibraryConnector libraryConnector)
     {
-        try
-        {
-            context.LibraryConnectors.Add(libraryConnector);
-            context.SaveChanges();
-            return Created();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
+        
+        context.LibraryConnectors.Add(libraryConnector);
+        
+        if(context.Sync().Result is { } errorMessage)
+            return StatusCode(Status500InternalServerError, errorMessage);
+        return Created();
     }
     
     /// <summary>
-    /// Deletes the ToFileLibrary-Connector with the requested ID
+    /// Deletes <see cref="LibraryConnector"/> with <paramref name="LibraryConnectorId"/>
     /// </summary>
-    /// <param name="LibraryControllerId">ToFileLibrary-Connector-ID</param>
+    /// <param name="LibraryConnectorId">ToFileLibrary-Connector-ID</param>
     /// <response code="200"></response>
-    /// <response code="404">Connector with ID not found.</response>
+    /// <response code="404"><see cref="LibraryConnector"/> with <<paramref name="LibraryConnectorId"/> not found.</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpDelete("{LibraryControllerId}")]
+    [HttpDelete("{LibraryConnectorId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult DeleteConnector(string LibraryControllerId)
+    public IActionResult DeleteConnector(string LibraryConnectorId)
     {
-        try
-        {
-            LibraryConnector? ret = context.LibraryConnectors.Find(LibraryControllerId);
-            if (ret is null)
-                return NotFound();
-            
-            context.Remove(ret);
-            context.SaveChanges();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
+        if (context.LibraryConnectors.Find(LibraryConnectorId) is not { } connector)
+            return NotFound();
+        
+        context.LibraryConnectors.Remove(connector);
+        
+        if(context.Sync().Result is { } errorMessage)
+            return StatusCode(Status500InternalServerError, errorMessage);
+        return Ok();
     }
 }

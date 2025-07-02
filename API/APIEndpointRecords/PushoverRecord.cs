@@ -1,12 +1,12 @@
 namespace API.APIEndpointRecords;
 
-public record PushoverRecord(string apptoken, string user)
+public record PushoverRecord(string Name, string AppToken, string User)
 {
     public bool Validate()
     {
-        if (apptoken == string.Empty)
+        if (AppToken == string.Empty)
             return false;
-        if (user == string.Empty)
+        if (User == string.Empty)
             return false;
         return true;
     }

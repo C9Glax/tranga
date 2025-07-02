@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace API.Schema.MangaContext.MetadataFetchers;
 
-[PrimaryKey("MetadataFetcherName", "Identifier")]
+[PrimaryKey("Name", "Identifier")]
 public class MetadataEntry
 {
     [JsonIgnore]
@@ -19,7 +19,7 @@ public class MetadataEntry
         this.Manga = manga;
         this.MangaId = manga.MangaId;
         this.MetadataFetcher = fetcher;
-        this.MetadataFetcherName = fetcher.MetadataFetcherName;
+        this.MetadataFetcherName = fetcher.Name;
         this.Identifier = identifier;
     }
 

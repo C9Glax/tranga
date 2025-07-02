@@ -1,6 +1,5 @@
 ﻿using API.Schema.MangaContext;
 using Asp.Versioning;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
@@ -10,102 +9,74 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class QueryController(MangaContext context, ILog Log) : Controller
+public class QueryController(IServiceScope scope) : Controller
 {
     /// <summary>
-    /// Returns the Author-Information for Author-ID
+    /// Returns the <see cref="Author"/> with <paramref name="AuthorId"/>
     /// </summary>
-    /// <param name="AuthorId">Author-Id</param>
+    /// <param name="AuthorId"><see cref="Author"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404">Author with ID not found</response>
+    /// <response code="404"><see cref="Author"/> with <paramref name="AuthorId"/> not found</response>
     [HttpGet("Author/{AuthorId}")]
     [ProducesResponseType<Author>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetAuthor(string AuthorId)
     {
-        Author? ret = context.Authors.Find(AuthorId);
-        if (ret is null)
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Authors.Find(AuthorId) is not { } author)
             return NotFound();
-        return Ok(ret);
+        
+        return Ok(author);
     }
     
     /// <summary>
-    /// Returns all Mangas which where Authored by Author with AuthorId
+    /// Returns all <see cref="Manga"/> which where Authored by <see cref="Author"/> with <paramref name="AuthorId"/>
     /// </summary>
-    /// <param name="AuthorId">Author-ID</param>
+    /// <param name="AuthorId"><see cref="Author"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404">Author not found</response>
+    /// <response code="404"><see cref="Author"/> with <paramref name="AuthorId"/></response>
     [HttpGet("Mangas/WithAuthorId/{AuthorId}")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangaWithAuthorIds(string AuthorId)
     {
-        if(context.Authors.Find(AuthorId) is not { } a)
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Authors.Find(AuthorId) is not { } author)
             return NotFound();
-        return Ok(context.Mangas.Where(m => m.Authors.Contains(a)));
-    }
-    /*
-    /// <summary>
-    /// Returns Link-Information for Link-Id
-    /// </summary>
-    /// <param name="LinkId"></param>
-    /// <response code="200"></response>
-    /// <response code="404">Link with ID not found</response>
-    [HttpGet("Link/{LinkId}")]
-    [ProducesResponseType<Link>(Status200OK, "application/json")]
-    [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetLink(string LinkId)
-    {
-        Link? ret = context.Links.Find(LinkId);
-        if (ret is null)
-            return NotFound();
-        return Ok(ret);
+        
+        return Ok(context.Mangas.Where(m => m.Authors.Contains(author)));
     }
     
     /// <summary>
-    /// Returns AltTitle-Information for AltTitle-Id
+    /// Returns all <see cref="Manga"/> with <see cref="Tag"/>
     /// </summary>
-    /// <param name="AltTitleId"></param>
+    /// <param name="Tag"><see cref="Tag"/>.Tag</param>
     /// <response code="200"></response>
-    /// <response code="404">AltTitle with ID not found</response>
-    [HttpGet("AltTitle/{AltTitleId}")]
-    [ProducesResponseType<AltTitle>(Status200OK, "application/json")]
-    [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetAltTitle(string AltTitleId)
-    {
-        AltTitle? ret = context.AltTitles.Find(AltTitleId);
-        if (ret is null)
-            return NotFound();
-        return Ok(ret);
-    }*/
-    
-    /// <summary>
-    /// Returns all Obj with Tag
-    /// </summary>
-    /// <param name="Tag"></param>
-    /// <response code="200"></response>
-    /// <response code="404">Tag not found</response>
+    /// <response code="404"><see cref="Tag"/> not found</response>
     [HttpGet("Mangas/WithTag/{Tag}")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangasWithTag(string Tag)
     {
-        if(context.Tags.Find(Tag) is not { } t)
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Tags.Find(Tag) is not { } tag)
             return NotFound();
-        return Ok(context.Mangas.Where(m => m.MangaTags.Contains(t)));
+        
+        return Ok(context.Mangas.Where(m => m.MangaTags.Contains(tag)));
     }
     
     /// <summary>
-    /// Returns Chapter-Information for Chapter-Id
+    /// Returns <see cref="Chapter"/> with <paramref name="ChapterId"/>
     /// </summary>
-    /// <param name="ChapterId"></param>
+    /// <param name="ChapterId"><see cref="Chapter"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404">Chapter with ID not found</response>
+    /// <response code="404"><see cref="Chapter"/> with <paramref name="ChapterId"/> not found</response>
     [HttpGet("Chapter/{ChapterId}")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     public IActionResult GetChapter(string ChapterId)
     {
-        Chapter? ret = context.Chapters.Find(ChapterId);
-        if (ret is null)
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Chapters.Find(ChapterId) is not { } chapter)
             return NotFound();
-        return Ok(ret);
+        
+        return Ok(chapter);
     }
 }

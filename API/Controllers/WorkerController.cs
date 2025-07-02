@@ -84,110 +84,73 @@ public class WorkerController(ILog Log) : Controller
     }
 
     /// <summary>
-    /// Modify Job with ID
+    /// Modify <see cref="BaseWorker"/> with <paramref name="WorkerId"/>
     /// </summary>
-    /// <param name="JobId">Job-ID</param>
-    /// <param name="modifyJobRecord">Fields to modify, set to null to keep previous value</param>
-    /// <response code="202">Job modified</response>
-    /// <response code="400">Malformed request</response>
-    /// <response code="404">Job with ID not found</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPatch("{JobId}")]
-    [ProducesResponseType<Job>(Status202Accepted, "application/json")]
+    /// <param name="WorkerId"><see cref="BaseWorker"/>.Key</param>
+    /// <param name="modifyWorkerRecord">Fields to modify, set to null to keep previous value</param>
+    /// <response code="202"></response>
+    /// <response code="400"></response>
+    /// <response code="404"><see cref="BaseWorker"/> with <paramref name="WorkerId"/> could not be found</response>
+    /// <response code="409"><see cref="BaseWorker"/> is not <see cref="IPeriodic"/>, can not modify <paramref name="modifyWorkerRecord.IntervalMs"/></response>
+    [HttpPatch("{WorkerId}")]
+    [ProducesResponseType<BaseWorker>(Status202Accepted, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult ModifyJob(string JobId, [FromBody]ModifyJobRecord modifyJobRecord)
+    [ProducesResponseType<string>(Status409Conflict, "text/plain")]
+    public IActionResult ModifyJob(string WorkerId, [FromBody]ModifyWorkerRecord modifyWorkerRecord)
     {
-        try
-        {
-            Job? ret = context.Jobs.Find(JobId);
-            if(ret is null)
-                return NotFound();
-            
-            ret.RecurrenceMs = modifyJobRecord.RecurrenceMs ?? ret.RecurrenceMs;
-            ret.Enabled = modifyJobRecord.Enabled ?? ret.Enabled;
-
-            context.SaveChanges();
-            return new AcceptedResult(ret.Key, ret);
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+            return NotFound(nameof(WorkerId));
+        
+        if(modifyWorkerRecord.IntervalMs is not null && worker is not IPeriodic)
+            return Conflict("Can not modify Interval of non-Periodic worker");
+        else if(modifyWorkerRecord.IntervalMs is not null && worker is IPeriodic periodic)
+            periodic.Interval = TimeSpan.FromMilliseconds((long)modifyWorkerRecord.IntervalMs);
+        
+        return Accepted(worker);
     }
 
     /// <summary>
-    /// Starts the Job with the requested ID
+    /// Starts <see cref="BaseWorker"/> with <paramref name="WorkerId"/>
     /// </summary>
-    /// <param name="JobId">Job-ID</param>
-    /// <param name="startDependencies">Start Jobs necessary for execution</param>
-    /// <response code="202">Job started</response>
-    /// <response code="404">Job with ID not found</response>
-    /// <response code="409">Job was already running</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{JobId}/Start")]
+    /// <param name="WorkerId"><see cref="BaseWorker"/>.Key</param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="BaseWorker"/> with <paramref name="WorkerId"/> could not be found</response>
+    /// <response code="412"><see cref="BaseWorker"/> was already running</response>
+    [HttpPost("{WorkerId}/Start")]
     [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status409Conflict)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult StartJob(string JobId, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]bool startDependencies = false)
+    [ProducesResponseType<string>(Status412PreconditionFailed, "text/plain")]
+    public IActionResult StartJob(string WorkerId)
     {
-        Job? ret = context.Jobs.Find(JobId);
-        if (ret is null)
-            return NotFound();
-        List<Job> dependencies = startDependencies ? ret.GetDependenciesAndSelf() : [ret];
+        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+            return NotFound(nameof(WorkerId));
         
-        try
-        {
-            if(dependencies.Any(d => d.state >= JobState.Running && d.state < JobState.Completed))
-                return new ConflictResult();
-            dependencies.ForEach(d =>
-            {
-                d.LastExecution = DateTime.UnixEpoch;
-                d.state = JobState.CompletedWaiting;
-            });
-            context.SaveChanges();
-            return Accepted();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        if (worker.State >= WorkerExecutionState.Waiting)
+            return StatusCode(Status412PreconditionFailed, "Already running");
+
+        Tranga.StartWorker(worker);
+        return Ok();
     }
 
     /// <summary>
-    /// Stops the Job with the requested ID
+    /// Stops <see cref="BaseWorker"/> with <paramref name="WorkerId"/>
     /// </summary>
-    /// <param name="JobId">Job-ID</param>
-    /// <remarks><h1>NOT IMPLEMENTED</h1></remarks>
-    [HttpPost("{JobId}/Stop")]
+    /// <param name="WorkerId"><see cref="BaseWorker"/>.Key</param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="BaseWorker"/> with <paramref name="WorkerId"/> could not be found</response>
+    /// <response code="208"><see cref="BaseWorker"/> was not running</response>
+    [HttpPost("{WorkerId}/Stop")]
     [ProducesResponseType(Status501NotImplemented)]
-    public IActionResult StopJob(string JobId)
+    public IActionResult StopJob(string WorkerId)
     {
-        return StatusCode(Status501NotImplemented);
-    }
-
-    /// <summary>
-    /// Removes failed and completed Jobs (that are not recurring)
-    /// </summary>
-    /// <response code="202">Job started</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPost("Cleanup")]
-    public IActionResult CleanupJobs()
-    {
-        try
-        {
-            context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Failed || j.state == JobState.Completed));
-            context.SaveChanges();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+            return NotFound(nameof(WorkerId));
+        
+        if(worker.State is < WorkerExecutionState.Running or >= WorkerExecutionState.Completed)
+            return StatusCode(Status208AlreadyReported, "Not running");
+        
+        Tranga.StopWorker(worker);
+        return Ok();
     }
 }

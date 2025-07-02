@@ -118,8 +118,8 @@ using (IServiceScope scope = app.Services.CreateScope())
     ];
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
-    if (!context.LocalLibraries.Any())
-        context.LocalLibraries.Add(new FileLibrary(TrangaSettings.downloadLocation, "Default FileLibrary"));
+    if (!context.FileLibraries.Any())
+        context.FileLibraries.Add(new FileLibrary(TrangaSettings.downloadLocation, "Default FileLibrary"));
     
     context.Sync();
 }

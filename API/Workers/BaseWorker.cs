@@ -13,7 +13,12 @@ public abstract class BaseWorker : Identifiable
     internal WorkerExecutionState State { get; set; }
     private static readonly CancellationTokenSource CancellationTokenSource = new(TimeSpan.FromMinutes(10));
     protected ILog Log { get; init; }
-    public void Cancel() => CancellationTokenSource.Cancel();
+
+    public void Cancel()
+    {
+        this.State = WorkerExecutionState.Cancelled;
+        CancellationTokenSource.Cancel();
+    }
     protected void Fail() => this.State = WorkerExecutionState.Failed;
 
     public BaseWorker(IEnumerable<BaseWorker>? dependsOn = null)
@@ -58,5 +63,6 @@ public enum WorkerExecutionState
     Created = 64,
     Waiting = 96,
     Running = 128,
-    Completed = 192
+    Completed = 192,
+    Cancelled = 193
 }

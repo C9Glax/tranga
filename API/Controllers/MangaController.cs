@@ -2,9 +2,7 @@
 using API.Schema.MangaContext.MangaConnectors;
 using API.Workers;
 using Asp.Versioning;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -352,7 +350,7 @@ public class MangaController(IServiceScope scope) : Controller
         MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
-        if(context.LocalLibraries.Find(LibraryId) is not { } library)
+        if(context.FileLibraries.Find(LibraryId) is not { } library)
             return NotFound(nameof(LibraryId));
 
         MoveMangaLibraryWorker moveLibrary = new(manga, library, scope);

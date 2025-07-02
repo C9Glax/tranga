@@ -1,9 +1,7 @@
 using API.Schema.MangaContext;
+using API.Schema.MangaContext.MangaConnectors;
 using Asp.Versioning;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -12,98 +10,69 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SearchController(MangaContext context, ILog Log) : Controller
+public class SearchController(IServiceScope scope) : Controller
 {
     /// <summary>
-    /// Initiate a search for a Obj on a specific Connector
+    /// Initiate a search for a <see cref="Manga"/> on <see cref="MangaConnector"/> with searchTerm
     /// </summary>
-    /// <param name="MangaConnectorName"></param>
-    /// <param name="Query"></param>
+    /// <param name="MangaConnectorName"><see cref="MangaConnector"/>.Name</param>
+    /// <param name="Query">searchTerm</param>
     /// <response code="200"></response>
-    /// <response code="404">MangaConnector with ID not found</response>
-    /// <response code="406">MangaConnector with ID is disabled</response>
-    /// <response code="500">Error during Database Operation</response>
+    /// <response code="404"><see cref="MangaConnector"/> with Name not found</response>
+    /// <response code="412"><see cref="MangaConnector"/> with Name is disabled</response>
     [HttpGet("{MangaConnectorName}/{Query}")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status406NotAcceptable)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult SearchManga(string MangaConnectorName, string Query)
     {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
             return NotFound();
-        else if (connector.Enabled is false)
-            return StatusCode(Status406NotAcceptable);
+        if (connector.Enabled is false)
+            return StatusCode(Status412PreconditionFailed);
         
         (Manga, MangaConnectorId<Manga>)[] mangas = connector.SearchManga(Query);
         List<Manga> retMangas = new();
         foreach ((Manga manga, MangaConnectorId<Manga> mcId) manga in mangas)
         {
-            try
-            {
-                if(AddMangaToContext(manga) is { } add)
-                    retMangas.Add(add);
-            }
-            catch (DbUpdateException e)
-            {
-                Log.Error(e);
-                return StatusCode(Status500InternalServerError, e.Message);
-            }
+            if(AddMangaToContext(manga, context) is { } add)
+                retMangas.Add(add);
         }
 
         return Ok(retMangas.ToArray());
     }
-    
-    /// <summary>
-    /// Search for a known Obj
-    /// </summary>
-    /// <param name="Query"></param>
-    /// <response code="200"></response>
-    [HttpGet("Local/{Query}")]
-    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
-    public IActionResult SearchMangaLocally(string Query)
-    {
-        Dictionary<Manga, double> distance = context.Mangas
-            .ToArray()
-            .ToDictionary(m => m, m => NeedlemanWunschStringUtil.CalculateSimilarityPercentage(Query, m.Name));
-        return Ok(distance.Where(kv => kv.Value > 50).OrderByDescending(kv => kv.Value).Select(kv => kv.Key).ToArray());
-    }
 
     /// <summary>
-    /// Returns Obj from MangaConnector associated with URL
+    /// Returns <see cref="Manga"/> from the <see cref="MangaConnector"/> associated with <paramref name="url"/>
     /// </summary>
-    /// <param name="url">Obj-Page URL</param>
+    /// <param name="url"></param>
     /// <response code="200"></response>
-    /// <response code="300">Multiple connectors found for URL</response>
-    /// <response code="404">Obj not found</response>
+    /// <response code="300">Multiple <see cref="MangaConnector"/> found for URL</response>
+    /// <response code="404"><see cref="Manga"/> not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("Url")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    [ProducesResponseType(Status500InternalServerError)]
     public IActionResult GetMangaFromUrl([FromBody]string url)
     {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.MangaConnectors.Find("Global") is not { } connector)
             return StatusCode(Status500InternalServerError, "Could not find Global Connector.");
 
         if(connector.GetMangaFromUrl(url) is not { } manga)
             return NotFound();
-        try
-        {
-            if(AddMangaToContext(manga) is { } add)
-                return Ok(add);
+        
+        if(AddMangaToContext(manga, context) is not { } add)
             return StatusCode(Status500InternalServerError);
-        }
-        catch (DbUpdateException e)
-        {
-            Log.Error(e);
-            return StatusCode(Status500InternalServerError, e.Message);
-        }
+        
+        return Ok(add);
     }
     
-    private Manga? AddMangaToContext((Manga, MangaConnectorId<Manga>) manga) => AddMangaToContext(manga.Item1, manga.Item2, context);
-    
-    internal static Manga? AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context)
+    private Manga? AddMangaToContext((Manga, MangaConnectorId<Manga>) manga, MangaContext context) => AddMangaToContext(manga.Item1, manga.Item2, context);
+
+    private static Manga? AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context)
     {
         Manga manga = context.Mangas.Find(addManga.Key) ?? addManga;
         MangaConnectorId<Manga> mcId = context.MangaConnectorToManga.Find(addMcId.Key) ?? addMcId;
@@ -123,16 +92,12 @@ public class SearchController(MangaContext context, ILog Log) : Controller
         });
         manga.Authors = mergedAuthors.ToList();
         
-        try
-        {
-            if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
-                context.MangaConnectorToManga.Add(mcId);
-            context.SaveChanges();
-        }
-        catch (DbUpdateException e)
-        {
+        
+        if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
+            context.MangaConnectorToManga.Add(mcId);
+
+        if (context.Sync().Result is not null)
             return null;
-        }
         return manga;
     }
 }

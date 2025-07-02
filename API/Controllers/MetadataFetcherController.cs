@@ -1,7 +1,6 @@
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
 using Asp.Versioning;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -12,47 +11,51 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MetadataFetcherController(MangaContext context, ILog Log) : Controller
+public class MetadataFetcherController(IServiceScope scope) : Controller
 {
     /// <summary>
-    /// Get all available Connectors (Metadata-Sites)
+    /// Get all <see cref="MetadataFetcher"/> (Metadata-Sites)
     /// </summary>
-    /// <response code="200">Names of Metadata-Fetchers</response>
+    /// <response code="200">Names of <see cref="MetadataFetcher"/> (Metadata-Sites)</response>
     [HttpGet]
     [ProducesResponseType<string[]>(Status200OK, "application/json")]
     public IActionResult GetConnectors()
     {
-        string[] connectors = Tranga.MetadataFetchers.Select(f => f.MetadataFetcherName).ToArray();
-        return Ok(connectors);
+        return Ok(Tranga.MetadataFetchers.Select(m => m.Name).ToArray());
     }
 
     /// <summary>
-    /// Returns all Mangas which have a linked Metadata-Provider
+    /// Returns all <see cref="MetadataEntry"/>
     /// </summary>
     /// <response code="200"></response>
     [HttpGet("Links")]
-    [ProducesResponseType<MetadataEntry>(Status200OK, "application/json")]
+    [ProducesResponseType<MetadataEntry[]>(Status200OK, "application/json")]
     public IActionResult GetLinkedEntries()
     {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        
         return Ok(context.MetadataEntries.ToArray());
     }
 
     /// <summary>
-    /// Searches Metadata-Provider for Manga-Metadata
+    /// Searches <see cref="MetadataFetcher"/> (Metadata-Sites) for Manga-Metadata
     /// </summary>
-    /// <param name="searchTerm">Instead of using the Manga for search, use a specific term</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
+    /// <param name="MetadataFetcherName"><see cref="MetadataFetcher"/>.Name</param>
+    /// <param name="searchTerm">Instead of using the <paramref name="MangaId"/> for search on Website, use a specific term</param>
     /// <response code="200"></response>
-    /// <response code="400">Metadata-fetcher with Name does not exist</response>
-    /// <response code="404">Manga with ID not found</response>
+    /// <response code="400"><see cref="MetadataFetcher"/> (Metadata-Sites) with <paramref name="MetadataFetcherName"/> does not exist</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     [HttpPost("{MetadataFetcherName}/SearchManga/{MangaId}")]
     [ProducesResponseType<MetadataSearchResult[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult SearchMangaMetadata(string MangaId, string MetadataFetcherName, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]string? searchTerm = null)
     {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.Mangas.Find(MangaId) is not { } manga)
             return NotFound();
-        if(Tranga.MetadataFetchers.FirstOrDefault(f => f.MetadataFetcherName == MetadataFetcherName) is not { } fetcher)
+        if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is not { } fetcher)
             return BadRequest();
 
         MetadataSearchResult[] searchResults = searchTerm is null ? fetcher.SearchMetadataEntry(manga) : fetcher.SearchMetadataEntry(searchTerm);
@@ -60,45 +63,43 @@ public class MetadataFetcherController(MangaContext context, ILog Log) : Control
     }
 
     /// <summary>
-    /// Links Metadata-Provider using Provider-Specific Identifier to Manga
+    /// Links <see cref="MetadataFetcher"/> (Metadata-Sites) using Provider-Specific Identifier to <see cref="Manga"/>
     /// </summary>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
+    /// <param name="MetadataFetcherName"><see cref="MetadataFetcher"/>.Name</param>
+    /// <param name="Identifier"><see cref="MetadataFetcherName"/>-Specific ID</param>
     /// <response code="200"></response>
-    /// <response code="400">Metadata-fetcher with Name does not exist</response>
-    /// <response code="404">Manga with ID not found</response>
+    /// <response code="400"><see cref="MetadataFetcher"/> (Metadata-Sites) with <paramref name="MetadataFetcherName"/> does not exist</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("{MetadataFetcherName}/Link/{MangaId}")]
-    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<MetadataEntry>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult LinkMangaMetadata(string MangaId, string MetadataFetcherName, [FromBody]string Identifier)
     {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.Mangas.Find(MangaId) is not { } manga)
             return NotFound();
-        if(Tranga.MetadataFetchers.FirstOrDefault(f => f.MetadataFetcherName == MetadataFetcherName) is not { } fetcher)
+        if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is not { } fetcher)
             return BadRequest();
-        MetadataEntry entry = fetcher.CreateMetadataEntry(manga, Identifier);
         
-        try
-        {
-            context.MetadataEntries.Add(entry);
-            context.SaveChanges();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
-        return Ok();
+        MetadataEntry entry = fetcher.CreateMetadataEntry(manga, Identifier);
+        context.MetadataEntries.Add(entry);
+        
+        if(context.Sync().Result is { } errorMessage)
+            return StatusCode(Status500InternalServerError, errorMessage);
+        return Ok(entry);
     }
 
     /// <summary>
-    /// Un-Links Metadata-Provider using Provider-Specific Identifier to Manga
+    /// Un-Links <see cref="MetadataFetcher"/> (Metadata-Sites) from <see cref="Manga"/>
     /// </summary>
     /// <response code="200"></response>
-    /// <response code="400">Metadata-fetcher with Name does not exist</response>
-    /// <response code="404">Manga with ID not found</response>
-    /// <response code="412">No Entry linking Manga and Metadata-Provider found</response>
+    /// <response code="400"><see cref="MetadataFetcher"/> (Metadata-Sites) with <paramref name="MetadataFetcherName"/> does not exist</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
+    /// <response code="412">No <see cref="MetadataEntry"/> linking <see cref="Manga"/> and <see cref="MetadataFetcher"/> found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("{MetadataFetcherName}/Unlink/{MangaId}")]
     [ProducesResponseType(Status200OK)]
@@ -108,58 +109,18 @@ public class MetadataFetcherController(MangaContext context, ILog Log) : Control
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult UnlinkMangaMetadata(string MangaId, string MetadataFetcherName)
     {
-        if(context.Mangas.Find(MangaId) is not { } manga)
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if(context.Mangas.Find(MangaId) is null)
             return NotFound();
-        if(Tranga.MetadataFetchers.FirstOrDefault(f => f.MetadataFetcherName == MetadataFetcherName) is not { } fetcher)
+        if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is null)
             return BadRequest();
-        MetadataEntry? entry = context.MetadataEntries.FirstOrDefault(e => e.MangaId == MangaId && e.MetadataFetcherName == MetadataFetcherName);
-        if (entry is null)
+        if(context.MetadataEntries.FirstOrDefault(e => e.MangaId == MangaId && e.MetadataFetcherName == MetadataFetcherName) is not { } entry)
             return StatusCode(Status412PreconditionFailed, "No entry found");
-        try
-        {
-            context.MetadataEntries.Remove(entry);
-            context.SaveChanges();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
-        return Ok();
-    }
 
-    /// <summary>
-    /// Tries linking a Manga to a Metadata-Provider-Site
-    /// </summary>
-    /// <response code="200"></response>
-    /// <response code="400">MetadataFetcher Name is invalid</response>
-    /// <response code="404">Manga has no linked entry with MetadataFetcher</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{MetadataFetcherName}/{MangaId}/UpdateMetadata")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult UpdateMetadata(string MangaId, string MetadataFetcherName)
-    {
-        if(Tranga.MetadataFetchers
-               .FirstOrDefault(f =>
-                   f.MetadataFetcherName.Equals(MetadataFetcherName, StringComparison.InvariantCultureIgnoreCase)) is not { } fetcher)
-            return BadRequest();
-        MetadataEntry? entry = context.MetadataEntries
-            .FirstOrDefault(e =>
-                e.MangaId == MangaId && e.MetadataFetcherName.Equals(MetadataFetcherName, StringComparison.InvariantCultureIgnoreCase));
-        if (entry is null)
-            return NotFound();
-        try
-        {
-            fetcher.UpdateMetadata(entry, context);
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        context.Remove(entry);
+        
+        if(context.Sync().Result is { } errorMessage)
+            return StatusCode(Status500InternalServerError, errorMessage);
         return Ok();
     }
 }

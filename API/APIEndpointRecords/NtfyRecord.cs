@@ -1,16 +1,16 @@
 namespace API.APIEndpointRecords;
 
-public record NtfyRecord(string endpoint, string username, string password, string topic, int priority)
+public record NtfyRecord(string Name, string Endpoint, string Username, string Password, string Topic, int Priority)
 {
     public bool Validate()
     {
-        if (endpoint == string.Empty)
+        if (Endpoint == string.Empty)
             return false;
-        if (username == string.Empty)
+        if (Username == string.Empty)
             return false;
-        if (password == string.Empty)
+        if (Password == string.Empty)
             return false;
-        if (priority < 1 || priority > 5)
+        if (Priority < 1 || Priority > 5)
             return false;
         return true;
     }

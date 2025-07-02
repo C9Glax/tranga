@@ -1,14 +1,14 @@
 namespace API.APIEndpointRecords;
 
-public record GotifyRecord(string endpoint, string appToken, int priority)
+public record GotifyRecord(string Name, string Endpoint, string AppToken, int Priority)
 {
     public bool Validate()
     {
-        if (endpoint == string.Empty)
+        if (Endpoint == string.Empty)
             return false;
-        if (appToken == string.Empty)
+        if (AppToken == string.Empty)
             return false;
-        if (priority < 0 || priority > 10)
+        if (Priority < 0 || Priority > 10)
             return false;
 
         return true;

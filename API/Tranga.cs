@@ -71,4 +71,14 @@ public static class Tranga
             Thread.Sleep(TrangaSettings.workCycleTimeout);
         }
     }
+
+    internal static void StartWorker(BaseWorker worker)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void StopWorker(BaseWorker worker)
+    {
+        throw new NotImplementedException();
+    }
 }

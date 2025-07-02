@@ -2,23 +2,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema.MangaContext.MetadataFetchers;
 
-[PrimaryKey("MetadataFetcherName")]
+[PrimaryKey("Name")]
 public abstract class MetadataFetcher
 {
     // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
-    public string MetadataFetcherName { get; init; }
+    public string Name { get; init; }
 
     protected MetadataFetcher()
     {
-        this.MetadataFetcherName = this.GetType().Name;
+        this.Name = this.GetType().Name;
     }
     
     /// <summary>
     /// EFCORE ONLY!!!
     /// </summary>
-    internal MetadataFetcher(string metadataFetcherName)
+    internal MetadataFetcher(string name)
     {
-        this.MetadataFetcherName = metadataFetcherName;
+        this.Name = name;
     }
 
     internal MetadataEntry CreateMetadataEntry(Manga manga, string identifier) =>
