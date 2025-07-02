@@ -1,5 +1,4 @@
-using API.Schema;
-using API.Schema.Contexts;
+using API.Schema.MangaContext;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SearchController(PgsqlContext context, ILog Log) : Controller
+public class SearchController(MangaContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Initiate a search for a Obj on a specific Connector
@@ -104,7 +103,7 @@ public class SearchController(PgsqlContext context, ILog Log) : Controller
     
     private Manga? AddMangaToContext((Manga, MangaConnectorId<Manga>) manga) => AddMangaToContext(manga.Item1, manga.Item2, context);
     
-    internal static Manga? AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, PgsqlContext context)
+    internal static Manga? AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context)
     {
         Manga manga = context.Mangas.Find(addManga.Key) ?? addManga;
         MangaConnectorId<Manga> mcId = context.MangaConnectorToManga.Find(addMcId.Key) ?? addMcId;

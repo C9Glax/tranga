@@ -1,7 +1,6 @@
 ﻿using API.MangaDownloadClients;
-using API.Schema;
-using API.Schema.Contexts;
-using API.Schema.Jobs;
+using API.Schema.JobsContext.Jobs;
+using API.Schema.MangaContext;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SettingsController(PgsqlContext context, ILog Log) : Controller
+public class SettingsController(MangaContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Get all Settings

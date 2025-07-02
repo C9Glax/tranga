@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using API.APIEndpointRecords;
-using API.Schema.Contexts;
-using API.Schema.NotificationConnectors;
+using API.Schema.NotificationsContext;
+using API.Schema.NotificationsContext.NotificationConnectors;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;

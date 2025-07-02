@@ -1,6 +1,6 @@
-﻿using API.Schema;
-using API.Schema.Contexts;
-using API.Schema.Jobs;
+﻿using API.Schema.MangaContext;
+using API.Schema.MangaContext.MangaConnectors;
+using API.Workers;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -18,56 +18,58 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaController(PgsqlContext context, ILog Log) : Controller
+public class MangaController(IServiceScope scope) : Controller
 {
     /// <summary>
-    /// Returns all cached Obj
+    /// Returns all cached <see cref="Manga"/>
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetAllManga()
     {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         Manga[] ret = context.Mangas.ToArray();
         return Ok(ret);
     }
     
     /// <summary>
-    /// Returns all cached Obj with IDs
+    /// Returns all cached <see cref="Manga"/> with <paramref name="MangaIds"/>
     /// </summary>
-    /// <param name="ids">Array of Obj-IDs</param>
+    /// <param name="MangaIds">Array of <<see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
     [HttpPost("WithIDs")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
-    public IActionResult GetManga([FromBody]string[] ids)
+    public IActionResult GetManga([FromBody]string[] MangaIds)
     {
-        Manga[] ret = context.Mangas.Where(m => ids.Contains(m.Key)).ToArray();
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        Manga[] ret = context.Mangas.Where(m => MangaIds.Contains(m.Key)).ToArray();
         return Ok(ret);
     }
 
     /// <summary>
-    /// Return Obj with ID
+    /// Return <see cref="Manga"/> with <paramref name="MangaId"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404">Obj with ID not found</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     [HttpGet("{MangaId}")]
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetManga(string MangaId)
     {
-        Manga? ret = context.Mangas.Find(MangaId);
-        if (ret is null)
-            return NotFound();
-        return Ok(ret);
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
+        return Ok(manga);
     }
 
     /// <summary>
-    /// Delete Obj with ID
+    /// Delete <see cref="Manga"/> with <paramref name="MangaId"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404">Obj with ID not found</response>
+    /// <response code="404"><<see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{MangaId}")]
     [ProducesResponseType(Status200OK)]
@@ -75,62 +77,52 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteManga(string MangaId)
     {
-        try
-        {
-            Manga? ret = context.Mangas.Find(MangaId);
-            if (ret is null)
-                return NotFound();
-            
-            context.Remove(ret);
-            context.SaveChanges();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
+        
+        context.Mangas.Remove(manga);
+        
+        if(context.Sync().Result is { } errorMessage)
+            return StatusCode(Status500InternalServerError, errorMessage);
+        return Ok();
     }
 
-    
+
     /// <summary>
-    /// Merge two Manga into one. THIS IS NOT REVERSIBLE!
+    /// Merge two <see cref="Manga"/> into one. THIS IS NOT REVERSIBLE!
     /// </summary>
+    /// <param name="MangaIdFrom"><see cref="Manga"/>.Key of <see cref="Manga"/> merging data from (getting deleted)</param>
+    /// <param name="MangaIdInto"><see cref="Manga"/>.Key of <see cref="Manga"/> merging data into</param>
     /// <response code="200"></response>
-    /// <response code="404">MangaId not found</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPatch("{MangaIdFrom}/MergeInto/{MangaIdTo}")]
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaIdFrom"/> or <paramref name="MangaIdInto"/> not found</response>
+    [HttpPatch("{MangaIdFrom}/MergeInto/{MangaIdInto}")]
     [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult MergeIntoManga(string MangaIdFrom, string MangaIdTo)
+    public IActionResult MergeIntoManga(string MangaIdFrom, string MangaIdInto)
     {
-        if(context.Mangas.Find(MangaIdFrom) is not { } from)
-            return NotFound(MangaIdFrom);
-        if(context.Mangas.Find(MangaIdTo) is not { } to)
-            return NotFound(MangaIdTo);
-        try
-        {
-            to.MergeFrom(from, context);
-            return Ok();
-        }
-        catch (DbUpdateException e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaIdFrom) is not { } from)
+            return NotFound(nameof(MangaIdFrom));
+        if (context.Mangas.Find(MangaIdInto) is not { } into)
+            return NotFound(nameof(MangaIdInto));
+        
+        BaseWorker[] newJobs = into.MergeFrom(from, context);
+        Tranga.AddWorkers(newJobs);
+        
+        return Ok();
     }
 
     /// <summary>
-    /// Returns Cover of Obj
+    /// Returns Cover of <see cref="Manga"/> with <paramref name="MangaId"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
-    /// <param name="width">If width is provided, height needs to also be provided</param>
-    /// <param name="height">If height is provided, width needs to also be provided</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
+    /// <param name="width">If <paramref name="width"/> is provided, <paramref name="height"/> needs to also be provided</param>
+    /// <param name="height">If <paramref name="height"/> is provided, <paramref name="width"/> needs to also be provided</param>
     /// <response code="200">JPEG Image</response>
     /// <response code="204">Cover not loaded</response>
     /// <response code="400">The formatting-request was invalid</response>
-    /// <response code="404">Obj with ID not found</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     /// <response code="503">Retry later, downloading cover</response>
     [HttpGet("{MangaId}/Cover")]
     [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
@@ -140,22 +132,22 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetCover(string MangaId, [FromQuery]int? width, [FromQuery]int? height)
     {
-        if(context.Mangas.Find(MangaId) is not { } m)
-            return NotFound();
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
         
-        if (!System.IO.File.Exists(m.CoverFileNameInCache))
+        if (!System.IO.File.Exists(manga.CoverFileNameInCache))
         {
-            List<Job> coverDownloadJobs = context.Jobs.Where(j => j.JobType == JobType.DownloadMangaCoverJob).Include(j => ((DownloadMangaCoverJob)j).Manga).ToList();
-            if (coverDownloadJobs.Any(j => j is DownloadMangaCoverJob dmc && dmc.MangaId == MangaId && dmc.state < JobState.Completed))
+            if (Tranga.GetRunningWorkers().Any(worker => worker is DownloadCoverFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId))
             {
-                Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000:D}");
-                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * coverDownloadJobs.Count() * 2  / 1000);
+                Response.Headers.Append("Retry-After", $"{TrangaSettings.workCycleTimeout * 2 / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, TrangaSettings.workCycleTimeout * 2  / 1000);
             }
             else
                 return NoContent();
         }
 
-        Image image = Image.Load(m.CoverFileNameInCache);
+        Image image = Image.Load(manga.CoverFileNameInCache);
 
         if (width is { } w && height is { } h)
         {
@@ -170,46 +162,48 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
         
         using MemoryStream ms = new();
         image.Save(ms, new JpegEncoder(){Quality = 100});
-        DateTime lastModified = new FileInfo(m.CoverFileNameInCache).LastWriteTime;
+        DateTime lastModified = new FileInfo(manga.CoverFileNameInCache).LastWriteTime;
         HttpContext.Response.Headers.CacheControl = "public";
         return File(ms.GetBuffer(), "image/jpeg", new DateTimeOffset(lastModified), EntityTagHeaderValue.Parse($"\"{lastModified.Ticks}\""));
     }
 
     /// <summary>
-    /// Returns all Chapters of Obj
+    /// Returns all <see cref="Chapter"/> of <see cref="Manga"/> with <paramref name="MangaId"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404">Obj with ID not found</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     [HttpGet("{MangaId}/Chapters")]
     [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChapters(string MangaId)
     {
-        if(context.Mangas.Find(MangaId) is not { } m)
-            return NotFound();
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
         
-        Chapter[] chapters = m.Chapters.ToArray();
+        Chapter[] chapters = manga.Chapters.ToArray();
         return Ok(chapters);
     }
     
     /// <summary>
-    /// Returns all downloaded Chapters for Obj with ID
+    /// Returns all downloaded <see cref="Chapter"/> for <see cref="Manga"/> with <paramref name="MangaId"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Obj with ID not found.</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
     [HttpGet("{MangaId}/Chapters/Downloaded")]
     [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersDownloaded(string MangaId)
     {
-        if(context.Mangas.Find(MangaId) is not { } m)
-            return NotFound();
-        
-        List<Chapter> chapters = m.Chapters.ToList();
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
+
+        List<Chapter> chapters = manga.Chapters.Where(c => c.Downloaded).ToList();
         if (chapters.Count == 0)
             return NoContent();
         
@@ -217,22 +211,23 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Returns all Chapters not downloaded for Obj with ID
+    /// Returns all <see cref="Chapter"/> not downloaded for <see cref="Manga"/> with <paramref name="MangaId"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Obj with ID not found.</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
     [HttpGet("{MangaId}/Chapters/NotDownloaded")]
     [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersNotDownloaded(string MangaId)
     {
-        if(context.Mangas.Find(MangaId) is not { } m)
-            return NotFound();
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
         
-        List<Chapter> chapters = m.Chapters.ToList();
+        List<Chapter> chapters = manga.Chapters.Where(c => c.Downloaded == false).ToList();
         if (chapters.Count == 0)
             return NoContent();
         
@@ -240,13 +235,13 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     }
     
     /// <summary>
-    /// Returns the latest Chapter of requested Obj available on Website
+    /// Returns the latest <see cref="Chapter"/> of requested <see cref="Manga"/> available on <see cref="MangaConnector"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Obj with ID not found.</response>
-    /// <response code="500">Could not retrieve the maximum chapter-number</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
+    /// <response code="412">Could not retrieve the maximum chapter-number</response>
     /// <response code="503">Retry after timeout, updating value</response>
     [HttpGet("{MangaId}/Chapter/LatestAvailable")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
@@ -256,130 +251,115 @@ public class MangaController(PgsqlContext context, ILog Log) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapter(string MangaId)
     {
-        if(context.Mangas.Find(MangaId) is not { } m)
-            return NotFound();
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
         
-        List<Chapter> chapters = m.Chapters.ToList();
+        List<Chapter> chapters = manga.Chapters.ToList();
         if (chapters.Count == 0)
         {
-            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).Include(j => ((RetrieveChaptersJob)j).Manga).ToList();
-            if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId && rcj.state < JobState.Completed))
+            if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
             {
-                Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2 / 1000:D}");
-                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2/ 1000);
+                Response.Headers.Append("Retry-After", $"{TrangaSettings.workCycleTimeout * 2 / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, TrangaSettings.workCycleTimeout * 2/ 1000);
             }else
                 return Ok(0);
         }
         
         Chapter? max = chapters.Max();
         if (max is null)
-            return StatusCode(500, "Max chapter could not be found");
+            return StatusCode(Status500InternalServerError, "Max chapter could not be found");
         
         return Ok(max);
     }
     
     /// <summary>
-    /// Returns the latest Chapter of requested Obj that is downloaded
+    /// Returns the latest <see cref="Chapter"/> of requested <see cref="Manga"/> that is downloaded
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
     /// <response code="204">No available chapters</response>
-    /// <response code="404">Obj with ID not found.</response>
-    /// <response code="500">Could not retrieve the maximum chapter-number</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
+    /// <response code="412">Could not retrieve the maximum chapter-number</response>
     /// <response code="503">Retry after timeout, updating value</response>
     [HttpGet("{MangaId}/Chapter/LatestDownloaded")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    [ProducesResponseType<string>(Status412PreconditionFailed, "text/plain")]
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapterDownloaded(string MangaId)
     {
-        if(context.Mangas.Find(MangaId) is not { } m)
-            return NotFound();
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
         
-        List<Chapter> chapters = m.Chapters.ToList();
+        List<Chapter> chapters = manga.Chapters.ToList();
         if (chapters.Count == 0)
         {
-            List<Job> retrieveChapterJobs = context.Jobs.Where(j => j.JobType == JobType.RetrieveChaptersJob).Include(j => ((RetrieveChaptersJob)j).Manga).ToList();
-            if (retrieveChapterJobs.Any(j => j is RetrieveChaptersJob rcj && rcj.MangaId == MangaId && rcj.state < JobState.Completed))
+            if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
             {
-                Response.Headers.Append("Retry-After", $"{TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000:D}");
-                return StatusCode(Status503ServiceUnavailable, TrangaSettings.startNewJobTimeoutMs * retrieveChapterJobs.Count() * 2  / 1000);
+                Response.Headers.Append("Retry-After", $"{TrangaSettings.workCycleTimeout * 2 / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, TrangaSettings.workCycleTimeout * 2/ 1000);
             }else
                 return NoContent();
         }
         
         Chapter? max = chapters.Max();
         if (max is null)
-            return StatusCode(500, "Max chapter could not be found");
+            return StatusCode(Status412PreconditionFailed, "Max chapter could not be found");
         
         return Ok(max);
     }
 
     /// <summary>
-    /// Configure the cut-off for Obj
+    /// Configure the <see cref="Chapter"/> cut-off for <see cref="Manga"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
-    /// <param name="chapterThreshold">Threshold (Chapter Number)</param>
-    /// <response code="200"></response>
-    /// <response code="404">Obj with ID not found.</response>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
+    /// <param name="chapterThreshold">Threshold (<see cref="Chapter"/> ChapterNumber)</param>
+    /// <response code="202"></response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{MangaId}/IgnoreChaptersBefore")]
-    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult IgnoreChaptersBefore(string MangaId, [FromBody]float chapterThreshold)
     {
-        Manga? m = context.Mangas.Find(MangaId);
-        if (m is null)
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound();
         
-        try
-        {
-            m.IgnoreChaptersBefore = chapterThreshold;
-            context.SaveChanges();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        manga.IgnoreChaptersBefore = chapterThreshold;
+        if(context.Sync().Result is { } errorMessage)
+            return StatusCode(Status500InternalServerError, errorMessage);
+
+        return Accepted();
     }
 
     /// <summary>
-    /// Move Obj to different ToFileLibrary
+    /// Move <see cref="Manga"/> to different <see cref="FileLibrary"/>
     /// </summary>
-    /// <param name="MangaId">Obj-ID</param>
-    /// <param name="LibraryId">ToFileLibrary-Id</param>
+    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
+    /// <param name="LibraryId"><see cref="FileLibrary"/>.Key</param>
     /// <response code="202">Folder is going to be moved</response>
-    /// <response code="404">MangaId or LibraryId not found</response>
-    /// <response code="500">Error during Database Operation</response>
+    /// <response code="404"><paramref name="MangaId"/> or <paramref name="LibraryId"/> not found</response>
     [HttpPost("{MangaId}/ChangeLibrary/{LibraryId}")]
     [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult MoveFolder(string MangaId, string LibraryId)
     {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
-            return NotFound();
+            return NotFound(nameof(MangaId));
         if(context.LocalLibraries.Find(LibraryId) is not { } library)
-            return NotFound();
+            return NotFound(nameof(LibraryId));
 
-        MoveMangaLibraryJob moveLibrary = new(manga, library);
-        UpdateChaptersDownloadedJob updateDownloadedFiles = new(manga, 0, dependsOnJobs: [moveLibrary]);
+        MoveMangaLibraryWorker moveLibrary = new(manga, library, scope);
+        UpdateChaptersDownloadedWorker updateDownloadedFiles = new(manga, scope, [moveLibrary]);
         
-        try
-        {
-            context.Jobs.AddRange(moveLibrary, updateDownloadedFiles);
-            context.SaveChanges();
-            return Accepted();
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-            return StatusCode(500, e.Message);
-        }
+        Tranga.AddWorkers([moveLibrary, updateDownloadedFiles]);
+        
+        return Accepted();
     }
 }

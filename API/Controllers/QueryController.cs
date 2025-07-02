@@ -1,5 +1,4 @@
-﻿using API.Schema;
-using API.Schema.Contexts;
+﻿using API.Schema.MangaContext;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class QueryController(PgsqlContext context, ILog Log) : Controller
+public class QueryController(MangaContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Returns the Author-Information for Author-ID

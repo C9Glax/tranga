@@ -1,6 +1,5 @@
 ﻿using API.APIEndpointRecords;
-using API.Schema;
-using API.Schema.Contexts;
+using API.Schema.MangaContext;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class LocalLibrariesController(PgsqlContext context, ILog Log) : Controller
+public class LocalLibrariesController(MangaContext context, ILog Log) : Controller
 {
     [HttpGet]
     [ProducesResponseType<FileLibrary[]>(Status200OK, "application/json")]

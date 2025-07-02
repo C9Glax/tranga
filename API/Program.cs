@@ -1,10 +1,9 @@
 using System.Reflection;
 using API;
-using API.Controllers;
-using API.Schema;
-using API.Schema.Contexts;
-using API.Schema.Jobs;
-using API.Schema.MangaConnectors;
+using API.Schema.LibraryContext;
+using API.Schema.MangaContext;
+using API.Schema.MangaContext.MangaConnectors;
+using API.Schema.NotificationsContext;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
@@ -56,17 +55,17 @@ builder.Services.AddSwaggerGen(opt =>
 });
 builder.Services.ConfigureOptions<NamedSwaggerGenOptions>();
 
-string ConnectionString = $"Host={Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost:5432"}; " +
+string connectionString = $"Host={Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost:5432"}; " +
                           $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "postgres"}; " +
                           $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres"}; " +
                           $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres"}";
 
-builder.Services.AddDbContext<PgsqlContext>(options =>
-    options.UseNpgsql(ConnectionString));
+builder.Services.AddDbContext<MangaContext>(options =>
+    options.UseNpgsql(connectionString));
 builder.Services.AddDbContext<NotificationsContext>(options =>
-    options.UseNpgsql(ConnectionString));
+    options.UseNpgsql(connectionString));
 builder.Services.AddDbContext<LibraryContext>(options =>
-    options.UseNpgsql(ConnectionString));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddControllers(options =>
 {
@@ -108,52 +107,21 @@ app.UseMiddleware<RequestTimeMiddleware>();
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
-    PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-    //TODO Remove after migrations complete
-    if (context.Database.GetMigrations().Contains("20250630182650_OofV2.1") == false)
-    {
-        IQueryable<(string, string)> mangas = context.Database.SqlQuery<(string, string)>($"SELECT MangaConnectorName, IdOnConnectorSite as ID FROM Mangas");
-        context.Database.Migrate();
-        foreach ((string mangaConnectorName, string idOnConnectorSite) manga in mangas)
-        {
-            if(context.MangaConnectors.Find(manga.mangaConnectorName) is not { } mangaConnector)
-                continue;
-            if(mangaConnector.GetMangaFromId(manga.idOnConnectorSite) is not { } result)
-                continue;
-            if (SearchController.AddMangaToContext(result.Item1, result.Item2, context) is { } added)
-            {
-                RetrieveChaptersJob retrieveChaptersJob = new (added, "en", 0);
-                UpdateChaptersDownloadedJob update = new(added, 0, null, [retrieveChaptersJob]);
-                context.Jobs.AddRange([retrieveChaptersJob, update]);
-            }
-        }
-    } else
-        context.Database.Migrate();
-    
+    MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+    context.Database.Migrate();
     
     MangaConnector[] connectors =
     [
         new MangaDex(),
         new ComickIo(),
-        new Global(scope.ServiceProvider.GetService<PgsqlContext>()!)
+        new Global(scope.ServiceProvider.GetService<MangaContext>()!)
     ];
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
     if (!context.LocalLibraries.Any())
         context.LocalLibraries.Add(new FileLibrary(TrangaSettings.downloadLocation, "Default FileLibrary"));
-
-    context.Jobs.AddRange(context.Jobs.Where(j => j.JobType == JobType.DownloadAvailableChaptersJob)
-        .Include(downloadAvailableChaptersJob => ((DownloadAvailableChaptersJob)downloadAvailableChaptersJob).Manga)
-        .ToList()
-        .Select(dacj => new UpdateChaptersDownloadedJob(((DownloadAvailableChaptersJob)dacj).Manga, 0, dacj)));
-    context.Jobs.RemoveRange(context.Jobs.Where(j => j.state == JobState.Completed && j.RecurrenceMs < 1));
-    foreach (Job job in context.Jobs.Where(j => j.state == JobState.Running))
-    {
-        job.state = JobState.FirstExecution;
-        job.LastExecution = DateTime.UnixEpoch;
-    }
     
-    context.SaveChanges();
+    context.Sync();
 }
 
 using (IServiceScope scope = app.Services.CreateScope())
@@ -164,20 +132,21 @@ using (IServiceScope scope = app.Services.CreateScope())
     string[] emojis = { "(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=", "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~","૮ \u00b4• ﻌ \u00b4• ა", "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"};
     context.Notifications.Add(new Notification("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High));
     
-    context.SaveChanges();
+    context.Sync();
 }
 
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
+    context.Database.Migrate();
+    
+    context.Sync();
+}
 
 TrangaSettings.Load();
 Tranga.StartLogger();
 
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    PgsqlContext context = scope.ServiceProvider.GetRequiredService<PgsqlContext>();
-    Tranga.RemoveStaleFiles(context);
-}
-Tranga.JobStarterThread.Start(app.Services);
-//Tranga.NotificationSenderThread.Start(app.Services); //TODO RE-ENABLE
+Tranga.PeriodicWorkerStarterThread.Start(app.Services);
 
 app.UseCors("AllowAll");
 

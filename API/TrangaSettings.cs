@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
-using API.Schema;
+using API.Schema.NotificationsContext;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -36,7 +36,7 @@ public static class TrangaSettings
     [JsonIgnore]
     public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
     public static bool aprilFoolsMode { get; private set; } = true;
-    public static int startNewJobTimeoutMs { get; private set; } = 20000;
+    public static int workCycleTimeout { get; private set; } = 20000;
     [JsonIgnore]
     internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
@@ -153,7 +153,7 @@ public static class TrangaSettings
         jobj.Add("requestLimits", JToken.FromObject(requestLimits));
         jobj.Add("compression", JToken.FromObject(compression));
         jobj.Add("bwImages", JToken.FromObject(bwImages));
-        jobj.Add("startNewJobTimeoutMs", JToken.FromObject(startNewJobTimeoutMs));
+        jobj.Add("workCycleTimeout", JToken.FromObject(workCycleTimeout));
         jobj.Add("chapterNamingScheme", JToken.FromObject(chapterNamingScheme));
         jobj.Add("flareSolverrUrl", JToken.FromObject(flareSolverrUrl));
         return jobj;
@@ -178,8 +178,8 @@ public static class TrangaSettings
             compression = ci.Value<int>()!;
         if (jobj.TryGetValue("bwImages", out JToken? bwi))
             bwImages = bwi.Value<bool>()!;
-        if (jobj.TryGetValue("startNewJobTimeoutMs", out JToken? snjt))
-            startNewJobTimeoutMs = snjt.Value<int>()!;
+        if (jobj.TryGetValue("workCycleTimeout", out JToken? snjt))
+            workCycleTimeout = snjt.Value<int>()!;
         if (jobj.TryGetValue("chapterNamingScheme", out JToken? cns))
             chapterNamingScheme = cns.Value<string>()!;
         if (jobj.TryGetValue("flareSolverrUrl", out JToken? fsu))

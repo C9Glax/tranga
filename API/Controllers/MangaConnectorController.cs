@@ -1,5 +1,5 @@
-﻿using API.Schema.Contexts;
-using API.Schema.MangaConnectors;
+﻿using API.Schema.MangaContext;
+using API.Schema.MangaContext.MangaConnectors;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaConnectorController(PgsqlContext context, ILog Log) : Controller
+public class MangaConnectorController(MangaContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Get all available Connectors (Scanlation-Sites)

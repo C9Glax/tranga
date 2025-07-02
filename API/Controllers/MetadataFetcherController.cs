@@ -1,6 +1,5 @@
-using API.Schema;
-using API.Schema.Contexts;
-using API.Schema.MetadataFetchers;
+using API.Schema.MangaContext;
+using API.Schema.MangaContext.MetadataFetchers;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MetadataFetcherController(PgsqlContext context, ILog Log) : Controller
+public class MetadataFetcherController(MangaContext context, ILog Log) : Controller
 {
     /// <summary>
     /// Get all available Connectors (Metadata-Sites)
