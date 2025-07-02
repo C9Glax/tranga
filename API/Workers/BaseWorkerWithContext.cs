@@ -5,7 +5,7 @@ namespace API.Workers;
 
 public abstract class BaseWorkerWithContext<T>(IEnumerable<BaseWorker>? dependsOn = null) : BaseWorker(dependsOn) where T : DbContext
 {
-    protected T? DbContext = null;
+    protected T DbContext = null!;
     public void SetScope(IServiceScope scope) => DbContext = scope.ServiceProvider.GetRequiredService<T>();
     
     /// <exception cref="ConfigurationErrorsException">Scope has not been set. <see cref="SetScope"/></exception>
