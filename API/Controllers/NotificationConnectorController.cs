@@ -62,8 +62,8 @@ public class NotificationConnectorController(IServiceScope scope) : Controller
         
         context.NotificationConnectors.Add(notificationConnector);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
     
@@ -156,8 +156,8 @@ public class NotificationConnectorController(IServiceScope scope) : Controller
         
         context.NotificationConnectors.Remove(connector);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
 }

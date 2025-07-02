@@ -10,8 +10,8 @@ using static System.IO.UnixFileMode;
 
 namespace API.Workers;
 
-public class DownloadChapterFromMangaconnectorWorker(Chapter chapter, IServiceScope scope, IEnumerable<BaseWorker>? dependsOn = null)
-    : BaseWorkerWithContext<MangaContext>(scope, dependsOn)
+public class DownloadChapterFromMangaconnectorWorker(Chapter chapter, IEnumerable<BaseWorker>? dependsOn = null)
+    : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
     protected override BaseWorker[] DoWorkInternal()
     {
@@ -89,7 +89,7 @@ public class DownloadChapterFromMangaconnectorWorker(Chapter chapter, IServiceSc
         Directory.Delete(tempFolder, true); //Cleanup
         
         chapter.Downloaded = true;
-        DbContext.SaveChanges();
+        DbContext.Sync();
 
         return [];
     }

@@ -2,7 +2,7 @@ using API.Schema.MangaContext;
 
 namespace API.Workers.MaintenanceWorkers;
 
-public class CleanupMangaCoversWorker(IServiceScope scope, IEnumerable<BaseWorker>? dependsOn = null) : BaseWorkerWithContext<MangaContext>(scope, dependsOn), IPeriodic
+public class CleanupMangaCoversWorker(IEnumerable<BaseWorker>? dependsOn = null) : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UtcNow;
     public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(60);

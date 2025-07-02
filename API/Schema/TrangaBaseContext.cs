@@ -22,17 +22,17 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
         }, Array.Empty<string>(), LogLevel.Warning, DbContextLoggerOptions.Level | DbContextLoggerOptions.Category | DbContextLoggerOptions.UtcTime);
     }
 
-    internal async Task<string?> Sync()
+    internal async Task<(bool success, string? exceptionMessage)> Sync()
     {
         try
         {
             await this.SaveChangesAsync();
-            return null;
+            return (true, null);
         }
         catch (Exception e)
         {
             Log.Error(null, e);
-            return e.Message;
+            return (false, e.Message);
         }
     }
 }

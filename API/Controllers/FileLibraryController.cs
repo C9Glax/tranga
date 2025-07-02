@@ -63,8 +63,8 @@ public class FileLibraryController(IServiceScope scope) : Controller
         //TODO Path check
         library.BasePath = newBasePath;
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
     
@@ -90,8 +90,8 @@ public class FileLibraryController(IServiceScope scope) : Controller
         //TODO Name check
         library.LibraryName = newName;
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
     
@@ -111,8 +111,8 @@ public class FileLibraryController(IServiceScope scope) : Controller
         //TODO Parameter check
         context.FileLibraries.Add(library);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
     
@@ -134,8 +134,8 @@ public class FileLibraryController(IServiceScope scope) : Controller
         
         context.FileLibraries.Remove(library);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
 }

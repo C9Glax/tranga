@@ -60,8 +60,8 @@ public class LibraryConnectorController(IServiceScope scope) : Controller
         
         context.LibraryConnectors.Add(libraryConnector);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
     
@@ -84,8 +84,8 @@ public class LibraryConnectorController(IServiceScope scope) : Controller
         
         context.LibraryConnectors.Remove(connector);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
 }

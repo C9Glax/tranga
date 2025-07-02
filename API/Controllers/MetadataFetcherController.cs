@@ -119,8 +119,8 @@ public class MetadataFetcherController(IServiceScope scope) : Controller
 
         context.Remove(entry);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
 }

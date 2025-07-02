@@ -5,21 +5,44 @@ namespace API.Workers;
 
 public abstract class BaseWorker : Identifiable
 {
+    /// <summary>
+    /// Workers this Worker depends on being completed before running.
+    /// </summary>
     public BaseWorker[] DependsOn { get; init; }
+    /// <summary>
+    /// Dependencies and dependencies of dependencies. See also <see cref="DependsOn"/>.
+    /// </summary>
     public IEnumerable<BaseWorker> AllDependencies => DependsOn.Select(d => d.AllDependencies).SelectMany(x => x);
+    /// <summary>
+    /// <see cref="AllDependencies"/> and Self.
+    /// </summary>
     public IEnumerable<BaseWorker> DependenciesAndSelf => AllDependencies.Append(this);
+    /// <summary>
+    /// <see cref="DependsOn"/> where <see cref="WorkerExecutionState"/> is less than Completed.
+    /// </summary>
     public IEnumerable<BaseWorker> MissingDependencies => DependsOn.Where(d => d.State < WorkerExecutionState.Completed);
-    public bool DependenciesFulfilled => DependsOn.All(d => d.State >= WorkerExecutionState.Completed);
-    internal WorkerExecutionState State { get; set; }
+    public bool AllDependenciesFulfilled => DependsOn.All(d => d.State >= WorkerExecutionState.Completed);
+    internal WorkerExecutionState State { get; private set; }
     private static readonly CancellationTokenSource CancellationTokenSource = new(TimeSpan.FromMinutes(10));
     protected ILog Log { get; init; }
 
+    /// <summary>
+    /// Stops worker, and marks as <see cref="WorkerExecutionState"/>.Cancelled
+    /// </summary>
     public void Cancel()
     {
         this.State = WorkerExecutionState.Cancelled;
         CancellationTokenSource.Cancel();
     }
-    protected void Fail() => this.State = WorkerExecutionState.Failed;
+
+    /// <summary>
+    /// Stops worker, and marks as <see cref="WorkerExecutionState"/>.Failed
+    /// </summary>
+    protected void Fail()
+    {
+        this.State = WorkerExecutionState.Failed;
+        CancellationTokenSource.Cancel();
+    }
 
     public BaseWorker(IEnumerable<BaseWorker>? dependsOn = null)
     {
@@ -27,6 +50,22 @@ public abstract class BaseWorker : Identifiable
         this.Log = LogManager.GetLogger(GetType());
     }
 
+    /// <summary>
+    /// Sets States during worker-run.
+    /// States:
+    /// <list type="bullet">
+    /// <item><see cref="WorkerExecutionState"/>.Waiting when waiting for <see cref="MissingDependencies"/></item>
+    /// <item><see cref="WorkerExecutionState"/>.Running when running</item>
+    /// <item><see cref="WorkerExecutionState"/>.Completed after finished</item>
+    /// </list>
+    /// </summary>
+    /// <returns>
+    /// <list type="bullet">
+    /// <item>If <see cref="BaseWorker"/> has <see cref="MissingDependencies"/>, missing dependencies.</item>
+    /// <item>If <see cref="MissingDependencies"/> are <see cref="WorkerExecutionState"/>.Running, itself after waiting for dependencies.</item>
+    /// <item>If <see cref="BaseWorker"/> has run, additional <see cref="BaseWorker"/>.</item>
+    /// </list>
+    /// </returns>
     public Task<BaseWorker[]> DoWork()
     {
         this.State = WorkerExecutionState.Waiting;
@@ -60,9 +99,9 @@ public abstract class BaseWorker : Identifiable
 public enum WorkerExecutionState
 {
     Failed = 0,
+    Cancelled = 32,
     Created = 64,
     Waiting = 96,
     Running = 128,
-    Completed = 192,
-    Cancelled = 193
+    Completed = 192
 }

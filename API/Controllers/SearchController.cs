@@ -96,7 +96,7 @@ public class SearchController(IServiceScope scope) : Controller
         if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
             context.MangaConnectorToManga.Add(mcId);
 
-        if (context.Sync().Result is not null)
+        if (context.Sync().Result is { success: false } )
             return null;
         return manga;
     }

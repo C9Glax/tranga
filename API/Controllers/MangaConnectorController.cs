@@ -88,8 +88,8 @@ public class MangaConnectorController(IServiceScope scope) : Controller
         
         connector.Enabled = Enabled;
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Accepted();
     }
 }

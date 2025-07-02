@@ -81,8 +81,8 @@ public class MangaController(IServiceScope scope) : Controller
         
         context.Mangas.Remove(manga);
         
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
 
@@ -329,8 +329,8 @@ public class MangaController(IServiceScope scope) : Controller
             return NotFound();
         
         manga.IgnoreChaptersBefore = chapterThreshold;
-        if(context.Sync().Result is { } errorMessage)
-            return StatusCode(Status500InternalServerError, errorMessage);
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
 
         return Accepted();
     }
@@ -354,7 +354,7 @@ public class MangaController(IServiceScope scope) : Controller
             return NotFound(nameof(LibraryId));
 
         MoveMangaLibraryWorker moveLibrary = new(manga, library, scope);
-        UpdateChaptersDownloadedWorker updateDownloadedFiles = new(manga, scope, [moveLibrary]);
+        UpdateChaptersDownloadedWorker updateDownloadedFiles = new(manga, [moveLibrary]);
         
         Tranga.AddWorkers([moveLibrary, updateDownloadedFiles]);
         

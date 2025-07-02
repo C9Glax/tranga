@@ -2,6 +2,7 @@
 using API.Workers;
 using log4net;
 using log4net.Config;
+using Microsoft.EntityFrameworkCore;
 
 namespace API;
 
@@ -54,6 +55,7 @@ public static class Tranga
 
     private static readonly Dictionary<BaseWorker, Thread> RunningWorkers = new();
     public static BaseWorker[] GetRunningWorkers() => RunningWorkers.Keys.ToArray();
+    private static readonly HashSet<BaseWorker> StartWorkers = new();
     private static void WorkerStarter(object? serviceProviderObj)
     {
         Log.Info("WorkerStarter Thread running.");
@@ -66,19 +68,26 @@ public static class Tranga
         
         while (true)
         {
-            using IServiceScope scope = serviceProvider.CreateScope();
-           
+            foreach (BaseWorker startWorker in StartWorkers)
+            {
+                IServiceScope scope = serviceProvider.CreateScope();
+                StartWorker(startWorker, scope);
+            }
             Thread.Sleep(TrangaSettings.workCycleTimeout);
         }
     }
 
-    internal static void StartWorker(BaseWorker worker)
+    internal static void MarkWorkerForStart(BaseWorker worker) => StartWorkers.Add(worker);
+
+    private static void StartWorker(BaseWorker worker, IServiceScope scope)
     {
-        throw new NotImplementedException();
+        if(worker is BaseWorkerWithContext<DbContext> w)
+            w.SetScope(scope);
+        worker.DoWork();
     }
 
     internal static void StopWorker(BaseWorker worker)
     {
-        throw new NotImplementedException();
+        worker.Cancel();
     }
 }

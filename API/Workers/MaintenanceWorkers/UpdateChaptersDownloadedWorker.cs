@@ -1,10 +1,8 @@
 using API.Schema.MangaContext;
-using Microsoft.EntityFrameworkCore;
-
 namespace API.Workers;
 
-public class UpdateChaptersDownloadedWorker(Manga manga, IServiceScope scope, IEnumerable<BaseWorker>? dependsOn = null)
-    : BaseWorkerWithContext<MangaContext>(scope, dependsOn), IPeriodic
+public class UpdateChaptersDownloadedWorker(Manga manga, IEnumerable<BaseWorker>? dependsOn = null)
+    : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UtcNow;
     public TimeSpan Interval { get; set; } =  TimeSpan.FromMinutes(60);
@@ -15,14 +13,7 @@ public class UpdateChaptersDownloadedWorker(Manga manga, IServiceScope scope, IE
             mangaChapter.Downloaded = mangaChapter.CheckDownloaded();
         }
 
-        try
-        {
-            DbContext.SaveChanges();
-        }
-        catch (DbUpdateException e)
-        {
-            Log.Error(e);
-        }
+        DbContext.Sync();
         return [];
     }
 }

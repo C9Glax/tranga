@@ -1,10 +1,8 @@
 ﻿using API.APIEndpointRecords;
-using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -129,7 +127,7 @@ public class WorkerController(ILog Log) : Controller
         if (worker.State >= WorkerExecutionState.Waiting)
             return StatusCode(Status412PreconditionFailed, "Already running");
 
-        Tranga.StartWorker(worker);
+        Tranga.MarkWorkerForStart(worker);
         return Ok();
     }
 
