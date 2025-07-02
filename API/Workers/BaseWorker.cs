@@ -31,6 +31,7 @@ public abstract class BaseWorker : Identifiable
     /// </summary>
     public void Cancel()
     {
+        Log.Debug($"Cancelled {this}");
         this.State = WorkerExecutionState.Cancelled;
         CancellationTokenSource.Cancel();
     }
@@ -40,6 +41,7 @@ public abstract class BaseWorker : Identifiable
     /// </summary>
     protected void Fail()
     {
+        Log.Debug($"Failed {this}");
         this.State = WorkerExecutionState.Failed;
         CancellationTokenSource.Cancel();
     }
@@ -68,6 +70,7 @@ public abstract class BaseWorker : Identifiable
     /// </returns>
     public Task<BaseWorker[]> DoWork()
     {
+        Log.Debug($"Checking {this}");
         this.State = WorkerExecutionState.Waiting;
         
         BaseWorker[] missingDependenciesThatNeedStarting = MissingDependencies.Where(d => d.State < WorkerExecutionState.Waiting).ToArray();
@@ -77,8 +80,15 @@ public abstract class BaseWorker : Identifiable
         if (MissingDependencies.Any())
             return new Task<BaseWorker[]>(WaitForDependencies);
         
+        Log.Info($"Running {this}");
+        DateTime startTime = DateTime.UtcNow;
         Task<BaseWorker[]> task = new (DoWorkInternal, CancellationTokenSource.Token);
-        task.GetAwaiter().OnCompleted(() => this.State = WorkerExecutionState.Completed);
+        task.GetAwaiter().OnCompleted(() =>
+        {
+            DateTime endTime = DateTime.UtcNow;
+            Log.Info($"Completed {this}\n\t{endTime.Subtract(startTime).TotalMilliseconds} ms");
+            this.State = WorkerExecutionState.Completed;
+        });
         task.Start();
         this.State = WorkerExecutionState.Running;
         return task;
@@ -88,6 +98,7 @@ public abstract class BaseWorker : Identifiable
 
     private BaseWorker[] WaitForDependencies()
     {
+        Log.Info($"Waiting for {MissingDependencies.Count()} Dependencies {this}:\n\t{string.Join("\n\t", MissingDependencies.Select(d => d.ToString()))}");
         while (CancellationTokenSource.IsCancellationRequested == false && MissingDependencies.Any())
         {
             Thread.Sleep(TrangaSettings.workCycleTimeout);  
