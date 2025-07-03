@@ -1,6 +1,4 @@
 ﻿using API.MangaDownloadClients;
-using API.Schema.MangaContext;
-using API.Workers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -11,7 +9,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SettingsController(IServiceScope scope) : Controller
+public class SettingsController() : Controller
 {
     /// <summary>
     /// Get all <see cref="Tranga.Settings"/>
@@ -221,13 +219,8 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType(Status200OK)]
     public IActionResult SetCustomNamingScheme([FromBody]string namingScheme)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
-        
-        Dictionary<Chapter, string> oldPaths = context.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
+        //TODO Move old Chapters
         Tranga.Settings.SetChapterNamingScheme(namingScheme);
-        MoveFileOrFolderWorker[] newJobs = oldPaths
-            .Select(kv => new MoveFileOrFolderWorker(kv.Value, kv.Key.FullArchiveFilePath)).ToArray();
-        Tranga.AddWorkers(newJobs);
         
         return Ok();
     }

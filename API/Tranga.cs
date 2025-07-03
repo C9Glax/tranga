@@ -174,7 +174,7 @@ public static class Tranga
         if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
             context.MangaConnectorToManga.Add(mcId);
 
-        if (context.Sync().Result is { success: false })
+        if (context.Sync() is { success: false })
             return false;
         return true;
     }
@@ -191,7 +191,7 @@ public static class Tranga
         if(context.MangaConnectorToChapter.Find(chId.Key) is null)
             context.MangaConnectorToChapter.Add(chId);
 
-        if (context.Sync().Result is { success: false })
+        if (context.Sync() is { success: false })
             return false;
         return true;
     }

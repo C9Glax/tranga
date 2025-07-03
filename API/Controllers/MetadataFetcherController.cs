@@ -11,7 +11,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MetadataFetcherController(IServiceScope scope) : Controller
+public class MetadataFetcherController(MangaContext context) : Controller
 {
     /// <summary>
     /// Get all <see cref="MetadataFetcher"/> (Metadata-Sites)
@@ -32,8 +32,6 @@ public class MetadataFetcherController(IServiceScope scope) : Controller
     [ProducesResponseType<MetadataEntry[]>(Status200OK, "application/json")]
     public IActionResult GetLinkedEntries()
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
-        
         return Ok(context.MetadataEntries.ToArray());
     }
 
@@ -52,7 +50,6 @@ public class MetadataFetcherController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult SearchMangaMetadata(string MangaId, string MetadataFetcherName, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]string? searchTerm = null)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.Mangas.Find(MangaId) is not { } manga)
             return NotFound();
         if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is not { } fetcher)
@@ -79,7 +76,6 @@ public class MetadataFetcherController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult LinkMangaMetadata(string MangaId, string MetadataFetcherName, [FromBody]string Identifier)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.Mangas.Find(MangaId) is not { } manga)
             return NotFound();
         if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is not { } fetcher)
@@ -88,7 +84,7 @@ public class MetadataFetcherController(IServiceScope scope) : Controller
         MetadataEntry entry = fetcher.CreateMetadataEntry(manga, Identifier);
         context.MetadataEntries.Add(entry);
         
-        if(context.Sync().Result is { } errorMessage)
+        if(context.Sync() is { } errorMessage)
             return StatusCode(Status500InternalServerError, errorMessage);
         return Ok(entry);
     }
@@ -109,7 +105,6 @@ public class MetadataFetcherController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult UnlinkMangaMetadata(string MangaId, string MetadataFetcherName)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.Mangas.Find(MangaId) is null)
             return NotFound();
         if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is null)
@@ -119,7 +114,7 @@ public class MetadataFetcherController(IServiceScope scope) : Controller
 
         context.Remove(entry);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }

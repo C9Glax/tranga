@@ -13,7 +13,7 @@ namespace API.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
-public class NotificationConnectorController(IServiceScope scope) : Controller
+public class NotificationConnectorController(NotificationsContext context) : Controller
 {
     /// <summary>
     /// Gets all configured <see cref="NotificationConnector"/>
@@ -23,7 +23,6 @@ public class NotificationConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<NotificationConnector[]>(Status200OK, "application/json")]
     public IActionResult GetAllConnectors()
     {
-        NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
         
         return Ok(context.NotificationConnectors.ToArray());
     }
@@ -39,7 +38,6 @@ public class NotificationConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetConnector(string Name)
     {
-        NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
         if(context.NotificationConnectors.Find(Name) is not { } connector)
             return NotFound();
         
@@ -58,11 +56,10 @@ public class NotificationConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateConnector([FromBody]NotificationConnector notificationConnector)
     {
-        NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
         
         context.NotificationConnectors.Add(notificationConnector);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
@@ -150,13 +147,12 @@ public class NotificationConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteConnector(string Name)
     {
-        NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
         if(context.NotificationConnectors.Find(Name) is not { } connector)
             return NotFound();
         
         context.NotificationConnectors.Remove(connector);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }

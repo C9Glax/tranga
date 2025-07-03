@@ -10,7 +10,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaConnectorController(IServiceScope scope) : Controller
+public class MangaConnectorController(MangaContext context) : Controller
 {
     /// <summary>
     /// Get all <see cref="MangaConnector"/> (Scanlation-Sites)
@@ -20,7 +20,6 @@ public class MangaConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetConnectors()
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         return Ok(context.MangaConnectors.Select(c => c.Name).ToArray());
     }
 
@@ -35,7 +34,6 @@ public class MangaConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetConnector(string MangaConnectorName)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
             return NotFound();
         
@@ -50,7 +48,6 @@ public class MangaConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetEnabledConnectors()
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         
         return Ok(context.MangaConnectors.Where(c => c.Enabled).ToArray());
     }
@@ -63,7 +60,6 @@ public class MangaConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetDisabledConnectors()
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         
         return Ok(context.MangaConnectors.Where(c => c.Enabled == false).ToArray());
     }
@@ -82,13 +78,12 @@ public class MangaConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult SetEnabled(string MangaConnectorName, bool Enabled)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
             return NotFound();
         
         connector.Enabled = Enabled;
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Accepted();
     }

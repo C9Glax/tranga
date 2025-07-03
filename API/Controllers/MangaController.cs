@@ -16,7 +16,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaController(IServiceScope scope) : Controller
+public class MangaController(MangaContext context) : Controller
 {
     /// <summary>
     /// Returns all cached <see cref="Manga"/>
@@ -26,7 +26,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetAllManga()
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         Manga[] ret = context.Mangas.ToArray();
         return Ok(ret);
     }
@@ -40,7 +39,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetManga([FromBody]string[] MangaIds)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         Manga[] ret = context.Mangas.Where(m => MangaIds.Contains(m.Key)).ToArray();
         return Ok(ret);
     }
@@ -56,7 +54,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetManga(string MangaId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         return Ok(manga);
@@ -75,13 +72,12 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteManga(string MangaId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
         context.Mangas.Remove(manga);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
@@ -99,7 +95,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult MergeIntoManga(string MangaIdFrom, string MangaIdInto)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaIdFrom) is not { } from)
             return NotFound(nameof(MangaIdFrom));
         if (context.Mangas.Find(MangaIdInto) is not { } into)
@@ -130,7 +125,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetCover(string MangaId, [FromQuery]int? width, [FromQuery]int? height)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
@@ -176,7 +170,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChapters(string MangaId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
@@ -197,7 +190,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersDownloaded(string MangaId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
 
@@ -221,7 +213,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChaptersNotDownloaded(string MangaId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
@@ -249,7 +240,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapter(string MangaId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
@@ -288,7 +278,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<int>(Status503ServiceUnavailable, "text/plain")]
     public IActionResult GetLatestChapterDownloaded(string MangaId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
@@ -324,12 +313,11 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult IgnoreChaptersBefore(string MangaId, [FromBody]float chapterThreshold)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound();
         
         manga.IgnoreChaptersBefore = chapterThreshold;
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
 
         return Accepted();
@@ -347,13 +335,12 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult MoveFolder(string MangaId, string LibraryId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         if(context.FileLibraries.Find(LibraryId) is not { } library)
             return NotFound(nameof(LibraryId));
 
-        MoveMangaLibraryWorker moveLibrary = new(manga, library, scope);
+        MoveMangaLibraryWorker moveLibrary = new(manga, library);
         
         Tranga.AddWorkers([moveLibrary]);
         
@@ -379,7 +366,6 @@ public class MangaController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError,  "text/plain")]
     public IActionResult MarkAsRequested(string MangaId, string MangaConnectorName, bool IsRequested)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Mangas.Find(MangaId) is null)
             return NotFound(nameof(MangaId));
         if(context.MangaConnectors.Find(MangaConnectorName) is null)
@@ -392,7 +378,7 @@ public class MangaController(IServiceScope scope) : Controller
                 return StatusCode(Status412PreconditionFailed, "Not linked anyways.");
 
         mcId.UseForDownload = IsRequested;
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
 
         DownloadCoverFromMangaconnectorWorker downloadCover = new(mcId);

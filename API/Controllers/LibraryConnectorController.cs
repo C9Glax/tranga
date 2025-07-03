@@ -10,7 +10,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class LibraryConnectorController(IServiceScope scope) : Controller
+public class LibraryConnectorController(LibraryContext context) : Controller
 {
     /// <summary>
     /// Gets all configured <see cref="LibraryConnector"/>
@@ -20,8 +20,6 @@ public class LibraryConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<LibraryConnector[]>(Status200OK, "application/json")]
     public IActionResult GetAllConnectors()
     {
-        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
-        
         LibraryConnector[] connectors = context.LibraryConnectors.ToArray();
         
         return Ok(connectors);
@@ -38,7 +36,6 @@ public class LibraryConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetConnector(string LibraryConnectorId)
     {
-        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
         if (context.LibraryConnectors.Find(LibraryConnectorId) is not { } connector)
             return NotFound();
         
@@ -56,11 +53,10 @@ public class LibraryConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateConnector([FromBody]LibraryConnector libraryConnector)
     {
-        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
         
         context.LibraryConnectors.Add(libraryConnector);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
@@ -78,13 +74,12 @@ public class LibraryConnectorController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteConnector(string LibraryConnectorId)
     {
-        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
         if (context.LibraryConnectors.Find(LibraryConnectorId) is not { } connector)
             return NotFound();
         
         context.LibraryConnectors.Remove(connector);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }

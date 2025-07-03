@@ -10,7 +10,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SearchController(IServiceScope scope) : Controller
+public class SearchController(MangaContext context) : Controller
 {
     /// <summary>
     /// Initiate a search for a <see cref="Manga"/> on <see cref="MangaConnector"/> with searchTerm
@@ -26,7 +26,6 @@ public class SearchController(IServiceScope scope) : Controller
     [ProducesResponseType(Status406NotAcceptable)]
     public IActionResult SearchManga(string MangaConnectorName, string Query)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
             return NotFound();
         if (connector.Enabled is false)
@@ -57,7 +56,6 @@ public class SearchController(IServiceScope scope) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public IActionResult GetMangaFromUrl([FromBody]string url)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.MangaConnectors.Find("Global") is not { } connector)
             return StatusCode(Status500InternalServerError, "Could not find Global Connector.");
 

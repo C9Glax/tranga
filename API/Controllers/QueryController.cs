@@ -9,7 +9,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class QueryController(IServiceScope scope) : Controller
+public class QueryController(MangaContext context) : Controller
 {
     /// <summary>
     /// Returns the <see cref="Author"/> with <paramref name="AuthorId"/>
@@ -22,7 +22,6 @@ public class QueryController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetAuthor(string AuthorId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Authors.Find(AuthorId) is not { } author)
             return NotFound();
         
@@ -39,7 +38,6 @@ public class QueryController(IServiceScope scope) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangaWithAuthorIds(string AuthorId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Authors.Find(AuthorId) is not { } author)
             return NotFound();
         
@@ -56,7 +54,6 @@ public class QueryController(IServiceScope scope) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangasWithTag(string Tag)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Tags.Find(Tag) is not { } tag)
             return NotFound();
         
@@ -73,7 +70,6 @@ public class QueryController(IServiceScope scope) : Controller
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     public IActionResult GetChapter(string ChapterId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.Chapters.Find(ChapterId) is not { } chapter)
             return NotFound();
         

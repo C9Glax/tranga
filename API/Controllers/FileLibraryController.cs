@@ -9,7 +9,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class FileLibraryController(IServiceScope scope) : Controller
+public class FileLibraryController(MangaContext context) : Controller
 {
     /// <summary>
     /// Returns all <see cref="FileLibrary"/>
@@ -19,8 +19,6 @@ public class FileLibraryController(IServiceScope scope) : Controller
     [ProducesResponseType<FileLibrary[]>(Status200OK, "application/json")]
     public IActionResult GetFileLibraries()
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
-        
         return Ok(context.FileLibraries.ToArray());
     }
 
@@ -35,7 +33,6 @@ public class FileLibraryController(IServiceScope scope) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetFileLibrary(string FileLibraryId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.FileLibraries.Find(FileLibraryId) is not { } library)
             return NotFound();
         
@@ -56,14 +53,13 @@ public class FileLibraryController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult ChangeLibraryBasePath(string FileLibraryId, [FromBody]string newBasePath)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.FileLibraries.Find(FileLibraryId) is not { } library)
             return NotFound();
         
         //TODO Path check
         library.BasePath = newBasePath;
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
@@ -83,14 +79,13 @@ public class FileLibraryController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult ChangeLibraryName(string FileLibraryId, [FromBody] string newName)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.FileLibraries.Find(FileLibraryId) is not { } library)
             return NotFound();
         
         //TODO Name check
         library.LibraryName = newName;
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
@@ -106,12 +101,11 @@ public class FileLibraryController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNewLibrary([FromBody]FileLibrary library)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
 
         //TODO Parameter check
         context.FileLibraries.Add(library);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
@@ -128,13 +122,12 @@ public class FileLibraryController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult DeleteLocalLibrary(string FileLibraryId)
     {
-        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         if (context.FileLibraries.Find(FileLibraryId) is not { } library)
             return NotFound();
         
         context.FileLibraries.Remove(library);
         
-        if(context.Sync().Result is { success: false } result)
+        if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
