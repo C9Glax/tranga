@@ -21,7 +21,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType<BaseWorker[]>(Status200OK, "application/json")]
     public IActionResult GetAllWorkers()
     {
-        return Ok(Tranga.Workers.ToArray());
+        return Ok(Tranga.AllWorkers.ToArray());
     }
     
     /// <summary>
@@ -33,7 +33,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType<BaseWorker[]>(Status200OK, "application/json")]
     public IActionResult GetJobs([FromBody]string[] WorkerIds)
     {
-        return Ok(Tranga.Workers.Where(worker => WorkerIds.Contains(worker.Key)).ToArray());
+        return Ok(Tranga.AllWorkers.Where(worker => WorkerIds.Contains(worker.Key)).ToArray());
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType<BaseWorker[]>(Status200OK, "application/json")]
     public IActionResult GetJobsInState(WorkerExecutionState State)
     {
-        return Ok(Tranga.Workers.Where(worker => worker.State == State).ToArray());
+        return Ok(Tranga.AllWorkers.Where(worker => worker.State == State).ToArray());
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetJob(string WorkerId)
     {
-        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         return Ok(worker);
     }
@@ -75,7 +75,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult DeleteJob(string WorkerId)
     {
-        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         Tranga.RemoveWorker(worker);
         return Ok();
@@ -97,7 +97,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType<string>(Status409Conflict, "text/plain")]
     public IActionResult ModifyJob(string WorkerId, [FromBody]ModifyWorkerRecord modifyWorkerRecord)
     {
-        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         
         if(modifyWorkerRecord.IntervalMs is not null && worker is not IPeriodic)
@@ -121,7 +121,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType<string>(Status412PreconditionFailed, "text/plain")]
     public IActionResult StartJob(string WorkerId)
     {
-        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         
         if (worker.State >= WorkerExecutionState.Waiting)
@@ -142,7 +142,7 @@ public class WorkerController(ILog Log) : Controller
     [ProducesResponseType(Status501NotImplemented)]
     public IActionResult StopJob(string WorkerId)
     {
-        if(Tranga.Workers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         
         if(worker.State is < WorkerExecutionState.Running or >= WorkerExecutionState.Completed)

@@ -32,8 +32,8 @@ public static class Tranga
         Log.Info(TRANGA);
     }
     
-    internal static HashSet<BaseWorker> Workers { get; private set; } = new ();
-    public static void AddWorker(BaseWorker worker) => Workers.Add(worker);
+    internal static HashSet<BaseWorker> AllWorkers { get; private set; } = new ();
+    public static void AddWorker(BaseWorker worker) => AllWorkers.Add(worker);
     public static void AddWorkers(IEnumerable<BaseWorker> workers)
     {
         foreach (BaseWorker baseWorker in workers)
@@ -42,21 +42,14 @@ public static class Tranga
         }
     }
     
-    internal static void StopWorker(BaseWorker worker) => RemoveWorker(worker);
-    
     public static void RemoveWorker(BaseWorker removeWorker)
     {
-        IEnumerable<BaseWorker> baseWorkers = Workers.Where(w => w.DependenciesAndSelf.Any(worker => worker == removeWorker));
+        IEnumerable<BaseWorker> baseWorkers = AllWorkers.Where(w => w.DependenciesAndSelf.Any(worker => worker == removeWorker));
         
         foreach (BaseWorker worker in baseWorkers)
         {
-             worker.Cancel();
-             Workers.Remove(worker);
-             if (RunningWorkers.ContainsKey(worker))
-             {
-                 worker.Cancel();
-                 RunningWorkers.Remove(worker);
-             }
+             StopWorker(worker);
+             AllWorkers.Remove(worker);
         }
     }
 
@@ -76,6 +69,9 @@ public static class Tranga
         while (true)
         {
             CheckRunningWorkers();
+
+            foreach (BaseWorker baseWorker in AllWorkers.DueWorkers())
+                StartWorkers.Add(baseWorker);
             
             foreach (BaseWorker worker in StartWorkers)
             {
@@ -96,12 +92,31 @@ public static class Tranga
         {
             RunningWorkers.Remove(worker);
             foreach (BaseWorker newWorker in task.Result)
-                StartWorkers.Add(newWorker);
+                AllWorkers.Add(newWorker);
             task.Dispose();
         }
     }
 
+    private static IEnumerable<BaseWorker> DueWorkers(this IEnumerable<BaseWorker> workers)
+    {
+        return workers.Where(w =>
+        {
+            if (w.State is >= WorkerExecutionState.Running and < WorkerExecutionState.Completed)
+                return false;
+            if (w is IPeriodic periodicWorker)
+                return periodicWorker.IsDue;
+            return true;
+        });
+    }
+
     internal static void MarkWorkerForStart(BaseWorker worker) => StartWorkers.Add(worker);
+
+    internal static void StopWorker(BaseWorker worker)
+    {
+        StartWorkers.Remove(worker);
+        worker.Cancel();
+        RunningWorkers.Remove(worker);
+    }
     
     internal static bool AddMangaToContext((Manga, MangaConnectorId<Manga>) addManga, MangaContext context, [NotNullWhen(true)]out Manga? manga) => AddMangaToContext(addManga.Item1, addManga.Item2, context, out manga);
 
