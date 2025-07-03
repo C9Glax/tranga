@@ -272,4 +272,28 @@ public class SettingsController(IServiceScope scope) : Controller
         RequestResult result = client.MakeRequestInternal(knownProtectedUrl);
         return (int)result.statusCode >= 200 && (int)result.statusCode < 300 ? Ok() : StatusCode(500, result.statusCode); 
     }
+
+    /// <summary>
+    /// Returns the language in which Manga are downloaded
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpGet("DownloadLanguage")]
+    [ProducesResponseType<string>(Status200OK,  "text/plain")]
+    public IActionResult GetDownloadLanguage()
+    {
+        return Ok(Tranga.Settings.DownloadLanguage);
+    }
+
+    /// <summary>
+    /// Sets the language in which Manga are downloaded
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpPatch("DownloadLanguage/{Language}")]
+    [ProducesResponseType(Status200OK)]
+    public IActionResult SetDownloadLanguage(string Language)
+    {
+        //TODO Validation
+        Tranga.Settings.SetDownloadLanguage(Language);
+        return Ok();
+    }
 }
