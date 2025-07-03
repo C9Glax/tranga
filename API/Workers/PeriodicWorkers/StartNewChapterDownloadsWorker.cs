@@ -6,7 +6,7 @@ public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerab
     : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
 
-    public DateTime LastExecution { get; set; } = DateTime.UtcNow;
+    public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromMinutes(120);
     protected override BaseWorker[] DoWorkInternal()
     {

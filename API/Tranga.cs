@@ -2,6 +2,7 @@
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
 using API.Workers;
+using API.Workers.MaintenanceWorkers;
 using log4net;
 using log4net.Config;
 using Microsoft.EntityFrameworkCore;
@@ -24,12 +25,26 @@ public static class Tranga
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
     internal static TrangaSettings Settings = TrangaSettings.Load();
+    
+    internal static readonly UpdateMetadataWorker UpdateMetadataWorker = new ();
+    internal static readonly SendNotificationsWorker SendNotificationsWorker = new();
+    internal static readonly UpdateChaptersDownloadedWorker UpdateChaptersDownloadedWorker = new();
+    internal static readonly CheckForNewChaptersWorker CheckForNewChaptersWorker = new();
+    internal static readonly CleanupMangaCoversWorker CleanupMangaCoversWorker = new();
+    internal static readonly StartNewChapterDownloadsWorker StartNewChapterDownloadsWorker = new();
 
     internal static void StartLogger()
     {
         BasicConfigurator.Configure();
         Log.Info("Logger Configured.");
         Log.Info(TRANGA);
+        
+        AddWorker(UpdateMetadataWorker);
+        AddWorker(SendNotificationsWorker);
+        AddWorker(UpdateChaptersDownloadedWorker);
+        AddWorker(CheckForNewChaptersWorker);
+        AddWorker(CleanupMangaCoversWorker);
+        AddWorker(StartNewChapterDownloadsWorker);
     }
     
     internal static HashSet<BaseWorker> AllWorkers { get; private set; } = new ();

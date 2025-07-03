@@ -5,7 +5,7 @@ namespace API.Workers;
 public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
-    public DateTime LastExecution { get; set; } = DateTime.UtcNow;
+    public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(60);
     
     protected override BaseWorker[] DoWorkInternal()

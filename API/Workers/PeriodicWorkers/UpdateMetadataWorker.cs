@@ -8,7 +8,7 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
     : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
 
-    public DateTime LastExecution { get; set; } = DateTime.UtcNow;
+    public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromHours(12);
     
     protected override BaseWorker[] DoWorkInternal()

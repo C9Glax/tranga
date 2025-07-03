@@ -6,7 +6,7 @@ namespace API.Workers;
 public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<NotificationsContext>(dependsOn), IPeriodic
 {
-    public DateTime LastExecution { get; set; } = DateTime.UtcNow;
+    public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(1);
     protected override BaseWorker[] DoWorkInternal()
     {

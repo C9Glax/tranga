@@ -4,8 +4,8 @@ namespace API.Workers.MaintenanceWorkers;
 
 public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null) : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
-    public DateTime LastExecution { get; set; } = DateTime.UtcNow;
-    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(60);
+    public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
+    public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromHours(24);
     
     protected override BaseWorker[] DoWorkInternal()
     {
