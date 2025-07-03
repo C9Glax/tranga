@@ -5,8 +5,14 @@ namespace API.Workers;
 public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
+    internal readonly string MangaId = manga.Key;
+    internal readonly string LibraryId = toLibrary.Key;
     protected override BaseWorker[] DoWorkInternal()
     {
+        if (DbContext.Mangas.Find(MangaId) is not { } manga)
+            return []; //TODO Exception?
+        if (DbContext.FileLibraries.Find(LibraryId) is not { } toLibrary)
+            return []; //TODO Exception?
         Dictionary<Chapter, string> oldPath = manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
         manga.Library = toLibrary;
 
@@ -16,5 +22,5 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
         return manga.Chapters.Select(c => new MoveFileOrFolderWorker(c.FullArchiveFilePath, oldPath[c])).ToArray<BaseWorker>();
     }
 
-    public override string ToString() => $"{base.ToString()} {manga} {toLibrary}";
+    public override string ToString() => $"{base.ToString()} {MangaId} {LibraryId}";
 }

@@ -6,9 +6,11 @@ namespace API.Workers;
 public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
-    public MangaConnectorId<Manga> MangaConnectorId { get; init; } = mcId;
+    internal readonly string MangaConnectorIdId = mcId.Key;
     protected override BaseWorker[] DoWorkInternal()
     {
+        if (DbContext.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } MangaConnectorId)
+            return []; //TODO Exception?
         MangaConnector mangaConnector = MangaConnectorId.MangaConnector;
         Manga manga = MangaConnectorId.Obj;
         
@@ -18,5 +20,5 @@ public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId,
         return [];
     }
     
-    public override string ToString() => $"{base.ToString()} {MangaConnectorId}";
+    public override string ToString() => $"{base.ToString()} {MangaConnectorIdId}";
 }

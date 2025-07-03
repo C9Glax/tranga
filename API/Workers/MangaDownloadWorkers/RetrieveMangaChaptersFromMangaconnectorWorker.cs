@@ -6,9 +6,11 @@ namespace API.Workers;
 public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Manga> mcId, string language, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
-    public MangaConnectorId<Manga> MangaConnectorId { get; init; } = mcId;
+    internal readonly string MangaConnectorIdId = mcId.Key;
     protected override BaseWorker[] DoWorkInternal()
     {
+        if (DbContext.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } MangaConnectorId)
+            return []; //TODO Exception?
         MangaConnector mangaConnector = MangaConnectorId.MangaConnector;
         Manga manga = MangaConnectorId.Obj;
         // This gets all chapters that are not downloaded
@@ -29,5 +31,5 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         return [];
     }
 
-    public override string ToString() => $"{base.ToString()} {MangaConnectorId}";
+    public override string ToString() => $"{base.ToString()} {MangaConnectorIdId}";
 }

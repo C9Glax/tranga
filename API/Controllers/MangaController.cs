@@ -130,7 +130,7 @@ public class MangaController(MangaContext context) : Controller
         
         if (!System.IO.File.Exists(manga.CoverFileNameInCache))
         {
-            if (Tranga.GetRunningWorkers().Any(worker => worker is DownloadCoverFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId))
+            if (Tranga.GetRunningWorkers().Any(worker => worker is DownloadCoverFromMangaconnectorWorker w && context.MangaConnectorToManga.Find(w.MangaConnectorIdId)?.ObjId == MangaId))
             {
                 Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
                 return StatusCode(Status503ServiceUnavailable, Tranga.Settings.WorkCycleTimeoutMs * 2  / 1000);
@@ -246,7 +246,7 @@ public class MangaController(MangaContext context) : Controller
         List<Chapter> chapters = manga.Chapters.ToList();
         if (chapters.Count == 0)
         {
-            if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
+            if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && context.MangaConnectorToManga.Find(w.MangaConnectorIdId)?.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
             {
                 Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
                 return StatusCode(Status503ServiceUnavailable, Tranga.Settings.WorkCycleTimeoutMs * 2/ 1000);
@@ -284,7 +284,7 @@ public class MangaController(MangaContext context) : Controller
         List<Chapter> chapters = manga.Chapters.ToList();
         if (chapters.Count == 0)
         {
-            if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
+            if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && context.MangaConnectorToManga.Find(w.MangaConnectorIdId)?.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
             {
                 Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
                 return StatusCode(Status503ServiceUnavailable, Tranga.Settings.WorkCycleTimeoutMs * 2/ 1000);
