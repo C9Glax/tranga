@@ -1,4 +1,5 @@
 using API.Schema.NotificationsContext;
+using API.Schema.NotificationsContext.NotificationConnectors;
 
 namespace API.Workers;
 
@@ -9,7 +10,20 @@ public class SendNotificationsWorker(IEnumerable<BaseWorker>? dependsOn = null)
     public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(1);
     protected override BaseWorker[] DoWorkInternal()
     {
-        throw new NotImplementedException();
+        NotificationConnector[] connectors = DbContext.NotificationConnectors.ToArray();
+        Notification[] notifications = DbContext.Notifications.Where(n => n.IsSent == false).ToArray();
+        
+        foreach (Notification notification in notifications)
+        {
+            foreach (NotificationConnector connector in connectors)
+            {
+                connector.SendNotification(notification.Title, notification.Message);
+                notification.IsSent = true;
+            }
+        }
+        
+        DbContext.Sync();
+        return [];
     }
 
 }

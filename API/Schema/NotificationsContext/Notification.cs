@@ -19,6 +19,8 @@ public class Notification : Identifiable
     
     [Required]
     public DateTime Date { get; init; }
+    
+    public bool IsSent { get; internal set; }
 
     public Notification(string title, string message = "", NotificationUrgency urgency = NotificationUrgency.Normal, DateTime? date = null)
         : base(TokenGen.CreateToken("Notification"))
@@ -27,18 +29,20 @@ public class Notification : Identifiable
         this.Message = message;
         this.Urgency = urgency;
         this.Date = date ?? DateTime.UtcNow;
+        this.IsSent = false;
     }
 
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public Notification(string key, string title, string message, NotificationUrgency urgency, DateTime date)
+    public Notification(string key, string title, string message, NotificationUrgency urgency, DateTime date, bool isSent)
         : base(key)
     {
         this.Title = title;
         this.Message = message;
         this.Urgency = urgency;
         this.Date = date;
+        this.IsSent =  isSent;
     }
 
     public override string ToString() => $"{base.ToString()} {Urgency} {Title}";
