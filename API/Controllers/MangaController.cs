@@ -359,4 +359,46 @@ public class MangaController(IServiceScope scope) : Controller
         
         return Accepted();
     }
+
+    /// <summary>
+    /// (Un-)Marks <see cref="Manga"/> as requested for Download from <see cref="MangaConnector"/>
+    /// </summary>
+    /// <param name="MangaId"><see cref="Manga"/> with <paramref name="MangaId"/></param>
+    /// <param name="MangaConnectorName"><see cref="MangaConnector"/> with <paramref name="MangaConnectorName"/></param>
+    /// <param name="IsRequested">true to mark as requested, false to mark as not-requested</param>
+    /// <response code="200"></response>
+    /// <response code="404"><paramref name="MangaId"/> or <paramref name="MangaConnectorName"/> not found</response>
+    /// <response code="412"><see cref="Manga"/> was not linked to <see cref="MangaConnector"/>, so nothing changed</response>
+    /// <response code="428"><see cref="Manga"/> is not linked to <see cref="MangaConnector"/> yet. Search for <see cref="Manga"/> on <see cref="MangaConnector"/> first (to create a <see cref="MangaConnectorId{T}"/>).</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPost("{MangaId}/SetAsDownloadFrom/{MangaConnectorName}/{IsIsRequested}")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string>(Status404NotFound,  "text/plain")]
+    [ProducesResponseType<string>(Status412PreconditionFailed,  "text/plain")]
+    [ProducesResponseType<string>(Status428PreconditionRequired,  "text/plain")]
+    [ProducesResponseType<string>(Status500InternalServerError,  "text/plain")]
+    public IActionResult MarkAsRequested(string MangaId, string MangaConnectorName, bool IsRequested)
+    {
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        if (context.Mangas.Find(MangaId) is null)
+            return NotFound(nameof(MangaId));
+        if(context.MangaConnectors.Find(MangaConnectorName) is null)
+            return NotFound(nameof(MangaConnectorName));
+
+        if (context.MangaConnectorToManga.FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == MangaId) is not { } mcId)
+            if(IsRequested)
+                return StatusCode(Status428PreconditionRequired, "Don't know how to download this Manga from MangaConnector");
+            else
+                return StatusCode(Status412PreconditionFailed, "Not linked anyways.");
+
+        mcId.UseForDownload = IsRequested;
+        if(context.Sync().Result is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
+
+        DownloadCoverFromMangaconnectorWorker downloadCover = new(mcId);
+        RetrieveMangaChaptersFromMangaconnectorWorker retrieveChapters = new(mcId, Tranga.Settings.DownloadLanguage);
+        Tranga.AddWorkers([downloadCover, retrieveChapters]);
+        
+        return Ok();
+    }
 }
