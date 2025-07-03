@@ -11,7 +11,7 @@ public class RemoveOldNotificationsWorker(TimeSpan? interval = null, IEnumerable
     protected override BaseWorker[] DoWorkInternal()
     {
         IQueryable<Notification> toRemove = DbContext.Notifications.Where(n => n.IsSent || DateTime.UtcNow - n.Date > Interval);
-        DbContext.Remove(toRemove);
+        DbContext.RemoveRange(toRemove);
         DbContext.Sync();
         return [];
     }
