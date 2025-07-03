@@ -91,7 +91,7 @@ public static class Tranga
             foreach (BaseWorker baseWorker in AllWorkers.DueWorkers())
                 StartWorkers.Add(baseWorker);
             
-            foreach (BaseWorker worker in StartWorkers)
+            foreach (BaseWorker worker in StartWorkers.ToArray())
             {
                 if(RunningWorkers.ContainsKey(worker))
                     continue;
@@ -109,6 +109,8 @@ public static class Tranga
                     RunningWorkers.Add(libraryContextWorker, libraryContextWorker.DoWork());
                 }else
                     RunningWorkers.Add(worker, worker.DoWork());
+
+                StartWorkers.Remove(worker);
             }
             Thread.Sleep(Settings.WorkCycleTimeoutMs);
         }
@@ -117,8 +119,10 @@ public static class Tranga
     private static void CheckRunningWorkers()
     {
         KeyValuePair<BaseWorker, Task<BaseWorker[]>>[] done = RunningWorkers.Where(kv => kv.Value.IsCompleted).ToArray();
+        if (done.Length < 1)
+            return;
         Log.Info($"Done: {done.Length}");
-        Log.Debug(string.Join("\n", done.Select(d => d.ToString())));
+        Log.Debug(string.Join("\n", done.Select(d => d.Key.ToString())));
         foreach ((BaseWorker worker, Task<BaseWorker[]> task) in done)
         {
             RunningWorkers.Remove(worker);

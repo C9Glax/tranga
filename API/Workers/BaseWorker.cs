@@ -88,6 +88,8 @@ public abstract class BaseWorker : Identifiable
             DateTime endTime = DateTime.UtcNow;
             Log.Info($"Completed {this}\n\t{endTime.Subtract(startTime).TotalMilliseconds} ms");
             this.State = WorkerExecutionState.Completed;
+            if(this is IPeriodic periodic)
+                periodic.LastExecution = DateTime.UtcNow;
         });
         task.Start();
         this.State = WorkerExecutionState.Running;
