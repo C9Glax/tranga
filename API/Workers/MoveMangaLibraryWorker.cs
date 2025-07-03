@@ -15,4 +15,6 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IService
 
         return manga.Chapters.Select(c => new MoveFileOrFolderWorker(c.FullArchiveFilePath, oldPath[c])).ToArray<BaseWorker>();
     }
+
+    public override string ToString() => $"{base.ToString()} {manga} {toLibrary}";
 }

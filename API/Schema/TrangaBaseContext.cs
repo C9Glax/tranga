@@ -35,4 +35,6 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
             return (false, e.Message);
         }
     }
+
+    public override string ToString() => $"{GetType().Name} {typeof(T).Name}";
 }

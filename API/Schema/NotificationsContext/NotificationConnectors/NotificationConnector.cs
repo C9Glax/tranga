@@ -79,4 +79,6 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
             return sb.ToString();
         }
     }
+
+    public override string ToString() => $"{GetType().Name} {Name}";
 }

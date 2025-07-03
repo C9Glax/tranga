@@ -44,4 +44,6 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
     {
         File.Move(from.FullName, toLocation);
     }
+
+    public override string ToString() => $"{base.ToString()} {FromLocation} {ToLocation}";
 }

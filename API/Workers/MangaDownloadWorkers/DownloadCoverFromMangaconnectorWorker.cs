@@ -17,4 +17,6 @@ public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId,
         DbContext.Sync();
         return [];
     }
+    
+    public override string ToString() => $"{base.ToString()} {MangaConnectorId}";
 }

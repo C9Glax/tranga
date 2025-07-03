@@ -161,21 +161,23 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite | OtherRead | OtherWrite);
         Log.Debug($"Copied cover from {fileInCache} to {newFilePath}");
     }
-    
+
     private bool DownloadImage(string imageUrl, string savePath)
     {
         HttpDownloadClient downloadClient = new();
         RequestResult requestResult = downloadClient.MakeRequest(imageUrl, RequestType.MangaImage);
-        
+
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
             return false;
         if (requestResult.result == Stream.Null)
             return false;
 
-        FileStream fs = new (savePath, FileMode.Create, FileAccess.Write, FileShare.None);
+        FileStream fs = new(savePath, FileMode.Create, FileAccess.Write, FileShare.None);
         requestResult.result.CopyTo(fs);
         fs.Close();
         ProcessImage(savePath);
         return true;
     }
+
+    public override string ToString() => $"{base.ToString()} {MangaConnectorId}";
 }

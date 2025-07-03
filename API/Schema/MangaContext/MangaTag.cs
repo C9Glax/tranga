@@ -10,8 +10,5 @@ public class MangaTag(string tag)
     [Required]
     public string Tag { get; init; } = tag;
 
-    public override string ToString()
-    {
-        return $"{Tag}";
-    }
+    public override string ToString() => Tag;
 }

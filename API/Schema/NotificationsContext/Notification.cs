@@ -45,7 +45,7 @@ public class Notification : Identifiable
         this.IsSent =  isSent;
     }
 
-    public override string ToString() => $"{base.ToString()} {Urgency} {Title}";
+    public override string ToString() => $"{base.ToString()} {Urgency} {Title} {Message}";
 }
 
 public enum NotificationUrgency : byte

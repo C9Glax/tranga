@@ -16,4 +16,6 @@ public class UpdateChaptersDownloadedWorker(Manga manga, TimeSpan? interval = nu
         DbContext.Sync();
         return [];
     }
+
+    public override string ToString() => $"{base.ToString()} {manga}";
 }

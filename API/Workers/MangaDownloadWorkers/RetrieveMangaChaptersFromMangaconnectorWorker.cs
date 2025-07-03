@@ -28,4 +28,6 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
 
         return [];
     }
+
+    public override string ToString() => $"{base.ToString()} {MangaConnectorId}";
 }
