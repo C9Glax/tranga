@@ -36,7 +36,7 @@ public class SearchController(IServiceScope scope) : Controller
         List<Manga> retMangas = new();
         foreach ((Manga manga, MangaConnectorId<Manga> mcId) manga in mangas)
         {
-            if(AddMangaToContext(manga, context) is { } add)
+            if(Tranga.AddMangaToContext(manga, context, out Manga? add))
                 retMangas.Add(add);
         }
 
@@ -64,40 +64,9 @@ public class SearchController(IServiceScope scope) : Controller
         if(connector.GetMangaFromUrl(url) is not { } manga)
             return NotFound();
         
-        if(AddMangaToContext(manga, context) is not { } add)
+        if(Tranga.AddMangaToContext(manga, context, out Manga? add) == false)
             return StatusCode(Status500InternalServerError);
         
         return Ok(add);
-    }
-    
-    private Manga? AddMangaToContext((Manga, MangaConnectorId<Manga>) manga, MangaContext context) => AddMangaToContext(manga.Item1, manga.Item2, context);
-
-    private static Manga? AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context)
-    {
-        Manga manga = context.Mangas.Find(addManga.Key) ?? addManga;
-        MangaConnectorId<Manga> mcId = context.MangaConnectorToManga.Find(addMcId.Key) ?? addMcId;
-        mcId.Obj = manga;
-        
-        IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
-        {
-            MangaTag? inDb = context.Tags.Find(mt.Tag);
-            return inDb ?? mt;
-        });
-        manga.MangaTags = mergedTags.ToList();
-
-        IEnumerable<Author> mergedAuthors = manga.Authors.Select(ma =>
-        {
-            Author? inDb = context.Authors.Find(ma.Key);
-            return inDb ?? ma;
-        });
-        manga.Authors = mergedAuthors.ToList();
-        
-        
-        if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
-            context.MangaConnectorToManga.Add(mcId);
-
-        if (context.Sync().Result is { success: false } )
-            return null;
-        return manga;
     }
 }

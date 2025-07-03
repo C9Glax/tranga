@@ -14,15 +14,15 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         // This gets all chapters that are not downloaded
         (Chapter, MangaConnectorId<Chapter>)[] allChapters =
             mangaConnector.GetChapters(MangaConnectorId, language).DistinctBy(c => c.Item1.Key).ToArray();
-        (Chapter, MangaConnectorId<Chapter>)[] newChapters = allChapters.Where(chapter =>
-            manga.Chapters.Any(ch => chapter.Item1.Key == ch.Key && ch.Downloaded) == false).ToArray();
-        Log.Info($"{manga.Chapters.Count} existing + {newChapters.Length} new chapters.");
 
-        foreach ((Chapter chapter, MangaConnectorId<Chapter> mcId) newChapter in newChapters)
+        int addedChapters = 0;
+        foreach ((Chapter chapter, MangaConnectorId<Chapter> mcId) newChapter in allChapters)
         {
-            manga.Chapters.Add(newChapter.chapter);
-            DbContext.MangaConnectorToChapter.Add(newChapter.mcId);
+            if (Tranga.AddChapterToContext(newChapter, DbContext, out Chapter? addedChapter) == false)
+                continue;
+            manga.Chapters.Add(addedChapter);
         }
+        Log.Info($"{manga.Chapters.Count} existing + {addedChapters} new chapters.");
 
         DbContext.Sync();
 

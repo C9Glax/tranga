@@ -1,4 +1,6 @@
-﻿using API.Schema.MangaContext.MetadataFetchers;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.Schema.MangaContext;
+using API.Schema.MangaContext.MetadataFetchers;
 using API.Workers;
 using log4net;
 using log4net.Config;
@@ -100,4 +102,51 @@ public static class Tranga
     }
 
     internal static void MarkWorkerForStart(BaseWorker worker) => StartWorkers.Add(worker);
+    
+    internal static bool AddMangaToContext((Manga, MangaConnectorId<Manga>) addManga, MangaContext context, [NotNullWhen(true)]out Manga? manga) => AddMangaToContext(addManga.Item1, addManga.Item2, context, out manga);
+
+    internal static bool AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context, [NotNullWhen(true)]out Manga? manga)
+    {
+        manga = context.Mangas.Find(addManga.Key) ?? addManga;
+        MangaConnectorId<Manga> mcId = context.MangaConnectorToManga.Find(addMcId.Key) ?? addMcId;
+        mcId.Obj = manga;
+        
+        IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
+        {
+            MangaTag? inDb = context.Tags.Find(mt.Tag);
+            return inDb ?? mt;
+        });
+        manga.MangaTags = mergedTags.ToList();
+
+        IEnumerable<Author> mergedAuthors = manga.Authors.Select(ma =>
+        {
+            Author? inDb = context.Authors.Find(ma.Key);
+            return inDb ?? ma;
+        });
+        manga.Authors = mergedAuthors.ToList();
+        
+        if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
+            context.MangaConnectorToManga.Add(mcId);
+
+        if (context.Sync().Result is { success: false })
+            return false;
+        return true;
+    }
+
+    internal static bool AddChapterToContext((Chapter, MangaConnectorId<Chapter>) addChapter, MangaContext context,
+        [NotNullWhen(true)] out Chapter? chapter) => AddChapterToContext(addChapter.Item1, addChapter.Item2, context, out chapter);
+
+    internal static bool AddChapterToContext(Chapter addChapter, MangaConnectorId<Chapter> addChId, MangaContext context, [NotNullWhen(true)] out Chapter? chapter)
+    {
+        chapter = context.Chapters.Find(addChapter.Key) ?? addChapter;
+        MangaConnectorId<Chapter> chId = context.MangaConnectorToChapter.Find(addChId.Key) ?? addChId;
+        chId.Obj = chapter;
+        
+        if(context.MangaConnectorToChapter.Find(chId.Key) is null)
+            context.MangaConnectorToChapter.Add(chId);
+
+        if (context.Sync().Result is { success: false })
+            return false;
+        return true;
+    }
 }
