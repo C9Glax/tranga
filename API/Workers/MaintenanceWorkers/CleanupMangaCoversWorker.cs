@@ -2,10 +2,10 @@ using API.Schema.MangaContext;
 
 namespace API.Workers.MaintenanceWorkers;
 
-public class CleanupMangaCoversWorker(IEnumerable<BaseWorker>? dependsOn = null) : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
+public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null) : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UtcNow;
-    public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(60);
+    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(60);
     
     protected override BaseWorker[] DoWorkInternal()
     {

@@ -354,9 +354,8 @@ public class MangaController(IServiceScope scope) : Controller
             return NotFound(nameof(LibraryId));
 
         MoveMangaLibraryWorker moveLibrary = new(manga, library, scope);
-        UpdateChaptersDownloadedWorker updateDownloadedFiles = new(manga, [moveLibrary]);
         
-        Tranga.AddWorkers([moveLibrary, updateDownloadedFiles]);
+        Tranga.AddWorkers([moveLibrary]);
         
         return Accepted();
     }

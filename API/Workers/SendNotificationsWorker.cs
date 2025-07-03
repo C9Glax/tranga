@@ -3,11 +3,11 @@ using API.Schema.NotificationsContext.NotificationConnectors;
 
 namespace API.Workers;
 
-public class SendNotificationsWorker(IEnumerable<BaseWorker>? dependsOn = null)
+public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<NotificationsContext>(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UtcNow;
-    public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(1);
+    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(1);
     protected override BaseWorker[] DoWorkInternal()
     {
         NotificationConnector[] connectors = DbContext.NotificationConnectors.ToArray();
