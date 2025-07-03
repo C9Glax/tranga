@@ -7,7 +7,7 @@ public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerab
 {
 
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
-    public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromMinutes(120);
+    public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromMinutes(1);
     protected override BaseWorker[] DoWorkInternal()
     {
         IQueryable<MangaConnectorId<Chapter>> mangaConnectorIds = DbContext.MangaConnectorToChapter.Where(id => id.Obj.Downloaded == false && id.UseForDownload);
