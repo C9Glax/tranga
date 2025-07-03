@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
+using API.Schema.NotificationsContext;
 using API.Workers;
 using API.Workers.MaintenanceWorkers;
 using log4net;
 using log4net.Config;
-using Microsoft.EntityFrameworkCore;
 
 namespace API;
 
@@ -32,6 +33,7 @@ public static class Tranga
     internal static readonly CheckForNewChaptersWorker CheckForNewChaptersWorker = new();
     internal static readonly CleanupMangaCoversWorker CleanupMangaCoversWorker = new();
     internal static readonly StartNewChapterDownloadsWorker StartNewChapterDownloadsWorker = new();
+    internal static readonly RemoveOldNotificationsWorker RemoveOldNotificationsWorker = new();
 
     internal static void StartLogger()
     {
@@ -45,6 +47,7 @@ public static class Tranga
         AddWorker(CheckForNewChaptersWorker);
         AddWorker(CleanupMangaCoversWorker);
         AddWorker(StartNewChapterDownloadsWorker);
+        AddWorker(RemoveOldNotificationsWorker);
     }
     
     internal static HashSet<BaseWorker> AllWorkers { get; private set; } = new ();
@@ -90,9 +93,22 @@ public static class Tranga
             
             foreach (BaseWorker worker in StartWorkers)
             {
-                if (worker is BaseWorkerWithContext<DbContext> scopedWorker)
-                    scopedWorker.SetScope(serviceProvider.CreateScope());
-                RunningWorkers.Add(worker, worker.DoWork());
+                if(RunningWorkers.ContainsKey(worker))
+                    continue;
+                if (worker is BaseWorkerWithContext<MangaContext> mangaContextWorker)
+                {
+                    mangaContextWorker.SetScope(serviceProvider.CreateScope());
+                    RunningWorkers.Add(mangaContextWorker, mangaContextWorker.DoWork());
+                }else if (worker is BaseWorkerWithContext<NotificationsContext> notificationContextWorker)
+                {
+                    notificationContextWorker.SetScope(serviceProvider.CreateScope());
+                    RunningWorkers.Add(notificationContextWorker, notificationContextWorker.DoWork());
+                }else if (worker is BaseWorkerWithContext<LibraryContext> libraryContextWorker)
+                {
+                    libraryContextWorker.SetScope(serviceProvider.CreateScope());
+                    RunningWorkers.Add(libraryContextWorker, libraryContextWorker.DoWork());
+                }else
+                    RunningWorkers.Add(worker, worker.DoWork());
             }
             Thread.Sleep(Settings.WorkCycleTimeoutMs);
         }

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
-[PrimaryKey("LibraryConnectorId")]
+[PrimaryKey("Key")]
 public abstract class LibraryConnector : Identifiable
 {
     [Required]

@@ -16,10 +16,10 @@ public struct TrangaSettings()
     public string DownloadLocation => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Manga");
     [JsonIgnore]
     internal static readonly string DefaultUserAgent = $"Tranga/2.0 ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")})";
-    public string UserAgent { get; private set; } = DefaultUserAgent;
-    public int ImageCompression{ get; private set; } = 40;
-    public bool BlackWhiteImages { get; private set; } = false;
-    public string FlareSolverrUrl { get; private set; } = string.Empty;
+    public string UserAgent { get; set; } = DefaultUserAgent;
+    public int ImageCompression{ get; set; } = 40;
+    public bool BlackWhiteImages { get; set; } = false;
+    public string FlareSolverrUrl { get; set; } = string.Empty;
     /// <summary>
     /// Placeholders:
     /// %M Obj Name
@@ -34,8 +34,8 @@ public struct TrangaSettings()
     /// ?_(...) replace _ with a value from above:
     /// Everything inside the braces will only be added if the value of %_ is not null
     /// </summary>
-    public string ChapterNamingScheme { get; private set; } = "%M - ?V(Vol.%V )Ch.%C?T( - %T)";
-    public int WorkCycleTimeoutMs { get; private set; } = 20000;
+    public string ChapterNamingScheme { get; set; } = "%M - ?V(Vol.%V )Ch.%C?T( - %T)";
+    public int WorkCycleTimeoutMs { get; set; } = 20000;
     [JsonIgnore]
     internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
@@ -46,12 +46,14 @@ public struct TrangaSettings()
         {RequestType.MangaCover, 60},
         {RequestType.Default, 60}
     };
-    public Dictionary<RequestType, int> RequestLimits { get; private set; } = DefaultRequestLimits;
+    public Dictionary<RequestType, int> RequestLimits { get; set; } = DefaultRequestLimits;
 
-    public string DownloadLanguage { get; private set; } = "en";
+    public string DownloadLanguage { get; set; } = "en";
 
     public static TrangaSettings Load()
     {
+        if (!File.Exists(settingsFilePath))
+            new TrangaSettings().Save();
         return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(settingsFilePath));
     }
 

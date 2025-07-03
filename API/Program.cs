@@ -127,7 +127,8 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
     context.Database.Migrate();
-    
+
+    context.Notifications.RemoveRange(context.Notifications);
     string[] emojis = { "(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=", "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~","૮ \u00b4• ﻌ \u00b4• ა", "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"};
     context.Notifications.Add(new Notification("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High));
     
@@ -142,7 +143,6 @@ using (IServiceScope scope = app.Services.CreateScope())
     context.Sync();
 }
 
-TrangaSettings.Load();
 Tranga.StartLogger();
 
 Tranga.PeriodicWorkerStarterThread.Start(app.Services);
