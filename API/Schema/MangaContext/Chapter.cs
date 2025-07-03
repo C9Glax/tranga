@@ -108,7 +108,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     private static readonly Regex ReplaceRexx = new(@"%([a-zA-Z])|(.+?)");
     private string GetArchiveFilePath()
     {
-        string archiveNamingScheme = TrangaSettings.chapterNamingScheme;
+        string archiveNamingScheme = Tranga.Settings.ChapterNamingScheme;
         StringBuilder stringBuilder = new();
         foreach (Match nullable in  NullableRex.Matches(archiveNamingScheme))
         {

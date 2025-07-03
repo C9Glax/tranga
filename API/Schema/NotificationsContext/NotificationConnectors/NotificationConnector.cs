@@ -34,7 +34,7 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
     [NotMapped]
     private readonly HttpClient Client = new()
     {
-        DefaultRequestHeaders = { { "User-Agent", TrangaSettings.userAgent } }
+        DefaultRequestHeaders = { { "User-Agent", Tranga.Settings.UserAgent } }
     };
     
     [JsonIgnore]

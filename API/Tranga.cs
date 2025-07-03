@@ -21,6 +21,7 @@ public static class Tranga
     public static Thread PeriodicWorkerStarterThread { get; } = new (WorkerStarter);
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
+    internal static TrangaSettings Settings = TrangaSettings.Load();
 
     internal static void StartLogger()
     {
@@ -80,7 +81,7 @@ public static class Tranga
                     scopedWorker.SetScope(serviceProvider.CreateScope());
                 RunningWorkers.Add(worker, worker.DoWork());
             }
-            Thread.Sleep(TrangaSettings.workCycleTimeout);
+            Thread.Sleep(Settings.WorkCycleTimeoutMs);
         }
     }
 

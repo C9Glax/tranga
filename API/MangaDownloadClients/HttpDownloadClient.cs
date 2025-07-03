@@ -12,7 +12,7 @@ internal class HttpDownloadClient : DownloadClient
         HttpClient client = new();
         client.Timeout = TimeSpan.FromSeconds(10);
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-        client.DefaultRequestHeaders.Add("User-Agent", TrangaSettings.userAgent);
+        client.DefaultRequestHeaders.Add("User-Agent", Tranga.Settings.UserAgent);
         HttpResponseMessage? response;
         Uri uri = new(url);
         HttpRequestMessage requestMessage = new(HttpMethod.Get, uri);

@@ -96,7 +96,7 @@ public class DownloadChapterFromMangaconnectorWorker(Chapter chapter, IEnumerabl
     
     private void ProcessImage(string imagePath)
     {
-        if (!TrangaSettings.bwImages && TrangaSettings.compression == 100)
+        if (!Tranga.Settings.BlackWhiteImages && Tranga.Settings.ImageCompression == 100)
         {
             Log.Debug("No processing requested for image");
             return;
@@ -107,12 +107,12 @@ public class DownloadChapterFromMangaconnectorWorker(Chapter chapter, IEnumerabl
         try
         {
             using Image image = Image.Load(imagePath);
-            if (TrangaSettings.bwImages)
+            if (Tranga.Settings.BlackWhiteImages)
                 image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
             File.Delete(imagePath);
             image.SaveAsJpeg(imagePath, new JpegEncoder()
             {
-                Quality = TrangaSettings.compression
+                Quality = Tranga.Settings.ImageCompression
             });
         }
         catch (Exception e)

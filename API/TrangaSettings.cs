@@ -6,16 +6,22 @@ using Newtonsoft.Json.Linq;
 
 namespace API;
 
-public static class TrangaSettings
+public struct TrangaSettings()
 {
-    public static string downloadLocation { get; private set; } = (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Obj" : Path.Join(Directory.GetCurrentDirectory(), "Downloads"));
-    public static string workingDirectory { get; private set; } = Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+
+    [JsonIgnore]
+    public static string workingDirectory => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+    [JsonIgnore]
+    public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
+    [JsonIgnore]
+    public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
+    public string DownloadLocation => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Manga");
     [JsonIgnore]
     internal static readonly string DefaultUserAgent = $"Tranga/2.0 ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")})";
-    public static string userAgent { get; private set; } = DefaultUserAgent;
-    public static int compression{ get; private set; } = 40;
-    public static bool bwImages { get; private set; } = false;
-    public static string flareSolverrUrl { get; private set; } = string.Empty;
+    public string UserAgent { get; private set; } = DefaultUserAgent;
+    public int ImageCompression{ get; private set; } = 40;
+    public bool BlackWhiteImages { get; private set; } = false;
+    public string FlareSolverrUrl { get; private set; } = string.Empty;
     /// <summary>
     /// Placeholders:
     /// %M Obj Name
@@ -30,13 +36,8 @@ public static class TrangaSettings
     /// ?_(...) replace _ with a value from above:
     /// Everything inside the braces will only be added if the value of %_ is not null
     /// </summary>
-    public static string chapterNamingScheme { get; private set; } = "%M - ?V(Vol.%V )Ch.%C?T( - %T)";
-    [JsonIgnore]
-    public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
-    [JsonIgnore]
-    public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
-    public static bool aprilFoolsMode { get; private set; } = true;
-    public static int workCycleTimeout { get; private set; } = 20000;
+    public string ChapterNamingScheme { get; private set; } = "%M - ?V(Vol.%V )Ch.%C?T( - %T)";
+    public int WorkCycleTimeoutMs { get; private set; } = 20000;
     [JsonIgnore]
     internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
@@ -47,142 +48,57 @@ public static class TrangaSettings
         {RequestType.MangaCover, 60},
         {RequestType.Default, 60}
     };
-    public static Dictionary<RequestType, int> requestLimits { get; private set; } = DefaultRequestLimits;
+    public Dictionary<RequestType, int> RequestLimits { get; private set; } = DefaultRequestLimits;
 
-    public static TimeSpan NotificationUrgencyDelay(NotificationUrgency urgency) => urgency switch
+    public static TrangaSettings Load()
     {
-        NotificationUrgency.High => TimeSpan.Zero,
-        NotificationUrgency.Normal => TimeSpan.FromMinutes(5),
-        NotificationUrgency.Low => TimeSpan.FromMinutes(10),
-        _ => TimeSpan.FromHours(1)
-    }; //TODO make this a setting?
-
-    public static void Load()
-    {
-        if(File.Exists(settingsFilePath))
-            Deserialize(File.ReadAllText(settingsFilePath));
-        else return;
-
-        Directory.CreateDirectory(downloadLocation);
-        ExportSettings();
+        return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(settingsFilePath));
     }
 
-    public static void UpdateAprilFoolsMode(bool enabled)
+    public void Save()
     {
-        aprilFoolsMode = enabled;
-        ExportSettings();
+        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
     }
 
-    public static void UpdateCompressImages(int value)
+    public void SetUserAgent(string value)
     {
-        compression = int.Clamp(value, 1, 100);
-        ExportSettings();
+        this.UserAgent = value;
+        Save();
     }
 
-    public static void UpdateBwImages(bool enabled)
+    public void SetRequestLimit(RequestType type, int value)
     {
-        bwImages = enabled;
-        ExportSettings();
+        this.RequestLimits[type] = value;
+        Save();
     }
 
-    public static void UpdateUserAgent(string? customUserAgent)
+    public void ResetRequestLimits()
     {
-        userAgent = customUserAgent ?? DefaultUserAgent;
-        ExportSettings();
+        this.RequestLimits = DefaultRequestLimits;
+        Save();
     }
 
-    public static void UpdateRequestLimit(RequestType requestType, int newLimit)
+    public void UpdateImageCompression(int value)
     {
-        requestLimits[requestType] = newLimit;
-        ExportSettings();
+        this.ImageCompression = value;
+        Save();
     }
 
-    public static void UpdateChapterNamingScheme(string namingScheme)
+    public void SetBlackWhiteImageEnabled(bool enabled)
     {
-        chapterNamingScheme = namingScheme;
-        ExportSettings();
+        this.BlackWhiteImages = enabled;
+        Save();
     }
 
-    public static void UpdateFlareSolverrUrl(string url)
+    public void SetChapterNamingScheme(string scheme)
     {
-        flareSolverrUrl = url;
-        ExportSettings();
+        this.ChapterNamingScheme = scheme;
+        Save();
     }
 
-    public static void ResetRequestLimits()
+    public void SetFlareSolverrUrl(string url)
     {
-        requestLimits = DefaultRequestLimits;
-        ExportSettings();
-    }
-
-    public static void ExportSettings()
-    {
-        if (File.Exists(settingsFilePath))
-        {
-            while(IsFileInUse(settingsFilePath))
-                Thread.Sleep(100);
-        }
-        else
-            Directory.CreateDirectory(new FileInfo(settingsFilePath).DirectoryName!);
-        File.WriteAllText(settingsFilePath, Serialize());
-    }
-    
-    internal static bool IsFileInUse(string filePath)
-    {
-        if (!File.Exists(filePath))
-            return false;
-        try
-        {
-            using FileStream stream = new (filePath, FileMode.Open, FileAccess.Read, FileShare.None);
-            stream.Close();
-            return false;
-        }
-        catch (IOException)
-        {
-            return true;
-        }
-    }
-
-    public static JObject AsJObject()
-    {
-        JObject jobj = new ();
-        jobj.Add("downloadLocation", JToken.FromObject(downloadLocation));
-        jobj.Add("workingDirectory", JToken.FromObject(workingDirectory));
-        jobj.Add("userAgent", JToken.FromObject(userAgent));
-        jobj.Add("aprilFoolsMode", JToken.FromObject(aprilFoolsMode));
-        jobj.Add("requestLimits", JToken.FromObject(requestLimits));
-        jobj.Add("compression", JToken.FromObject(compression));
-        jobj.Add("bwImages", JToken.FromObject(bwImages));
-        jobj.Add("workCycleTimeout", JToken.FromObject(workCycleTimeout));
-        jobj.Add("chapterNamingScheme", JToken.FromObject(chapterNamingScheme));
-        jobj.Add("flareSolverrUrl", JToken.FromObject(flareSolverrUrl));
-        return jobj;
-    }
-
-    public static string Serialize() => AsJObject().ToString();
-
-    public static void Deserialize(string serialized)
-    {
-        JObject jobj = JObject.Parse(serialized);
-        if (jobj.TryGetValue("downloadLocation", out JToken? dl))
-            downloadLocation = dl.Value<string>()!;
-        if (jobj.TryGetValue("workingDirectory", out JToken? wd))
-            workingDirectory = wd.Value<string>()!;
-        if (jobj.TryGetValue("userAgent", out JToken? ua))
-            userAgent = ua.Value<string>()!;
-        if (jobj.TryGetValue("aprilFoolsMode", out JToken? afm))
-            aprilFoolsMode = afm.Value<bool>()!;
-        if (jobj.TryGetValue("requestLimits", out JToken? rl))
-            requestLimits = rl.ToObject<Dictionary<RequestType, int>>()!;
-        if (jobj.TryGetValue("compression", out JToken? ci))
-            compression = ci.Value<int>()!;
-        if (jobj.TryGetValue("bwImages", out JToken? bwi))
-            bwImages = bwi.Value<bool>()!;
-        if (jobj.TryGetValue("workCycleTimeout", out JToken? snjt))
-            workCycleTimeout = snjt.Value<int>()!;
-        if (jobj.TryGetValue("chapterNamingScheme", out JToken? cns))
-            chapterNamingScheme = cns.Value<string>()!;
-        if (jobj.TryGetValue("flareSolverrUrl", out JToken? fsu))
-            flareSolverrUrl = fsu.Value<string>()!;
+        this.FlareSolverrUrl = url;
+        Save();
     }
 }

@@ -16,14 +16,14 @@ public abstract class DownloadClient
     public RequestResult MakeRequest(string url, RequestType requestType, string? referrer = null, string? clickButton = null)
     {
         Log.Debug($"Requesting {requestType} {url}");
-        if (!TrangaSettings.requestLimits.ContainsKey(requestType))
+        if (!Tranga.Settings.RequestLimits.ContainsKey(requestType))
         {
             return new RequestResult(HttpStatusCode.NotAcceptable, null, Stream.Null);
         }
 
-        int rateLimit = TrangaSettings.userAgent == TrangaSettings.DefaultUserAgent
+        int rateLimit = Tranga.Settings.UserAgent == TrangaSettings.DefaultUserAgent
             ? TrangaSettings.DefaultRequestLimits[requestType]
-            : TrangaSettings.requestLimits[requestType];
+            : Tranga.Settings.RequestLimits[requestType];
         
         TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
         DateTime now = DateTime.Now;

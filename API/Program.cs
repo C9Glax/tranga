@@ -97,8 +97,7 @@ app.MapControllers()
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint(
-            $"/swagger/v2/swagger.json", "v2"); 
+    options.SwaggerEndpoint($"/swagger/v2/swagger.json", "v2"); 
 });
 
 app.UseHttpsRedirection();
@@ -119,7 +118,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
     context.MangaConnectors.AddRange(newConnectors);
     if (!context.FileLibraries.Any())
-        context.FileLibraries.Add(new FileLibrary(TrangaSettings.downloadLocation, "Default FileLibrary"));
+        context.FileLibraries.Add(new FileLibrary(Tranga.Settings.DownloadLocation, "Default FileLibrary"));
     
     context.Sync();
 }

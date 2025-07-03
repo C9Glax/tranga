@@ -3,7 +3,6 @@ using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -15,14 +14,14 @@ namespace API.Controllers;
 public class SettingsController(IServiceScope scope) : Controller
 {
     /// <summary>
-    /// Get all Settings
+    /// Get all <see cref="Tranga.Settings"/>
     /// </summary>
     /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<JObject>(Status200OK, "application/json")]
+    [ProducesResponseType<TrangaSettings>(Status200OK, "application/json")]
     public IActionResult GetSettings()
     {
-        return Ok(JObject.Parse(TrangaSettings.Serialize()));
+        return Ok(Tranga.Settings);
     }
     
     /// <summary>
@@ -33,7 +32,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     public IActionResult GetUserAgent()
     {
-        return Ok(TrangaSettings.userAgent);
+        return Ok(Tranga.Settings.UserAgent);
     }
     
     /// <summary>
@@ -44,7 +43,8 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType(Status200OK)]
     public IActionResult SetUserAgent([FromBody]string userAgent)
     {
-        TrangaSettings.UpdateUserAgent(userAgent);
+        //TODO Validate
+        Tranga.Settings.SetUserAgent(userAgent);
         return Ok();
     }
     
@@ -56,7 +56,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType(Status200OK)]
     public IActionResult ResetUserAgent()
     {
-        TrangaSettings.UpdateUserAgent(TrangaSettings.DefaultUserAgent);
+        Tranga.Settings.SetUserAgent(TrangaSettings.DefaultUserAgent);
         return Ok();
     }
     
@@ -68,7 +68,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType<Dictionary<RequestType,int>>(Status200OK, "application/json")]
     public IActionResult GetRequestLimits()
     {
-        return Ok(TrangaSettings.requestLimits);
+        return Ok(Tranga.Settings.RequestLimits);
     }
     
     /// <summary>
@@ -96,7 +96,7 @@ public class SettingsController(IServiceScope scope) : Controller
     {
         if (requestLimit <= 0)
             return BadRequest();
-        TrangaSettings.UpdateRequestLimit(RequestType, requestLimit);
+        Tranga.Settings.SetRequestLimit(RequestType, requestLimit);
         return Ok();
     }
     
@@ -108,7 +108,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status200OK)]
     public IActionResult ResetRequestLimits(RequestType RequestType)
     {
-        TrangaSettings.UpdateRequestLimit(RequestType, TrangaSettings.DefaultRequestLimits[RequestType]);
+        Tranga.Settings.SetRequestLimit(RequestType, TrangaSettings.DefaultRequestLimits[RequestType]);
         return Ok();
     }
     
@@ -120,35 +120,35 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status200OK)]
     public IActionResult ResetRequestLimits()
     {
-        TrangaSettings.ResetRequestLimits();
+        Tranga.Settings.ResetRequestLimits();
         return Ok();
     }
     
     /// <summary>
     /// Returns Level of Image-Compression for Images
     /// </summary>
-    /// <response code="200">JPEG compression-level as Integer</response>
-    [HttpGet("ImageCompression")]
+    /// <response code="200">JPEG ImageCompression-level as Integer</response>
+    [HttpGet("ImageCompressionLevel")]
     [ProducesResponseType<int>(Status200OK, "text/plain")]
     public IActionResult GetImageCompression()
     {
-        return Ok(TrangaSettings.compression);
+        return Ok(Tranga.Settings.ImageCompression);
     }
     
     /// <summary>
     /// Set the Image-Compression-Level for Images
     /// </summary>
-    /// <param name="level">100 to disable, 0-99 for JPEG compression-Level</param>
+    /// <param name="level">100 to disable, 0-99 for JPEG ImageCompression-Level</param>
     /// <response code="200"></response>
     /// <response code="400">Level outside permitted range</response>
-    [HttpPatch("ImageCompression")]
+    [HttpPatch("ImageCompressionLevel/{level}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status400BadRequest)]
-    public IActionResult SetImageCompression([FromBody]int level)
+    public IActionResult SetImageCompression(int level)
     {
         if (level < 1 || level > 100)
             return BadRequest();
-        TrangaSettings.UpdateCompressImages(level);
+        Tranga.Settings.UpdateImageCompression(level);
         return Ok();
     }
     
@@ -160,7 +160,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType<bool>(Status200OK, "text/plain")]
     public IActionResult GetBwImagesToggle()
     {
-        return Ok(TrangaSettings.bwImages);
+        return Ok(Tranga.Settings.BlackWhiteImages);
     }
     
     /// <summary>
@@ -168,37 +168,11 @@ public class SettingsController(IServiceScope scope) : Controller
     /// </summary>
     /// <param name="enabled">true to enable</param>
     /// <response code="200"></response>
-    [HttpPatch("BWImages")]
+    [HttpPatch("BWImages/{enabled}")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetBwImagesToggle([FromBody]bool enabled)
+    public IActionResult SetBwImagesToggle(bool enabled)
     {
-        TrangaSettings.UpdateBwImages(enabled);
-        return Ok();
-    }
-    
-    /// <summary>
-    /// Get state of April Fools Mode
-    /// </summary>
-    /// <remarks>April Fools Mode disables all downloads on April 1st</remarks>
-    /// <response code="200">True if enabled</response>
-    [HttpGet("AprilFoolsMode")]
-    [ProducesResponseType<bool>(Status200OK, "text/plain")]
-    public IActionResult GetAprilFoolsMode()
-    {
-        return Ok(TrangaSettings.aprilFoolsMode);
-    }
-    
-    /// <summary>
-    /// Enable/Disable April Fools Mode
-    /// </summary>
-    /// <remarks>April Fools Mode disables all downloads on April 1st</remarks>
-    /// <param name="enabled">true to enable</param>
-    /// <response code="200"></response>
-    [HttpPatch("AprilFoolsMode")]
-    [ProducesResponseType(Status200OK)]
-    public IActionResult SetAprilFoolsMode([FromBody]bool enabled)
-    {
-        TrangaSettings.UpdateAprilFoolsMode(enabled);
+        Tranga.Settings.SetBlackWhiteImageEnabled(enabled);
         return Ok();
     }
     
@@ -224,7 +198,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     public IActionResult GetCustomNamingScheme()
     {
-        return Ok(TrangaSettings.chapterNamingScheme);
+        return Ok(Tranga.Settings.ChapterNamingScheme);
     }
     
     /// <summary>
@@ -250,7 +224,7 @@ public class SettingsController(IServiceScope scope) : Controller
         MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         
         Dictionary<Chapter, string> oldPaths = context.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
-        TrangaSettings.UpdateChapterNamingScheme(namingScheme);
+        Tranga.Settings.SetChapterNamingScheme(namingScheme);
         MoveFileOrFolderWorker[] newJobs = oldPaths
             .Select(kv => new MoveFileOrFolderWorker(kv.Value, kv.Key.FullArchiveFilePath)).ToArray();
         Tranga.AddWorkers(newJobs);
@@ -267,7 +241,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType(Status200OK)]
     public IActionResult SetFlareSolverrUrl([FromBody]string flareSolverrUrl)
     {
-        TrangaSettings.UpdateFlareSolverrUrl(flareSolverrUrl);
+        Tranga.Settings.SetFlareSolverrUrl(flareSolverrUrl);
         return Ok();
     }
 
@@ -279,7 +253,7 @@ public class SettingsController(IServiceScope scope) : Controller
     [ProducesResponseType(Status200OK)]
     public IActionResult ClearFlareSolverrUrl()
     {
-        TrangaSettings.UpdateFlareSolverrUrl(string.Empty);
+        Tranga.Settings.SetFlareSolverrUrl(string.Empty);
         return Ok();
     }
 

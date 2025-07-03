@@ -138,8 +138,8 @@ public class MangaController(IServiceScope scope) : Controller
         {
             if (Tranga.GetRunningWorkers().Any(worker => worker is DownloadCoverFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId))
             {
-                Response.Headers.Append("Retry-After", $"{TrangaSettings.workCycleTimeout * 2 / 1000:D}");
-                return StatusCode(Status503ServiceUnavailable, TrangaSettings.workCycleTimeout * 2  / 1000);
+                Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, Tranga.Settings.WorkCycleTimeoutMs * 2  / 1000);
             }
             else
                 return NoContent();
@@ -258,8 +258,8 @@ public class MangaController(IServiceScope scope) : Controller
         {
             if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
             {
-                Response.Headers.Append("Retry-After", $"{TrangaSettings.workCycleTimeout * 2 / 1000:D}");
-                return StatusCode(Status503ServiceUnavailable, TrangaSettings.workCycleTimeout * 2/ 1000);
+                Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, Tranga.Settings.WorkCycleTimeoutMs * 2/ 1000);
             }else
                 return Ok(0);
         }
@@ -297,8 +297,8 @@ public class MangaController(IServiceScope scope) : Controller
         {
             if (Tranga.GetRunningWorkers().Any(worker => worker is RetrieveMangaChaptersFromMangaconnectorWorker w && w.MangaConnectorId.ObjId == MangaId && w.State < WorkerExecutionState.Completed))
             {
-                Response.Headers.Append("Retry-After", $"{TrangaSettings.workCycleTimeout * 2 / 1000:D}");
-                return StatusCode(Status503ServiceUnavailable, TrangaSettings.workCycleTimeout * 2/ 1000);
+                Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
+                return StatusCode(Status503ServiceUnavailable, Tranga.Settings.WorkCycleTimeoutMs * 2/ 1000);
             }else
                 return NoContent();
         }

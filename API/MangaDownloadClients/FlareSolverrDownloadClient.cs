@@ -18,13 +18,13 @@ public class FlareSolverrDownloadClient : DownloadClient
             Log.Warn("Client can not click button");
         if(referrer is not null)
             Log.Warn("Client can not set referrer");
-        if (TrangaSettings.flareSolverrUrl == string.Empty)
+        if (Tranga.Settings.FlareSolverrUrl == string.Empty)
         {
             Log.Error("FlareSolverr URL is empty");
             return new(HttpStatusCode.InternalServerError, null, Stream.Null);
         }
         
-        Uri flareSolverrUri = new (TrangaSettings.flareSolverrUrl);
+        Uri flareSolverrUri = new (Tranga.Settings.FlareSolverrUrl);
         if (flareSolverrUri.Segments.Last() != "v1")
             flareSolverrUri = new UriBuilder(flareSolverrUri)
             {
@@ -35,7 +35,7 @@ public class FlareSolverrDownloadClient : DownloadClient
         {
             Timeout = TimeSpan.FromSeconds(10),
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
-            DefaultRequestHeaders = { { "User-Agent", TrangaSettings.userAgent } }
+            DefaultRequestHeaders = { { "User-Agent", Tranga.Settings.UserAgent } }
         };
 
         JObject requestObj = new()
