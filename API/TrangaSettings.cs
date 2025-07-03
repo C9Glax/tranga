@@ -1,8 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
-using API.Schema.NotificationsContext;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace API;
 
@@ -49,6 +47,8 @@ public struct TrangaSettings()
         {RequestType.Default, 60}
     };
     public Dictionary<RequestType, int> RequestLimits { get; private set; } = DefaultRequestLimits;
+
+    public string DownloadLanguage { get; private set; } = "en";
 
     public static TrangaSettings Load()
     {
@@ -99,6 +99,12 @@ public struct TrangaSettings()
     public void SetFlareSolverrUrl(string url)
     {
         this.FlareSolverrUrl = url;
+        Save();
+    }
+
+    public void SetDownloadLanguage(string language)
+    {
+        this.DownloadLanguage = language;
         Save();
     }
 }

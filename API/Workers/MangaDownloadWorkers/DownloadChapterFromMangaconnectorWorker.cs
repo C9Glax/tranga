@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
+using API.Schema.MangaContext.MangaConnectors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -10,21 +11,21 @@ using static System.IO.UnixFileMode;
 
 namespace API.Workers;
 
-public class DownloadChapterFromMangaconnectorWorker(Chapter chapter, IEnumerable<BaseWorker>? dependsOn = null)
+public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> chId, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
+    public MangaConnectorId<Chapter> MangaConnectorId { get; init; } = chId;
     protected override BaseWorker[] DoWorkInternal()
     {
+        MangaConnector mangaConnector = MangaConnectorId.MangaConnector;
+        Chapter chapter = MangaConnectorId.Obj;
         if (chapter.Downloaded)
         {
             Log.Info("Chapter was already downloaded.");
             return [];
         }
         
-        //TODO MangaConnector Selection
-        MangaConnectorId<Chapter> mcId = chapter.MangaConnectorIds.First();
-        
-        string[] imageUrls = mcId.MangaConnector.GetChapterImageUrls(mcId);
+        string[] imageUrls = mangaConnector.GetChapterImageUrls(MangaConnectorId);
         if (imageUrls.Length < 1)
         {
             Log.Info($"No imageUrls for chapter {chapter}");
