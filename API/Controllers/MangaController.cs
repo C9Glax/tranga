@@ -358,7 +358,7 @@ public class MangaController(MangaContext context) : Controller
     /// <response code="412"><see cref="Manga"/> was not linked to <see cref="MangaConnector"/>, so nothing changed</response>
     /// <response code="428"><see cref="Manga"/> is not linked to <see cref="MangaConnector"/> yet. Search for <see cref="Manga"/> on <see cref="MangaConnector"/> first (to create a <see cref="MangaConnectorId{T}"/>).</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{MangaId}/SetAsDownloadFrom/{MangaConnectorName}/{IsIsRequested}")]
+    [HttpPost("{MangaId}/SetAsDownloadFrom/{MangaConnectorName}/{IsRequested}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound,  "text/plain")]
     [ProducesResponseType<string>(Status412PreconditionFailed,  "text/plain")]
