@@ -40,7 +40,10 @@ public static class Tranga
         BasicConfigurator.Configure();
         Log.Info("Logger Configured.");
         Log.Info(TRANGA);
-        
+    }
+
+    internal static void AddDefaultWorkers()
+    {
         AddWorker(UpdateMetadataWorker);
         AddWorker(SendNotificationsWorker);
         AddWorker(UpdateChaptersDownloadedWorker);
@@ -51,7 +54,12 @@ public static class Tranga
     }
     
     internal static HashSet<BaseWorker> AllWorkers { get; private set; } = new ();
-    public static void AddWorker(BaseWorker worker) => AllWorkers.Add(worker);
+
+    public static void AddWorker(BaseWorker worker)
+    {
+        Log.Debug($"Adding {worker} to AllWorkers.");
+        AllWorkers.Add(worker);
+    }
     public static void AddWorkers(IEnumerable<BaseWorker> workers)
     {
         foreach (BaseWorker baseWorker in workers)
@@ -67,6 +75,7 @@ public static class Tranga
         foreach (BaseWorker worker in baseWorkers)
         {
              StopWorker(worker);
+             Log.Debug($"Removing {removeWorker} from AllWorkers.");
              AllWorkers.Remove(worker);
         }
     }
