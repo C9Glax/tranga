@@ -1,5 +1,5 @@
+using API.MangaConnectors;
 using API.Schema.MangaContext;
-using API.Schema.MangaContext.MangaConnectors;
 
 namespace API.Workers;
 
@@ -9,12 +9,13 @@ public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId,
     internal readonly string MangaConnectorIdId = mcId.Key;
     protected override BaseWorker[] DoWorkInternal()
     {
-        if (DbContext.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } MangaConnectorId)
+        if (DbContext.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } mangaConnectorId)
             return []; //TODO Exception?
-        MangaConnector mangaConnector = MangaConnectorId.MangaConnector;
-        Manga manga = MangaConnectorId.Obj;
+        if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+            return []; //TODO Exception?
+        Manga manga = mangaConnectorId.Obj;
         
-        manga.CoverFileNameInCache = mangaConnector.SaveCoverImageToCache(MangaConnectorId);
+        manga.CoverFileNameInCache = mangaConnector.SaveCoverImageToCache(mangaConnectorId);
 
         DbContext.Sync();
         return [];

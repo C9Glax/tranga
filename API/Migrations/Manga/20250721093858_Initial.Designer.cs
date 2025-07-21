@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations.Manga
 {
     [DbContext(typeof(MangaContext))]
-    [Migration("20250703192023_Initial")]
+    [Migration("20250721093858_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -23,6 +23,39 @@ namespace API.Migrations.Manga
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("API.MangaConnectors.MangaConnector", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.PrimitiveCollection<string[]>("BaseUris")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("text[]");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("IconUrl")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.PrimitiveCollection<string[]>("SupportedLanguages")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("MangaConnector");
+
+                    b.HasDiscriminator<string>("Name").HasValue("MangaConnector");
+
+                    b.UseTphMappingStrategy();
+                });
 
             modelBuilder.Entity("API.Schema.MangaContext.Author", b =>
                 {
@@ -177,8 +210,6 @@ namespace API.Migrations.Manga
 
                     b.HasKey("Key");
 
-                    b.HasIndex("MangaConnectorName");
-
                     b.HasIndex("ObjId");
 
                     b.ToTable("MangaConnectorToChapter");
@@ -213,44 +244,9 @@ namespace API.Migrations.Manga
 
                     b.HasKey("Key");
 
-                    b.HasIndex("MangaConnectorName");
-
                     b.HasIndex("ObjId");
 
                     b.ToTable("MangaConnectorToManga");
-                });
-
-            modelBuilder.Entity("API.Schema.MangaContext.MangaConnectors.MangaConnector", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
-                    b.PrimitiveCollection<string[]>("BaseUris")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("text[]");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("IconUrl")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)");
-
-                    b.PrimitiveCollection<string[]>("SupportedLanguages")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("text[]");
-
-                    b.HasKey("Name");
-
-                    b.ToTable("MangaConnectors");
-
-                    b.HasDiscriminator<string>("Name").HasValue("MangaConnector");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("API.Schema.MangaContext.MangaTag", b =>
@@ -332,23 +328,23 @@ namespace API.Migrations.Manga
                     b.ToTable("MangaTagToManga");
                 });
 
-            modelBuilder.Entity("API.Schema.MangaContext.MangaConnectors.ComickIo", b =>
+            modelBuilder.Entity("API.MangaConnectors.ComickIo", b =>
                 {
-                    b.HasBaseType("API.Schema.MangaContext.MangaConnectors.MangaConnector");
+                    b.HasBaseType("API.MangaConnectors.MangaConnector");
 
                     b.HasDiscriminator().HasValue("ComickIo");
                 });
 
-            modelBuilder.Entity("API.Schema.MangaContext.MangaConnectors.Global", b =>
+            modelBuilder.Entity("API.MangaConnectors.Global", b =>
                 {
-                    b.HasBaseType("API.Schema.MangaContext.MangaConnectors.MangaConnector");
+                    b.HasBaseType("API.MangaConnectors.MangaConnector");
 
                     b.HasDiscriminator().HasValue("Global");
                 });
 
-            modelBuilder.Entity("API.Schema.MangaContext.MangaConnectors.MangaDex", b =>
+            modelBuilder.Entity("API.MangaConnectors.MangaDex", b =>
                 {
-                    b.HasBaseType("API.Schema.MangaContext.MangaConnectors.MangaConnector");
+                    b.HasBaseType("API.MangaConnectors.MangaConnector");
 
                     b.HasDiscriminator().HasValue("MangaDex");
                 });
@@ -445,38 +441,22 @@ namespace API.Migrations.Manga
 
             modelBuilder.Entity("API.Schema.MangaContext.MangaConnectorId<API.Schema.MangaContext.Chapter>", b =>
                 {
-                    b.HasOne("API.Schema.MangaContext.MangaConnectors.MangaConnector", "MangaConnector")
-                        .WithMany()
-                        .HasForeignKey("MangaConnectorName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("API.Schema.MangaContext.Chapter", "Obj")
                         .WithMany("MangaConnectorIds")
                         .HasForeignKey("ObjId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("MangaConnector");
-
                     b.Navigation("Obj");
                 });
 
             modelBuilder.Entity("API.Schema.MangaContext.MangaConnectorId<API.Schema.MangaContext.Manga>", b =>
                 {
-                    b.HasOne("API.Schema.MangaContext.MangaConnectors.MangaConnector", "MangaConnector")
-                        .WithMany()
-                        .HasForeignKey("MangaConnectorName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("API.Schema.MangaContext.Manga", "Obj")
                         .WithMany("MangaConnectorIds")
                         .HasForeignKey("ObjId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("MangaConnector");
 
                     b.Navigation("Obj");
                 });

@@ -18,17 +18,7 @@ public class Manga : Identifiable
     [JsonIgnore] [Url] [StringLength(512)] public string CoverUrl { get; internal set; }
     [Required] public MangaReleaseStatus ReleaseStatus { get; internal set; }
     [StringLength(64)] public string? LibraryId { get; private set; }
-    private FileLibrary? _library;
-    [JsonIgnore]
-    public FileLibrary? Library
-    {
-        get => _lazyLoader.Load(this, ref _library);
-        set
-        {
-            LibraryId = value?.Key;
-            _library = value;
-        }
-    }
+    [JsonIgnore] public FileLibrary? Library = null!;
 
     public ICollection<Author> Authors { get; internal set; }= null!;
     public ICollection<MangaTag> MangaTags { get; internal set; }= null!;
@@ -45,25 +35,11 @@ public class Manga : Identifiable
     public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
 
     [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.Key).ToList();
-    private ICollection<Chapter>? _chapters;
-    [JsonIgnore]
-    public ICollection<Chapter> Chapters
-    {
-        get => _lazyLoader.Load(this, ref _chapters) ?? throw new InvalidOperationException();
-        init => _chapters = value;
-    }
+    [JsonIgnore] public ICollection<Chapter> Chapters = null!;
 
     [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors =>
         MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
-    private ICollection<MangaConnectorId<Manga>>? _mangaConnectorIds;
-    [JsonIgnore]
-    public ICollection<MangaConnectorId<Manga>> MangaConnectorIds
-    {
-        get => _lazyLoader.Load(this, ref _mangaConnectorIds) ?? throw new InvalidOperationException();
-        private set => _mangaConnectorIds = value;
-    }
-
-    private readonly ILazyLoader _lazyLoader = null!;
+    [JsonIgnore] public ICollection<MangaConnectorId<Manga>> MangaConnectorIds = null!;
 
     public Manga(string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,
         ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<AltTitle> altTitles,
@@ -89,12 +65,11 @@ public class Manga : Identifiable
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    public Manga(ILazyLoader lazyLoader, string key, string name, string description, string coverUrl,
+    public Manga(string key, string name, string description, string coverUrl,
         MangaReleaseStatus releaseStatus,
         string directoryName, float ignoreChaptersBefore, string? libraryId, uint? year, string? originalLanguage)
         : base(key)
     {
-        this._lazyLoader = lazyLoader;
         this.Name = name;
         this.Description = description;
         this.CoverUrl = coverUrl;

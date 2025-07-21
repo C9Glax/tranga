@@ -2,11 +2,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
+using API.Schema.MangaContext;
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace API.Schema.MangaContext.MangaConnectors;
+namespace API.MangaConnectors;
 
 [PrimaryKey("Name")]
 public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)

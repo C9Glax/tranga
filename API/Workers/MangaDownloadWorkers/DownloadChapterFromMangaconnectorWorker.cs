@@ -1,8 +1,8 @@
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using API.MangaConnectors;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
-using API.Schema.MangaContext.MangaConnectors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -17,17 +17,18 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     internal readonly string MangaConnectorIdId = chId.Key;
     protected override BaseWorker[] DoWorkInternal()
     {
-        if (DbContext.MangaConnectorToChapter.Find(MangaConnectorIdId) is not { } MangaConnectorId)
+        if (DbContext.MangaConnectorToChapter.Find(MangaConnectorIdId) is not { } mangaConnectorId)
             return []; //TODO Exception?
-        MangaConnector mangaConnector = MangaConnectorId.MangaConnector;
-        Chapter chapter = MangaConnectorId.Obj;
+        if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+            return []; //TODO Exception?
+        Chapter chapter = mangaConnectorId.Obj;
         if (chapter.Downloaded)
         {
             Log.Info("Chapter was already downloaded.");
             return [];
         }
         
-        string[] imageUrls = mangaConnector.GetChapterImageUrls(MangaConnectorId);
+        string[] imageUrls = mangaConnector.GetChapterImageUrls(mangaConnectorId);
         if (imageUrls.Length < 1)
         {
             Log.Info($"No imageUrls for chapter {chapter}");
@@ -147,10 +148,15 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
         
         //TODO MangaConnector Selection
-        MangaConnectorId<Manga> mcId = manga.MangaConnectorIds.First();
+        MangaConnectorId<Manga> mangaConnectorId = manga.MangaConnectorIds.First();
+        if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+        {
+            Log.Error($"MangaConnector with name {mangaConnectorId.MangaConnectorName} could not be found");
+            return;
+        }
 
         Log.Info($"Copying cover to {publicationFolder}");
-        string? fileInCache = manga.CoverFileNameInCache ?? mcId.MangaConnector.SaveCoverImageToCache(mcId);
+        string? fileInCache = manga.CoverFileNameInCache ?? mangaConnector.SaveCoverImageToCache(mangaConnectorId);
         if (fileInCache is null)
         {
             Log.Error($"File {fileInCache} does not exist");

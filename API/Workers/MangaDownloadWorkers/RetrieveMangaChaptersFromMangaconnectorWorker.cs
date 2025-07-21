@@ -1,5 +1,5 @@
+using API.MangaConnectors;
 using API.Schema.MangaContext;
-using API.Schema.MangaContext.MangaConnectors;
 
 namespace API.Workers;
 
@@ -9,13 +9,14 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
     internal readonly string MangaConnectorIdId = mcId.Key;
     protected override BaseWorker[] DoWorkInternal()
     {
-        if (DbContext.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } MangaConnectorId)
+        if (DbContext.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } mangaConnectorId)
             return []; //TODO Exception?
-        MangaConnector mangaConnector = MangaConnectorId.MangaConnector;
-        Manga manga = MangaConnectorId.Obj;
+        if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+            return []; //TODO Exception?
+        Manga manga = mangaConnectorId.Obj;
         // This gets all chapters that are not downloaded
         (Chapter, MangaConnectorId<Chapter>)[] allChapters =
-            mangaConnector.GetChapters(MangaConnectorId, language).DistinctBy(c => c.Item1.Key).ToArray();
+            mangaConnector.GetChapters(mangaConnectorId, language).DistinctBy(c => c.Item1.Key).ToArray();
 
         int addedChapters = 0;
         foreach ((Chapter chapter, MangaConnectorId<Chapter> mcId) newChapter in allChapters)

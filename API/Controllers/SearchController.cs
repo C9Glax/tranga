@@ -1,5 +1,5 @@
+using API.MangaConnectors;
 using API.Schema.MangaContext;
-using API.Schema.MangaContext.MangaConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -26,7 +26,7 @@ public class SearchController(MangaContext context) : Controller
     [ProducesResponseType(Status406NotAcceptable)]
     public IActionResult SearchManga(string MangaConnectorName, string Query)
     {
-        if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
+        if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return NotFound();
         if (connector.Enabled is false)
             return StatusCode(Status412PreconditionFailed);
@@ -56,7 +56,7 @@ public class SearchController(MangaContext context) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public IActionResult GetMangaFromUrl([FromBody]string url)
     {
-        if (context.MangaConnectors.Find("Global") is not { } connector)
+        if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals("Global", StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return StatusCode(Status500InternalServerError, "Could not find Global Connector.");
 
         if(connector.GetMangaFromUrl(url) is not { } manga)

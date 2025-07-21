@@ -13,30 +13,12 @@ namespace API.Schema.MangaContext;
 public class Chapter : Identifiable, IComparable<Chapter>
 {
     [StringLength(64)] [Required] public string ParentMangaId { get; init; } = null!;
-    private Manga? _parentManga;
-
-    [JsonIgnore]
-    public Manga ParentManga
-    {
-        get => _lazyLoader.Load(this, ref _parentManga) ?? throw new InvalidOperationException();
-        init
-        {
-            ParentMangaId = value.Key;
-            _parentManga = value;
-        }
-    }
+    [JsonIgnore] public Manga ParentManga = null!;
 
     [NotMapped]
     public Dictionary<string, string> IdsOnMangaConnectors =>
         MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
-
-    private ICollection<MangaConnectorId<Chapter>>? _mangaConnectorIds;
-    [JsonIgnore]
-    public ICollection<MangaConnectorId<Chapter>> MangaConnectorIds
-    {
-        get => _lazyLoader.Load(this, ref _mangaConnectorIds) ?? throw new InvalidOperationException();
-        init => _mangaConnectorIds = value;
-    }
+    [JsonIgnore] public ICollection<MangaConnectorId<Chapter>> MangaConnectorIds = null!;
 
     public int? VolumeNumber { get; private set; }
     [StringLength(10)] [Required] public string ChapterNumber { get; private set; }
@@ -47,8 +29,6 @@ public class Chapter : Identifiable, IComparable<Chapter>
 
     [Required] public bool Downloaded { get; internal set; }
     [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
-
-    private readonly ILazyLoader _lazyLoader = null!;
 
     public Chapter(Manga parentManga, string chapterNumber,
         int? volumeNumber, string? title = null)
@@ -66,10 +46,9 @@ public class Chapter : Identifiable, IComparable<Chapter>
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal Chapter(ILazyLoader lazyLoader, string key, int? volumeNumber, string chapterNumber, string? title, string fileName, bool downloaded)
+    internal Chapter(string key, int? volumeNumber, string chapterNumber, string? title, string fileName, bool downloaded)
         : base(key)
     {
-        this._lazyLoader = lazyLoader;
         this.VolumeNumber = volumeNumber;
         this.ChapterNumber = chapterNumber;
         this.Title = title;

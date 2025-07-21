@@ -1,8 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using API.MangaDownloadClients;
+using API.Schema.MangaContext;
 using Newtonsoft.Json.Linq;
 
-namespace API.Schema.MangaContext.MangaConnectors;
+namespace API.MangaConnectors;
 
 public class ComickIo : MangaConnector
 {

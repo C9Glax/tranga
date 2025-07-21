@@ -1,4 +1,4 @@
-﻿using API.Schema.MangaContext.MangaConnectors;
+﻿using API.MangaConnectors;
 using API.Schema.MangaContext.MetadataFetchers;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +6,6 @@ namespace API.Schema.MangaContext;
 
 public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseContext<MangaContext>(options)
 {
-    public DbSet<MangaConnector> MangaConnectors { get; set; }
     public DbSet<Manga> Mangas { get; set; }
     public DbSet<FileLibrary> FileLibraries { get; set; }
     public DbSet<Chapter> Chapters { get; set; }
@@ -31,26 +30,12 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .WithOne(c => c.ParentManga)
             .HasForeignKey(c => c.ParentMangaId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.Chapters)
-            .EnableLazyLoading();
-        modelBuilder.Entity<Chapter>()
-            .Navigation(c => c.ParentManga)
-            .EnableLazyLoading();
         //Chapter has MangaConnectorIds
         modelBuilder.Entity<Chapter>()
             .HasMany<MangaConnectorId<Chapter>>(c => c.MangaConnectorIds)
             .WithOne(id => id.Obj)
             .HasForeignKey(id => id.ObjId)
             .OnDelete(DeleteBehavior.NoAction);
-        modelBuilder.Entity<MangaConnectorId<Chapter>>()
-            .HasOne<MangaConnector>(id => id.MangaConnector)
-            .WithMany()
-            .HasForeignKey(id => id.MangaConnectorName)
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<MangaConnectorId<Chapter>>()
-            .Navigation(entry => entry.MangaConnector)
-            .EnableLazyLoading();
         //Manga owns MangaAltTitles
         modelBuilder.Entity<Manga>()
             .OwnsMany<AltTitle>(m => m.AltTitles)
@@ -95,17 +80,6 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .WithOne(id => id.Obj)
             .HasForeignKey(id => id.ObjId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.MangaConnectorIds)
-            .EnableLazyLoading();
-        modelBuilder.Entity<MangaConnectorId<Manga>>()
-            .HasOne<MangaConnector>(id => id.MangaConnector)
-            .WithMany()
-            .HasForeignKey(id => id.MangaConnectorName)
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<MangaConnectorId<Manga>>()
-            .Navigation(entry => entry.MangaConnector)
-            .EnableLazyLoading();
         
         
         //FileLibrary has many Mangas
@@ -114,9 +88,6 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .WithOne(m => m.Library)
             .HasForeignKey(m => m.LibraryId)
             .OnDelete(DeleteBehavior.SetNull);
-        modelBuilder.Entity<Manga>()
-            .Navigation(m => m.Library)
-            .EnableLazyLoading();
         
         modelBuilder.Entity<MetadataFetcher>()
             .HasDiscriminator<string>(nameof(MetadataEntry))

@@ -1,17 +1,17 @@
-﻿namespace API.Schema.MangaContext.MangaConnectors;
+﻿using API.Schema.MangaContext;
+
+namespace API.MangaConnectors;
 
 public class Global : MangaConnector
 {
-    private MangaContext context { get; init; }
-    public Global(MangaContext context) : base("Global", ["all"], [""], "")
+    public Global() : base("Global", ["all"], [""], "")
     {
-        this.context = context;
     }
 
     public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
         //Get all enabled Connectors
-        MangaConnector[] enabledConnectors = context.MangaConnectors.Where(c => c.Enabled && c.Name != "Global").ToArray();
+        MangaConnector[] enabledConnectors = Tranga.MangaConnectors.Where(c => c.Enabled && c.Name != "Global").ToArray();
         
         //Create Task for each MangaConnector to search simultaneously
         Task<(Manga, MangaConnectorId<Manga>)[]>[] tasks =
@@ -32,7 +32,7 @@ public class Global : MangaConnector
 
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
-        MangaConnector? mc = context.MangaConnectors.ToArray().FirstOrDefault(c => c.UrlMatchesConnector(url));
+        MangaConnector? mc = Tranga.MangaConnectors.FirstOrDefault(c => c.UrlMatchesConnector(url));
         return mc?.GetMangaFromUrl(url) ?? null;
     }
 
@@ -44,11 +44,15 @@ public class Global : MangaConnector
     public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga,
         string? language = null)
     {
-        return manga.MangaConnector.GetChapters(manga, language);
+        if (!Tranga.TryGetMangaConnector(manga.MangaConnectorName, out MangaConnector? mangaConnector))
+            return [];
+        return mangaConnector.GetChapters(manga, language);
     }
 
     internal override string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId)
     {
-        return chapterId.MangaConnector.GetChapterImageUrls(chapterId);
+        if (!Tranga.TryGetMangaConnector(chapterId.MangaConnectorName, out MangaConnector? mangaConnector))
+            return [];
+        return mangaConnector.GetChapterImageUrls(chapterId);
     }
 }

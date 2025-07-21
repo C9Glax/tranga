@@ -1,5 +1,5 @@
-﻿using API.Schema.MangaContext;
-using API.Schema.MangaContext.MangaConnectors;
+﻿using API.MangaConnectors;
+using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -20,7 +20,7 @@ public class MangaConnectorController(MangaContext context) : Controller
     [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetConnectors()
     {
-        return Ok(context.MangaConnectors.Select(c => c.Name).ToArray());
+        return Ok(Tranga.MangaConnectors.Select(c => c.Name).ToArray());
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class MangaConnectorController(MangaContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetConnector(string MangaConnectorName)
     {
-        if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
+        if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return NotFound();
         
         return Ok(connector);
@@ -49,7 +49,7 @@ public class MangaConnectorController(MangaContext context) : Controller
     public IActionResult GetEnabledConnectors()
     {
         
-        return Ok(context.MangaConnectors.Where(c => c.Enabled).ToArray());
+        return Ok(Tranga.MangaConnectors.Where(c => c.Enabled).ToArray());
     }
     
     /// <summary>
@@ -61,7 +61,7 @@ public class MangaConnectorController(MangaContext context) : Controller
     public IActionResult GetDisabledConnectors()
     {
         
-        return Ok(context.MangaConnectors.Where(c => c.Enabled == false).ToArray());
+        return Ok(Tranga.MangaConnectors.Where(c => c.Enabled == false).ToArray());
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class MangaConnectorController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult SetEnabled(string MangaConnectorName, bool Enabled)
     {
-        if(context.MangaConnectors.Find(MangaConnectorName) is not { } connector)
+        if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return NotFound();
         
         connector.Enabled = Enabled;

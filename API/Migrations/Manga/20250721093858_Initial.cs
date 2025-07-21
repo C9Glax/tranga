@@ -36,7 +36,7 @@ namespace API.Migrations.Manga
                 });
 
             migrationBuilder.CreateTable(
-                name: "MangaConnectors",
+                name: "MangaConnector",
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
@@ -47,7 +47,7 @@ namespace API.Migrations.Manga
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MangaConnectors", x => x.Name);
+                    table.PrimaryKey("PK_MangaConnector", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,12 +202,6 @@ namespace API.Migrations.Manga
                 {
                     table.PrimaryKey("PK_MangaConnectorToManga", x => x.Key);
                     table.ForeignKey(
-                        name: "FK_MangaConnectorToManga_MangaConnectors_MangaConnectorName",
-                        column: x => x.MangaConnectorName,
-                        principalTable: "MangaConnectors",
-                        principalColumn: "Name",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_MangaConnectorToManga_Mangas_ObjId",
                         column: x => x.ObjId,
                         principalTable: "Mangas",
@@ -283,12 +277,6 @@ namespace API.Migrations.Manga
                         column: x => x.ObjId,
                         principalTable: "Chapters",
                         principalColumn: "Key");
-                    table.ForeignKey(
-                        name: "FK_MangaConnectorToChapter_MangaConnectors_MangaConnectorName",
-                        column: x => x.MangaConnectorName,
-                        principalTable: "MangaConnectors",
-                        principalColumn: "Name",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -312,19 +300,9 @@ namespace API.Migrations.Manga
                 column: "MangaKey");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MangaConnectorToChapter_MangaConnectorName",
-                table: "MangaConnectorToChapter",
-                column: "MangaConnectorName");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MangaConnectorToChapter_ObjId",
                 table: "MangaConnectorToChapter",
                 column: "ObjId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MangaConnectorToManga_MangaConnectorName",
-                table: "MangaConnectorToManga",
-                column: "MangaConnectorName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MangaConnectorToManga_ObjId",
@@ -360,6 +338,9 @@ namespace API.Migrations.Manga
                 name: "Link");
 
             migrationBuilder.DropTable(
+                name: "MangaConnector");
+
+            migrationBuilder.DropTable(
                 name: "MangaConnectorToChapter");
 
             migrationBuilder.DropTable(
@@ -376,9 +357,6 @@ namespace API.Migrations.Manga
 
             migrationBuilder.DropTable(
                 name: "Chapters");
-
-            migrationBuilder.DropTable(
-                name: "MangaConnectors");
 
             migrationBuilder.DropTable(
                 name: "Tags");

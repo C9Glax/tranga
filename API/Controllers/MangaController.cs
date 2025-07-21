@@ -1,5 +1,5 @@
-﻿using API.Schema.MangaContext;
-using API.Schema.MangaContext.MangaConnectors;
+﻿using API.MangaConnectors;
+using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -368,7 +368,7 @@ public class MangaController(MangaContext context) : Controller
     {
         if (context.Mangas.Find(MangaId) is null)
             return NotFound(nameof(MangaId));
-        if(context.MangaConnectors.Find(MangaConnectorName) is null)
+        if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return NotFound(nameof(MangaConnectorName));
 
         if (context.MangaConnectorToManga.FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == MangaId) is not { } mcId)

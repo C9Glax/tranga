@@ -1,8 +1,8 @@
 using System.Reflection;
 using API;
+using API.MangaConnectors;
 using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
-using API.Schema.MangaContext.MangaConnectors;
 using API.Schema.NotificationsContext;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
@@ -109,14 +109,6 @@ using (IServiceScope scope = app.Services.CreateScope())
     MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
     context.Database.Migrate();
     
-    MangaConnector[] connectors =
-    [
-        new MangaDex(),
-        new ComickIo(),
-        new Global(scope.ServiceProvider.GetService<MangaContext>()!)
-    ];
-    MangaConnector[] newConnectors = connectors.Where(c => !context.MangaConnectors.Contains(c)).ToArray();
-    context.MangaConnectors.AddRange(newConnectors);
     if (!context.FileLibraries.Any())
         context.FileLibraries.Add(new FileLibrary(Tranga.Settings.DownloadLocation, "Default FileLibrary"));
     

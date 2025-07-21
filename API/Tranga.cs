@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using API.MangaConnectors;
 using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
@@ -25,6 +26,7 @@ public static class Tranga
     public static Thread PeriodicWorkerStarterThread { get; } = new (WorkerStarter);
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
+    internal static readonly MangaConnector[] MangaConnectors = [new Global(), new MangaDex(), new ComickIo()];
     internal static TrangaSettings Settings = TrangaSettings.Load();
     
     internal static readonly UpdateMetadataWorker UpdateMetadataWorker = new ();
@@ -51,6 +53,13 @@ public static class Tranga
         AddWorker(CleanupMangaCoversWorker);
         AddWorker(StartNewChapterDownloadsWorker);
         AddWorker(RemoveOldNotificationsWorker);
+    }
+
+    internal static bool TryGetMangaConnector(string name, [NotNullWhen(true)]out MangaConnector? mangaConnector)
+    {
+        mangaConnector =
+            MangaConnectors.FirstOrDefault(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        return mangaConnector != null;
     }
     
     internal static HashSet<BaseWorker> AllWorkers { get; private set; } = new ();
