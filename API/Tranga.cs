@@ -75,7 +75,7 @@ public static class Tranga
 
     public static void AddWorker(BaseWorker worker)
     {
-        Log.Debug($"Adding {worker}");
+        Log.Debug($"Adding Worker {worker}");
         StartWorker(worker);
         if(worker is IPeriodic periodic)
             AddPeriodicWorker(worker, periodic);
@@ -90,7 +90,7 @@ public static class Tranga
 
     private static Task PeriodicTask(BaseWorker worker, IPeriodic periodic) => new (() =>
     {
-        Log.Debug($"Waiting {periodic.Interval} for {worker}");
+        Log.Debug($"Waiting {periodic.Interval} for next run of {worker}");
         Thread.Sleep(periodic.Interval);
         StartWorker(worker, RefreshTask(worker, periodic));
     });
@@ -99,6 +99,7 @@ public static class Tranga
     {
         if (worker.State < WorkerExecutionState.Created) //Failed
             return;
+        Log.Debug($"Refreshing {worker}");
         PeriodicWorkers[(worker as IPeriodic)!] = PeriodicTask(worker, periodic);
         PeriodicWorkers[(worker as IPeriodic)!].Start();
     };
@@ -139,12 +140,14 @@ public static class Tranga
 
     private static Action AfterWork(BaseWorker worker, Action? callback) => () =>
     {
+        Log.Debug($"AfterWork {worker}");
         RunningWorkers.Remove(worker, out _);
         callback?.Invoke();
     };
 
     internal static void StopWorker(BaseWorker worker)
     {
+        Log.Debug($"Stopping {worker}");
         if(worker is IPeriodic periodicWorker)
             PeriodicWorkers.Remove(periodicWorker);
         worker.Cancel();
