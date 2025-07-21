@@ -68,7 +68,7 @@ public abstract class BaseWorker : Identifiable
     /// <item>If <see cref="BaseWorker"/> has run, additional <see cref="BaseWorker"/>.</item>
     /// </list>
     /// </returns>
-    public Task<BaseWorker[]> DoWork()
+    public Task<BaseWorker[]> DoWork(Action? callback = null)
     {
         Log.Debug($"Checking {this}");
         this.State = WorkerExecutionState.Waiting;
@@ -93,6 +93,7 @@ public abstract class BaseWorker : Identifiable
         });
         task.Start();
         this.State = WorkerExecutionState.Running;
+        callback?.Invoke();
         return task;
     }
     

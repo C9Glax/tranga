@@ -135,11 +135,9 @@ using (IServiceScope scope = app.Services.CreateScope())
     context.Sync();
 }
 
+Tranga.SetServiceProvider(app.Services);
 Tranga.StartLogger();
-
 Tranga.AddDefaultWorkers();
-
-Tranga.PeriodicWorkerStarterThread.Start(app.Services);
 
 app.UseCors("AllowAll");
 

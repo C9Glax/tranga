@@ -20,7 +20,7 @@ public class WorkerController() : Controller
     [ProducesResponseType<string[]>(Status200OK, "application/json")]
     public IActionResult GetAllWorkers()
     {
-        return Ok(Tranga.AllWorkers.Select(w => w.Key).ToArray());
+        return Ok(Tranga.GetRunningWorkers().Select(w => w.Key).ToArray());
     }
     
     /// <summary>
@@ -32,7 +32,7 @@ public class WorkerController() : Controller
     [ProducesResponseType<BaseWorker[]>(Status200OK, "application/json")]
     public IActionResult GetWorkers([FromBody]string[] WorkerIds)
     {
-        return Ok(Tranga.AllWorkers.Where(worker => WorkerIds.Contains(worker.Key)).ToArray());
+        return Ok(Tranga.GetRunningWorkers().Where(worker => WorkerIds.Contains(worker.Key)).ToArray());
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class WorkerController() : Controller
     [ProducesResponseType<BaseWorker[]>(Status200OK, "application/json")]
     public IActionResult GetWorkersInState(WorkerExecutionState State)
     {
-        return Ok(Tranga.AllWorkers.Where(worker => worker.State == State).ToArray());
+        return Ok(Tranga.GetRunningWorkers().Where(worker => worker.State == State).ToArray());
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class WorkerController() : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetWorker(string WorkerId)
     {
-        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.GetRunningWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         return Ok(worker);
     }
@@ -74,37 +74,10 @@ public class WorkerController() : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult DeleteWorker(string WorkerId)
     {
-        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.GetRunningWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
-        Tranga.RemoveWorker(worker);
+        Tranga.StopWorker(worker);
         return Ok();
-    }
-
-    /// <summary>
-    /// Modify <see cref="BaseWorker"/> with <paramref name="WorkerId"/>
-    /// </summary>
-    /// <param name="WorkerId"><see cref="BaseWorker"/>.Key</param>
-    /// <param name="modifyWorkerRecord">Fields to modify, set to null to keep previous value</param>
-    /// <response code="202"></response>
-    /// <response code="400"></response>
-    /// <response code="404"><see cref="BaseWorker"/> with <paramref name="WorkerId"/> could not be found</response>
-    /// <response code="409"><see cref="BaseWorker"/> is not <see cref="IPeriodic"/>, can not modify <paramref name="modifyWorkerRecord.IntervalMs"/></response>
-    [HttpPatch("{WorkerId}")]
-    [ProducesResponseType<BaseWorker>(Status202Accepted, "application/json")]
-    [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status409Conflict, "text/plain")]
-    public IActionResult ModifyWorker(string WorkerId, [FromBody]ModifyWorkerRecord modifyWorkerRecord)
-    {
-        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
-            return NotFound(nameof(WorkerId));
-        
-        if(modifyWorkerRecord.IntervalMs is not null && worker is not IPeriodic)
-            return Conflict("Can not modify Interval of non-Periodic worker");
-        else if(modifyWorkerRecord.IntervalMs is not null && worker is IPeriodic periodic)
-            periodic.Interval = TimeSpan.FromMilliseconds((long)modifyWorkerRecord.IntervalMs);
-        
-        return Accepted(worker);
     }
 
     /// <summary>
@@ -120,13 +93,13 @@ public class WorkerController() : Controller
     [ProducesResponseType<string>(Status412PreconditionFailed, "text/plain")]
     public IActionResult StartWorker(string WorkerId)
     {
-        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.GetRunningWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         
         if (worker.State >= WorkerExecutionState.Waiting)
             return StatusCode(Status412PreconditionFailed, "Already running");
 
-        Tranga.MarkWorkerForStart(worker);
+        Tranga.StartWorker(worker);
         return Ok();
     }
 
@@ -141,7 +114,7 @@ public class WorkerController() : Controller
     [ProducesResponseType(Status501NotImplemented)]
     public IActionResult StopWorker(string WorkerId)
     {
-        if(Tranga.AllWorkers.FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
+        if(Tranga.GetRunningWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
             return NotFound(nameof(WorkerId));
         
         if(worker.State is < WorkerExecutionState.Running or >= WorkerExecutionState.Completed)
