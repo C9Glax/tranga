@@ -36,6 +36,7 @@ public static class Tranga
     internal static readonly CleanupMangaCoversWorker CleanupMangaCoversWorker = new();
     internal static readonly StartNewChapterDownloadsWorker StartNewChapterDownloadsWorker = new();
     internal static readonly RemoveOldNotificationsWorker RemoveOldNotificationsWorker = new();
+    internal static readonly UpdateCoversWorker UpdateCoversWorker = new();
 
     internal static void StartLogger()
     {
@@ -53,6 +54,7 @@ public static class Tranga
         AddWorker(CleanupMangaCoversWorker);
         AddWorker(StartNewChapterDownloadsWorker);
         AddWorker(RemoveOldNotificationsWorker);
+        AddWorker(UpdateCoversWorker);
     }
 
     internal static bool TryGetMangaConnector(string name, [NotNullWhen(true)]out MangaConnector? mangaConnector)
