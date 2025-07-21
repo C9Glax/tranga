@@ -146,17 +146,19 @@ public static class Tranga
             RunningWorkers.Remove(worker);
             foreach (BaseWorker newWorker in task.Result)
                 AllWorkers.Add(newWorker);
+            if (worker is not IPeriodic)
+                AllWorkers.Remove(worker);
             task.Dispose();
         }
     }
 
     private static IEnumerable<BaseWorker> DueWorkers(this IEnumerable<BaseWorker> workers)
     {
-        return workers.Where(w =>
+        return workers.Where(worker =>
         {
-            if (w.State is >= WorkerExecutionState.Running and < WorkerExecutionState.Completed)
+            if (worker.State is >= WorkerExecutionState.Running and < WorkerExecutionState.Completed)
                 return false;
-            if (w is IPeriodic periodicWorker)
+            if (worker is IPeriodic periodicWorker)
                 return periodicWorker.IsDue;
             return true;
         });
