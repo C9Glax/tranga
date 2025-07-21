@@ -412,7 +412,7 @@ public class MangaController(MangaContext context) : Controller
     {
         if (context.Mangas.Find(MangaId) is null)
             return NotFound(nameof(MangaId));
-        if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
+        if(!Tranga.TryGetMangaConnector(MangaConnectorName, out MangaConnector? mangaConnector))
             return NotFound(nameof(MangaConnectorName));
 
         if (context.MangaConnectorToManga
@@ -435,5 +435,25 @@ public class MangaController(MangaContext context) : Controller
         Tranga.AddWorkers([downloadCover, retrieveChapters]);
         
         return Ok();
+    }
+    
+    /// <summary>
+    /// Initiate a search for <see cref="Manga"/> on a different <see cref="MangaConnector"/>
+    /// </summary>
+    /// <param name="MangaId"><see cref="Manga"/> with <paramref name="MangaId"/></param>
+    /// <param name="MangaConnectorName"><see cref="MangaConnector"/>.Name</param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="MangaConnector"/> with Name not found</response>
+    /// <response code="412"><see cref="MangaConnector"/> with Name is disabled</response>
+    [HttpPost("{MangaId}/SearchOn/{MangaConnectorName}")]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType(Status406NotAcceptable)]
+    public IActionResult SearchOnDifferentConnector(string MangaId, string MangaConnectorName)
+    {
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound(nameof(MangaId));
+
+        return new SearchController(context).SearchManga(MangaConnectorName, manga.Name);
     }
 }
