@@ -48,30 +48,29 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// Creates a new <see cref="NotificationConnector"/>
     /// </summary>
     /// <remarks>Formatting placeholders: "%title" and "%text" can be placed in url, header-values and body and will be replaced when notifications are sent</remarks>
-    /// <response code="201"></response>
+    /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
-    [ProducesResponseType(Status201Created)]
-    [ProducesResponseType(Status409Conflict)]
+    [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateConnector([FromBody]NotificationConnector notificationConnector)
     {
-        
         context.NotificationConnectors.Add(notificationConnector);
+        context.Notifications.Add(new ("Added new Notification Connector!", notificationConnector.Name, NotificationUrgency.High));
         
         if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Created();
+        return Ok(notificationConnector.Name);
     }
     
     /// <summary>
     /// Creates a new Gotify-<see cref="NotificationConnector"/>
     /// </summary>
     /// <remarks>Priority needs to be between 0 and 10</remarks>
-    /// <response code="201"></response>
+    /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Gotify")]
-    [ProducesResponseType<string>(Status201Created, "application/json")]
+    [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateGotifyConnector([FromBody]GotifyRecord gotifyData)
     {
@@ -79,7 +78,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
         
         NotificationConnector gotifyConnector = new (gotifyData.Name,
             gotifyData.Endpoint, 
-            new Dictionary<string, string>() { { "X-Gotify-IDOnConnector", gotifyData.AppToken } }, 
+            new Dictionary<string, string>() { { "X-Gotify-Key", gotifyData.AppToken } }, 
             "POST", 
             $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {gotifyData.Priority}}}");
         return CreateConnector(gotifyConnector);
@@ -89,10 +88,10 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// Creates a new Ntfy-<see cref="NotificationConnector"/>
     /// </summary>
     /// <remarks>Priority needs to be between 1 and 5</remarks>
-    /// <response code="201"></response>
+    /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Ntfy")]
-    [ProducesResponseType<string>(Status201Created, "application/json")]
+    [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreateNtfyConnector([FromBody]NtfyRecord ntfyRecord)
     {
@@ -102,14 +101,13 @@ public class NotificationConnectorController(NotificationsContext context) : Con
         string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(authHeader)).Replace("=","");
         
         NotificationConnector ntfyConnector = new (ntfyRecord.Name,
-            $"{ntfyRecord.Endpoint}/{ntfyRecord.Topic}?auth={auth}", 
+            $"{ntfyRecord.Endpoint}?auth={auth}", 
             new Dictionary<string, string>()
             {
-                {"Title", "%title"},
-                {"Priority", ntfyRecord.Priority.ToString()},
+                {"Authorization", auth}
             }, 
             "POST", 
-            "%text");
+            $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {ntfyRecord.Priority} \"Topic\": \"{ntfyRecord.Topic}\"}}");
         return CreateConnector(ntfyConnector);
     }
     
@@ -117,10 +115,10 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// Creates a new Pushover-<see cref="NotificationConnector"/>
     /// </summary>
     /// <remarks>https://pushover.net/api</remarks>
-    /// <response code="201">ID of new connector</response>
+    /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Pushover")]
-    [ProducesResponseType<string>(Status201Created, "application/json")]
+    [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public IActionResult CreatePushoverConnector([FromBody]PushoverRecord pushoverRecord)
     {
@@ -154,6 +152,6 @@ public class NotificationConnectorController(NotificationsContext context) : Con
         
         if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Created();
+        return Ok();
     }
 }

@@ -44,40 +44,29 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
     public void SendNotification(string title, string notificationText)
     {
         Log.Info($"Sending notification: {title} - {notificationText}");
-        CustomWebhookFormatProvider formatProvider = new (title, notificationText);
-        string formattedUrl = string.Format(formatProvider, Url);
-        string formattedBody = string.Format(formatProvider, Body, title, notificationText);
+        string formattedUrl = FormatStr(Url, title, notificationText);
+        string formattedBody = FormatStr(Body, title, notificationText);
         Dictionary<string, string> formattedHeaders = Headers.ToDictionary(h => h.Key, 
-            h => string.Format(formatProvider, h.Value, title, notificationText));
+            h => FormatStr(h.Value, title, notificationText));
 
         HttpRequestMessage request = new(System.Net.Http.HttpMethod.Parse(HttpMethod), formattedUrl);
         foreach (var (key, value) in formattedHeaders)
             request.Headers.Add(key, value);
         request.Content = new StringContent(formattedBody);
+        request.Content.Headers.ContentType = new ("application/json");
         Log.Debug($"Request: {request}");
 
         HttpResponseMessage response = Client.Send(request);
-        Log.Debug($"Response status code: {response.StatusCode}");
+        Log.Debug($"Response status code: {response.StatusCode} {response.Content.ReadAsStringAsync().Result}");
     }
 
-    private class CustomWebhookFormatProvider(string title, string text) : IFormatProvider
+    private string FormatStr(string str, string title, string text)
     {
-        public object? GetFormat(Type? formatType)
-        {
-            return this;
-        }
-
-        public string Format(string fmt, object arg, IFormatProvider provider)
-        {
-            if(arg.GetType() != typeof(string))
-                return arg.ToString() ?? string.Empty;
-
-            StringBuilder sb = new StringBuilder(fmt);
-            sb.Replace("%title", title);
-            sb.Replace("%text", text);
+        StringBuilder sb = new (str);
+        sb.Replace("%title", title);
+        sb.Replace("%text", text);
             
-            return sb.ToString();
-        }
+        return sb.ToString();
     }
 
     public override string ToString() => $"{GetType().Name} {Name}";

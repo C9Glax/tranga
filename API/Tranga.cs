@@ -71,7 +71,7 @@ public static class Tranga
         return mangaConnector != null;
     }
     
-    internal static readonly Dictionary<IPeriodic, Task> PeriodicWorkers = new ();
+    internal static readonly ConcurrentDictionary<IPeriodic, Task> PeriodicWorkers = new ();
 
     public static void AddWorker(BaseWorker worker)
     {
@@ -84,8 +84,9 @@ public static class Tranga
     private static void AddPeriodicWorker(BaseWorker worker, IPeriodic periodic)
     {
         Log.Debug($"Adding Periodic {worker}");
-        PeriodicWorkers.Add((worker as IPeriodic)!, PeriodicTask(worker, periodic));
-        PeriodicWorkers[(worker as IPeriodic)!].Start();
+        Task periodicTask = PeriodicTask(worker, periodic);
+        PeriodicWorkers.TryAdd((worker as IPeriodic)!, periodicTask);
+        periodicTask.Start();
     }
 
     private static Task PeriodicTask(BaseWorker worker, IPeriodic periodic) => new (() =>
@@ -100,8 +101,9 @@ public static class Tranga
         if (worker.State < WorkerExecutionState.Created) //Failed
             return;
         Log.Debug($"Refreshing {worker}");
-        PeriodicWorkers[(worker as IPeriodic)!] = PeriodicTask(worker, periodic);
-        PeriodicWorkers[(worker as IPeriodic)!].Start();
+        Task periodicTask = PeriodicTask(worker, periodic);
+        PeriodicWorkers.AddOrUpdate((worker as IPeriodic)!, periodicTask, (_, _) => periodicTask);
+        periodicTask.Start();
     };
     
     public static void AddWorkers(IEnumerable<BaseWorker> workers)
@@ -149,7 +151,7 @@ public static class Tranga
     {
         Log.Debug($"Stopping {worker}");
         if(worker is IPeriodic periodicWorker)
-            PeriodicWorkers.Remove(periodicWorker);
+            PeriodicWorkers.Remove(periodicWorker, out _);
         worker.Cancel();
         RunningWorkers.Remove(worker, out _);
     }
