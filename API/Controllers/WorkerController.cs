@@ -1,7 +1,6 @@
 ﻿using API.APIEndpointRecords;
 using API.Workers;
 using Asp.Versioning;
-using log4net;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
@@ -14,14 +13,14 @@ namespace API.Controllers;
 public class WorkerController() : Controller
 {
     /// <summary>
-    /// Returns all <see cref="BaseWorker"/>
+    /// Returns all <see cref="BaseWorker"/>.Keys
     /// </summary>
-    /// <response code="200"></response>
+    /// <response code="200"><see cref="BaseWorker"/> Keys/IDs</response>
     [HttpGet]
-    [ProducesResponseType<BaseWorker[]>(Status200OK, "application/json")]
+    [ProducesResponseType<string[]>(Status200OK, "application/json")]
     public IActionResult GetAllWorkers()
     {
-        return Ok(Tranga.AllWorkers.ToArray());
+        return Ok(Tranga.AllWorkers.Select(w => w.Key).ToArray());
     }
     
     /// <summary>
