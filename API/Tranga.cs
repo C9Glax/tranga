@@ -123,24 +123,25 @@ public static class Tranga
             Log.Fatal("ServiceProvider is null");
             return;
         }
-        Action callBack = AfterWork(worker, callback);
+        Action afterWorkCallback = AfterWork(worker, callback);
+        
         if (worker is BaseWorkerWithContext<MangaContext> mangaContextWorker)
         {
             mangaContextWorker.SetScope(ServiceProvider.CreateScope());
-            RunningWorkers.TryAdd(mangaContextWorker, mangaContextWorker.DoWork(callBack));
+            RunningWorkers.TryAdd(mangaContextWorker, mangaContextWorker.DoWork(afterWorkCallback));
         }else if (worker is BaseWorkerWithContext<NotificationsContext> notificationContextWorker)
         {
             notificationContextWorker.SetScope(ServiceProvider.CreateScope());
-            RunningWorkers.TryAdd(notificationContextWorker, notificationContextWorker.DoWork(callBack));
+            RunningWorkers.TryAdd(notificationContextWorker, notificationContextWorker.DoWork(afterWorkCallback));
         }else if (worker is BaseWorkerWithContext<LibraryContext> libraryContextWorker)
         {
             libraryContextWorker.SetScope(ServiceProvider.CreateScope());
-            RunningWorkers.TryAdd(libraryContextWorker, libraryContextWorker.DoWork(callBack));
+            RunningWorkers.TryAdd(libraryContextWorker, libraryContextWorker.DoWork(afterWorkCallback));
         }else
-            RunningWorkers.TryAdd(worker, worker.DoWork(callBack));
+            RunningWorkers.TryAdd(worker, worker.DoWork(afterWorkCallback));
     }
 
-    private static Action AfterWork(BaseWorker worker, Action? callback) => () =>
+    private static Action AfterWork(BaseWorker worker, Action? callback = null) => () =>
     {
         Log.Debug($"AfterWork {worker}");
         RunningWorkers.Remove(worker, out _);

@@ -23,7 +23,7 @@ public abstract class BaseWorker : Identifiable
     public IEnumerable<BaseWorker> MissingDependencies => DependsOn.Where(d => d.State < WorkerExecutionState.Completed);
     public bool AllDependenciesFulfilled => DependsOn.All(d => d.State >= WorkerExecutionState.Completed);
     internal WorkerExecutionState State { get; private set; }
-    private static readonly CancellationTokenSource CancellationTokenSource = new(TimeSpan.FromMinutes(10));
+    private CancellationTokenSource? CancellationTokenSource = null;
     protected ILog Log { get; init; }
 
     /// <summary>
@@ -33,7 +33,7 @@ public abstract class BaseWorker : Identifiable
     {
         Log.Debug($"Cancelled {this}");
         this.State = WorkerExecutionState.Cancelled;
-        CancellationTokenSource.Cancel();
+        CancellationTokenSource?.Cancel();
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public abstract class BaseWorker : Identifiable
     {
         Log.Debug($"Failed {this}");
         this.State = WorkerExecutionState.Failed;
-        CancellationTokenSource.Cancel();
+        CancellationTokenSource?.Cancel();
     }
 
     public BaseWorker(IEnumerable<BaseWorker>? dependsOn = null)
@@ -70,9 +70,12 @@ public abstract class BaseWorker : Identifiable
     /// </returns>
     public Task<BaseWorker[]> DoWork(Action? callback = null)
     {
+        // Start the worker
         Log.Debug($"Checking {this}");
+        this.CancellationTokenSource = new(TimeSpan.FromMinutes(10));
         this.State = WorkerExecutionState.Waiting;
         
+        // Wait for dependencies, start them if necessary
         BaseWorker[] missingDependenciesThatNeedStarting = MissingDependencies.Where(d => d.State < WorkerExecutionState.Waiting).ToArray();
         if(missingDependenciesThatNeedStarting.Any())
             return new Task<BaseWorker[]>(() => missingDependenciesThatNeedStarting);
@@ -80,29 +83,32 @@ public abstract class BaseWorker : Identifiable
         if (MissingDependencies.Any())
             return new Task<BaseWorker[]>(WaitForDependencies);
         
+        // Run the actual work
         Log.Info($"Running {this}");
         DateTime startTime = DateTime.UtcNow;
         Task<BaseWorker[]> task = new (DoWorkInternal, CancellationTokenSource.Token);
-        task.GetAwaiter().OnCompleted(() =>
-        {
-            DateTime endTime = DateTime.UtcNow;
-            Log.Info($"Completed {this}\n\t{endTime.Subtract(startTime).TotalMilliseconds} ms");
-            this.State = WorkerExecutionState.Completed;
-            if(this is IPeriodic periodic)
-                periodic.LastExecution = DateTime.UtcNow;
-        });
-        task.Start();
+        task.GetAwaiter().OnCompleted(Finish(startTime, callback));
         this.State = WorkerExecutionState.Running;
-        callback?.Invoke();
+        task.Start();
         return task;
     }
+
+    private Action Finish(DateTime startTime, Action? callback = null) => () =>
+    {
+        DateTime endTime = DateTime.UtcNow;
+        Log.Info($"Completed {this}\n\t{endTime.Subtract(startTime).TotalMilliseconds} ms");
+        this.State = WorkerExecutionState.Completed;
+        if(this is IPeriodic periodic)
+            periodic.LastExecution = DateTime.UtcNow;
+        callback?.Invoke();
+    };
     
     protected abstract BaseWorker[] DoWorkInternal();
 
     private BaseWorker[] WaitForDependencies()
     {
         Log.Info($"Waiting for {MissingDependencies.Count()} Dependencies {this}:\n\t{string.Join("\n\t", MissingDependencies.Select(d => d.ToString()))}");
-        while (CancellationTokenSource.IsCancellationRequested == false && MissingDependencies.Any())
+        while (CancellationTokenSource?.IsCancellationRequested == false && MissingDependencies.Any())
         {
             Thread.Sleep(Tranga.Settings.WorkCycleTimeoutMs);  
         }
