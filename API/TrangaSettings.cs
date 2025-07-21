@@ -59,7 +59,7 @@ public struct TrangaSettings()
 
     public void Save()
     {
-        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this));
+        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented));
     }
 
     public void SetUserAgent(string value)

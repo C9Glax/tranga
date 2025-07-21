@@ -97,7 +97,7 @@ public static class Tranga
         {
             CheckRunningWorkers();
 
-            foreach (BaseWorker baseWorker in AllWorkers.DueWorkers())
+            foreach (BaseWorker baseWorker in AllWorkers.DueWorkers().ToArray())
                 StartWorkers.Add(baseWorker);
             
             foreach (BaseWorker worker in StartWorkers.ToArray())
