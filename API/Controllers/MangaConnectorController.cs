@@ -20,7 +20,7 @@ public class MangaConnectorController(MangaContext context) : Controller
     [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetConnectors()
     {
-        return Ok(Tranga.MangaConnectors.Select(c => c.Name).ToArray());
+        return Ok(Tranga.MangaConnectors.ToArray());
     }
 
     /// <summary>
@@ -48,7 +48,6 @@ public class MangaConnectorController(MangaContext context) : Controller
     [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
     public IActionResult GetEnabledConnectors()
     {
-        
         return Ok(Tranga.MangaConnectors.Where(c => c.Enabled).ToArray());
     }
     
