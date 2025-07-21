@@ -200,6 +200,10 @@ public static class Tranga
 
         if (context.Sync() is { success: false })
             return false;
+
+        DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (addMcId);
+        AddWorker(downloadCoverWorker);
+        
         return true;
     }
 
