@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using API.MangaConnectors;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -21,6 +22,8 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             return []; //TODO Exception?
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
             return []; //TODO Exception?
+        
+        DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Chapter>.Obj)).Load();
         Chapter chapter = mangaConnectorId.Obj;
         if (chapter.Downloaded)
         {
@@ -28,6 +31,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             return [];
         }
         
+        DbContext.Entry(chapter).Navigation(nameof(Chapter.ParentManga)).Load();
         string[] imageUrls = mangaConnector.GetChapterImageUrls(mangaConnectorId);
         if (imageUrls.Length < 1)
         {
@@ -83,6 +87,9 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         CopyCoverFromCacheToDownloadLocation(chapter.ParentManga);
         
         Log.Debug($"Creating ComicInfo.xml {chapter}");
+        foreach (CollectionEntry collectionEntry in DbContext.Entry(chapter.ParentManga).Collections)
+            collectionEntry.Load();
+        DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).Load();
         File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
         
         Log.Debug($"Packaging images to archive {chapter}");
@@ -148,6 +155,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
         
         //TODO MangaConnector Selection
+        DbContext.Entry(manga).Collection(m => m.MangaConnectorIds).Load();
         MangaConnectorId<Manga> mangaConnectorId = manga.MangaConnectorIds.First();
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
         {
@@ -156,6 +164,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
 
         Log.Info($"Copying cover to {publicationFolder}");
+        DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).Load();
         string? fileInCache = manga.CoverFileNameInCache ?? mangaConnector.SaveCoverImageToCache(mangaConnectorId);
         if (fileInCache is null)
         {

@@ -1,4 +1,5 @@
 using API.Schema.MangaContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
 
@@ -10,7 +11,9 @@ public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<Ba
     
     protected override BaseWorker[] DoWorkInternal()
     {
-        IQueryable<MangaConnectorId<Manga>> connectorIdsManga = DbContext.MangaConnectorToManga.Where(id => id.UseForDownload);
+        IQueryable<MangaConnectorId<Manga>> connectorIdsManga = DbContext.MangaConnectorToManga
+            .Include(id => id.Obj)
+            .Where(id => id.UseForDownload);
 
         List<BaseWorker> newWorkers = new();
         foreach (MangaConnectorId<Manga> mangaConnectorId in connectorIdsManga)

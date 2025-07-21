@@ -13,7 +13,11 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
             return []; //TODO Exception?
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
             return []; //TODO Exception?
+        
+        DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).Load();
         Manga manga = mangaConnectorId.Obj;
+        DbContext.Entry(manga).Collection(m => m.Chapters).Load();
+        
         // This gets all chapters that are not downloaded
         (Chapter, MangaConnectorId<Chapter>)[] allChapters =
             mangaConnector.GetChapters(mangaConnectorId, language).DistinctBy(c => c.Item1.Key).ToArray();

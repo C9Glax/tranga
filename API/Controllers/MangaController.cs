@@ -3,6 +3,8 @@ using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Net.Http.Headers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -21,12 +23,12 @@ public class MangaController(MangaContext context) : Controller
     /// <summary>
     /// Returns all cached <see cref="Manga"/>
     /// </summary>
-    /// <response code="200"></response>
+    /// <response code="200"><see cref="Manga"/> Keys/IDs</response>
     [HttpGet]
-    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    [ProducesResponseType<string[]>(Status200OK, "application/json")]
     public IActionResult GetAllManga()
     {
-        Manga[] ret = context.Mangas.ToArray();
+        string[] ret = context.Mangas.Select(m => m.Key).ToArray();
         return Ok(ret);
     }
     
@@ -39,7 +41,15 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetManga([FromBody]string[] MangaIds)
     {
-        Manga[] ret = context.Mangas.Where(m => MangaIds.Contains(m.Key)).ToArray();
+        Manga[] ret = context.Mangas.Where(m => MangaIds.Contains(m.Key))
+            .Include(m => m.Library)
+            .Include(m => m.Authors)
+            .Include(m => m.MangaTags)
+            .Include(m => m.Links)
+            .Include(m => m.AltTitles)
+            .Include(m => m.Chapters)
+            .Include(m => m.MangaConnectorIds)
+            .ToArray();
         return Ok(ret);
     }
 
@@ -56,6 +66,9 @@ public class MangaController(MangaContext context) : Controller
     {
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
+        foreach (CollectionEntry collectionEntry in context.Entry(manga).Collections)
+            collectionEntry.Load();
+        context.Entry(manga).Navigation(nameof(Manga.Library)).Load();
         return Ok(manga);
     }
 
@@ -99,6 +112,15 @@ public class MangaController(MangaContext context) : Controller
             return NotFound(nameof(MangaIdFrom));
         if (context.Mangas.Find(MangaIdInto) is not { } into)
             return NotFound(nameof(MangaIdInto));
+        
+        
+        foreach (CollectionEntry collectionEntry in context.Entry(from).Collections)
+            collectionEntry.Load();
+        context.Entry(from).Navigation(nameof(Manga.Library)).Load();
+        
+        foreach (CollectionEntry collectionEntry in context.Entry(into).Collections)
+            collectionEntry.Load();
+        context.Entry(into).Navigation(nameof(Manga.Library)).Load();
         
         BaseWorker[] newJobs = into.MergeFrom(from, context);
         Tranga.AddWorkers(newJobs);
@@ -173,6 +195,8 @@ public class MangaController(MangaContext context) : Controller
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
+        context.Entry(manga).Collection(m => m.Chapters).Load();
+        
         Chapter[] chapters = manga.Chapters.ToArray();
         return Ok(chapters);
     }
@@ -192,6 +216,8 @@ public class MangaController(MangaContext context) : Controller
     {
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
+        
+        context.Entry(manga).Collection(m => m.Chapters).Load();
 
         List<Chapter> chapters = manga.Chapters.Where(c => c.Downloaded).ToList();
         if (chapters.Count == 0)
@@ -215,6 +241,8 @@ public class MangaController(MangaContext context) : Controller
     {
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
+        
+        context.Entry(manga).Collection(m => m.Chapters).Load();
         
         List<Chapter> chapters = manga.Chapters.Where(c => c.Downloaded == false).ToList();
         if (chapters.Count == 0)
@@ -243,6 +271,8 @@ public class MangaController(MangaContext context) : Controller
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
+        context.Entry(manga).Collection(m => m.Chapters).Load();
+        
         List<Chapter> chapters = manga.Chapters.ToList();
         if (chapters.Count == 0)
         {
@@ -257,6 +287,10 @@ public class MangaController(MangaContext context) : Controller
         Chapter? max = chapters.Max();
         if (max is null)
             return StatusCode(Status500InternalServerError, "Max chapter could not be found");
+        
+        foreach (CollectionEntry collectionEntry in context.Entry(max).Collections)
+            collectionEntry.Load();
+        context.Entry(max).Navigation(nameof(Chapter.ParentManga)).Load();
         
         return Ok(max);
     }
@@ -281,6 +315,8 @@ public class MangaController(MangaContext context) : Controller
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         
+        context.Entry(manga).Collection(m => m.Chapters).Load();
+        
         List<Chapter> chapters = manga.Chapters.ToList();
         if (chapters.Count == 0)
         {
@@ -295,6 +331,10 @@ public class MangaController(MangaContext context) : Controller
         Chapter? max = chapters.Max();
         if (max is null)
             return StatusCode(Status412PreconditionFailed, "Max chapter could not be found");
+        
+        foreach (CollectionEntry collectionEntry in context.Entry(max).Collections)
+            collectionEntry.Load();
+        context.Entry(max).Navigation(nameof(Chapter.ParentManga)).Load();
         
         return Ok(max);
     }
@@ -333,12 +373,16 @@ public class MangaController(MangaContext context) : Controller
     [HttpPost("{MangaId}/ChangeLibrary/{LibraryId}")]
     [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult MoveFolder(string MangaId, string LibraryId)
+    public IActionResult ChangeLibrary(string MangaId, string LibraryId)
     {
         if (context.Mangas.Find(MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
         if(context.FileLibraries.Find(LibraryId) is not { } library)
             return NotFound(nameof(LibraryId));
+        
+        foreach (CollectionEntry collectionEntry in context.Entry(manga).Collections)
+            collectionEntry.Load();
+        context.Entry(manga).Navigation(nameof(Manga.Library)).Load();
 
         MoveMangaLibraryWorker moveLibrary = new(manga, library);
         
@@ -371,15 +415,20 @@ public class MangaController(MangaContext context) : Controller
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return NotFound(nameof(MangaConnectorName));
 
-        if (context.MangaConnectorToManga.FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == MangaId) is not { } mcId)
+        if (context.MangaConnectorToManga
+                .FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == MangaId)
+            is not { } mcId)
+        {
             if(IsRequested)
                 return StatusCode(Status428PreconditionRequired, "Don't know how to download this Manga from MangaConnector");
             else
                 return StatusCode(Status412PreconditionFailed, "Not linked anyways.");
+        }
 
         mcId.UseForDownload = IsRequested;
         if(context.Sync() is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
+        
 
         DownloadCoverFromMangaconnectorWorker downloadCover = new(mcId);
         RetrieveMangaChaptersFromMangaconnectorWorker retrieveChapters = new(mcId, Tranga.Settings.DownloadLanguage);

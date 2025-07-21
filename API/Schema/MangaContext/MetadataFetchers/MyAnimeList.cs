@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using JikanDotNet;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace API.Schema.MangaContext.MetadataFetchers;
 
@@ -47,6 +48,11 @@ public class MyAnimeList : MetadataFetcher
     public override void UpdateMetadata(MetadataEntry metadataEntry, MangaContext dbContext)
     {
         Manga dbManga = dbContext.Mangas.Find(metadataEntry.MangaId)!;
+        
+        foreach (CollectionEntry collectionEntry in dbContext.Entry(dbManga).Collections)
+            collectionEntry.Load();
+        dbContext.Entry(dbManga).Navigation(nameof(Manga.Library)).Load();
+        
         MangaFull resultData;
         try
         {

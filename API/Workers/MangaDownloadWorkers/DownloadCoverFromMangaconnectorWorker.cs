@@ -13,6 +13,8 @@ public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId,
             return []; //TODO Exception?
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
             return []; //TODO Exception?
+        
+        DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).Load();
         Manga manga = mangaConnectorId.Obj;
         
         manga.CoverFileNameInCache = mangaConnector.SaveCoverImageToCache(mangaConnectorId);

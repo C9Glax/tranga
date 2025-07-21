@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace API.Schema.MangaContext;
@@ -15,8 +14,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     [StringLength(64)] [Required] public string ParentMangaId { get; init; } = null!;
     [JsonIgnore] public Manga ParentManga = null!;
 
-    [NotMapped]
-    public Dictionary<string, string> IdsOnMangaConnectors =>
+    [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors =>
         MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
     [JsonIgnore] public ICollection<MangaConnectorId<Chapter>> MangaConnectorIds = null!;
 

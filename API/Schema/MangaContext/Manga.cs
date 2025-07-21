@@ -20,9 +20,9 @@ public class Manga : Identifiable
     [StringLength(64)] public string? LibraryId { get; private set; }
     [JsonIgnore] public FileLibrary? Library = null!;
 
-    public ICollection<Author> Authors { get; internal set; }= null!;
-    public ICollection<MangaTag> MangaTags { get; internal set; }= null!;
-    public ICollection<Link> Links { get; internal set; }= null!;
+    public ICollection<Author> Authors { get; internal set; } = null!;
+    public ICollection<MangaTag> MangaTags { get; internal set; } = null!;
+    public ICollection<Link> Links { get; internal set; } = null!;
     public ICollection<AltTitle> AltTitles { get; internal set; } = null!;
     [Required] public float IgnoreChaptersBefore { get; internal set; }
     [StringLength(1024)] [Required] public string DirectoryName { get; private set; }

@@ -13,6 +13,10 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
             return []; //TODO Exception?
         if (DbContext.FileLibraries.Find(LibraryId) is not { } toLibrary)
             return []; //TODO Exception?
+        
+        DbContext.Entry(manga).Collection(m => m.Chapters).Load();
+        DbContext.Entry(manga).Navigation(nameof(Manga.Library)).Load();
+        
         Dictionary<Chapter, string> oldPath = manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
         manga.Library = toLibrary;
 
