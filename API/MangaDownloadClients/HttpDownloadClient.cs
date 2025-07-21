@@ -5,6 +5,7 @@ namespace API.MangaDownloadClients;
 
 internal class HttpDownloadClient : DownloadClient
 {
+    private static readonly FlareSolverrDownloadClient FlareSolverrDownloadClient = new();
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         if (clickButton is not null)
@@ -36,7 +37,7 @@ internal class HttpDownloadClient : DownloadClient
                     (s.Product?.Name ?? "").Contains("cloudflare", StringComparison.InvariantCultureIgnoreCase)))
             {
                 Log.Debug("Retrying with FlareSolverr!");
-                return new FlareSolverrDownloadClient().MakeRequestInternal(url, referrer, clickButton);
+                return FlareSolverrDownloadClient.MakeRequestInternal(url, referrer, clickButton);
             }
             else
             {

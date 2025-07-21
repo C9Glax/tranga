@@ -1,11 +1,12 @@
-﻿using System.Net;
+﻿using System.Collections.Concurrent;
+using System.Net;
 using log4net;
 
 namespace API.MangaDownloadClients;
 
 public abstract class DownloadClient
 {
-    private static readonly Dictionary<RequestType, DateTime> LastExecutedRateLimit = new();
+    private static readonly ConcurrentDictionary<RequestType, DateTime> LastExecutedRateLimit = new();
     protected ILog Log { get; init; }
 
     protected DownloadClient()

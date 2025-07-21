@@ -10,8 +10,6 @@ namespace API.MangaDownloadClients;
 
 public class FlareSolverrDownloadClient : DownloadClient
 {
-    
-    
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
         if (clickButton is not null)
