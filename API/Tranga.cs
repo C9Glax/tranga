@@ -205,6 +205,10 @@ public static class Tranga
         MangaConnectorId<Chapter> chId = context.MangaConnectorToChapter.Find(addChId.Key) ?? addChId;
         chId.Obj = chapter;
         
+        foreach (CollectionEntry collectionEntry in context.Entry(chapter).Collections)
+            collectionEntry.Load();
+        context.Entry(chapter).Navigation(nameof(Chapter.ParentManga)).Load();
+        
         if(context.MangaConnectorToChapter.Find(chId.Key) is null)
             context.MangaConnectorToChapter.Add(chId);
 
