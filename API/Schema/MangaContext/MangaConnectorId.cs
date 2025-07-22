@@ -8,7 +8,7 @@ namespace API.Schema.MangaContext;
 [PrimaryKey("Key")]
 public class MangaConnectorId<T> : Identifiable where T : Identifiable
 {
-    [StringLength(64)] [Required] public string ObjId { get; private set; } = null!;
+    [StringLength(64)] [Required] public string ObjId { get; private set; }
     [JsonIgnore] public T Obj = null!;
 
     [StringLength(32)] [Required] public string MangaConnectorName { get; private set; }
@@ -21,6 +21,7 @@ public class MangaConnectorId<T> : Identifiable where T : Identifiable
         : base(TokenGen.CreateToken(typeof(MangaConnectorId<T>), mangaConnector.Name, idOnConnectorSite))
     {
         this.Obj = obj;
+        this.ObjId = obj.Key;
         this.MangaConnectorName = mangaConnector.Name;
         this.IdOnConnectorSite = idOnConnectorSite;
         this.WebsiteUrl = websiteUrl;

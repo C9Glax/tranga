@@ -9,6 +9,7 @@ using API.Workers;
 using API.Workers.MaintenanceWorkers;
 using log4net;
 using log4net.Config;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace API;
 
@@ -164,6 +165,10 @@ public static class Tranga
         manga = context.Mangas.Find(addManga.Key) ?? addManga;
         MangaConnectorId<Manga> mcId = context.MangaConnectorToManga.Find(addMcId.Key) ?? addMcId;
         mcId.Obj = manga;
+        
+        foreach (CollectionEntry collectionEntry in context.Entry(manga).Collections)
+            collectionEntry.Load();
+        context.Entry(manga).Navigation(nameof(Manga.Library)).Load();
         
         IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
         {
