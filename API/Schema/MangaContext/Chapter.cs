@@ -39,6 +39,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
         this.Title = title;
         this.FileName = GetArchiveFilePath();
         this.Downloaded = false;
+        this.MangaConnectorIds = [];
     }
 
     /// <summary>

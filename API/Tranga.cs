@@ -9,7 +9,7 @@ using API.Workers;
 using API.Workers.MaintenanceWorkers;
 using log4net;
 using log4net.Config;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
 
 namespace API;
 
@@ -162,30 +162,41 @@ public static class Tranga
 
     internal static bool AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context, [NotNullWhen(true)]out Manga? manga)
     {
-        manga = context.Mangas.Find(addManga.Key) ?? addManga;
-        MangaConnectorId<Manga> mcId = context.MangaConnectorToManga.Find(addMcId.Key) ?? addMcId;
-        mcId.Obj = manga;
-        
-        foreach (CollectionEntry collectionEntry in context.Entry(manga).Collections)
-            collectionEntry.Load();
-        context.Entry(manga).Navigation(nameof(Manga.Library)).Load();
-        
-        IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
+        context.ChangeTracker.Clear();
+        manga = context.FindMangaLike(addManga);
+        if (manga is not null)
         {
-            MangaTag? inDb = context.Tags.Find(mt.Tag);
-            return inDb ?? mt;
-        });
-        manga.MangaTags = mergedTags.ToList();
+            foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
+            {
+                mcId.Obj = manga;
+                mcId.ObjId = manga.Key;
+            }
+            manga.MangaTags = manga.MangaTags.UnionBy(addManga.MangaTags, tag => tag.Tag).ToList();
+            manga.Authors = manga.Authors.UnionBy(addManga.Authors, author => author.Key).ToList();
+            manga.Links = manga.Links.UnionBy(addManga.Links, link => link.Key).ToList();
+            manga.AltTitles = manga.AltTitles.UnionBy(addManga.AltTitles, altTitle => altTitle.Key).ToList();
+            manga.Chapters = manga.Chapters.UnionBy(addManga.Chapters, chapter => chapter.Key).ToList();
+            manga.MangaConnectorIds = manga.MangaConnectorIds.UnionBy(addManga.MangaConnectorIds, id => id.MangaConnectorName).ToList();
+        }
+        else
+        {
+            manga = addManga;
+            IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
+            {
+                MangaTag? inDb = context.Tags.Find(mt.Tag);
+                return inDb ?? mt;
+            });
+            manga.MangaTags = mergedTags.ToList();
 
-        IEnumerable<Author> mergedAuthors = manga.Authors.Select(ma =>
-        {
-            Author? inDb = context.Authors.Find(ma.Key);
-            return inDb ?? ma;
-        });
-        manga.Authors = mergedAuthors.ToList();
-        
-        if(context.MangaConnectorToManga.Find(addMcId.Key) is null)
-            context.MangaConnectorToManga.Add(mcId);
+            IEnumerable<Author> mergedAuthors = manga.Authors.Select(ma =>
+            {
+                Author? inDb = context.Authors.Find(ma.Key);
+                return inDb ?? ma;
+            });
+            manga.Authors = mergedAuthors.ToList();
+            
+            context.Mangas.Add(manga);
+        }
 
         if (context.Sync() is { success: false })
             return false;
@@ -201,16 +212,19 @@ public static class Tranga
 
     internal static bool AddChapterToContext(Chapter addChapter, MangaConnectorId<Chapter> addChId, MangaContext context, [NotNullWhen(true)] out Chapter? chapter)
     {
-        chapter = context.Chapters.Find(addChapter.Key) ?? addChapter;
-        MangaConnectorId<Chapter> chId = context.MangaConnectorToChapter.Find(addChId.Key) ?? addChId;
-        chId.Obj = chapter;
-        
-        foreach (CollectionEntry collectionEntry in context.Entry(chapter).Collections)
-            collectionEntry.Load();
-        context.Entry(chapter).Navigation(nameof(Chapter.ParentManga)).Load();
-        
-        if(context.MangaConnectorToChapter.Find(chId.Key) is null)
-            context.MangaConnectorToChapter.Add(chId);
+        chapter = context.Chapters.Where(ch => ch.Key == addChapter.Key)
+                .Include(ch => ch.ParentManga)
+                .Include(ch => ch.MangaConnectorIds)
+                .FirstOrDefault();
+        if (chapter is not null)
+        {
+            chapter.MangaConnectorIds = chapter.MangaConnectorIds.UnionBy(addChapter.MangaConnectorIds, id => id.Key).ToList();
+        }
+        else
+        {
+            context.Chapters.Add(addChapter);
+            chapter = addChapter;
+        }
 
         if (context.Sync() is { success: false })
             return false;

@@ -177,19 +177,19 @@ public class ComickIo : MangaConnector
         byte whatever = 0;
         List<AltTitle> altTitles = altTitlesArray?
             .Select(token => new AltTitle(token.Value<string>("lang")??whatever++.ToString(), token.Value<string>("title")!))
-            .ToList()!;
+            .ToList()??[];
         
         JArray? authorsArray = json["authors"] as JArray;
         JArray? artistsArray = json["artists"] as JArray;
         List<Author> authors = authorsArray?.Concat(artistsArray!)
             .Select(token => new Author(token.Value<string>("name")!))
             .DistinctBy(a => a.Key)
-            .ToList()!;
+            .ToList()??[];
         
         JArray? genreArray = json["comic"]?["md_comic_md_genres"] as JArray;
         List<MangaTag> tags = genreArray?
             .Select(token => new MangaTag(token["md_genres"]?.Value<string>("name")!))
-            .ToList()!;
+            .ToList()??[];
         
         JArray? linksArray = json["comic"]?["links"] as JArray;
         List<Link> links = linksArray?
@@ -221,7 +221,7 @@ public class ComickIo : MangaConnector
                     _ => kv.Key
                 };
                 return new Link(key, fullUrl);
-            }).ToList()!;
+            }).ToList()??[];
         
         if(hid is null)
             throw new Exception("hid is null");
@@ -232,7 +232,9 @@ public class ComickIo : MangaConnector
         
         Manga manga = new (name, description??"", coverUrl, status, authors, tags, links, altTitles,
             year: year, originalLanguage: originalLanguage);
-        return (manga, new MangaConnectorId<Manga>(manga, this, hid, url));
+        MangaConnectorId<Manga> mcId = new (manga, this, hid, url);
+        manga.MangaConnectorIds.Add(mcId);
+        return (manga, mcId);
     }
 
     private List<(Chapter, MangaConnectorId<Chapter>)> ParseChapters(MangaConnectorId<Manga> mcIdManga, JArray chaptersArray)
@@ -251,8 +253,9 @@ public class ComickIo : MangaConnector
                 continue;
             
             Chapter ch = new (mcIdManga.Obj, chapterNum, volumeNum, title);
-
-            chapters.Add((ch, new (ch, this, hid, url)));
+            MangaConnectorId<Chapter> mcId = new(ch, this, hid, url);
+            ch.MangaConnectorIds.Add(mcId);
+            chapters.Add((ch, mcId));
         }
         return chapters;
     }

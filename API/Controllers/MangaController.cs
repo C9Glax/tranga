@@ -41,15 +41,7 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetManga([FromBody]string[] MangaIds)
     {
-        Manga[] ret = context.Mangas.Where(m => MangaIds.Contains(m.Key))
-            .Include(m => m.Library)
-            .Include(m => m.Authors)
-            .Include(m => m.MangaTags)
-            .Include(m => m.Links)
-            .Include(m => m.AltTitles)
-            .Include(m => m.Chapters)
-            .Include(m => m.MangaConnectorIds)
-            .ToArray();
+        Manga[] ret = context.MangaIncludeAll().Where(m => MangaIds.Contains(m.Key)).ToArray();
         return Ok(ret);
     }
 
@@ -64,11 +56,8 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetManga(string MangaId)
     {
-        if (context.Mangas.Find(MangaId) is not { } manga)
+        if (context.MangaIncludeAll().FirstOrDefault(m => m.Key == MangaId) is not { } manga)
             return NotFound(nameof(MangaId));
-        foreach (CollectionEntry collectionEntry in context.Entry(manga).Collections)
-            collectionEntry.Load();
-        context.Entry(manga).Navigation(nameof(Manga.Library)).Load();
         return Ok(manga);
     }
 

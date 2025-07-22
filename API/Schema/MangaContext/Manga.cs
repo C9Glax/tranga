@@ -61,6 +61,7 @@ public class Manga : Identifiable
         this.Year = year;
         this.OriginalLanguage = originalLanguage;
         this.Chapters = [];
+        this.MangaConnectorIds = [];
     }
 
     /// <summary>

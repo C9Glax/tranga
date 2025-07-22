@@ -1,6 +1,7 @@
 ﻿using API.MangaConnectors;
 using API.Schema.MangaContext.MetadataFetchers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace API.Schema.MangaContext;
 
@@ -102,4 +103,23 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
     }
+
+    public Manga? FindMangaLike(Manga other)
+    {
+        if (MangaIncludeAll().FirstOrDefault(m => m.Key == other.Key) is { } f)
+            return f;
+
+        return MangaIncludeAll()
+            .FirstOrDefault(m => m.Links.Any(l => l.Key == other.Key) ||
+                                 m.AltTitles.Any(t => other.AltTitles.Select(ot => ot.Title)
+                                     .Any(s => s.Equals(t.Title))));
+    }
+
+    public IIncludableQueryable<Manga, ICollection<MangaConnectorId<Manga>>> MangaIncludeAll() => Mangas.Include(m => m.Library)
+        .Include(m => m.Authors)
+        .Include(m => m.MangaTags)
+        .Include(m => m.Links)
+        .Include(m => m.AltTitles)
+        .Include(m => m.Chapters)
+        .Include(m => m.MangaConnectorIds);
 }

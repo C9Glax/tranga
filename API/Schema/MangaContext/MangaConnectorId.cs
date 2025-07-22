@@ -8,7 +8,7 @@ namespace API.Schema.MangaContext;
 [PrimaryKey("Key")]
 public class MangaConnectorId<T> : Identifiable where T : Identifiable
 {
-    [StringLength(64)] [Required] public string ObjId { get; private set; }
+    [StringLength(64)] [Required] public string ObjId { get; internal set; }
     [JsonIgnore] public T Obj = null!;
 
     [StringLength(32)] [Required] public string MangaConnectorName { get; private set; }

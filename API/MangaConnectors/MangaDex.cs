@@ -313,9 +313,11 @@ public class MangaDex : MangaConnector
         string websiteUrl = $"https://mangadex.org/title/{id}";
         string coverUrl = $"https://uploads.mangadex.org/covers/{id}/{coverFileName}";
 
-        Manga manga = new Manga(name, description, coverUrl, releaseStatus, authors, tags, links,altTitles,
+        Manga manga = new (name, description, coverUrl, releaseStatus, authors, tags, links,altTitles,
             null, 0f, year, originalLanguage);
-        return (manga, new MangaConnectorId<Manga>(manga, this, id, websiteUrl));
+        MangaConnectorId<Manga> mcId = new (manga, this, id, websiteUrl);
+        manga.MangaConnectorIds.Add(mcId);
+        return (manga, mcId);
     }
 
     private (Chapter chapter, MangaConnectorId<Chapter> id) ParseChapterFromJToken(MangaConnectorId<Manga> mcIdManga, JToken jToken)
@@ -334,6 +336,8 @@ public class MangaDex : MangaConnector
         
         string websiteUrl = $"https://mangadex.org/chapter/{id}";
         Chapter chapter = new (mcIdManga.Obj, chapterStr, volumeNumber, title);
-        return (chapter, new MangaConnectorId<Chapter>(chapter, this, id, websiteUrl));
+        MangaConnectorId<Chapter> mcId = new(chapter, this, id, websiteUrl);
+        chapter.MangaConnectorIds.Add(mcId);
+        return (chapter, mcId);
     }
 }
