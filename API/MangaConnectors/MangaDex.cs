@@ -277,9 +277,9 @@ public class MangaDex : MangaConnector
                     _ => kv.Key
                 };
                 return new Link(key, url);
-            }).ToList()!;
+            }).ToList()??[];
 
-        List<AltTitle> altTitles = (altTitlesJArray??[])
+        List<AltTitle> altTitles = altTitlesJArray?
             .Select(t =>
             {
                 JObject? j = t as JObject;
@@ -287,19 +287,19 @@ public class MangaDex : MangaConnector
                 if (p is null)
                     return null;
                 return new AltTitle(p.Name, p.Value.ToString());
-            }).Where(x => x is not null).ToList()!;
+            }).Where(x => x is not null).Cast<AltTitle>().ToList()??[];
         
-        List<MangaTag> tags = (tagsJArray??[])
+        List<MangaTag> tags = tagsJArray?
             .Where(t => t.Value<string>("type") == "tag")
             .Select(t => t["attributes"]?["name"]?.Value<string>("en")??t["attributes"]?["name"]?.First?.First?.Value<string>())
             .Select(str => str is not null ? new MangaTag(str) : null)
-            .Where(x => x is not null).ToList()!;
+            .Where(x => x is not null).Cast<MangaTag>().ToList()??[];
         
         List<Author> authors = relationships
             .Where(r => r["type"]?.Value<string>() == "author")
             .Select(t => t["attributes"]?.Value<string>("name"))
             .Select(str => str is not null ? new Author(str) : null)
-            .Where(x => x is not null).ToList()!;
+            .Where(x => x is not null).Cast<Author>().ToList();
             
         
         MangaReleaseStatus releaseStatus = status switch
