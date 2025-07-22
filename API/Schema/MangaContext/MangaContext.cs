@@ -36,7 +36,7 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .HasMany<MangaConnectorId<Chapter>>(c => c.MangaConnectorIds)
             .WithOne(id => id.Obj)
             .HasForeignKey(id => id.ObjId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
         //Manga owns MangaAltTitles
         modelBuilder.Entity<Manga>()
             .OwnsMany<AltTitle>(m => m.AltTitles)

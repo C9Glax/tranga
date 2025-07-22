@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations.Manga
 {
     [DbContext(typeof(MangaContext))]
-    [Migration("20250721093858_Initial")]
+    [Migration("20250722203315_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -444,7 +444,7 @@ namespace API.Migrations.Manga
                     b.HasOne("API.Schema.MangaContext.Chapter", "Obj")
                         .WithMany("MangaConnectorIds")
                         .HasForeignKey("ObjId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Obj");

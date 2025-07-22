@@ -441,7 +441,7 @@ namespace API.Migrations.Manga
                     b.HasOne("API.Schema.MangaContext.Chapter", "Obj")
                         .WithMany("MangaConnectorIds")
                         .HasForeignKey("ObjId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Obj");

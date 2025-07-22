@@ -276,7 +276,8 @@ namespace API.Migrations.Manga
                         name: "FK_MangaConnectorToChapter_Chapters_ObjId",
                         column: x => x.ObjId,
                         principalTable: "Chapters",
-                        principalColumn: "Key");
+                        principalColumn: "Key",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
