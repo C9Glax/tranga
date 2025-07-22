@@ -1,6 +1,8 @@
-﻿using API.Schema.MangaContext;
+﻿using API.MangaConnectors;
+using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -63,12 +65,32 @@ public class QueryController(MangaContext context) : Controller
     }
 
     /// <summary>
+    /// Returns all <see cref="Manga"/> that are being downloaded from at least one <see cref="MangaConnector"/>
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpGet("Manga/Downloading")]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    public IActionResult GetMangaDownloading()
+    {
+        Manga[] ret = context.Mangas.Where(m => m.MangaConnectorIds.Any(id => id.UseForDownload))
+            .Include(m => m.Library)
+            .Include(m => m.Authors)
+            .Include(m => m.MangaTags)
+            .Include(m => m.Links)
+            .Include(m => m.AltTitles)
+            .Include(m => m.Chapters)
+            .Include(m => m.MangaConnectorIds)
+            .ToArray();
+        return Ok(ret);
+    }
+
+    /// <summary>
     /// Returns the <see cref="MangaConnectorId{Chapter}"/> with <see cref="MangaConnectorId{Chapter}"/>.Key
     /// </summary>
     /// <param name="MangaConnectorIdId">Key of <see cref="MangaConnectorId{Manga}"/></param>
     /// <response code="200"></response>
     /// <response code="404"><see cref="MangaConnectorId{Chapter}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
-    [HttpGet("chapter/MangaConnectorId/{MangaConnectorIdId}")]
+    [HttpGet("Chapter/MangaConnectorId/{MangaConnectorIdId}")]
     [ProducesResponseType<MangaConnectorId<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChapterMangaConnectorId(string MangaConnectorIdId)
