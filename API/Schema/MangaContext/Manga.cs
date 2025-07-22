@@ -39,6 +39,7 @@ public class Manga : Identifiable
 
     [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors =>
         MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
+    [NotMapped] public ICollection<string> MangaConnectorIdsIds => MangaConnectorIds.Select(id => id.Key).ToList();
     [JsonIgnore] public ICollection<MangaConnectorId<Manga>> MangaConnectorIds = null!;
 
     public Manga(string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,

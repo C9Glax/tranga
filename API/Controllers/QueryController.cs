@@ -29,38 +29,6 @@ public class QueryController(MangaContext context) : Controller
     }
     
     /// <summary>
-    /// Returns all <see cref="Manga"/> which where Authored by <see cref="Author"/> with <paramref name="AuthorId"/>
-    /// </summary>
-    /// <param name="AuthorId"><see cref="Author"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="Author"/> with <paramref name="AuthorId"/></response>
-    [HttpGet("Mangas/WithAuthorId/{AuthorId}")]
-    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
-    public IActionResult GetMangaWithAuthorIds(string AuthorId)
-    {
-        if (context.Authors.Find(AuthorId) is not { } author)
-            return NotFound();
-        
-        return Ok(context.Mangas.Where(m => m.Authors.Contains(author)));
-    }
-    
-    /// <summary>
-    /// Returns all <see cref="Manga"/> with <see cref="Tag"/>
-    /// </summary>
-    /// <param name="Tag"><see cref="Tag"/>.Tag</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="Tag"/> not found</response>
-    [HttpGet("Mangas/WithTag/{Tag}")]
-    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
-    public IActionResult GetMangasWithTag(string Tag)
-    {
-        if (context.Tags.Find(Tag) is not { } tag)
-            return NotFound();
-        
-        return Ok(context.Mangas.Where(m => m.MangaTags.Contains(tag)));
-    }
-    
-    /// <summary>
     /// Returns <see cref="Chapter"/> with <paramref name="ChapterId"/>
     /// </summary>
     /// <param name="ChapterId"><see cref="Chapter"/>.Key</param>
@@ -68,11 +36,46 @@ public class QueryController(MangaContext context) : Controller
     /// <response code="404"><see cref="Chapter"/> with <paramref name="ChapterId"/> not found</response>
     [HttpGet("Chapter/{ChapterId}")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
     public IActionResult GetChapter(string ChapterId)
     {
         if (context.Chapters.Find(ChapterId) is not { } chapter)
             return NotFound();
         
         return Ok(chapter);
+    }
+
+    /// <summary>
+    /// Returns the <see cref="MangaConnectorId{Manga}"/> with <see cref="MangaConnectorId{Manga}"/>.Key
+    /// </summary>
+    /// <param name="MangaConnectorIdId">Key of <see cref="MangaConnectorId{Manga}"/></param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="MangaConnectorId{Manga}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
+    [HttpGet("Manga/MangaConnectorId/{MangaConnectorIdId}")]
+    [ProducesResponseType<MangaConnectorId<Manga>>(Status200OK, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
+    public IActionResult GetMangaMangaConnectorId(string MangaConnectorIdId)
+    {
+        if(context.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } mcIdManga)
+            return NotFound();
+        
+        return Ok(mcIdManga);
+    }
+
+    /// <summary>
+    /// Returns the <see cref="MangaConnectorId{Chapter}"/> with <see cref="MangaConnectorId{Chapter}"/>.Key
+    /// </summary>
+    /// <param name="MangaConnectorIdId">Key of <see cref="MangaConnectorId{Manga}"/></param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="MangaConnectorId{Chapter}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
+    [HttpGet("chapter/MangaConnectorId/{MangaConnectorIdId}")]
+    [ProducesResponseType<MangaConnectorId<Chapter>>(Status200OK, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
+    public IActionResult GetChapterMangaConnectorId(string MangaConnectorIdId)
+    {
+        if(context.MangaConnectorToChapter.Find(MangaConnectorIdId) is not { } mcIdChapter)
+            return NotFound();
+        
+        return Ok(mcIdChapter);
     }
 }

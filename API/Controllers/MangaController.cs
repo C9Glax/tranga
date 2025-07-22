@@ -456,4 +456,36 @@ public class MangaController(MangaContext context) : Controller
 
         return new SearchController(context).SearchManga(MangaConnectorName, manga.Name);
     }
+    
+    /// <summary>
+    /// Returns all <see cref="Manga"/> which where Authored by <see cref="Author"/> with <paramref name="AuthorId"/>
+    /// </summary>
+    /// <param name="AuthorId"><see cref="Author"/>.Key</param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="Author"/> with <paramref name="AuthorId"/></response>
+    [HttpGet("WithAuthorId/{AuthorId}")]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    public IActionResult GetMangaWithAuthorIds(string AuthorId)
+    {
+        if (context.Authors.Find(AuthorId) is not { } author)
+            return NotFound();
+        
+        return Ok(context.Mangas.Where(m => m.Authors.Contains(author)));
+    }
+    
+    /// <summary>
+    /// Returns all <see cref="Manga"/> with <see cref="Tag"/>
+    /// </summary>
+    /// <param name="Tag"><see cref="Tag"/>.Tag</param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="Tag"/> not found</response>
+    [HttpGet("WithTag/{Tag}")]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    public IActionResult GetMangasWithTag(string Tag)
+    {
+        if (context.Tags.Find(Tag) is not { } tag)
+            return NotFound();
+        
+        return Ok(context.Mangas.Where(m => m.MangaTags.Contains(tag)));
+    }
 }

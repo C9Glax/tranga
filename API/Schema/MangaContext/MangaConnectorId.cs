@@ -11,7 +11,7 @@ public class MangaConnectorId<T> : Identifiable where T : Identifiable
     [StringLength(64)] [Required] public string ObjId { get; private set; } = null!;
     [JsonIgnore] public T Obj = null!;
 
-    [StringLength(32)] [Required] public string MangaConnectorName { get; private set; } = null!;
+    [StringLength(32)] [Required] public string MangaConnectorName { get; private set; }
 
     [StringLength(256)] [Required] public string IdOnConnectorSite { get; init; }
     [Url] [StringLength(512)] public string? WebsiteUrl { get; internal init; }
