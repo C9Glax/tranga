@@ -32,6 +32,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
         
         DbContext.Entry(chapter).Navigation(nameof(Chapter.ParentManga)).Load();
+        DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).Load();
+
+        if (chapter.ParentManga.LibraryId is null)
+        {
+            Log.Info($"Library is not set for {chapter.ParentManga} {chapter}");
+            return [];
+        }
+        
         string[] imageUrls = mangaConnector.GetChapterImageUrls(mangaConnectorId);
         if (imageUrls.Length < 1)
         {
