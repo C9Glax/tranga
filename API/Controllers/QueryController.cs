@@ -2,7 +2,7 @@
 using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -72,16 +72,31 @@ public class QueryController(MangaContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetMangaDownloading()
     {
-        Manga[] ret = context.Mangas.Where(m => m.MangaConnectorIds.Any(id => id.UseForDownload))
-            .Include(m => m.Library)
-            .Include(m => m.Authors)
-            .Include(m => m.MangaTags)
-            .Include(m => m.Links)
-            .Include(m => m.AltTitles)
-            .Include(m => m.Chapters)
-            .Include(m => m.MangaConnectorIds)
+        Manga[] ret = context.MangaIncludeAll()
+            .Where(m => m.MangaConnectorIds.Any(id => id.UseForDownload))
             .ToArray();
         return Ok(ret);
+    }
+
+    /// <summary>
+    /// Returns <see cref="Manga"/> with names similar to <see cref="Manga"/> (identified by <paramref name="MangaId"/>
+    /// </summary>
+    /// <param name="MangaId">Key of <see cref="Manga"/></param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
+    [HttpGet("Manga/{MangaId}/SimilarName")]
+    [ProducesResponseType<string[]>(Status200OK, "application/json")]
+    [ProducesResponseType(Status404NotFound)]
+    public IActionResult GetSimilarManga(string MangaId)
+    {
+        if (context.Mangas.Find(MangaId) is not { } manga)
+            return NotFound();
+        string name = manga.Name;
+        Dictionary<string, string> mangaNames = context.Mangas.Where(m => m.Key != MangaId).ToDictionary(m => m.Key, m => m.Name);
+        string[] similarIds = mangaNames
+            .Where(kv => NeedlemanWunschStringUtil.CalculateSimilarityPercentage(name, kv.Value) > 0.8)
+            .Select(kv => kv.Key).ToArray();
+        return Ok(similarIds);
     }
 
     /// <summary>
