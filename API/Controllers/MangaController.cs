@@ -66,7 +66,7 @@ public class MangaController(MangaContext context) : Controller
     /// </summary>
     /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
-    /// <response code="404"><<see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{MangaId}")]
     [ProducesResponseType(Status200OK)]

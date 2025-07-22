@@ -1,0 +1,36 @@
+using API.MangaConnectors;
+using API.Schema.MangaContext;
+using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static Microsoft.AspNetCore.Http.StatusCodes;
+
+namespace API.Controllers;
+
+[ApiVersion(2)]
+[ApiController]
+[Route("v{v:apiVersion}/[controller]")]
+public class MaintenanceController(MangaContext mangaContext) : Controller
+{
+    
+    /// <summary>
+    /// Removes all <see cref="Manga"/> not marked for Download on any <see cref="MangaConnector"/>
+    /// </summary>
+    /// <response code="200"></response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPost("CleanupNoDownloadManga")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public IActionResult CleanupNoDownloadManga()
+    {
+        Manga[] noDownloads = mangaContext.Mangas
+            .Include(m => m.MangaConnectorIds)
+            .Where(m => !m.MangaConnectorIds.Any(id => id.UseForDownload))
+            .ToArray();
+        mangaContext.Mangas.RemoveRange(noDownloads);
+        
+        if(mangaContext.Sync() is { success: false } result)
+            return StatusCode(Status500InternalServerError, result.exceptionMessage);
+        return Ok();
+    }
+}
