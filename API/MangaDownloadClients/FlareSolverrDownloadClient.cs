@@ -172,6 +172,10 @@ public class FlareSolverrDownloadClient : DownloadClient
             jsonString = pre.InnerText;
             return true;
         }
+        catch (System.Text.Json.JsonException)
+        {
+            return false;
+        }
         catch (JsonReaderException)
         {
             return false;
