@@ -1,5 +1,6 @@
 using API.Schema;
 using log4net;
+using Newtonsoft.Json;
 
 namespace API.Workers;
 
@@ -12,10 +13,12 @@ public abstract class BaseWorker : Identifiable
     /// <summary>
     /// Dependencies and dependencies of dependencies. See also <see cref="DependsOn"/>.
     /// </summary>
+    [JsonIgnore]
     public IEnumerable<BaseWorker> AllDependencies => DependsOn.Select(d => d.AllDependencies).SelectMany(x => x);
     /// <summary>
     /// <see cref="AllDependencies"/> and Self.
     /// </summary>
+    [JsonIgnore]
     public IEnumerable<BaseWorker> DependenciesAndSelf => AllDependencies.Append(this);
     /// <summary>
     /// <see cref="DependsOn"/> where <see cref="WorkerExecutionState"/> is less than Completed.

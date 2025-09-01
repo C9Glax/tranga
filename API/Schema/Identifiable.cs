@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema;
@@ -15,6 +16,8 @@ public abstract class Identifiable
         this.Key = key;
     }
     
+    [Required]
+    [StringLength(TokenGen.MaximumLength, MinimumLength = TokenGen.MinimumLength)]
     public string Key { get; init; }
 
     public override string ToString() => Key;

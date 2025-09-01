@@ -5,8 +5,8 @@ namespace API;
 
 public static class TokenGen
 {
-    private const int MinimumLength = 16;
-    private const int MaximumLength = 64;
+    public const int MinimumLength = 16;
+    public const int MaximumLength = 64;
     private const string Chars = "abcdefghijklmnopqrstuvwxyz0123456789";
 
     public static string CreateToken(Type t, params string[] identifiers) => CreateToken(t.Name, identifiers);
