@@ -1,7 +1,7 @@
 ﻿# syntax=docker/dockerfile:1
 ARG DOTNET=9.0
 
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/aspnet:$DOTNET AS base
+FROM mcr.microsoft.com/dotnet/aspnet:$DOTNET AS base
 WORKDIR /publish
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
@@ -14,7 +14,7 @@ RUN dotnet restore /src/Tranga.sln
 COPY . /src/
 RUN dotnet publish -c Release --property:OutputPath=/publish -maxcpucount:1 
 
-FROM --platform=$TARGETPLATFORM base AS runtime
+FROM base AS runtime
 EXPOSE 6531
 ARG UNAME=tranga
 ARG UID=1000
