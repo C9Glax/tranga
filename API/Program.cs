@@ -1,6 +1,5 @@
 using System.Reflection;
 using API;
-using API.MangaConnectors;
 using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.NotificationsContext;
@@ -76,7 +75,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(opts =>
     opts.SerializerSettings.Converters.Add(new StringEnumConverter());
     opts.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 });
-builder.Services.AddScoped<ILog>(opts => LogManager.GetLogger("API"));
+builder.Services.AddScoped<ILog>(_ => LogManager.GetLogger("API"));
 
 builder.WebHost.UseUrls("http://*:6531");
 
@@ -112,7 +111,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     if (!context.FileLibraries.Any())
         context.FileLibraries.Add(new FileLibrary(Tranga.Settings.DownloadLocation, "Default FileLibrary"));
     
-    context.Sync();
+    await context.Sync(CancellationToken.None);
 }
 
 using (IServiceScope scope = app.Services.CreateScope())
@@ -124,7 +123,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     string[] emojis = { "(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=", "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~","૮ \u00b4• ﻌ \u00b4• ა", "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"};
     context.Notifications.Add(new Notification("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High));
     
-    context.Sync();
+    await context.Sync(CancellationToken.None);
 }
 
 using (IServiceScope scope = app.Services.CreateScope())
@@ -132,7 +131,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
     context.Database.Migrate();
     
-    context.Sync();
+    await context.Sync(CancellationToken.None);
 }
 
 Tranga.SetServiceProvider(app.Services);

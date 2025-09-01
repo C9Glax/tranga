@@ -11,7 +11,7 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromHours(12);
     
-    protected override BaseWorker[] DoWorkInternal()
+    protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         IQueryable<string> mangaIds = DbContext.MangaConnectorToManga
             .Where(m => m.UseForDownload)
@@ -22,9 +22,9 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
                 mangaIds.Any(id => id == e.MangaId));
         
         foreach (MetadataEntry metadataEntry in metadataEntriesToUpdate)
-            metadataEntry.MetadataFetcher.UpdateMetadata(metadataEntry, DbContext);
+            await metadataEntry.MetadataFetcher.UpdateMetadata(metadataEntry, DbContext, CancellationTokenSource.Token);
 
-        DbContext.Sync();
+        await DbContext.Sync(CancellationTokenSource.Token);
 
         return [];
     }

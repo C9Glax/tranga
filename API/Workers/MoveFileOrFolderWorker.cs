@@ -6,7 +6,7 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
     public readonly string FromLocation = fromLocation;
     public readonly string ToLocation = toLocation;
 
-    protected override BaseWorker[] DoWorkInternal()
+    protected override Task<BaseWorker[]> DoWorkInternal()
     {
         try
         {
@@ -14,13 +14,13 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
             if (!fi.Exists)
             {
                 Log.Error($"File does not exist at {FromLocation}");
-                return [];
+                return new Task<BaseWorker[]>(() => []);
             }
 
             if (File.Exists(ToLocation))//Do not override existing
             {
                 Log.Error($"File already exists at {ToLocation}");
-                return [];
+                return new Task<BaseWorker[]>(() => []);
             } 
             if(fi.Attributes.HasFlag(FileAttributes.Directory))
                 MoveDirectory(fi, ToLocation);
@@ -32,7 +32,7 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
             Log.Error(e);
         }
 
-        return [];
+        return new Task<BaseWorker[]>(() => []);
     }
 
     private void MoveDirectory(FileInfo from, string toLocation)

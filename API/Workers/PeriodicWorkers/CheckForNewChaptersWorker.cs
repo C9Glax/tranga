@@ -9,7 +9,7 @@ public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<Ba
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(60);
     
-    protected override BaseWorker[] DoWorkInternal()
+    protected override Task<BaseWorker[]> DoWorkInternal()
     {
         IQueryable<MangaConnectorId<Manga>> connectorIdsManga = DbContext.MangaConnectorToManga
             .Include(id => id.Obj)
@@ -19,7 +19,7 @@ public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<Ba
         foreach (MangaConnectorId<Manga> mangaConnectorId in connectorIdsManga)
             newWorkers.Add(new RetrieveMangaChaptersFromMangaconnectorWorker(mangaConnectorId, Tranga.Settings.DownloadLanguage));
         
-        return newWorkers.ToArray();
+        return new Task<BaseWorker[]>(() => newWorkers.ToArray());
     }
 
 }

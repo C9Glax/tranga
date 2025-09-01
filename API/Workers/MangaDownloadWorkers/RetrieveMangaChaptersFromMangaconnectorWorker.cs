@@ -1,5 +1,6 @@
 using API.MangaConnectors;
 using API.Schema.MangaContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
 
@@ -7,16 +8,16 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
     internal readonly string MangaConnectorIdId = mcId.Key;
-    protected override BaseWorker[] DoWorkInternal()
+    protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        if (DbContext.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } mangaConnectorId)
+        if (await DbContext.MangaConnectorToManga.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId) is not { } mangaConnectorId)
             return []; //TODO Exception?
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
             return []; //TODO Exception?
         
-        DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).Load();
+        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).LoadAsync(CancellationTokenSource.Token);
         Manga manga = mangaConnectorId.Obj;
-        DbContext.Entry(manga).Collection(m => m.Chapters).Load();
+        await DbContext.Entry(manga).Collection(m => m.Chapters).LoadAsync(CancellationTokenSource.Token);
         
         // This gets all chapters that are not downloaded
         (Chapter, MangaConnectorId<Chapter>)[] allChapters =
@@ -25,13 +26,13 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         int addedChapters = 0;
         foreach ((Chapter chapter, MangaConnectorId<Chapter> mcId) newChapter in allChapters)
         {
-            if (Tranga.AddChapterToContext(newChapter, DbContext, out Chapter? addedChapter) == false)
+            if (Tranga.AddChapterToContext(newChapter, DbContext, out Chapter? addedChapter, CancellationTokenSource.Token) == false)
                 continue;
             manga.Chapters.Add(addedChapter);
         }
         Log.Info($"{manga.Chapters.Count} existing + {addedChapters} new chapters.");
 
-        DbContext.Sync();
+        await DbContext.Sync(CancellationTokenSource.Token);
 
         return [];
     }

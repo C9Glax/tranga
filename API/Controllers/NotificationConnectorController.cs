@@ -4,6 +4,7 @@ using API.Schema.NotificationsContext;
 using API.Schema.NotificationsContext.NotificationConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -19,12 +20,15 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// Gets all configured <see cref="NotificationConnector"/>
     /// </summary>
     /// <response code="200"></response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpGet]
     [ProducesResponseType<NotificationConnector[]>(Status200OK, "application/json")]
-    public IActionResult GetAllConnectors()
+    public async Task<IActionResult> GetAllConnectors ()
     {
+        if(await context.NotificationConnectors.ToArrayAsync(HttpContext.RequestAborted) is not { } result)
+            return StatusCode(Status500InternalServerError);
         
-        return Ok(context.NotificationConnectors.ToArray());
+        return Ok(result);
     }
     
     /// <summary>
@@ -36,10 +40,10 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpGet("{Name}")]
     [ProducesResponseType<NotificationConnector>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetConnector(string Name)
+    public async Task<IActionResult> GetConnector (string Name)
     {
-        if(context.NotificationConnectors.Find(Name) is not { } connector)
-            return NotFound();
+        if (await context.NotificationConnectors.FirstOrDefaultAsync(c => c.Name == Name, HttpContext.RequestAborted) is not { } connector)
+            return NotFound(nameof(Name));
         
         return Ok(connector);
     }
@@ -53,12 +57,12 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateConnector([FromBody]NotificationConnector notificationConnector)
+    public async Task<IActionResult> CreateConnector ([FromBody]NotificationConnector notificationConnector)
     {
         context.NotificationConnectors.Add(notificationConnector);
         context.Notifications.Add(new ("Added new Notification Connector!", notificationConnector.Name, NotificationUrgency.High));
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok(notificationConnector.Name);
     }
@@ -72,7 +76,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut("Gotify")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateGotifyConnector([FromBody]GotifyRecord gotifyData)
+    public async Task<IActionResult> CreateGotifyConnector ([FromBody]GotifyRecord gotifyData)
     {
         //TODO Validate Data
         
@@ -81,7 +85,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
             new Dictionary<string, string>() { { "X-Gotify-Key", gotifyData.AppToken } }, 
             "POST", 
             $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {gotifyData.Priority}}}");
-        return CreateConnector(gotifyConnector);
+        return await CreateConnector(gotifyConnector);
     }
     
     /// <summary>
@@ -93,7 +97,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut("Ntfy")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateNtfyConnector([FromBody]NtfyRecord ntfyRecord)
+    public async Task<IActionResult> CreateNtfyConnector ([FromBody]NtfyRecord ntfyRecord)
     {
         //TODO Validate Data
         
@@ -108,7 +112,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
             }, 
             "POST", 
             $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {ntfyRecord.Priority} \"Topic\": \"{ntfyRecord.Topic}\"}}");
-        return CreateConnector(ntfyConnector);
+        return await CreateConnector(ntfyConnector);
     }
     
     /// <summary>
@@ -120,7 +124,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut("Pushover")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreatePushoverConnector([FromBody]PushoverRecord pushoverRecord)
+    public async Task<IActionResult> CreatePushoverConnector ([FromBody]PushoverRecord pushoverRecord)
     {
         //TODO Validate Data
         
@@ -129,7 +133,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
             new Dictionary<string, string>(),
             "POST", 
             $"{{\"token\": \"{pushoverRecord.AppToken}\", \"user\": \"{pushoverRecord.User}\", \"message:\":\"%text\", \"%title\" }}");
-        return CreateConnector(pushoverConnector);
+        return await CreateConnector(pushoverConnector);
     }
     
     /// <summary>
@@ -143,14 +147,14 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult DeleteConnector(string Name)
+    public async Task<IActionResult> DeleteConnector (string Name)
     {
-        if(context.NotificationConnectors.Find(Name) is not { } connector)
-            return NotFound();
+        if (await context.NotificationConnectors.FirstOrDefaultAsync(c => c.Name == Name, HttpContext.RequestAborted) is not { } connector)
+            return NotFound(nameof(Name));
         
         context.NotificationConnectors.Remove(connector);
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }

@@ -6,12 +6,12 @@ namespace API.Schema;
 [PrimaryKey("Key")]
 public abstract class Identifiable
 {
-    public Identifiable()
+    protected Identifiable()
     {
         this.Key = TokenGen.CreateToken(this.GetType());
     }
-    
-    public Identifiable(string key)
+
+    protected Identifiable(string key)
     {
         this.Key = key;
     }

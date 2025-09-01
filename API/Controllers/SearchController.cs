@@ -24,7 +24,7 @@ public class SearchController(MangaContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status406NotAcceptable)]
-    public IActionResult SearchManga(string MangaConnectorName, string Query)
+    public IActionResult SearchManga (string MangaConnectorName, string Query)
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return NotFound();
@@ -35,7 +35,7 @@ public class SearchController(MangaContext context) : Controller
         List<Manga> retMangas = new();
         foreach ((Manga manga, MangaConnectorId<Manga> mcId) manga in mangas)
         {
-            if(Tranga.AddMangaToContext(manga, context, out Manga? add))
+            if(Tranga.AddMangaToContext(manga, context, out Manga? add, HttpContext.RequestAborted))
                 retMangas.Add(add);
         }
 
@@ -54,7 +54,7 @@ public class SearchController(MangaContext context) : Controller
     [ProducesResponseType<Manga>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status500InternalServerError)]
-    public IActionResult GetMangaFromUrl([FromBody]string url)
+    public IActionResult GetMangaFromUrl ([FromBody]string url)
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals("Global", StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return StatusCode(Status500InternalServerError, "Could not find Global Connector.");
@@ -62,7 +62,7 @@ public class SearchController(MangaContext context) : Controller
         if(connector.GetMangaFromUrl(url) is not { } manga)
             return NotFound();
         
-        if(Tranga.AddMangaToContext(manga, context, out Manga? add) == false)
+        if(Tranga.AddMangaToContext(manga, context, out Manga? add, HttpContext.RequestAborted) == false)
             return StatusCode(Status500InternalServerError);
         
         return Ok(add);

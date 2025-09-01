@@ -22,11 +22,11 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
         }, Array.Empty<string>(), LogLevel.Warning, DbContextLoggerOptions.Level | DbContextLoggerOptions.Category | DbContextLoggerOptions.UtcTime);
     }
 
-    internal (bool success, string? exceptionMessage) Sync()
+    internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token)
     {
         try
         {
-            this.SaveChanges();
+            await this.SaveChangesAsync(token);
             return (true, null);
         }
         catch (Exception e)

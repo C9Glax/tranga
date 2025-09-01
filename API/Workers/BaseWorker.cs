@@ -26,7 +26,7 @@ public abstract class BaseWorker : Identifiable
     public IEnumerable<BaseWorker> MissingDependencies => DependsOn.Where(d => d.State < WorkerExecutionState.Completed);
     public bool AllDependenciesFulfilled => DependsOn.All(d => d.State >= WorkerExecutionState.Completed);
     internal WorkerExecutionState State { get; private set; }
-    private CancellationTokenSource? CancellationTokenSource = null;
+    protected CancellationTokenSource CancellationTokenSource = new ();
     protected ILog Log { get; init; }
 
     /// <summary>
@@ -36,7 +36,7 @@ public abstract class BaseWorker : Identifiable
     {
         Log.Debug($"Cancelled {this}");
         this.State = WorkerExecutionState.Cancelled;
-        CancellationTokenSource?.Cancel();
+        CancellationTokenSource.Cancel();
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public abstract class BaseWorker : Identifiable
     {
         Log.Debug($"Failed {this}");
         this.State = WorkerExecutionState.Failed;
-        CancellationTokenSource?.Cancel();
+        CancellationTokenSource.Cancel();
     }
 
     public BaseWorker(IEnumerable<BaseWorker>? dependsOn = null)
@@ -89,10 +89,9 @@ public abstract class BaseWorker : Identifiable
         // Run the actual work
         Log.Info($"Running {this}");
         DateTime startTime = DateTime.UtcNow;
-        Task<BaseWorker[]> task = new (DoWorkInternal, CancellationTokenSource.Token);
+        Task<BaseWorker[]> task = DoWorkInternal();
         task.GetAwaiter().OnCompleted(Finish(startTime, callback));
         this.State = WorkerExecutionState.Running;
-        task.Start();
         return task;
     }
 
@@ -106,12 +105,12 @@ public abstract class BaseWorker : Identifiable
         callback?.Invoke();
     };
     
-    protected abstract BaseWorker[] DoWorkInternal();
+    protected abstract Task<BaseWorker[]> DoWorkInternal();
 
     private BaseWorker[] WaitForDependencies()
     {
         Log.Info($"Waiting for {MissingDependencies.Count()} Dependencies {this}:\n\t{string.Join("\n\t", MissingDependencies.Select(d => d.ToString()))}");
-        while (CancellationTokenSource?.IsCancellationRequested == false && MissingDependencies.Any())
+        while (CancellationTokenSource.IsCancellationRequested == false && MissingDependencies.Any())
         {
             Thread.Sleep(Tranga.Settings.WorkCycleTimeoutMs);  
         }

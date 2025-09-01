@@ -8,7 +8,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
 {
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(1);
-    protected override BaseWorker[] DoWorkInternal()
+    protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         NotificationConnector[] connectors = DbContext.NotificationConnectors.ToArray();
         Notification[] notifications = DbContext.Notifications.Where(n => n.IsSent == false).ToArray();
@@ -22,7 +22,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
             }
         }
         
-        DbContext.Sync();
+        await DbContext.Sync(CancellationTokenSource.Token);
         return [];
     }
 

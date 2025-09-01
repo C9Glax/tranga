@@ -9,11 +9,11 @@ public class UpdateCoversWorker(TimeSpan? interval = null, IEnumerable<BaseWorke
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromHours(6);
     
-    protected override BaseWorker[] DoWorkInternal()
+    protected override Task<BaseWorker[]> DoWorkInternal()
     {
         List<BaseWorker> workers = new();
         foreach (MangaConnectorId<Manga> mangaConnectorId in DbContext.MangaConnectorToManga)
             workers.Add(new DownloadCoverFromMangaconnectorWorker(mangaConnectorId));
-        return workers.ToArray();
+        return new Task<BaseWorker[]>(() => workers.ToArray());
     }
 }

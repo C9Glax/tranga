@@ -158,12 +158,13 @@ public static class Tranga
         RunningWorkers.Remove(worker, out _);
     }
     
-    internal static bool AddMangaToContext((Manga, MangaConnectorId<Manga>) addManga, MangaContext context, [NotNullWhen(true)]out Manga? manga) => AddMangaToContext(addManga.Item1, addManga.Item2, context, out manga);
+    internal static bool AddMangaToContext((Manga, MangaConnectorId<Manga>) addManga, MangaContext context, [NotNullWhen(true)]out Manga? manga, CancellationToken token) =>
+        AddMangaToContext(addManga.Item1, addManga.Item2, context, out manga, token);
 
-    internal static bool AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context, [NotNullWhen(true)]out Manga? manga)
+    internal static bool AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context, [NotNullWhen(true)]out Manga? manga, CancellationToken token)
     {
         context.ChangeTracker.Clear();
-        manga = context.FindMangaLike(addManga);
+        manga = context.FindMangaLike(addManga, token).Result;
         if (manga is not null)
         {
             foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
@@ -198,7 +199,7 @@ public static class Tranga
             context.Mangas.Add(manga);
         }
 
-        if (context.Sync() is { success: false })
+        if (context.Sync(token).Result is { success: false })
             return false;
 
         DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (addMcId);
@@ -207,10 +208,10 @@ public static class Tranga
         return true;
     }
 
-    internal static bool AddChapterToContext((Chapter, MangaConnectorId<Chapter>) addChapter, MangaContext context,
-        [NotNullWhen(true)] out Chapter? chapter) => AddChapterToContext(addChapter.Item1, addChapter.Item2, context, out chapter);
+    internal static bool AddChapterToContext((Chapter, MangaConnectorId<Chapter>) addChapter, MangaContext context, [NotNullWhen(true)] out Chapter? chapter, CancellationToken token) =>
+        AddChapterToContext(addChapter.Item1, addChapter.Item2, context, out chapter, token);
 
-    internal static bool AddChapterToContext(Chapter addChapter, MangaConnectorId<Chapter> addChId, MangaContext context, [NotNullWhen(true)] out Chapter? chapter)
+    internal static bool AddChapterToContext(Chapter addChapter, MangaConnectorId<Chapter> addChId, MangaContext context, [NotNullWhen(true)] out Chapter? chapter, CancellationToken token)
     {
         chapter = context.Chapters.Where(ch => ch.Key == addChapter.Key)
                 .Include(ch => ch.ParentManga)
@@ -226,7 +227,7 @@ public static class Tranga
             chapter = addChapter;
         }
 
-        if (context.Sync() is { success: false })
+        if (context.Sync(token).Result is { success: false })
             return false;
         return true;
     }

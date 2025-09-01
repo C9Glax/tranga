@@ -31,5 +31,5 @@ public abstract class MetadataFetcher
     /// <summary>
     /// Updates the Manga linked in the MetadataEntry
     /// </summary>
-    public abstract void UpdateMetadata(MetadataEntry metadataEntry, MangaContext dbContext);
+    public abstract Task UpdateMetadata(MetadataEntry metadataEntry, MangaContext dbContext, CancellationToken token);
 }

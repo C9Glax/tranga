@@ -2,6 +2,7 @@
 using API.Schema.LibraryContext.LibraryConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -16,11 +17,13 @@ public class LibraryConnectorController(LibraryContext context) : Controller
     /// Gets all configured <see cref="LibraryConnector"/>
     /// </summary>
     /// <response code="200"></response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpGet]
     [ProducesResponseType<LibraryConnector[]>(Status200OK, "application/json")]
-    public IActionResult GetAllConnectors()
+    public async Task<IActionResult> GetAllConnectors ()
     {
-        LibraryConnector[] connectors = context.LibraryConnectors.ToArray();
+        if (await context.LibraryConnectors.ToArrayAsync(HttpContext.RequestAborted) is not { } connectors)
+            return StatusCode(Status500InternalServerError);
         
         return Ok(connectors);
     }
@@ -34,9 +37,9 @@ public class LibraryConnectorController(LibraryContext context) : Controller
     [HttpGet("{LibraryConnectorId}")]
     [ProducesResponseType<LibraryConnector>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetConnector(string LibraryConnectorId)
+    public async Task<IActionResult> GetConnector (string LibraryConnectorId)
     {
-        if (context.LibraryConnectors.Find(LibraryConnectorId) is not { } connector)
+        if (await context.LibraryConnectors.FirstOrDefaultAsync(l => l.Key == LibraryConnectorId) is not { } connector)
             return NotFound();
         
         return Ok(connector);
@@ -51,12 +54,12 @@ public class LibraryConnectorController(LibraryContext context) : Controller
     [HttpPut]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateConnector([FromBody]LibraryConnector libraryConnector)
+    public async Task<IActionResult> CreateConnector ([FromBody]LibraryConnector libraryConnector)
     {
         
         context.LibraryConnectors.Add(libraryConnector);
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
@@ -66,20 +69,20 @@ public class LibraryConnectorController(LibraryContext context) : Controller
     /// </summary>
     /// <param name="LibraryConnectorId">ToFileLibrary-Connector-ID</param>
     /// <response code="200"></response>
-    /// <response code="404"><see cref="LibraryConnector"/> with <<paramref name="LibraryConnectorId"/> not found.</response>
+    /// <response code="404"><see cref="LibraryConnector"/> with <paramref name="LibraryConnectorId"/> not found.</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{LibraryConnectorId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult DeleteConnector(string LibraryConnectorId)
+    public async Task<IActionResult> DeleteConnector (string LibraryConnectorId)
     {
-        if (context.LibraryConnectors.Find(LibraryConnectorId) is not { } connector)
+        if (await context.LibraryConnectors.FirstOrDefaultAsync(l => l.Key == LibraryConnectorId) is not { } connector)
             return NotFound();
         
         context.LibraryConnectors.Remove(connector);
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }

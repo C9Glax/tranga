@@ -8,11 +8,11 @@ public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<Bas
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromHours(24);
     
-    protected override BaseWorker[] DoWorkInternal()
+    protected override Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Info("Removing stale files...");
         if (!Directory.Exists(TrangaSettings.coverImageCache))
-            return [];
+            return new Task<BaseWorker[]>(() => []);
         string[] usedFiles = DbContext.Mangas.Select(m => m.CoverFileNameInCache).Where(s => s != null).ToArray()!;
         string[] extraneousFiles = new DirectoryInfo(TrangaSettings.coverImageCache).GetFiles()
             .Where(f => usedFiles.Contains(f.FullName) == false)
@@ -23,7 +23,6 @@ public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<Bas
             Log.Info($"Deleting {path}");
             File.Delete(path);
         }
-
-        return [];
+        return new Task<BaseWorker[]>(() => []);
     }
 }

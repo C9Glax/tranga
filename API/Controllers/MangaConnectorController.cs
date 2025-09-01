@@ -75,14 +75,14 @@ public class MangaConnectorController(MangaContext context) : Controller
     [ProducesResponseType(Status202Accepted)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult SetEnabled(string MangaConnectorName, bool Enabled)
+    public async Task<IActionResult> SetEnabled(string MangaConnectorName, bool Enabled)
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return NotFound();
         
         connector.Enabled = Enabled;
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Accepted();
     }

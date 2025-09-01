@@ -21,15 +21,17 @@ public class MaintenanceController(MangaContext mangaContext) : Controller
     [HttpPost("CleanupNoDownloadManga")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CleanupNoDownloadManga()
+    public async Task<IActionResult> CleanupNoDownloadManga()
     {
-        Manga[] noDownloads = mangaContext.Mangas
-            .Include(m => m.MangaConnectorIds)
-            .Where(m => !m.MangaConnectorIds.Any(id => id.UseForDownload))
-            .ToArray();
+        if (await mangaContext.Mangas
+                .Include(m => m.MangaConnectorIds)
+                .Where(m => !m.MangaConnectorIds.Any(id => id.UseForDownload))
+                .ToArrayAsync(HttpContext.RequestAborted) is not { } noDownloads)
+            return StatusCode(Status500InternalServerError);
+        
         mangaContext.Mangas.RemoveRange(noDownloads);
         
-        if(mangaContext.Sync() is { success: false } result)
+        if(await mangaContext.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }

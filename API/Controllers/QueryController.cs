@@ -1,7 +1,7 @@
-﻿using API.MangaConnectors;
-using API.Schema.MangaContext;
+﻿using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
@@ -22,10 +22,10 @@ public class QueryController(MangaContext context) : Controller
     [HttpGet("Author/{AuthorId}")]
     [ProducesResponseType<Author>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetAuthor(string AuthorId)
+    public async Task<IActionResult> GetAuthor (string AuthorId)
     {
-        if (context.Authors.Find(AuthorId) is not { } author)
-            return NotFound();
+        if (await context.Authors.FirstOrDefaultAsync(a => a.Key == AuthorId, HttpContext.RequestAborted) is not { } author)
+            return NotFound(nameof(AuthorId));
         
         return Ok(author);
     }
@@ -39,10 +39,10 @@ public class QueryController(MangaContext context) : Controller
     [HttpGet("Chapter/{ChapterId}")]
     [ProducesResponseType<Chapter>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetChapter(string ChapterId)
+    public async Task<IActionResult> GetChapter (string ChapterId)
     {
-        if (context.Chapters.Find(ChapterId) is not { } chapter)
-            return NotFound();
+        if (await context.Chapters.FirstOrDefaultAsync(c => c.Key == ChapterId, HttpContext.RequestAborted) is not { } chapter)
+            return NotFound(nameof(ChapterId));
         
         return Ok(chapter);
     }
@@ -56,10 +56,10 @@ public class QueryController(MangaContext context) : Controller
     [HttpGet("Manga/MangaConnectorId/{MangaConnectorIdId}")]
     [ProducesResponseType<MangaConnectorId<Manga>>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetMangaMangaConnectorId(string MangaConnectorIdId)
+    public async Task<IActionResult> GetMangaMangaConnectorId (string MangaConnectorIdId)
     {
-        if(context.MangaConnectorToManga.Find(MangaConnectorIdId) is not { } mcIdManga)
-            return NotFound();
+        if (await context.MangaConnectorToManga.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, HttpContext.RequestAborted) is not { } mcIdManga)
+            return NotFound(nameof(MangaConnectorIdId));
         
         return Ok(mcIdManga);
     }
@@ -70,18 +70,24 @@ public class QueryController(MangaContext context) : Controller
     /// <param name="MangaId">Key of <see cref="Manga"/></param>
     /// <response code="200"></response>
     /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpGet("Manga/{MangaId}/SimilarName")]
     [ProducesResponseType<string[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetSimilarManga(string MangaId)
+    public async Task<IActionResult> GetSimilarManga (string MangaId)
     {
-        if (context.Mangas.Find(MangaId) is not { } manga)
-            return NotFound();
+        if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+            return NotFound(nameof(MangaId));
+        
         string name = manga.Name;
-        Dictionary<string, string> mangaNames = context.Mangas.Where(m => m.Key != MangaId).ToDictionary(m => m.Key, m => m.Name);
+        
+        if(await context.Mangas.Where(m => m.Key != MangaId).ToDictionaryAsync(m => m.Key, m => m.Name, HttpContext.RequestAborted) is not { } mangaNames)
+            return StatusCode(Status500InternalServerError);
+        
         string[] similarIds = mangaNames
             .Where(kv => NeedlemanWunschStringUtil.CalculateSimilarityPercentage(name, kv.Value) > 0.8)
             .Select(kv => kv.Key).ToArray();
+        
         return Ok(similarIds);
     }
 
@@ -94,10 +100,10 @@ public class QueryController(MangaContext context) : Controller
     [HttpGet("Chapter/MangaConnectorId/{MangaConnectorIdId}")]
     [ProducesResponseType<MangaConnectorId<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetChapterMangaConnectorId(string MangaConnectorIdId)
+    public async Task<IActionResult> GetChapterMangaConnectorId (string MangaConnectorIdId)
     {
-        if(context.MangaConnectorToChapter.Find(MangaConnectorIdId) is not { } mcIdChapter)
-            return NotFound();
+        if (await context.MangaConnectorToManga.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, HttpContext.RequestAborted) is not { } mcIdChapter)
+            return NotFound(nameof(MangaConnectorIdId));
         
         return Ok(mcIdChapter);
     }

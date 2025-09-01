@@ -43,21 +43,25 @@ public class MyAnimeList : MetadataFetcher
     /// </summary>
     /// <param name="metadataEntry"></param>
     /// <param name="dbContext"></param>
+    /// <param name="token"></param>
     /// <exception cref="FormatException"></exception>
     /// <exception cref="DbUpdateException"></exception>
-    public override void UpdateMetadata(MetadataEntry metadataEntry, MangaContext dbContext)
+    public override async Task UpdateMetadata(MetadataEntry metadataEntry, MangaContext dbContext, CancellationToken token)
     {
-        Manga dbManga = dbContext.Mangas.Find(metadataEntry.MangaId)!;
+        if (await dbContext.Mangas.FirstOrDefaultAsync(m => m.Key == metadataEntry.MangaId, token) is not { } dbManga)
+            throw new DbUpdateException("Manga not found");
         
         foreach (CollectionEntry collectionEntry in dbContext.Entry(dbManga).Collections)
-            collectionEntry.Load();
-        dbContext.Entry(dbManga).Navigation(nameof(Manga.Library)).Load();
+            await collectionEntry.LoadAsync(token);
+        await dbContext.Entry(dbManga).Navigation(nameof(Manga.Library)).LoadAsync(token);
         
         MangaFull resultData;
         try
         {
             long id = long.Parse(metadataEntry.Identifier);
-            resultData = Jikan.GetMangaFullDataAsync(id).Result.Data;
+            if(await Jikan.GetMangaFullDataAsync(id, token) is not { } response)
+                throw new DbUpdateException("Manga Data not found");
+            resultData = response.Data;
         }
         catch (Exception)
         {
@@ -71,7 +75,7 @@ public class MyAnimeList : MetadataFetcher
         dbManga.Authors.Clear();
         dbManga.Authors = resultData.Authors.Select(a => new Author(a.Name)).ToList();
 
-        dbContext.Sync();
+        await dbContext.Sync(token);
     }
     
 }

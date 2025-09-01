@@ -1,4 +1,5 @@
 using API.Schema.MangaContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
 
@@ -7,20 +8,20 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
 {
     internal readonly string MangaId = manga.Key;
     internal readonly string LibraryId = toLibrary.Key;
-    protected override BaseWorker[] DoWorkInternal()
+    protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        if (DbContext.Mangas.Find(MangaId) is not { } manga)
+        if (await DbContext.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, CancellationTokenSource.Token) is not { } manga)
             return []; //TODO Exception?
-        if (DbContext.FileLibraries.Find(LibraryId) is not { } toLibrary)
+        if (await DbContext.FileLibraries.FirstOrDefaultAsync(l => l.Key == LibraryId, CancellationTokenSource.Token) is not { } toLibrary)
             return []; //TODO Exception?
         
-        DbContext.Entry(manga).Collection(m => m.Chapters).Load();
-        DbContext.Entry(manga).Navigation(nameof(Manga.Library)).Load();
+        await DbContext.Entry(manga).Collection(m => m.Chapters).LoadAsync(CancellationTokenSource.Token);
+        await DbContext.Entry(manga).Navigation(nameof(Manga.Library)).LoadAsync(CancellationTokenSource.Token);
         
         Dictionary<Chapter, string> oldPath = manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
         manga.Library = toLibrary;
 
-        if (DbContext.Sync() is { success: false })
+        if (await DbContext.Sync(CancellationTokenSource.Token) is { success: false })
             return [];
 
         return manga.Chapters.Select(c => new MoveFileOrFolderWorker(c.FullArchiveFilePath, oldPath[c])).ToArray<BaseWorker>();

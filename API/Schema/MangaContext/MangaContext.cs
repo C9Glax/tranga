@@ -104,15 +104,15 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .OnDelete(DeleteBehavior.Cascade);
     }
 
-    public Manga? FindMangaLike(Manga other)
+    public async Task<Manga?> FindMangaLike(Manga other, CancellationToken token)
     {
-        if (MangaIncludeAll().FirstOrDefault(m => m.Key == other.Key) is { } f)
+        if (await MangaIncludeAll().FirstOrDefaultAsync(m => m.Key == other.Key, token) is { } f)
             return f;
 
-        return MangaIncludeAll()
-            .FirstOrDefault(m => m.Links.Any(l => l.Key == other.Key) ||
-                                 m.AltTitles.Any(t => other.AltTitles.Select(ot => ot.Title)
-                                     .Any(s => s.Equals(t.Title))));
+        return await MangaIncludeAll()
+            .FirstOrDefaultAsync(m =>
+                m.Links.Any(l => l.Key == other.Key) ||
+                m.AltTitles.Any(t => other.AltTitles.Select(ot => ot.Title).Any(s => s.Equals(t.Title))), token);
     }
 
     public IIncludableQueryable<Manga, ICollection<MangaConnectorId<Manga>>> MangaIncludeAll() => Mangas.Include(m => m.Library)

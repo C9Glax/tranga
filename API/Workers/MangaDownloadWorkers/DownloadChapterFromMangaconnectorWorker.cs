@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using API.MangaConnectors;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -16,14 +17,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
     internal readonly string MangaConnectorIdId = chId.Key;
-    protected override BaseWorker[] DoWorkInternal()
+    protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        if (DbContext.MangaConnectorToChapter.Find(MangaConnectorIdId) is not { } mangaConnectorId)
+        if(await DbContext.MangaConnectorToChapter.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, CancellationTokenSource.Token) is not { } mangaConnectorId)
             return []; //TODO Exception?
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
             return []; //TODO Exception?
         
-        DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Chapter>.Obj)).Load();
+        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Chapter>.Obj)).LoadAsync(CancellationTokenSource.Token);
         Chapter chapter = mangaConnectorId.Obj;
         if (chapter.Downloaded)
         {
@@ -31,8 +32,8 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             return [];
         }
         
-        DbContext.Entry(chapter).Navigation(nameof(Chapter.ParentManga)).Load();
-        DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).Load();
+        await DbContext.Entry(chapter).Navigation(nameof(Chapter.ParentManga)).LoadAsync(CancellationTokenSource.Token);
+        await DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).LoadAsync(CancellationTokenSource.Token);
 
         if (chapter.ParentManga.LibraryId is null)
         {
@@ -92,13 +93,13 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             }
         }
         
-        CopyCoverFromCacheToDownloadLocation(chapter.ParentManga);
+        await CopyCoverFromCacheToDownloadLocation(chapter.ParentManga);
         
         Log.Debug($"Creating ComicInfo.xml {chapter}");
         foreach (CollectionEntry collectionEntry in DbContext.Entry(chapter.ParentManga).Collections)
-            collectionEntry.Load();
-        DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).Load();
-        File.WriteAllText(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString());
+            await collectionEntry.LoadAsync(CancellationTokenSource.Token);
+        await DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).LoadAsync(CancellationTokenSource.Token);
+        await File.WriteAllTextAsync(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString(), CancellationTokenSource.Token);
         
         Log.Debug($"Packaging images to archive {chapter}");
         //ZIP-it and ship-it
@@ -108,7 +109,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         Directory.Delete(tempFolder, true); //Cleanup
         
         chapter.Downloaded = true;
-        DbContext.Sync();
+        await DbContext.Sync(CancellationTokenSource.Token);
 
         return [];
     }
@@ -151,7 +152,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
     }
     
-    private void CopyCoverFromCacheToDownloadLocation(Manga manga)
+    private async Task CopyCoverFromCacheToDownloadLocation(Manga manga)
     {
         //Check if Publication already has a Folder and cover
         string publicationFolder = manga.CreatePublicationFolder();
@@ -163,7 +164,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
         
         //TODO MangaConnector Selection
-        DbContext.Entry(manga).Collection(m => m.MangaConnectorIds).Load();
+        await DbContext.Entry(manga).Collection(m => m.MangaConnectorIds).LoadAsync(CancellationTokenSource.Token);
         MangaConnectorId<Manga> mangaConnectorId = manga.MangaConnectorIds.First();
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
         {
@@ -172,7 +173,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
 
         Log.Info($"Copying cover to {publicationFolder}");
-        DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).Load();
+        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).LoadAsync(CancellationTokenSource.Token);
         string? fileInCache = manga.CoverFileNameInCache ?? mangaConnector.SaveCoverImageToCache(mangaConnectorId);
         if (fileInCache is null)
         {

@@ -1,6 +1,7 @@
 ﻿using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
 
@@ -15,11 +16,14 @@ public class FileLibraryController(MangaContext context) : Controller
     /// Returns all <see cref="FileLibrary"/>
     /// </summary>
     /// <response code="200"></response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpGet]
     [ProducesResponseType<FileLibrary[]>(Status200OK, "application/json")]
-    public IActionResult GetFileLibraries()
+    public async Task<IActionResult> GetFileLibraries ()
     {
-        return Ok(context.FileLibraries.ToArray());
+        if(await context.FileLibraries.ToArrayAsync(HttpContext.RequestAborted) is not { } result)
+            return StatusCode(Status500InternalServerError);
+        return Ok(result);
     }
 
     /// <summary>
@@ -31,9 +35,9 @@ public class FileLibraryController(MangaContext context) : Controller
     [HttpGet("{FileLibraryId}")]
     [ProducesResponseType<FileLibrary>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetFileLibrary(string FileLibraryId)
+    public async Task<IActionResult> GetFileLibrary (string FileLibraryId)
     {
-        if (context.FileLibraries.Find(FileLibraryId) is not { } library)
+        if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
             return NotFound();
         
         return Ok(library);
@@ -51,15 +55,15 @@ public class FileLibraryController(MangaContext context) : Controller
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult ChangeLibraryBasePath(string FileLibraryId, [FromBody]string newBasePath)
+    public async Task<IActionResult> ChangeLibraryBasePath (string FileLibraryId, [FromBody]string newBasePath)
     {
-        if (context.FileLibraries.Find(FileLibraryId) is not { } library)
+        if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
             return NotFound();
         
         //TODO Path check
         library.BasePath = newBasePath;
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
@@ -77,21 +81,21 @@ public class FileLibraryController(MangaContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult ChangeLibraryName(string FileLibraryId, [FromBody] string newName)
+    public async Task<IActionResult> ChangeLibraryName (string FileLibraryId, [FromBody] string newName)
     {
-        if (context.FileLibraries.Find(FileLibraryId) is not { } library)
+        if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
             return NotFound();
         
         //TODO Name check
         library.LibraryName = newName;
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
     
     /// <summary>
-    /// Creates new <see cref="FileLibraryId"/>
+    /// Creates new <see cref="FileLibrary"/>
     /// </summary>
     /// <param name="library">New <see cref="FileLibrary"/> to add</param>
     /// <response code="200"></response>
@@ -99,13 +103,12 @@ public class FileLibraryController(MangaContext context) : Controller
     [HttpPut]
     [ProducesResponseType(Status201Created)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult CreateNewLibrary([FromBody]FileLibrary library)
+    public async Task<IActionResult> CreateNewLibrary ([FromBody]FileLibrary library)
     {
-
         //TODO Parameter check
         context.FileLibraries.Add(library);
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Created();
     }
@@ -120,14 +123,14 @@ public class FileLibraryController(MangaContext context) : Controller
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public IActionResult DeleteLocalLibrary(string FileLibraryId)
+    public async Task<IActionResult> DeleteLocalLibrary (string FileLibraryId)
     {
-        if (context.FileLibraries.Find(FileLibraryId) is not { } library)
+        if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
             return NotFound();
         
         context.FileLibraries.Remove(library);
         
-        if(context.Sync() is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return StatusCode(Status500InternalServerError, result.exceptionMessage);
         return Ok();
     }
