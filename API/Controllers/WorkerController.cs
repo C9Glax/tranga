@@ -13,26 +13,14 @@ namespace API.Controllers;
 public class WorkerController() : Controller
 {
     /// <summary>
-    /// Returns all <see cref="BaseWorker"/>.Keys
+    /// Returns all <see cref="BaseWorker"/>
     /// </summary>
-    /// <response code="200"><see cref="BaseWorker"/> Keys/IDs</response>
-    [HttpGet]
-    [ProducesResponseType<string[]>(Status200OK, "application/json")]
-    public IActionResult GetAllWorkers()
-    {
-        return Ok(Tranga.GetRunningWorkers().Select(w => w.Key).ToArray());
-    }
-    
-    /// <summary>
-    /// Returns <see cref="BaseWorker"/> with requested <paramref name="WorkerIds"/>
-    /// </summary>
-    /// <param name="WorkerIds">Array of <see cref="BaseWorker"/>.Key</param>
     /// <response code="200"></response>
-    [HttpPost("WithIDs")]
+    [HttpGet]
     [ProducesResponseType<BaseWorker[]>(Status200OK, "application/json")]
-    public IActionResult GetWorkers([FromBody]string[] WorkerIds)
+    public IActionResult GetWorkers()
     {
-        return Ok(Tranga.GetRunningWorkers().Where(worker => WorkerIds.Contains(worker.Key)).ToArray());
+        return Ok(Tranga.GetRunningWorkers().ToArray());
     }
 
     /// <summary>
