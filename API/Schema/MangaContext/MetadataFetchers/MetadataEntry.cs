@@ -17,7 +17,7 @@ public class MetadataEntry
     public MetadataEntry(MetadataFetcher fetcher, Manga manga, string identifier)
     {
         this.Manga = manga;
-        this.MangaId = manga.MangaId;
+        this.MangaId = manga.Key;
         this.MetadataFetcher = fetcher;
         this.MetadataFetcherName = fetcher.Name;
         this.Identifier = identifier;

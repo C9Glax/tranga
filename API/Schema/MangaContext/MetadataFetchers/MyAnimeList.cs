@@ -64,21 +64,14 @@ public class MyAnimeList : MetadataFetcher
             throw new FormatException("ID was not in correct format");
         }
 
-        try
-        {
-            dbManga.Name = resultData.Titles.First().Title;
-            dbManga.Description = resultData.Synopsis;
-            dbManga.AltTitles.Clear();
-            dbManga.AltTitles = resultData.Titles.Select(t => new MangaAltTitle(t.Type, t.Title)).ToList();
-            dbManga.Authors.Clear();
-            dbManga.Authors = resultData.Authors.Select(a => new Author(a.Name)).ToList();
+        dbManga.Name = resultData.Titles.First().Title;
+        dbManga.Description = resultData.Synopsis;
+        dbManga.AltTitles.Clear();
+        dbManga.AltTitles = resultData.Titles.Select(t => new AltTitle(t.Type, t.Title)).ToList();
+        dbManga.Authors.Clear();
+        dbManga.Authors = resultData.Authors.Select(a => new Author(a.Name)).ToList();
 
-            dbContext.Sync();
-        }
-        catch (DbUpdateException e)
-        {
-            throw;
-        }
+        dbContext.Sync();
     }
     
 }
