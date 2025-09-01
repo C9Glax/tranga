@@ -89,9 +89,10 @@ public abstract class BaseWorker : Identifiable
         // Run the actual work
         Log.Info($"Running {this}");
         DateTime startTime = DateTime.UtcNow;
-        Task<BaseWorker[]> task = DoWorkInternal();
+        Task<BaseWorker[]> task = new Task<BaseWorker[]>(() => DoWorkInternal().Result);
         task.GetAwaiter().OnCompleted(Finish(startTime, callback));
         this.State = WorkerExecutionState.Running;
+        task.Start();
         return task;
     }
 
