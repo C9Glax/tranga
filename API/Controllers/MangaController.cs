@@ -44,6 +44,20 @@ public class MangaController(MangaContext context) : Controller
     }
     
     /// <summary>
+    /// Returns all <see cref="Manga"/> that are being downloaded from at least one <see cref="MangaConnector"/>
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpGet("Downloading")]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    public IActionResult GetMangaDownloading()
+    {
+        Manga[] ret = context.MangaIncludeAll()
+            .Where(m => m.MangaConnectorIds.Any(id => id.UseForDownload))
+            .ToArray();
+        return Ok(ret);
+    }
+    
+    /// <summary>
     /// Returns all cached <see cref="Manga"/> with <paramref name="MangaIds"/>
     /// </summary>
     /// <param name="MangaIds">Array of <<see cref="Manga"/>.Key</param>
