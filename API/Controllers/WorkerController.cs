@@ -22,6 +22,17 @@ public class WorkerController() : Controller
     {
         return Ok(Tranga.GetRunningWorkers().ToArray());
     }
+    
+    /// <summary>
+    /// Returns all <see cref="BaseWorker"/>.Keys
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpGet("Keys")]
+    [ProducesResponseType<string[]>(Status200OK, "application/json")]
+    public IActionResult GetWorkerIds()
+    {
+        return Ok(Tranga.GetRunningWorkers().Select(w => w.Key).ToArray());
+    }
 
     /// <summary>
     /// Get all <see cref="BaseWorker"/> in requested <see cref="WorkerExecutionState"/>
