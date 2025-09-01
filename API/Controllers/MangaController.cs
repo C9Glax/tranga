@@ -67,7 +67,7 @@ public class MangaController(MangaContext context) : Controller
                .ToArrayAsync(HttpContext.RequestAborted) is not { } result)
             return StatusCode(Status500InternalServerError);
 
-        return Ok(result.Select(m => new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus)));
+        return Ok(result.Select(m => new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus, m.MangaConnectorIds)));
     }
     
     /// <summary>

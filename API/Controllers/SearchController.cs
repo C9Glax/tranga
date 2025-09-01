@@ -1,3 +1,4 @@
+using API.Controllers.DTOs;
 using API.MangaConnectors;
 using API.Schema.MangaContext;
 using Asp.Versioning;
@@ -17,11 +18,11 @@ public class SearchController(MangaContext context) : Controller
     /// </summary>
     /// <param name="MangaConnectorName"><see cref="MangaConnector"/>.Name</param>
     /// <param name="Query">searchTerm</param>
-    /// <response code="200"></response>
+    /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Manga"/>. Use <see cref="GetManga"/> for more information</response>
     /// <response code="404"><see cref="MangaConnector"/> with Name not found</response>
     /// <response code="412"><see cref="MangaConnector"/> with Name is disabled</response>
     [HttpGet("{MangaConnectorName}/{Query}")]
-    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    [ProducesResponseType<MinimalManga[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status406NotAcceptable)]
     public IActionResult SearchManga (string MangaConnectorName, string Query)
@@ -39,19 +40,19 @@ public class SearchController(MangaContext context) : Controller
                 retMangas.Add(add);
         }
 
-        return Ok(retMangas.ToArray());
+        return Ok(retMangas.Select(m => new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus, m.MangaConnectorIds)));
     }
 
     /// <summary>
     /// Returns <see cref="Manga"/> from the <see cref="MangaConnector"/> associated with <paramref name="url"/>
     /// </summary>
     /// <param name="url"></param>
-    /// <response code="200"></response>
+    /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Manga"/>. Use <see cref="GetManga"/> for more information</response>
     /// <response code="300">Multiple <see cref="MangaConnector"/> found for URL</response>
     /// <response code="404"><see cref="Manga"/> not found</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("Url")]
-    [ProducesResponseType<Manga>(Status200OK, "application/json")]
+    [ProducesResponseType<MinimalManga>(Status200OK, "application/json")]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status500InternalServerError)]
     public IActionResult GetMangaFromUrl ([FromBody]string url)
@@ -65,6 +66,6 @@ public class SearchController(MangaContext context) : Controller
         if(Tranga.AddMangaToContext(manga, context, out Manga? add, HttpContext.RequestAborted) == false)
             return StatusCode(Status500InternalServerError);
         
-        return Ok(add);
+        return Ok(new MinimalManga(add.Key, add.Name, add.Description, add.ReleaseStatus, add.MangaConnectorIds));
     }
 }
