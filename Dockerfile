@@ -3,15 +3,6 @@ ARG DOTNET=9.0
 
 FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/aspnet:$DOTNET AS base
 WORKDIR /publish
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-ENV XDG_CONFIG_HOME=/tmp/.chromium
-ENV XDG_CACHE_HOME=/tmp/.chromium
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -y chromium \
-  && apt-get autopurge -y \
-  && apt-get autoclean -y
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
 WORKDIR /src
