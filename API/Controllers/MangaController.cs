@@ -1,4 +1,5 @@
-﻿using API.MangaConnectors;
+﻿using API.Controllers.DTOs;
+using API.MangaConnectors;
 using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;
@@ -24,16 +25,16 @@ public class MangaController(MangaContext context) : Controller
     /// <summary>
     /// Returns all cached <see cref="Manga"/>
     /// </summary>
-    /// <response code="200"></response>
+    /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Manga"/>. Use <see cref="GetManga"/> for more information</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpGet]
-    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    [ProducesResponseType<MinimalManga[]>(Status200OK, "application/json")]
     public async Task<IActionResult> GetAllManga ()
     {
         if(await context.Mangas.ToArrayAsync(HttpContext.RequestAborted) is not { } result)
             return StatusCode(Status500InternalServerError);
         
-        return Ok(result);
+        return Ok(result.Select(m => new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus)));
     }
     
     /// <summary>
@@ -54,18 +55,19 @@ public class MangaController(MangaContext context) : Controller
     /// <summary>
     /// Returns all <see cref="Manga"/> that are being downloaded from at least one <see cref="MangaConnector"/>
     /// </summary>
-    /// <response code="200"></response>
+    /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Manga"/>. Use <see cref="GetManga"/> for more information</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpGet("Downloading")]
-    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
+    [ProducesResponseType<MinimalManga[]>(Status200OK, "application/json")]
     public async Task<IActionResult> GetMangaDownloading ()
     {
-        if(await context.MangaIncludeAll()
+        if(await context.Mangas
+               .Include(m => m.MangaConnectorIds)
                .Where(m => m.MangaConnectorIds.Any(id => id.UseForDownload))
                .ToArrayAsync(HttpContext.RequestAborted) is not { } result)
             return StatusCode(Status500InternalServerError);
-        
-        return Ok(result);
+
+        return Ok(result.Select(m => new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus)));
     }
     
     /// <summary>
@@ -76,7 +78,7 @@ public class MangaController(MangaContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("WithIDs")]
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
-    public async Task<IActionResult> GetManga ([FromBody]string[] MangaIds)
+    public async Task<IActionResult> GetMangaWithIds ([FromBody]string[] MangaIds)
     {
         if(await context.MangaIncludeAll()
                .Where(m => MangaIds.Contains(m.Key))

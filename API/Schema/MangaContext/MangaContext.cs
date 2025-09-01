@@ -115,11 +115,13 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
                 m.AltTitles.Any(t => other.AltTitles.Select(ot => ot.Title).Any(s => s.Equals(t.Title))), token);
     }
 
-    public IIncludableQueryable<Manga, ICollection<MangaConnectorId<Manga>>> MangaIncludeAll() => Mangas.Include(m => m.Library)
-        .Include(m => m.Authors)
-        .Include(m => m.MangaTags)
-        .Include(m => m.Links)
-        .Include(m => m.AltTitles)
-        .Include(m => m.Chapters)
-        .Include(m => m.MangaConnectorIds);
+    public IIncludableQueryable<Manga, ICollection<MangaConnectorId<Manga>>> MangaIncludeAll() =>
+        Mangas
+            .Include(m => m.Library)
+            .Include(m => m.Authors)
+            .Include(m => m.MangaTags)
+            .Include(m => m.Links)
+            .Include(m => m.AltTitles)
+            .Include(m => m.Chapters)
+            .Include(m => m.MangaConnectorIds);
 }
