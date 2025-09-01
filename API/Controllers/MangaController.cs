@@ -20,16 +20,27 @@ namespace API.Controllers;
 [Route("v{v:apiVersion}/[controller]")]
 public class MangaController(MangaContext context) : Controller
 {
+    
     /// <summary>
     /// Returns all cached <see cref="Manga"/>
     /// </summary>
-    /// <response code="200"><see cref="Manga"/> Keys/IDs</response>
+    /// <response code="200"></response>
     [HttpGet]
-    [ProducesResponseType<string[]>(Status200OK, "application/json")]
+    [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     public IActionResult GetAllManga()
     {
-        string[] ret = context.Mangas.Select(m => m.Key).ToArray();
-        return Ok(ret);
+        return Ok(context.Mangas.ToArray());
+    }
+    
+    /// <summary>
+    /// Returns all cached <see cref="Manga"/>.Keys
+    /// </summary>
+    /// <response code="200"><see cref="Manga"/> Keys/IDs</response>
+    [HttpGet("Keys")]
+    [ProducesResponseType<string[]>(Status200OK, "application/json")]
+    public IActionResult GetAllMangaKeys()
+    {
+        return Ok(context.Mangas.Select(m => m.Key).ToArray());
     }
     
     /// <summary>
