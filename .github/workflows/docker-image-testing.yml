@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "testing" ]
   workflow_dispatch:
 
 jobs:
@@ -38,8 +38,8 @@ jobs:
           context: ./
           file: ./Dockerfile
           #platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/arm/v7,linux/arm/v6
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64 #,linux/arm64
           pull: true
           push: true
           tags: |
-            glax/tranga-api:latest
+            glax/tranga-api:testing
