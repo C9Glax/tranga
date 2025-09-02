@@ -1,21 +1,39 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using API.Schema.MangaContext;
-using Newtonsoft.Json;
 
 namespace API.Controllers.DTOs;
 
-public sealed record MinimalManga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId<Manga>>? MangaConnectorIds = null)
+/// <summary>
+/// Shortened Version of <see cref="Manga"/>
+/// </summary>
+public record MinimalManga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId> MangaConnectorIds) : Identifiable(Key)
 {
-    [Required] [StringLength(TokenGen.MaximumLength, MinimumLength = TokenGen.MinimumLength)]
-    public string Key { get; init; } = Key;
+    /// <summary>
+    /// Name of the Manga
+    /// </summary>
     [Required]
-    [JsonRequired]
+    [Description("Name of the Manga")]
     public string Name { get; init; } = Name;
+    
+    /// <summary>
+    /// Description of the Manga
+    /// </summary>
     [Required]
-    [JsonRequired]
+    [Description("Description of the Manga")]
     public string Description { get; init; } = Description;
+    
+    /// <summary>
+    /// ReleaseStatus of the Manga
+    /// </summary>
     [Required]
-    [JsonRequired]
+    [Description("ReleaseStatus of the Manga")]
     public MangaReleaseStatus ReleaseStatus { get; init; } = ReleaseStatus;
-    public IEnumerable<MangaConnectorId<Manga>>? MangaConnectorIds { get; init; } = MangaConnectorIds;
+    
+    /// <summary>
+    /// Ids of the Manga on MangaConnectors
+    /// </summary>
+    [Required]
+    [Description("Ids of the Manga on MangaConnectors")]
+    public IEnumerable<MangaConnectorId> MangaConnectorIds { get; init; } = MangaConnectorIds;
 }

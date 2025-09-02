@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using API.Workers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Newtonsoft.Json;
 using static System.IO.UnixFileMode;
 
 namespace API.Schema.MangaContext;
@@ -13,34 +11,31 @@ namespace API.Schema.MangaContext;
 [PrimaryKey("Key")]
 public class Manga : Identifiable
 {
-    [StringLength(512)] [Required] public string Name { get; internal set; }
+    [StringLength(512)] public string Name { get; internal set; }
     [Required] public string Description { get; internal set; }
-    [JsonIgnore] [Url] [StringLength(512)] public string CoverUrl { get; internal set; }
-    [Required] public MangaReleaseStatus ReleaseStatus { get; internal set; }
+    [Url] [StringLength(512)] public string CoverUrl { get; internal set; }
+    public MangaReleaseStatus ReleaseStatus { get; internal set; }
     [StringLength(64)] public string? LibraryId { get; private set; }
-    [JsonIgnore] public FileLibrary? Library = null!;
+    public FileLibrary? Library = null!;
 
     public ICollection<Author> Authors { get; internal set; } = null!;
     public ICollection<MangaTag> MangaTags { get; internal set; } = null!;
     public ICollection<Link> Links { get; internal set; } = null!;
     public ICollection<AltTitle> AltTitles { get; internal set; } = null!;
-    [Required] public float IgnoreChaptersBefore { get; internal set; }
+    public float IgnoreChaptersBefore { get; internal set; }
     [StringLength(1024)] [Required] public string DirectoryName { get; private set; }
-    [JsonIgnore] [StringLength(512)] public string? CoverFileNameInCache { get; internal set; }
+    [StringLength(512)] public string? CoverFileNameInCache { get; internal set; }
     public uint? Year { get; internal init; }
     [StringLength(8)] public string? OriginalLanguage { get; internal init; }
 
-    [JsonIgnore]
-    [NotMapped]
-    public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
+    [NotMapped] public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
 
     [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.Key).ToList();
-    [JsonIgnore] public ICollection<Chapter> Chapters = null!;
+    public ICollection<Chapter> Chapters = null!;
 
-    [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors =>
-        MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
+    [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors => MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
     [NotMapped] public ICollection<string> MangaConnectorIdsIds => MangaConnectorIds.Select(id => id.Key).ToList();
-    [JsonIgnore] public ICollection<MangaConnectorId<Manga>> MangaConnectorIds = null!;
+    public ICollection<MangaConnectorId<Manga>> MangaConnectorIds = null!;
 
     public Manga(string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,
         ICollection<Author> authors, ICollection<MangaTag> mangaTags, ICollection<Link> links, ICollection<AltTitle> altTitles,

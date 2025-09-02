@@ -1,6 +1,7 @@
 ﻿using API.MangaConnectors;
 using API.Schema.MangaContext;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
@@ -17,10 +18,10 @@ public class MangaConnectorController(MangaContext context) : Controller
     /// </summary>
     /// <response code="200">Names of <see cref="MangaConnector"/> (Scanlation-Sites)</response>
     [HttpGet]
-    [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
-    public IActionResult GetConnectors()
+    [ProducesResponseType<List<MangaConnector>>(Status200OK, "application/json")]
+    public Ok<List<MangaConnector>> GetConnectors()
     {
-        return Ok(Tranga.MangaConnectors.ToArray());
+        return TypedResults.Ok(Tranga.MangaConnectors.ToList());
     }
 
     /// <summary>
@@ -31,13 +32,13 @@ public class MangaConnectorController(MangaContext context) : Controller
     /// <response code="404"><see cref="MangaConnector"/> (Scanlation-Sites) with Name not found.</response>
     [HttpGet("{MangaConnectorName}")]
     [ProducesResponseType<MangaConnector>(Status200OK, "application/json")]
-    [ProducesResponseType(Status404NotFound)]
-    public IActionResult GetConnector(string MangaConnectorName)
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
+    public Results<Ok<MangaConnector>, NotFound<string>> GetConnector(string MangaConnectorName)
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
-            return NotFound();
+            return TypedResults.NotFound(nameof(MangaConnectorName));
         
-        return Ok(connector);
+        return TypedResults.Ok(connector);
     }
     
     /// <summary>
@@ -45,10 +46,10 @@ public class MangaConnectorController(MangaContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet("Enabled")]
-    [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
-    public IActionResult GetEnabledConnectors()
+    [ProducesResponseType<List<MangaConnector>>(Status200OK, "application/json")]
+    public Ok<List<MangaConnector>> GetEnabledConnectors()
     {
-        return Ok(Tranga.MangaConnectors.Where(c => c.Enabled).ToArray());
+        return TypedResults.Ok(Tranga.MangaConnectors.Where(c => c.Enabled).ToList());
     }
     
     /// <summary>
@@ -56,11 +57,11 @@ public class MangaConnectorController(MangaContext context) : Controller
     /// </summary>
     /// <response code="200"></response>
     [HttpGet("Disabled")]
-    [ProducesResponseType<MangaConnector[]>(Status200OK, "application/json")]
-    public IActionResult GetDisabledConnectors()
+    [ProducesResponseType<List<MangaConnector>>(Status200OK, "application/json")]
+    public Ok<List<MangaConnector>> GetDisabledConnectors()
     {
         
-        return Ok(Tranga.MangaConnectors.Where(c => c.Enabled == false).ToArray());
+        return TypedResults.Ok(Tranga.MangaConnectors.Where(c => c.Enabled == false).ToList());
     }
 
     /// <summary>
@@ -68,22 +69,22 @@ public class MangaConnectorController(MangaContext context) : Controller
     /// </summary>
     /// <param name="MangaConnectorName"><see cref="MangaConnector"/>.Name</param>
     /// <param name="Enabled">Set true to enable, false to disable</param>
-    /// <response code="202"></response>
+    /// <response code="200"></response>
     /// <response code="404"><see cref="MangaConnector"/> (Scanlation-Sites) with Name not found.</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{MangaConnectorName}/SetEnabled/{Enabled}")]
-    [ProducesResponseType(Status202Accepted)]
-    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> SetEnabled(string MangaConnectorName, bool Enabled)
+    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> SetEnabled(string MangaConnectorName, bool Enabled)
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
-            return NotFound();
+            return TypedResults.NotFound(nameof(MangaConnectorName));
         
         connector.Enabled = Enabled;
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Accepted();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok();
     }
 }

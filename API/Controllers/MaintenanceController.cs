@@ -1,6 +1,7 @@
 using API.MangaConnectors;
 using API.Schema.MangaContext;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -21,18 +22,18 @@ public class MaintenanceController(MangaContext mangaContext) : Controller
     [HttpPost("CleanupNoDownloadManga")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> CleanupNoDownloadManga()
+    public async Task<Results<Ok, InternalServerError<string>>> CleanupNoDownloadManga()
     {
         if (await mangaContext.Mangas
                 .Include(m => m.MangaConnectorIds)
                 .Where(m => !m.MangaConnectorIds.Any(id => id.UseForDownload))
                 .ToArrayAsync(HttpContext.RequestAborted) is not { } noDownloads)
-            return StatusCode(Status500InternalServerError);
+            return TypedResults.InternalServerError("Could not fetch Manga");
         
         mangaContext.Mangas.RemoveRange(noDownloads);
         
         if(await mangaContext.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok();
     }
 }

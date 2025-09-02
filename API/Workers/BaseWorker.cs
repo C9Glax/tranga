@@ -1,6 +1,5 @@
 using API.Schema;
 using log4net;
-using Newtonsoft.Json;
 
 namespace API.Workers;
 
@@ -9,21 +8,19 @@ public abstract class BaseWorker : Identifiable
     /// <summary>
     /// Workers this Worker depends on being completed before running.
     /// </summary>
-    public BaseWorker[] DependsOn { get; init; }
+    private BaseWorker[] DependsOn { get; init; }
     /// <summary>
     /// Dependencies and dependencies of dependencies. See also <see cref="DependsOn"/>.
     /// </summary>
-    [JsonIgnore]
-    public IEnumerable<BaseWorker> AllDependencies => DependsOn.Select(d => d.AllDependencies).SelectMany(x => x);
+    internal IEnumerable<BaseWorker> AllDependencies => DependsOn.Select(d => d.AllDependencies).SelectMany(x => x);
     /// <summary>
     /// <see cref="AllDependencies"/> and Self.
     /// </summary>
-    [JsonIgnore]
-    public IEnumerable<BaseWorker> DependenciesAndSelf => AllDependencies.Append(this);
+    internal IEnumerable<BaseWorker> DependenciesAndSelf => AllDependencies.Append(this);
     /// <summary>
     /// <see cref="DependsOn"/> where <see cref="WorkerExecutionState"/> is less than Completed.
     /// </summary>
-    public IEnumerable<BaseWorker> MissingDependencies => DependsOn.Where(d => d.State < WorkerExecutionState.Completed);
+    internal IEnumerable<BaseWorker> MissingDependencies => DependsOn.Where(d => d.State < WorkerExecutionState.Completed);
     public bool AllDependenciesFulfilled => DependsOn.All(d => d.State >= WorkerExecutionState.Completed);
     internal WorkerExecutionState State { get; private set; }
     private CancellationTokenSource _cancellationTokenSource = new ();
@@ -50,7 +47,7 @@ public abstract class BaseWorker : Identifiable
         _cancellationTokenSource.Cancel();
     }
 
-    public BaseWorker(IEnumerable<BaseWorker>? dependsOn = null)
+    protected BaseWorker(IEnumerable<BaseWorker>? dependsOn = null)
     {
         this.DependsOn = dependsOn?.ToArray() ?? [];
         this.Log = LogManager.GetLogger(GetType());

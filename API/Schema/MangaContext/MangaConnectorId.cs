@@ -1,19 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 using API.MangaConnectors;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace API.Schema.MangaContext;
 
 [PrimaryKey("Key")]
 public class MangaConnectorId<T> : Identifiable where T : Identifiable
 {
-    [StringLength(64)] [Required] public string ObjId { get; internal set; }
-    [JsonIgnore] public T Obj = null!;
+    public T Obj = null!;
+    [StringLength(64)] public string ObjId { get; internal set; }
 
-    [StringLength(32)] [Required] public string MangaConnectorName { get; private set; }
+    [StringLength(32)] public string MangaConnectorName { get; private set; }
 
-    [StringLength(256)] [Required] public string IdOnConnectorSite { get; init; }
+    [StringLength(256)] public string IdOnConnectorSite { get; init; }
     [Url] [StringLength(512)] public string? WebsiteUrl { get; internal init; }
     public bool UseForDownload { get; internal set; }
 

@@ -7,7 +7,6 @@ namespace API.Schema.MangaContext;
 public class Author(string authorName) : Identifiable(TokenGen.CreateToken(typeof(Author), authorName))
 {
     [StringLength(128)]
-    [Required]
     public string AuthorName { get; init; } = authorName;
 
     public override string ToString() => $"{base.ToString()} {AuthorName}";

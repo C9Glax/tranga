@@ -4,28 +4,27 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace API.Schema.MangaContext;
 
 [PrimaryKey("Key")]
 public class Chapter : Identifiable, IComparable<Chapter>
 {
-    [StringLength(64)] [Required] public string ParentMangaId { get; init; } = null!;
-    [JsonIgnore] public Manga ParentManga = null!;
+    [StringLength(64)] public string ParentMangaId { get; init; } = null!;
+    public Manga ParentManga = null!;
 
     [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors =>
         MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
-    [JsonIgnore] public ICollection<MangaConnectorId<Chapter>> MangaConnectorIds = null!;
+    public ICollection<MangaConnectorId<Chapter>> MangaConnectorIds = null!;
 
     public int? VolumeNumber { get; private set; }
-    [StringLength(10)] [Required] public string ChapterNumber { get; private set; }
+    [StringLength(10)] public string ChapterNumber { get; private set; }
 
     [StringLength(256)] public string? Title { get; private set; }
 
-    [StringLength(256)] [Required] public string FileName { get; private set; }
+    [StringLength(256)] public string FileName { get; private set; }
 
-    [Required] public bool Downloaded { get; internal set; }
+    public bool Downloaded { get; internal set; }
     [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
 
     public Chapter(Manga parentManga, string chapterNumber,

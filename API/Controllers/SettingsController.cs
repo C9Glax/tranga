@@ -1,5 +1,6 @@
 ﻿using API.MangaDownloadClients;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 // ReSharper disable InconsistentNaming
@@ -17,9 +18,9 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpGet]
     [ProducesResponseType<TrangaSettings>(Status200OK, "application/json")]
-    public IActionResult GetSettings()
+    public Ok<TrangaSettings> GetSettings()
     {
-        return Ok(Tranga.Settings);
+        return TypedResults.Ok(Tranga.Settings);
     }
     
     /// <summary>
@@ -28,9 +29,9 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpGet("UserAgent")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
-    public IActionResult GetUserAgent()
+    public Ok<string> GetUserAgent()
     {
-        return Ok(Tranga.Settings.UserAgent);
+        return TypedResults.Ok(Tranga.Settings.UserAgent);
     }
     
     /// <summary>
@@ -39,11 +40,11 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpPatch("UserAgent")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetUserAgent([FromBody]string userAgent)
+    public Ok SetUserAgent([FromBody]string userAgent)
     {
         //TODO Validate
         Tranga.Settings.SetUserAgent(userAgent);
-        return Ok();
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -52,10 +53,10 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpDelete("UserAgent")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult ResetUserAgent()
+    public Ok ResetUserAgent()
     {
         Tranga.Settings.SetUserAgent(TrangaSettings.DefaultUserAgent);
-        return Ok();
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -64,9 +65,9 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpGet("RequestLimits")]
     [ProducesResponseType<Dictionary<RequestType,int>>(Status200OK, "application/json")]
-    public IActionResult GetRequestLimits()
+    public Ok<Dictionary<RequestType,int>> GetRequestLimits()
     {
-        return Ok(Tranga.Settings.RequestLimits);
+        return TypedResults.Ok(Tranga.Settings.RequestLimits);
     }
     
     /// <summary>
@@ -75,9 +76,9 @@ public class SettingsController() : Controller
     /// <remarks><h1>NOT IMPLEMENTED</h1></remarks>
     [HttpPatch("RequestLimits")]
     [ProducesResponseType(Status501NotImplemented)]
-    public IActionResult SetRequestLimits()
+    public StatusCodeHttpResult SetRequestLimits()
     {
-        return StatusCode(501);
+        return TypedResults.StatusCode(Status501NotImplemented);
     }
 
     /// <summary>
@@ -90,12 +91,12 @@ public class SettingsController() : Controller
     [HttpPatch("RequestLimits/{RequestType}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status400BadRequest)]
-    public IActionResult SetRequestLimit(RequestType RequestType, [FromBody]int requestLimit)
+    public Results<Ok, BadRequest> SetRequestLimit(RequestType RequestType, [FromBody]int requestLimit)
     {
         if (requestLimit <= 0)
-            return BadRequest();
+            return TypedResults.BadRequest();
         Tranga.Settings.SetRequestLimit(RequestType, requestLimit);
-        return Ok();
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -104,10 +105,10 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpDelete("RequestLimits/{RequestType}")]
     [ProducesResponseType<string>(Status200OK)]
-    public IActionResult ResetRequestLimits(RequestType RequestType)
+    public Ok ResetRequestLimits(RequestType RequestType)
     {
         Tranga.Settings.SetRequestLimit(RequestType, TrangaSettings.DefaultRequestLimits[RequestType]);
-        return Ok();
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -116,10 +117,10 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpDelete("RequestLimits")]
     [ProducesResponseType<string>(Status200OK)]
-    public IActionResult ResetRequestLimits()
+    public Ok ResetRequestLimits()
     {
         Tranga.Settings.ResetRequestLimits();
-        return Ok();
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -128,9 +129,9 @@ public class SettingsController() : Controller
     /// <response code="200">JPEG ImageCompression-level as Integer</response>
     [HttpGet("ImageCompressionLevel")]
     [ProducesResponseType<int>(Status200OK, "text/plain")]
-    public IActionResult GetImageCompression()
+    public Ok<int> GetImageCompression()
     {
-        return Ok(Tranga.Settings.ImageCompression);
+        return TypedResults.Ok(Tranga.Settings.ImageCompression);
     }
     
     /// <summary>
@@ -142,12 +143,12 @@ public class SettingsController() : Controller
     [HttpPatch("ImageCompressionLevel/{level}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status400BadRequest)]
-    public IActionResult SetImageCompression(int level)
+    public Results<Ok, BadRequest> SetImageCompression(int level)
     {
         if (level < 1 || level > 100)
-            return BadRequest();
+            return TypedResults.BadRequest();
         Tranga.Settings.UpdateImageCompression(level);
-        return Ok();
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -156,9 +157,9 @@ public class SettingsController() : Controller
     /// <response code="200">True if enabled</response>
     [HttpGet("BWImages")]
     [ProducesResponseType<bool>(Status200OK, "text/plain")]
-    public IActionResult GetBwImagesToggle()
+    public Ok<bool> GetBwImagesToggle()
     {
-        return Ok(Tranga.Settings.BlackWhiteImages);
+        return TypedResults.Ok(Tranga.Settings.BlackWhiteImages);
     }
     
     /// <summary>
@@ -168,10 +169,10 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpPatch("BWImages/{enabled}")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetBwImagesToggle(bool enabled)
+    public Ok SetBwImagesToggle(bool enabled)
     {
         Tranga.Settings.SetBlackWhiteImageEnabled(enabled);
-        return Ok();
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -194,9 +195,9 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpGet("ChapterNamingScheme")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
-    public IActionResult GetCustomNamingScheme()
+    public Ok<string> GetCustomNamingScheme()
     {
-        return Ok(Tranga.Settings.ChapterNamingScheme);
+        return TypedResults.Ok(Tranga.Settings.ChapterNamingScheme);
     }
     
     /// <summary>
@@ -217,12 +218,12 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpPatch("ChapterNamingScheme")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetCustomNamingScheme([FromBody]string namingScheme)
+    public Ok SetCustomNamingScheme([FromBody]string namingScheme)
     {
         //TODO Move old Chapters
         Tranga.Settings.SetChapterNamingScheme(namingScheme);
         
-        return Ok();
+        return TypedResults.Ok();
     }
 
     /// <summary>
@@ -232,10 +233,10 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpPost("FlareSolverr/Url")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetFlareSolverrUrl([FromBody]string flareSolverrUrl)
+    public Ok SetFlareSolverrUrl([FromBody]string flareSolverrUrl)
     {
         Tranga.Settings.SetFlareSolverrUrl(flareSolverrUrl);
-        return Ok();
+        return TypedResults.Ok();
     }
 
     /// <summary>
@@ -244,10 +245,10 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpDelete("FlareSolverr/Url")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult ClearFlareSolverrUrl()
+    public Ok ClearFlareSolverrUrl()
     {
         Tranga.Settings.SetFlareSolverrUrl(string.Empty);
-        return Ok();
+        return TypedResults.Ok();
     }
 
     /// <summary>
@@ -258,12 +259,12 @@ public class SettingsController() : Controller
     [HttpPost("FlareSolverr/Test")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status500InternalServerError)]
-    public IActionResult TestFlareSolverrReachable()
+    public Results<Ok, InternalServerError> TestFlareSolverrReachable()
     {
         const string knownProtectedUrl = "https://prowlarr.servarr.com/v1/ping";
         FlareSolverrDownloadClient client = new();
         RequestResult result = client.MakeRequestInternal(knownProtectedUrl);
-        return (int)result.statusCode >= 200 && (int)result.statusCode < 300 ? Ok() : StatusCode(500, result.statusCode); 
+        return (int)result.statusCode >= 200 && (int)result.statusCode < 300 ? TypedResults.Ok() : TypedResults.InternalServerError(); 
     }
 
     /// <summary>
@@ -272,9 +273,9 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpGet("DownloadLanguage")]
     [ProducesResponseType<string>(Status200OK,  "text/plain")]
-    public IActionResult GetDownloadLanguage()
+    public Ok<string> GetDownloadLanguage()
     {
-        return Ok(Tranga.Settings.DownloadLanguage);
+        return TypedResults.Ok(Tranga.Settings.DownloadLanguage);
     }
 
     /// <summary>
@@ -283,10 +284,10 @@ public class SettingsController() : Controller
     /// <response code="200"></response>
     [HttpPatch("DownloadLanguage/{Language}")]
     [ProducesResponseType(Status200OK)]
-    public IActionResult SetDownloadLanguage(string Language)
+    public Ok SetDownloadLanguage(string Language)
     {
         //TODO Validation
         Tranga.Settings.SetDownloadLanguage(Language);
-        return Ok();
+        return TypedResults.Ok();
     }
 }

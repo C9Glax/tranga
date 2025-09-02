@@ -7,10 +7,8 @@ namespace API.Schema.MangaContext;
 public class Link(string linkProvider, string linkUrl) : Identifiable(TokenGen.CreateToken(typeof(Link), linkProvider, linkUrl))
 {
     [StringLength(64)]
-    [Required]
     public string LinkProvider { get; init; } = linkProvider;
     [StringLength(2048)]
-    [Required]
     [Url]
     public string LinkUrl { get; init; } = linkUrl;
 

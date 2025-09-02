@@ -1,6 +1,7 @@
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,10 @@ public class MetadataFetcherController(MangaContext context) : Controller
     /// </summary>
     /// <response code="200">Names of <see cref="MetadataFetcher"/> (Metadata-Sites)</response>
     [HttpGet]
-    [ProducesResponseType<string[]>(Status200OK, "application/json")]
-    public IActionResult GetConnectors ()
+    [ProducesResponseType<List<string>>(Status200OK, "application/json")]
+    public Ok<List<string>> GetConnectors ()
     {
-        return Ok(Tranga.MetadataFetchers.Select(m => m.Name).ToArray());
+        return TypedResults.Ok(Tranga.MetadataFetchers.Select(m => m.Name).ToList());
     }
 
     /// <summary>
@@ -31,13 +32,14 @@ public class MetadataFetcherController(MangaContext context) : Controller
     /// <response code="200"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpGet("Links")]
-    [ProducesResponseType<MetadataEntry[]>(Status200OK, "application/json")]
-    public async Task<IActionResult> GetLinkedEntries ()
+    [ProducesResponseType<List<MetadataEntry>>(Status200OK, "application/json")]
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<List<MetadataEntry>>, InternalServerError>> GetLinkedEntries ()
     {
-        if (await context.MetadataEntries.ToArrayAsync() is not { } result)
-            return StatusCode(Status500InternalServerError);
+        if (await context.MetadataEntries.ToListAsync() is not { } result)
+            return TypedResults.InternalServerError();
         
-        return Ok(result);
+        return TypedResults.Ok(result);
     }
 
     /// <summary>
@@ -52,16 +54,16 @@ public class MetadataFetcherController(MangaContext context) : Controller
     [HttpPost("{MetadataFetcherName}/SearchManga/{MangaId}")]
     [ProducesResponseType<MetadataSearchResult[]>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status404NotFound)]
-    public async Task<IActionResult> SearchMangaMetadata(string MangaId, string MetadataFetcherName, [FromBody (EmptyBodyBehavior = EmptyBodyBehavior.Allow)]string? searchTerm = null)
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
+    public async Task<Results<Ok<List<MetadataSearchResult>>, BadRequest, NotFound<string>>> SearchMangaMetadata(string MangaId, string MetadataFetcherName, [FromBody (EmptyBodyBehavior = EmptyBodyBehavior.Allow)]string? searchTerm = null)
     {
         if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
-            return NotFound(nameof(MangaId));
+            return TypedResults.NotFound(nameof(MangaId));
         if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is not { } fetcher)
-            return BadRequest();
+            return TypedResults.BadRequest();
 
         MetadataSearchResult[] searchResults = searchTerm is null ? fetcher.SearchMetadataEntry(manga) : fetcher.SearchMetadataEntry(searchTerm);
-        return Ok(searchResults);
+        return TypedResults.Ok(searchResults.ToList());
     }
 
     /// <summary>
@@ -77,21 +79,21 @@ public class MetadataFetcherController(MangaContext context) : Controller
     [HttpPost("{MetadataFetcherName}/Link/{MangaId}")]
     [ProducesResponseType<MetadataEntry>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> LinkMangaMetadata (string MangaId, string MetadataFetcherName, [FromBody]string Identifier)
+    public async Task<Results<Ok<MetadataEntry>, BadRequest, NotFound<string>, InternalServerError<string>>> LinkMangaMetadata (string MangaId, string MetadataFetcherName, [FromBody]string Identifier)
     {
         if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
-            return NotFound(nameof(MangaId));
+            return TypedResults.NotFound(nameof(MangaId));
         if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is not { } fetcher)
-            return BadRequest();
+            return TypedResults.BadRequest();
         
         MetadataEntry entry = fetcher.CreateMetadataEntry(manga, Identifier);
         context.MetadataEntries.Add(entry);
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok(entry);
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok(entry);
     }
 
     /// <summary>
@@ -105,22 +107,23 @@ public class MetadataFetcherController(MangaContext context) : Controller
     [HttpPost("{MetadataFetcherName}/Unlink/{MangaId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType<string>(Status412PreconditionFailed, "text/plain")]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
+    [ProducesResponseType(Status412PreconditionFailed)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> UnlinkMangaMetadata (string MangaId, string MetadataFetcherName)
+    public async Task<Results<Ok, BadRequest, NotFound<string>, InternalServerError<string>, StatusCodeHttpResult>> UnlinkMangaMetadata (string MangaId, string MetadataFetcherName)
     {
         if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } _)
-            return NotFound(nameof(MangaId));
+            return TypedResults.NotFound(nameof(MangaId));
         if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is null)
-            return BadRequest();
-        if(context.MetadataEntries.FirstOrDefault(e => e.MangaId == MangaId && e.MetadataFetcherName == MetadataFetcherName) is not { } entry)
-            return StatusCode(Status412PreconditionFailed, "No entry found");
+            return TypedResults.BadRequest();
+        if (context.MetadataEntries.FirstOrDefault(e =>
+                e.MangaId == MangaId && e.MetadataFetcherName == MetadataFetcherName) is not { } entry)
+            return TypedResults.StatusCode(Status412PreconditionFailed);
 
         context.Remove(entry);
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok();
     }
 }

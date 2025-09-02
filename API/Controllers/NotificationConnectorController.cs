@@ -3,6 +3,7 @@ using API.APIEndpointRecords;
 using API.Schema.NotificationsContext;
 using API.Schema.NotificationsContext.NotificationConnectors;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -22,13 +23,14 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// <response code="200"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpGet]
-    [ProducesResponseType<NotificationConnector[]>(Status200OK, "application/json")]
-    public async Task<IActionResult> GetAllConnectors ()
+    [ProducesResponseType<List<NotificationConnector>>(Status200OK, "application/json")]
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<List<NotificationConnector>>, InternalServerError>> GetAllConnectors ()
     {
-        if(await context.NotificationConnectors.ToArrayAsync(HttpContext.RequestAborted) is not { } result)
-            return StatusCode(Status500InternalServerError);
+        if(await context.NotificationConnectors.ToListAsync(HttpContext.RequestAborted) is not { } result)
+            return TypedResults.InternalServerError();
         
-        return Ok(result);
+        return TypedResults.Ok(result);
     }
     
     /// <summary>
@@ -39,13 +41,13 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// <response code="404"><see cref="NotificationConnector"/> with <paramref name="Name"/> not found</response>
     [HttpGet("{Name}")]
     [ProducesResponseType<NotificationConnector>(Status200OK, "application/json")]
-    [ProducesResponseType(Status404NotFound)]
-    public async Task<IActionResult> GetConnector (string Name)
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
+    public async Task<Results<Ok<NotificationConnector>, NotFound<string>>> GetConnector (string Name)
     {
         if (await context.NotificationConnectors.FirstOrDefaultAsync(c => c.Name == Name, HttpContext.RequestAborted) is not { } connector)
-            return NotFound(nameof(Name));
+            return TypedResults.NotFound(nameof(Name));
         
-        return Ok(connector);
+        return TypedResults.Ok(connector);
     }
     
     /// <summary>
@@ -57,14 +59,14 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> CreateConnector ([FromBody]NotificationConnector notificationConnector)
+    public async Task<Results<Ok<string>, InternalServerError<string>>> CreateConnector ([FromBody]NotificationConnector notificationConnector)
     {
         context.NotificationConnectors.Add(notificationConnector);
         context.Notifications.Add(new ("Added new Notification Connector!", notificationConnector.Name, NotificationUrgency.High));
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok(notificationConnector.Name);
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok(notificationConnector.Name);
     }
     
     /// <summary>
@@ -76,7 +78,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut("Gotify")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> CreateGotifyConnector ([FromBody]GotifyRecord gotifyData)
+    public async Task<Results<Ok<string>, InternalServerError<string>>> CreateGotifyConnector ([FromBody]GotifyRecord gotifyData)
     {
         //TODO Validate Data
         
@@ -97,7 +99,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut("Ntfy")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> CreateNtfyConnector ([FromBody]NtfyRecord ntfyRecord)
+    public async Task<Results<Ok<string>, InternalServerError<string>>> CreateNtfyConnector ([FromBody]NtfyRecord ntfyRecord)
     {
         //TODO Validate Data
         
@@ -124,7 +126,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [HttpPut("Pushover")]
     [ProducesResponseType<string>(Status200OK, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> CreatePushoverConnector ([FromBody]PushoverRecord pushoverRecord)
+    public async Task<Results<Ok<string>, InternalServerError<string>>> CreatePushoverConnector ([FromBody]PushoverRecord pushoverRecord)
     {
         //TODO Validate Data
         
@@ -145,17 +147,17 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{Name}")]
     [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> DeleteConnector (string Name)
+    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> DeleteConnector (string Name)
     {
         if (await context.NotificationConnectors.FirstOrDefaultAsync(c => c.Name == Name, HttpContext.RequestAborted) is not { } connector)
-            return NotFound(nameof(Name));
+            return TypedResults.NotFound(nameof(Name));
         
         context.NotificationConnectors.Remove(connector);
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok();
     }
 }

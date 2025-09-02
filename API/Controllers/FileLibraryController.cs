@@ -1,5 +1,6 @@
 ﻿using API.Schema.MangaContext;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -19,11 +20,12 @@ public class FileLibraryController(MangaContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpGet]
     [ProducesResponseType<FileLibrary[]>(Status200OK, "application/json")]
-    public async Task<IActionResult> GetFileLibraries ()
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<List<FileLibrary>>, InternalServerError>> GetFileLibraries ()
     {
-        if(await context.FileLibraries.ToArrayAsync(HttpContext.RequestAborted) is not { } result)
-            return StatusCode(Status500InternalServerError);
-        return Ok(result);
+        if (await context.FileLibraries.ToListAsync(HttpContext.RequestAborted) is not { } result)
+            return TypedResults.InternalServerError();
+        return TypedResults.Ok(result);
     }
 
     /// <summary>
@@ -34,13 +36,13 @@ public class FileLibraryController(MangaContext context) : Controller
     /// <response code="404"><see cref="FileLibrary"/> with <paramref name="FileLibraryId"/> not found.</response>
     [HttpGet("{FileLibraryId}")]
     [ProducesResponseType<FileLibrary>(Status200OK, "application/json")]
-    [ProducesResponseType(Status404NotFound)]
-    public async Task<IActionResult> GetFileLibrary (string FileLibraryId)
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
+    public async Task<Results<Ok<FileLibrary>, NotFound<string>>> GetFileLibrary (string FileLibraryId)
     {
         if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
-            return NotFound();
+            return TypedResults.NotFound(nameof(FileLibraryId));
         
-        return Ok(library);
+        return TypedResults.Ok(library);
     }
 
     /// <summary>
@@ -53,19 +55,19 @@ public class FileLibraryController(MangaContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{FileLibraryId}/ChangeBasePath")]
     [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> ChangeLibraryBasePath (string FileLibraryId, [FromBody]string newBasePath)
+    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> ChangeLibraryBasePath (string FileLibraryId, [FromBody]string newBasePath)
     {
         if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
-            return NotFound();
+            return TypedResults.NotFound(nameof(FileLibraryId));
         
         //TODO Path check
         library.BasePath = newBasePath;
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -78,39 +80,39 @@ public class FileLibraryController(MangaContext context) : Controller
     /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{FileLibraryId}/ChangeName")]
     [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status404NotFound)]
-    [ProducesResponseType(Status400BadRequest)]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> ChangeLibraryName (string FileLibraryId, [FromBody] string newName)
+    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> ChangeLibraryName (string FileLibraryId, [FromBody] string newName)
     {
         if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
-            return NotFound();
+            return TypedResults.NotFound(nameof(FileLibraryId));
         
         //TODO Name check
         library.LibraryName = newName;
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok();
     }
     
     /// <summary>
     /// Creates new <see cref="FileLibrary"/>
     /// </summary>
     /// <param name="library">New <see cref="FileLibrary"/> to add</param>
-    /// <response code="200"></response>
+    /// <response code="200">Key of new Library</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
-    [ProducesResponseType(Status201Created)]
+    [ProducesResponseType<string>(Status201Created, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> CreateNewLibrary ([FromBody]FileLibrary library)
+    public async Task<Results<Created<string>, InternalServerError<string>>> CreateNewLibrary ([FromBody]FileLibrary library)
     {
         //TODO Parameter check
         context.FileLibraries.Add(library);
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Created();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        
+        return TypedResults.Created(string.Empty, library.Key);
     }
     
     /// <summary>
@@ -118,20 +120,21 @@ public class FileLibraryController(MangaContext context) : Controller
     /// </summary>
     /// <param name="FileLibraryId"><see cref="FileLibrary"/>.Key</param>
     /// <response code="200"></response>
+    /// <response code="404"><see cref="FileLibrary"/> with <paramref name="FileLibraryId"/> not found.</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpDelete("{FileLibraryId}")]
     [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status404NotFound)]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<IActionResult> DeleteLocalLibrary (string FileLibraryId)
+    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> DeleteLocalLibrary (string FileLibraryId)
     {
         if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
-            return NotFound();
+            return TypedResults.NotFound(nameof(FileLibraryId));
         
         context.FileLibraries.Remove(library);
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
-            return StatusCode(Status500InternalServerError, result.exceptionMessage);
-        return Ok();
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Ok();
     }
 }
