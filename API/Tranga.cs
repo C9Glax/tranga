@@ -207,28 +207,4 @@ public static class Tranga
         
         return true;
     }
-
-    internal static bool AddChapterToContext((Chapter, MangaConnectorId<Chapter>) addChapter, MangaContext context, [NotNullWhen(true)] out Chapter? chapter, CancellationToken token) =>
-        AddChapterToContext(addChapter.Item1, addChapter.Item2, context, out chapter, token);
-
-    internal static bool AddChapterToContext(Chapter addChapter, MangaConnectorId<Chapter> addChId, MangaContext context, [NotNullWhen(true)] out Chapter? chapter, CancellationToken token)
-    {
-        chapter = context.Chapters.Where(ch => ch.Key == addChapter.Key)
-                .Include(ch => ch.ParentManga)
-                .Include(ch => ch.MangaConnectorIds)
-                .FirstOrDefault();
-        if (chapter is not null)
-        {
-            chapter.MangaConnectorIds = chapter.MangaConnectorIds.UnionBy(addChapter.MangaConnectorIds, id => id.Key).ToList();
-        }
-        else
-        {
-            context.Chapters.Add(addChapter);
-            chapter = addChapter;
-        }
-
-        if (context.Sync(token).Result is { success: false })
-            return false;
-        return true;
-    }
 }

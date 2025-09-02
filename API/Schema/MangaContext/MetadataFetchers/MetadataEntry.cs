@@ -32,4 +32,6 @@ public class MetadataEntry
         this.Identifier = identifier;
         this.MetadataFetcherName = metadataFetcherName;
     }
+    
+    public override string ToString() => $"{GetType().FullName} {MangaId} {MetadataFetcherName}";
 }

@@ -4,23 +4,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
 
+/// <summary>
+/// Downloads the cover for Manga from Mangaconnector
+/// </summary>
 public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
     internal readonly string MangaConnectorIdId = mcId.Key;
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        if (await DbContext.MangaConnectorToManga.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId) is not { } mangaConnectorId)
+        Log.Debug($"Getting Cover for MangaConnectorId {MangaConnectorIdId}...");
+        // Getting MangaConnector info
+        if (await DbContext.MangaConnectorToManga
+                .Include(id => id.Obj)
+                .FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, CancellationToken) is not { } mangaConnectorId)
+        {
+            Log.Error("Could not get MangaConnectorId.");
             return []; //TODO Exception?
+        }
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+        {
+            Log.Error("Could not get MangaConnector.");
             return []; //TODO Exception?
-        
-        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).LoadAsync(CancellationTokenSource.Token);
-        Manga manga = mangaConnectorId.Obj;
-        
-        manga.CoverFileNameInCache = mangaConnector.SaveCoverImageToCache(mangaConnectorId);
+        }
+        Log.Debug($"Getting Cover for MangaConnectorId {mangaConnectorId}...");
 
-        await DbContext.Sync(CancellationTokenSource.Token);
+        string? coverFileName = mangaConnector.SaveCoverImageToCache(mangaConnectorId);
+        if (coverFileName is null)
+        {
+            Log.Error($"Could not get Cover for MangaConnectorId {mangaConnectorId}.");
+            return [];
+        }
+        DbContext.Entry(mangaConnectorId.Obj).Property(m => m.CoverFileNameInCache).CurrentValue = coverFileName;
+
+        if(await DbContext.Sync(CancellationToken) is { success: false } e)
+            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+        
         return [];
     }
     

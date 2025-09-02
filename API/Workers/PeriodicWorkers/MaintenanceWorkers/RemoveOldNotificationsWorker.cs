@@ -1,7 +1,11 @@
 using API.Schema.NotificationsContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers.MaintenanceWorkers;
 
+/// <summary>
+/// Removes sent notifications from database
+/// </summary>
 public class RemoveOldNotificationsWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<NotificationsContext>(dependsOn), IPeriodic
 {
@@ -10,10 +14,14 @@ public class RemoveOldNotificationsWorker(TimeSpan? interval = null, IEnumerable
     
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        IQueryable<Notification> toRemove = DbContext.Notifications.Where(n => n.IsSent || DateTime.UtcNow - n.Date > Interval);
+        Log.Debug("Removing old notifications...");
+        List<Notification> toRemove = await DbContext.Notifications.Where(n => n.IsSent).ToListAsync(CancellationToken);
+        Log.Debug($"Removing {toRemove.Count} old notifications...");
         DbContext.RemoveRange(toRemove);
         
-        await DbContext.Sync(CancellationTokenSource.Token);
+        if(await DbContext.Sync(CancellationToken) is { success: false } e)
+            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+        
         return [];
     }
 

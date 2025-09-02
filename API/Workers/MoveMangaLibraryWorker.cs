@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
 
+/// <summary>
+/// Moves a Manga to a different Library
+/// </summary>
 public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
@@ -10,20 +13,32 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
     internal readonly string LibraryId = toLibrary.Key;
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        if (await DbContext.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, CancellationTokenSource.Token) is not { } manga)
+        Log.Debug("Moving Manga...");
+        // Get Manga (with Chapters and Library)
+        if (await DbContext.Mangas
+                .Include(m => m.Chapters)
+                .Include(m => m.Library)
+                .FirstOrDefaultAsync(m => m.Key == MangaId, CancellationToken) is not { } manga)
+        {
+            Log.Error("Could not find Manga.");
             return []; //TODO Exception?
-        if (await DbContext.FileLibraries.FirstOrDefaultAsync(l => l.Key == LibraryId, CancellationTokenSource.Token) is not { } toLibrary)
+        }
+        // Get new Library
+        if (await DbContext.FileLibraries.FirstOrDefaultAsync(l => l.Key == LibraryId, CancellationToken) is not { } toLibrary)
+        {
+            Log.Error("Could not find Library.");
             return []; //TODO Exception?
+        }
         
-        await DbContext.Entry(manga).Collection(m => m.Chapters).LoadAsync(CancellationTokenSource.Token);
-        await DbContext.Entry(manga).Navigation(nameof(Manga.Library)).LoadAsync(CancellationTokenSource.Token);
-        
+        // Save old Path (to later move chapters)
         Dictionary<Chapter, string> oldPath = manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
-        manga.Library = toLibrary;
-
-        if (await DbContext.Sync(CancellationTokenSource.Token) is { success: false })
+        // Set new Path
+        DbContext.Entry(manga).Property(m => m.Library).CurrentValue = toLibrary;
+        
+        if (await DbContext.Sync(CancellationToken) is { success: false })
             return [];
 
+        // Create Jobs to move chapters from old to new Path
         return manga.Chapters.Select(c => new MoveFileOrFolderWorker(c.FullArchiveFilePath, oldPath[c])).ToArray<BaseWorker>();
     }
 

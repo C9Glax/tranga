@@ -13,28 +13,41 @@ using static System.IO.UnixFileMode;
 
 namespace API.Workers;
 
+/// <summary>
+/// Downloads single chapter for Manga from Mangaconnector
+/// </summary>
+/// <param name="chId"></param>
+/// <param name="dependsOn"></param>
 public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> chId, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
     internal readonly string MangaConnectorIdId = chId.Key;
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        if(await DbContext.MangaConnectorToChapter.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, CancellationTokenSource.Token) is not { } mangaConnectorId)
+        Log.Debug($"Downloading chapter for MangaConnectorId {MangaConnectorIdId}...");
+        // Getting MangaConnector info
+        if (await DbContext.MangaConnectorToChapter
+                .Include(id => id.Obj)
+                .ThenInclude(c => c.ParentManga)
+                .ThenInclude(m => m.Library)
+                .FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, CancellationToken) is not { } mangaConnectorId)
+        {
+            Log.Error("Could not get MangaConnectorId.");
             return []; //TODO Exception?
+        }
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+        {
+            Log.Error("Could not get MangaConnector.");
             return []; //TODO Exception?
+        }
+        Log.Debug($"Downloading chapter for MangaConnectorId {mangaConnectorId}...");
         
-        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Chapter>.Obj)).LoadAsync(CancellationTokenSource.Token);
         Chapter chapter = mangaConnectorId.Obj;
         if (chapter.Downloaded)
         {
             Log.Info("Chapter was already downloaded.");
             return [];
         }
-        
-        await DbContext.Entry(chapter).Navigation(nameof(Chapter.ParentManga)).LoadAsync(CancellationTokenSource.Token);
-        await DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).LoadAsync(CancellationTokenSource.Token);
-
         if (chapter.ParentManga.LibraryId is null)
         {
             Log.Info($"Library is not set for {chapter.ParentManga} {chapter}");
@@ -97,9 +110,8 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         
         Log.Debug($"Creating ComicInfo.xml {chapter}");
         foreach (CollectionEntry collectionEntry in DbContext.Entry(chapter.ParentManga).Collections)
-            await collectionEntry.LoadAsync(CancellationTokenSource.Token);
-        await DbContext.Entry(chapter.ParentManga).Navigation(nameof(Manga.Library)).LoadAsync(CancellationTokenSource.Token);
-        await File.WriteAllTextAsync(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString(), CancellationTokenSource.Token);
+            await collectionEntry.LoadAsync(CancellationToken);
+        await File.WriteAllTextAsync(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString(), CancellationToken);
         
         Log.Debug($"Packaging images to archive {chapter}");
         //ZIP-it and ship-it
@@ -107,9 +119,12 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
         Directory.Delete(tempFolder, true); //Cleanup
+
+        DbContext.Entry(chapter).Property(c => c.Downloaded).CurrentValue = true;
+        if(await DbContext.Sync(CancellationToken) is { success: false } e)
+            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
         
-        chapter.Downloaded = true;
-        await DbContext.Sync(CancellationTokenSource.Token);
+        Log.Debug($"Downloaded chapter {chapter}.");
 
         return [];
     }
@@ -164,7 +179,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
         
         //TODO MangaConnector Selection
-        await DbContext.Entry(manga).Collection(m => m.MangaConnectorIds).LoadAsync(CancellationTokenSource.Token);
+        await DbContext.Entry(manga).Collection(m => m.MangaConnectorIds).LoadAsync(CancellationToken);
         MangaConnectorId<Manga> mangaConnectorId = manga.MangaConnectorIds.First();
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
         {
@@ -173,7 +188,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
 
         Log.Info($"Copying cover to {publicationFolder}");
-        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).LoadAsync(CancellationTokenSource.Token);
+        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).LoadAsync(CancellationToken);
         string? fileInCache = manga.CoverFileNameInCache ?? mangaConnector.SaveCoverImageToCache(mangaConnectorId);
         if (fileInCache is null)
         {

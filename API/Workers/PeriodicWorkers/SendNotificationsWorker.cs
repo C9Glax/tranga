@@ -1,8 +1,14 @@
 using API.Schema.NotificationsContext;
 using API.Schema.NotificationsContext.NotificationConnectors;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
 
+/// <summary>
+/// Send notifications to NotificationConnectors
+/// </summary>
+/// <param name="interval"></param>
+/// <param name="dependsOn"></param>
 public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<NotificationsContext>(dependsOn), IPeriodic
 {
@@ -10,19 +16,26 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
     public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(1);
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        NotificationConnector[] connectors = DbContext.NotificationConnectors.ToArray();
-        Notification[] notifications = DbContext.Notifications.Where(n => n.IsSent == false).ToArray();
+        Log.Debug("Sending notifications...");
+        List<NotificationConnector> connectors = await DbContext.NotificationConnectors.ToListAsync(CancellationToken);
+        List<Notification> unsentNotifications = await DbContext.Notifications.Where(n => n.IsSent == false).ToListAsync(CancellationToken);
         
-        foreach (Notification notification in notifications)
+        Log.Debug($"Sending {unsentNotifications.Count} notifications to {connectors.Count} connectors...");
+        
+        unsentNotifications.ForEach(notification =>
         {
-            foreach (NotificationConnector connector in connectors)
+            connectors.ForEach(connector =>
             {
                 connector.SendNotification(notification.Title, notification.Message);
-                notification.IsSent = true;
-            }
-        }
+                DbContext.Entry(notification).Property(n => n.IsSent).CurrentValue = true;
+            });
+        });
         
-        await DbContext.Sync(CancellationTokenSource.Token);
+        Log.Debug("Notifications sent.");
+        
+        if(await DbContext.Sync(CancellationToken) is { success: false } e)
+            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+            
         return [];
     }
 

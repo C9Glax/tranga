@@ -71,7 +71,11 @@ public class Chapter : Identifiable, IComparable<Chapter>
     /// Checks the filesystem if an archive at the ArchiveFilePath exists
     /// </summary>
     /// <returns>True if archive exists on disk</returns>
-    public bool CheckDownloaded() => File.Exists(FullArchiveFilePath);
+    public bool CheckDownloaded()
+    {
+        //TODO Log here
+        return File.Exists(FullArchiveFilePath);
+    } 
 
     /// Placeholders:
     /// %M Obj Name

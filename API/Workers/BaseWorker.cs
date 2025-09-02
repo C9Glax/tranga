@@ -26,7 +26,8 @@ public abstract class BaseWorker : Identifiable
     public IEnumerable<BaseWorker> MissingDependencies => DependsOn.Where(d => d.State < WorkerExecutionState.Completed);
     public bool AllDependenciesFulfilled => DependsOn.All(d => d.State >= WorkerExecutionState.Completed);
     internal WorkerExecutionState State { get; private set; }
-    protected CancellationTokenSource CancellationTokenSource = new ();
+    private CancellationTokenSource _cancellationTokenSource = new ();
+    protected CancellationToken CancellationToken => _cancellationTokenSource.Token;
     protected ILog Log { get; init; }
 
     /// <summary>
@@ -36,7 +37,7 @@ public abstract class BaseWorker : Identifiable
     {
         Log.Debug($"Cancelled {this}");
         this.State = WorkerExecutionState.Cancelled;
-        CancellationTokenSource.Cancel();
+        _cancellationTokenSource.Cancel();
     }
 
     /// <summary>
@@ -46,7 +47,7 @@ public abstract class BaseWorker : Identifiable
     {
         Log.Debug($"Failed {this}");
         this.State = WorkerExecutionState.Failed;
-        CancellationTokenSource.Cancel();
+        _cancellationTokenSource.Cancel();
     }
 
     public BaseWorker(IEnumerable<BaseWorker>? dependsOn = null)
@@ -75,7 +76,7 @@ public abstract class BaseWorker : Identifiable
     {
         // Start the worker
         Log.Debug($"Checking {this}");
-        this.CancellationTokenSource = new(TimeSpan.FromMinutes(10));
+        this._cancellationTokenSource = new(TimeSpan.FromMinutes(10));
         this.State = WorkerExecutionState.Waiting;
         
         // Wait for dependencies, start them if necessary
@@ -111,7 +112,7 @@ public abstract class BaseWorker : Identifiable
     private BaseWorker[] WaitForDependencies()
     {
         Log.Info($"Waiting for {MissingDependencies.Count()} Dependencies {this}:\n\t{string.Join("\n\t", MissingDependencies.Select(d => d.ToString()))}");
-        while (CancellationTokenSource.IsCancellationRequested == false && MissingDependencies.Any())
+        while (_cancellationTokenSource.IsCancellationRequested == false && MissingDependencies.Any())
         {
             Thread.Sleep(Tranga.Settings.WorkCycleTimeoutMs);  
         }

@@ -48,12 +48,22 @@ public class MyAnimeList : MetadataFetcher
     /// <exception cref="DbUpdateException"></exception>
     public override async Task UpdateMetadata(MetadataEntry metadataEntry, MangaContext dbContext, CancellationToken token)
     {
-        if (await dbContext.Mangas.FirstOrDefaultAsync(m => m.Key == metadataEntry.MangaId, token) is not { } dbManga)
-            throw new DbUpdateException("Manga not found");
-        
+        Manga? dbManga = metadataEntry.Manga; //Might be null!
+        if (dbManga is null)
+        {
+            if (await dbContext.Mangas.FirstOrDefaultAsync(m => m.Key == metadataEntry.MangaId, token) is not
+                { } update)
+                throw new DbUpdateException("Manga not found");
+            dbManga = update;
+        }
+
+        // Load all collections (tags, links, authors)...
         foreach (CollectionEntry collectionEntry in dbContext.Entry(dbManga).Collections)
-            await collectionEntry.LoadAsync(token);
-        await dbContext.Entry(dbManga).Navigation(nameof(Manga.Library)).LoadAsync(token);
+        {
+            if(!collectionEntry.IsLoaded)
+                await collectionEntry.LoadAsync(token);
+        }
+        await dbContext.Entry(dbManga).Reference(m => m.Library).LoadAsync(token);
         
         MangaFull resultData;
         try

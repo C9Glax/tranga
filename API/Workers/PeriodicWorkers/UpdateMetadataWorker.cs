@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
 
+/// <summary>
+/// Updates Metadata for all Manga
+/// </summary>
+/// <param name="interval"></param>
+/// <param name="dependsOn"></param>
 public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
@@ -13,18 +18,27 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
     
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        IQueryable<string> mangaIds = DbContext.MangaConnectorToManga
-            .Where(m => m.UseForDownload)
-            .Select(m => m.ObjId);
-        IQueryable<MetadataEntry> metadataEntriesToUpdate = DbContext.MetadataEntries
-            .Include(e => e.MetadataFetcher)
-            .Where(e =>
-                mangaIds.Any(id => id == e.MangaId));
-        
-        foreach (MetadataEntry metadataEntry in metadataEntriesToUpdate)
-            await metadataEntry.MetadataFetcher.UpdateMetadata(metadataEntry, DbContext, CancellationTokenSource.Token);
+        Log.Debug("Updating metadata...");
+        // Get MetadataEntries of Manga marked for download
+        List<MetadataEntry> metadataEntriesToUpdate = await DbContext.MangaConnectorToManga
+            .Where(m => m.UseForDownload) // Get marked Manga
+            .Join(
+                DbContext.MetadataEntries.Include(e => e.MetadataFetcher).Include(e => e.Manga),
+                mcId => mcId.ObjId,
+                e => e.MangaId,
+                (mcId, e) => e) // return MetadataEntry
+            .ToListAsync(CancellationToken);
+        Log.Debug($"Updating metadata of {metadataEntriesToUpdate.Count} manga...");
 
-        await DbContext.Sync(CancellationTokenSource.Token);
+        foreach (MetadataEntry metadataEntry in metadataEntriesToUpdate)
+        {
+            Log.Debug($"Updating metadata of {metadataEntry}...");
+            await metadataEntry.MetadataFetcher.UpdateMetadata(metadataEntry, DbContext, CancellationToken);
+        }
+        Log.Debug("Updated metadata.");
+
+        if(await DbContext.Sync(CancellationToken) is { success: false } e)
+            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
 
         return [];
     }
