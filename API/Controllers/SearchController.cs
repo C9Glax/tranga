@@ -1,5 +1,4 @@
 using API.Controllers.DTOs;
-using API.MangaConnectors;
 using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;

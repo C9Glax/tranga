@@ -12,27 +12,14 @@ namespace API.MangaConnectors;
 [PrimaryKey("Name")]
 public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)
 {
-    [JsonIgnore]
-    [NotMapped]
-    internal DownloadClient downloadClient { get; init; } = null!;
+    [NotMapped] internal DownloadClient downloadClient { get; init; } = null!;
 
-    [JsonIgnore]
-    [NotMapped]
-    protected ILog Log { get; init; } = LogManager.GetLogger(name);
+    [NotMapped] protected ILog Log { get; init; } = LogManager.GetLogger(name);
     
-    [StringLength(32)]
-    [Required]
-    public string Name { get; init; } = name;
-    [StringLength(8)]
-    [Required]
-    public string[] SupportedLanguages { get; init; } = supportedLanguages;
-    [StringLength(2048)]
-    [Required]
-    public string IconUrl { get; init; } = iconUrl;
-    [StringLength(256)]
-    [Required]
-    public string[] BaseUris { get; init; } = baseUris;
-    [Required]
+    [StringLength(32)] public string Name { get; init; } = name;
+    [StringLength(8)] public string[] SupportedLanguages { get; init; } = supportedLanguages;
+    [StringLength(2048)] public string IconUrl { get; init; } = iconUrl;
+    [StringLength(256)] public string[] BaseUris { get; init; } = baseUris;
     public bool Enabled { get; internal set; } = true;
     
     public abstract (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName);

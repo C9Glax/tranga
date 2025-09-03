@@ -1,5 +1,4 @@
 ﻿using API.Controllers.DTOs;
-using API.MangaConnectors;
 using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;
@@ -67,7 +66,7 @@ public class MangaController(MangaContext context) : Controller
     }
     
     /// <summary>
-    /// Returns all <see cref="Schema.MangaContext.Manga"/> that are being downloaded from at least one <see cref="MangaConnector"/>
+    /// Returns all <see cref="Schema.MangaContext.Manga"/> that are being downloaded from at least one <see cref="API.MangaConnectors.MangaConnector"/>
     /// </summary>
     /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Schema.MangaContext.Manga"/>. Use <see cref="GetManga"/> for more information</response>
     /// <response code="500">Error during Database Operation</response>
@@ -320,7 +319,7 @@ public class MangaController(MangaContext context) : Controller
     }
     
     /// <summary>
-    /// Returns the latest <see cref="Chapter"/> of requested <see cref="Manga"/> available on <see cref="MangaConnector"/>
+    /// Returns the latest <see cref="Chapter"/> of requested <see cref="Manga"/> available on <see cref="API.MangaConnectors.MangaConnector"/>
     /// </summary>
     /// <param name="MangaId"><see cref="Manga"/>.Key</param>
     /// <response code="200"></response>
@@ -457,15 +456,15 @@ public class MangaController(MangaContext context) : Controller
     }
 
     /// <summary>
-    /// (Un-)Marks <see cref="Manga"/> as requested for Download from <see cref="MangaConnector"/>
+    /// (Un-)Marks <see cref="Manga"/> as requested for Download from <see cref="API.MangaConnectors.MangaConnector"/>
     /// </summary>
     /// <param name="MangaId"><see cref="Manga"/> with <paramref name="MangaId"/></param>
-    /// <param name="MangaConnectorName"><see cref="MangaConnector"/> with <paramref name="MangaConnectorName"/></param>
+    /// <param name="MangaConnectorName"><see cref="API.MangaConnectors.MangaConnector"/> with <paramref name="MangaConnectorName"/></param>
     /// <param name="IsRequested">true to mark as requested, false to mark as not-requested</param>
     /// <response code="200"></response>
     /// <response code="404"><paramref name="MangaId"/> or <paramref name="MangaConnectorName"/> not found</response>
-    /// <response code="412"><see cref="Manga"/> was not linked to <see cref="MangaConnector"/>, so nothing changed</response>
-    /// <response code="428"><see cref="Manga"/> is not linked to <see cref="MangaConnector"/> yet. Search for <see cref="Manga"/> on <see cref="MangaConnector"/> first (to create a <see cref="MangaConnectorId{T}"/>).</response>
+    /// <response code="412"><see cref="Manga"/> was not linked to <see cref="API.MangaConnectors.MangaConnector"/>, so nothing changed</response>
+    /// <response code="428"><see cref="Manga"/> is not linked to <see cref="API.MangaConnectors.MangaConnector"/> yet. Search for <see cref="Manga"/> on <see cref="API.MangaConnectors.MangaConnector"/> first (to create a <see cref="MangaConnectorId{T}"/>).</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPost("{MangaId}/SetAsDownloadFrom/{MangaConnectorName}/{IsRequested}")]
     [ProducesResponseType(Status200OK)]
@@ -477,7 +476,7 @@ public class MangaController(MangaContext context) : Controller
     {
         if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } _)
             return TypedResults.NotFound(nameof(MangaId));
-        if(!Tranga.TryGetMangaConnector(MangaConnectorName, out MangaConnector? _))
+        if(!Tranga.TryGetMangaConnector(MangaConnectorName, out API.MangaConnectors.MangaConnector? _))
             return TypedResults.NotFound(nameof(MangaConnectorName));
 
         if (context.MangaConnectorToManga
@@ -502,13 +501,13 @@ public class MangaController(MangaContext context) : Controller
     }
     
     /// <summary>
-    /// Initiate a search for <see cref="API.Schema.MangaContext.Manga"/> on a different <see cref="MangaConnector"/>
+    /// Initiate a search for <see cref="API.Schema.MangaContext.Manga"/> on a different <see cref="API.MangaConnectors.MangaConnector"/>
     /// </summary>
     /// <param name="MangaId"><see cref="API.Schema.MangaContext.Manga"/> with <paramref name="MangaId"/></param>
-    /// <param name="MangaConnectorName"><see cref="MangaConnector"/>.Name</param>
+    /// <param name="MangaConnectorName"><see cref="API.MangaConnectors.MangaConnector"/>.Name</param>
     /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Schema.MangaContext.Manga"/></response>
-    /// <response code="404"><see cref="MangaConnector"/> with Name not found</response>
-    /// <response code="412"><see cref="MangaConnector"/> with Name is disabled</response>
+    /// <response code="404"><see cref="API.MangaConnectors.MangaConnector"/> with Name not found</response>
+    /// <response code="412"><see cref="API.MangaConnectors.MangaConnector"/> with Name is disabled</response>
     [HttpPost("{MangaId}/SearchOn/{MangaConnectorName}")]
     [ProducesResponseType<List<MinimalManga>>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
