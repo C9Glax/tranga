@@ -125,6 +125,12 @@ public static class Tranga
             return;
         }
         Action afterWorkCallback = AfterWork(worker, callback);
+
+        while (RunningWorkers.Count > Settings.MaxConcurrentWorkers)
+        {
+            Log.Warn($"{worker}: Max worker concurrency reached ({Settings.MaxConcurrentWorkers})! Waiting {Settings.WorkCycleTimeoutMs}ms...");
+            Thread.Sleep(Settings.WorkCycleTimeoutMs);
+        }
         
         if (worker is BaseWorkerWithContext<MangaContext> mangaContextWorker)
         {

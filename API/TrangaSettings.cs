@@ -52,6 +52,8 @@ public struct TrangaSettings()
     
     public int MaxConcurrentDownloads { get; set; } = 5;
 
+    public int MaxConcurrentWorkers { get; set; } = 10;
+
     public static TrangaSettings Load()
     {
         if (!File.Exists(settingsFilePath))
