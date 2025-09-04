@@ -39,12 +39,12 @@ public struct TrangaSettings()
     [JsonIgnore]
     internal static readonly Dictionary<RequestType, int> DefaultRequestLimits = new ()
     {
-        {RequestType.MangaInfo, 60},
-        {RequestType.MangaDexFeed, 60},
+        {RequestType.MangaInfo, 360},
+        {RequestType.MangaDexFeed, 360},
         {RequestType.MangaDexImage, 60},
         {RequestType.MangaImage, 240},
         {RequestType.MangaCover, 60},
-        {RequestType.Default, 60}
+        {RequestType.Default, 360}
     };
     public Dictionary<RequestType, int> RequestLimits { get; set; } = DefaultRequestLimits;
 
