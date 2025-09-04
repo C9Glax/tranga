@@ -20,6 +20,8 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         // Getting MangaConnector info
         if (await DbContext.MangaConnectorToManga
                 .Include(id => id.Obj)
+                .ThenInclude(m => m.Chapters)
+                .ThenInclude(ch => ch.MangaConnectorIds)
                 .FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, CancellationToken) is not { } mangaConnectorId)
         {
             Log.Error("Could not get MangaConnectorId.");
@@ -33,8 +35,6 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         Log.Debug($"Getting Chapters for MangaConnectorId {mangaConnectorId}...");
         
         Manga manga = mangaConnectorId.Obj;
-        // Load existing Chapters (in database)
-        await DbContext.Entry(manga).Collection(m => m.Chapters).LoadAsync(CancellationToken);
         
         // Retrieve available Chapters from Connector
         (Chapter chapter, MangaConnectorId<Chapter> chapterId)[] allChapters =
@@ -46,6 +46,24 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
             manga.Chapters.All(c => c.Key != ch.chapter.Key)).ToList();
         Log.Debug($"Got {newChapters.Count} new chapters.");
 
+        // Add Chapters to Manga
+        manga.Chapters = manga.Chapters.Union(newChapters.Select(ch => ch.chapter)).ToList();
+        
+        // Filter for new ChapterIds
+        List<MangaConnectorId<Chapter>> existingChapterIds = manga.Chapters.SelectMany(c => c.MangaConnectorIds).ToList();
+        List<MangaConnectorId<Chapter>> newIds = allChapters.Select(ch => ch.chapterId)
+            .Where(newCh => !existingChapterIds.Any(existing =>
+                existing.MangaConnectorName == newCh.MangaConnectorName &&
+                existing.IdOnConnectorSite == newCh.IdOnConnectorSite))
+            .ToList();
+        // Match tracked entities of Chapters
+        foreach (MangaConnectorId<Chapter> newId in newIds)
+            newId.Obj = manga.Chapters.First(ch => ch.Key == newId.ObjId);
+        Log.Debug($"Got {newIds.Count} new download-Ids.");
+        
+        // Add new ChapterIds to Database
+        DbContext.MangaConnectorToChapter.AddRange(newIds);
+
         // If Manga is marked for Download from Connector, mark the new Chapters as UseForDownload
         if (mangaConnectorId.UseForDownload)
         {
@@ -54,9 +72,6 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
                 chapterId.UseForDownload = mangaConnectorId.UseForDownload;
             }
         }
-
-        // Add Chapters to Manga
-        manga.Chapters = manga.Chapters.Union(newChapters.Select(ch => ch.chapter)).ToList();
 
         if(await DbContext.Sync(CancellationToken) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
