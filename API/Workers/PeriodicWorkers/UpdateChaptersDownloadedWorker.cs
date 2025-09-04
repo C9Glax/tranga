@@ -16,7 +16,7 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
         Log.Debug("Checking chapter files...");
         List<Chapter> chapters = await DbContext.Chapters.ToListAsync(CancellationToken);
         Log.Debug($"Checking {chapters.Count} chapters...");
-        chapters.ForEach(async void (chapter) =>
+        foreach (Chapter chapter in chapters)
         {
             try
             {
@@ -26,7 +26,7 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
             {
                 Log.Error(exception);
             }
-        });
+        }
 
         if(await DbContext.Sync(CancellationToken) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
