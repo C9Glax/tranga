@@ -7,7 +7,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// <see cref="Schema.MangaContext.Manga"/> DTO
 /// </summary>
-public record Manga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId> MangaConnectorIds, float IgnoreChaptersBefore, uint? Year, string? OriginalLanguage, IEnumerable<string> ChapterIds, IEnumerable<Author> Authors, IEnumerable<string> Tags, IEnumerable<Link> Links, IEnumerable<AltTitle> AltTitles)
+public record Manga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId> MangaConnectorIds, float IgnoreChaptersBefore, uint? Year, string? OriginalLanguage, IEnumerable<string> ChapterIds, IEnumerable<Author> Authors, IEnumerable<string> Tags, IEnumerable<Link> Links, IEnumerable<AltTitle> AltTitles, string? FileLibraryId)
     : MinimalManga(Key, Name, Description, ReleaseStatus, MangaConnectorIds)
 {
     /// <summary>
@@ -63,4 +63,11 @@ public record Manga(string Key, string Name, string Description, MangaReleaseSta
     [Required]
     [Description("Alt Titles of Manga")]
     public IEnumerable<AltTitle> AltTitles { get; init; } = AltTitles;
+    
+    /// <summary>
+    /// Id of the Library the Manga gets downloaded to
+    /// </summary>
+    [Required]
+    [Description("Id of the Library the Manga gets downloaded to")]
+    public string? FileLibraryId { get; init; } = FileLibraryId;
 }
