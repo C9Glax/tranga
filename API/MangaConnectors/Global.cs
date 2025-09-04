@@ -4,7 +4,7 @@ namespace API.MangaConnectors;
 
 public class Global : MangaConnector
 {
-    public Global() : base("Global", ["all"], [""], "")
+    public Global() : base("Global", ["all"], [""], "https://avatars.githubusercontent.com/u/13404778")
     {
     }
 
