@@ -144,6 +144,20 @@ public class Chapter : Identifiable, IComparable<Chapter>
         return stringBuilder.ToString();
     }
 
+    public class ChapterComparer : IComparer<Chapter>
+    {
+        public int Compare(Chapter? x, Chapter? y)
+        {
+            if (x is null && y is null)
+                return 0;
+            if(x is null)
+                return -1;
+            if (y is null)
+                return 1;
+            return CompareChapterNumbers(x.ChapterNumber, y.ChapterNumber);
+        }
+    }
+
     private static int CompareChapterNumbers(string ch1, string ch2)
     {
         int[] ch1Arr = ch1.Split('.').Select(c => int.TryParse(c, out int result) ? result : -1).ToArray();
