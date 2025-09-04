@@ -46,6 +46,15 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
             manga.Chapters.All(c => c.Key != ch.chapter.Key)).ToList();
         Log.Debug($"Got {newChapters.Count} new chapters.");
 
+        // If Manga is marked for Download from Connector, mark the new Chapters as UseForDownload
+        if (mangaConnectorId.UseForDownload)
+        {
+            foreach ((Chapter _, MangaConnectorId<Chapter> chapterId) in newChapters)
+            {
+                chapterId.UseForDownload = mangaConnectorId.UseForDownload;
+            }
+        }
+
         // Add Chapters to Manga
         manga.Chapters = manga.Chapters.Union(newChapters.Select(ch => ch.chapter)).ToList();
 
