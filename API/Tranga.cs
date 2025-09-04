@@ -158,13 +158,14 @@ public static class Tranga
         RunningWorkers.Remove(worker, out _);
     }
     
-    internal static bool AddMangaToContext((Manga, MangaConnectorId<Manga>) addManga, MangaContext context, [NotNullWhen(true)]out Manga? manga, CancellationToken token) =>
-        AddMangaToContext(addManga.Item1, addManga.Item2, context, out manga, token);
+    internal static async Task<bool> AddMangaToContext(this MangaContext context, (Manga, MangaConnectorId<Manga>) addManga, CancellationToken token) =>
+        await AddMangaToContext(context, addManga.Item1, addManga.Item2, token);
 
-    internal static bool AddMangaToContext(Manga addManga, MangaConnectorId<Manga> addMcId, MangaContext context, [NotNullWhen(true)]out Manga? manga, CancellationToken token)
+    internal static async Task<bool> AddMangaToContext(this MangaContext context, Manga addManga, MangaConnectorId<Manga> addMcId,
+        CancellationToken token)
     {
         context.ChangeTracker.Clear();
-        manga = context.FindMangaLike(addManga, token).Result;
+        Manga? manga = await context.FindMangaLike(addManga, token);
         if (manga is not null)
         {
             foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
@@ -178,6 +179,8 @@ public static class Tranga
             manga.AltTitles = manga.AltTitles.UnionBy(addManga.AltTitles, altTitle => altTitle.Key).ToList();
             manga.Chapters = manga.Chapters.UnionBy(addManga.Chapters, chapter => chapter.Key).ToList();
             manga.MangaConnectorIds = manga.MangaConnectorIds.UnionBy(addManga.MangaConnectorIds, id => id.MangaConnectorName).ToList();
+
+            addManga = manga;
         }
         else
         {
@@ -199,7 +202,7 @@ public static class Tranga
             context.Mangas.Add(manga);
         }
 
-        if (context.Sync(token).Result is { success: false })
+        if (await context.Sync(token) is { success: false })
             return false;
 
         DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (addMcId);
