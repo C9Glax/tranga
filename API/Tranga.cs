@@ -145,6 +145,12 @@ public static class Tranga
     private static Action AfterWork(BaseWorker worker, Action? callback = null) => () =>
     {
         Log.Debug($"AfterWork {worker}");
+        if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
+        {
+            BaseWorker[] newWorkers = task.Result;
+            Log.Debug($"Resulted in {newWorkers.Length} new Workers.");
+            AddWorkers(newWorkers);
+        }
         RunningWorkers.Remove(worker, out _);
         callback?.Invoke();
     };

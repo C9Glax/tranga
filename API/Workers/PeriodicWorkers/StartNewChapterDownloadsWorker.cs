@@ -14,11 +14,15 @@ public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerab
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromMinutes(1);
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
+        Log.Debug("Checking for missing chapters...");
+        
         // Get missing chapters
         List<MangaConnectorId<Chapter>> missingChapters = await DbContext.MangaConnectorToChapter
             .Include(id => id.Obj)
             .Where(id => id.Obj.Downloaded == false && id.UseForDownload)
             .ToListAsync(CancellationToken);
+        
+        Log.Debug($"Found {missingChapters.Count} missing downloads.");
         
         // Create new jobs
         List<BaseWorker> newWorkers = missingChapters.Select(mcId => new DownloadChapterFromMangaconnectorWorker(mcId)).ToList<BaseWorker>();
