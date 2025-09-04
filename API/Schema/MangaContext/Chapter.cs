@@ -66,14 +66,26 @@ public class Chapter : Identifiable, IComparable<Chapter>
         };
     }
 
+    
     /// <summary>
     /// Checks the filesystem if an archive at the ArchiveFilePath exists
     /// </summary>
+    /// <param name="context"></param>
+    /// <param name="token"></param>
     /// <returns>True if archive exists on disk</returns>
-    public bool CheckDownloaded()
+    /// <exception cref="KeyNotFoundException">Unable to load Chapter, Parent or Library</exception>
+    public async Task<bool> CheckDownloaded(MangaContext context, CancellationToken? token = null)
     {
+        if(await context.Chapters
+               .Include(c => c.ParentManga)
+               .ThenInclude(p => p.Library)
+               .FirstOrDefaultAsync(c => c.Key == this.Key, token??CancellationToken.None) is not { } chapter)
+            throw new KeyNotFoundException("Unable to find chapter");
+        
         //TODO Log here
-        return File.Exists(FullArchiveFilePath);
+        this.Downloaded = File.Exists(chapter.FullArchiveFilePath);
+        await context.Sync(token??CancellationToken.None);
+        return this.Downloaded;
     } 
 
     /// Placeholders:

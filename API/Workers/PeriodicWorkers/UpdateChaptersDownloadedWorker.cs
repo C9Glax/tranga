@@ -14,9 +14,19 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Checking chapter files...");
-        List<Chapter> chapters = await DbContext.Chapters.Include(c => c.ParentManga).ToListAsync(CancellationToken);
+        List<Chapter> chapters = await DbContext.Chapters.ToListAsync(CancellationToken);
         Log.Debug($"Checking {chapters.Count} chapters...");
-        chapters.ForEach(chapter => DbContext.Entry(chapter).Property(c => c.Downloaded).CurrentValue = chapter.CheckDownloaded());
+        chapters.ForEach(async void (chapter) =>
+        {
+            try
+            {
+                chapter.Downloaded = await chapter.CheckDownloaded(DbContext, CancellationToken);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception);
+            }
+        });
 
         if(await DbContext.Sync(CancellationToken) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");

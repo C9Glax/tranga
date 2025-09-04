@@ -35,6 +35,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             Log.Error("Could not get MangaConnectorId.");
             return []; //TODO Exception?
         }
+        
+        // Check if Chapter already exists...
+        if (await mangaConnectorId.Obj.CheckDownloaded(DbContext, CancellationToken))
+        {
+            Log.Warn("Chapter already exists!");
+            return [];
+        }
+        
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
         {
             Log.Error("Could not get MangaConnector.");

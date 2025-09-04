@@ -148,7 +148,7 @@ public static class Tranga
         if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
         {
             BaseWorker[] newWorkers = task.Result;
-            Log.Debug($"Resulted in {newWorkers.Length} new Workers.");
+            Log.Debug($"{worker} created {newWorkers.Length} new Workers.");
             AddWorkers(newWorkers);
         }
         RunningWorkers.Remove(worker, out _);
