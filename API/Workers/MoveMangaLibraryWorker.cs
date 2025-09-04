@@ -33,7 +33,7 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
         // Save old Path (to later move chapters)
         Dictionary<Chapter, string> oldPath = manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
         // Set new Path
-        DbContext.Entry(manga).Property(m => m.Library).CurrentValue = toLibrary;
+        manga.Library = toLibrary;
         
         if (await DbContext.Sync(CancellationToken) is { success: false })
             return [];

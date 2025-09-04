@@ -443,10 +443,13 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok, NotFound<string>>> ChangeLibrary(string MangaId, string LibraryId)
     {
-        if (await context.MangaIncludeAll().FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+        if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
             return TypedResults.NotFound(nameof(MangaId));
         if (await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == LibraryId, HttpContext.RequestAborted) is not { } library)
             return TypedResults.NotFound(nameof(LibraryId));
+        
+        if(manga.LibraryId == library.Key)
+            return TypedResults.Ok();
 
         MoveMangaLibraryWorker moveLibrary = new(manga, library);
         
