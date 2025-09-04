@@ -36,16 +36,18 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         // Load existing Chapters (in database)
         await DbContext.Entry(manga).Collection(m => m.Chapters).LoadAsync(CancellationToken);
         
-        // This gets all chapters that are not downloaded
+        // Retrieve available Chapters from Connector
         (Chapter chapter, MangaConnectorId<Chapter> chapterId)[] allChapters =
             mangaConnector.GetChapters(mangaConnectorId, language).DistinctBy(c => c.Item1.Key).ToArray();
-        
-        int beforeAmount = manga.Chapters.Count;
         Log.Debug($"Got {allChapters.Length} chapters from connector.");
-        DbContext.Entry(manga).Collection(m => m.Chapters).CurrentValue = manga.Chapters.UnionBy(allChapters.Select(c => c.chapter), c => c.Key);
-        int afterAmount = manga.Chapters.Count;
         
-        Log.Debug($"Got {afterAmount} new chapters.");
+        // Filter for new Chapters
+        List<(Chapter chapter, MangaConnectorId<Chapter> chapterId)> newChapters = allChapters.Where<(Chapter chapter, MangaConnectorId<Chapter> chapterId)>(ch =>
+            manga.Chapters.All(c => c.Key != ch.chapter.Key)).ToList();
+        Log.Debug($"Got {newChapters.Count} new chapters.");
+
+        // Add Chapters to Manga
+        manga.Chapters = manga.Chapters.Union(newChapters.Select(ch => ch.chapter)).ToList();
 
         if(await DbContext.Sync(CancellationToken) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
