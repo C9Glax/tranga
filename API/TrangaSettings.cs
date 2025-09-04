@@ -49,6 +49,8 @@ public struct TrangaSettings()
     public Dictionary<RequestType, int> RequestLimits { get; set; } = DefaultRequestLimits;
 
     public string DownloadLanguage { get; set; } = "en";
+    
+    public int MaxConcurrentDownloads { get; set; } = 5;
 
     public static TrangaSettings Load()
     {
@@ -107,6 +109,12 @@ public struct TrangaSettings()
     public void SetDownloadLanguage(string language)
     {
         this.DownloadLanguage = language;
+        Save();
+    }
+
+    public void SetMaxConcurrentDownloads(int value)
+    {
+        this.MaxConcurrentDownloads = value;
         Save();
     }
 }

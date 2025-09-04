@@ -24,8 +24,15 @@ public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerab
         
         Log.Debug($"Found {missingChapters.Count} missing downloads.");
         
+        // Maximum Concurrent workers
+        int downloadWorkers = Tranga.GetRunningWorkers().Count(w => w.GetType() == typeof(DownloadChapterFromMangaconnectorWorker));
+        int amountNewWorkers = Math.Min(Tranga.Settings.MaxConcurrentDownloads, Tranga.Settings.MaxConcurrentDownloads - downloadWorkers);
+        Log.Debug($"{downloadWorkers} running download Workers. {amountNewWorkers} new download Workers.");
+        IEnumerable<MangaConnectorId<Chapter>> newDownloadChapters = missingChapters.Take(amountNewWorkers);
+
+
         // Create new jobs
-        List<BaseWorker> newWorkers = missingChapters.Select(mcId => new DownloadChapterFromMangaconnectorWorker(mcId)).ToList<BaseWorker>();
+        List<BaseWorker> newWorkers = newDownloadChapters.Select(mcId => new DownloadChapterFromMangaconnectorWorker(mcId)).ToList<BaseWorker>();
         
         return newWorkers.ToArray();
     }
