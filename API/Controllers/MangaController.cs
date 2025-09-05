@@ -226,8 +226,11 @@ public class MangaController(MangaContext context) : Controller
         }
         
         DateTime lastModified = data.fileInfo.LastWriteTime;
+        EntityTagHeaderValue entityTagHeaderValue = EntityTagHeaderValue.Parse($"\"{lastModified.Ticks}\"");
+        if(HttpContext.Request.Headers.ETag.Equals(entityTagHeaderValue.Tag.Value))
+            return TypedResults.StatusCode(Status304NotModified);
         HttpContext.Response.Headers.CacheControl = "public";
-        return TypedResults.Bytes(data.stream.ToArray(), "image/jpeg", lastModified: new DateTimeOffset(lastModified), entityTag: EntityTagHeaderValue.Parse($"\"{lastModified.Ticks}\""));
+        return TypedResults.Bytes(data.stream.ToArray(), "image/jpeg", lastModified: new DateTimeOffset(lastModified), entityTag: entityTagHeaderValue);
     }
     public enum CoverSize { Original, Large, Medium, Small }
 
