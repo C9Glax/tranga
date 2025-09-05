@@ -11,11 +11,22 @@ public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<Bas
     protected override Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Info("Removing stale files...");
-        if (!Directory.Exists(TrangaSettings.coverImageCache))
-            return new Task<BaseWorker[]>(() => []);
         string[] usedFiles = DbContext.Mangas.Select(m => m.CoverFileNameInCache).Where(s => s != null).ToArray()!;
-        string[] extraneousFiles = new DirectoryInfo(TrangaSettings.coverImageCache).GetFiles()
-            .Where(f => usedFiles.Contains(f.FullName) == false)
+        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheOriginal);
+        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheLarge);
+        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheMedium);
+        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheSmall);
+        return new Task<BaseWorker[]>(() => []);
+    }
+
+    private void CleanupImageCache(string[] retainFilenames, string imageCachePath)
+    {
+        DirectoryInfo directory = new(imageCachePath);
+        if (!directory.Exists)
+            return;
+        string[] extraneousFiles = directory
+            .GetFiles()
+            .Where(f => retainFilenames.Contains(f.Name) == false)
             .Select(f => f.FullName)
             .ToArray();
         foreach (string path in extraneousFiles)
@@ -23,6 +34,5 @@ public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<Bas
             Log.Info($"Deleting {path}");
             File.Delete(path);
         }
-        return new Task<BaseWorker[]>(() => []);
     }
 }

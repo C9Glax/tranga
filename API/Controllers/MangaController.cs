@@ -1,4 +1,5 @@
-﻿using API.Controllers.DTOs;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.Controllers.DTOs;
 using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;
@@ -7,10 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Net.Http.Headers;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using AltTitle = API.Controllers.DTOs.AltTitle;
 using Author = API.Controllers.DTOs.Author;
@@ -190,54 +187,49 @@ public class MangaController(MangaContext context) : Controller
     /// Returns Cover of <see cref="Manga"/> with <paramref name="MangaId"/>
     /// </summary>
     /// <param name="MangaId"><see cref="Manga"/>.Key</param>
-    /// <param name="width">If <paramref name="width"/> is provided, <paramref name="height"/> needs to also be provided</param>
-    /// <param name="height">If <paramref name="height"/> is provided, <paramref name="width"/> needs to also be provided</param>
+    /// <param name="CoverSize">Size of the cover returned
+    /// <br /> - <see cref="CoverSize.Small"/> <see cref="Constants.ImageSmSize"/>
+    /// <br /> - <see cref="CoverSize.Medium"/> <see cref="Constants.ImageMdSize"/>
+    /// <br /> - <see cref="CoverSize.Large"/> <see cref="Constants.ImageLgSize"/>
+    /// </param>
     /// <response code="200">JPEG Image</response>
     /// <response code="204">Cover not loaded</response>
-    /// <response code="400">The formatting-request was invalid</response>
     /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
     /// <response code="503">Retry later, downloading cover</response>
-    [HttpGet("{MangaId}/Cover")]
-    [ProducesResponseType<byte[]>(Status200OK,"image/jpeg")]
+    [HttpGet("{MangaId}/Cover/{CoverSize?}")]
+    [ProducesResponseType<FileContentResult>(Status200OK,"image/jpeg")]
     [ProducesResponseType(Status204NoContent)]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType(Status503ServiceUnavailable)]
-    public async Task<Results<FileContentHttpResult, NoContent, BadRequest, NotFound<string>, StatusCodeHttpResult>> GetCover (string MangaId, [FromQuery]int? width, [FromQuery]int? height)
+    public async Task<Results<FileContentHttpResult, NoContent, BadRequest, NotFound<string>, StatusCodeHttpResult>> GetCover (string MangaId, CoverSize? CoverSize = null)
     {
         if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
             return TypedResults.NotFound(nameof(MangaId));
-        
-        if (!System.IO.File.Exists(manga.CoverFileNameInCache))
+
+        string cache = CoverSize switch
+        {
+            MangaController.CoverSize.Small => TrangaSettings.coverImageCacheSmall,
+            MangaController.CoverSize.Medium => TrangaSettings.coverImageCacheMedium,
+            MangaController.CoverSize.Large => TrangaSettings.coverImageCacheLarge,
+            _ => TrangaSettings.coverImageCacheOriginal
+        };
+
+        if (await manga.GetCoverImage(cache, HttpContext.RequestAborted) is not { } data)
         {
             if (Tranga.GetRunningWorkers().Any(worker => worker is DownloadCoverFromMangaconnectorWorker w && context.MangaConnectorToManga.Find(w.MangaConnectorIdId)?.ObjId == MangaId))
             {
                 Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
                 return TypedResults.StatusCode(Status503ServiceUnavailable);
             }
-            else
-                return TypedResults.NoContent();
-        }
-
-        Image image = await Image.LoadAsync(manga.CoverFileNameInCache, HttpContext.RequestAborted);
-
-        if (width is { } w && height is { } h)
-        {
-            if (width < 10 || height < 10 || width > 65535 || height > 65535)
-                return TypedResults.BadRequest();
-            image.Mutate(i => i.ApplyProcessor(new ResizeProcessor(new ResizeOptions()
-            {
-                Mode = ResizeMode.Max,
-                Size = new Size(w, h)
-            }, image.Size)));
+            return TypedResults.NoContent();
         }
         
-        using MemoryStream ms = new();
-        await image.SaveAsync(ms, new JpegEncoder(){Quality = 100}, HttpContext.RequestAborted);
-        DateTime lastModified = new FileInfo(manga.CoverFileNameInCache).LastWriteTime;
+        DateTime lastModified = data.fileInfo.LastWriteTime;
         HttpContext.Response.Headers.CacheControl = "public";
-        return TypedResults.File(ms.GetBuffer(), "image/jpeg", lastModified: new DateTimeOffset(lastModified), entityTag: EntityTagHeaderValue.Parse($"\"{lastModified.Ticks}\""));
+        return TypedResults.Bytes(data.stream.ToArray(), "image/jpeg", lastModified: new DateTimeOffset(lastModified), entityTag: EntityTagHeaderValue.Parse($"\"{lastModified.Ticks}\""));
     }
+    public enum CoverSize { Original, Large, Medium, Small }
 
     /// <summary>
     /// Returns all <see cref="Chapter"/> of <see cref="Manga"/> with <paramref name="MangaId"/>

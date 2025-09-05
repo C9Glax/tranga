@@ -200,18 +200,19 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
 
         Log.Info($"Copying cover to {publicationFolder}");
         await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).LoadAsync(CancellationToken);
-        string? fileInCache = manga.CoverFileNameInCache ?? mangaConnector.SaveCoverImageToCache(mangaConnectorId);
-        if (fileInCache is null)
+        string? coverFileNameInCache = manga.CoverFileNameInCache ?? mangaConnector.SaveCoverImageToCache(mangaConnectorId);
+        if (coverFileNameInCache is null)
         {
-            Log.Error($"File {fileInCache} does not exist");
+            Log.Error($"File {coverFileNameInCache} does not exist");
             return;
         }
         
-        string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(fileInCache).Split('.')[^1]}" );
-        File.Copy(fileInCache, newFilePath, true);
+        string fullCoverPath = Path.Join(TrangaSettings.coverImageCacheOriginal, coverFileNameInCache);
+        string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(coverFileNameInCache).Split('.')[^1]}" );
+        File.Copy(fullCoverPath, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite | OtherRead | OtherWrite);
-        Log.Debug($"Copied cover from {fileInCache} to {newFilePath}");
+        Log.Debug($"Copied cover from {fullCoverPath} to {newFilePath}");
     }
 
     private bool DownloadImage(string imageUrl, string savePath)

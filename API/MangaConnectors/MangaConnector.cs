@@ -6,6 +6,9 @@ using API.Schema.MangaContext;
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 namespace API.MangaConnectors;
 
@@ -43,8 +46,8 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
         Regex urlRex = new (@"https?:\/\/((?:[a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+))");
         //https?:\/\/[a-zA-Z0-9-]+\.([a-zA-Z0-9-]+\.[a-zA-Z0-9]+)\/(?:.+\/)*(.+\.([a-zA-Z]+)) for only second level domains
         Match match = urlRex.Match(mangaId.Obj.CoverUrl);
-        string filename = $"{match.Groups[1].Value}-{mangaId.Key}.{match.Groups[3].Value}";
-        string saveImagePath = Path.Join(TrangaSettings.coverImageCache, filename);
+        string filename = $"{match.Groups[1].Value}-{mangaId.ObjId}.{mangaId.MangaConnectorName}.{match.Groups[3].Value}";
+        string saveImagePath = Path.Join(TrangaSettings.coverImageCacheOriginal, filename);
 
         if (File.Exists(saveImagePath))
             return saveImagePath;
@@ -53,11 +56,36 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
         if ((int)coverResult.statusCode < 200 || (int)coverResult.statusCode >= 300)
             return SaveCoverImageToCache(mangaId, --retries);
             
-        using MemoryStream ms = new();
-        coverResult.result.CopyTo(ms);
-        Directory.CreateDirectory(TrangaSettings.coverImageCache);
-        File.WriteAllBytes(saveImagePath, ms.ToArray());
-        
-        return saveImagePath;
+        try
+        {
+            using MemoryStream ms = new();
+            coverResult.result.CopyTo(ms);
+            byte[] imageBytes = ms.ToArray();
+            Directory.CreateDirectory(TrangaSettings.coverImageCacheOriginal);
+            File.WriteAllBytes(saveImagePath, imageBytes);
+
+            using Image image = Image.Load(imageBytes);
+            Directory.CreateDirectory(TrangaSettings.coverImageCacheLarge);
+            using Image large = image.Clone(x => x.Resize(new ResizeOptions
+                { Size = Constants.ImageLgSize, Mode = ResizeMode.Max }));
+            large.SaveAsJpeg(Path.Join(TrangaSettings.coverImageCacheLarge, filename), new (){ Quality = 40 });
+            
+            Directory.CreateDirectory(TrangaSettings.coverImageCacheMedium);
+            using Image medium = image.Clone(x => x.Resize(new ResizeOptions
+                { Size = Constants.ImageMdSize, Mode = ResizeMode.Max }));
+            medium.SaveAsJpeg(Path.Join(TrangaSettings.coverImageCacheMedium, filename), new (){ Quality = 40 });
+            
+            Directory.CreateDirectory(TrangaSettings.coverImageCacheSmall);
+            using Image small = image.Clone(x => x.Resize(new ResizeOptions
+                { Size = Constants.ImageSmSize, Mode = ResizeMode.Max }));
+            small.SaveAsJpeg(Path.Join(TrangaSettings.coverImageCacheSmall, filename), new (){ Quality = 40 });
+        }
+        catch (Exception e)
+        {
+            Log.Error(e);
+        }
+
+
+        return filename;
     }
 }

@@ -11,8 +11,11 @@ public struct TrangaSettings()
     public static string workingDirectory => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
     [JsonIgnore]
     public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
-    [JsonIgnore]
-    public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
+    [JsonIgnore] public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
+    [JsonIgnore] public static string coverImageCacheOriginal => Path.Join(coverImageCache, "original");
+    [JsonIgnore] public static string coverImageCacheLarge => Path.Join(coverImageCache, "large");
+    [JsonIgnore] public static string coverImageCacheMedium => Path.Join(coverImageCache, "medium");
+    [JsonIgnore] public static string coverImageCacheSmall => Path.Join(coverImageCache, "small");
     public string DownloadLocation => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Manga");
     [JsonIgnore]
     internal static readonly string DefaultUserAgent = $"Tranga/2.0 ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")})";

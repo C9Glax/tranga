@@ -4,6 +4,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using API.Workers;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using static System.IO.UnixFileMode;
 
 namespace API.Schema.MangaContext;
@@ -153,6 +157,18 @@ public class Manga : Identifiable
         }
         
         return newJobs.ToArray();
+    }
+
+    public async Task<(MemoryStream stream, FileInfo fileInfo)?> GetCoverImage(string cachePath, CancellationToken ct)
+    {
+        string fullPath = Path.Join(cachePath, CoverFileNameInCache);
+        if (!File.Exists(fullPath))
+            return null;
+
+        FileInfo fileInfo = new(fullPath);
+        MemoryStream stream = new (await File.ReadAllBytesAsync(fullPath, ct));
+        
+        return (stream, fileInfo);
     }
 
     public override string ToString() => $"{base.ToString()} {Name}";

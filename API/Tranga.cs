@@ -15,16 +15,6 @@ namespace API;
 
 public static class Tranga
 {
-
-    // ReSharper disable once InconsistentNaming
-    private const string TRANGA = 
-        "\n\n" +
-        " _______                                 v2\n" +
-        "|_     _|.----..---.-..-----..-----..---.-.\n" +
-        "  |   |  |   _||  _  ||     ||  _  ||  _  |\n" +
-        "  |___|  |__|  |___._||__|__||___  ||___._|\n" +
-        "                             |_____|       \n\n";
-    
     private static IServiceProvider? ServiceProvider;
     
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
@@ -45,7 +35,7 @@ public static class Tranga
     {
         XmlConfigurator.ConfigureAndWatch(loggerConfigFile);
         Log.Info("Logger Configured.");
-        Log.Info(TRANGA);
+        Log.Info(Constants.TRANGA);
     }
 
     internal static void AddDefaultWorkers()
