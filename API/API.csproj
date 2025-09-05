@@ -35,4 +35,8 @@
       <Folder Include="Migrations\Manga\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="Log4Net.config.xml" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    </ItemGroup>
+
 </Project>
