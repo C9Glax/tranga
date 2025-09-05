@@ -143,9 +143,21 @@ public static class Tranga
         Log.Debug($"AfterWork {worker}");
         if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
         {
-            BaseWorker[] newWorkers = task.Result;
-            Log.Debug($"{worker} created {newWorkers.Length} new Workers.");
-            AddWorkers(newWorkers);
+            Log.Debug($"Waiting for Children to exit {worker}");
+            task.Wait();
+            if (task.IsCompleted)
+            {
+                try
+                {
+                    BaseWorker[] newWorkers = task.Result;
+                    Log.Debug($"{worker} created {newWorkers.Length} new Workers.");
+                    AddWorkers(newWorkers);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            }else Log.Warn($"Children failed: {worker}");
         }
         RunningWorkers.Remove(worker, out _);
         callback?.Invoke();
