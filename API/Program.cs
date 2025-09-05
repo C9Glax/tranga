@@ -135,7 +135,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 }
 
 Tranga.SetServiceProvider(app.Services);
-Tranga.StartLogger();
+Tranga.StartLogger(new FileInfo("Log4Net.config.xml"));
 Tranga.AddDefaultWorkers();
 
 app.UseCors("AllowAll");

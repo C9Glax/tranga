@@ -41,9 +41,9 @@ public static class Tranga
     internal static readonly RemoveOldNotificationsWorker RemoveOldNotificationsWorker = new();
     internal static readonly UpdateCoversWorker UpdateCoversWorker = new();
 
-    internal static void StartLogger()
+    internal static void StartLogger(FileInfo loggerConfigFile)
     {
-        BasicConfigurator.Configure();
+        XmlConfigurator.ConfigureAndWatch(loggerConfigFile);
         Log.Info("Logger Configured.");
         Log.Info(TRANGA);
     }
