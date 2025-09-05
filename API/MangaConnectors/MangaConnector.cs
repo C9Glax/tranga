@@ -50,7 +50,7 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
         string saveImagePath = Path.Join(TrangaSettings.coverImageCacheOriginal, filename);
 
         if (File.Exists(saveImagePath))
-            return saveImagePath;
+            return filename;
         
         RequestResult coverResult = downloadClient.MakeRequest(mangaId.Obj.CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}");
         if ((int)coverResult.statusCode < 200 || (int)coverResult.statusCode >= 300)
