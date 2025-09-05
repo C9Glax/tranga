@@ -66,6 +66,9 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if (imageUrls.Length < 1)
         {
             Log.Info($"No imageUrls for chapter {chapter}");
+            chId.UseForDownload = false; // Do not try to download from this again
+            if(await DbContext.Sync(CancellationToken) is { success: false } result)
+                Log.Error(result.exceptionMessage);
             return [];
         }
         string saveArchiveFilePath = chapter.FullArchiveFilePath;
