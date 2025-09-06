@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
+        <PackageReference Include="JikanDotNet" Version="2.9.1" />
+        <PackageReference Include="log4net" Version="3.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+        <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.978" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="9.0.4" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\Manga\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Log4Net.config.xml" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    </ItemGroup>
+
+</Project>
