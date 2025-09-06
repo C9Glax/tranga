@@ -6,7 +6,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// The <see cref="API.Schema.MangaContext.Author"/> DTO
 /// </summary>
-public record Author(string Key, string Name) : Identifiable(Key)
+public sealed record Author(string Key, string Name) : Identifiable(Key)
 {
     /// <summary>
     /// Name of the Author.

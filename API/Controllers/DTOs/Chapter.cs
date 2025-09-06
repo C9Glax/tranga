@@ -6,7 +6,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// <see cref="API.Schema.MangaContext.Chapter"/> DTO
 /// </summary>
-public record Chapter(string Key, string MangaId, int? Volume, string ChapterNumber, string? Title, IEnumerable<MangaConnectorId> MangaConnectorIds, bool Downloaded) : Identifiable(Key)
+public sealed record Chapter(string Key, string MangaId, int? Volume, string ChapterNumber, string? Title, IEnumerable<MangaConnectorId> MangaConnectorIds, bool Downloaded) : Identifiable(Key)
 {
     /// <summary>
     /// Identifier of the Manga this Chapter belongs to

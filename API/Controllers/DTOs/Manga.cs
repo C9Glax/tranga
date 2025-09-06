@@ -7,7 +7,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// <see cref="Schema.MangaContext.Manga"/> DTO
 /// </summary>
-public record Manga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId> MangaConnectorIds, float IgnoreChaptersBefore, uint? Year, string? OriginalLanguage, IEnumerable<string> ChapterIds, IEnumerable<Author> Authors, IEnumerable<string> Tags, IEnumerable<Link> Links, IEnumerable<AltTitle> AltTitles, string? FileLibraryId)
+public sealed record Manga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId> MangaConnectorIds, float IgnoreChaptersBefore, uint? Year, string? OriginalLanguage, IEnumerable<string> ChapterIds, IEnumerable<Author> Authors, IEnumerable<string> Tags, IEnumerable<Link> Links, IEnumerable<AltTitle> AltTitles, string? FileLibraryId)
     : MinimalManga(Key, Name, Description, ReleaseStatus, MangaConnectorIds)
 {
     /// <summary>

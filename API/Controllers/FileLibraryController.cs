@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using FileLibrary = API.Controllers.DTOs.FileLibrary;
+
 // ReSharper disable InconsistentNaming
 
 namespace API.Controllers;
@@ -14,18 +16,21 @@ namespace API.Controllers;
 public class FileLibraryController(MangaContext context) : Controller
 {
     /// <summary>
-    /// Returns all <see cref="FileLibrary"/>
+    /// Returns all <see cref="DTOs.FileLibrary"/>
     /// </summary>
     /// <response code="200"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpGet]
-    [ProducesResponseType<FileLibrary[]>(Status200OK, "application/json")]
+    [ProducesResponseType<List<FileLibrary>>(Status200OK, "application/json")]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<Results<Ok<List<FileLibrary>>, InternalServerError>> GetFileLibraries ()
     {
         if (await context.FileLibraries.ToListAsync(HttpContext.RequestAborted) is not { } result)
             return TypedResults.InternalServerError();
-        return TypedResults.Ok(result);
+
+        List<FileLibrary> fileLibraries = result.Select(f => new FileLibrary(f.Key, f.BasePath, f.LibraryName)).ToList();
+
+        return TypedResults.Ok(fileLibraries);
     }
 
     /// <summary>
@@ -42,7 +47,7 @@ public class FileLibraryController(MangaContext context) : Controller
         if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
             return TypedResults.NotFound(nameof(FileLibraryId));
         
-        return TypedResults.Ok(library);
+        return TypedResults.Ok(new FileLibrary(library.Key, library.BasePath, library.LibraryName));
     }
 
     /// <summary>
@@ -98,15 +103,16 @@ public class FileLibraryController(MangaContext context) : Controller
     /// <summary>
     /// Creates new <see cref="FileLibrary"/>
     /// </summary>
-    /// <param name="library">New <see cref="FileLibrary"/> to add</param>
+    /// <param name="requestData">New <see cref="FileLibrary"/> to add</param>
     /// <response code="200">Key of new Library</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
     [ProducesResponseType<string>(Status201Created, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Created<string>, InternalServerError<string>>> CreateNewLibrary ([FromBody]FileLibrary library)
+    public async Task<Results<Created<string>, InternalServerError<string>>> CreateNewLibrary ([FromBody]CreateLibraryRecord requestData)
     {
         //TODO Parameter check
+        Schema.MangaContext.FileLibrary library = new Schema.MangaContext.FileLibrary(requestData.BasePath, requestData.LibraryName);
         context.FileLibraries.Add(library);
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
@@ -114,6 +120,7 @@ public class FileLibraryController(MangaContext context) : Controller
         
         return TypedResults.Created(string.Empty, library.Key);
     }
+    public sealed record CreateLibraryRecord(string BasePath, string LibraryName);
     
     /// <summary>
     /// Deletes the <see cref="FileLibraryId"/>.LibraryName with <paramref name="FileLibraryId"/>
