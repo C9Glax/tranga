@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using LibraryConnector = API.Controllers.DTOs.LibraryConnector;
+
 // ReSharper disable InconsistentNaming
 
 namespace API.Controllers;
@@ -15,7 +17,7 @@ namespace API.Controllers;
 public class LibraryConnectorController(LibraryContext context) : Controller
 {
     /// <summary>
-    /// Gets all configured <see cref="LibraryConnector"/>
+    /// Gets all configured <see cref="DTOs.LibraryConnector"/>
     /// </summary>
     /// <response code="200"></response>
     /// <response code="500">Error during Database Operation</response>
@@ -25,8 +27,10 @@ public class LibraryConnectorController(LibraryContext context) : Controller
     {
         if (await context.LibraryConnectors.ToListAsync(HttpContext.RequestAborted) is not { } connectors)
             return TypedResults.InternalServerError();
-        
-        return TypedResults.Ok(connectors);
+
+        List<LibraryConnector> libraryConnectors = connectors.Select(c => new LibraryConnector(c.Key, c.BaseUrl, c.LibraryType)).ToList();
+
+        return TypedResults.Ok(libraryConnectors);
     }
     
     /// <summary>
@@ -43,26 +47,35 @@ public class LibraryConnectorController(LibraryContext context) : Controller
         if (await context.LibraryConnectors.FirstOrDefaultAsync(l => l.Key == LibraryConnectorId) is not { } connector)
             return TypedResults.NotFound(nameof(LibraryConnectorId));
         
-        return TypedResults.Ok(connector);
+        return TypedResults.Ok(new LibraryConnector(connector.Key, connector.BaseUrl, connector.LibraryType));
     }
     
     /// <summary>
     /// Creates a new <see cref="LibraryConnector"/>
     /// </summary>
-    /// <param name="libraryConnector"></param>
+    /// <param name="requestData"></param>
     /// <response code="201"></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
     [ProducesResponseType<string>(Status201Created, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Created<string>, InternalServerError<string>>> CreateConnector ([FromBody]LibraryConnector libraryConnector)
+    public async Task<Results<Created<string>, InternalServerError<string>>> CreateConnector ([FromBody]CreateLibraryConnectorRecord requestData)
     {
-        context.LibraryConnectors.Add(libraryConnector);
+        //TODO verify data
+        API.Schema.LibraryContext.LibraryConnectors.LibraryConnector connector = requestData.LibraryType switch
+        {
+            LibraryType.Kavita => new Kavita(requestData.Url, requestData.Username, requestData.Password),
+            LibraryType.Komga => new Komga(requestData.Url, requestData.Username, requestData.Password),
+            _ => throw new NotImplementedException()
+        };
+        
+        context.LibraryConnectors.Add(connector);
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
-        return TypedResults.Created(string.Empty, libraryConnector.Key);
+        return TypedResults.Created(string.Empty, connector.Key);
     }
+    public sealed record CreateLibraryConnectorRecord(LibraryType LibraryType, string Url, string Username, string Password);
     
     /// <summary>
     /// Deletes <see cref="LibraryConnector"/> with <paramref name="LibraryConnectorId"/>

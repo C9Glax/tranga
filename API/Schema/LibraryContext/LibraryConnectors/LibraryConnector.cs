@@ -9,18 +9,9 @@ namespace API.Schema.LibraryContext.LibraryConnectors;
 [PrimaryKey("Key")]
 public abstract class LibraryConnector : Identifiable
 {
-    [Required]
     public LibraryType LibraryType { get; init; }
-    [StringLength(256)]
-    [Required]
-    [Url]
     public string BaseUrl { get; init; }
-    [StringLength(256)]
-    [Required]
     public string Auth { get; init; }
-    
-    [JsonIgnore]
-    [NotMapped]
     protected ILog Log { get; init; }
 
     protected LibraryConnector(LibraryType libraryType, string baseUrl, string auth)
