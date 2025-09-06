@@ -18,8 +18,12 @@
       <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-cuttingedge.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
     </tr>
     <tr>
-      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/postgres-Server-V2?label=postgres-Server-V2"></th>
-      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-serverv2.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
+      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/testing?label=testing"></th>
+      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-testing.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
+    </tr>
+    <tr>
+      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/oldstable?label=oldstable"></th>
+      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-oldstable.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
     </tr>
   </table>
 
@@ -40,22 +44,21 @@ Notifications can be sent to your devices using [Gotify](https://gotify.net/), [
 
 ## What this program does and does *not* do
 
-DOES: Download Images from a Website.<br />
-DOES: Create Archives.<br />
+*DOES*: Download Images from a Website.<br />
+*DOES*: Create Archives with those images.<br />
 
-### how:
+_**how**?_
 
 Tranga (this repository) is a REST-API and worker in one. Tranga provides REST-Endpoints to configure workers (Jobs).
 Requests include searches for Manga, creating and starting Jobs such as downloading available chapters.
-For available endpoints check `<hostedInstance>/swagger`
+For available endpoints check `http(s)://<hostedInstance>/swagger`
 
-This repository *does not* include a frontend. A frontend can take many forms, such as a website:
+**This repository** _**does not**_ include a frontend. A frontend can take many forms, such as a website:
 
 [tranga-website](https://github.com/C9Glax/tranga-website)
 
 When downloading a chapter (meaning the images that make-up the manga) from a Website, Tranga will
-additionally try and scrape Metadata from the same website ~~or enhance it from third-party sources~~
-([tbd issue](https://github.com/C9Glax/tranga/issues/280)).
+additionally try and fetch Metadata from the same website or enhance it from third-party sources.
 Downloaded images can be jpeg-compressed and/or made black and white to save on diskspace
 (measured at least a 50% reduction in size, without a significant loss of quality).
 
@@ -160,20 +163,13 @@ Tranga is using a code-first Entity-Framework Core approach. If you modify the d
 
 - `Program.cs` Configuration for ASP.NET, Swagger (also in `NamedSwaggerGenOptions.cs`)
 - `Tranga.cs` Worker-Logic
-- `Schema/` Entity-Framework
-  - `Schema/Jobs/` + Logic for Jobs
-  - `Schema/**/` + Logic for **
-  - `Schema/Contexts/` EF configuration
-- `MangaDownloadClients/` Networking-Clients for Scraping
-- `Controllers/` ASP.NET Controllers (Endpoints)
-- `APIEndpointRecords/` Records for API-Requests with specific Request-Types (Body)
+- `Schema/**` Entity-Framework Schema Definitions
+- `MangaDownloadClients/**` Networking-Clients for Scraping
+- `Controllers/**` ASP.NET Controllers (Endpoints)
 
 If you want to add a new Website-Connector: <br />
 1. Copy one of the existing connectors, or start from scratch and inherit from `API.Schema.MangaConnectors.MangaConnector`.
-2. Add the new Connector as Object-Instance in `Program.cs` to the MangaConnector-Array `connectors`.
-3. In `PgsqlContext.cs` add the Discriminator for the Connector (the value is the name of the connector, as defined
-in the constructor).
-4. In `Program.cs` add a new Object to the Array.
+2. Add the new Connector as Object-Instance in `Tranga.cs` to the MangaConnector-Array `connectors`.
 
 ### How to test locally
 
