@@ -7,13 +7,9 @@ namespace API.Schema.MangaContext;
 public class FileLibrary(string basePath, string libraryName)
     : Identifiable(TokenGen.CreateToken(typeof(FileLibrary), basePath))
 {
-    [StringLength(256)]
-    [Required]
-    public string BasePath { get; internal set; } = basePath;
+    [StringLength(256)] public string BasePath { get; internal set; } = basePath;
 
-    [StringLength(512)]
-    [Required]
-    public string LibraryName { get; internal set; } = libraryName;
+    [StringLength(512)] public string LibraryName { get; internal set; } = libraryName;
 
     public override string ToString() => $"{base.ToString()} {LibraryName} - {BasePath}";
 }

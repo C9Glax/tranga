@@ -10,9 +10,9 @@ namespace API.Schema.LibraryContext.LibraryConnectors;
 public abstract class LibraryConnector : Identifiable
 {
     public LibraryType LibraryType { get; init; }
-    public string BaseUrl { get; init; }
-    public string Auth { get; init; }
-    protected ILog Log { get; init; }
+    [StringLength(256)] [Url] public string BaseUrl { get; init; }
+    [StringLength(256)] public string Auth { get; init; }
+    [NotMapped] protected ILog Log { get; init; }
 
     protected LibraryConnector(LibraryType libraryType, string baseUrl, string auth)
         : base()

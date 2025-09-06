@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using API.Controllers.DTOs;
+﻿using API.Controllers.DTOs;
 using API.Schema.MangaContext;
 using API.Workers;
 using Asp.Versioning;

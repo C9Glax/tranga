@@ -1,4 +1,5 @@
-﻿using API.Schema.LibraryContext;
+﻿using API.Controllers.Requests;
+using API.Schema.LibraryContext;
 using API.Schema.LibraryContext.LibraryConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -75,7 +76,6 @@ public class LibraryConnectorController(LibraryContext context) : Controller
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Created(string.Empty, connector.Key);
     }
-    public sealed record CreateLibraryConnectorRecord(LibraryType LibraryType, string Url, string Username, string Password);
     
     /// <summary>
     /// Deletes <see cref="LibraryConnector"/> with <paramref name="LibraryConnectorId"/>

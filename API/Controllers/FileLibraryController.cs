@@ -1,4 +1,5 @@
-﻿using API.Schema.MangaContext;
+﻿using API.Controllers.Requests;
+using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -120,7 +121,6 @@ public class FileLibraryController(MangaContext context) : Controller
         
         return TypedResults.Created(string.Empty, library.Key);
     }
-    public sealed record CreateLibraryRecord(string BasePath, string LibraryName);
     
     /// <summary>
     /// Deletes the <see cref="FileLibraryId"/>.LibraryName with <paramref name="FileLibraryId"/>
