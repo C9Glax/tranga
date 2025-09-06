@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using API.APIEndpointRecords;
+using API.Controllers.DTOs;
+using API.Controllers.Requests;
 using API.Schema.NotificationsContext;
-using API.Schema.NotificationsContext.NotificationConnectors;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +29,10 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     {
         if(await context.NotificationConnectors.ToListAsync(HttpContext.RequestAborted) is not { } result)
             return TypedResults.InternalServerError();
-        
-        return TypedResults.Ok(result);
+
+        List<NotificationConnector> notificationConnectors = result.Select(n => new NotificationConnector(n.Name, n.Url, n.HttpMethod, n.Body, n.Headers)).ToList();
+
+        return TypedResults.Ok(notificationConnectors);
     }
     
     /// <summary>
@@ -46,8 +48,10 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     {
         if (await context.NotificationConnectors.FirstOrDefaultAsync(c => c.Name == Name, HttpContext.RequestAborted) is not { } connector)
             return TypedResults.NotFound(nameof(Name));
-        
-        return TypedResults.Ok(connector);
+
+        NotificationConnector notificationConnector = new NotificationConnector(connector.Name, connector.Url, connector.HttpMethod, connector.Body, connector.Headers);
+
+        return TypedResults.Ok(notificationConnector);
     }
     
     /// <summary>
@@ -57,16 +61,20 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut]
-    [ProducesResponseType<string>(Status200OK, "text/plain")]
+    [ProducesResponseType<string>(Status201Created, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<string>, InternalServerError<string>>> CreateConnector ([FromBody]NotificationConnector notificationConnector)
+    public async Task<Results<Created<string>, InternalServerError<string>>> CreateConnector ([FromBody]CreateNotificationConnectorRecord requestData)
     {
-        context.NotificationConnectors.Add(notificationConnector);
-        context.Notifications.Add(new ("Added new Notification Connector!", notificationConnector.Name, NotificationUrgency.High));
+        // TODO validate data
+        API.Schema.NotificationsContext.NotificationConnectors.NotificationConnector newConnector =
+            new(requestData.Name, requestData.Url, requestData.Headers, requestData.HttpMethod, requestData.Body);
+        
+        context.NotificationConnectors.Add(newConnector);
+        context.Notifications.Add(new ("Added new Notification Connector!", newConnector.Name, NotificationUrgency.High));
         
         if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
-        return TypedResults.Ok(notificationConnector.Name);
+        return TypedResults.Created(string.Empty, newConnector.Name);
     }
     
     /// <summary>
@@ -76,17 +84,16 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Gotify")]
-    [ProducesResponseType<string>(Status200OK, "text/plain")]
+    [ProducesResponseType<string>(Status201Created, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<string>, InternalServerError<string>>> CreateGotifyConnector ([FromBody]GotifyRecord gotifyData)
+    public async Task<Results<Created<string>, InternalServerError<string>>> CreateGotifyConnector ([FromBody]CreateGotifyConnectorRecord createGotifyConnectorData)
     {
         //TODO Validate Data
-        
-        NotificationConnector gotifyConnector = new (gotifyData.Name,
-            gotifyData.Endpoint, 
-            new Dictionary<string, string>() { { "X-Gotify-Key", gotifyData.AppToken } }, 
+        CreateNotificationConnectorRecord gotifyConnector = new (createGotifyConnectorData.Name,
+            createGotifyConnectorData.Url, 
             "POST", 
-            $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {gotifyData.Priority}}}");
+            $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {createGotifyConnectorData.Priority}}}",
+            new () { { "X-Gotify-Key", createGotifyConnectorData.AppToken } });
         return await CreateConnector(gotifyConnector);
     }
     
@@ -97,23 +104,19 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Ntfy")]
-    [ProducesResponseType<string>(Status200OK, "text/plain")]
+    [ProducesResponseType<string>(Status201Created, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<string>, InternalServerError<string>>> CreateNtfyConnector ([FromBody]NtfyRecord ntfyRecord)
+    public async Task<Results<Created<string>, InternalServerError<string>>> CreateNtfyConnector ([FromBody]CreateNtfyConnectorRecord createNtfyConnectorRecord)
     {
         //TODO Validate Data
-        
-        string authHeader = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ntfyRecord.Username}:{ntfyRecord.Password}"));
+        string authHeader = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{createNtfyConnectorRecord.Username}:{createNtfyConnectorRecord.Password}"));
         string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(authHeader)).Replace("=","");
         
-        NotificationConnector ntfyConnector = new (ntfyRecord.Name,
-            $"{ntfyRecord.Endpoint}?auth={auth}", 
-            new Dictionary<string, string>()
-            {
-                {"Authorization", auth}
-            }, 
+        CreateNotificationConnectorRecord ntfyConnector = new (createNtfyConnectorRecord.Name,
+            $"{createNtfyConnectorRecord.Url}?auth={auth}", 
             "POST", 
-            $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {ntfyRecord.Priority} \"Topic\": \"{ntfyRecord.Topic}\"}}");
+            $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {createNtfyConnectorRecord.Priority} \"Topic\": \"{createNtfyConnectorRecord.Topic}\"}}",
+            new () {{"Authorization", auth}});
         return await CreateConnector(ntfyConnector);
     }
     
@@ -124,17 +127,16 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     /// <response code="200">ID of the new <see cref="NotificationConnector"/></response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPut("Pushover")]
-    [ProducesResponseType<string>(Status200OK, "text/plain")]
+    [ProducesResponseType<string>(Status201Created, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<string>, InternalServerError<string>>> CreatePushoverConnector ([FromBody]PushoverRecord pushoverRecord)
+    public async Task<Results<Created<string>, InternalServerError<string>>> CreatePushoverConnector ([FromBody]CreatePushoverConnectorRecord createPushoverConnectorRecord)
     {
         //TODO Validate Data
-        
-        NotificationConnector pushoverConnector = new  (pushoverRecord.Name,
+        CreateNotificationConnectorRecord pushoverConnector = new  (createPushoverConnectorRecord.Name,
             $"https://api.pushover.net/1/messages.json", 
-            new Dictionary<string, string>(),
             "POST", 
-            $"{{\"token\": \"{pushoverRecord.AppToken}\", \"user\": \"{pushoverRecord.User}\", \"message:\":\"%text\", \"%title\" }}");
+            $"{{\"token\": \"{createPushoverConnectorRecord.AppToken}\", \"user\": \"{createPushoverConnectorRecord.Username}\", \"message:\":\"%text\", \"%title\" }}",
+            new ());
         return await CreateConnector(pushoverConnector);
     }
     

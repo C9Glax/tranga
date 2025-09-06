@@ -10,36 +10,22 @@ namespace API.Schema.NotificationsContext.NotificationConnectors;
 [PrimaryKey("Name")]
 public class NotificationConnector(string name, string url, Dictionary<string, string> headers, string httpMethod, string body)
 {
-    [StringLength(64)]
-    [Required]
-    public string Name { get; init; } = name;
+    [StringLength(64)] public string Name { get; init; } = name;
     
-    [StringLength(2048)]
-    [Required]
-    [Url]
-    public string Url { get; internal set; } = url;
+    [StringLength(2048)] [Url] public string Url { get; internal set; } = url;
 
-    [Required]
-    public Dictionary<string, string> Headers { get; internal set; } = headers;
+    [Required] public Dictionary<string, string> Headers { get; internal set; } = headers;
 
-    [StringLength(8)]
-    [Required]
-    public string HttpMethod { get; internal set; } = httpMethod;
+    [StringLength(8)] public string HttpMethod { get; internal set; } = httpMethod;
 
-    [StringLength(4096)]
-    [Required]
-    public string Body { get; internal set; } = body;
+    [StringLength(4096)] public string Body { get; internal set; } = body;
 
-    [JsonIgnore]
-    [NotMapped]
-    private readonly HttpClient Client = new()
+    [NotMapped] private readonly HttpClient Client = new()
     {
         DefaultRequestHeaders = { { "User-Agent", Tranga.Settings.UserAgent } }
     };
     
-    [JsonIgnore]
-    [NotMapped]
-    protected ILog Log = LogManager.GetLogger(name);
+    [JsonIgnore] protected ILog Log = LogManager.GetLogger(name);
 
     public void SendNotification(string title, string notificationText)
     {
