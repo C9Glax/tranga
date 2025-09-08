@@ -88,7 +88,7 @@ Endpoints are documented in Swagger. Just spin up an instance, and go to `http:/
 ## Built With
 
 - ASP.NET
-  - Entity Framework Core
+  - Entity Framework Core (EF Core)
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
 - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
 - [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
@@ -140,7 +140,7 @@ Downloads (default) are stored in - but this can be configured in `settings.json
 - Linux `/Manga`
 - Windows `%currentDirectory%/Downloads`
 
-#### Prerequisits
+### Prerequisits
 
 [.NET-Core 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
@@ -149,15 +149,54 @@ Downloads (default) are stored in - but this can be configured in `settings.json
 
 If you want to contribute, please feel free to fork and create a Pull-Request!
 
-General rules:
-- Strongly-type your variables. This improves readability.
-```csharp
-var xyz = Object.GetSomething(); //Do not do this. What type is xyz (without looking at Method returns etc.)?
-Manga[] zyx = Object.GetAnotherThing(); //I can now easily see that zyx is an Array.
-```
-Tranga is using a code-first Entity-Framework Core approach. If you modify the db-table structure you need to create a migration.
+### General rules
 
-**A broad overview of where is what:**<br />
+- Strong-type your variables. This improves readability.
+    - **DO**
+      ```csharp
+      Manga[] zyx = Object.GetAnotherThing(); //I can see that zyx is an Array, without digging through more code
+      ```
+    - **DO _NOT_**
+      ```csharp
+      var xyz = Object.GetSomething(); //What is xyz? An Array? A string? An object?
+      ```
+
+- Indent your `if` and `for` blocks
+    - **DO**
+      ```csharp
+      if(true)
+        return false;
+      ```
+    - **DO _NOT_**
+      ```csharp
+      if(true) return false;
+      ```
+      <details>
+        <summary>Because try reading this</summary>
+      
+        ```csharp
+        if (s.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || s.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return s;
+        ```
+
+      </details>
+
+- When using shorthand, _this_ improves readability for longer lines (at some point just use if-else...):
+```csharp
+bool retVal = xyz is true
+    ? false
+    : true;
+```
+```csharp
+bool retVal = xyz?
+    ?? abc?
+    ?? true;
+```
+
+### Database and EF Core
+
+Tranga is using a **code-first** EF-Core approach. If you modify the database(context) structure you need to create a migration.
+
+### A broad overview of where is what:
 
 ![Image](DB-Layout.png)
 
@@ -167,7 +206,8 @@ Tranga is using a code-first Entity-Framework Core approach. If you modify the d
 - `MangaDownloadClients/**` Networking-Clients for Scraping
 - `Controllers/**` ASP.NET Controllers (Endpoints)
 
-If you want to add a new Website-Connector: <br />
+##### If you want to add a new Website-Connector:
+
 1. Copy one of the existing connectors, or start from scratch and inherit from `API.Schema.MangaConnectors.MangaConnector`.
 2. Add the new Connector as Object-Instance in `Tranga.cs` to the MangaConnector-Array `connectors`.
 
