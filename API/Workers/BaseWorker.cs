@@ -73,24 +73,23 @@ public abstract class BaseWorker : Identifiable
     {
         // Start the worker
         Log.Debug($"Checking {this}");
-        this._cancellationTokenSource = new(TimeSpan.FromMinutes(10));
-        this.State = WorkerExecutionState.Waiting;
+        _cancellationTokenSource = new(TimeSpan.FromMinutes(10));
+        State = WorkerExecutionState.Waiting;
         
         // Wait for dependencies, start them if necessary
         BaseWorker[] missingDependenciesThatNeedStarting = MissingDependencies.Where(d => d.State < WorkerExecutionState.Waiting).ToArray();
         if(missingDependenciesThatNeedStarting.Any())
-            return new Task<BaseWorker[]>(() => missingDependenciesThatNeedStarting);
+            return new (() => missingDependenciesThatNeedStarting);
 
         if (MissingDependencies.Any())
-            return new Task<BaseWorker[]>(WaitForDependencies);
+            return new (WaitForDependencies);
         
         // Run the actual work
         Log.Info($"Running {this}");
         DateTime startTime = DateTime.UtcNow;
-        Task<BaseWorker[]> task = new Task<BaseWorker[]>(() => DoWorkInternal().Result);
+        State = WorkerExecutionState.Running;
+        Task<BaseWorker[]> task = DoWorkInternal();
         task.GetAwaiter().OnCompleted(Finish(startTime, callback));
-        this.State = WorkerExecutionState.Running;
-        task.Start();
         return task;
     }
 

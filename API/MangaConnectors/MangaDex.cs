@@ -324,7 +324,7 @@ public class MangaDex : MangaConnector
     {
         string? id = jToken.Value<string>("id");
         JToken? attributes = jToken["attributes"];
-        string? chapterStr = attributes?.Value<string>("chapter");
+        string? chapterStr = attributes?.Value<string>("chapter") ?? "0";
         string? volumeStr = attributes?.Value<string>("volume");
         int? volumeNumber = null;
         string? title = attributes?.Value<string>("title");
