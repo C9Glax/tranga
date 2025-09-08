@@ -1,6 +1,6 @@
 name: New Connector Request
 description: Request a new site to be added
-title: "[New Connector]: "
+title: "[New Connector]: <title>"
 labels: ["New Connector"]
 body:
   - type: input
@@ -9,15 +9,12 @@ body:
       placeholder: https://
     validations:
       required: true
-  - type: checkboxes
-    attributes:
-      label: Is the Website free to access?
-      description: We can't support pay-to-use sites, or captcha-proxied sites as Cloudflare.
-      options:
-        - label: The Website is freely accessible.
-          required: true
   - type: textarea
     attributes:
       label: Anything else?
     validations:
       required: false
+  - type: markdown
+    attributes:
+      value: |
+        If you want implement this read [Contributing](https://github.com/C9Glax/tranga#contributing). Thank you!
