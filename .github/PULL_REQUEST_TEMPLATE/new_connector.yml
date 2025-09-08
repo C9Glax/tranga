@@ -1,0 +1,31 @@
+name: New Connector Implementation
+description: New Connector
+title: "<title>"
+labels: ["New Connector"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing. Please make sure you have read [Contributing](https://github.com/C9Glax/tranga#contributing).
+        Just for the sake of completion:
+  - type: checkboxes
+    id: Contributing
+    attributes:
+      label: Contributing
+      description: I have checked
+      options:
+        - label: Formatting (if not done yet, mark this PR as draft)
+          required: false
+        - label: I have read https://github.com/C9Glax/tranga#if-you-want-to-add-a-new-website-connector
+          required: true
+  - type: input
+    attributes:
+      label: Existing Issue
+      placeholder: #<Issue number>
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Anything else?
+    validations:
+      required: false

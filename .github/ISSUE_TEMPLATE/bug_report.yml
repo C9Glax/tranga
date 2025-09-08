@@ -1,13 +1,13 @@
 name: Bug Report
 description: File a bug report
-title: "[It broke]: "
+title: "[Tranga broke]: <title>"
 labels: ["bug"]
 body:
 - type: textarea
   attributes:
     label: What is broken?
     description: What happened? How did we get here?
-    placeholder: The place where you tell me what you expected to happen, and what happened instead.
+    placeholder: Tell me what you expected to happen, and what happened instead.
   validations:
     required: true
 - type: textarea
