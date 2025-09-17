@@ -10,6 +10,7 @@ using log4net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,17 +55,24 @@ builder.Services.AddSwaggerGen(opt =>
 });
 builder.Services.ConfigureOptions<NamedSwaggerGenOptions>();
 
-string connectionString = $"Host={Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "tranga-pg:5432"}; " +
-                          $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "postgres"}; " +
-                          $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres"}; " +
-                          $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres"}";
+NpgsqlConnectionStringBuilder connectionStringBuilder = new()
+{
+    Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "tranga-pg:5432",
+    Database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "postgres",
+    Username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
+    Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres",
+    ConnectionLifetime = 300,
+    Timeout = 5,
+    CommandTimeout = 60,
+    ApplicationName = "Tranga"
+};
 
 builder.Services.AddDbContext<MangaContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionStringBuilder.ConnectionString));
 builder.Services.AddDbContext<NotificationsContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionStringBuilder.ConnectionString));
 builder.Services.AddDbContext<LibraryContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionStringBuilder.ConnectionString));
 
 builder.Services.AddControllers(options =>
 {
