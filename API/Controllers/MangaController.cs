@@ -209,10 +209,10 @@ public class MangaController(MangaContext context) : Controller
 
         string cache = CoverSize switch
         {
-            MangaController.CoverSize.Small => TrangaSettings.coverImageCacheSmall,
-            MangaController.CoverSize.Medium => TrangaSettings.coverImageCacheMedium,
-            MangaController.CoverSize.Large => TrangaSettings.coverImageCacheLarge,
-            _ => TrangaSettings.coverImageCacheOriginal
+            MangaController.CoverSize.Small => TrangaSettings.CoverImageCacheSmall,
+            MangaController.CoverSize.Medium => TrangaSettings.CoverImageCacheMedium,
+            MangaController.CoverSize.Large => TrangaSettings.CoverImageCacheLarge,
+            _ => TrangaSettings.CoverImageCacheOriginal
         };
 
         if (await manga.GetCoverImage(cache, HttpContext.RequestAborted) is not { } data)

@@ -18,7 +18,7 @@ public class CleanupMangaconnectorIdsWithoutConnector : BaseWorkerWithContext<Ma
                 .Where(mcId => connectorNames.Any(name => name == mcId.MangaConnectorName)).ToListAsync() is
             { Count: > 0 } list)
         {
-            string filePath = Path.Join(TrangaSettings.workingDirectory, $"deletedManga-{DateTime.UtcNow.Ticks}.txt");
+            string filePath = Path.Join(TrangaSettings.WorkingDirectory, $"deletedManga-{DateTime.UtcNow.Ticks}.txt");
             Log.Debug($"Writing deleted manga to {filePath}.");
             await File.WriteAllLinesAsync(filePath, list.Select(id => string.Join('-', id.MangaConnectorName, id.IdOnConnectorSite, id.Obj.Name, id.WebsiteUrl)), CancellationToken);
         }

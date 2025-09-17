@@ -7,22 +7,19 @@ namespace API;
 public struct TrangaSettings()
 {
 
-    [JsonIgnore]
-    public static string workingDirectory => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
-    [JsonIgnore]
-    public static string settingsFilePath => Path.Join(workingDirectory, "settings.json");
-    [JsonIgnore] public static string coverImageCache => Path.Join(workingDirectory, "imageCache");
-    [JsonIgnore] public static string coverImageCacheOriginal => Path.Join(coverImageCache, "original");
-    [JsonIgnore] public static string coverImageCacheLarge => Path.Join(coverImageCache, "large");
-    [JsonIgnore] public static string coverImageCacheMedium => Path.Join(coverImageCache, "medium");
-    [JsonIgnore] public static string coverImageCacheSmall => Path.Join(coverImageCache, "small");
-    public string DownloadLocation => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Manga");
-    [JsonIgnore]
-    internal static readonly string DefaultUserAgent = $"Tranga/2.0 ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")})";
+    [JsonIgnore] public static string WorkingDirectory => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+    [JsonIgnore] public static string SettingsFilePath => Path.Join(WorkingDirectory, "settings.json");
+    [JsonIgnore] public static string CoverImageCache => Path.Join(WorkingDirectory, "imageCache");
+    [JsonIgnore] public static string CoverImageCacheOriginal => Path.Join(CoverImageCache, "original");
+    [JsonIgnore] public static string CoverImageCacheLarge => Path.Join(CoverImageCache, "large");
+    [JsonIgnore] public static string CoverImageCacheMedium => Path.Join(CoverImageCache, "medium");
+    [JsonIgnore] public static string CoverImageCacheSmall => Path.Join(CoverImageCache, "small");
+    public string DefaultDownloadLocation => Environment.GetEnvironmentVariable("DOWNLOAD_LOCATION") ?? (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/Manga" : Path.Join(Directory.GetCurrentDirectory(), "Manga"));
+    [JsonIgnore] internal static readonly string DefaultUserAgent = $"Tranga/2.0 ({Enum.GetName(Environment.OSVersion.Platform)}; {(Environment.Is64BitOperatingSystem ? "x64" : "")})";
     public string UserAgent { get; set; } = DefaultUserAgent;
     public int ImageCompression{ get; set; } = 40;
     public bool BlackWhiteImages { get; set; } = false;
-    public string FlareSolverrUrl { get; set; } = string.Empty;
+    public string FlareSolverrUrl { get; set; } = Environment.GetEnvironmentVariable("FLARESOLVERR_URL") ?? string.Empty;
     /// <summary>
     /// Placeholders:
     /// %M Obj Name
@@ -53,20 +50,20 @@ public struct TrangaSettings()
 
     public string DownloadLanguage { get; set; } = "en";
     
-    public int MaxConcurrentDownloads { get; set; } = 5;
+    public int MaxConcurrentDownloads { get; set; } = (int)Math.Max(Environment.ProcessorCount * 0.75, 1); // Minimum of 1 Tasks, maximum of 0.75 per Core
 
-    public int MaxConcurrentWorkers { get; set; } = 10;
+    public int MaxConcurrentWorkers { get; set; } = Math.Max(Environment.ProcessorCount, 4); // Minimum of 4 Tasks, maximum of 1 per Core
 
     public static TrangaSettings Load()
     {
-        if (!File.Exists(settingsFilePath))
+        if (!File.Exists(SettingsFilePath))
             new TrangaSettings().Save();
-        return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(settingsFilePath));
+        return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(SettingsFilePath));
     }
 
     public void Save()
     {
-        File.WriteAllText(settingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented));
+        File.WriteAllText(SettingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented));
     }
 
     public void SetUserAgent(string value)
@@ -120,6 +117,12 @@ public struct TrangaSettings()
     public void SetMaxConcurrentDownloads(int value)
     {
         this.MaxConcurrentDownloads = value;
+        Save();
+    }
+
+    public void SetMaxConcurrentWorkers(int value)
+    {
+        this.MaxConcurrentWorkers = value;
         Save();
     }
 }

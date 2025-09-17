@@ -207,7 +207,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             return;
         }
         
-        string fullCoverPath = Path.Join(TrangaSettings.coverImageCacheOriginal, coverFileNameInCache);
+        string fullCoverPath = Path.Join(TrangaSettings.CoverImageCacheOriginal, coverFileNameInCache);
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(coverFileNameInCache).Split('.')[^1]}" );
         File.Copy(fullCoverPath, newFilePath, true);
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

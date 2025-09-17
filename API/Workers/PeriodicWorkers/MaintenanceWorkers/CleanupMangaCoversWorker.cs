@@ -12,10 +12,10 @@ public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<Bas
     {
         Log.Info("Removing stale files...");
         string[] usedFiles = DbContext.Mangas.Select(m => m.CoverFileNameInCache).Where(s => s != null).ToArray()!;
-        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheOriginal);
-        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheLarge);
-        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheMedium);
-        CleanupImageCache(usedFiles, TrangaSettings.coverImageCacheSmall);
+        CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheOriginal);
+        CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheLarge);
+        CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheMedium);
+        CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheSmall);
         return new Task<BaseWorker[]>(() => []);
     }
 

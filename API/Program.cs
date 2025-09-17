@@ -109,7 +109,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     context.Database.Migrate();
     
     if (!context.FileLibraries.Any())
-        context.FileLibraries.Add(new FileLibrary(Tranga.Settings.DownloadLocation, "Default FileLibrary"));
+        context.FileLibraries.Add(new (Tranga.Settings.DefaultDownloadLocation, "Default FileLibrary"));
     
     await context.Sync(CancellationToken.None);
 }
@@ -135,7 +135,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     await context.Sync(CancellationToken.None);
 }
 
-Tranga.SetServiceProvider(app.Services);
+Tranga.ServiceProvider = app.Services;
 Tranga.StartLogger(new FileInfo("Log4Net.config.xml"));
 Tranga.AddDefaultWorkers();
 

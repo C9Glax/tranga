@@ -16,7 +16,7 @@ namespace API;
 
 public static class Tranga
 {
-    private static IServiceProvider? _serviceProvider;
+    internal static IServiceProvider? ServiceProvider { get; set; }
     
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
@@ -57,11 +57,6 @@ public static class Tranga
         AddWorker(CleanupMangaconnectorIdsWithoutConnector);
     }
 
-    internal static void SetServiceProvider(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     internal static bool TryGetMangaConnector(string name, [NotNullWhen(true)]out MangaConnector? mangaConnector)
     {
         mangaConnector =
@@ -82,12 +77,12 @@ public static class Tranga
     private static void AddPeriodicWorker(BaseWorker worker, IPeriodic periodic)
     {
         Log.Debug($"Adding Periodic {worker}");
-        Task periodicTask = PeriodicTask(worker, periodic);
+        Task periodicTask = RefreshedPeriodicTask(worker, periodic);
         PeriodicWorkers.TryAdd((worker as IPeriodic)!, periodicTask);
         periodicTask.Start();
     }
 
-    private static Task PeriodicTask(BaseWorker worker, IPeriodic periodic) => new (() =>
+    private static Task RefreshedPeriodicTask(BaseWorker worker, IPeriodic periodic) => new (() =>
     {
         Log.Debug($"Waiting {periodic.Interval} for next run of {worker}");
         Thread.Sleep(periodic.Interval);
@@ -97,9 +92,12 @@ public static class Tranga
     private static Action RefreshTask(BaseWorker worker, IPeriodic periodic) => () =>
     {
         if (worker.State < WorkerExecutionState.Created) //Failed
+        {
+            Log.Debug($"Task {worker} failed. Not refreshing.");
             return;
+        } 
         Log.Debug($"Refreshing {worker}");
-        Task periodicTask = PeriodicTask(worker, periodic);
+        Task periodicTask = RefreshedPeriodicTask(worker, periodic);
         PeriodicWorkers.AddOrUpdate((worker as IPeriodic)!, periodicTask, (_, _) => periodicTask);
         periodicTask.Start();
     };
@@ -113,15 +111,15 @@ public static class Tranga
     private static readonly ConcurrentDictionary<BaseWorker, Task<BaseWorker[]>> RunningWorkers = new();
     public static BaseWorker[] GetRunningWorkers() => RunningWorkers.Keys.ToArray();
     
-    internal static void StartWorker(BaseWorker worker, Action? callback = null)
+    internal static void StartWorker(BaseWorker worker, Action? finishedCallback = null)
     {
         Log.Debug($"Starting {worker}");
-        if (_serviceProvider is null)
+        if (ServiceProvider is null)
         {
             Log.Fatal("ServiceProvider is null");
             return;
         }
-        Action afterWorkCallback = AfterWork(worker, callback);
+        Action afterWorkCallback = DefaultAfterWork(worker, finishedCallback);
 
         while (RunningWorkers.Count > Settings.MaxConcurrentWorkers)
         {
@@ -131,23 +129,23 @@ public static class Tranga
         
         if (worker is BaseWorkerWithContext<MangaContext> mangaContextWorker)
         {
-            mangaContextWorker.SetScope(_serviceProvider.CreateScope());
+            mangaContextWorker.SetScope(ServiceProvider.CreateScope());
             RunningWorkers.TryAdd(mangaContextWorker, mangaContextWorker.DoWork(afterWorkCallback));
         }else if (worker is BaseWorkerWithContext<NotificationsContext> notificationContextWorker)
         {
-            notificationContextWorker.SetScope(_serviceProvider.CreateScope());
+            notificationContextWorker.SetScope(ServiceProvider.CreateScope());
             RunningWorkers.TryAdd(notificationContextWorker, notificationContextWorker.DoWork(afterWorkCallback));
         }else if (worker is BaseWorkerWithContext<LibraryContext> libraryContextWorker)
         {
-            libraryContextWorker.SetScope(_serviceProvider.CreateScope());
+            libraryContextWorker.SetScope(ServiceProvider.CreateScope());
             RunningWorkers.TryAdd(libraryContextWorker, libraryContextWorker.DoWork(afterWorkCallback));
         }else
             RunningWorkers.TryAdd(worker, worker.DoWork(afterWorkCallback));
     }
 
-    private static Action AfterWork(BaseWorker worker, Action? callback = null) => () =>
+    private static Action DefaultAfterWork(BaseWorker worker, Action? callback = null) => () =>
     {
-        Log.Debug($"AfterWork {worker}");
+        Log.Debug($"DefaultAfterWork {worker}");
         if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
         {
             Log.Debug($"Waiting for Children to exit {worker}");
