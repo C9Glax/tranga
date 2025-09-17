@@ -1,4 +1,5 @@
 using API.Schema.MangaContext;
+using API.Workers.MangaDownloadWorkers;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers.PeriodicWorkers;

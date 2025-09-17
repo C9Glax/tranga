@@ -36,7 +36,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
         this.VolumeNumber = volumeNumber;
         this.ChapterNumber = chapterNumber;
         this.Title = title;
-        this.FileName = GetArchiveFilePath();
+        this.FileName = GetArchiveFilePath().CleanNameForWindows();
         this.Downloaded = false;
         this.MangaConnectorIds = [];
     }

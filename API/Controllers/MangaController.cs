@@ -1,6 +1,7 @@
 ﻿using API.Controllers.DTOs;
 using API.Schema.MangaContext;
 using API.Workers;
+using API.Workers.MangaDownloadWorkers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

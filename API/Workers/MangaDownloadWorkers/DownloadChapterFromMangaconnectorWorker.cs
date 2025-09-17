@@ -11,7 +11,7 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Binarization;
 using static System.IO.UnixFileMode;
 
-namespace API.Workers;
+namespace API.Workers.MangaDownloadWorkers;
 
 /// <summary>
 /// Downloads single chapter for Manga from Mangaconnector

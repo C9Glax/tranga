@@ -86,6 +86,6 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
         }
 
 
-        return filename;
+        return filename.CleanNameForWindows();
     }
 }

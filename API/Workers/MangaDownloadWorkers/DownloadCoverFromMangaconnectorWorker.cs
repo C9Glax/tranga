@@ -2,7 +2,7 @@ using API.MangaConnectors;
 using API.Schema.MangaContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers;
+namespace API.Workers.MangaDownloadWorkers;
 
 /// <summary>
 /// Downloads the cover for Manga from Mangaconnector

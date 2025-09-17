@@ -6,11 +6,11 @@ using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
 using API.Schema.NotificationsContext;
 using API.Workers;
+using API.Workers.MangaDownloadWorkers;
 using API.Workers.PeriodicWorkers;
 using API.Workers.PeriodicWorkers.MaintenanceWorkers;
 using log4net;
 using log4net.Config;
-using Microsoft.EntityFrameworkCore;
 
 namespace API;
 

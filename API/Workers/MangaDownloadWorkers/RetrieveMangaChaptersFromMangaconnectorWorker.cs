@@ -2,7 +2,7 @@ using API.MangaConnectors;
 using API.Schema.MangaContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers;
+namespace API.Workers.MangaDownloadWorkers;
 
 /// <summary>
 /// Retrieves the metadata of available chapters on the Mangaconnector
