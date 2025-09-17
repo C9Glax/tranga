@@ -89,11 +89,15 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     public async Task<Results<Created<string>, InternalServerError<string>>> CreateGotifyConnector ([FromBody]CreateGotifyConnectorRecord createGotifyConnectorData)
     {
         //TODO Validate Data
-        CreateNotificationConnectorRecord gotifyConnector = new (createGotifyConnectorData.Name,
-            createGotifyConnectorData.Url, 
-            "POST", 
-            $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {createGotifyConnectorData.Priority}}}",
-            new () { { "X-Gotify-Key", createGotifyConnectorData.AppToken } });
+        CreateNotificationConnectorRecord gotifyConnector = new ()
+        {
+            Name = createGotifyConnectorData.Name,
+            Url = createGotifyConnectorData.Url,
+            HttpMethod = "POST",
+            Body =
+                $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {createGotifyConnectorData.Priority}}}",
+            Headers = new() { { "X-Gotify-Key", createGotifyConnectorData.AppToken } }
+        };
         return await CreateConnector(gotifyConnector);
     }
     
@@ -112,11 +116,14 @@ public class NotificationConnectorController(NotificationsContext context) : Con
         string authHeader = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{createNtfyConnectorRecord.Username}:{createNtfyConnectorRecord.Password}"));
         string auth = Convert.ToBase64String(Encoding.UTF8.GetBytes(authHeader)).Replace("=","");
         
-        CreateNotificationConnectorRecord ntfyConnector = new (createNtfyConnectorRecord.Name,
-            $"{createNtfyConnectorRecord.Url}?auth={auth}", 
-            "POST", 
-            $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {createNtfyConnectorRecord.Priority} \"Topic\": \"{createNtfyConnectorRecord.Topic}\"}}",
-            new () {{"Authorization", auth}});
+        CreateNotificationConnectorRecord ntfyConnector = new ()
+        {
+            Name = createNtfyConnectorRecord.Name,
+            Url = $"{createNtfyConnectorRecord.Url}?auth={auth}",
+            HttpMethod = "POST",
+            Body = $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {createNtfyConnectorRecord.Priority} \"Topic\": \"{createNtfyConnectorRecord.Topic}\"}}",
+            Headers = new () {{"Authorization", auth}}
+        };
         return await CreateConnector(ntfyConnector);
     }
     
@@ -132,11 +139,14 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     public async Task<Results<Created<string>, InternalServerError<string>>> CreatePushoverConnector ([FromBody]CreatePushoverConnectorRecord createPushoverConnectorRecord)
     {
         //TODO Validate Data
-        CreateNotificationConnectorRecord pushoverConnector = new  (createPushoverConnectorRecord.Name,
-            $"https://api.pushover.net/1/messages.json", 
-            "POST", 
-            $"{{\"token\": \"{createPushoverConnectorRecord.AppToken}\", \"user\": \"{createPushoverConnectorRecord.Username}\", \"message:\":\"%text\", \"%title\" }}",
-            new ());
+        CreateNotificationConnectorRecord pushoverConnector = new ()
+        {
+            Name = createPushoverConnectorRecord.Name,
+            Url = "https://api.pushover.net/1/messages.json",
+            HttpMethod = "POST",
+            Body = $"{{\"token\": \"{createPushoverConnectorRecord.AppToken}\", \"user\": \"{createPushoverConnectorRecord.Username}\", \"message:\":\"%text\", \"%title\" }}",
+            Headers = new ()
+        };
         return await CreateConnector(pushoverConnector);
     }
     

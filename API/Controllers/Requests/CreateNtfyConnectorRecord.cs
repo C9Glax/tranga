@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.Requests;
 
-public record CreateNtfyConnectorRecord(string Name, string Url, string Username, string Password, string Topic, int Priority)
+public record CreateNtfyConnectorRecord
 {
     /// <summary>
     /// The Name of the Notification Connector
     /// </summary>
     [Required]
     [Description("The Name of the Notification Connector")]
-    public string Name { get; init; } = Name;
+    public required string Name { get; init; }
     
     /// <summary>
     /// The Url of the Instance
@@ -19,33 +19,33 @@ public record CreateNtfyConnectorRecord(string Name, string Url, string Username
     [Required]
     [Url]
     [Description("The Url of the Instance")]
-    public string Url { get; internal set; } = Url;
+    public required string Url { get; init; }
     
     /// <summary>
     /// The Priority of Notifications
     /// </summary>
     [Required]
     [Description("The Priority of Notifications")]
-    public int Priority { get; init; } = Priority;
+    public required int Priority { get; init; }
     
     /// <summary>
     /// The Username used for authentication
     /// </summary>
     [Required]
     [Description("The Username used for authentication")]
-    public string Username { get; init; } = Username;
+    public required string Username { get; init; }
     
     /// <summary>
     /// The Password used for authentication
     /// </summary>
     [Required]
     [Description("The Password used for authentication")]
-    public string Password { get; init; } = Password;
+    public required string Password { get; init; }
     
     /// <summary>
     /// The Topic of Notifications
     /// </summary>
     [Required]
     [Description("The Topic of Notifications")]
-    public string Topic { get; init; } = Topic;
+    public required string Topic { get; init; }
 }

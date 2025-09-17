@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.Requests;
 
-public record CreateGotifyConnectorRecord(string Name, string Url, string AppToken, int Priority)
+public record CreateGotifyConnectorRecord
 {
     /// <summary>
     /// The Name of the Notification Connector
     /// </summary>
     [Required]
     [Description("The Name of the Notification Connector")]
-    public string Name { get; init; } = Name;
+    public required string Name { get; init; }
     
     /// <summary>
     /// The Url of the Instance
@@ -19,19 +19,19 @@ public record CreateGotifyConnectorRecord(string Name, string Url, string AppTok
     [Required]
     [Url]
     [Description("The Url of the Instance")]
-    public string Url { get; internal set; } = Url;
+    public required string Url { get; init; }
     
     /// <summary>
     /// The Apptoken used for authentication
     /// </summary>
     [Required]
     [Description("The Apptoken used for authentication")]
-    public string AppToken { get; init; } = AppToken;
+    public required string AppToken { get; init; }
     
     /// <summary>
     /// The Priority of Notifications
     /// </summary>
     [Required]
     [Description("The Priority of Notifications")]
-    public int Priority { get; init; } = Priority;
+    public required int Priority { get; init; }
 }

@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.Requests;
 
-public record CreateNotificationConnectorRecord(string Name, string Url, string HttpMethod, string Body, Dictionary<string, string> Headers)
+public record CreateNotificationConnectorRecord
 {
     /// <summary>
     /// The Name of the Notification Connector
     /// </summary>
     [Required]
     [Description("The Name of the Notification Connector")]
-    public string Name { get; init; } = Name;
+    public required string Name { get; init; }
     
     /// <summary>
     /// The Url of the Instance
@@ -19,14 +19,14 @@ public record CreateNotificationConnectorRecord(string Name, string Url, string 
     [Required]
     [Url]
     [Description("The Url of the Instance")]
-    public string Url { get; internal set; } = Url;
+    public required string Url { get; init; }
     
     /// <summary>
     /// The HTTP Request Method to use for notifications
     /// </summary>
     [Required]
     [Description("The HTTP Request Method to use for notifications")]
-    public string HttpMethod { get; internal set; } = HttpMethod;
+    public required string HttpMethod { get; init; }
 
     /// <summary>
     /// The Request Body to use to send notifications
@@ -34,7 +34,7 @@ public record CreateNotificationConnectorRecord(string Name, string Url, string 
     /// <remarks>Formatting placeholders: "%title" and "%text" will be replaced when notifications are sent</remarks>
     [Required]
     [Description("The Request Body to use to send notifications")]
-    public string Body { get; internal set; } = Body;
+    public required string Body { get; init; }
 
     /// <summary>
     /// The Request Headers to use to send notifications
@@ -42,5 +42,5 @@ public record CreateNotificationConnectorRecord(string Name, string Url, string 
     /// <remarks>Formatting placeholders: "%title" and "%text" will be replaced when notifications are sent</remarks>
     [Required]
     [Description("The Request Headers to use to send notifications")]
-    public Dictionary<string, string> Headers { get; internal set; } = Headers;
+    public required Dictionary<string, string> Headers { get; init; }
 }
