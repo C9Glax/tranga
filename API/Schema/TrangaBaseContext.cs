@@ -24,14 +24,16 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
 
     internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token)
     {
+        Log.Debug($"Syncing {GetType().Name}...");
         try
         {
-            await this.SaveChangesAsync(token);
+            int changedRows = await this.SaveChangesAsync(token);
+            Log.Debug($"Synced {changedRows} rows...");
             return (true, null);
         }
         catch (Exception e)
         {
-            Log.Error(null, e);
+            Log.Error("Sync failed:", e);
             return (false, e.Message);
         }
     }

@@ -24,6 +24,8 @@ public class CleanupMangaconnectorIdsWithoutConnector : BaseWorkerWithContext<Ma
         }
         int deletedMangaIds = await DbContext.MangaConnectorToManga.Where(mcId => connectorNames.All(name => name != mcId.MangaConnectorName)).ExecuteDeleteAsync(CancellationToken);
         Log.Info($"Deleted {deletedMangaIds} mangaIds.");
+        
+        await DbContext.SaveChangesAsync(CancellationToken);
         return [];
     }
 }
