@@ -35,7 +35,6 @@
 Tranga can download Chapters and Metadata from "Scanlation" sites such as 
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
-- [Comick.io](https://comick.io/) (Multilingual)
 - [MangaWorld](https://www.mangaworld.cx) (it)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
