@@ -16,13 +16,14 @@ namespace API;
 
 public static class Tranga
 {
-    private static IServiceProvider? ServiceProvider;
+    private static IServiceProvider? _serviceProvider;
     
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
     internal static readonly MangaConnector[] MangaConnectors = [new Global(), new MangaDex(), new Mangaworld()];
     internal static TrangaSettings Settings = TrangaSettings.Load();
     
+    // ReSharper disable MemberCanBePrivate.Global
     internal static readonly UpdateMetadataWorker UpdateMetadataWorker = new ();
     internal static readonly SendNotificationsWorker SendNotificationsWorker = new();
     internal static readonly UpdateChaptersDownloadedWorker UpdateChaptersDownloadedWorker = new();
@@ -32,6 +33,8 @@ public static class Tranga
     internal static readonly RemoveOldNotificationsWorker RemoveOldNotificationsWorker = new();
     internal static readonly UpdateCoversWorker UpdateCoversWorker = new();
     internal static readonly UpdateLibraryConnectorsWorker UpdateLibraryConnectorsWorker = new();
+    internal static readonly CleanupMangaconnectorIdsWithoutConnector CleanupMangaconnectorIdsWithoutConnector = new();
+    // ReSharper restore MemberCanBePrivate.Global
 
     internal static void StartLogger(FileInfo loggerConfigFile)
     {
@@ -51,11 +54,12 @@ public static class Tranga
         AddWorker(RemoveOldNotificationsWorker);
         AddWorker(UpdateCoversWorker);
         AddWorker(UpdateLibraryConnectorsWorker);
+        AddWorker(CleanupMangaconnectorIdsWithoutConnector);
     }
 
     internal static void SetServiceProvider(IServiceProvider serviceProvider)
     {
-        ServiceProvider = serviceProvider;
+        _serviceProvider = serviceProvider;
     }
 
     internal static bool TryGetMangaConnector(string name, [NotNullWhen(true)]out MangaConnector? mangaConnector)
@@ -112,7 +116,7 @@ public static class Tranga
     internal static void StartWorker(BaseWorker worker, Action? callback = null)
     {
         Log.Debug($"Starting {worker}");
-        if (ServiceProvider is null)
+        if (_serviceProvider is null)
         {
             Log.Fatal("ServiceProvider is null");
             return;
@@ -127,15 +131,15 @@ public static class Tranga
         
         if (worker is BaseWorkerWithContext<MangaContext> mangaContextWorker)
         {
-            mangaContextWorker.SetScope(ServiceProvider.CreateScope());
+            mangaContextWorker.SetScope(_serviceProvider.CreateScope());
             RunningWorkers.TryAdd(mangaContextWorker, mangaContextWorker.DoWork(afterWorkCallback));
         }else if (worker is BaseWorkerWithContext<NotificationsContext> notificationContextWorker)
         {
-            notificationContextWorker.SetScope(ServiceProvider.CreateScope());
+            notificationContextWorker.SetScope(_serviceProvider.CreateScope());
             RunningWorkers.TryAdd(notificationContextWorker, notificationContextWorker.DoWork(afterWorkCallback));
         }else if (worker is BaseWorkerWithContext<LibraryContext> libraryContextWorker)
         {
-            libraryContextWorker.SetScope(ServiceProvider.CreateScope());
+            libraryContextWorker.SetScope(_serviceProvider.CreateScope());
             RunningWorkers.TryAdd(libraryContextWorker, libraryContextWorker.DoWork(afterWorkCallback));
         }else
             RunningWorkers.TryAdd(worker, worker.DoWork(afterWorkCallback));
