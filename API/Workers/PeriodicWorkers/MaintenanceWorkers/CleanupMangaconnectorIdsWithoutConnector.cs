@@ -10,7 +10,7 @@ public class CleanupMangaconnectorIdsWithoutConnector : BaseWorkerWithContext<Ma
     {
         Log.Info("Cleaning up old connector-data");
         string[] connectorNames = Tranga.MangaConnectors.Select(c => c.Name).ToArray();
-        int deletedChapterIds = await DbContext.MangaConnectorToChapter.Where(chId => connectorNames.Any(n => n == chId.MangaConnectorName)).ExecuteDeleteAsync(CancellationToken);
+        int deletedChapterIds = await DbContext.MangaConnectorToChapter.Where(chId => connectorNames.All(n => n != chId.MangaConnectorName)).ExecuteDeleteAsync(CancellationToken);
         Log.Info($"Deleted {deletedChapterIds} chapterIds.");
         
         // Manga without Connector get printed to file, to not lose data...
@@ -30,7 +30,7 @@ public class CleanupMangaconnectorIdsWithoutConnector : BaseWorkerWithContext<Ma
                 return sb.ToString();
             }), CancellationToken);
         }
-        int deletedMangaIds = await DbContext.MangaConnectorToManga.Where(mcId => connectorNames.Any(name => name == mcId.MangaConnectorName)).ExecuteDeleteAsync(CancellationToken);
+        int deletedMangaIds = await DbContext.MangaConnectorToManga.Where(mcId => connectorNames.All(name => name != mcId.MangaConnectorName)).ExecuteDeleteAsync(CancellationToken);
         Log.Info($"Deleted {deletedMangaIds} mangaIds.");
         return [];
     }
