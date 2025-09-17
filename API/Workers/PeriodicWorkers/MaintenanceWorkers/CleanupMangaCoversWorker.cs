@@ -1,6 +1,6 @@
 using API.Schema.MangaContext;
 
-namespace API.Workers.MaintenanceWorkers;
+namespace API.Workers.PeriodicWorkers.MaintenanceWorkers;
 
 public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic

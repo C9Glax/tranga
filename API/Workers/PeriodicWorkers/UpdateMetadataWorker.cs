@@ -2,7 +2,7 @@ using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers;
+namespace API.Workers.PeriodicWorkers;
 
 /// <summary>
 /// Updates Metadata for all Manga

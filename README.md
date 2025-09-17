@@ -196,6 +196,15 @@ bool retVal = xyz?
 
 Tranga is using a **code-first** EF-Core approach. If you modify the database(context) structure you need to create a migration.
 
+###### Configuration Environment-Variables:
+
+| variable          | default-value    |
+|-------------------|------------------|
+| POSTGRES_HOST     | `tranga-pg:5432` |
+| POSTGRES_DB       | `postgres`       |
+| POSTGRES_USER     | `postgres`       |
+| POSTGRES_PASSWORD | `postgres`       |
+
 ### A broad overview of where is what:
 
 ![Image](DB-Layout.png)

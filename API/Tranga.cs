@@ -6,7 +6,8 @@ using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
 using API.Schema.NotificationsContext;
 using API.Workers;
-using API.Workers.MaintenanceWorkers;
+using API.Workers.PeriodicWorkers;
+using API.Workers.PeriodicWorkers.MaintenanceWorkers;
 using log4net;
 using log4net.Config;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ public static class Tranga
     internal static readonly StartNewChapterDownloadsWorker StartNewChapterDownloadsWorker = new();
     internal static readonly RemoveOldNotificationsWorker RemoveOldNotificationsWorker = new();
     internal static readonly UpdateCoversWorker UpdateCoversWorker = new();
+    internal static readonly UpdateLibraryConnectorsWorker UpdateLibraryConnectorsWorker = new();
 
     internal static void StartLogger(FileInfo loggerConfigFile)
     {
@@ -48,6 +50,7 @@ public static class Tranga
         AddWorker(StartNewChapterDownloadsWorker);
         AddWorker(RemoveOldNotificationsWorker);
         AddWorker(UpdateCoversWorker);
+        AddWorker(UpdateLibraryConnectorsWorker);
     }
 
     internal static void SetServiceProvider(IServiceProvider serviceProvider)

@@ -1,15 +1,12 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
-public class Kavita : LibraryConnector
+public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.Kavita, baseUrl, auth)
 {
-
-    public Kavita(string baseUrl, string auth) : base(LibraryType.Kavita, baseUrl, auth)
-    {
-    }
-    
     public Kavita(string baseUrl, string username, string password) : 
         this(baseUrl, GetToken(baseUrl, username, password))
     {
@@ -51,16 +48,23 @@ public class Kavita : LibraryConnector
         return "";
     }
 
-    protected override void UpdateLibraryInternal()
+    public override async Task UpdateLibrary(CancellationToken ct)
     {
-        foreach (KavitaLibrary lib in GetLibraries())
-            NetClient.MakePost($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.id}", "Bearer", Auth);
+        try
+        {
+            foreach (KavitaLibrary lib in await GetLibraries(ct))
+                await NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.Id}", "Bearer", Auth, HttpMethod.Post, ct);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e);
+        }
     }
 
-    internal override bool Test()
+    internal override async Task<bool> Test(CancellationToken ct)
     {
-        foreach (KavitaLibrary lib in GetLibraries())
-            if (NetClient.MakePost($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.id}", "Bearer", Auth))
+        foreach (KavitaLibrary lib in await GetLibraries(ct))
+            if (await NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.Id}", "Bearer", Auth, HttpMethod.Post, ct) is { CanRead: true })
                 return true;
         return false;
     }
@@ -69,31 +73,17 @@ public class Kavita : LibraryConnector
     /// Fetches all libraries available to the user
     /// </summary>
     /// <returns>Array of KavitaLibrary</returns>
-    private IEnumerable<KavitaLibrary> GetLibraries()
+    private async Task<IEnumerable<KavitaLibrary>> GetLibraries(CancellationToken ct)
     {
-        Stream data = NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/libraries", "Bearer", Auth);
-        if (data == Stream.Null)
+        if(await NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/libraries", "Bearer", Auth, HttpMethod.Get, ct) is not { CanRead: true } data)
         {
             Log.Info("No libraries found");
             return [];
         }
-        JsonArray? result = JsonSerializer.Deserialize<JsonArray>(data);
-        if (result is null)
+        if(await JsonSerializer.DeserializeAsync<KavitaLibrary[]>(data, JsonSerializerOptions.Web, ct) is not { } ret)
         {
-            Log.Info("No libraries found");
+            Log.Debug("Parsing libraries failed.");
             return [];
-        }
-
-        List<KavitaLibrary> ret = new();
-
-        foreach (JsonNode? jsonNode in result)
-        {
-            JsonObject? jObject = (JsonObject?)jsonNode;
-            if(jObject is null)
-                continue;
-            int libraryId = jObject["id"]!.GetValue<int>();
-            string libraryName = jObject["name"]!.GetValue<string>();
-            ret.Add(new KavitaLibrary(libraryId, libraryName));
         }
 
         return ret;
@@ -101,14 +91,10 @@ public class Kavita : LibraryConnector
     
     private struct KavitaLibrary
     {
-        public int id { get; }
+        [JsonProperty("id")]
+        public required int Id { get; init; }
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        public string name { get; }
-
-        public KavitaLibrary(int id, string name)
-        {
-            this.id = id;
-            this.name = name;
-        }
+        [JsonProperty("name")]
+        public required string Name { get; init; }
     }
 }

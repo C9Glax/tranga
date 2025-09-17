@@ -1,7 +1,7 @@
 using API.Schema.NotificationsContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers.MaintenanceWorkers;
+namespace API.Workers.PeriodicWorkers.MaintenanceWorkers;
 
 /// <summary>
 /// Removes sent notifications from database

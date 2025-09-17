@@ -2,7 +2,7 @@ using API.Schema.NotificationsContext;
 using API.Schema.NotificationsContext.NotificationConnectors;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers;
+namespace API.Workers.PeriodicWorkers;
 
 /// <summary>
 /// Send notifications to NotificationConnectors

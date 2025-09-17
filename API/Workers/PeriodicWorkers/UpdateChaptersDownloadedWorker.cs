@@ -1,7 +1,7 @@
 using API.Schema.MangaContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers;
+namespace API.Workers.PeriodicWorkers;
 
 /// <summary>
 /// Updates the database to reflect changes made on disk

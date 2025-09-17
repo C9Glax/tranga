@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using log4net;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
@@ -18,7 +17,7 @@ public abstract class LibraryConnector : Identifiable
         : base()
     {
         this.LibraryType = libraryType;
-        this.BaseUrl = baseUrl;
+        this.BaseUrl = baseUrl.TrimEnd('/', ' ');
         this.Auth = auth;
         this.Log = LogManager.GetLogger(GetType());
     }
@@ -37,8 +36,8 @@ public abstract class LibraryConnector : Identifiable
 
     public override string ToString() => $"{base.ToString()} {this.LibraryType} {this.BaseUrl}";
     
-    protected abstract void UpdateLibraryInternal();
-    internal abstract bool Test();
+    public abstract Task UpdateLibrary(CancellationToken ct);
+    internal abstract Task<bool> Test(CancellationToken ct);
 }
 
 public enum LibraryType : byte

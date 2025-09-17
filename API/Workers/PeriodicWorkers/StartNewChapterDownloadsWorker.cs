@@ -1,7 +1,7 @@
 using API.Schema.MangaContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers;
+namespace API.Workers.PeriodicWorkers;
 
 /// <summary>
 /// Create new Workers for Chapters on Manga marked for Download, that havent been downloaded yet.

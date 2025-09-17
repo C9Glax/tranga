@@ -1,7 +1,7 @@
 using API.Schema.MangaContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Workers;
+namespace API.Workers.PeriodicWorkers;
 
 /// <summary>
 /// Creates Jobs to update available Chapters for all Manga that are marked for Download
