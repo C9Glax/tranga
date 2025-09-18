@@ -25,7 +25,10 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
 
     internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token, Type? trigger = null)
     {
-        Log.Debug($"Syncing {GetType().Name} {trigger?.Name}...");
+        int changesCount = ChangeTracker.Entries().Count(e => e.State is not EntityState.Unchanged and not EntityState.Detached);
+        Log.Debug($"Syncing {changesCount} changes {GetType().Name} {trigger?.Name}...");
+        if (changesCount < 1)
+            return (true, null);
         try
         {
             int changedRows = await this.SaveChangesAsync(token);
