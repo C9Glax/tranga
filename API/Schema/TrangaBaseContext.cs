@@ -1,3 +1,4 @@
+using API.Workers;
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -22,9 +23,9 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
         }, Array.Empty<string>(), LogLevel.Warning, DbContextLoggerOptions.Level | DbContextLoggerOptions.Category | DbContextLoggerOptions.UtcTime);
     }
 
-    internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token)
+    internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token, Type? trigger = null)
     {
-        Log.Debug($"Syncing {GetType().Name}...");
+        Log.Debug($"Syncing {GetType().Name} {trigger?.Name}...");
         try
         {
             int changedRows = await this.SaveChangesAsync(token);

@@ -32,7 +32,7 @@ public class MaintenanceController(MangaContext mangaContext) : Controller
         
         mangaContext.Mangas.RemoveRange(noDownloads);
         
-        if(await mangaContext.Sync(HttpContext.RequestAborted) is { success: false } result)
+        if(await mangaContext.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }

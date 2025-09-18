@@ -37,7 +37,7 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
         }
         Log.Debug("Updated metadata.");
 
-        if(await DbContext.Sync(CancellationToken) is { success: false } e)
+        if(await DbContext.Sync(CancellationToken, GetType()) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
 
         return [];

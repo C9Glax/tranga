@@ -90,7 +90,7 @@ public class MangaConnectorController(MangaContext context) : Controller
         
         connector.Enabled = Enabled;
         
-        if(await context.Sync(HttpContext.RequestAborted) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }

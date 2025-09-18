@@ -37,7 +37,7 @@ public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId,
         }
         DbContext.Entry(mangaConnectorId.Obj).Property(m => m.CoverFileNameInCache).CurrentValue = coverFileName;
 
-        if(await DbContext.Sync(CancellationToken) is { success: false } e)
+        if(await DbContext.Sync(CancellationToken, GetType()) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
         
         return [];
