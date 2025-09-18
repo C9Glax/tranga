@@ -125,14 +125,15 @@ downloaded (where Komga/Kavita can access them for example).
 The file also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the
 [Tranga-Website Repository](https://github.com/C9Glax/tranga-website) README.
 
-| env-var           | default-value    |
-|-------------------|------------------|
-| POSTGRES_HOST     | `tranga-pg:5432` |
-| POSTGRES_DB       | `postgres`       |
-| POSTGRES_USER     | `postgres`       |
-| POSTGRES_PASSWORD | `postgres`       |
-| DOWNLOAD_LOCATION | `/Manga`         |
-| FLARESOLVERR_URL  | `<empty>`        |
+| env-var                  | default-value                                                                            |
+|--------------------------|------------------------------------------------------------------------------------------|
+| POSTGRES_HOST            | `tranga-pg:5432`                                                                         |
+| POSTGRES_DB              | `postgres`                                                                               |
+| POSTGRES_USER            | `postgres`                                                                               |
+| POSTGRES_PASSWORD        | `postgres`                                                                               |
+| DOWNLOAD_LOCATION        | `/Manga`                                                                                 |
+| FLARESOLVERR_URL         | <empty>                                                                                  |
+| POSTGRES_COMMAND_TIMEOUT | [`60`](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout) |
 
 For compatibility do not execute the compose as root (which you should not do anyways...) but as user that can
 access the folder. Permission conflicts with Komga and Kavita should thus be limited.
