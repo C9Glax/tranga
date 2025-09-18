@@ -116,33 +116,34 @@ app.UseMiddleware<RequestTimeMiddleware>();
 using (IServiceScope scope = app.Services.CreateScope())
 {
     MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
-    context.Database.Migrate();
-    
+    await context.Database.MigrateAsync(CancellationToken.None);
+
     if (!context.FileLibraries.Any())
-        context.FileLibraries.Add(new (Tranga.Settings.DefaultDownloadLocation, "Default FileLibrary"));
-    
-    await context.Sync(CancellationToken.None);
+    {
+        await context.FileLibraries.AddAsync(new (Tranga.Settings.DefaultDownloadLocation, "Default FileLibrary"), CancellationToken.None);
+        await context.Sync(CancellationToken.None, reason: "Add default library");
+    }
 }
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
     NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
-    context.Database.Migrate();
+    await context.Database.MigrateAsync(CancellationToken.None);
 
     context.Notifications.RemoveRange(context.Notifications);
     string[] emojis = ["(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=", "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~","૮ \u00b4• ﻌ \u00b4• ა", "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"
     ];
-    context.Notifications.Add(new Notification("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High));
+    await context.Notifications.AddAsync(new ("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High), CancellationToken.None);
     
-    await context.Sync(CancellationToken.None);
+    await context.Sync(CancellationToken.None, reason: "Startup notification");
 }
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
     LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
-    context.Database.Migrate();
+    await context.Database.MigrateAsync(CancellationToken.None);
     
-    await context.Sync(CancellationToken.None);
+    await context.Sync(CancellationToken.None, reason: "Startup library");
 }
 
 Tranga.ServiceProvider = app.Services;

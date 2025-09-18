@@ -71,7 +71,7 @@ public class FileLibraryController(MangaContext context) : Controller
         //TODO Path check
         library.BasePath = newBasePath;
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }
@@ -96,7 +96,7 @@ public class FileLibraryController(MangaContext context) : Controller
         //TODO Name check
         library.LibraryName = newName;
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }
@@ -116,7 +116,7 @@ public class FileLibraryController(MangaContext context) : Controller
         Schema.MangaContext.FileLibrary library = new (requestData.BasePath, requestData.LibraryName);
         context.FileLibraries.Add(library);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         
         return TypedResults.Created(string.Empty, library.Key);
@@ -140,7 +140,7 @@ public class FileLibraryController(MangaContext context) : Controller
         
         context.FileLibraries.Remove(library);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }

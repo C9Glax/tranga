@@ -221,7 +221,7 @@ public static class Tranga
             context.Mangas.Add(manga);
         }
 
-        if (await context.Sync(token) is { success: false })
+        if (await context.Sync(token, reason: System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false })
             return false;
 
         DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (addMcId);

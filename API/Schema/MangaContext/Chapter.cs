@@ -84,7 +84,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
         
         //TODO Log here
         this.Downloaded = File.Exists(chapter.FullArchiveFilePath);
-        await context.Sync(token??CancellationToken.None, GetType());
+        await context.Sync(token??CancellationToken.None, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name);
         return this.Downloaded;
     } 
 

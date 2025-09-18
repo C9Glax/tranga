@@ -154,7 +154,7 @@ public class MangaController(MangaContext context) : Controller
         
         context.Mangas.Remove(manga);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }
@@ -420,7 +420,7 @@ public class MangaController(MangaContext context) : Controller
             return TypedResults.NotFound(nameof(MangaId));
         
         manga.IgnoreChaptersBefore = chapterThreshold;
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
 
         return TypedResults.Ok();
@@ -488,7 +488,7 @@ public class MangaController(MangaContext context) : Controller
         }
 
         mcId.UseForDownload = IsRequested;
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
 
         DownloadCoverFromMangaconnectorWorker downloadCover = new(mcId);

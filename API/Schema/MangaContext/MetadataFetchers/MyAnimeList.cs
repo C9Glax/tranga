@@ -85,7 +85,7 @@ public class MyAnimeList : MetadataFetcher
         dbManga.Authors.Clear();
         dbManga.Authors = resultData.Authors.Select(a => new Author(a.Name)).ToList();
 
-        await dbContext.Sync(token, GetType());
+        await dbContext.Sync(token, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name);
     }
     
 }

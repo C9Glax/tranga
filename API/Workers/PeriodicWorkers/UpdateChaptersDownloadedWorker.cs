@@ -28,7 +28,7 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
             }
         }
 
-        if(await DbContext.Sync(CancellationToken, GetType()) is { success: false } e)
+        if(await DbContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
         
         return [];

@@ -67,7 +67,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         {
             Log.Info($"No imageUrls for chapter {chapter}");
             mangaConnectorId.UseForDownload = false; // Do not try to download from this again
-            if(await DbContext.Sync(CancellationToken, GetType()) is { success: false } result)
+            if(await DbContext.Sync(CancellationToken, GetType(), "Disable Id") is { success: false } result)
                 Log.Error(result.exceptionMessage);
             return [];
         }
@@ -132,7 +132,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         Directory.Delete(tempFolder, true); //Cleanup
 
         DbContext.Entry(chapter).Property(c => c.Downloaded).CurrentValue = true;
-        if(await DbContext.Sync(CancellationToken, GetType()) is { success: false } e)
+        if(await DbContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
         
         Log.Debug($"Downloaded chapter {chapter}.");

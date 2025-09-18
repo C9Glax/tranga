@@ -23,10 +23,10 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
         }, Array.Empty<string>(), LogLevel.Warning, DbContextLoggerOptions.Level | DbContextLoggerOptions.Category | DbContextLoggerOptions.UtcTime);
     }
 
-    internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token, Type? trigger = null)
+    internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token, Type? trigger = null, string? reason = null)
     {
         int changesCount = ChangeTracker.Entries().Count(e => e.State is not EntityState.Unchanged and not EntityState.Detached);
-        Log.Debug($"Syncing {changesCount} changes {GetType().Name} {trigger?.Name}...");
+        Log.Debug($"Syncing {changesCount} changes {GetType().Name} {trigger?.Name} {reason}...");
         if (changesCount < 1)
             return (true, null);
         try

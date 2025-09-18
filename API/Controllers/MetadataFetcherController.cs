@@ -91,7 +91,7 @@ public class MetadataFetcherController(MangaContext context) : Controller
         MetadataEntry entry = fetcher.CreateMetadataEntry(manga, Identifier);
         context.MetadataEntries.Add(entry);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok(entry);
     }
@@ -122,7 +122,7 @@ public class MetadataFetcherController(MangaContext context) : Controller
 
         context.Remove(entry);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }

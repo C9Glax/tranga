@@ -72,7 +72,7 @@ public class LibraryConnectorController(LibraryContext context) : Controller
         
         context.LibraryConnectors.Add(connector);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Created(string.Empty, connector.Key);
     }
@@ -95,7 +95,7 @@ public class LibraryConnectorController(LibraryContext context) : Controller
         
         context.LibraryConnectors.Remove(connector);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }

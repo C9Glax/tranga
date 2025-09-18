@@ -35,7 +35,7 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
         // Set new Path
         manga.Library = toLibrary;
         
-        if (await DbContext.Sync(CancellationToken, GetType()) is { success: false })
+        if (await DbContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false })
             return [];
 
         // Create Jobs to move chapters from old to new Path

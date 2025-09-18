@@ -72,7 +72,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
         context.NotificationConnectors.Add(newConnector);
         context.Notifications.Add(new ("Added new Notification Connector!", newConnector.Name, NotificationUrgency.High));
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Created(string.Empty, newConnector.Name);
     }
@@ -168,7 +168,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
         
         context.NotificationConnectors.Remove(connector);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType()) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }
