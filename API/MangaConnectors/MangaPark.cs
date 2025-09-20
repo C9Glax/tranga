@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Web;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
 using HtmlAgilityPack;
@@ -26,24 +27,21 @@ public class MangaPark : MangaConnector
 
     private (Manga, MangaConnectorId<Manga>)[]? SearchMangaWithDomain(string mangaSearchName, string domain)
     {
-        Uri baseUri = new ($"https://{domain}/");
-        Uri search = new(baseUri, $"search?word={mangaSearchName}&lang={Tranga.Settings.DownloadLanguage}");
+        Uri baseUri = new($"https://{domain}/");
         
-        HtmlDocument document = new();
         List<(Manga, MangaConnectorId<Manga>)> ret = [];
         
         for (int page = 1;; page++) // break; in loop
         {
-            Uri pageSearch = new(search, $"&page={page}");
-            if (downloadClient.MakeRequest(pageSearch.ToString(), RequestType.Default) is { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
+            Uri searchUri = new(baseUri, $"search?word={HttpUtility.UrlEncode(mangaSearchName)}&lang={Tranga.Settings.DownloadLanguage}&page={page}");
+            if (downloadClient.MakeRequest(searchUri.ToString(), RequestType.Default) is { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
             {
-                document.Load(result.result);
+                HtmlDocument document= result.CreateDocument();
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract HAP sucks with nullable types
                 if (document.DocumentNode.SelectSingleNode("//button[contains(text(),\"No Data\")]") is not null) // No results found
                     break;
-
-                HtmlNode resultsListNode = document.GetNodeWith("jp_1");
-                ret.AddRange(resultsListNode.ChildNodes.Select(n => ParseSingleMangaFromSearchResultsList(baseUri, n)));
+                
+                ret.AddRange(document.GetNodesWith("q4_9").Select(n => ParseSingleMangaFromSearchResultsList(baseUri, n)));
             }else
                 return null;
         }
@@ -78,16 +76,23 @@ public class MangaPark : MangaConnector
         if (downloadClient.MakeRequest(url, RequestType.Default) is
             { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
-            HtmlDocument document = new();
-            document.Load(result.result);
+            HtmlDocument document= result.CreateDocument();
 
-            string name = document.GetNodeWith("2x", "q:id").InnerText;
-            string description = document.GetNodeWith("0a_9").InnerText;
+            if (document.GetNodeWith("q1_1")?.GetAttributeValue("title", string.Empty) is not { Length: >0 } name)
+            {
+                Log.Error("Name not found.");
+                return null;
+            }
+            string description = document.GetNodeWith("0a_9")?.InnerText ?? string.Empty;
 
-            string coverRelative = document.GetNodeWith("q1_1").GetAttributeValue("src", "");
-            string coverUrl = $"{url.Substring(0, url.IndexOf('/', 9))}{coverRelative}";
+            if (document.GetNodeWith("q1_1")?.GetAttributeValue("src", string.Empty) is not { Length: >0 } coverRelative)
+            {
+                Log.Error("Cover not found.");
+                return null;
+            }
+            string coverUrl = $"{url[..url.IndexOf('/', 9)]}{coverRelative}";
 
-            MangaReleaseStatus releaseStatus = document.GetNodeWith("Yn_5").InnerText.ToLower() switch
+            MangaReleaseStatus releaseStatus = document.GetNodeWith("Yn_5")?.InnerText.ToLower() switch
             {
                 "pending" => MangaReleaseStatus.Unreleased,
                 "ongoing" => MangaReleaseStatus.Continuing,
@@ -97,21 +102,24 @@ public class MangaPark : MangaConnector
                 _ => MangaReleaseStatus.Unreleased
             };
             
-            ICollection<Author> authors = document.GetNodeWith("tz_4")
+            ICollection<Author> authors = document.GetNodeWith("tz_4")?
                 .ChildNodes.Where(n => n.Name == "a")
                 .Select(n => n.InnerText)
-                .Select(t => new Author(t)).ToList();
+                .Select(t => new Author(t))
+                .ToList()??[];
 
-            ICollection<MangaTag> mangaTags = document.GetNodesWith("kd_0")
+            ICollection<MangaTag> mangaTags = document.GetNodesWith("kd_0")?
                 .Select(n => n.InnerText)
-                .Select(t => new MangaTag(t)).ToList();
+                .Select(t => new MangaTag(t))
+                .ToList()??[];
 
             ICollection<Link> links = [];
 
-            ICollection<AltTitle> altTitles = document.GetNodeWith("tz_2")
+            ICollection<AltTitle> altTitles = document.GetNodeWith("tz_2")?
                 .ChildNodes.Where(n => n.InnerText.Length > 1)
                 .Select(n => n.InnerText)
-                .Select(t => new AltTitle(string.Empty, t)).ToList();
+                .Select(t => new AltTitle(string.Empty, t))
+                .ToList()??[];
             
             Manga m = new (name, description, coverUrl, releaseStatus, authors, mangaTags, links, altTitles);
             MangaConnectorId<Manga> mcId = new(m, this, url.Split('/').Last(), url);
@@ -136,8 +144,7 @@ public class MangaPark : MangaConnector
         if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default) is
             { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
-            HtmlDocument document = new();
-            document.Load(result.result);
+            HtmlDocument document= result.CreateDocument();
             
             HtmlNodeCollection chapterNodes = document.GetNodesWith("8t_8");
 
@@ -189,8 +196,7 @@ public class MangaPark : MangaConnector
         if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default) is
             { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
-            HtmlDocument document = new();
-            document.Load(result.result);
+            HtmlDocument document= result.CreateDocument();
             
             HtmlNodeCollection imageNodes = document.GetNodesWith("8X_2");
 
@@ -200,8 +206,20 @@ public class MangaPark : MangaConnector
     }
 }
 
-internal static class Helper
+internal static class MangaParkHelper
 {
-    internal static HtmlNode GetNodeWith(this HtmlDocument document, string search, string selector = "q:key") => document.DocumentNode.SelectSingleNode($"//*[@${selector}=${search}]");
-    internal static HtmlNodeCollection GetNodesWith(this HtmlDocument document, string search, string selector = "q:key") => document.DocumentNode.SelectNodes($"//*[@${selector}=${search}]");
+    internal static HtmlDocument CreateDocument(this RequestResult result)
+    {
+        HtmlDocument document = new();
+        StreamReader sr = new (result.result);
+        string htmlStr = sr.ReadToEnd().Replace("q:key", "qkey");
+        document.LoadHtml(htmlStr);
+        
+        return document;
+    }
+
+    internal static HtmlNode? GetNodeWith(this HtmlDocument document, string search) => document.DocumentNode.SelectSingleNode("/html").GetNodeWith(search);
+    internal static HtmlNode? GetNodeWith(this HtmlNode node, string search) => node.SelectNodes($"{node.XPath}//*[@qkey='{search}']").FirstOrDefault();
+    internal static HtmlNodeCollection GetNodesWith(this HtmlDocument document, string search) => document.DocumentNode.SelectSingleNode("/html ").GetNodesWith(search);
+    internal static HtmlNodeCollection GetNodesWith(this HtmlNode node, string search) => node.SelectNodes($"{node.XPath}//*[@qkey='{search}']");
 }
