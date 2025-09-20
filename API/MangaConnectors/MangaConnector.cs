@@ -16,9 +16,7 @@ namespace API.MangaConnectors;
 public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)
 {
     [NotMapped] internal DownloadClient downloadClient { get; init; } = null!;
-
     [NotMapped] protected ILog Log { get; init; } = LogManager.GetLogger(name);
-    
     [StringLength(32)] public string Name { get; init; } = name;
     [StringLength(8)] public string[] SupportedLanguages { get; init; } = supportedLanguages;
     [StringLength(2048)] public string IconUrl { get; init; } = iconUrl;
