@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using log4net;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
@@ -40,8 +42,16 @@ public abstract class LibraryConnector : Identifiable
     internal abstract Task<bool> Test(CancellationToken ct);
 }
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum LibraryType : byte
 {
+    /// <summary>
+    /// <seealso cref="Komga"/>
+    /// </summary>
     Komga = 0,
+    
+    /// <summary>
+    /// <seealso cref="Kavita"/>
+    /// </summary>
     Kavita = 1
 }

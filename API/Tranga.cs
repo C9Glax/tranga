@@ -146,25 +146,27 @@ public static class Tranga
     private static Action DefaultAfterWork(BaseWorker worker, Action? callback = null) => () =>
     {
         Log.Debug($"DefaultAfterWork {worker}");
-        if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
+        try
         {
-            Log.Debug($"Waiting for Children to exit {worker}");
-            task.Wait();
-            if (task.IsCompleted)
+            if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
             {
-                try
+                Log.Debug($"Waiting for Children to exit {worker}");
+                task.Wait();
+                if (task.IsCompleted)
                 {
+                    Log.Debug($"Children done {worker}");
                     BaseWorker[] newWorkers = task.Result;
                     Log.Debug($"{worker} created {newWorkers.Length} new Workers.");
                     AddWorkers(newWorkers);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e);
-                }
-            }else Log.Warn($"Children failed: {worker}");
+                }else
+                    Log.Warn($"Children failed: {worker}");
+            }
+            RunningWorkers.Remove(worker, out _);
         }
-        RunningWorkers.Remove(worker, out _);
+        catch (Exception e)
+        {
+            Log.Error(e);
+        }
         callback?.Invoke();
     };
 

@@ -18,10 +18,7 @@ public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerab
         Log.Debug("Checking for missing chapters...");
         
         // Get missing chapters
-        List<MangaConnectorId<Chapter>> missingChapters = await DbContext.MangaConnectorToChapter
-            .Include(id => id.Obj)
-            .Where(id => id.Obj.Downloaded == false && id.UseForDownload)
-            .ToListAsync(CancellationToken);
+        List<MangaConnectorId<Chapter>> missingChapters = await GetMissingChapters(DbContext, CancellationToken);
         
         Log.Debug($"Found {missingChapters.Count} missing downloads.");
         
@@ -37,4 +34,9 @@ public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerab
         
         return newWorkers.ToArray();
     }
+    
+    internal static async Task<List<MangaConnectorId<Chapter>>> GetMissingChapters(MangaContext ctx, CancellationToken cancellationToken) => await ctx.MangaConnectorToChapter
+        .Include(id => id.Obj)
+        .Where(id => id.Obj.Downloaded == false && id.UseForDownload)
+        .ToListAsync(cancellationToken);
 }

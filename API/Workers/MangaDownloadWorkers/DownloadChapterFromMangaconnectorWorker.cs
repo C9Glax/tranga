@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using API.MangaConnectors;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
+using API.Workers.PeriodicWorkers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SixLabors.ImageSharp;
@@ -21,16 +22,16 @@ namespace API.Workers.MangaDownloadWorkers;
 public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> chId, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContext<MangaContext>(dependsOn)
 {
-    internal readonly string MangaConnectorIdId = chId.Key;
+    private readonly string _mangaConnectorIdId = chId.Key;
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        Log.Debug($"Downloading chapter for MangaConnectorId {MangaConnectorIdId}...");
+        Log.Debug($"Downloading chapter for MangaConnectorId {_mangaConnectorIdId}...");
         // Getting MangaConnector info
         if (await DbContext.MangaConnectorToChapter
                 .Include(id => id.Obj)
                 .ThenInclude(c => c.ParentManga)
                 .ThenInclude(m => m.Library)
-                .FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, CancellationToken) is not { } mangaConnectorId)
+                .FirstOrDefaultAsync(c => c.Key == _mangaConnectorIdId, CancellationToken) is not { } mangaConnectorId)
         {
             Log.Error("Could not get MangaConnectorId.");
             return []; //TODO Exception?
@@ -137,8 +138,22 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         
         Log.Debug($"Downloaded chapter {chapter}.");
 
-        return [];
+        bool refreshLibrary = await CheckLibraryRefresh();
+        if(refreshLibrary)
+            Log.Info($"Condition {Tranga.Settings.LibraryRefreshSetting} met.");
+
+        return refreshLibrary? [new RefreshLibrariesWorker()] : [];
     }
+
+    private async Task<bool> CheckLibraryRefresh() => Tranga.Settings.LibraryRefreshSetting switch
+    {
+        LibraryRefreshSetting.AfterAllFinished => await AllDownloadsFinished(),
+        LibraryRefreshSetting.AfterMangaFinished => await DbContext.MangaConnectorToChapter.Include(chId => chId.Obj).Where(chId => chId.UseForDownload).AllAsync(chId => chId.Obj.Downloaded, CancellationToken),
+        LibraryRefreshSetting.AfterEveryChapter => true,
+        LibraryRefreshSetting.WhileDownloading => await AllDownloadsFinished() ||  DateTime.UtcNow.Subtract(RefreshLibrariesWorker.LastRefresh).TotalMinutes > Tranga.Settings.RefreshLibraryWhileDownloadingEveryMinutes,
+        _ => true
+    };
+    private async Task<bool> AllDownloadsFinished() => (await StartNewChapterDownloadsWorker.GetMissingChapters(DbContext, CancellationToken)).Count == 0;
     
     private void ProcessImage(string imagePath)
     {
@@ -232,5 +247,5 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         return true;
     }
 
-    public override string ToString() => $"{base.ToString()} {MangaConnectorIdId}";
+    public override string ToString() => $"{base.ToString()} {_mangaConnectorIdId}";
 }

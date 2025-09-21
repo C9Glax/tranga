@@ -1,13 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
-using System.Text;
 using API.Workers;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using static System.IO.UnixFileMode;
 
 namespace API.Schema.MangaContext;
@@ -138,6 +135,7 @@ public class Manga : Identifiable
     public override string ToString() => $"{base.ToString()} {Name}";
 }
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum MangaReleaseStatus : byte
 {
     Continuing = 0,

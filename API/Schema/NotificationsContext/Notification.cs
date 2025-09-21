@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace API.Schema.NotificationsContext;
 
@@ -48,6 +50,7 @@ public class Notification : Identifiable
     public override string ToString() => $"{base.ToString()} {Urgency} {Title} {Message}";
 }
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum NotificationUrgency : byte
 {
     Low = 1,

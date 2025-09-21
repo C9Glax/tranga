@@ -1,6 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
+using API.Workers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace API;
 
@@ -54,16 +56,20 @@ public struct TrangaSettings()
 
     public int MaxConcurrentWorkers { get; set; } = Math.Max(Environment.ProcessorCount, 4); // Minimum of 4 Tasks, maximum of 1 per Core
 
+    public LibraryRefreshSetting LibraryRefreshSetting { get; set; } = LibraryRefreshSetting.AfterMangaFinished;
+
+    public int RefreshLibraryWhileDownloadingEveryMinutes { get; set; } = 10; 
+
     public static TrangaSettings Load()
     {
         if (!File.Exists(SettingsFilePath))
             new TrangaSettings().Save();
-        return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(SettingsFilePath));
+        return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(SettingsFilePath), new StringEnumConverter());
     }
 
     public void Save()
     {
-        File.WriteAllText(SettingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented));
+        File.WriteAllText(SettingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented, new StringEnumConverter()));
     }
 
     public void SetUserAgent(string value)
@@ -123,6 +129,18 @@ public struct TrangaSettings()
     public void SetMaxConcurrentWorkers(int value)
     {
         this.MaxConcurrentWorkers = value;
+        Save();
+    }
+
+    public void SetLibraryRefreshSetting(LibraryRefreshSetting setting)
+    {
+        this.LibraryRefreshSetting = setting;
+        Save();
+    }
+
+    public void SetRefreshLibraryWhileDownloadingEveryMinutes(int value)
+    {
+        this.RefreshLibraryWhileDownloadingEveryMinutes = value;
         Save();
     }
 }
