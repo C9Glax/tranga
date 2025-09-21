@@ -12,7 +12,7 @@ public class MangaPark : MangaConnector
     public MangaPark() : base("MangaPark", 
         ["en"],
         ["mangapark.com", "mangapark.net", "mangapark.org", "mangapark.me", "mangapark.io", "mangapark.to", "comicpark.org", "comicpark.to", "readpark.org", "readpark.net", "parkmanga.com", "parkmanga.net", "parkmanga.org", "mpark.to"], 
-        "https://mangapark.com/static-assets/img/favicon.ico")
+        "/blahaj.png")
     {
         this.downloadClient = new HttpDownloadClient();
     }
