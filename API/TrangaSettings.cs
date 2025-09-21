@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using API.MangaDownloadClients;
+using API.Workers;
 using Newtonsoft.Json;
 
 namespace API;
@@ -53,6 +54,10 @@ public struct TrangaSettings()
     public int MaxConcurrentDownloads { get; set; } = (int)Math.Max(Environment.ProcessorCount * 0.75, 1); // Minimum of 1 Tasks, maximum of 0.75 per Core
 
     public int MaxConcurrentWorkers { get; set; } = Math.Max(Environment.ProcessorCount, 4); // Minimum of 4 Tasks, maximum of 1 per Core
+
+    public LibraryRefreshSetting LibraryRefreshSetting { get; set; } = LibraryRefreshSetting.AfterMangaFinished;
+
+    public int RefreshLibraryWhileDownloadingEveryMinutes { get; set; } = 10; 
 
     public static TrangaSettings Load()
     {
@@ -123,6 +128,18 @@ public struct TrangaSettings()
     public void SetMaxConcurrentWorkers(int value)
     {
         this.MaxConcurrentWorkers = value;
+        Save();
+    }
+
+    public void SetLibraryRefreshSetting(LibraryRefreshSetting setting)
+    {
+        this.LibraryRefreshSetting = setting;
+        Save();
+    }
+
+    public void SetRefreshLibraryWhileDownloadingEveryMinutes(int value)
+    {
+        this.RefreshLibraryWhileDownloadingEveryMinutes = value;
         Save();
     }
 }
