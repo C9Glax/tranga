@@ -34,7 +34,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     {
         if(ChapterNumberRegex.Match(chapterNumber) is not { Success: true } match || !match.Value.Equals(chapterNumber))
             throw new ArgumentException($"Invalid chapter number: {chapterNumber}");
-        chapterNumber = string.Join('.', chapterNumber.Split('.').Select(p => p.TrimStart('0')));
+        chapterNumber = string.Join('.', chapterNumber.Split('.').Select(p => int.Parse(p).ToString()));
         this.ChapterNumber = chapterNumber;
         this.ParentManga = parentManga;
         this.MangaConnectorIds = [];
