@@ -184,9 +184,11 @@ public static class Tranga
         CancellationToken token)
     {
         context.ChangeTracker.Clear();
+        Log.Debug($"Adding Manga to Context: {addManga}");
         Manga? manga = await context.FindMangaLike(addManga, token);
         if (manga is not null)
         {
+            Log.Debug($"Merging with existing Manga: {manga}");
             foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
             {
                 mcId.Obj = manga;
@@ -203,6 +205,7 @@ public static class Tranga
         }
         else
         {
+            Log.Debug("Manga does not exist yet.");
             manga = addManga;
             IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
             {
@@ -221,7 +224,7 @@ public static class Tranga
             context.Mangas.Add(manga);
         }
 
-        if (await context.Sync(token, reason: System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false })
+        if (await context.Sync(token, reason: "AddMangaToContext") is { success: false })
             return false;
 
         DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (addMcId);
