@@ -32,7 +32,6 @@ public static class Tranga
     internal static readonly StartNewChapterDownloadsWorker StartNewChapterDownloadsWorker = new();
     internal static readonly RemoveOldNotificationsWorker RemoveOldNotificationsWorker = new();
     internal static readonly UpdateCoversWorker UpdateCoversWorker = new();
-    internal static readonly UpdateLibraryConnectorsWorker UpdateLibraryConnectorsWorker = new();
     internal static readonly CleanupMangaconnectorIdsWithoutConnector CleanupMangaconnectorIdsWithoutConnector = new();
     // ReSharper restore MemberCanBePrivate.Global
 
@@ -43,18 +42,25 @@ public static class Tranga
         Log.Info(Constants.TRANGA);
     }
 
+    internal static void StartupTasks()
+    {
+        AddWorker(SendNotificationsWorker);
+        AddWorker(CleanupMangaconnectorIdsWithoutConnector);
+        AddWorker(UpdateChaptersDownloadedWorker);
+        AddWorker(CleanupMangaCoversWorker);
+        Log.Info("Waiting for startup to complete...");
+        while (new List<BaseWorker>() { CleanupMangaconnectorIdsWithoutConnector, UpdateChaptersDownloadedWorker, CleanupMangaCoversWorker}.Any(w => w.State < WorkerExecutionState.Completed))
+            Thread.Sleep(100);
+        Log.Info("Start complete!");
+    }
+
     internal static void AddDefaultWorkers()
     {
         AddWorker(UpdateMetadataWorker);
-        AddWorker(SendNotificationsWorker);
-        AddWorker(UpdateChaptersDownloadedWorker);
         AddWorker(CheckForNewChaptersWorker);
-        AddWorker(CleanupMangaCoversWorker);
         AddWorker(StartNewChapterDownloadsWorker);
         AddWorker(RemoveOldNotificationsWorker);
         AddWorker(UpdateCoversWorker);
-        AddWorker(UpdateLibraryConnectorsWorker);
-        AddWorker(CleanupMangaconnectorIdsWithoutConnector);
     }
 
     internal static bool TryGetMangaConnector(string name, [NotNullWhen(true)]out MangaConnector? mangaConnector)

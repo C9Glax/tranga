@@ -1,4 +1,5 @@
 using API.Schema.MangaContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers.PeriodicWorkers.MaintenanceWorkers;
 
@@ -8,15 +9,15 @@ public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<Bas
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromHours(24);
     
-    protected override Task<BaseWorker[]> DoWorkInternal()
+    protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Info("Removing stale files...");
-        string[] usedFiles = DbContext.Mangas.Select(m => m.CoverFileNameInCache).Where(s => s != null).ToArray()!;
+        string[] usedFiles = await DbContext.Mangas.Where(m => m.CoverFileNameInCache != null).Select(m => m.CoverFileNameInCache!).ToArrayAsync(CancellationToken);
         CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheOriginal);
         CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheLarge);
         CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheMedium);
         CleanupImageCache(usedFiles, TrangaSettings.CoverImageCacheSmall);
-        return new Task<BaseWorker[]>(() => []);
+        return [];
     }
 
     private void CleanupImageCache(string[] retainFilenames, string imageCachePath)
