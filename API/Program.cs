@@ -62,10 +62,10 @@ NpgsqlConnectionStringBuilder connectionStringBuilder = new()
     Username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
     Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres",
     ConnectionLifetime = 300,
-    Timeout = 5,
+    Timeout = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_TIMEOUT") ?? "30"),
     ReadBufferSize = 65536,
     WriteBufferSize = 65536,
-    CommandTimeout = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_COMMAND_TIMEOUT") ?? "60") ,
+    CommandTimeout = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_COMMAND_TIMEOUT") ?? "60"),
     ApplicationName = "Tranga"
 };
 
