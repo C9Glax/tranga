@@ -142,6 +142,9 @@ public class MangaPark : MangaConnector
     {
         Uri baseUri = new ($"https://{domain}/");
         Uri requestUri = new (baseUri, $"title/{mangaId.IdOnConnectorSite}");
+
+        List<(Chapter, MangaConnectorId<Chapter>)> ret = [];
+        
         if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default) is
             { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
@@ -152,14 +155,20 @@ public class MangaPark : MangaConnector
                 Log.Debug("No chapters found.");
                 return null;
             }
-
-            return chapterNodes.Select(n => ParseChapter(mangaId.Obj, n, baseUri)).ToArray();
+            
+            foreach (HtmlNode chapterNode in chapterNodes)
+            {
+                if(ParseChapter(mangaId.Obj, chapterNode, baseUri) is { } ch)
+                    ret.Add(ch);
+            }
         }
         else return null;
+
+        return ret.ToArray();
     }
 
     private readonly Regex _volChTitleRex = new(@"(?:.*(?:Vol\.?(?:ume)?)\s*([0-9]+))?.*(?:Ch\.?(?:apter)?)\s*([0-9\.]+)(?::\s+(.*))?");
-    private (Chapter, MangaConnectorId<Chapter>) ParseChapter(Manga manga, HtmlNode chapterNode, Uri baseUri)
+    private (Chapter, MangaConnectorId<Chapter>)? ParseChapter(Manga manga, HtmlNode chapterNode, Uri baseUri)
     {
         HtmlNode linkNode = chapterNode.SelectSingleNode("./div[1]/a");
         Match linkMatch = _volChTitleRex.Match(linkNode.InnerText);
@@ -174,7 +183,7 @@ public class MangaPark : MangaConnector
             if (Match(linkNode.InnerText, @"[^\d]*([\d\.]+)[^\d]*") is not { Success: true } match)
             {
                 Log.Debug($"Unable to parse chapter-number: {linkNode.InnerText}");
-                throw new FormatException("Unable to parse chapter-number");
+                return null;
             }
             chapterNumber = match.Groups[1].Value;
         }
