@@ -4,6 +4,7 @@ using System.Web;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
 using HtmlAgilityPack;
+using static System.Text.RegularExpressions.Regex;
 
 namespace API.MangaConnectors;
 
@@ -163,15 +164,26 @@ public class MangaPark : MangaConnector
         HtmlNode linkNode = chapterNode.SelectSingleNode("./div[1]/a");
         Match linkMatch = _volChTitleRex.Match(linkNode.InnerText);
         HtmlNode? titleNode = chapterNode.SelectSingleNode("./div[1]/span");
+        
+        string chapterNumber;
+        int? volumeNumber = null;
 
         if (!linkMatch.Success || !linkMatch.Groups[2].Success)
         {
-            Log.Debug($"Unable to parse Chapter: {chapterNode.InnerHtml}");
-            throw new ($"Unable to parse Chapter: {chapterNode.InnerHtml}");
+            Log.Debug($"Not in standard Volume/Chapter format: {chapterNode.InnerText}");
+            if (Match(linkNode.InnerText, @"[^\d]*([\d\.]+)[^\d]*") is not { Success: true } match)
+            {
+                Log.Debug($"Unable to parse chapter-number: {chapterNode.InnerText}");
+                throw new FormatException("Unable to parse chapter-number");
+            }
+            chapterNumber = match.Groups[1].Value;
+        }
+        else
+        {
+            chapterNumber = linkMatch.Groups[2].Value;
+            volumeNumber = linkMatch.Groups[1].Success ? int.Parse(linkMatch.Groups[1].Value) : null;
         }
         
-        string chapterNumber = linkMatch.Groups[2].Value;
-        int? volumeNumber = linkMatch.Groups[1].Success ? int.Parse(linkMatch.Groups[1].Value) : null;
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract HAP sucks with nullables
         string? title = titleNode is not null ? titleNode.InnerText[2..] : (linkMatch.Groups[3].Success ? linkMatch.Groups[3].Value : null);
 
@@ -208,7 +220,7 @@ public class MangaPark : MangaConnector
                 return null;
             }
 
-            MatchCollection matchCollection = Regex.Matches(imageJson, @"https?:\/\/[^,]*\.webp");
+            MatchCollection matchCollection = Matches(imageJson, @"https?:\/\/[^,]*\.webp");
             return matchCollection.Select(m => m.Value).ToArray();
         }
         else return null;
