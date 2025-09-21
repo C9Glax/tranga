@@ -1,5 +1,7 @@
 using API.Schema;
 using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace API.Workers;
 
@@ -116,6 +118,7 @@ public abstract class BaseWorker : Identifiable
     }
 }
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum WorkerExecutionState
 {
     Failed = 0,

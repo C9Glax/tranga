@@ -1,4 +1,5 @@
-﻿using API.MangaDownloadClients;
+﻿using API.Controllers.Requests;
+using API.MangaDownloadClients;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -288,6 +289,21 @@ public class SettingsController() : Controller
     {
         //TODO Validation
         Tranga.Settings.SetDownloadLanguage(Language);
+        return TypedResults.Ok();
+    }
+    
+
+    /// <summary>
+    /// Sets the time when Libraries are refreshed
+    /// </summary>
+    /// <response code="200"></response>
+    [HttpPatch("LibraryRefresh")]
+    [ProducesResponseType(Status200OK)]
+    public Ok SetLibraryRefresh([FromBody]PatchLibraryRefreshRecord requestData)
+    {
+        Tranga.Settings.SetLibraryRefreshSetting(requestData.Setting);
+        if(requestData.RefreshLibraryWhileDownloadingEveryMinutes is { } value)
+            Tranga.Settings.SetRefreshLibraryWhileDownloadingEveryMinutes(value);
         return TypedResults.Ok();
     }
 }

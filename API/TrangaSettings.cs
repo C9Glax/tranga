@@ -2,6 +2,7 @@
 using API.MangaDownloadClients;
 using API.Workers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace API;
 
@@ -63,12 +64,12 @@ public struct TrangaSettings()
     {
         if (!File.Exists(SettingsFilePath))
             new TrangaSettings().Save();
-        return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(SettingsFilePath));
+        return JsonConvert.DeserializeObject<TrangaSettings>(File.ReadAllText(SettingsFilePath), new StringEnumConverter());
     }
 
     public void Save()
     {
-        File.WriteAllText(SettingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented));
+        File.WriteAllText(SettingsFilePath, JsonConvert.SerializeObject(this, Formatting.Indented, new StringEnumConverter()));
     }
 
     public void SetUserAgent(string value)
