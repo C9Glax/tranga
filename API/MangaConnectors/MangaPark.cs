@@ -229,7 +229,7 @@ public class MangaPark : MangaConnector
                 return null;
             }
 
-            MatchCollection matchCollection = Matches(imageJson, @"https?:\/\/[^,]*\.webp");
+            MatchCollection matchCollection = Matches(imageJson, @"https?:\/\/[\da-zA-Z\.]+\/[^,""]*\.[a-z]+");
             return matchCollection.Select(m => m.Value).ToArray();
         }
         else return null;
