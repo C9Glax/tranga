@@ -84,7 +84,7 @@ public class MangaPark : MangaConnector
                 Log.Debug("Name not found.");
                 return null;
             }
-            string description = document.GetNodeWith("0a_9")?.InnerText ?? string.Empty;
+            string description = HttpUtility.HtmlDecode(document.GetNodeWith("0a_9")?.InnerText ?? string.Empty);
 
             if (document.GetNodeWith("q1_1")?.GetAttributeValue("src", string.Empty) is not { Length: >0 } coverRelative)
             {
@@ -105,12 +105,12 @@ public class MangaPark : MangaConnector
             
             ICollection<Author> authors = document.GetNodeWith("tz_4")?
                 .ChildNodes.Where(n => n.Name == "a")
-                .Select(n => n.InnerText)
+                .Select(n => HttpUtility.HtmlDecode(n.InnerText))
                 .Select(t => new Author(t))
                 .ToList()??[];
 
             ICollection<MangaTag> mangaTags = document.GetNodesWith("kd_0")?
-                .Select(n => n.InnerText)
+                .Select(n => HttpUtility.HtmlDecode(n.InnerText))
                 .Select(t => new MangaTag(t))
                 .ToList()??[];
 
@@ -118,7 +118,7 @@ public class MangaPark : MangaConnector
 
             ICollection<AltTitle> altTitles = document.GetNodeWith("tz_2")?
                 .ChildNodes.Where(n => n.InnerText.Trim().Length > 1)
-                .Select(n => n.InnerText)
+                .Select(n => HttpUtility.HtmlDecode(n.InnerText))
                 .Select(t => new AltTitle(string.Empty, t))
                 .ToList()??[];
             
@@ -171,7 +171,8 @@ public class MangaPark : MangaConnector
     private (Chapter, MangaConnectorId<Chapter>)? ParseChapter(Manga manga, HtmlNode chapterNode, Uri baseUri)
     {
         HtmlNode linkNode = chapterNode.SelectSingleNode("./div[1]/a");
-        Match linkMatch = VolChTitleRex.Match(linkNode.InnerText);
+        string linkNodeText = HttpUtility.HtmlDecode(linkNode.InnerText);
+        Match linkMatch = VolChTitleRex.Match(linkNodeText);
         HtmlNode? titleNode = chapterNode.SelectSingleNode("./div[1]/span");
         
         string chapterNumber;
@@ -179,10 +180,10 @@ public class MangaPark : MangaConnector
 
         if (!linkMatch.Success || !linkMatch.Groups[2].Success)
         {
-            Log.Debug($"Not in standard Volume/Chapter format: {linkNode.InnerText}");
-            if (Match(linkNode.InnerText, @"[^\d]*((?:\d+\.)*\d+)[^\d]*") is not { Success: true } match)
+            Log.Debug($"Not in standard Volume/Chapter format: {linkNodeText}");
+            if (Match(linkNodeText, @"[^\d]*((?:\d+\.)*\d+)[^\d]*") is not { Success: true } match)
             {
-                Log.Debug($"Unable to parse chapter-number: {linkNode.InnerText}");
+                Log.Debug($"Unable to parse chapter-number: {linkNodeText}");
                 return null;
             }
             chapterNumber = match.Groups[1].Value;
@@ -194,7 +195,7 @@ public class MangaPark : MangaConnector
         }
         
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract HAP sucks with nullables
-        string? title = titleNode is not null ? titleNode.InnerText[2..] : (linkMatch.Groups[3].Success ? linkMatch.Groups[3].Value : null);
+        string? title = titleNode is not null ? HttpUtility.HtmlDecode(titleNode.InnerText)[2..] : (linkMatch.Groups[3].Success ? linkMatch.Groups[3].Value : null);
 
         string url = new Uri(baseUri, linkNode.GetAttributeValue("href", "")).ToString();
         string id = linkNode.GetAttributeValue("href", "")[7..];
