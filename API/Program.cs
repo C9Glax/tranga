@@ -117,6 +117,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
     await context.Database.MigrateAsync(CancellationToken.None);
+    await context.Database.EnsureCreatedAsync(CancellationToken.None);
 
     if (!context.FileLibraries.Any())
     {
@@ -129,6 +130,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
     await context.Database.MigrateAsync(CancellationToken.None);
+    await context.Database.EnsureCreatedAsync(CancellationToken.None);
 
     context.Notifications.RemoveRange(context.Notifications);
     string[] emojis = ["(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=", "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~","૮ \u00b4• ﻌ \u00b4• ა", "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"
@@ -142,6 +144,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
     await context.Database.MigrateAsync(CancellationToken.None);
+    await context.Database.EnsureCreatedAsync(CancellationToken.None);
     
     await context.Sync(CancellationToken.None, reason: "Startup library");
 }
