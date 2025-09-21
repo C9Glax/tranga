@@ -167,11 +167,11 @@ public class MangaPark : MangaConnector
         return ret.ToArray();
     }
 
-    private readonly Regex _volChTitleRex = new(@"(?:.*(?:Vol\.?(?:ume)?)\s*([0-9]+))?.*(?:Ch\.?(?:apter)?)\s*([0-9\.]+)(?::\s+(.*))?");
+    private static readonly Regex VolChTitleRex = new(@"(?:.*(?:Vol\.?(?:ume)?)\s*([0-9]+))?.*(?:Ch\.?(?:apter)?)\s*((?:\d+\.)*[0-9]+)\s*(?::|-\s+(.*))?", RegexOptions.Compiled);
     private (Chapter, MangaConnectorId<Chapter>)? ParseChapter(Manga manga, HtmlNode chapterNode, Uri baseUri)
     {
         HtmlNode linkNode = chapterNode.SelectSingleNode("./div[1]/a");
-        Match linkMatch = _volChTitleRex.Match(linkNode.InnerText);
+        Match linkMatch = VolChTitleRex.Match(linkNode.InnerText);
         HtmlNode? titleNode = chapterNode.SelectSingleNode("./div[1]/span");
         
         string chapterNumber;
@@ -180,7 +180,7 @@ public class MangaPark : MangaConnector
         if (!linkMatch.Success || !linkMatch.Groups[2].Success)
         {
             Log.Debug($"Not in standard Volume/Chapter format: {linkNode.InnerText}");
-            if (Match(linkNode.InnerText, @"[^\d]*([\d\.]+)[^\d]*") is not { Success: true } match)
+            if (Match(linkNode.InnerText, @"[^\d]*((?:\d+\.)*\d+)[^\d]*") is not { Success: true } match)
             {
                 Log.Debug($"Unable to parse chapter-number: {linkNode.InnerText}");
                 return null;
