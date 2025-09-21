@@ -116,7 +116,7 @@ public class MangaPark : MangaConnector
             ICollection<Link> links = [];
 
             ICollection<AltTitle> altTitles = document.GetNodeWith("tz_2")?
-                .ChildNodes.Where(n => n.InnerText.Length > 1)
+                .ChildNodes.Where(n => n.InnerText.Trim().Length > 1)
                 .Select(n => n.InnerText)
                 .Select(t => new AltTitle(string.Empty, t))
                 .ToList()??[];
