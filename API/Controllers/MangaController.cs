@@ -245,15 +245,20 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType(Status404NotFound)]
     public async Task<Results<Ok<List<Chapter>>, NotFound<string>>> GetChapters(string MangaId)
     {
-        if (await context.Mangas.Include(m => m.Chapters).ThenInclude(c => c.MangaConnectorIds).FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+        if(await context.Mangas.Include(m => m.Chapters).ThenInclude(c => c.MangaConnectorIds)
+               .Where(m => m.Key == MangaId)
+               .Select(m => m.Chapters)
+               .FirstOrDefaultAsync(HttpContext.RequestAborted)
+           is not { } dbChapters)
             return TypedResults.NotFound(nameof(MangaId));
-        
-        List<Chapter> chapters = manga.Chapters.Select(c =>
+
+        List<Chapter> chapters = dbChapters.Order().Select(c =>
         {
             IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
                 new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
             return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded);
         }).ToList();
+        
         return TypedResults.Ok(chapters);
     }
     
@@ -270,15 +275,20 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok<List<Chapter>>, NoContent, NotFound<string>>> GetChaptersDownloaded(string MangaId)
     {
-        if (await context.Mangas.Include(m => m.Chapters).FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+        if(await context.Mangas.Include(m => m.Chapters).ThenInclude(c => c.MangaConnectorIds)
+               .Where(m => m.Key == MangaId)
+               .Select(m => m.Chapters)
+               .FirstOrDefaultAsync(HttpContext.RequestAborted)
+           is not { } dbChapters)
             return TypedResults.NotFound(nameof(MangaId));
-        
-        List<Chapter> chapters = manga.Chapters.Where(c => c.Downloaded).Select(c =>
+
+        List<Chapter> chapters = dbChapters.Where(c => c.Downloaded).Order().Select(c =>
         {
             IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
                 new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
             return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded);
         }).ToList();
+        
         if (chapters.Count == 0)
             return TypedResults.NoContent();
         
@@ -298,15 +308,20 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok<List<Chapter>>, NoContent, NotFound<string>>> GetChaptersNotDownloaded(string MangaId)
     {
-        if (await context.Mangas.Include(m => m.Chapters).FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+        if(await context.Mangas.Include(m => m.Chapters).ThenInclude(c => c.MangaConnectorIds)
+               .Where(m => m.Key == MangaId)
+               .Select(m => m.Chapters)
+               .FirstOrDefaultAsync(HttpContext.RequestAborted)
+           is not { } dbChapters)
             return TypedResults.NotFound(nameof(MangaId));
-        
-        List<Chapter> chapters = manga.Chapters.Where(c => c.Downloaded == false).Select(c =>
+
+        List<Chapter> chapters = dbChapters.Where(c => !c.Downloaded).Order().Select(c =>
         {
             IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
                 new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
             return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded);
         }).ToList();
+        
         if (chapters.Count == 0)
             return TypedResults.NoContent();
         
