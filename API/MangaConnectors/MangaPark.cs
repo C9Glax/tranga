@@ -170,10 +170,10 @@ public class MangaPark : MangaConnector
 
         if (!linkMatch.Success || !linkMatch.Groups[2].Success)
         {
-            Log.Debug($"Not in standard Volume/Chapter format: {chapterNode.InnerText}");
+            Log.Debug($"Not in standard Volume/Chapter format: {linkNode.InnerText}");
             if (Match(linkNode.InnerText, @"[^\d]*([\d\.]+)[^\d]*") is not { Success: true } match)
             {
-                Log.Debug($"Unable to parse chapter-number: {chapterNode.InnerText}");
+                Log.Debug($"Unable to parse chapter-number: {linkNode.InnerText}");
                 throw new FormatException("Unable to parse chapter-number");
             }
             chapterNumber = match.Groups[1].Value;
