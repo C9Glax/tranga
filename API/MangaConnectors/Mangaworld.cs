@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Web;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
 using HtmlAgilityPack;
@@ -27,7 +28,7 @@ public sealed class Mangaworld : MangaConnector
     public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
         Uri baseUri = new ("https://www.mangaworld.cx/");
-        Uri searchUrl = new (baseUri, "archive?keyword=" + Uri.EscapeDataString(mangaSearchName));
+        Uri searchUrl = new (baseUri, "archive?keyword=" + HttpUtility.UrlEncode(mangaSearchName));
 
         RequestResult res = downloadClient.MakeRequest(searchUrl.ToString(), RequestType.Default);
         if ((int)res.statusCode < 200 || (int)res.statusCode >= 300)

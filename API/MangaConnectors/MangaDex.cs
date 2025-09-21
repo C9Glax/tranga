@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using System.Web;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
 using Newtonsoft.Json.Linq;
@@ -29,7 +30,7 @@ public class MangaDex : MangaConnector
         while(offset < total)
         {
             string requestUrl =
-                $"https://api.mangadex.org/manga?limit={Limit}&offset={offset}&title={mangaSearchName}" +
+                $"https://api.mangadex.org/manga?limit={Limit}&offset={offset}&title={HttpUtility.UrlEncode(mangaSearchName)}" +
                 $"&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica" +
                 $"&includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag'";
             offset += Limit;
