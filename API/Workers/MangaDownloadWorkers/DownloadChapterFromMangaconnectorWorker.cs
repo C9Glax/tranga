@@ -139,18 +139,21 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         Log.Debug($"Downloaded chapter {chapter}.");
 
         bool refreshLibrary = await CheckLibraryRefresh();
+        if(refreshLibrary)
+            Log.Info($"Condition {Tranga.Settings.LibraryRefreshSetting} met.");
 
         return refreshLibrary? [new RefreshLibrariesWorker()] : [];
     }
 
     private async Task<bool> CheckLibraryRefresh() => Tranga.Settings.LibraryRefreshSetting switch
     {
-        LibraryRefreshSetting.AfterAllFinished => (await StartNewChapterDownloadsWorker.GetMissingChapters(DbContext, CancellationToken)).Count == 0,
+        LibraryRefreshSetting.AfterAllFinished => await AllDownloadsFinished(),
         LibraryRefreshSetting.AfterMangaFinished => await DbContext.MangaConnectorToChapter.Include(chId => chId.Obj).Where(chId => chId.UseForDownload).AllAsync(chId => chId.Obj.Downloaded, CancellationToken),
         LibraryRefreshSetting.AfterEveryChapter => true,
-        LibraryRefreshSetting.WhileDownloading => DateTime.UtcNow.Subtract(RefreshLibrariesWorker.LastRefresh).TotalMinutes > Tranga.Settings.RefreshLibraryWhileDownloadingEveryMinutes,
+        LibraryRefreshSetting.WhileDownloading => await AllDownloadsFinished() ||  DateTime.UtcNow.Subtract(RefreshLibrariesWorker.LastRefresh).TotalMinutes > Tranga.Settings.RefreshLibraryWhileDownloadingEveryMinutes,
         _ => true
     };
+    private async Task<bool> AllDownloadsFinished() => (await StartNewChapterDownloadsWorker.GetMissingChapters(DbContext, CancellationToken)).Count == 0;
     
     private void ProcessImage(string imagePath)
     {
