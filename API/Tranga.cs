@@ -200,30 +200,27 @@ public static class Tranga
             manga.AltTitles = manga.AltTitles.UnionBy(addManga.AltTitles, altTitle => altTitle.Key).ToList();
             manga.Chapters = manga.Chapters.UnionBy(addManga.Chapters, chapter => chapter.Key).ToList();
             manga.MangaConnectorIds = manga.MangaConnectorIds.UnionBy(addManga.MangaConnectorIds, id => id.MangaConnectorName).ToList();
-
-            addManga = manga;
         }
         else
         {
             Log.Debug("Manga does not exist yet.");
-            manga = addManga;
-            IEnumerable<MangaTag> mergedTags = manga.MangaTags.Select(mt =>
+            IEnumerable<MangaTag> mergedTags = addManga.MangaTags.Select(mt =>
             {
                 MangaTag? inDb = context.Tags.Find(mt.Tag);
                 return inDb ?? mt;
             });
-            manga.MangaTags = mergedTags.ToList();
+            addManga.MangaTags = mergedTags.ToList();
 
-            IEnumerable<Author> mergedAuthors = manga.Authors.Select(ma =>
+            IEnumerable<Author> mergedAuthors = addManga.Authors.Select(ma =>
             {
                 Author? inDb = context.Authors.Find(ma.Key);
                 return inDb ?? ma;
             });
-            manga.Authors = mergedAuthors.ToList();
+            addManga.Authors = mergedAuthors.ToList();
             
-            context.Mangas.Add(manga);
+            context.Mangas.Add(addManga);
         }
-
+        
         if (await context.Sync(token, reason: "AddMangaToContext") is { success: false })
             return false;
 
