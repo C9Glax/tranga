@@ -16,7 +16,6 @@ public record PatchLibraryRefreshRecord
     /// <summary>
     /// When <see cref="LibraryRefreshSetting.WhileDownloading"/> is selected, update the time between refreshes
     /// </summary>
-    [Required]
     [Description("When WhileDownloadingis selected, update the time between refreshes")]
-    public required int? RefreshLibraryWhileDownloadingEveryMinutes { get; init; }
+    public int? RefreshLibraryWhileDownloadingEveryMinutes { get; init; }
 }
