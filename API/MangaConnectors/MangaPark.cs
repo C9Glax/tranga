@@ -41,7 +41,7 @@ public class MangaPark : MangaConnector
                 if (document.DocumentNode.SelectSingleNode("//button[contains(text(),\"No Data\")]") is not null) // No results found
                     break;
                 
-                ret.AddRange(document.GetNodesWith("q4_9").Select(n => ParseSingleMangaFromSearchResultsList(baseUri, n)));
+                ret.AddRange(document.GetNodesWith("q4_9")?.Select(n => ParseSingleMangaFromSearchResultsList(baseUri, n))??[]);
             }else
                 return null;
         }
@@ -80,14 +80,14 @@ public class MangaPark : MangaConnector
 
             if (document.GetNodeWith("q1_1")?.GetAttributeValue("title", string.Empty) is not { Length: >0 } name)
             {
-                Log.Error("Name not found.");
+                Log.Debug("Name not found.");
                 return null;
             }
             string description = document.GetNodeWith("0a_9")?.InnerText ?? string.Empty;
 
             if (document.GetNodeWith("q1_1")?.GetAttributeValue("src", string.Empty) is not { Length: >0 } coverRelative)
             {
-                Log.Error("Cover not found.");
+                Log.Debug("Cover not found.");
                 return null;
             }
             string coverUrl = $"{url[..url.IndexOf('/', 9)]}{coverRelative}";
@@ -145,8 +145,12 @@ public class MangaPark : MangaConnector
             { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
             HtmlDocument document= result.CreateDocument();
-            
-            HtmlNodeCollection chapterNodes = document.GetNodesWith("8t_8");
+
+            if (document.GetNodesWith("8t_8") is not { } chapterNodes)
+            {
+                Log.Debug("No chapters found.");
+                return null;
+            }
 
             return chapterNodes.Select(n => ParseChapter(mangaId.Obj, n, baseUri)).ToArray();
         }
@@ -156,13 +160,13 @@ public class MangaPark : MangaConnector
     private readonly Regex _volChTitleRex = new(@"(?:.*(?:Vol\.?(?:ume)?)\s*([0-9]+))?.*(?:Ch\.?(?:apter)?)\s*([0-9\.]+)(?::\s+(.*))?");
     private (Chapter, MangaConnectorId<Chapter>) ParseChapter(Manga manga, HtmlNode chapterNode, Uri baseUri)
     {
-        HtmlNode linkNode = chapterNode.SelectSingleNode("/div[1]/a");
+        HtmlNode linkNode = chapterNode.SelectSingleNode("./div[1]/a");
         Match linkMatch = _volChTitleRex.Match(linkNode.InnerText);
-        HtmlNode? titleNode = chapterNode.SelectSingleNode("/div[1]/span");
+        HtmlNode? titleNode = chapterNode.SelectSingleNode("./div[1]/span");
 
         if (!linkMatch.Success || !linkMatch.Groups[2].Success)
         {
-            Log.Error($"Unable to parse Chapter: {chapterNode.InnerHtml}");
+            Log.Debug($"Unable to parse Chapter: {chapterNode.InnerHtml}");
             throw new ($"Unable to parse Chapter: {chapterNode.InnerHtml}");
         }
         
@@ -196,11 +200,16 @@ public class MangaPark : MangaConnector
         if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default) is
             { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
-            HtmlDocument document= result.CreateDocument();
-            
-            HtmlNodeCollection imageNodes = document.GetNodesWith("8X_2");
+            HtmlDocument document = result.CreateDocument();
 
-            return imageNodes.Select(n => n.SelectSingleNode("/div/img").GetAttributeValue("src", "")).ToArray();
+            if (document.DocumentNode.SelectSingleNode("//script[@type='qwik/json']")?.InnerText is not { } imageJson)
+            {
+                Log.Debug("No images found.");
+                return null;
+            }
+
+            MatchCollection matchCollection = Regex.Matches(imageJson, @"https?:\/\/[^,]*\.webp");
+            return matchCollection.Select(m => m.Value).ToArray();
         }
         else return null;
     }
@@ -220,6 +229,7 @@ internal static class MangaParkHelper
 
     internal static HtmlNode? GetNodeWith(this HtmlDocument document, string search) => document.DocumentNode.SelectSingleNode("/html").GetNodeWith(search);
     internal static HtmlNode? GetNodeWith(this HtmlNode node, string search) => node.SelectNodes($"{node.XPath}//*[@qkey='{search}']").FirstOrDefault();
-    internal static HtmlNodeCollection GetNodesWith(this HtmlDocument document, string search) => document.DocumentNode.SelectSingleNode("/html ").GetNodesWith(search);
-    internal static HtmlNodeCollection GetNodesWith(this HtmlNode node, string search) => node.SelectNodes($"{node.XPath}//*[@qkey='{search}']");
+    internal static HtmlNodeCollection? GetNodesWith(this HtmlDocument document, string search) => document.DocumentNode.SelectSingleNode("/html ").GetNodesWith(search);
+    // ReSharper disable once ReturnTypeCanBeNotNullable HAP nullable
+    internal static HtmlNodeCollection? GetNodesWith(this HtmlNode node, string search) => node.SelectNodes($"{node.XPath}//*[@qkey='{search}']");
 }
