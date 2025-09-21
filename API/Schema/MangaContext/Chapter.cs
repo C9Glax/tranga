@@ -27,14 +27,17 @@ public class Chapter : Identifiable, IComparable<Chapter>
     public bool Downloaded { get; internal set; }
     [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
 
+    private static readonly Regex ChapterNumberRegex = new(@"(?:\d+\.)*\d+", RegexOptions.Compiled);
     public Chapter(Manga parentManga, string chapterNumber,
         int? volumeNumber, string? title = null)
         : base(TokenGen.CreateToken(typeof(Chapter), parentManga.Key, chapterNumber))
     {
+        if(ChapterNumberRegex.Match(chapterNumber) is not { Success: true } match || !match.Value.Equals(chapterNumber))
+            throw new ArgumentException($"Invalid chapter number: {chapterNumber}");
+        this.ChapterNumber = chapterNumber;
         this.ParentManga = parentManga;
         this.MangaConnectorIds = [];
         this.VolumeNumber = volumeNumber;
-        this.ChapterNumber = chapterNumber;
         this.Title = title;
         this.FileName = GetArchiveFilePath().CleanNameForWindows();
         this.Downloaded = false;
@@ -47,6 +50,8 @@ public class Chapter : Identifiable, IComparable<Chapter>
     internal Chapter(string key, int? volumeNumber, string chapterNumber, string? title, string fileName, bool downloaded)
         : base(key)
     {
+        if(ChapterNumberRegex.Match(chapterNumber) is not { Success: true } match || !match.Value.Equals(chapterNumber))
+            throw new ArgumentException($"Invalid chapter number: {chapterNumber}");
         this.VolumeNumber = volumeNumber;
         this.ChapterNumber = chapterNumber;
         this.Title = title;
