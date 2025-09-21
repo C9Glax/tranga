@@ -34,6 +34,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     {
         if(ChapterNumberRegex.Match(chapterNumber) is not { Success: true } match || !match.Value.Equals(chapterNumber))
             throw new ArgumentException($"Invalid chapter number: {chapterNumber}");
+        chapterNumber = string.Join('.', chapterNumber.Split('.').Select(p => p.TrimStart('0')));
         this.ChapterNumber = chapterNumber;
         this.ParentManga = parentManga;
         this.MangaConnectorIds = [];
@@ -50,8 +51,6 @@ public class Chapter : Identifiable, IComparable<Chapter>
     internal Chapter(string key, int? volumeNumber, string chapterNumber, string? title, string fileName, bool downloaded)
         : base(key)
     {
-        if(ChapterNumberRegex.Match(chapterNumber) is not { Success: true } match || !match.Value.Equals(chapterNumber))
-            throw new ArgumentException($"Invalid chapter number: {chapterNumber}");
         this.VolumeNumber = volumeNumber;
         this.ChapterNumber = chapterNumber;
         this.Title = title;
