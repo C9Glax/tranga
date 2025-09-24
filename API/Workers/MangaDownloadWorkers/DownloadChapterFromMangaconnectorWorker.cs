@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Text;
 using API.MangaConnectors;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
@@ -34,7 +35,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
                 .FirstOrDefaultAsync(c => c.Key == _mangaConnectorIdId, CancellationToken) is not { } mangaConnectorId)
         {
             Log.Error("Could not get MangaConnectorId.");
-            return []; //TODO Exception?
+            return [];
         }
         
         // Check if Chapter already exists...
@@ -47,22 +48,19 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
         {
             Log.Error("Could not get MangaConnector.");
-            return []; //TODO Exception?
+            return [];
         }
+        
         Log.Debug($"Downloading chapter for MangaConnectorId {mangaConnectorId}...");
         
         Chapter chapter = mangaConnectorId.Obj;
-        if (chapter.Downloaded)
-        {
-            Log.Info("Chapter was already downloaded.");
-            return [];
-        }
         if (chapter.ParentManga.LibraryId is null)
         {
             Log.Info($"Library is not set for {chapter.ParentManga} {chapter}");
             return [];
         }
         
+        Log.Info($"Getting imageUrls for chapter {chapter}");
         string[] imageUrls = mangaConnector.GetChapterImageUrls(mangaConnectorId);
         if (imageUrls.Length < 1)
         {
@@ -87,34 +85,30 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         {
             Log.Info($"Creating publication Directory: {directoryPath}");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                Directory.CreateDirectory(directoryPath,
-                    UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
+                Directory.CreateDirectory(directoryPath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
             else
                 Directory.CreateDirectory(directoryPath);
         }
 
-        if (File.Exists(saveArchiveFilePath)) //Don't download twice. Redownload
-        {
-            Log.Info($"Archive {saveArchiveFilePath} already existed, but deleting and re-downloading.");
-            File.Delete(saveArchiveFilePath);
-        }
-        
-        //Create a temporary folder to store images
-        string tempFolder = Directory.CreateTempSubdirectory("trangatemp").FullName;
-        Log.Debug($"Created temp folder: {tempFolder}");
-
         Log.Info($"Downloading images: {chapter}");
-        int chapterNum = 0;
+        List<Stream> images = [];
         //Download all Images to temporary Folder
         foreach (string imageUrl in imageUrls)
         {
-            string extension = imageUrl.Split('.')[^1].Split('?')[0];
-            string imagePath = Path.Join(tempFolder, $"{chapterNum++}.{extension}");
-            bool status = DownloadImage(imageUrl, imagePath);
-            if (status is false)
+            try
             {
-                Log.Error($"Failed to download image: {imageUrl}");
-                return [];
+                if (DownloadImage(imageUrl) is not { } stream)
+                {
+                    Log.Error($"Failed to download image: {imageUrl}");
+                    return [];
+                }
+                else
+                    images.Add(stream);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                images.ForEach(i => i.Dispose());
             }
         }
         
@@ -123,14 +117,46 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         Log.Debug($"Creating ComicInfo.xml {chapter}");
         foreach (CollectionEntry collectionEntry in DbContext.Entry(chapter.ParentManga).Collections)
             await collectionEntry.LoadAsync(CancellationToken);
-        await File.WriteAllTextAsync(Path.Join(tempFolder, "ComicInfo.xml"), chapter.GetComicInfoXmlString(), CancellationToken);
+        string comicInfo = chapter.GetComicInfoXmlString();
+
+        if (File.Exists(saveArchiveFilePath))
+        {
+            Log.Info($"Archive {saveArchiveFilePath} already existed, overwriting.");
+            File.Delete(saveArchiveFilePath);
+        }
+
+        //Create cbz archive
+        try
+        {
+            Log.Debug($"Creating archive: {saveArchiveFilePath}");
+            //ZIP-it and ship-it
+            using ZipArchive archive = ZipFile.Open(saveArchiveFilePath, ZipArchiveMode.Create);
+            Log.Debug("Writing ComicInfo.xml");
+            Stream comicStream = archive.CreateEntry("ComicInfo.xml").Open();
+            await comicStream.WriteAsync(Encoding.UTF8.GetBytes(comicInfo), CancellationToken);
+            await comicStream.DisposeAsync();
+            for (int i = 0; i < images.Count; i++)
+            {
+                Log.Debug($"Packaging images to archive {chapter} , image {i}");
+                Stream zipStream = archive.CreateEntry($"{i}.jpg").Open();
+                Stream imageStream = images[i];
+                imageStream.Position = 0;
+                await imageStream.CopyToAsync(zipStream, CancellationToken);
+                await zipStream.DisposeAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex);
+        }
+        finally
+        {
+            images.ForEach(i => i.Dispose());
+        }
         
-        Log.Debug($"Packaging images to archive {chapter}");
-        //ZIP-it and ship-it
-        ZipFile.CreateFromDirectory(tempFolder, saveArchiveFilePath);
+        Log.Debug("Setting Permissions");
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute | OtherRead | OtherExecute);
-        Directory.Delete(tempFolder, true); //Cleanup
+            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
 
         DbContext.Entry(chapter).Property(c => c.Downloaded).CurrentValue = true;
         if(await DbContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
@@ -155,42 +181,43 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     };
     private async Task<bool> AllDownloadsFinished() => (await StartNewChapterDownloadsWorker.GetMissingChapters(DbContext, CancellationToken)).Count == 0;
     
-    private void ProcessImage(string imagePath)
+    private bool ProcessImage(Stream imageStream, out Stream processedImage)
     {
         if (!Tranga.Settings.BlackWhiteImages && Tranga.Settings.ImageCompression == 100)
         {
             Log.Debug("No processing requested for image");
-            return;
+            processedImage = imageStream;
+            return true;
         }
-        
-        Log.Debug($"Processing image: {imagePath}");
 
+        processedImage = new MemoryStream();
         try
         {
-            using Image image = Image.Load(imagePath);
+            using Image image = Image.Load(imageStream);
             if (Tranga.Settings.BlackWhiteImages)
                 image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
-            File.Delete(imagePath);
-            image.SaveAsJpeg(imagePath, new JpegEncoder()
+            image.SaveAsJpeg(processedImage, new JpegEncoder()
             {
                 Quality = Tranga.Settings.ImageCompression
             });
+            return true;
         }
         catch (Exception e)
         {
             if (e is UnknownImageFormatException or NotSupportedException)
             {
                 //If the Image-Format is not processable by ImageSharp, we can't modify it.
-                Log.Debug($"Unable to process {imagePath}: Not supported image format");
+                Log.Debug($"Unable to process image: Not supported image format");
             }else if (e is InvalidImageContentException)
             {
-                Log.Debug($"Unable to process {imagePath}: Invalid Content");
+                Log.Debug($"Unable to process image: Invalid Content");
             }
             else
             {
                 Log.Error(e);
             }
         }
+        return false;
     }
     
     private async Task CopyCoverFromCacheToDownloadLocation(Manga manga)
@@ -230,21 +257,17 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         Log.Debug($"Copied cover from {fullCoverPath} to {newFilePath}");
     }
 
-    private bool DownloadImage(string imageUrl, string savePath)
+    private Stream? DownloadImage(string imageUrl)
     {
         HttpDownloadClient downloadClient = new();
         RequestResult requestResult = downloadClient.MakeRequest(imageUrl, RequestType.MangaImage);
 
         if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
-            return false;
+            return null;
         if (requestResult.result == Stream.Null)
-            return false;
-
-        FileStream fs = new(savePath, FileMode.Create, FileAccess.Write, FileShare.None);
-        requestResult.result.CopyTo(fs);
-        fs.Close();
-        ProcessImage(savePath);
-        return true;
+            return null;
+        
+        return ProcessImage(requestResult.result, out Stream processedImage) ? processedImage : null;
     }
 
     public override string ToString() => $"{base.ToString()} {_mangaConnectorIdId}";

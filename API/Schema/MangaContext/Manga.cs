@@ -86,9 +86,10 @@ public class Manga : Identifiable
         if (publicationFolder is null)
             throw new DirectoryNotFoundException("Publication folder not found");
         if(!Directory.Exists(publicationFolder))
-            Directory.CreateDirectory(publicationFolder);
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(publicationFolder, GroupRead | GroupWrite | GroupExecute | OtherRead | OtherWrite | OtherExecute | UserRead | UserWrite | UserExecute);
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                Directory.CreateDirectory(publicationFolder, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
+            else
+                Directory.CreateDirectory(publicationFolder);
         return publicationFolder;
     }
 
