@@ -163,10 +163,8 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> DeleteConnector (string Name)
     {
-        if (await context.NotificationConnectors.FirstOrDefaultAsync(c => c.Name == Name, HttpContext.RequestAborted) is not { } connector)
+        if (await context.NotificationConnectors.Where(c => c.Name == Name).ExecuteDeleteAsync(HttpContext.RequestAborted) < 1)
             return TypedResults.NotFound(nameof(Name));
-        
-        context.NotificationConnectors.Remove(connector);
         
         if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);

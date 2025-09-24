@@ -90,10 +90,8 @@ public class LibraryConnectorController(LibraryContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> DeleteConnector (string LibraryConnectorId)
     {
-        if (await context.LibraryConnectors.FirstOrDefaultAsync(l => l.Key == LibraryConnectorId) is not { } connector)
+        if (await context.LibraryConnectors.Where(l => l.Key == LibraryConnectorId).ExecuteDeleteAsync(HttpContext.RequestAborted) < 1)
             return TypedResults.NotFound(nameof(LibraryConnectorId));
-        
-        context.LibraryConnectors.Remove(connector);
         
         if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);

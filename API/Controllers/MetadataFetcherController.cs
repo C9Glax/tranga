@@ -112,15 +112,13 @@ public class MetadataFetcherController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public async Task<Results<Ok, BadRequest, NotFound<string>, InternalServerError<string>, StatusCodeHttpResult>> UnlinkMangaMetadata (string MangaId, string MetadataFetcherName)
     {
-        if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } _)
+        if (! await context.Mangas.AnyAsync(m => m.Key == MangaId, HttpContext.RequestAborted))
             return TypedResults.NotFound(nameof(MangaId));
-        if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == MetadataFetcherName) is null)
+        if(Tranga.MetadataFetchers.All(f => f.Name != MetadataFetcherName))
             return TypedResults.BadRequest();
-        if (context.MetadataEntries.FirstOrDefault(e =>
-                e.MangaId == MangaId && e.MetadataFetcherName == MetadataFetcherName) is not { } entry)
+        if (await context.MetadataEntries.Where(e => e.MangaId == MangaId && e.MetadataFetcherName == MetadataFetcherName)
+                .ExecuteDeleteAsync(HttpContext.RequestAborted) < 1)
             return TypedResults.StatusCode(Status412PreconditionFailed);
-
-        context.Remove(entry);
         
         if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);

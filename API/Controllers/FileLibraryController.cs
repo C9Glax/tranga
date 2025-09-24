@@ -135,10 +135,8 @@ public class FileLibraryController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> DeleteLocalLibrary (string FileLibraryId)
     {
-        if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
+        if(await context.FileLibraries.Where(l => l.Key == FileLibraryId).ExecuteDeleteAsync(HttpContext.RequestAborted) < 1)
             return TypedResults.NotFound(nameof(FileLibraryId));
-        
-        context.FileLibraries.Remove(library);
         
         if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
