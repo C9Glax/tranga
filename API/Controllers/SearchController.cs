@@ -36,8 +36,11 @@ public class SearchController(MangaContext context) : Controller
         
         (Manga manga, MangaConnectorId<Manga> id)[] mangas = connector.SearchManga(Query);
 
-        IEnumerable<(Manga manga, MangaConnectorId<Manga> id)> addedManga = mangas.Where(kv => context.AddMangaToContext(kv, HttpContext.RequestAborted).GetAwaiter().GetResult());
-
+        IEnumerable<(Manga manga, MangaConnectorId<Manga> id)> addedManga =
+            mangas.Select(kv => context.AddMangaToContext(kv, HttpContext.RequestAborted))
+                .Where(t => t.Result is not null)
+                .Select(t => t.Result)
+                .Cast<(Manga manga, MangaConnectorId<Manga> id)>();
         IEnumerable<MinimalManga> result = addedManga.Select(manga => manga.manga).Select(m =>
         {
             IEnumerable<MangaConnectorId> ids = m.MangaConnectorIds.Select(id =>
@@ -59,7 +62,7 @@ public class SearchController(MangaContext context) : Controller
     [ProducesResponseType<MinimalManga>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<MinimalManga>, NotFound<string>, InternalServerError<string>>> GetMangaFromUrl ([FromBody]string url)
+    public async Task<Results<Ok<MinimalManga>, NotFound<string>, InternalServerError<string>>> GetMangaFromUrl([FromBody]string url)
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals("Global", StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return TypedResults.InternalServerError("Could not find Global Connector.");
@@ -67,7 +70,7 @@ public class SearchController(MangaContext context) : Controller
         if(connector.GetMangaFromUrl(url) is not ({ } m, not null) manga)
             return TypedResults.NotFound("Could not retrieve Manga");
         
-        if(await context.AddMangaToContext(manga, HttpContext.RequestAborted) == false)
+        if(await context.AddMangaToContext(manga, HttpContext.RequestAborted) is not { } addedManga)
             return TypedResults.InternalServerError("Could not add Manga to context");  
         
         IEnumerable<MangaConnectorId> ids = m.MangaConnectorIds.Select(id =>

@@ -185,16 +185,15 @@ public static class Tranga
         RunningWorkers.Remove(worker, out _);
     }
     
-    internal static async Task<bool> AddMangaToContext(this MangaContext context, (Manga, MangaConnectorId<Manga>) addManga, CancellationToken token) =>
+    internal static async Task<(Manga manga, MangaConnectorId<Manga> id)?> AddMangaToContext(this MangaContext context, (Manga, MangaConnectorId<Manga>) addManga, CancellationToken token) =>
         await AddMangaToContext(context, addManga.Item1, addManga.Item2, token);
 
-    internal static async Task<bool> AddMangaToContext(this MangaContext context, Manga addManga, MangaConnectorId<Manga> addMcId,
-        CancellationToken token)
+    internal static async Task<(Manga manga, MangaConnectorId<Manga> id)?> AddMangaToContext(this MangaContext context, Manga addManga, MangaConnectorId<Manga> addMcId, CancellationToken token)
     {
         context.ChangeTracker.Clear();
         Log.Debug($"Adding Manga to Context: {addManga}");
-        Manga? manga = await context.FindMangaLike(addManga, token);
-        if (manga is not null)
+        (Manga,MangaConnectorId<Manga>)? result;
+        if (await context.FindMangaLike(addManga, token) is { } manga)
         {
             Log.Debug($"Merging with existing Manga: {manga}");
             foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
@@ -208,6 +207,8 @@ public static class Tranga
             manga.AltTitles = manga.AltTitles.UnionBy(addManga.AltTitles, altTitle => altTitle.Key).ToList();
             manga.Chapters = manga.Chapters.UnionBy(addManga.Chapters, chapter => chapter.Key).ToList();
             manga.MangaConnectorIds = manga.MangaConnectorIds.UnionBy(addManga.MangaConnectorIds, id => id.MangaConnectorName).ToList();
+            
+            result = (manga, manga.MangaConnectorIds.First(id => id.MangaConnectorName == addMcId.MangaConnectorName));
         }
         else
         {
@@ -227,14 +228,15 @@ public static class Tranga
             addManga.Authors = mergedAuthors.ToList();
             
             context.Mangas.Add(addManga);
+            result = (addManga, addMcId);
         }
         
         if (await context.Sync(token, reason: "AddMangaToContext") is { success: false })
-            return false;
+            return null;
 
-        DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (addMcId);
+        DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (result.Value.Item2);
         AddWorker(downloadCoverWorker);
         
-        return true;
+        return result;
     }
 }
