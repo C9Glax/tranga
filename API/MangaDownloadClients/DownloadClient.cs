@@ -36,9 +36,12 @@ public abstract class DownloadClient
 
         TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(now.Subtract(LastExecutedRateLimit[requestType]));
         Log.Debug($"Request limit {requestType} {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests:ss'.'fffff} Timeout: {rateLimitTimeout:ss'.'fffff}");
-        
+
         if (rateLimitTimeout > TimeSpan.Zero)
+        {
+            Log.Info($"Waiting {rateLimitTimeout} for {url}");
             Thread.Sleep(rateLimitTimeout);
+        }
 
         // Make the request
         RequestResult result = MakeRequestInternal(url, referrer, clickButton);

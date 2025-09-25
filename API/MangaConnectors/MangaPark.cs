@@ -28,6 +28,7 @@ public class MangaPark : MangaConnector
 
     private (Manga, MangaConnectorId<Manga>)[]? SearchMangaWithDomain(string mangaSearchName, string domain)
     {
+        Log.Debug($"Using domain {domain}");
         Uri baseUri = new($"https://{domain}/");
         
         List<(Manga, MangaConnectorId<Manga>)> ret = [];
@@ -68,6 +69,7 @@ public class MangaPark : MangaConnector
 
     private (Manga, MangaConnectorId<Manga>)? GetMangaFromIdWithDomain(string mangaIdOnSite, string domain)
     {
+        Log.Debug($"Using domain {domain}");
         Uri baseUri = new ($"https://{domain}/");
         return GetMangaFromUrl(new Uri(baseUri, $"title/{mangaIdOnSite}").ToString());
     }
@@ -140,6 +142,7 @@ public class MangaPark : MangaConnector
 
     private (Chapter, MangaConnectorId<Chapter>)[]? GetChaptersFromDomain(MangaConnectorId<Manga> mangaId, string domain)
     {
+        Log.Debug($"Using domain {domain}");
         Uri baseUri = new ($"https://{domain}/");
         Uri requestUri = new (baseUri, $"title/{mangaId.IdOnConnectorSite}");
 
@@ -217,6 +220,7 @@ public class MangaPark : MangaConnector
 
     private string[]? GetChapterImageUrlsFromDomain(MangaConnectorId<Chapter> chapterId, string domain)
     {
+        Log.Debug($"Using domain {domain}");
         Uri baseUri = new ($"https://{domain}/");
         Uri requestUri = new (baseUri, $"title/{chapterId.IdOnConnectorSite}");
         if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default) is

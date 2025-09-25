@@ -8,6 +8,7 @@ internal class HttpDownloadClient : DownloadClient
     private static readonly FlareSolverrDownloadClient FlareSolverrDownloadClient = new();
     internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
     {
+        Log.Debug($"Using {typeof(HttpDownloadClient).FullName} for {url}");
         if (clickButton is not null)
             Log.Warn("Client can not click button");
         HttpClient client = new();
