@@ -217,7 +217,7 @@ public class MangaController(MangaContext context) : Controller
         {
             if (Tranga.GetRunningWorkers().Any(worker => worker is DownloadCoverFromMangaconnectorWorker w && context.MangaConnectorToManga.Find(w.MangaConnectorIdId)?.ObjId == MangaId))
             {
-                Response.Headers.Append("Retry-After", $"{Tranga.Settings.WorkCycleTimeoutMs * 2 / 1000:D}");
+                Response.Headers.Append("Retry-After","2");
                 return TypedResults.StatusCode(Status503ServiceUnavailable);
             }
             return TypedResults.NoContent();
@@ -254,7 +254,7 @@ public class MangaController(MangaContext context) : Controller
         {
             IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
                 new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded);
+            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName);
         }).ToList();
         
         return TypedResults.Ok(chapters);
@@ -284,7 +284,7 @@ public class MangaController(MangaContext context) : Controller
         {
             IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
                 new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded);
+            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName);
         }).ToList();
         
         if (chapters.Count == 0)
@@ -317,7 +317,7 @@ public class MangaController(MangaContext context) : Controller
         {
             IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
                 new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded);
+            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName);
         }).ToList();
         
         if (chapters.Count == 0)
@@ -370,7 +370,7 @@ public class MangaController(MangaContext context) : Controller
         
         IEnumerable<MangaConnectorId> ids = max.MangaConnectorIds.Select(id =>
             new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-        return TypedResults.Ok(new Chapter(max.Key, max.ParentMangaId, max.VolumeNumber, max.ChapterNumber, max.Title,ids, max.Downloaded));
+        return TypedResults.Ok(new Chapter(max.Key, max.ParentMangaId, max.VolumeNumber, max.ChapterNumber, max.Title,ids, max.Downloaded, max.FileName));
     }
     
     /// <summary>
@@ -412,7 +412,7 @@ public class MangaController(MangaContext context) : Controller
         
         IEnumerable<MangaConnectorId> ids = max.MangaConnectorIds.Select(id =>
             new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-        return TypedResults.Ok(new Chapter(max.Key, max.ParentMangaId, max.VolumeNumber, max.ChapterNumber, max.Title,ids, max.Downloaded));
+        return TypedResults.Ok(new Chapter(max.Key, max.ParentMangaId, max.VolumeNumber, max.ChapterNumber, max.Title,ids, max.Downloaded, max.FileName));
     }
 
     /// <summary>
