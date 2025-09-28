@@ -120,7 +120,10 @@ app.UseSwagger(opts =>
     opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
     opts.RouteTemplate = "swagger/{documentName}/swagger.json";
 });
-app.UseSwaggerUI();
+app.UseSwaggerUI(opts =>
+{
+    opts.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+});
 
 app.UseHttpsRedirection();
 
