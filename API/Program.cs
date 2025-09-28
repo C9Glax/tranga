@@ -7,12 +7,19 @@ using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
 using log4net;
+using log4net.Config;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Npgsql;
 
-var builder = WebApplication.CreateBuilder(args);
+XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config.xml"));
+ILog Log = LogManager.GetLogger("Startup");
+Log.Info("Logger Configured.");
+
+Log.Info("Starting up");
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
@@ -26,6 +33,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+Log.Debug("Adding API-Explorer-helpers...");
 builder.Services.AddApiVersioning(option =>
     {
         option.AssumeDefaultVersionWhenUnspecified = true;
@@ -47,14 +55,14 @@ builder.Services.AddApiVersioning(option =>
         options.SubstituteApiVersionInUrl = true;
     });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGenNewtonsoftSupport();
-builder.Services.AddSwaggerGen(opt =>
+builder.Services.ConfigureOptions<NamedSwaggerGenOptions>();
+builder.Services.AddSwaggerGenNewtonsoftSupport().AddSwaggerGen(opt =>
 {
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
-builder.Services.ConfigureOptions<NamedSwaggerGenOptions>();
 
+Log.Debug("Adding Database-Connection...");
 NpgsqlConnectionStringBuilder connectionStringBuilder = new()
 {
     Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "tranga-pg:5432",
@@ -89,71 +97,86 @@ builder.Services.AddScoped<ILog>(_ => LogManager.GetLogger("API"));
 
 builder.WebHost.UseUrls("http://*:6531");
 
-var app = builder.Build();
+Log.Info("Starting app...");
+WebApplication app = builder.Build();
+
+app.UseCors("AllowAll");
 
 ApiVersionSet apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(2))
     .ReportApiVersions()
     .Build();
 
-
 app.UseCors("AllowAll");
 
+Log.Debug("Mapping Controllers...");
 app.MapControllers()
     .WithApiVersionSet(apiVersionSet)
     .MapToApiVersion(2);
 
-app.UseSwagger();
-app.UseSwaggerUI(options =>
+Log.Debug("Adding Swagger...");
+app.UseSwagger(opts =>
 {
-    options.SwaggerEndpoint($"/swagger/v2/swagger.json", "v2"); 
+    opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+    opts.RouteTemplate = "swagger/{documentName}/swagger.json";
 });
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<RequestTimeMiddleware>();
-
-using (IServiceScope scope = app.Services.CreateScope())
+try //Connect to DB and apply migrations
 {
-    MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
-    await context.Database.MigrateAsync(CancellationToken.None);
-    await context.Database.EnsureCreatedAsync(CancellationToken.None);
-
-    if (!context.FileLibraries.Any())
+    Log.Debug("Applying Migrations...");
+    using (IServiceScope scope = app.Services.CreateScope())
     {
-        await context.FileLibraries.AddAsync(new (Tranga.Settings.DefaultDownloadLocation, "Default FileLibrary"), CancellationToken.None);
-        await context.Sync(CancellationToken.None, reason: "Add default library");
+        MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        await context.Database.MigrateAsync(CancellationToken.None);
+
+        if (!context.FileLibraries.Any())
+        {
+            await context.FileLibraries.AddAsync(new(Tranga.Settings.DefaultDownloadLocation, "Default FileLibrary"),
+                CancellationToken.None);
+            await context.Sync(CancellationToken.None, reason: "Add default library");
+        }
+    }
+
+    using (IServiceScope scope = app.Services.CreateScope())
+    {
+        NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
+        await context.Database.MigrateAsync(CancellationToken.None);
+
+        context.Notifications.ExecuteDelete();
+        string[] emojis =
+        [
+            "(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=",
+            "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~", "૮ \u00b4• ﻌ \u00b4• ა",
+            "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"
+        ];
+        await context.Notifications.AddAsync(
+            new("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High),
+            CancellationToken.None);
+
+        await context.Sync(CancellationToken.None, reason: "Startup notification");
+    }
+
+    using (IServiceScope scope = app.Services.CreateScope())
+    {
+        LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
+        await context.Database.MigrateAsync(CancellationToken.None);
+
+        await context.Sync(CancellationToken.None, reason: "Startup library");
     }
 }
-
-using (IServiceScope scope = app.Services.CreateScope())
+catch (Exception e)
 {
-    NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
-    await context.Database.MigrateAsync(CancellationToken.None);
-    await context.Database.EnsureCreatedAsync(CancellationToken.None);
-
-    context.Notifications.ExecuteDelete();
-    string[] emojis = ["(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=", "（ΦωΦ）", "(\u272a\u3268\u272a)", "( ﾉ･o･ )ﾉ", "（〜^\u2207^ )〜", "~(\u2267ω\u2266)~","૮ \u00b4• ﻌ \u00b4• ა", "(\u02c3ᆺ\u02c2)", "(=\ud83d\udf66 \u0f1d \ud83d\udf66=)"
-    ];
-    await context.Notifications.AddAsync(new ("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High), CancellationToken.None);
-    
-    await context.Sync(CancellationToken.None, reason: "Startup notification");
+    Log.Debug("Migrations failed!", e);
+    return;
 }
 
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    LibraryContext context = scope.ServiceProvider.GetRequiredService<LibraryContext>();
-    await context.Database.MigrateAsync(CancellationToken.None);
-    await context.Database.EnsureCreatedAsync(CancellationToken.None);
-    
-    await context.Sync(CancellationToken.None, reason: "Startup library");
-}
-
+Log.Info("Starting Tranga.");
 Tranga.ServiceProvider = app.Services;
-Tranga.StartLogger(new FileInfo("Log4Net.config.xml"));
 Tranga.StartupTasks();
 Tranga.AddDefaultWorkers();
 
-app.UseCors("AllowAll");
-
+Log.Info("Running app.");
 app.Run();

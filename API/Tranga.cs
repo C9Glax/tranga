@@ -35,15 +35,9 @@ public static class Tranga
     internal static readonly CleanupMangaconnectorIdsWithoutConnector CleanupMangaconnectorIdsWithoutConnector = new();
     // ReSharper restore MemberCanBePrivate.Global
 
-    internal static void StartLogger(FileInfo loggerConfigFile)
-    {
-        XmlConfigurator.ConfigureAndWatch(loggerConfigFile);
-        Log.Info("Logger Configured.");
-        Log.Info(Constants.TRANGA);
-    }
-
     internal static void StartupTasks()
     {
+        Log.Info(Constants.TRANGA);
         AddWorker(SendNotificationsWorker);
         AddWorker(CleanupMangaconnectorIdsWithoutConnector);
         AddWorker(UpdateChaptersDownloadedWorker);
