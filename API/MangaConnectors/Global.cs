@@ -10,23 +10,27 @@ public class Global : MangaConnector
 
     public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
+        Log.Debug("Searching Manga on all enabled connectors:");
         //Get all enabled Connectors
         MangaConnector[] enabledConnectors = Tranga.MangaConnectors.Where(c => c.Enabled && c.Name != "Global").ToArray();
+        Log.Debug(string.Join(", ", enabledConnectors.Select(c => c.Name)));
         
         //Create Task for each MangaConnector to search simultaneously
         Task<(Manga, MangaConnectorId<Manga>)[]>[] tasks =
             enabledConnectors.Select(c => new Task<(Manga, MangaConnectorId<Manga>)[]>(() => c.SearchManga(mangaSearchName))).ToArray();
-        foreach (var task in tasks)
+        foreach (Task<(Manga, MangaConnectorId<Manga>)[]> task in tasks)
             task.Start();
         
         //Wait for all tasks to finish
         do
         {
-            Thread.Sleep(50);
-        }while(tasks.Any(t => t.Status < TaskStatus.RanToCompletion));
+            Thread.Sleep(500);
+            Log.Debug($"Waiting for search to finish: {tasks.Count(t => !t.IsCompleted)}");
+        }while(tasks.Any(t => !t.IsCompleted));
         
         //Concatenate all results into one
         (Manga, MangaConnectorId<Manga>)[] ret = tasks.Select(t => t.IsCompletedSuccessfully ? t.Result : []).ToArray().SelectMany(i => i).ToArray();
+        Log.Debug($"Got {ret.Length} results.");
         return ret;
     }
 
