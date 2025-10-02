@@ -24,10 +24,13 @@ public class MaintenanceController(MangaContext mangaContext) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public async Task<Results<Ok, InternalServerError<string>>> CleanupNoDownloadManga()
     {
-        await mangaContext.Mangas
-            .Include(m => m.MangaConnectorIds)
-            .Where(m => !m.MangaConnectorIds.Any(id => id.UseForDownload))
-            .ExecuteDeleteAsync(HttpContext.RequestAborted);
+        if (await mangaContext.Mangas
+                .Include(m => m.MangaConnectorIds)
+                .Where(m => !m.MangaConnectorIds.Any(id => id.UseForDownload))
+                .ToListAsync(HttpContext.RequestAborted) is not { } remove)
+            return TypedResults.InternalServerError("Database error");
+        
+        mangaContext.RemoveRange(remove);
         
         if(await mangaContext.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
