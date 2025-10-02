@@ -38,25 +38,22 @@ public class MangaPark : MangaConnector
             Uri searchUri = new(baseUri, $"search?word={HttpUtility.UrlEncode(mangaSearchName)}&lang={Tranga.Settings.DownloadLanguage}&page={page}");
             if (downloadClient.MakeRequest(searchUri.ToString(), RequestType.Default) is { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
             {
-                HtmlDocument document= result.CreateDocument();
+                HtmlDocument document = result.CreateDocument();
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract HAP sucks with nullable types
                 if (document.DocumentNode.SelectSingleNode("//button[contains(text(),\"No Data\")]") is not null) // No results found
                     break;
+
+                if (document.GetNodesWith("q4_9") is not { Count: > 0 } resultNodes)
+                    return [];
+                IEnumerable<string> urls = resultNodes.Select(node =>
+                    node.SelectSingleNode("//a[contains(@href,'title')]").Attributes["href"].Value).Distinct();
                 
-                ret.AddRange(document.GetNodesWith("q4_9")?.Select(n => ParseSingleMangaFromSearchResultsList(baseUri, n))??[]);
+                ret.AddRange(urls.Select(link => ((Manga, MangaConnectorId<Manga>))GetMangaFromUrl(new Uri(baseUri, link).ToString())!));
             }else
                 return null;
         }
 
-        return ret.ToArray();
-    }
-
-    private (Manga, MangaConnectorId<Manga>) ParseSingleMangaFromSearchResultsList(Uri baseUri, HtmlNode resultNode)
-    {
-        HtmlNode titleAndLinkNode = resultNode.SelectSingleNode("//a[contains(@href,'title')]");
-        string link = titleAndLinkNode.Attributes["href"].Value;
-
-        return ((Manga, MangaConnectorId<Manga>))GetMangaFromUrl(new Uri(baseUri, link).ToString())!;
+        return ret.DistinctBy(r => r.Item1.Key).ToArray();
     }
 
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite)

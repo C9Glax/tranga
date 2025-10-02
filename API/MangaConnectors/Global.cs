@@ -29,7 +29,7 @@ public class Global : MangaConnector
         }while(tasks.Any(t => !t.IsCompleted));
         
         //Concatenate all results into one
-        (Manga, MangaConnectorId<Manga>)[] ret = tasks.Select(t => t.IsCompletedSuccessfully ? t.Result : []).ToArray().SelectMany(i => i).ToArray();
+        (Manga, MangaConnectorId<Manga>)[] ret = tasks.Select(t => t.IsCompletedSuccessfully ? t.Result : []).SelectMany(i => i).ToArray();
         Log.Debug($"Got {ret.Length} results.");
         return ret;
     }
