@@ -183,6 +183,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     
     private bool ProcessImage(Stream imageStream, out Stream processedImage)
     {
+        Log.Debug("Processing image");
         if (!Tranga.Settings.BlackWhiteImages && Tranga.Settings.ImageCompression == 100)
         {
             Log.Debug("No processing requested for image");
@@ -194,12 +195,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         try
         {
             using Image image = Image.Load(imageStream);
+            Log.Debug("Image loaded");
             if (Tranga.Settings.BlackWhiteImages)
                 image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
             image.SaveAsJpeg(processedImage, new JpegEncoder()
             {
                 Quality = Tranga.Settings.ImageCompression
             });
+            Log.Debug("Image processed");
             return true;
         }
         catch (Exception e)
@@ -207,17 +210,17 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             if (e is UnknownImageFormatException or NotSupportedException)
             {
                 //If the Image-Format is not processable by ImageSharp, we can't modify it.
-                Log.Debug($"Unable to process image: Not supported image format");
+                Log.Debug("Unable to process image: Not supported image format");
             }else if (e is InvalidImageContentException)
             {
-                Log.Debug($"Unable to process image: Invalid Content");
+                Log.Debug("Unable to process image: Invalid Content");
             }
             else
             {
                 Log.Error(e);
             }
+            return false;
         }
-        return false;
     }
     
     private async Task CopyCoverFromCacheToDownloadLocation(Manga manga)
