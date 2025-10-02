@@ -100,6 +100,7 @@ Endpoints are documented in Swagger. Just spin up an instance, and go to `http:/
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
 - [Jikan](https://jikan.moe/)
   - [Jikan.Net](https://github.com/Ervie/jikan.net)
+- [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - 💙 Blåhaj 🦈
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

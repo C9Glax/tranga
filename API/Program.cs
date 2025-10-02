@@ -14,11 +14,21 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Npgsql;
 
-XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config.xml"));
-ILog Log = LogManager.GetLogger("Startup");
-Log.Info("Logger Configured.");
+string tranga =
+    "\n\n" +
+    " _______                                 v2\n" +
+    "|_     _|.----..---.-..-----..-----..---.-.\n" +
+    "  |   |  |   _||  _  ||     ||  _  ||  _  |\n" +
+    "  |___|  |__|  |___._||__|__||___  ||___._|\n" +
+    "                             |_____|       \n" +
+    $"{GitInformation.Branch}-{GitInformation.ShortCommit}-{BuildInformation.BuildAt} for {BuildInformation.Platform}\n\n";
 
-Log.Info("Starting up");
+XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config.xml"));
+ILog log = LogManager.GetLogger("Startup");
+log.Info(tranga);
+log.Info("Logger Configured.");
+
+log.Info("Starting up");
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
@@ -33,7 +43,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-Log.Debug("Adding API-Explorer-helpers...");
+log.Debug("Adding API-Explorer-helpers...");
 builder.Services.AddApiVersioning(option =>
     {
         option.AssumeDefaultVersionWhenUnspecified = true;
@@ -62,7 +72,7 @@ builder.Services.AddSwaggerGenNewtonsoftSupport().AddSwaggerGen(opt =>
     opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
-Log.Debug("Adding Database-Connection...");
+log.Debug("Adding Database-Connection...");
 NpgsqlConnectionStringBuilder connectionStringBuilder = new()
 {
     Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "tranga-pg:5432",
@@ -97,7 +107,7 @@ builder.Services.AddScoped<ILog>(_ => LogManager.GetLogger("API"));
 
 builder.WebHost.UseUrls("http://*:6531");
 
-Log.Info("Starting app...");
+log.Info("Starting app...");
 WebApplication app = builder.Build();
 
 app.UseCors("AllowAll");
@@ -109,12 +119,12 @@ ApiVersionSet apiVersionSet = app.NewApiVersionSet()
 
 app.UseCors("AllowAll");
 
-Log.Debug("Mapping Controllers...");
+log.Debug("Mapping Controllers...");
 app.MapControllers()
     .WithApiVersionSet(apiVersionSet)
     .MapToApiVersion(2);
 
-Log.Debug("Adding Swagger...");
+log.Debug("Adding Swagger...");
 app.UseSwagger(opts =>
 {
     opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
@@ -129,7 +139,7 @@ app.UseHttpsRedirection();
 
 try //Connect to DB and apply migrations
 {
-    Log.Debug("Applying Migrations...");
+    log.Debug("Applying Migrations...");
     using (IServiceScope scope = app.Services.CreateScope())
     {
         MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
@@ -172,14 +182,14 @@ try //Connect to DB and apply migrations
 }
 catch (Exception e)
 {
-    Log.Debug("Migrations failed!", e);
+    log.Debug("Migrations failed!", e);
     return;
 }
 
-Log.Info("Starting Tranga.");
+log.Info("Starting Tranga.");
 Tranga.ServiceProvider = app.Services;
 Tranga.StartupTasks();
 Tranga.AddDefaultWorkers();
 
-Log.Info("Running app.");
+log.Info("Running app.");
 app.Run();

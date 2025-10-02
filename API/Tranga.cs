@@ -10,12 +10,12 @@ using API.Workers.MangaDownloadWorkers;
 using API.Workers.PeriodicWorkers;
 using API.Workers.PeriodicWorkers.MaintenanceWorkers;
 using log4net;
-using log4net.Config;
 
 namespace API;
 
 public static class Tranga
 {
+    
     internal static IServiceProvider? ServiceProvider { get; set; }
     
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
@@ -37,7 +37,6 @@ public static class Tranga
 
     internal static void StartupTasks()
     {
-        Log.Info(Constants.TRANGA);
         AddWorker(SendNotificationsWorker);
         AddWorker(CleanupMangaconnectorIdsWithoutConnector);
         AddWorker(UpdateChaptersDownloadedWorker);
