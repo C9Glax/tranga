@@ -31,11 +31,11 @@ public abstract class DownloadClient
         
         // Apply the delay
         TimeSpan timeBetweenRequests = TimeSpan.FromMinutes(1).Divide(rateLimit);
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.UtcNow;
         LastExecutedRateLimit.TryAdd(requestType, now.Subtract(timeBetweenRequests));
 
         TimeSpan rateLimitTimeout = timeBetweenRequests.Subtract(now.Subtract(LastExecutedRateLimit[requestType]));
-        Log.Debug($"Request limit {requestType} {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests:ss'.'fffff} Timeout: {rateLimitTimeout:ss'.'fffff}");
+        Log.Debug($"Request limit {requestType} {rateLimit}/Minute timeBetweenRequests: {timeBetweenRequests:ss'.'fffff}");
 
         if (rateLimitTimeout > TimeSpan.Zero)
         {
