@@ -225,30 +225,48 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     
     private async Task CopyCoverFromCacheToDownloadLocation(Manga manga)
     {
-        //Check if Publication already has a Folder and cover
-        string publicationFolder = manga.CreatePublicationFolder();
-        DirectoryInfo dirInfo = new (publicationFolder);
-        if (dirInfo.EnumerateFiles().Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
+        Log.Debug($"Copying cover for {manga}");
+
+        manga = await DbContext.MangaIncludeAll().FirstAsync(m => m.Key == manga.Key, CancellationToken);
+        string publicationFolder;
+        try
         {
-            Log.Debug($"Cover already exists at {publicationFolder}");
-            return;
+            Log.Debug("Checking Manga directory exists...");
+            //Check if Publication already has a Folder and cover
+            publicationFolder = manga.FullDirectoryPath;
+
+            Log.Debug("Checking cover already exists...");
+            DirectoryInfo dirInfo = new(publicationFolder);
+            if (dirInfo.EnumerateFiles()
+                .Any(info => info.Name.Contains("cover", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                Log.Debug($"Cover already exists at {publicationFolder}");
+                return;
+            }
         }
-        
-        //TODO MangaConnector Selection
-        await DbContext.Entry(manga).Collection(m => m.MangaConnectorIds).LoadAsync(CancellationToken);
-        MangaConnectorId<Manga> mangaConnectorId = manga.MangaConnectorIds.First();
-        if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+        catch (Exception e)
         {
-            Log.Error($"MangaConnector with name {mangaConnectorId.MangaConnectorName} could not be found");
+            Log.Error(e);
             return;
         }
 
-        Log.Info($"Copying cover to {publicationFolder}");
-        await DbContext.Entry(mangaConnectorId).Navigation(nameof(MangaConnectorId<Manga>.Obj)).LoadAsync(CancellationToken);
-        string? coverFileNameInCache = manga.CoverFileNameInCache ?? mangaConnector.SaveCoverImageToCache(mangaConnectorId);
+        if (manga.CoverFileNameInCache is not { } coverFileNameInCache)
+        {
+            MangaConnectorId<Manga> mangaConnectorId = manga.MangaConnectorIds.First();
+            if (!Tranga.TryGetMangaConnector(mangaConnectorId.MangaConnectorName, out MangaConnector? mangaConnector))
+            {
+                Log.Error($"MangaConnector with name {mangaConnectorId.MangaConnectorName} could not be found");
+                return;
+            }
+            
+            coverFileNameInCache = mangaConnector.SaveCoverImageToCache(mangaConnectorId);
+            manga.CoverFileNameInCache = coverFileNameInCache;
+            if (await DbContext.Sync(CancellationToken, reason: "Update cover filename") is { success: false } result)
+                Log.Error($"Couldn't update cover filename {result.exceptionMessage}");
+        }
         if (coverFileNameInCache is null)
         {
-            Log.Error($"File {coverFileNameInCache} does not exist");
+            Log.Error($"File {coverFileNameInCache} does not exist and failed to download cover");
             return;
         }
         

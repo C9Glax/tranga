@@ -28,8 +28,8 @@ public class Manga : Identifiable
     [StringLength(512)] public string? CoverFileNameInCache { get; internal set; }
     public uint? Year { get; internal init; }
     [StringLength(8)] public string? OriginalLanguage { get; internal init; }
-
-    [NotMapped] public string? FullDirectoryPath => Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
+    
+    [NotMapped] public string FullDirectoryPath => EnsureDirectoryExists();
 
     [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.Key).ToList();
     public ICollection<Chapter> Chapters = null!;
@@ -79,10 +79,10 @@ public class Manga : Identifiable
         this.OriginalLanguage = originalLanguage;
     }
     
-    
-    public string CreatePublicationFolder()
+    /// <exception cref="DirectoryNotFoundException">Library not loaded</exception>
+    private string EnsureDirectoryExists()
     {
-        string? publicationFolder = FullDirectoryPath;
+        string? publicationFolder = Library is not null ? Path.Join(Library.BasePath, DirectoryName) : null;
         if (publicationFolder is null)
             throw new DirectoryNotFoundException("Publication folder not found");
         if(!Directory.Exists(publicationFolder))
