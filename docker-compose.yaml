@@ -3,6 +3,7 @@ services:
   tranga-api:
     image: glax/tranga-api:Server-V2
     container_name: tranga-api
+    user: "${UID}:${GID}"
     volumes:
       - ./Manga:/Manga
       - ./settings:/usr/share/tranga-api
