@@ -138,6 +138,7 @@ The file also includes [tranga-website](https://github.com/C9Glax/tranga-website
 | FLARESOLVERR_URL            | <empty>                                                                                  |
 | POSTGRES_COMMAND_TIMEOUT    | [`60`](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout) |
 | POSTGRES_CONNECTION_TIMEOUT | `30`                                                                                     |
+| CHECK_CHAPTERS_BEFORE_START | `true`                                                                                   |
 
 For compatibility do not execute the compose as root (which you should not do anyways...) but as user that can
 access the folder. Permission conflicts with Komga and Kavita should thus be limited.

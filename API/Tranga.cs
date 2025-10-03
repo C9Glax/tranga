@@ -39,8 +39,11 @@ public static class Tranga
     {
         AddWorker(SendNotificationsWorker);
         AddWorker(CleanupMangaconnectorIdsWithoutConnector);
-        AddWorker(UpdateChaptersDownloadedWorker);
         AddWorker(CleanupMangaCoversWorker);
+        
+        if(Constants.UpdateChaptersDownloadedBeforeStarting)
+            AddWorker(UpdateChaptersDownloadedWorker);
+        
         Log.Info("Waiting for startup to complete...");
         while (new List<BaseWorker>() { CleanupMangaconnectorIdsWithoutConnector, UpdateChaptersDownloadedWorker, CleanupMangaCoversWorker}.Any(w => w.State < WorkerExecutionState.Completed))
             Thread.Sleep(100);
@@ -54,6 +57,9 @@ public static class Tranga
         AddWorker(StartNewChapterDownloadsWorker);
         AddWorker(RemoveOldNotificationsWorker);
         AddWorker(UpdateCoversWorker);
+        
+        if(!Constants.UpdateChaptersDownloadedBeforeStarting)
+            AddWorker(UpdateChaptersDownloadedWorker);
     }
 
     internal static bool TryGetMangaConnector(string name, [NotNullWhen(true)]out MangaConnector? mangaConnector)

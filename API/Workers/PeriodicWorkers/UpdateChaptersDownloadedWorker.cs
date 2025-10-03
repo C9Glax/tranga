@@ -10,7 +10,7 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
     : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
-    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(60);
+    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromDays(1);
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Checking chapter files...");

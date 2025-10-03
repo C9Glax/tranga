@@ -75,15 +75,15 @@ builder.Services.AddSwaggerGenNewtonsoftSupport().AddSwaggerGen(opt =>
 log.Debug("Adding Database-Connection...");
 NpgsqlConnectionStringBuilder connectionStringBuilder = new()
 {
-    Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "tranga-pg:5432",
-    Database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "postgres",
-    Username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
-    Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres",
+    Host = Constants.PostgresHost,
+    Database = Constants.PostgresDb,
+    Username = Constants.PostgresUser,
+    Password = Constants.PostgresPassword,
     ConnectionLifetime = 300,
-    Timeout = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_TIMEOUT") ?? "30"),
+    Timeout = Constants.PostgresConnectionTimeout,
     ReadBufferSize = 65536,
     WriteBufferSize = 65536,
-    CommandTimeout = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_COMMAND_TIMEOUT") ?? "60"),
+    CommandTimeout = Constants.PostgresCommandTimeout,
     ApplicationName = "Tranga"
 };
 
