@@ -231,8 +231,8 @@ public class MangaPark : MangaConnector
                 return null;
             }
 
-            MatchCollection matchCollection = Matches(imageJson, @"https?:\/\/[\da-zA-Z\.]+\/[^,""]*\.[a-z]+");
-            return matchCollection.Select(m => m.Value).ToArray();
+            MatchCollection matchCollection = Matches(imageJson, @"""https?:\/\/[\da-zA-Z\.]+\/[^,]*\.[a-z]+""");
+            return matchCollection.Select(m => m.Value.Trim('"')).ToArray();
         }
         else return null;
     }
