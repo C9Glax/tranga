@@ -84,18 +84,19 @@ That is why I wanted to create my own project, in a language I understand, and t
 
 ## Endpoint Documentation
 
-Endpoints are documented in Swagger. Just spin up an instance, and go to `http://<url>/swagger`.
+Checkout `openapi/API_v2.json`
+
+The container also spins up a Swagger site at `http://<url>/swagger`.
 
 ## Built With
 
 - ASP.NET
-  - Entity Framework Core (EF Core)
+  - EF Core
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
 - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
 - [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
-- [PuppeteerSharp](https://github.com/hardkoded/puppeteer-sharp/blob/master/LICENSE)
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
 - [Jikan](https://jikan.moe/)
