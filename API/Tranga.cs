@@ -58,7 +58,7 @@ public static class Tranga
         AddWorker(RemoveOldNotificationsWorker);
         AddWorker(UpdateCoversWorker);
         
-        if(!Constants.UpdateChaptersDownloadedBeforeStarting)
+        if(Constants.UpdateChaptersDownloadedBeforeStarting)
             AddWorker(UpdateChaptersDownloadedWorker);
     }
 
