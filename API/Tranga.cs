@@ -45,8 +45,8 @@ public static class Tranga
             AddWorker(UpdateChaptersDownloadedWorker);
         
         Log.Info("Waiting for startup to complete...");
-        while (new List<BaseWorker>() { CleanupMangaconnectorIdsWithoutConnector, UpdateChaptersDownloadedWorker, CleanupMangaCoversWorker}.Any(w => w.State < WorkerExecutionState.Completed))
-            Thread.Sleep(100);
+        while (RunningWorkers.Any(w => w.Key.State < WorkerExecutionState.Completed))
+            Thread.Sleep(1000);
         Log.Info("Start complete!");
     }
 
