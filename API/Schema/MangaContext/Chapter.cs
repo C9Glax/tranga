@@ -85,6 +85,9 @@ public class Chapter : Identifiable, IComparable<Chapter>
                .ThenInclude(p => p.Library)
                .FirstOrDefaultAsync(c => c.Key == this.Key, token??CancellationToken.None) is not { } chapter)
             throw new KeyNotFoundException("Unable to find chapter");
+
+        if (chapter.ParentManga.Library is null)
+            return false;
         
         //TODO Log here
         this.Downloaded = File.Exists(chapter.FullArchiveFilePath);
