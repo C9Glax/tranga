@@ -36,7 +36,7 @@ public class MangaPark : MangaConnector
         for (int page = 1;; page++) // break; in loop
         {
             Uri searchUri = new(baseUri, $"search?word={HttpUtility.UrlEncode(mangaSearchName)}&lang={Tranga.Settings.DownloadLanguage}&page={page}");
-            if (downloadClient.MakeRequest(searchUri.ToString(), RequestType.Default) is { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
+            if (downloadClient.MakeRequest(searchUri.ToString(), RequestType.Default).Result is { StatusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
             {
                 HtmlDocument document = result.CreateDocument();
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract HAP sucks with nullable types
@@ -73,8 +73,8 @@ public class MangaPark : MangaConnector
 
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
-        if (downloadClient.MakeRequest(url, RequestType.Default) is
-            { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
+        if (downloadClient.MakeRequest(url, RequestType.Default).Result is
+            { StatusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
             HtmlDocument document= result.CreateDocument();
 
@@ -145,8 +145,8 @@ public class MangaPark : MangaConnector
 
         List<(Chapter, MangaConnectorId<Chapter>)> ret = [];
         
-        if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default) is
-            { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
+        if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default).Result is
+            { StatusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
             HtmlDocument document= result.CreateDocument();
 
@@ -220,8 +220,8 @@ public class MangaPark : MangaConnector
         Log.Debug($"Using domain {domain}");
         Uri baseUri = new ($"https://{domain}/");
         Uri requestUri = new (baseUri, $"title/{chapterId.IdOnConnectorSite}");
-        if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default) is
-            { statusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
+        if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default).Result is
+            { StatusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
             HtmlDocument document = result.CreateDocument();
 
@@ -240,10 +240,10 @@ public class MangaPark : MangaConnector
 
 internal static class MangaParkHelper
 {
-    internal static HtmlDocument CreateDocument(this RequestResult result)
+    internal static HtmlDocument CreateDocument(this HttpResponseMessage result)
     {
         HtmlDocument document = new();
-        StreamReader sr = new (result.result);
+        StreamReader sr = new (result.Content.ReadAsStream());
         string htmlStr = sr.ReadToEnd().Replace("q:key", "qkey");
         document.LoadHtml(htmlStr);
         

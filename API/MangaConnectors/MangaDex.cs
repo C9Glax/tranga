@@ -35,14 +35,14 @@ public class MangaDex : MangaConnector
                 $"&includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag'";
             offset += Limit;
 
-            RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.MangaDexFeed);
-            if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
+            HttpResponseMessage result = downloadClient.MakeRequest(requestUrl, RequestType.MangaDexFeed).Result;
+            if ((int)result.StatusCode < 200 || (int)result.StatusCode >= 300)
             {
                 Log.Error("Request failed");
                 return [];
             }
 
-            using StreamReader sr = new (result.result);
+            using StreamReader sr = new (result.Content.ReadAsStream());
             JObject jObject = JObject.Parse(sr.ReadToEnd());
 
             if (jObject.Value<string>("result") != "ok")
@@ -96,14 +96,14 @@ public class MangaDex : MangaConnector
             $"https://api.mangadex.org/manga/{mangaIdOnSite}" +
             $"?includes%5B%5D=manga&includes%5B%5D=cover_art&includes%5B%5D=author&includes%5B%5D=artist&includes%5B%5D=tag'";
         
-        RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.MangaDexFeed);
-        if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
+        HttpResponseMessage result = downloadClient.MakeRequest(requestUrl, RequestType.MangaDexFeed).Result;
+        if ((int)result.StatusCode < 200 || (int)result.StatusCode >= 300)
         {
             Log.Error("Request failed");
             return null;
         }
 
-        using StreamReader sr = new (result.result);
+        using StreamReader sr = new (result.Content.ReadAsStream());
         JObject jObject = JObject.Parse(sr.ReadToEnd());
 
         if (jObject.Value<string>("result") != "ok")
@@ -138,14 +138,14 @@ public class MangaDex : MangaConnector
                 $"contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&includeFutureUpdates=0&includes%5B%5D=";
             offset += Limit;
 
-            RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.MangaDexFeed);
-            if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
+            HttpResponseMessage result = downloadClient.MakeRequest(requestUrl, RequestType.MangaDexFeed).Result;
+            if ((int)result.StatusCode < 200 || (int)result.StatusCode >= 300)
             {
                 Log.Error("Request failed");
                 return [];
             }
 
-            using StreamReader sr = new (result.result);
+            using StreamReader sr = new (result.Content.ReadAsStream());
             JObject jObject = JObject.Parse(sr.ReadToEnd());
 
             if (jObject.Value<string>("result") != "ok")
@@ -191,14 +191,14 @@ public class MangaDex : MangaConnector
         string id = match.Groups[1].Value;
         string requestUrl = $"https://api.mangadex.org/at-home/server/{id}";
         
-        RequestResult result = downloadClient.MakeRequest(requestUrl, RequestType.Default);
-        if ((int)result.statusCode < 200 || (int)result.statusCode >= 300)
+        HttpResponseMessage result = downloadClient.MakeRequest(requestUrl, RequestType.Default).Result;
+        if ((int)result.StatusCode < 200 || (int)result.StatusCode >= 300)
         {
             Log.Error("Request failed");
             return [];
         }
 
-        using StreamReader sr = new (result.result);
+        using StreamReader sr = new (result.Content.ReadAsStream());
         JObject jObject = JObject.Parse(sr.ReadToEnd());
         
         if (jObject.Value<string>("result") != "ok")

@@ -30,11 +30,11 @@ public sealed class Mangaworld : MangaConnector
         Uri baseUri = new ("https://www.mangaworld.cx/");
         Uri searchUrl = new (baseUri, "archive?keyword=" + HttpUtility.UrlEncode(mangaSearchName));
 
-        RequestResult res = downloadClient.MakeRequest(searchUrl.ToString(), RequestType.Default);
-        if ((int)res.statusCode < 200 || (int)res.statusCode >= 300)
+        HttpResponseMessage res = downloadClient.MakeRequest(searchUrl.ToString(), RequestType.Default).Result;
+        if ((int)res.StatusCode < 200 || (int)res.StatusCode >= 300)
             return [];
 
-        using StreamReader sr = new (res.result);
+        using StreamReader sr = new (res.Content.ReadAsStream());
         string html = sr.ReadToEnd();
 
         HtmlDocument doc = new ();
@@ -85,11 +85,11 @@ public sealed class Mangaworld : MangaConnector
         string slug = parts[1];
 
         string url = $"https://www.mangaworld.cx/manga/{id}/{slug}/";
-        RequestResult res = downloadClient.MakeRequest(url, RequestType.MangaInfo);
-        if ((int)res.statusCode < 200 || (int)res.statusCode >= 300)
+        HttpResponseMessage res = downloadClient.MakeRequest(url, RequestType.MangaInfo).Result;
+        if ((int)res.StatusCode < 200 || (int)res.StatusCode >= 300)
             return null;
 
-        using StreamReader sr = new (res.result);
+        using StreamReader sr = new (res.Content.ReadAsStream());
         string html = sr.ReadToEnd();
 
         HtmlDocument doc = new ();
@@ -175,11 +175,11 @@ public sealed class Mangaworld : MangaConnector
     {
         string url = EnsureListStyle(chapterId.WebsiteUrl ?? $"https://www.mangaworld.cx/manga/{chapterId.IdOnConnectorSite}");
 
-        RequestResult res = downloadClient.MakeRequest(url, RequestType.MangaInfo);
-        if ((int)res.statusCode < 200 || (int)res.statusCode >= 300)
+        HttpResponseMessage res = downloadClient.MakeRequest(url, RequestType.MangaInfo).Result;
+        if ((int)res.StatusCode < 200 || (int)res.StatusCode >= 300)
             return [];
 
-        using StreamReader sr = new (res.result);
+        using StreamReader sr = new (res.Content.ReadAsStream());
         string html = sr.ReadToEnd();
 
         Uri baseUri = new (url);
@@ -354,20 +354,20 @@ public sealed class Mangaworld : MangaConnector
         baseUri = new (seriesUrl);
 
         // 1) tenta client "Default"
-        RequestResult res = downloadClient.MakeRequest(seriesUrl, RequestType.Default);
-        if ((int)res.statusCode >= 200 && (int)res.statusCode < 300)
+        HttpResponseMessage res = downloadClient.MakeRequest(seriesUrl, RequestType.Default).Result;
+        if ((int)res.StatusCode >= 200 && (int)res.StatusCode < 300)
         {
-            using StreamReader sr = new (res.result);
+            using StreamReader sr = new (res.Content.ReadAsStream());
             string html = sr.ReadToEnd();
             if (!LooksLikeChallenge(html))
                 return html;
         }
 
         // 2) fallback: client “MangaInfo” (proxy/Flare se configurato)
-        RequestResult res2 = downloadClient.MakeRequest(seriesUrl, RequestType.MangaInfo);
-        if ((int)res2.statusCode >= 200 && (int)res2.statusCode < 300)
+        HttpResponseMessage res2 = downloadClient.MakeRequest(seriesUrl, RequestType.MangaInfo).Result;
+        if ((int)res2.StatusCode >= 200 && (int)res2.StatusCode < 300)
         {
-            using StreamReader sr2 = new StreamReader(res2.result);
+            using StreamReader sr2 = new StreamReader(res2.Content.ReadAsStream());
             return sr2.ReadToEnd();
         }
 

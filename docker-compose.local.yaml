@@ -22,7 +22,7 @@ services:
         max-size: "10m"
         max-file: "5"
   tranga-pg:
-    image: postgres:latest
+    image: postgres:17
     container_name: tranga-pg
     ports:
       - "5432:5432"

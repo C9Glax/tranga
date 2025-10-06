@@ -2764,51 +2764,6 @@
       }
     },
     "/v2/Settings/RequestLimits": {
-      "get": {
-        "tags": [
-          "Settings"
-        ],
-        "summary": "Get all Request-Limits",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "Default": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "MangaDexFeed": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "MangaImage": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "MangaCover": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "MangaDexImage": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "MangaInfo": {
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              }
-            }
-          }
-        }
-      },
       "patch": {
         "tags": [
           "Settings"
@@ -2818,145 +2773,6 @@
         "responses": {
           "501": {
             "description": "Not Implemented"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Settings"
-        ],
-        "summary": "Reset Request-Limit",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "text/json; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/Settings/RequestLimits/{RequestType}": {
-      "patch": {
-        "tags": [
-          "Settings"
-        ],
-        "summary": "Updates a Request-Limit value",
-        "parameters": [
-          {
-            "name": "RequestType",
-            "in": "path",
-            "description": "Type of Request",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/RequestType"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "New limit in Requests/Minute",
-          "content": {
-            "application/json-patch+json; x-version=2.0": {
-              "schema": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "application/json; x-version=2.0": {
-              "schema": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "text/json; x-version=2.0": {
-              "schema": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "application/*+json; x-version=2.0": {
-              "schema": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          },
-          "400": {
-            "description": "Limit needs to be greater than 0",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Settings"
-        ],
-        "summary": "Reset Request-Limit",
-        "parameters": [
-          {
-            "name": "RequestType",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/RequestType"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "text/json; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
           }
         }
       }
@@ -4313,17 +4129,6 @@
         },
         "additionalProperties": { }
       },
-      "RequestType": {
-        "enum": [
-          "Default",
-          "MangaDexFeed",
-          "MangaImage",
-          "MangaCover",
-          "MangaDexImage",
-          "MangaInfo"
-        ],
-        "type": "string"
-      },
       "TrangaSettings": {
         "type": "object",
         "properties": {
@@ -4355,37 +4160,6 @@
           "workCycleTimeoutMs": {
             "type": "integer",
             "format": "int32"
-          },
-          "requestLimits": {
-            "type": "object",
-            "properties": {
-              "Default": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "MangaDexFeed": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "MangaImage": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "MangaCover": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "MangaDexImage": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "MangaInfo": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "additionalProperties": false,
-            "nullable": true
           },
           "downloadLanguage": {
             "type": "string",

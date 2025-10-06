@@ -1,25 +1,26 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Text;
 using System.Text.Json;
 using HtmlAgilityPack;
+using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace API.MangaDownloadClients;
 
-public class FlareSolverrDownloadClient : DownloadClient
+public class FlareSolverrDownloadClient(HttpClient client) : IDownloadClient
 {
-    internal override RequestResult MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
+    private ILog Log { get; } = LogManager.GetLogger(typeof(FlareSolverrDownloadClient));
+
+    public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null)
     {
-        if (clickButton is not null)
-            Log.Warn("Client can not click button");
+        Log.Debug($"Using {typeof(FlareSolverrDownloadClient).FullName} for {url}");
         if(referrer is not null)
             Log.Warn("Client can not set referrer");
         if (Tranga.Settings.FlareSolverrUrl == string.Empty)
         {
             Log.Error("FlareSolverr URL is empty");
-            return new(HttpStatusCode.InternalServerError, null, Stream.Null);
+            return new(HttpStatusCode.InternalServerError);
         }
         
         Uri flareSolverrUri = new (Tranga.Settings.FlareSolverrUrl);
@@ -29,13 +30,6 @@ public class FlareSolverrDownloadClient : DownloadClient
                 Path = "v1"
             }.Uri;
         
-        HttpClient client = new()
-        {
-            Timeout = TimeSpan.FromSeconds(10),
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
-            DefaultRequestHeaders = { { "User-Agent", Tranga.Settings.UserAgent } }
-        };
-
         JObject requestObj = new()
         {
             ["cmd"] = "request.get",
@@ -52,12 +46,12 @@ public class FlareSolverrDownloadClient : DownloadClient
         HttpResponseMessage? response;
         try
         {
-            response = client.Send(requestMessage);
+            response = await client.SendAsync(requestMessage);
         }
         catch (HttpRequestException e)
         {
             Log.Error(e);
-            return new (HttpStatusCode.Unused, null, Stream.Null);
+            return new (HttpStatusCode.InternalServerError);
         }
 
         if (!response.IsSuccessStatusCode)
@@ -74,7 +68,7 @@ public class FlareSolverrDownloadClient : DownloadClient
                       $"{response.Version}\n" +
                       $"Headers:\n\t{string.Join("\n\t", response.Headers.Select(h => $"{h.Key}: <{string.Join(">, <", h.Value)}"))}>\n" +
                       $"{response.Content.ReadAsStringAsync().Result}");
-            return new (response.StatusCode,  null, Stream.Null);
+            return response;
         }
 
         string responseString = response.Content.ReadAsStringAsync().Result;
@@ -82,51 +76,45 @@ public class FlareSolverrDownloadClient : DownloadClient
         if (!IsInCorrectFormat(responseObj, out string? reason))
         {
             Log.Error($"Wrong format: {reason}");
-            return new(HttpStatusCode.Unused, null, Stream.Null);
+            return new(HttpStatusCode.InternalServerError);
         }
 
         string statusResponse = responseObj["status"]!.Value<string>()!;
         if (statusResponse != "ok")
         {
             Log.Debug($"Status is not ok: {statusResponse}");
-            return new(HttpStatusCode.Unused, null, Stream.Null);
+            return new(HttpStatusCode.InternalServerError);
         }
         JObject solution = (responseObj["solution"] as JObject)!;
 
         if (!Enum.TryParse(solution["status"]!.Value<int>().ToString(), out HttpStatusCode statusCode))
         {
             Log.Error($"Wrong format: Cant parse status code: {solution["status"]!.Value<int>()}");
-            return new(HttpStatusCode.Unused, null, Stream.Null);
+            return new(HttpStatusCode.InternalServerError);
         }
         if (statusCode < HttpStatusCode.OK || statusCode >= HttpStatusCode.MultipleChoices)
         {
             Log.Debug($"Status is: {statusCode}");
-            return new(statusCode, null, Stream.Null);
+            return new (statusCode);
         }
 
         if (solution["response"]!.Value<string>() is not { } htmlString)
         {
             Log.Error("Wrong format: Cant find response in solution");
-            return new(HttpStatusCode.Unused, null, Stream.Null);
+            return new(HttpStatusCode.InternalServerError);
         }
 
-        if (IsJson(htmlString, out HtmlDocument document, out string? json))
+        if (IsJson(htmlString, out string? json))
         {
-            MemoryStream ms = new();
-            ms.Write(Encoding.UTF8.GetBytes(json));
-            ms.Position = 0;
-            return new(statusCode, document, ms);
+            return new(statusCode) { Content = new StringContent(json) };
         }
         else
         {
-            MemoryStream ms = new();
-            ms.Write(Encoding.UTF8.GetBytes(htmlString));
-            ms.Position = 0;
-            return new(statusCode, document, ms);
+            return new(statusCode) { Content = new StringContent(htmlString) };
         }
     }
 
-    private bool IsInCorrectFormat(JObject responseObj, [NotNullWhen(false)]out string? reason)
+    private static bool IsInCorrectFormat(JObject responseObj, [NotNullWhen(false)]out string? reason)
     {
         reason = null;
         if (!responseObj.ContainsKey("status"))
@@ -157,10 +145,10 @@ public class FlareSolverrDownloadClient : DownloadClient
         return true;
     }
 
-    private bool IsJson(string htmlString, out HtmlDocument document, [NotNullWhen(true)]out string? jsonString)
+    private static bool IsJson(string htmlString, [NotNullWhen(true)]out string? jsonString)
     {
         jsonString = null;
-        document = new();
+        HtmlDocument document = new();
         document.LoadHtml(htmlString);
 
         HtmlNode pre = document.DocumentNode.SelectSingleNode("//pre");

@@ -61,17 +61,6 @@ public class SettingsController() : Controller
     }
     
     /// <summary>
-    /// Get all Request-Limits
-    /// </summary>
-    /// <response code="200"></response>
-    [HttpGet("RequestLimits")]
-    [ProducesResponseType<Dictionary<RequestType,int>>(Status200OK, "application/json")]
-    public Ok<Dictionary<RequestType,int>> GetRequestLimits()
-    {
-        return TypedResults.Ok(Tranga.Settings.RequestLimits);
-    }
-    
-    /// <summary>
     /// Update all Request-Limits to new values
     /// </summary>
     /// <remarks><h1>NOT IMPLEMENTED</h1></remarks>
@@ -80,48 +69,6 @@ public class SettingsController() : Controller
     public StatusCodeHttpResult SetRequestLimits()
     {
         return TypedResults.StatusCode(Status501NotImplemented);
-    }
-
-    /// <summary>
-    /// Updates a Request-Limit value
-    /// </summary>
-    /// <param name="RequestType">Type of Request</param>
-    /// <param name="requestLimit">New limit in Requests/Minute</param>
-    /// <response code="200"></response>
-    /// <response code="400">Limit needs to be greater than 0</response>
-    [HttpPatch("RequestLimits/{RequestType}")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType(Status400BadRequest)]
-    public Results<Ok, BadRequest> SetRequestLimit(RequestType RequestType, [FromBody]int requestLimit)
-    {
-        if (requestLimit <= 0)
-            return TypedResults.BadRequest();
-        Tranga.Settings.SetRequestLimit(RequestType, requestLimit);
-        return TypedResults.Ok();
-    }
-    
-    /// <summary>
-    /// Reset Request-Limit
-    /// </summary>
-    /// <response code="200"></response>
-    [HttpDelete("RequestLimits/{RequestType}")]
-    [ProducesResponseType<string>(Status200OK)]
-    public Ok ResetRequestLimits(RequestType RequestType)
-    {
-        Tranga.Settings.SetRequestLimit(RequestType, TrangaSettings.DefaultRequestLimits[RequestType]);
-        return TypedResults.Ok();
-    }
-    
-    /// <summary>
-    /// Reset Request-Limit
-    /// </summary>
-    /// <response code="200"></response>
-    [HttpDelete("RequestLimits")]
-    [ProducesResponseType<string>(Status200OK)]
-    public Ok ResetRequestLimits()
-    {
-        Tranga.Settings.ResetRequestLimits();
-        return TypedResults.Ok();
     }
     
     /// <summary>
@@ -260,12 +207,12 @@ public class SettingsController() : Controller
     [HttpPost("FlareSolverr/Test")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status500InternalServerError)]
-    public Results<Ok, InternalServerError> TestFlareSolverrReachable()
+    public async Task<Results<Ok, InternalServerError>> TestFlareSolverrReachable()
     {
         const string knownProtectedUrl = "https://prowlarr.servarr.com/v1/ping";
-        FlareSolverrDownloadClient client = new();
-        RequestResult result = client.MakeRequestInternal(knownProtectedUrl);
-        return (int)result.statusCode >= 200 && (int)result.statusCode < 300 ? TypedResults.Ok() : TypedResults.InternalServerError(); 
+        FlareSolverrDownloadClient client = new(new ());
+        HttpResponseMessage result = await client.MakeRequest(knownProtectedUrl, RequestType.Default);
+        return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300 ? TypedResults.Ok() : TypedResults.InternalServerError(); 
     }
 
     /// <summary>

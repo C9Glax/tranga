@@ -5,9 +5,7 @@ using API.MangaDownloadClients;
 using API.Schema.MangaContext;
 using log4net;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 
 namespace API.MangaConnectors;
@@ -15,7 +13,7 @@ namespace API.MangaConnectors;
 [PrimaryKey("Name")]
 public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)
 {
-    [NotMapped] internal DownloadClient downloadClient { get; init; } = null!;
+    [NotMapped] internal IDownloadClient downloadClient { get; init; } = null!;
     [NotMapped] protected ILog Log { get; init; } = LogManager.GetLogger(name);
     [StringLength(32)] public string Name { get; init; } = name;
     [StringLength(8)] public string[] SupportedLanguages { get; init; } = supportedLanguages;
@@ -50,14 +48,14 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
         if (File.Exists(saveImagePath))
             return filename;
         
-        RequestResult coverResult = downloadClient.MakeRequest(mangaId.Obj.CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}");
-        if ((int)coverResult.statusCode < 200 || (int)coverResult.statusCode >= 300)
+        HttpResponseMessage coverResult = downloadClient.MakeRequest(mangaId.Obj.CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}").Result;
+        if ((int)coverResult.StatusCode < 200 || (int)coverResult.StatusCode >= 300)
             return SaveCoverImageToCache(mangaId, --retries);
             
         try
         {
             using MemoryStream ms = new();
-            coverResult.result.CopyTo(ms);
+            coverResult.Content.ReadAsStream().CopyTo(ms);
             byte[] imageBytes = ms.ToArray();
             Directory.CreateDirectory(TrangaSettings.CoverImageCacheOriginal);
             File.WriteAllBytes(saveImagePath, imageBytes);

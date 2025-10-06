@@ -286,14 +286,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     private Stream? DownloadImage(string imageUrl)
     {
         HttpDownloadClient downloadClient = new();
-        RequestResult requestResult = downloadClient.MakeRequest(imageUrl, RequestType.MangaImage);
+        HttpResponseMessage requestResult = downloadClient.MakeRequest(imageUrl, RequestType.MangaImage).Result;
 
-        if ((int)requestResult.statusCode < 200 || (int)requestResult.statusCode >= 300)
+        if ((int)requestResult.StatusCode < 200 || (int)requestResult.StatusCode >= 300)
             return null;
-        if (requestResult.result == Stream.Null)
+        if (requestResult.Content.ReadAsStream() == Stream.Null)
             return null;
         
-        return ProcessImage(requestResult.result, out Stream processedImage) ? processedImage : null;
+        return ProcessImage(requestResult.Content.ReadAsStream(), out Stream processedImage) ? processedImage : null;
     }
 
     public override string ToString() => $"{base.ToString()} {_mangaConnectorIdId}";

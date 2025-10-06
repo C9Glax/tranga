@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using API.MangaConnectors;
+using API.MangaDownloadClients;
 using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
@@ -34,6 +35,8 @@ public static class Tranga
     internal static readonly UpdateCoversWorker UpdateCoversWorker = new();
     internal static readonly CleanupMangaconnectorIdsWithoutConnector CleanupMangaconnectorIdsWithoutConnector = new();
     // ReSharper restore MemberCanBePrivate.Global
+
+    internal static readonly RateLimitHandler RateLimitHandler = new();
 
     internal static void StartupTasks()
     {
