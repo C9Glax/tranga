@@ -14,24 +14,33 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Moving Manga...");
-        // Get Manga (with Chapters and Library)
+        // Get Manga (with and Library)
         if (await DbContext.Mangas
-                .Include(m => m.Chapters)
                 .Include(m => m.Library)
                 .FirstOrDefaultAsync(m => m.Key == MangaId, CancellationToken) is not { } manga)
         {
             Log.Error("Could not find Manga.");
-            return []; //TODO Exception?
+            return [];
         }
+
+        if (await DbContext.Chapters
+                .Include(ch => ch.ParentManga).ThenInclude(m => m.Library)
+                .Where(ch => ch.ParentMangaId == MangaId)
+                .ToListAsync(CancellationToken) is not { } chapters)
+        {
+            Log.Error("Could not find chapters.");
+            return [];
+        }
+        
         // Get new Library
         if (await DbContext.FileLibraries.FirstOrDefaultAsync(l => l.Key == LibraryId, CancellationToken) is not { } toLibrary)
         {
             Log.Error("Could not find Library.");
-            return []; //TODO Exception?
+            return [];
         }
         
         // Save old Path (to later move chapters)
-        Dictionary<Chapter, string> oldPath = manga.Chapters.ToDictionary(c => c, c => c.FullArchiveFilePath);
+        Dictionary<string, string> oldPath = manga.Chapters.ToDictionary(c => c.Key, c => c.FullArchiveFilePath).Where(kv => kv.Value is not null).ToDictionary(x => x.Key, x => x.Value)!;
         // Set new Path
         manga.Library = toLibrary;
         
@@ -39,7 +48,7 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
             return [];
 
         // Create Jobs to move chapters from old to new Path
-        return manga.Chapters.Select(c => new MoveFileOrFolderWorker(c.FullArchiveFilePath, oldPath[c])).ToArray<BaseWorker>();
+        return manga.Chapters.Select(c => new MoveFileOrFolderWorker(c.FullArchiveFilePath, oldPath[c.Key])).ToArray<BaseWorker>();
     }
 
     public override string ToString() => $"{base.ToString()} {MangaId} {LibraryId}";

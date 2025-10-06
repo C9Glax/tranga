@@ -29,6 +29,8 @@ public class Manga : Identifiable
     public uint? Year { get; internal init; }
     [StringLength(8)] public string? OriginalLanguage { get; internal init; }
     
+    
+    /// <exception cref="DirectoryNotFoundException">Library not loaded</exception>
     [NotMapped] public string FullDirectoryPath => EnsureDirectoryExists();
 
     [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.Key).ToList();
@@ -110,11 +112,13 @@ public class Manga : Identifiable
 
         foreach (Chapter otherChapter in other.Chapters)
         {
-            string oldPath = otherChapter.FullArchiveFilePath;
+            if (otherChapter.FullArchiveFilePath is not { } oldPath)
+                continue;
             Chapter newChapter = new(this, otherChapter.ChapterNumber, otherChapter.VolumeNumber,
                 otherChapter.Title);
             this.Chapters.Add(newChapter);
-            string newPath = newChapter.FullArchiveFilePath;
+            if (newChapter.FullArchiveFilePath is not { } newPath)
+                continue;
             newJobs.Add(new MoveFileOrFolderWorker(newPath, oldPath));
         }
         

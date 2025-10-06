@@ -70,7 +70,12 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
                 Log.Error(result.exceptionMessage);
             return [];
         }
-        string saveArchiveFilePath = chapter.FullArchiveFilePath;
+
+        if (chapter.FullArchiveFilePath is not { } saveArchiveFilePath)
+        {
+            Log.Error("Failed getting saveArchiveFilePath");
+            return [];
+        }
         Log.Debug($"Chapter path: {saveArchiveFilePath}");
         
         //Check if Publication Directory already exists

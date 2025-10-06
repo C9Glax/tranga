@@ -25,7 +25,10 @@ public class Chapter : Identifiable, IComparable<Chapter>
     [StringLength(256)] public string FileName { get; private set; }
 
     public bool Downloaded { get; internal set; }
-    [NotMapped] public string FullArchiveFilePath => Path.Join(ParentManga.FullDirectoryPath, FileName);
+
+    /// <exception cref="DirectoryNotFoundException">Library for Manga not loaded</exception>
+    [NotMapped]
+    public string? FullArchiveFilePath => GetFullFilepath();
 
     private static readonly Regex ChapterNumberRegex = new(@"(?:\d+\.)*\d+", RegexOptions.Compiled);
     public Chapter(Manga parentManga, string chapterNumber,
@@ -89,7 +92,6 @@ public class Chapter : Identifiable, IComparable<Chapter>
         if (chapter.ParentManga.Library is null)
             return false;
         
-        //TODO Log here
         this.Downloaded = File.Exists(chapter.FullArchiveFilePath);
         await context.Sync(token??CancellationToken.None, GetType(), $"CheckDownloaded {this} {this.Downloaded}");
         return this.Downloaded;
@@ -161,6 +163,18 @@ public class Chapter : Identifiable, IComparable<Chapter>
         stringBuilder.Append(".cbz");
 
         return stringBuilder.ToString();
+    }
+
+    private string? GetFullFilepath()
+    {
+        try
+        {
+            return Path.Join(ParentManga.FullDirectoryPath, FileName);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     public class ChapterComparer : IComparer<Chapter>
