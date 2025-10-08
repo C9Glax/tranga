@@ -3406,7 +3406,6 @@
         "required": [
           "chapterNumber",
           "downloaded",
-          "fileName",
           "key",
           "mangaConnectorIds",
           "mangaId",
@@ -3447,9 +3446,9 @@
             "description": "Ids of the Manga on MangaConnectors"
           },
           "fileName": {
-            "minLength": 1,
             "type": "string",
-            "description": "Filename of the archive"
+            "description": "Filename of the archive",
+            "nullable": true
           },
           "key": {
             "maxLength": 64,

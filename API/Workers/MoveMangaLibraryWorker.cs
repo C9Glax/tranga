@@ -17,18 +17,10 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
         // Get Manga (with and Library)
         if (await DbContext.Mangas
                 .Include(m => m.Library)
+                .Include(m => m.Chapters)
                 .FirstOrDefaultAsync(m => m.Key == MangaId, CancellationToken) is not { } manga)
         {
             Log.Error("Could not find Manga.");
-            return [];
-        }
-
-        if (await DbContext.Chapters
-                .Include(ch => ch.ParentManga).ThenInclude(m => m.Library)
-                .Where(ch => ch.ParentMangaId == MangaId)
-                .ToListAsync(CancellationToken) is not { } chapters)
-        {
-            Log.Error("Could not find chapters.");
             return [];
         }
         
@@ -40,7 +32,7 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
         }
         
         // Save old Path (to later move chapters)
-        Dictionary<string, string> oldPath = manga.Chapters.ToDictionary(c => c.Key, c => c.FullArchiveFilePath).Where(kv => kv.Value is not null).ToDictionary(x => x.Key, x => x.Value)!;
+        Dictionary<string, string> oldPath = manga.Chapters.Where(c => c.FileName != null).ToDictionary(c => c.Key, c => c.FullArchiveFilePath)!;
         // Set new Path
         manga.Library = toLibrary;
         
@@ -48,7 +40,7 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
             return [];
 
         // Create Jobs to move chapters from old to new Path
-        return manga.Chapters.Select(c => new MoveFileOrFolderWorker(c.FullArchiveFilePath, oldPath[c.Key])).ToArray<BaseWorker>();
+        return oldPath.Select(kv => new MoveFileOrFolderWorker(manga.Chapters.First(ch => ch.Key == kv.Key).FullArchiveFilePath!, kv.Value)).ToArray<BaseWorker>();
     }
 
     public override string ToString() => $"{base.ToString()} {MangaId} {LibraryId}";

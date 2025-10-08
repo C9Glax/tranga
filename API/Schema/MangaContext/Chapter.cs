@@ -22,7 +22,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
 
     [StringLength(256)] public string? Title { get; private set; }
 
-    [StringLength(256)] public string FileName { get; private set; }
+    [StringLength(256)] public string? FileName { get; private set; }
 
     public bool Downloaded { get; internal set; }
 
@@ -43,7 +43,6 @@ public class Chapter : Identifiable, IComparable<Chapter>
         this.MangaConnectorIds = [];
         this.VolumeNumber = volumeNumber;
         this.Title = title;
-        this.FileName = GetArchiveFilePath().CleanNameForWindows();
         this.Downloaded = false;
         this.MangaConnectorIds = [];
     }
@@ -51,7 +50,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal Chapter(string key, int? volumeNumber, string chapterNumber, string? title, string fileName, bool downloaded)
+    internal Chapter(string key, int? volumeNumber, string chapterNumber, string? title, string? fileName, bool downloaded)
         : base(key)
     {
         this.VolumeNumber = volumeNumber;
@@ -90,6 +89,8 @@ public class Chapter : Identifiable, IComparable<Chapter>
             throw new KeyNotFoundException("Unable to find chapter");
 
         if (chapter.ParentManga.Library is null)
+            return false;
+        if (chapter.FileName is null)
             return false;
         
         this.Downloaded = File.Exists(chapter.FullArchiveFilePath);
@@ -169,7 +170,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     {
         try
         {
-            return Path.Join(ParentManga.FullDirectoryPath, FileName);
+            return Path.Join(ParentManga.FullDirectoryPath, this.FileName is null ? GetArchiveFilePath() : FileName);
         }
         catch (Exception)
         {
