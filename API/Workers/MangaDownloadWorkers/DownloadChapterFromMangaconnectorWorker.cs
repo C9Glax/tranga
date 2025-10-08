@@ -186,17 +186,17 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     };
     private async Task<bool> AllDownloadsFinished() => (await StartNewChapterDownloadsWorker.GetMissingChapters(DbContext, CancellationToken)).Count == 0;
     
-    private bool ProcessImage(Stream imageStream, out Stream processedImage)
+    private Stream ProcessImage(Stream imageStream)
     {
         Log.Debug("Processing image");
+        imageStream.Position = 0;
         if (!Tranga.Settings.BlackWhiteImages && Tranga.Settings.ImageCompression == 100)
         {
             Log.Debug("No processing requested for image");
-            processedImage = imageStream;
-            return true;
+            return imageStream;
         }
 
-        processedImage = new MemoryStream();
+        MemoryStream processedImage = new ();
         try
         {
             using Image image = Image.Load(imageStream);
@@ -208,7 +208,8 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
                 Quality = Tranga.Settings.ImageCompression
             });
             Log.Debug("Image processed");
-            return true;
+            processedImage.Position = 0;
+            return processedImage;
         }
         catch (Exception e)
         {
@@ -224,7 +225,9 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             {
                 Log.Error(e);
             }
-            return false;
+            imageStream.CopyTo(processedImage);
+            processedImage.Position = 0;
+            return processedImage;
         }
     }
     
@@ -290,10 +293,8 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
 
         if ((int)requestResult.StatusCode < 200 || (int)requestResult.StatusCode >= 300)
             return null;
-        if (requestResult.Content.ReadAsStream() == Stream.Null)
-            return null;
-        
-        return ProcessImage(requestResult.Content.ReadAsStream(), out Stream processedImage) ? processedImage : null;
+
+        return ProcessImage(requestResult.Content.ReadAsStream());
     }
 
     public override string ToString() => $"{base.ToString()} {_mangaConnectorIdId}";
