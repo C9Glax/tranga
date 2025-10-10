@@ -14,7 +14,7 @@ internal class HttpDownloadClient : IDownloadClient
     private static readonly FlareSolverrDownloadClient FlareSolverrDownloadClient = new(Client);
     private ILog Log { get; } = LogManager.GetLogger(typeof(HttpDownloadClient));
     
-    public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null)
+    public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null, CancellationToken? cancellationToken = null)
     {
         Log.Debug($"Using {typeof(HttpDownloadClient).FullName} for {url}");
         HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
@@ -24,7 +24,7 @@ internal class HttpDownloadClient : IDownloadClient
         
         try
         {
-            HttpResponseMessage response = await Client.SendAsync(requestMessage);
+            HttpResponseMessage response = await Client.SendAsync(requestMessage, cancellationToken ?? CancellationToken.None);
             Log.Debug($"Request {url} returned {(int)response.StatusCode} {response.StatusCode}");
             if(response.IsSuccessStatusCode)
                 return response;

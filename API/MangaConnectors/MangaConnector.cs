@@ -84,4 +84,10 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
 
         return filename.CleanNameForWindows();
     }
+    
+    public async Task<Stream?> DownloadImage(string imageUrl, CancellationToken ct)
+    {
+        HttpResponseMessage requestResult = await downloadClient.MakeRequest(imageUrl, RequestType.MangaImage, cancellationToken: ct);
+        return requestResult.IsSuccessStatusCode ? await requestResult.Content.ReadAsStreamAsync(ct) : null;
+    }
 }

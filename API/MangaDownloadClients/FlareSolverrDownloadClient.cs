@@ -12,7 +12,7 @@ public class FlareSolverrDownloadClient(HttpClient client) : IDownloadClient
 {
     private ILog Log { get; } = LogManager.GetLogger(typeof(FlareSolverrDownloadClient));
 
-    public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null)
+    public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null, CancellationToken? cancellationToken = null)
     {
         Log.Debug($"Using {typeof(FlareSolverrDownloadClient).FullName} for {url}");
         if(referrer is not null)
@@ -46,7 +46,7 @@ public class FlareSolverrDownloadClient(HttpClient client) : IDownloadClient
         HttpResponseMessage? response;
         try
         {
-            response = await client.SendAsync(requestMessage);
+            response = await client.SendAsync(requestMessage, cancellationToken ?? CancellationToken.None);
         }
         catch (HttpRequestException e)
         {
@@ -71,7 +71,7 @@ public class FlareSolverrDownloadClient(HttpClient client) : IDownloadClient
             return response;
         }
 
-        string responseString = response.Content.ReadAsStringAsync().Result;
+        string responseString = await response.Content.ReadAsStringAsync(cancellationToken ?? CancellationToken.None);
         JObject responseObj = JObject.Parse(responseString);
         if (!IsInCorrectFormat(responseObj, out string? reason))
         {

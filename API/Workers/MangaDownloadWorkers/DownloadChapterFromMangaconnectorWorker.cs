@@ -102,18 +102,19 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         {
             try
             {
-                if (DownloadImage(imageUrl) is not { } stream)
+                if (await mangaConnector.DownloadImage(imageUrl, CancellationToken) is not { } stream)
                 {
                     Log.Error($"Failed to download image: {imageUrl}");
                     return [];
                 }
                 else
-                    images.Add(stream);
+                    images.Add(await ProcessImage(stream, CancellationToken));
             }
             catch (Exception ex)
             {
                 Log.Error(ex);
                 images.ForEach(i => i.Dispose());
+                return [];
             }
         }
         
@@ -186,7 +187,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     };
     private async Task<bool> AllDownloadsFinished() => (await StartNewChapterDownloadsWorker.GetMissingChapters(DbContext, CancellationToken)).Count == 0;
     
-    private Stream ProcessImage(Stream imageStream)
+    private async Task<Stream> ProcessImage(Stream imageStream, CancellationToken? cancellationToken = null)
     {
         Log.Debug("Processing image");
         imageStream.Position = 0;
@@ -199,11 +200,11 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         MemoryStream processedImage = new ();
         try
         {
-            using Image image = Image.Load(imageStream);
+            using Image image = await Image.LoadAsync(imageStream, cancellationToken ?? CancellationToken.None);
             Log.Debug("Image loaded");
             if (Tranga.Settings.BlackWhiteImages)
                 image.Mutate(i => i.ApplyProcessor(new AdaptiveThresholdProcessor()));
-            image.SaveAsJpeg(processedImage, new JpegEncoder()
+            await image.SaveAsJpegAsync(processedImage, new JpegEncoder()
             {
                 Quality = Tranga.Settings.ImageCompression
             });
@@ -225,7 +226,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             {
                 Log.Error(e);
             }
-            imageStream.CopyTo(processedImage);
+            await imageStream.CopyToAsync(processedImage);
             processedImage.Position = 0;
             return processedImage;
         }
@@ -284,17 +285,6 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite | OtherRead | OtherWrite);
         Log.Debug($"Copied cover from {fullCoverPath} to {newFilePath}");
-    }
-
-    private Stream? DownloadImage(string imageUrl)
-    {
-        HttpDownloadClient downloadClient = new();
-        HttpResponseMessage requestResult = downloadClient.MakeRequest(imageUrl, RequestType.MangaImage).Result;
-
-        if ((int)requestResult.StatusCode < 200 || (int)requestResult.StatusCode >= 300)
-            return null;
-
-        return ProcessImage(requestResult.Content.ReadAsStream());
     }
 
     public override string ToString() => $"{base.ToString()} {_mangaConnectorIdId}";
