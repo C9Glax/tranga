@@ -17,7 +17,7 @@ public class MoveMangaLibraryWorker(Manga manga, FileLibrary toLibrary, IEnumera
         // Get Manga (with and Library)
         if (await DbContext.Mangas
                 .Include(m => m.Library)
-                .Include(m => m.Chapters).ThenInclude(ch => ch.ParentManga).ThenInclude(m => m.Library) //kind of redundant, but better be safe
+                .Include(m => m.Chapters)
                 .FirstOrDefaultAsync(m => m.Key == MangaId, CancellationToken) is not { } manga)
         {
             Log.Error("Could not find Manga.");
