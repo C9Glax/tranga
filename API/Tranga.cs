@@ -158,9 +158,12 @@ public static class Tranga
         {
             if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
             {
-                Log.Debug($"Waiting for Children to exit {worker}");
-                task.Wait();
-                if (task.IsCompleted)
+                if (!task.IsCompleted)
+                {
+                    Log.Debug($"Waiting for Children to exit {worker}");
+                    task.Wait();
+                }
+                if (task.IsCompletedSuccessfully)
                 {
                     Log.Debug($"Children done {worker}");
                     BaseWorker[] newWorkers = task.Result;
