@@ -22,7 +22,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
 
     [StringLength(256)] public string? Title { get; private set; }
 
-    [StringLength(256)] public string? FileName { get; private set; }
+    [StringLength(256)] public string? FileName { get; internal set; }
 
     public bool Downloaded { get; internal set; }
 

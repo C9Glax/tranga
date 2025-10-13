@@ -164,7 +164,8 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
 
-        DbContext.Entry(chapter).Property(c => c.Downloaded).CurrentValue = true;
+        chapter.Downloaded = true;
+        chapter.FileName = new FileInfo(saveArchiveFilePath).Name;
         if(await DbContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
             Log.Error($"Failed to save database changes: {e.exceptionMessage}");
         
