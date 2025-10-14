@@ -3814,16 +3814,9 @@
           "instance": {
             "type": "string",
             "nullable": true
-          },
-          "extensions": {
-            "type": "object",
-            "additionalProperties": {
-              "nullable": true
-            },
-            "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": { }
       },
       "TrangaSettings": {
         "type": "object",

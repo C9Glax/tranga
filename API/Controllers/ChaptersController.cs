@@ -205,7 +205,7 @@ public class ChaptersController(MangaContext context) : Controller
     /// <param name="MangaConnectorIdId">Key of <see cref="MangaConnectorId{Chapter}"/></param>
     /// <response code="200"></response>
     /// <response code="404"><see cref="MangaConnectorId{Manga}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
-    [HttpGet("{MangaConnectorIdId}")]
+    [HttpGet("ConnectorId/{MangaConnectorIdId}")]
     [ProducesResponseType<MangaConnectorId>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok<MangaConnectorId>, NotFound<string>>> GetChapterMangaConnectorId (string MangaConnectorIdId)
