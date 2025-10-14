@@ -21,20 +21,9 @@ public class WorkerController : Controller
     [ProducesResponseType<List<Worker>>(Status200OK, "application/json")]
     public Ok<List<Worker>> GetWorkers()
     {
-        IEnumerable<Worker> result = Tranga.GetRunningWorkers().Select(w =>
+        IEnumerable<Worker> result = Tranga.GetKnownWorkers().Select(w =>
             new Worker(w.Key, w.AllDependencies.Select(d => d.Key), w.MissingDependencies.Select(d => d.Key), w.AllDependenciesFulfilled, w.State));
         return TypedResults.Ok(result.ToList());
-    }
-    
-    /// <summary>
-    /// Returns all <see cref="BaseWorker"/>.Keys
-    /// </summary>
-    /// <response code="200"></response>
-    [HttpGet("Keys")]
-    [ProducesResponseType<string[]>(Status200OK, "application/json")]
-    public Ok<List<string>> GetWorkerIds()
-    {
-        return TypedResults.Ok(Tranga.GetRunningWorkers().Select(w => w.Key).ToList());
     }
 
     /// <summary>
@@ -46,7 +35,7 @@ public class WorkerController : Controller
     [ProducesResponseType<List<Worker>>(Status200OK, "application/json")]
     public Ok<List<Worker>> GetWorkersInState(WorkerExecutionState State)
     {
-        IEnumerable<Worker> result = Tranga.GetRunningWorkers().Where(worker => worker.State == State).Select(w =>
+        IEnumerable<Worker> result = Tranga.GetKnownWorkers().Where(worker => worker.State == State).Select(w =>
             new Worker(w.Key, w.AllDependencies.Select(d => d.Key), w.MissingDependencies.Select(d => d.Key), w.AllDependenciesFulfilled, w.State));
         return TypedResults.Ok(result.ToList());
     }
@@ -62,52 +51,12 @@ public class WorkerController : Controller
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public Results<Ok<Worker>, NotFound<string>> GetWorker(string WorkerId)
     {
-        if(Tranga.GetRunningWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } w)
+        if(Tranga.GetKnownWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } w)
             return TypedResults.NotFound(nameof(WorkerId));
         
         Worker result = new (w.Key, w.AllDependencies.Select(d => d.Key), w.MissingDependencies.Select(d => d.Key), w.AllDependenciesFulfilled, w.State);
         
         return TypedResults.Ok(result);
-    }
-
-    /// <summary>
-    /// Delete <see cref="BaseWorker"/> with <paramref name="WorkerId"/> and all child-<see cref="BaseWorker"/>s
-    /// </summary>
-    /// <param name="WorkerId"><see cref="BaseWorker"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="BaseWorker"/> with <paramref name="WorkerId"/> could not be found</response>
-    [HttpDelete("{WorkerId}")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    public Results<Ok, NotFound<string>> DeleteWorker(string WorkerId)
-    {
-        if(Tranga.GetRunningWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
-            return TypedResults.NotFound(nameof(WorkerId));
-        Tranga.StopWorker(worker);
-        return TypedResults.Ok();
-    }
-
-    /// <summary>
-    /// Starts <see cref="BaseWorker"/> with <paramref name="WorkerId"/>
-    /// </summary>
-    /// <param name="WorkerId"><see cref="BaseWorker"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="BaseWorker"/> with <paramref name="WorkerId"/> could not be found</response>
-    /// <response code="412"><see cref="BaseWorker"/> was already running</response>
-    [HttpPost("{WorkerId}/Start")]
-    [ProducesResponseType(Status202Accepted)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    [ProducesResponseType(Status412PreconditionFailed)]
-    public Results<Ok, NotFound<string>, StatusCodeHttpResult> StartWorker(string WorkerId)
-    {
-        if(Tranga.GetRunningWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } worker)
-            return TypedResults.NotFound(nameof(WorkerId));
-        
-        if (worker.State >= WorkerExecutionState.Waiting)
-            return TypedResults.StatusCode(Status412PreconditionFailed);
-
-        Tranga.StartWorker(worker);
-        return TypedResults.Ok();
     }
 
     /// <summary>

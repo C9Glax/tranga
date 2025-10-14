@@ -61,17 +61,6 @@ public class SettingsController() : Controller
     }
     
     /// <summary>
-    /// Update all Request-Limits to new values
-    /// </summary>
-    /// <remarks><h1>NOT IMPLEMENTED</h1></remarks>
-    [HttpPatch("RequestLimits")]
-    [ProducesResponseType(Status501NotImplemented)]
-    public StatusCodeHttpResult SetRequestLimits()
-    {
-        return TypedResults.StatusCode(Status501NotImplemented);
-    }
-    
-    /// <summary>
     /// Returns Level of Image-Compression for Images
     /// </summary>
     /// <response code="200">JPEG ImageCompression-level as Integer</response>
@@ -179,7 +168,7 @@ public class SettingsController() : Controller
     /// </summary>
     /// <param name="flareSolverrUrl">URL of FlareSolverr-Instance</param>
     /// <response code="200"></response>
-    [HttpPost("FlareSolverr/Url")]
+    [HttpPatch("FlareSolverr/Url")]
     [ProducesResponseType(Status200OK)]
     public Ok SetFlareSolverrUrl([FromBody]string flareSolverrUrl)
     {
@@ -212,7 +201,7 @@ public class SettingsController() : Controller
         const string knownProtectedUrl = "https://prowlarr.servarr.com/v1/ping";
         FlareSolverrDownloadClient client = new(new ());
         HttpResponseMessage result = await client.MakeRequest(knownProtectedUrl, RequestType.Default);
-        return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300 ? TypedResults.Ok() : TypedResults.InternalServerError(); 
+        return result.IsSuccessStatusCode ? TypedResults.Ok() : TypedResults.InternalServerError(); 
     }
 
     /// <summary>

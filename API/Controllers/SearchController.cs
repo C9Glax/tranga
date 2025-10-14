@@ -58,11 +58,11 @@ public class SearchController(MangaContext context) : Controller
     /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Schema.MangaContext.Manga"/>.</response>
     /// <response code="404"><see cref="Manga"/> not found</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPost("Url")]
+    [HttpGet]
     [ProducesResponseType<MinimalManga>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<MinimalManga>, NotFound<string>, InternalServerError<string>>> GetMangaFromUrl([FromBody]string url)
+    public async Task<Results<Ok<MinimalManga>, NotFound<string>, InternalServerError<string>>> GetMangaFromUrl([FromQuery]string url)
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals("Global", StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return TypedResults.InternalServerError("Could not find Global Connector.");

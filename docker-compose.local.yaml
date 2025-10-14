@@ -15,6 +15,7 @@ services:
         condition: service_healthy
     environment:
       - POSTGRES_HOST=tranga-pg
+      - CHECK_CHAPTERS_BEFORE_START=false
     restart: unless-stopped
     logging:
       driver: json-file

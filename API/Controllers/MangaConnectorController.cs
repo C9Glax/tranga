@@ -44,29 +44,15 @@ public class MangaConnectorController(MangaContext context) : Controller
     }
     
     /// <summary>
-    /// Get all enabled <see cref="API.MangaConnectors.MangaConnector"/> (Scanlation-Sites)
+    /// Get all <see cref="API.MangaConnectors.MangaConnector"/> (Scanlation-Sites) with <paramref name="Enabled"/>-Status
     /// </summary>
     /// <response code="200"></response>
-    [HttpGet("Enabled")]
+    [HttpGet("{Enabled}")]
     [ProducesResponseType<List<MangaConnector>>(Status200OK, "application/json")]
-    public Ok<List<MangaConnector>> GetEnabledConnectors()
+    public Ok<List<MangaConnector>> GetEnabledConnectors(bool Enabled)
     {
         return TypedResults.Ok(Tranga.MangaConnectors
-            .Where(c => c.Enabled)
-            .Select(c => new MangaConnector(c.Name, c.Enabled, c.IconUrl, c.SupportedLanguages))
-            .ToList());
-    }
-    
-    /// <summary>
-    /// Get all disabled <see cref="API.MangaConnectors.MangaConnector"/> (Scanlation-Sites)
-    /// </summary>
-    /// <response code="200"></response>
-    [HttpGet("Disabled")]
-    [ProducesResponseType<List<MangaConnector>>(Status200OK, "application/json")]
-    public Ok<List<MangaConnector>> GetDisabledConnectors()
-    {
-        return TypedResults.Ok(Tranga.MangaConnectors
-            .Where(c => c.Enabled == false)
+            .Where(c => c.Enabled == Enabled)
             .Select(c => new MangaConnector(c.Name, c.Enabled, c.IconUrl, c.SupportedLanguages))
             .ToList());
     }

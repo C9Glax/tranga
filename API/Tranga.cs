@@ -77,7 +77,11 @@ public static class Tranga
     public static void AddWorker(BaseWorker worker)
     {
         Log.Debug($"Adding Worker {worker}");
-        StartWorker(worker);
+        KnownWorkers.Add(worker);
+        if(worker is not IPeriodic)
+            StartWorker(worker, RemoveFromKnownWorkers(worker));
+        else
+            StartWorker(worker);
         if(worker is IPeriodic periodic)
             AddPeriodicWorker(worker, periodic);
     }
@@ -109,6 +113,12 @@ public static class Tranga
         PeriodicWorkers.AddOrUpdate((worker as IPeriodic)!, periodicTask, (_, _) => periodicTask);
         periodicTask.Start();
     };
+
+    private static Action RemoveFromKnownWorkers(BaseWorker worker) => () =>
+    {
+        if (KnownWorkers.Contains(worker))
+            KnownWorkers.Remove(worker);
+    };
     
     public static void AddWorkers(IEnumerable<BaseWorker> workers)
     {
@@ -116,6 +126,8 @@ public static class Tranga
             AddWorker(baseWorker);
     }
 
+    private static readonly HashSet<BaseWorker> KnownWorkers = new();
+    public static BaseWorker[] GetKnownWorkers() =>  KnownWorkers.ToArray();
     private static readonly ConcurrentDictionary<BaseWorker, Task<BaseWorker[]>> RunningWorkers = new();
     public static BaseWorker[] GetRunningWorkers() => RunningWorkers.Keys.ToArray();
     

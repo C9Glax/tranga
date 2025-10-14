@@ -6,12 +6,11 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Net.Http.Headers;
+using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using AltTitle = API.Controllers.DTOs.AltTitle;
 using Author = API.Controllers.DTOs.Author;
-using Chapter = API.Controllers.DTOs.Chapter;
 using Link = API.Controllers.DTOs.Link;
 using Manga = API.Controllers.DTOs.Manga;
 
@@ -71,33 +70,6 @@ public class MangaController(MangaContext context) : Controller
             return new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus, ids);
         }).ToList());
     }
-    
-    /// <summary>
-    /// Returns all cached <see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaIds"/>
-    /// </summary>
-    /// <param name="MangaIds">Array of <see cref="Schema.MangaContext.Manga"/>.Key</param>
-    /// <response code="200"><see cref="DTOs.Manga"/></response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPost("WithIDs")]
-    [ProducesResponseType<List<Manga>>(Status200OK, "application/json")]
-    [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<List<Manga>>, InternalServerError>> GetMangaWithIds ([FromBody]string[] MangaIds)
-    {
-        if (await context.MangaIncludeAll()
-                .Where(m => MangaIds.Contains(m.Key))
-                .ToArrayAsync(HttpContext.RequestAborted) is not { } result)
-            return TypedResults.InternalServerError();
-        
-        return TypedResults.Ok(result.Select(m =>
-        {
-            IEnumerable<MangaConnectorId> ids = m.MangaConnectorIds.Select(id => new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            IEnumerable<Author> authors = m.Authors.Select(a => new Author(a.Key, a.AuthorName));
-            IEnumerable<string> tags = m.MangaTags.Select(t => t.Tag);
-            IEnumerable<Link> links = m.Links.Select(l => new Link(l.Key, l.LinkProvider, l.LinkUrl));
-            IEnumerable<AltTitle> altTitles = m.AltTitles.Select(a => new AltTitle(a.Language, a.Title));
-            return new Manga(m.Key, m.Name, m.Description, m.ReleaseStatus, ids, m.IgnoreChaptersBefore, m.Year, m.OriginalLanguage, m.ChapterIds, authors, tags, links, altTitles, m.LibraryId);
-        }).ToList());
-    }
 
     /// <summary>
     /// Return <see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/>
@@ -152,7 +124,7 @@ public class MangaController(MangaContext context) : Controller
     /// <param name="MangaIdInto"><see cref="Manga"/>.Key of <see cref="Manga"/> merging data into</param>
     /// <response code="200"></response>
     /// <response code="404"><see cref="Manga"/> with <paramref name="MangaIdFrom"/> or <paramref name="MangaIdInto"/> not found</response>
-    [HttpPatch("{MangaIdFrom}/MergeInto/{MangaIdInto}")]
+    [HttpPost("{MangaIdFrom}/MergeInto/{MangaIdInto}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok, NotFound<string>>> MergeIntoManga (string MangaIdFrom, string MangaIdInto)
@@ -220,171 +192,6 @@ public class MangaController(MangaContext context) : Controller
     public enum CoverSize { Original, Large, Medium, Small }
 
     /// <summary>
-    /// Returns all <see cref="Chapter"/> of <see cref="Manga"/> with <paramref name="MangaId"/>
-    /// </summary>
-    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
-    [HttpGet("{MangaId}/Chapters")]
-    [ProducesResponseType<List<Chapter>>(Status200OK, "application/json")]
-    [ProducesResponseType(Status404NotFound)]
-    public async Task<Results<Ok<List<Chapter>>, NotFound<string>>> GetChapters(string MangaId)
-    {
-        if(await context.Chapters.Include(ch => ch.MangaConnectorIds)
-               .Where(ch => ch.ParentMangaId == MangaId)
-               .ToListAsync(HttpContext.RequestAborted)
-           is not { } dbChapters)
-            return TypedResults.NotFound(nameof(MangaId));
-
-        List<Chapter> chapters = dbChapters.OrderDescending().Select(c =>
-        {
-            IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-                new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName);
-        }).ToList();
-        
-        return TypedResults.Ok(chapters);
-    }
-    
-    /// <summary>
-    /// Returns all downloaded <see cref="Chapter"/> for <see cref="Manga"/> with <paramref name="MangaId"/>
-    /// </summary>
-    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
-    [HttpGet("{MangaId}/Chapters/Downloaded")]
-    [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    public async Task<Results<Ok<List<Chapter>>, NotFound<string>>> GetChaptersDownloaded(string MangaId)
-    {
-        if(await context.Chapters.Include(ch => ch.MangaConnectorIds)
-               .Where(ch => ch.ParentMangaId == MangaId && ch.Downloaded)
-               .ToListAsync(HttpContext.RequestAborted)
-           is not { } dbChapters)
-            return TypedResults.NotFound(nameof(MangaId));
-
-        List<Chapter> chapters = dbChapters.OrderDescending().Select(c =>
-        {
-            IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-                new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName);
-        }).ToList();
-        
-        return TypedResults.Ok(chapters);
-    }
-    
-    /// <summary>
-    /// Returns all <see cref="Chapter"/> not downloaded for <see cref="Manga"/> with <paramref name="MangaId"/>
-    /// </summary>
-    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
-    [HttpGet("{MangaId}/Chapters/NotDownloaded")]
-    [ProducesResponseType<List<Chapter>>(Status200OK, "application/json")]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    public async Task<Results<Ok<List<Chapter>>, NoContent, NotFound<string>>> GetChaptersNotDownloaded(string MangaId)
-    {
-        if(await context.Chapters.Include(ch => ch.MangaConnectorIds)
-               .Where(ch => ch.ParentMangaId == MangaId && ch.Downloaded == false)
-               .ToListAsync(HttpContext.RequestAborted)
-           is not { } dbChapters)
-            return TypedResults.NotFound(nameof(MangaId));
-
-        List<Chapter> chapters = dbChapters.OrderDescending().Select(c =>
-        {
-            IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-                new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName);
-        }).ToList();
-        
-        return TypedResults.Ok(chapters);
-    }
-    
-    /// <summary>
-    /// Returns the latest <see cref="Chapter"/> of requested <see cref="Manga"/>
-    /// </summary>
-    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="204">No available chapters</response>
-    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
-    [HttpGet("{MangaId}/Chapter/LatestAvailable")]
-    [ProducesResponseType<int>(Status200OK, "application/json")]
-    [ProducesResponseType(Status204NoContent)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    public async Task<Results<Ok<Chapter>, NoContent, NotFound<string>>> GetLatestChapter(string MangaId)
-    {
-        if(await context.Chapters.Include(ch => ch.MangaConnectorIds)
-               .Where(ch => ch.ParentMangaId == MangaId)
-               .ToListAsync(HttpContext.RequestAborted)
-           is not { } dbChapters)
-            return TypedResults.NotFound(nameof(MangaId));
-
-        Schema.MangaContext.Chapter? c = dbChapters.Max();
-        if (c is null)
-            return TypedResults.NoContent();
-            
-        IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-            new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-        return TypedResults.Ok(new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName));
-    }
-    
-    /// <summary>
-    /// Returns the latest <see cref="Chapter"/> of requested <see cref="Manga"/> that is downloaded
-    /// </summary>
-    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
-    /// <response code="200"></response>
-    /// <response code="204">No available chapters</response>
-    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
-    /// <response code="412">Could not retrieve the maximum chapter-number</response>
-    /// <response code="503">Retry after timeout, updating value</response>
-    [HttpGet("{MangaId}/Chapter/LatestDownloaded")]
-    [ProducesResponseType<Chapter>(Status200OK, "application/json")]
-    [ProducesResponseType(Status204NoContent)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    [ProducesResponseType(Status412PreconditionFailed)]
-    [ProducesResponseType(Status503ServiceUnavailable)]
-    public async Task<Results<Ok<Chapter>, NoContent, NotFound<string>, StatusCodeHttpResult>>  GetLatestChapterDownloaded(string MangaId)
-    {
-        if(await context.Chapters.Include(ch => ch.MangaConnectorIds)
-               .Where(ch => ch.ParentMangaId == MangaId && ch.Downloaded)
-               .ToListAsync(HttpContext.RequestAborted)
-           is not { } dbChapters)
-            return TypedResults.NotFound(nameof(MangaId));
-
-        Schema.MangaContext.Chapter? c = dbChapters.Max();
-        if (c is null)
-            return TypedResults.NoContent();
-            
-        IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-            new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-        return TypedResults.Ok(new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName));
-    }
-
-    /// <summary>
-    /// Configure the <see cref="Chapter"/> cut-off for <see cref="Manga"/>
-    /// </summary>
-    /// <param name="MangaId"><see cref="Manga"/>.Key</param>
-    /// <param name="chapterThreshold">Threshold (<see cref="Chapter"/> ChapterNumber)</param>
-    /// <response code="202"></response>
-    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found.</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPatch("{MangaId}/IgnoreChaptersBefore")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> IgnoreChaptersBefore(string MangaId, [FromBody]float chapterThreshold)
-    {
-        if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
-            return TypedResults.NotFound(nameof(MangaId));
-        
-        manga.IgnoreChaptersBefore = chapterThreshold;
-        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
-            return TypedResults.InternalServerError(result.exceptionMessage);
-
-        return TypedResults.Ok();
-    }
-
-    /// <summary>
     /// Move <see cref="Manga"/> to different <see cref="DTOs.FileLibrary"/>
     /// </summary>
     /// <param name="MangaId"><see cref="Manga"/>.Key</param>
@@ -422,7 +229,7 @@ public class MangaController(MangaContext context) : Controller
     /// <response code="412"><see cref="Manga"/> was not linked to <see cref="API.MangaConnectors.MangaConnector"/>, so nothing changed</response>
     /// <response code="428"><see cref="Manga"/> is not linked to <see cref="API.MangaConnectors.MangaConnector"/> yet. Search for <see cref="Manga"/> on <see cref="API.MangaConnectors.MangaConnector"/> first (to create a <see cref="MangaConnectorId{T}"/>).</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPost("{MangaId}/SetAsDownloadFrom/{MangaConnectorName}/{IsRequested}")]
+    [HttpPatch("{MangaId}/DownloadFrom/{MangaConnectorName}/{IsRequested}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound,  "text/plain")]
     [ProducesResponseType<string>(Status412PreconditionFailed,  "text/plain")]
@@ -464,7 +271,7 @@ public class MangaController(MangaContext context) : Controller
     /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Schema.MangaContext.Manga"/></response>
     /// <response code="404"><see cref="API.MangaConnectors.MangaConnector"/> with Name not found</response>
     /// <response code="412"><see cref="API.MangaConnectors.MangaConnector"/> with Name is disabled</response>
-    [HttpPost("{MangaId}/SearchOn/{MangaConnectorName}")]
+    [HttpGet("{MangaId}/OnMangaConnector/{MangaConnectorName}")]
     [ProducesResponseType<List<MinimalManga>>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType(Status406NotAcceptable)]
@@ -536,5 +343,54 @@ public class MangaController(MangaContext context) : Controller
             IEnumerable<AltTitle> altTitles = m.AltTitles.Select(a => new AltTitle(a.Language, a.Title));
             return new Manga(m.Key, m.Name, m.Description, m.ReleaseStatus, ids, m.IgnoreChaptersBefore, m.Year, m.OriginalLanguage, m.ChapterIds, authors, tags, links, altTitles, m.LibraryId);
         }).ToList());
+    }
+
+    /// <summary>
+    /// Returns <see cref="Schema.MangaContext.Manga"/> with names similar to <see cref="Schema.MangaContext.Manga"/> (identified by <paramref name="MangaId"/>)
+    /// </summary>
+    /// <param name="MangaId">Key of <see cref="Schema.MangaContext.Manga"/></param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpGet("WithSimilarName/{MangaId}")]
+    [ProducesResponseType<List<string>>(Status200OK, "application/json")]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<List<string>>, NotFound<string>, InternalServerError>> GetSimilarManga (string MangaId)
+    {
+        if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+            return TypedResults.NotFound(nameof(MangaId));
+        
+        string name = manga.Name;
+
+        if (await context.Mangas.Where(m => m.Key != MangaId)
+                .ToDictionaryAsync(m => m.Key, m => m.Name, HttpContext.RequestAborted) is not { } mangaNames)
+            return TypedResults.InternalServerError();
+
+        List<string> similarIds = mangaNames
+            .Where(kv => NeedlemanWunschStringUtil.CalculateSimilarityPercentage(name, kv.Value) > 0.8)
+            .Select(kv => kv.Key)
+            .ToList();
+        
+        return TypedResults.Ok(similarIds);
+    }
+
+    /// <summary>
+    /// Returns the <see cref="MangaConnectorId{Manga}"/> with <see cref="MangaConnectorId{Manga}"/>.Key
+    /// </summary>
+    /// <param name="MangaConnectorIdId">Key of <see cref="MangaConnectorId{Manga}"/></param>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="MangaConnectorId{Manga}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
+    [HttpGet("{MangaConnectorIdId}")]
+    [ProducesResponseType<MangaConnectorId>(Status200OK, "application/json")]
+    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
+    public async Task<Results<Ok<MangaConnectorId>, NotFound<string>>> GetMangaMangaConnectorId (string MangaConnectorIdId)
+    {
+        if (await context.MangaConnectorToManga.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, HttpContext.RequestAborted) is not { } mcIdManga)
+            return TypedResults.NotFound(nameof(MangaConnectorIdId));
+
+        MangaConnectorId result = new (mcIdManga.Key, mcIdManga.MangaConnectorName, mcIdManga.ObjId, mcIdManga.WebsiteUrl, mcIdManga.UseForDownload);
+        
+        return TypedResults.Ok(result);
     }
 }

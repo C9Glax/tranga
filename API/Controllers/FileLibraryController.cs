@@ -59,46 +59,35 @@ public class FileLibraryController(MangaContext context) : Controller
     /// <response code="200"></response>
     /// <response code="404"><see cref="FileLibrary"/> with <paramref name="FileLibraryId"/> not found.</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPatch("{FileLibraryId}/ChangeBasePath")]
+    [HttpPatch("{FileLibraryId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> ChangeLibraryBasePath (string FileLibraryId, [FromBody]string newBasePath)
+    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> ChangeLibraryBasePath (string FileLibraryId, [FromBody]PatchFileLibraryRecord requestData)
     {
         if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
             return TypedResults.NotFound(nameof(FileLibraryId));
-        
-        //TODO Path check
-        library.BasePath = newBasePath;
+
+        if (requestData.Path is { } path)
+            library.BasePath = path;
+        if(requestData.Name is { } name)
+            library.LibraryName = name;
         
         if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }
-    
-    /// <summary>
-    /// Changes the <see cref="FileLibraryId"/>.LibraryName with <paramref name="FileLibraryId"/>
-    /// </summary>
-    /// <param name="FileLibraryId"><see cref="FileLibrary"/>.Key</param>
-    /// <param name="newName">New <see cref="FileLibraryId"/>.LibraryName</param>
-    /// <response code="200"></response>
-    /// <response code="404"><see cref="FileLibrary"/> with <paramref name="FileLibraryId"/> not found.</response>
-    /// <response code="500">Error during Database Operation</response>
-    [HttpPatch("{FileLibraryId}/ChangeName")]
-    [ProducesResponseType(Status200OK)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> ChangeLibraryName (string FileLibraryId, [FromBody] string newName)
+
+    public record PatchFileLibraryRecord(string? Path, string? Name)
     {
-        if(await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == FileLibraryId, HttpContext.RequestAborted) is not { } library)
-            return TypedResults.NotFound(nameof(FileLibraryId));
-        
-        //TODO Name check
-        library.LibraryName = newName;
-        
-        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
-            return TypedResults.InternalServerError(result.exceptionMessage);
-        return TypedResults.Ok();
+        /// <summary>
+        /// Directory Path
+        /// </summary>
+        public required string? Path { get; init; } = Path;
+        /// <summary>
+        /// Library Name
+        /// </summary>
+        public required string? Name { get; init; } = Name;
     }
     
     /// <summary>
