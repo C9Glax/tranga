@@ -335,7 +335,7 @@
         }
       }
     },
-    "/v2/Chapters/{ChapterId}": {
+    "/v2/Chapters/WithId/{ChapterId}": {
       "get": {
         "tags": [
           "Chapters"
