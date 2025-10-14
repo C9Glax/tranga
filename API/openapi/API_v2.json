@@ -3679,27 +3679,39 @@
         "additionalProperties": false
       },
       "MetadataSearchResult": {
+        "required": [
+          "coverUrl",
+          "description",
+          "identifier",
+          "name",
+          "url"
+        ],
         "type": "object",
         "properties": {
           "identifier": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "description": "Identifier specific to the MetadataFetcher"
           },
           "name": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "description": "Name of the Manga"
           },
           "url": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "description": "Url to the result"
           },
           "description": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "description": "Description of the Manga"
           },
           "coverUrl": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "description": "Url to the cover if available"
           }
         },
         "additionalProperties": false
