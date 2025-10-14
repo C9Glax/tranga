@@ -1673,6 +1673,45 @@
         }
       }
     },
+    "/v2/MetadataFetcher/Links/{MangaId}": {
+      "get": {
+        "tags": [
+          "MetadataFetcher"
+        ],
+        "summary": "Returns all API.Schema.MangaContext.MetadataFetchers.MetadataEntry for API.Schema.MangaContext.Manga with MangaId",
+        "parameters": [
+          {
+            "name": "MangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataEntry"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "404": {
+            "description": "API.Schema.MangaContext.Manga with MangaId not found"
+          }
+        }
+      }
+    },
     "/v2/MetadataFetcher/{MetadataFetcherName}/SearchManga/{MangaId}": {
       "post": {
         "tags": [

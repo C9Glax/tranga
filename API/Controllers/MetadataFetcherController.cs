@@ -36,8 +36,24 @@ public class MetadataFetcherController(MangaContext context) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<Results<Ok<List<MetadataEntry>>, InternalServerError>> GetLinkedEntries ()
     {
-        if (await context.MetadataEntries.ToListAsync() is not { } result)
+        if (await context.MetadataEntries.ToListAsync(HttpContext.RequestAborted) is not { } result)
             return TypedResults.InternalServerError();
+        
+        return TypedResults.Ok(result);
+    }
+
+    /// <summary>
+    /// Returns all <see cref="MetadataEntry"/> for <see cref="Manga"/> with <paramref name="MangaId"/>
+    /// </summary>
+    /// <response code="200"></response>
+    /// <response code="404"><see cref="Manga"/> with <paramref name="MangaId"/> not found</response>
+    [HttpGet("Links/{MangaId}")]
+    [ProducesResponseType<List<MetadataEntry>>(Status200OK, "application/json")]
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<List<MetadataEntry>>, NotFound<string>>> GetLinkedEntries(string MangaId)
+    {
+        if (await context.MetadataEntries.Where(me => me.MangaId == MangaId).ToListAsync(HttpContext.RequestAborted) is not { } result)
+            return TypedResults.NotFound(nameof(MangaId));
         
         return TypedResults.Ok(result);
     }
