@@ -329,7 +329,7 @@ public class MangaController(MangaContext context) : Controller
     public async Task<Results<Ok<List<Manga>>, NotFound<string>, InternalServerError>> GetMangasWithTag (string Tag)
     {
         if (await context.MangaIncludeAll()
-                .Where(m => m.MangaTags.Any(t => t.Tag.Equals(Tag, StringComparison.InvariantCultureIgnoreCase)))
+                .Where(m => m.MangaTags.Any(t => t.Tag == Tag))
                 .OrderBy(m => m.Name)
                 .ToListAsync(HttpContext.RequestAborted) is not { } result)
             return TypedResults.InternalServerError();
