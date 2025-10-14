@@ -47,7 +47,7 @@ public class MangaConnectorController(MangaContext context) : Controller
     /// Get all <see cref="API.MangaConnectors.MangaConnector"/> (Scanlation-Sites) with <paramref name="Enabled"/>-Status
     /// </summary>
     /// <response code="200"></response>
-    [HttpGet("{Enabled}")]
+    [HttpGet("Enabled/{Enabled}")]
     [ProducesResponseType<List<MangaConnector>>(Status200OK, "application/json")]
     public Ok<List<MangaConnector>> GetEnabledConnectors(bool Enabled)
     {

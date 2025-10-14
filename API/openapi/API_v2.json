@@ -1538,7 +1538,7 @@
         }
       }
     },
-    "/v2/MangaConnector/{Enabled}": {
+    "/v2/MangaConnector/Enabled/{Enabled}": {
       "get": {
         "tags": [
           "MangaConnector"
