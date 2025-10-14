@@ -376,7 +376,7 @@
         }
       }
     },
-    "/v2/Chapters/{MangaConnectorIdId}": {
+    "/v2/Chapters/ConnectorId/{MangaConnectorIdId}": {
       "get": {
         "tags": [
           "Chapters"
@@ -1433,7 +1433,7 @@
         }
       }
     },
-    "/v2/Manga/{MangaConnectorIdId}": {
+    "/v2/Manga/ConnectorId/{MangaConnectorIdId}": {
       "get": {
         "tags": [
           "Manga"
