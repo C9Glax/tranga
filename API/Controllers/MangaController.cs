@@ -326,22 +326,20 @@ public class MangaController(MangaContext context) : Controller
     [ProducesResponseType<Manga[]>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<List<Manga>>, NotFound<string>, InternalServerError>> GetMangasWithTag (string Tag)
+    public async Task<Results<Ok<List<MinimalManga>>, NotFound<string>, InternalServerError>> GetMangasWithTag (string Tag)
     {
-        if (await context.MangaIncludeAll()
+        if (await context.Mangas
+                .Include(m => m.MangaConnectorIds)
+                .Include(m => m.MangaTags)
                 .Where(m => m.MangaTags.Any(t => t.Tag == Tag))
                 .OrderBy(m => m.Name)
                 .ToListAsync(HttpContext.RequestAborted) is not { } result)
             return TypedResults.InternalServerError();
-
+        
         return TypedResults.Ok(result.Select(m =>
         {
             IEnumerable<MangaConnectorId> ids = m.MangaConnectorIds.Select(id => new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-            IEnumerable<Author> authors = m.Authors.Select(a => new Author(a.Key, a.AuthorName));
-            IEnumerable<string> tags = m.MangaTags.Select(t => t.Tag);
-            IEnumerable<Link> links = m.Links.Select(l => new Link(l.Key, l.LinkProvider, l.LinkUrl));
-            IEnumerable<AltTitle> altTitles = m.AltTitles.Select(a => new AltTitle(a.Language, a.Title));
-            return new Manga(m.Key, m.Name, m.Description, m.ReleaseStatus, ids, m.IgnoreChaptersBefore, m.Year, m.OriginalLanguage, m.ChapterIds, authors, tags, links, altTitles, m.LibraryId);
+            return new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus, ids);
         }).ToList());
     }
 
