@@ -97,7 +97,7 @@ public class MetadataFetcherController(MangaContext context) : Controller
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<MetadataEntry>, BadRequest, NotFound<string>, InternalServerError<string>>> LinkMangaMetadata (string MangaId, string MetadataFetcherName, [FromBody]string Identifier)
+    public async Task<Results<Ok, BadRequest, NotFound<string>, InternalServerError<string>>> LinkMangaMetadata (string MangaId, string MetadataFetcherName, [FromBody]string Identifier)
     {
         if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
             return TypedResults.NotFound(nameof(MangaId));
@@ -107,9 +107,9 @@ public class MetadataFetcherController(MangaContext context) : Controller
         MetadataEntry entry = fetcher.CreateMetadataEntry(manga, Identifier);
         context.MetadataEntries.Add(entry);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), "Link Metadatafetcher") is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
-        return TypedResults.Ok(entry);
+        return TypedResults.Ok();
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public class MetadataFetcherController(MangaContext context) : Controller
                 .ExecuteDeleteAsync(HttpContext.RequestAborted) < 1)
             return TypedResults.StatusCode(Status412PreconditionFailed);
         
-        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), "Unlink Metadatafetcher") is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
         return TypedResults.Ok();
     }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -10,6 +11,7 @@ public class MetadataEntry
     public Manga Manga { get; init; } = null!;
     public string MangaId  { get; init; }
     [JsonIgnore]
+    [NotMapped]
     public MetadataFetcher MetadataFetcher { get; init; } = null!;
     public string MetadataFetcherName { get; init; }
     public string Identifier { get; init; }

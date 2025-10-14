@@ -18,7 +18,6 @@ public class Manga : Identifiable
     public MangaReleaseStatus ReleaseStatus { get; internal set; }
     [StringLength(64)] public string? LibraryId { get; private set; }
     public FileLibrary? Library = null!;
-
     public ICollection<Author> Authors { get; internal set; } = null!;
     public ICollection<MangaTag> MangaTags { get; internal set; } = null!;
     public ICollection<Link> Links { get; internal set; } = null!;
@@ -31,13 +30,20 @@ public class Manga : Identifiable
     
     
     /// <exception cref="DirectoryNotFoundException">Library not loaded</exception>
-    [NotMapped] public string FullDirectoryPath => EnsureDirectoryExists();
+    [NotMapped]
+    [JsonIgnore]
+    public string FullDirectoryPath => EnsureDirectoryExists();
 
-    [NotMapped] public ICollection<string> ChapterIds => Chapters.Select(c => c.Key).ToList();
+    [NotMapped]
+    public ICollection<string> ChapterIds => Chapters.Select(c => c.Key).ToList();
+    [JsonIgnore]
     public ICollection<Chapter> Chapters = null!;
 
-    [NotMapped] public Dictionary<string, string> IdsOnMangaConnectors => MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
-    [NotMapped] public ICollection<string> MangaConnectorIdsIds => MangaConnectorIds.Select(id => id.Key).ToList();
+    [NotMapped]
+    public Dictionary<string, string> IdsOnMangaConnectors => MangaConnectorIds.ToDictionary(id => id.MangaConnectorName, id => id.IdOnConnectorSite);
+    [NotMapped]
+    public ICollection<string> MangaConnectorIdsIds => MangaConnectorIds.Select(id => id.Key).ToList();
+    [JsonIgnore]
     public ICollection<MangaConnectorId<Manga>> MangaConnectorIds = null!;
 
     public Manga(string name, string description, string coverUrl, MangaReleaseStatus releaseStatus,

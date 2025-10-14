@@ -99,10 +99,6 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .HasOne<Manga>(entry => entry.Manga)
             .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<MetadataEntry>()
-            .HasOne<MetadataFetcher>(entry => entry.MetadataFetcher)
-            .WithMany()
-            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public async Task<Manga?> FindMangaLike(Manga other, CancellationToken token)
