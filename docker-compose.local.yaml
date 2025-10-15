@@ -15,6 +15,8 @@ services:
         condition: service_healthy
     environment:
       - POSTGRES_HOST=tranga-pg
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
       - CHECK_CHAPTERS_BEFORE_START=false
     restart: unless-stopped
     logging:
