@@ -17,9 +17,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       #- FLARESOLVERR_URL=
-      #- POSTGRES_COMMAND_TIMEOUT=120
-      #- POSTGRES_CONNECTION_TIMEOUT=
-      #- CHECK_CHAPTERS_BEFORE_START=false
+      #- POSTGRES_COMMAND_TIMEOUT=30
+      #- POSTGRES_CONNECTION_TIMEOUT=30
+      #- CHECK_CHAPTERS_BEFORE_START=true
+      #- CREATE_COMICINFO_XML=true
     restart: unless-stopped
     logging:
       driver: json-file

@@ -16,4 +16,6 @@ public struct Constants
     public static readonly int PostgresCommandTimeout =  int.Parse(Environment.GetEnvironmentVariable("POSTGRES_COMMAND_TIMEOUT") ?? "60");
 
     public static readonly bool UpdateChaptersDownloadedBeforeStarting = bool.Parse(Environment.GetEnvironmentVariable("CHECK_CHAPTERS_BEFORE_START") ?? "true");
+    
+    public static readonly bool CreateComicInfoXml = bool.Parse(Environment.GetEnvironmentVariable("CREATE_COMICINFO_XML") ?? "true");
 }

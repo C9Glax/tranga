@@ -120,10 +120,9 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         
         await CopyCoverFromCacheToDownloadLocation(chapter.ParentManga);
         
-        Log.Debug($"Creating ComicInfo.xml {chapter}");
+        Log.Debug($"Loading collections {chapter}");
         foreach (CollectionEntry collectionEntry in DbContext.Entry(chapter.ParentManga).Collections)
             await collectionEntry.LoadAsync(CancellationToken);
-        string comicInfo = chapter.GetComicInfoXmlString();
 
         if (File.Exists(saveArchiveFilePath))
         {
@@ -137,10 +136,18 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             Log.Debug($"Creating archive: {saveArchiveFilePath}");
             //ZIP-it and ship-it
             using ZipArchive archive = ZipFile.Open(saveArchiveFilePath, ZipArchiveMode.Create);
-            Log.Debug("Writing ComicInfo.xml");
-            Stream comicStream = archive.CreateEntry("ComicInfo.xml").Open();
-            await comicStream.WriteAsync(Encoding.UTF8.GetBytes(comicInfo), CancellationToken);
-            await comicStream.DisposeAsync();
+
+            if (Constants.CreateComicInfoXml)
+            {
+                Log.Debug("Writing ComicInfo.xml");
+                Stream comicStream = archive.CreateEntry("ComicInfo.xml").Open();
+                string comicInfo = chapter.GetComicInfoXmlString();
+                await comicStream.WriteAsync(Encoding.UTF8.GetBytes(comicInfo), CancellationToken);
+                await comicStream.DisposeAsync();
+            }
+            else
+                Log.Debug("Skipping ComicInfo.xml. CREATE_COMICINFO_XML is set to false");
+            
             for (int i = 0; i < images.Count; i++)
             {
                 Log.Debug($"Packaging images to archive {chapter} , image {i}");
