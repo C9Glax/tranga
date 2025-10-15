@@ -146,12 +146,11 @@ public class Manga : Identifiable
     public override string ToString() => $"{base.ToString()} {Name}";
 }
 
-[JsonConverter(typeof(StringEnumConverter))]
-public enum MangaReleaseStatus : byte
+public enum MangaReleaseStatus
 {
-    Continuing = 0,
-    Completed = 1,
-    OnHiatus = 2,
-    Cancelled = 3,
-    Unreleased = 4
+    Continuing,
+    Completed,
+    OnHiatus,
+    Cancelled,
+    Unreleased
 }

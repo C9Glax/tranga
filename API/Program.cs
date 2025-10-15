@@ -10,7 +10,6 @@ using log4net;
 using log4net.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Npgsql;
 
@@ -94,14 +93,16 @@ builder.Services.AddDbContext<NotificationsContext>(options =>
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseNpgsql(connectionStringBuilder.ConnectionString));
 
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
 builder.Services.AddControllers(options =>
 {
     options.AllowEmptyInputInBodyModelBinding = true;
-});
-builder.Services.AddControllers().AddNewtonsoftJson(opts =>
+}).AddNewtonsoftJson(opts =>
 {
     opts.SerializerSettings.Converters.Add(new StringEnumConverter());
-    opts.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 });
 builder.Services.AddScoped<ILog>(_ => LogManager.GetLogger("API"));
 

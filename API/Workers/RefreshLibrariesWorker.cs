@@ -22,23 +22,22 @@ public class RefreshLibrariesWorker(IEnumerable<BaseWorker>? dependsOn = null) :
     }
 }
 
-[JsonConverter(typeof(StringEnumConverter))]
-public enum LibraryRefreshSetting : byte
+public enum LibraryRefreshSetting
 {
     /// <summary>
     /// Refresh Libraries after all Manga are downloaded
     /// </summary>
-    AfterAllFinished = 0,
+    AfterAllFinished,
     /// <summary>
     /// Refresh Libraries after a Manga is downloaded
     /// </summary>
-    AfterMangaFinished = 1,
+    AfterMangaFinished,
     /// <summary>
     /// Refresh Libraries after every download
     /// </summary>
-    AfterEveryChapter = 2,
+    AfterEveryChapter,
     /// <summary>
     /// Refresh Libraries while downloading chapters, every x minutes
     /// </summary>
-    WhileDownloading = 3
+    WhileDownloading
 }

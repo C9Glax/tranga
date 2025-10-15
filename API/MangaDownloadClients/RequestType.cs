@@ -1,11 +1,10 @@
 ﻿namespace API.MangaDownloadClients;
 
-public enum RequestType : byte
+public enum RequestType
 {
-    Default = 0,
-    MangaDexFeed = 1,
-    MangaImage = 2,
-    MangaCover = 3,
-    MangaDexImage = 5,
-    MangaInfo = 6
+    Default,
+    MangaDexFeed,
+    MangaImage,
+    MangaCover,
+    MangaInfo
 }

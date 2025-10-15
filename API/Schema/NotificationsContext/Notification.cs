@@ -50,10 +50,9 @@ public class Notification : Identifiable
     public override string ToString() => $"{base.ToString()} {Urgency} {Title} {Message}";
 }
 
-[JsonConverter(typeof(StringEnumConverter))]
-public enum NotificationUrgency : byte
+public enum NotificationUrgency
 {
-    Low = 1,
-    Normal = 3,
-    High = 5
+    Low,
+    Normal,
+    High
 }

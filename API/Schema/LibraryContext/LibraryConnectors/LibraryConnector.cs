@@ -42,16 +42,15 @@ public abstract class LibraryConnector : Identifiable
     internal abstract Task<bool> Test(CancellationToken ct);
 }
 
-[JsonConverter(typeof(StringEnumConverter))]
-public enum LibraryType : byte
+public enum LibraryType
 {
     /// <summary>
     /// <seealso cref="Komga"/>
     /// </summary>
-    Komga = 0,
+    Komga,
     
     /// <summary>
     /// <seealso cref="Kavita"/>
     /// </summary>
-    Kavita = 1
+    Kavita
 }
