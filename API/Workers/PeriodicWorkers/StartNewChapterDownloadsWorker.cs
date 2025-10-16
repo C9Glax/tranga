@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using API.Schema.MangaContext;
 using API.Workers.MangaDownloadWorkers;
 using Microsoft.EntityFrameworkCore;
@@ -8,17 +9,26 @@ namespace API.Workers.PeriodicWorkers;
 /// Create new Workers for Chapters on Manga marked for Download, that havent been downloaded yet.
 /// </summary>
 public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
-    : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
+    : BaseWorkerWithContexts(dependsOn), IPeriodic
 {
 
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval ?? TimeSpan.FromMinutes(1);
+    
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    private MangaContext MangaContext = null!;
+
+    protected override void SetContexts(IServiceScope serviceScope)
+    {
+        MangaContext = GetContext<MangaContext>(serviceScope);
+    }
+    
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Checking for missing chapters...");
         
         // Get missing chapters
-        List<MangaConnectorId<Chapter>> missingChapters = await GetMissingChapters(DbContext, CancellationToken);
+        List<MangaConnectorId<Chapter>> missingChapters = await GetMissingChapters(MangaContext, CancellationToken);
         
         Log.Debug($"Found {missingChapters.Count} missing downloads.");
         

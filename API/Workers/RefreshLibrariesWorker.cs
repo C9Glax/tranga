@@ -1,20 +1,27 @@
+using System.Diagnostics.CodeAnalysis;
 using API.Schema.LibraryContext;
 using API.Schema.LibraryContext.LibraryConnectors;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace API.Workers;
 
-public class RefreshLibrariesWorker(IEnumerable<BaseWorker>? dependsOn = null) : BaseWorkerWithContext<LibraryContext>(dependsOn)
+public class RefreshLibrariesWorker(IEnumerable<BaseWorker>? dependsOn = null) : BaseWorkerWithContexts(dependsOn)
 {
     public static DateTime LastRefresh { get; set; } = DateTime.UnixEpoch;
+    
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    private LibraryContext LibraryContext = null!;
+
+    protected override void SetContexts(IServiceScope serviceScope)
+    {
+        LibraryContext = GetContext<LibraryContext>(serviceScope);
+    }
     
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Refreshing libraries...");
         LastRefresh = DateTime.UtcNow;
-        List<LibraryConnector> libraries = await DbContext.LibraryConnectors.ToListAsync(CancellationToken);
+        List<LibraryConnector> libraries = await LibraryContext.LibraryConnectors.ToListAsync(CancellationToken);
         foreach (LibraryConnector connector in libraries)
             await connector.UpdateLibrary(CancellationToken);
         Log.Debug("Libraries Refreshed...");

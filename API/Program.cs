@@ -1,5 +1,7 @@
 using System.Reflection;
 using API;
+using API.Schema.ActionsContext;
+using API.Schema.ActionsContext.Actions;
 using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.NotificationsContext;
@@ -92,6 +94,8 @@ builder.Services.AddDbContext<NotificationsContext>(options =>
     options.UseNpgsql(connectionStringBuilder.ConnectionString));
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseNpgsql(connectionStringBuilder.ConnectionString));
+builder.Services.AddDbContext<ActionsContext>(options =>
+    options.UseNpgsql(connectionStringBuilder.ConnectionString));
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
 {
@@ -179,6 +183,15 @@ try //Connect to DB and apply migrations
         await context.Database.MigrateAsync(CancellationToken.None);
 
         await context.Sync(CancellationToken.None, reason: "Startup library");
+    }
+
+    using (IServiceScope scope = app.Services.CreateScope())
+    {
+        ActionsContext context = scope.ServiceProvider.GetRequiredService<ActionsContext>();
+        await context.Database.MigrateAsync(CancellationToken.None);
+        context.Actions.Add(new StartupActionRecord());
+
+        await context.Sync(CancellationToken.None, reason: "Startup actions");
     }
 }
 catch (Exception e)

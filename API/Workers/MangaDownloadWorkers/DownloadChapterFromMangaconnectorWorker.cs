@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
 using API.MangaConnectors;
-using API.MangaDownloadClients;
+using API.Schema.ActionsContext;
+using API.Schema.ActionsContext.Actions;
 using API.Schema.MangaContext;
 using API.Workers.PeriodicWorkers;
 using Microsoft.EntityFrameworkCore;
@@ -21,14 +23,26 @@ namespace API.Workers.MangaDownloadWorkers;
 /// <param name="chId"></param>
 /// <param name="dependsOn"></param>
 public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> chId, IEnumerable<BaseWorker>? dependsOn = null)
-    : BaseWorkerWithContext<MangaContext>(dependsOn)
+    : BaseWorkerWithContexts(dependsOn)
 {
     private readonly string _mangaConnectorIdId = chId.Key;
+
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    private MangaContext MangaContext = null!;
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    private ActionsContext ActionsContext = null!;
+
+    protected override void SetContexts(IServiceScope serviceScope)
+    {
+        MangaContext = GetContext<MangaContext>(serviceScope);
+        ActionsContext = GetContext<ActionsContext>(serviceScope);
+    }
+    
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug($"Downloading chapter for MangaConnectorId {_mangaConnectorIdId}...");
         // Getting MangaConnector info
-        if (await DbContext.MangaConnectorToChapter
+        if (await MangaContext.MangaConnectorToChapter
                 .Include(id => id.Obj)
                 .ThenInclude(c => c.ParentManga)
                 .ThenInclude(m => m.Library)
@@ -39,7 +53,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
         
         // Check if Chapter already exists...
-        if (await mangaConnectorId.Obj.CheckDownloaded(DbContext, CancellationToken))
+        if (await mangaConnectorId.Obj.CheckDownloaded(MangaContext, CancellationToken))
         {
             Log.Warn("Chapter already exists!");
             return [];
@@ -66,7 +80,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         {
             Log.Info($"No imageUrls for chapter {chapter}");
             mangaConnectorId.UseForDownload = false; // Do not try to download from this again
-            if(await DbContext.Sync(CancellationToken, GetType(), "Disable Id") is { success: false } result)
+            if(await MangaContext.Sync(CancellationToken, GetType(), "Disable Id") is { success: false } result)
                 Log.Error(result.exceptionMessage);
             return [];
         }
@@ -121,7 +135,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         await CopyCoverFromCacheToDownloadLocation(chapter.ParentManga);
         
         Log.Debug($"Loading collections {chapter}");
-        foreach (CollectionEntry collectionEntry in DbContext.Entry(chapter.ParentManga).Collections)
+        foreach (CollectionEntry collectionEntry in MangaContext.Entry(chapter.ParentManga).Collections)
             await collectionEntry.LoadAsync(CancellationToken);
 
         if (File.Exists(saveArchiveFilePath))
@@ -173,10 +187,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
 
         chapter.Downloaded = true;
         chapter.FileName = new FileInfo(saveArchiveFilePath).Name;
-        if(await DbContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
-            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+        if(await MangaContext.Sync(CancellationToken, GetType(), "Downloading complete") is { success: false } chapterContextException)
+            Log.Error($"Failed to save database changes: {chapterContextException.exceptionMessage}");
         
         Log.Debug($"Downloaded chapter {chapter}.");
+
+        ActionsContext.Actions.Add(new ChapterDownloadedActionRecord(chapter));
+        if(await ActionsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } actionsContextException)
+            Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
 
         bool refreshLibrary = await CheckLibraryRefresh();
         if(refreshLibrary)
@@ -188,12 +206,12 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     private async Task<bool> CheckLibraryRefresh() => Tranga.Settings.LibraryRefreshSetting switch
     {
         LibraryRefreshSetting.AfterAllFinished => await AllDownloadsFinished(),
-        LibraryRefreshSetting.AfterMangaFinished => await DbContext.MangaConnectorToChapter.Include(chId => chId.Obj).Where(chId => chId.UseForDownload).AllAsync(chId => chId.Obj.Downloaded, CancellationToken),
+        LibraryRefreshSetting.AfterMangaFinished => await MangaContext.MangaConnectorToChapter.Include(chId => chId.Obj).Where(chId => chId.UseForDownload).AllAsync(chId => chId.Obj.Downloaded, CancellationToken),
         LibraryRefreshSetting.AfterEveryChapter => true,
         LibraryRefreshSetting.WhileDownloading => await AllDownloadsFinished() ||  DateTime.UtcNow.Subtract(RefreshLibrariesWorker.LastRefresh).TotalMinutes > Tranga.Settings.RefreshLibraryWhileDownloadingEveryMinutes,
         _ => true
     };
-    private async Task<bool> AllDownloadsFinished() => (await StartNewChapterDownloadsWorker.GetMissingChapters(DbContext, CancellationToken)).Count == 0;
+    private async Task<bool> AllDownloadsFinished() => (await StartNewChapterDownloadsWorker.GetMissingChapters(MangaContext, CancellationToken)).Count == 0;
     
     private async Task<Stream> ProcessImage(Stream imageStream, CancellationToken? cancellationToken = null)
     {
@@ -244,7 +262,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     {
         Log.Debug($"Copying cover for {manga}");
 
-        manga = await DbContext.MangaIncludeAll().FirstAsync(m => m.Key == manga.Key, CancellationToken);
+        manga = await MangaContext.MangaIncludeAll().FirstAsync(m => m.Key == manga.Key, CancellationToken);
         string publicationFolder;
         try
         {
@@ -278,7 +296,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             
             coverFileNameInCache = mangaConnector.SaveCoverImageToCache(mangaConnectorId);
             manga.CoverFileNameInCache = coverFileNameInCache;
-            if (await DbContext.Sync(CancellationToken, reason: "Update cover filename") is { success: false } result)
+            if (await MangaContext.Sync(CancellationToken, reason: "Update cover filename") is { success: false } result)
                 Log.Error($"Couldn't update cover filename {result.exceptionMessage}");
         }
         if (coverFileNameInCache is null)

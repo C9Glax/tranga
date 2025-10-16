@@ -1,4 +1,6 @@
 ﻿using API.Controllers.DTOs;
+using API.Schema.ActionsContext;
+using API.Schema.ActionsContext.Actions;
 using API.Schema.MangaContext;
 using API.Workers;
 using API.Workers.MangaDownloadWorkers;
@@ -11,6 +13,7 @@ using Soenneker.Utils.String.NeedlemanWunsch;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using AltTitle = API.Controllers.DTOs.AltTitle;
 using Author = API.Controllers.DTOs.Author;
+using Chapter = API.Schema.MangaContext.Chapter;
 using Link = API.Controllers.DTOs.Link;
 using Manga = API.Controllers.DTOs.Manga;
 
@@ -21,7 +24,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaController(MangaContext context) : Controller
+public class MangaController(MangaContext context, ActionsContext actionsContext) : Controller
 {
     
     /// <summary>
@@ -175,12 +178,7 @@ public class MangaController(MangaContext context) : Controller
 
         if (await manga.GetCoverImage(cache, HttpContext.RequestAborted) is not { } data)
         {
-            if (Tranga.GetRunningWorkers().Any(worker => worker is DownloadCoverFromMangaconnectorWorker w && context.MangaConnectorToManga.Find(w.MangaConnectorIdId)?.ObjId == MangaId))
-            {
-                Response.Headers.Append("Retry-After","2");
-                return TypedResults.StatusCode(Status503ServiceUnavailable);
-            }
-            return TypedResults.NoContent();
+            return TypedResults.NotFound("Image not in cache");
         }
         
         DateTime lastModified = data.fileInfo.LastWriteTime;
@@ -199,12 +197,17 @@ public class MangaController(MangaContext context) : Controller
     /// <param name="LibraryId"><see cref="DTOs.FileLibrary"/>.Key</param>
     /// <response code="202">Folder is going to be moved</response>
     /// <response code="404"><paramref name="MangaId"/> or <paramref name="LibraryId"/> not found</response>
+    /// <response code="500">Error during Database Operation</response>
     [HttpPost("{MangaId}/ChangeLibrary/{LibraryId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    public async Task<Results<Ok, NotFound<string>>> ChangeLibrary(string MangaId, string LibraryId)
+    [ProducesResponseType<string>(Status500InternalServerError,  "text/plain")]
+    public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> ChangeLibrary(string MangaId, string LibraryId)
     {
-        if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+        if (await context.Mangas
+                .Include(m => m.Library)
+                .Include(m => m.Chapters)
+                .FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
             return TypedResults.NotFound(nameof(MangaId));
         if (await context.FileLibraries.FirstOrDefaultAsync(l => l.Key == LibraryId, HttpContext.RequestAborted) is not { } library)
             return TypedResults.NotFound(nameof(LibraryId));
@@ -212,9 +215,18 @@ public class MangaController(MangaContext context) : Controller
         if(manga.LibraryId == library.Key)
             return TypedResults.Ok();
 
-        MoveMangaLibraryWorker moveLibrary = new(manga, library);
+        Dictionary<Chapter, string?> oldPaths = manga.Chapters.Where(ch => ch.Downloaded).ToDictionary(ch => ch, ch => ch.FullArchiveFilePath);
+        manga.Library = library;
+        Dictionary<Chapter, string?> newPaths = oldPaths.ToDictionary(kv => kv.Key, kv => kv.Key.FullArchiveFilePath);
+        IEnumerable<MoveFileOrFolderWorker> workers = oldPaths.Select(kv => new MoveFileOrFolderWorker(newPaths[kv.Key]!, kv.Value!));
+        Tranga.AddWorkers(workers);
         
-        Tranga.AddWorkers([moveLibrary]);
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), "Move Manga") is { success: false } mangaContextResult)
+            return TypedResults.InternalServerError(mangaContextResult.exceptionMessage);
+        
+        actionsContext.Actions.Add(new LibraryMovedActionRecord(manga, library));
+        if(await actionsContext.Sync(HttpContext.RequestAborted, GetType(), "Move Manga") is { success: false } actionsContextResult)
+            return TypedResults.InternalServerError(actionsContextResult.exceptionMessage);
         
         return TypedResults.Ok();
     }

@@ -2,10 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using API.MangaConnectors;
 using API.MangaDownloadClients;
-using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
-using API.Schema.NotificationsContext;
 using API.Workers;
 using API.Workers.MangaDownloadWorkers;
 using API.Workers.PeriodicWorkers;
@@ -146,21 +144,15 @@ public static class Tranga
             Log.Warn($"{worker}: Max worker concurrency reached ({Settings.MaxConcurrentWorkers})! Waiting {Settings.WorkCycleTimeoutMs}ms...");
             Thread.Sleep(Settings.WorkCycleTimeoutMs);
         }
-        
-        if (worker is BaseWorkerWithContext<MangaContext> mangaContextWorker)
+
+        if (worker is BaseWorkerWithContexts withContexts)
         {
-            mangaContextWorker.SetScope(ServiceProvider.CreateScope());
-            RunningWorkers.TryAdd(mangaContextWorker, mangaContextWorker.DoWork(afterWorkCallback));
-        }else if (worker is BaseWorkerWithContext<NotificationsContext> notificationContextWorker)
+            RunningWorkers.TryAdd(withContexts, withContexts.DoWork(ServiceProvider.CreateScope(), afterWorkCallback));
+        }
+        else
         {
-            notificationContextWorker.SetScope(ServiceProvider.CreateScope());
-            RunningWorkers.TryAdd(notificationContextWorker, notificationContextWorker.DoWork(afterWorkCallback));
-        }else if (worker is BaseWorkerWithContext<LibraryContext> libraryContextWorker)
-        {
-            libraryContextWorker.SetScope(ServiceProvider.CreateScope());
-            RunningWorkers.TryAdd(libraryContextWorker, libraryContextWorker.DoWork(afterWorkCallback));
-        }else
             RunningWorkers.TryAdd(worker, worker.DoWork(afterWorkCallback));
+        }
     }
 
     private static Action DefaultAfterWork(BaseWorker worker, Action? callback = null) => () =>

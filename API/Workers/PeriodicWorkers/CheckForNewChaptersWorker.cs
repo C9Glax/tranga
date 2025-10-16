@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using API.Schema.MangaContext;
 using API.Workers.MangaDownloadWorkers;
 using Microsoft.EntityFrameworkCore;
@@ -8,15 +9,23 @@ namespace API.Workers.PeriodicWorkers;
 /// Creates Jobs to update available Chapters for all Manga that are marked for Download
 /// </summary>
 public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<BaseWorker>? dependsOn = null)
-    : BaseWorkerWithContext<MangaContext>(dependsOn), IPeriodic
+    : BaseWorkerWithContexts(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
     public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(60);
     
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    private MangaContext MangaContext = null!;
+
+    protected override void SetContexts(IServiceScope serviceScope)
+    {
+        MangaContext = GetContext<MangaContext>(serviceScope);
+    }
+    
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Checking for new chapters...");
-        List<MangaConnectorId<Manga>> connectorIdsManga = await DbContext.MangaConnectorToManga
+        List<MangaConnectorId<Manga>> connectorIdsManga = await MangaContext.MangaConnectorToManga
             .Include(id => id.Obj)
             .Where(id => id.UseForDownload)
             .ToListAsync(CancellationToken);
@@ -27,5 +36,4 @@ public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<Ba
 
         return newWorkers.ToArray();
     }
-
 }

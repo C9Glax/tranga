@@ -1,12 +1,24 @@
+using System.Diagnostics.CodeAnalysis;
+using API.Schema.ActionsContext;
+using API.Schema.ActionsContext.Actions;
+
 namespace API.Workers;
 
 public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnumerable<BaseWorker>? dependsOn = null)
-    : BaseWorker(dependsOn)
+    : BaseWorkerWithContexts(dependsOn)
 {
     public readonly string FromLocation = fromLocation;
     public readonly string ToLocation = toLocation;
+    
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    private ActionsContext ActionsContext = null!;
 
-    protected override Task<BaseWorker[]> DoWorkInternal()
+    protected override void SetContexts(IServiceScope serviceScope)
+    {
+        ActionsContext = GetContext<ActionsContext>(serviceScope);
+    }
+
+    protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         try
         {
@@ -14,13 +26,13 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
             if (!fi.Exists)
             {
                 Log.Error($"File does not exist at {FromLocation}");
-                return new Task<BaseWorker[]>(() => []);
+                return [];
             }
 
             if (File.Exists(ToLocation))//Do not override existing
             {
                 Log.Error($"File already exists at {ToLocation}");
-                return new Task<BaseWorker[]>(() => []);
+                return [];
             } 
             if(fi.Attributes.HasFlag(FileAttributes.Directory))
                 MoveDirectory(fi, ToLocation);
@@ -32,7 +44,11 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
             Log.Error(e);
         }
 
-        return new Task<BaseWorker[]>(() => []);
+        ActionsContext.Actions.Add(new DataMovedActionRecord(FromLocation, ToLocation));
+        if(await ActionsContext.Sync(CancellationToken, GetType(), "Library Moved") is { success: false } actionsContextException)
+            Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
+
+        return [];
     }
 
     private void MoveDirectory(FileInfo from, string toLocation)

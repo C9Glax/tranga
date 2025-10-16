@@ -5,6 +5,88 @@
     "version": "2.0"
   },
   "paths": {
+    "/v2/Actions/Types": {
+      "get": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Returns the available Action Types (API.Schema.ActionsContext.ActionRecord.Action) performed by Tranga",
+        "responses": {
+          "200": {
+            "description": "List of performed action-types"
+          },
+          "500": {
+            "description": "Database error"
+          }
+        }
+      }
+    },
+    "/v2/Actions/Interval": {
+      "post": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Returns API.Schema.ActionsContext.ActionRecord performed in API.Controllers.ActionsController.Interval",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/Interval"
+              }
+            },
+            "application/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/Interval"
+              }
+            },
+            "text/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/Interval"
+              }
+            },
+            "application/*+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/Interval"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of performed actions"
+          },
+          "500": {
+            "description": "Database error"
+          }
+        }
+      }
+    },
+    "/v2/Actions/Type/{Type}": {
+      "get": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Returns API.Schema.ActionsContext.ActionRecord with type Type",
+        "parameters": [
+          {
+            "name": "Type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of performed actions"
+          },
+          "500": {
+            "description": "Database error"
+          }
+        }
+      }
+    },
     "/v2/Chapters/{MangaId}": {
       "get": {
         "tags": [
@@ -1120,6 +1202,16 @@
           },
           "404": {
             "description": "MangaId or LibraryId not found",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error during Database Operation",
             "content": {
               "text/plain; x-version=2.0": {
                 "schema": {
@@ -3397,6 +3489,20 @@
             "minLength": 16,
             "type": "string",
             "description": "Unique Identifier of the DTO"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Interval": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
