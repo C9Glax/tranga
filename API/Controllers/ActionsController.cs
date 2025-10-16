@@ -38,8 +38,8 @@ public class ActionsController(ActionsContext context) : Controller
     public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Filter filter)
     {
         if (await context.Filter(filter.MangaId, filter.ChapterId)
-                .Where(a => filter.Start == null || a.PerformedAt >= filter.Start)
-                .Where(a => filter.End == null || a.PerformedAt >= filter.End)
+                .Where(a => filter.Start == null || a.PerformedAt >= filter.Start.Value.ToUniversalTime())
+                .Where(a => filter.End == null || a.PerformedAt >= filter.End.Value.ToUniversalTime())
                 .Where(a => filter.Action == null || a.Action == filter.Action)
                 .ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
