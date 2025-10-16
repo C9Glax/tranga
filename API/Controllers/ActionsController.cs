@@ -40,7 +40,8 @@ public class ActionsController(ActionsContext context) : Controller
         if (await context.FilterActions(filter.MangaId, filter.ChapterId)
                 .Where(a => filter.Start == null || a.PerformedAt >= filter.Start.Value.ToUniversalTime())
                 .Where(a => filter.End == null || a.PerformedAt <= filter.End.Value.ToUniversalTime())
-                .Where(a => filter.Action == null || a.Action == filter.Action)
+                .Where(a => filter.Action == null || a.Action == filter.Action) 
+                .OrderByDescending(a => a.PerformedAt)
                 .ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
         
