@@ -3277,12 +3277,12 @@
           },
           "mangaId": {
             "type": "string",
-            "description": "MangaId if Record is API.Schema.ActionsContext.Actions.Generic.ActionWithMangaRecord",
+            "description": "MangaId if Record is API.Schema.ActionsContext.Actions.Generic.IActionWithMangaRecord",
             "nullable": true
           },
           "chapterId": {
             "type": "string",
-            "description": "ChapterId if Record is API.Schema.ActionsContext.Actions.Generic.ActionWithMangaRecord",
+            "description": "ChapterId if Record is API.Schema.ActionsContext.Actions.Generic.IActionWithMangaRecord",
             "nullable": true
           },
           "key": {

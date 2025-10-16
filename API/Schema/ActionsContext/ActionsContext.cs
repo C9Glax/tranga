@@ -19,5 +19,16 @@ public class ActionsContext(DbContextOptions<ActionsContext> options) : TrangaBa
             .HasValue<DataMovedActionRecord>(ActionsEnum.DataMoved)
             .HasValue<LibraryMovedActionRecord>(ActionsEnum.LibraryMoved)
             .HasValue<StartupActionRecord>(ActionsEnum.Startup);
+
+        modelBuilder.Entity<ChapterDownloadedActionRecord>().Property(a => a.MangaId).HasColumnName("MangaId");
+        modelBuilder.Entity<ChapterDownloadedActionRecord>().Property(a => a.ChapterId).HasColumnName("ChapterId");
+        
+        modelBuilder.Entity<CoverDownloadedActionRecord>().Property(a => a.MangaId).HasColumnName("MangaId");
+        
+        modelBuilder.Entity<ChaptersRetrievedActionRecord>().Property(a => a.MangaId).HasColumnName("MangaId");
+        
+        modelBuilder.Entity<MetadataUpdatedActionRecord>().Property(a => a.MangaId).HasColumnName("MangaId");
+        
+        modelBuilder.Entity<LibraryMovedActionRecord>().Property(a => a.MangaId).HasColumnName("MangaId");
     }
 }

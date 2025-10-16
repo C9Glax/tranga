@@ -50,8 +50,14 @@ namespace API.Migrations.Actions
 
                     b.Property<string>("ChapterId")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("text")
+                        .HasColumnName("ChapterId");
+
+                    b.Property<string>("MangaId")
+                        .IsRequired()
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("text")
+                        .HasColumnName("MangaId");
 
                     b.HasDiscriminator().HasValue(1);
                 });
@@ -63,8 +69,8 @@ namespace API.Migrations.Actions
                     b.Property<string>("MangaId")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("text")
+                        .HasColumnName("MangaId");
 
                     b.HasDiscriminator().HasValue(2);
                 });
@@ -81,8 +87,8 @@ namespace API.Migrations.Actions
                     b.Property<string>("MangaId")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("text")
+                        .HasColumnName("MangaId");
 
                     b.HasDiscriminator().HasValue(3);
                 });
@@ -116,8 +122,8 @@ namespace API.Migrations.Actions
                     b.Property<string>("MangaId")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("text")
+                        .HasColumnName("MangaId");
 
                     b.HasDiscriminator().HasValue(5);
                 });
@@ -129,8 +135,8 @@ namespace API.Migrations.Actions
                     b.Property<string>("MangaId")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("text")
+                        .HasColumnName("MangaId");
 
                     b.Property<string>("MetadataFetcher")
                         .IsRequired()

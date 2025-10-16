@@ -6,7 +6,7 @@ using API.Schema.MangaContext.MetadataFetchers;
 namespace API.Schema.ActionsContext.Actions;
 
 public sealed class MetadataUpdatedActionRecord(ActionsEnum action, DateTime performedAt, string mangaId, string metadataFetcher)
-    : ActionWithMangaRecord(action, performedAt, mangaId)
+    : ActionRecord(action, performedAt), IActionWithMangaRecord
 {
     public MetadataUpdatedActionRecord(Manga manga, MetadataFetcher fetcher) : this(ActionsEnum.MetadataUpdated, DateTime.UtcNow, manga.Key, fetcher.Name) { }
 
@@ -15,4 +15,6 @@ public sealed class MetadataUpdatedActionRecord(ActionsEnum action, DateTime per
     /// </summary>
     [StringLength(1024)]
     public string MetadataFetcher { get; init; } = metadataFetcher;
+
+    public string MangaId { get; init; } = mangaId;
 }

@@ -192,7 +192,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         
         Log.Debug($"Downloaded chapter {chapter}.");
 
-        ActionsContext.Actions.Add(new ChapterDownloadedActionRecord(chapter));
+        ActionsContext.Actions.Add(new ChapterDownloadedActionRecord(chapter.ParentManga, chapter));
         if(await ActionsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } actionsContextException)
             Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
 
