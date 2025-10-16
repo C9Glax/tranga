@@ -3285,6 +3285,26 @@
             "description": "ChapterId if Record is API.Schema.ActionsContext.Actions.Generic.IActionWithMangaRecord",
             "nullable": true
           },
+          "from": {
+            "type": "string",
+            "description": "FromPath if Record is API.Schema.ActionsContext.Actions.DataMovedActionRecord",
+            "nullable": true
+          },
+          "to": {
+            "type": "string",
+            "description": "ToPath if Record is API.Schema.ActionsContext.Actions.DataMovedActionRecord",
+            "nullable": true
+          },
+          "filename": {
+            "type": "string",
+            "description": "Filename if Record is API.Schema.ActionsContext.Actions.CoverDownloadedActionRecord",
+            "nullable": true
+          },
+          "metadataFetcher": {
+            "type": "string",
+            "description": "API.Schema.MangaContext.MetadataFetchers.MetadataFetcher if Record is API.Schema.ActionsContext.Actions.MetadataUpdatedActionRecord",
+            "nullable": true
+          },
           "key": {
             "maxLength": 64,
             "minLength": 16,
