@@ -32,23 +32,23 @@ public class ActionsContext(DbContextOptions<ActionsContext> options) : TrangaBa
         modelBuilder.Entity<LibraryMovedActionRecord>().Property(a => a.MangaId).HasColumnName("MangaId");
     }
 
-    public IQueryable<ActionRecord> FilterManga(string MangaId) => this.Actions
+    public IQueryable<ActionRecord> FilterActionsManga(string MangaId) => this.Actions
         .FromSqlInterpolated($"""SELECT * FROM public."Actions" WHERE "MangaId" = {MangaId}""");
 
-    public IQueryable<ActionRecord> FilterChapter(string ChapterId) => this.Actions
+    public IQueryable<ActionRecord> FilterActionsChapter(string ChapterId) => this.Actions
         .FromSqlInterpolated($"""SELECT * FROM public."Actions" WHERE "ChapterId" = {ChapterId}""");
     
-    public IQueryable<ActionRecord> FilterMangaAndChapter(string MangaId, string ChapterId) => this.Actions
+    public IQueryable<ActionRecord> FilterActionsMangaAndChapter(string MangaId, string ChapterId) => this.Actions
         .FromSqlInterpolated($"""SELECT * FROM public."Actions" WHERE "MangaId" = {MangaId} AND "ChapterId" = {ChapterId}""");
 
-    public IQueryable<ActionRecord> Filter(string? MangaId, string? ChapterId)
+    public IQueryable<ActionRecord> FilterActions(string? MangaId, string? ChapterId)
     {
         if (MangaId is { } mangaId && ChapterId is { } chapterId)
-            return FilterMangaAndChapter(mangaId, chapterId);
+            return FilterActionsMangaAndChapter(mangaId, chapterId);
         if (MangaId is { } mangaId2)
-            return FilterManga(mangaId2);
+            return FilterActionsManga(mangaId2);
         if (ChapterId is { } chapterId2)
-            return FilterChapter(chapterId2);
+            return FilterActionsChapter(chapterId2);
         return this.Actions.AsQueryable();
     }
 }

@@ -37,9 +37,9 @@ public class ActionsController(ActionsContext context) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Filter filter)
     {
-        if (await context.Filter(filter.MangaId, filter.ChapterId)
+        if (await context.FilterActions(filter.MangaId, filter.ChapterId)
                 .Where(a => filter.Start == null || a.PerformedAt >= filter.Start.Value.ToUniversalTime())
-                .Where(a => filter.End == null || a.PerformedAt >= filter.End.Value.ToUniversalTime())
+                .Where(a => filter.End == null || a.PerformedAt <= filter.End.Value.ToUniversalTime())
                 .Where(a => filter.Action == null || a.Action == filter.Action)
                 .ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
@@ -73,7 +73,7 @@ public class ActionsController(ActionsContext context) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToManga(string MangaId)
     {
-        if(await context.FilterManga(MangaId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
+        if(await context.FilterActionsManga(MangaId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
         
         return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
@@ -89,7 +89,7 @@ public class ActionsController(ActionsContext context) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToChapter(string ChapterId)
     {
-        if(await context.FilterChapter(ChapterId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
+        if(await context.FilterActionsChapter(ChapterId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
         
         return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
