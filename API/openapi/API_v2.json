@@ -114,6 +114,78 @@
         }
       }
     },
+    "/v2/Actions/RelatedTo/Manga/{MangaId}": {
+      "get": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Returns API.Schema.ActionsContext.ActionRecord related to API.Controllers.DTOs.Manga",
+        "parameters": [
+          {
+            "name": "MangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of performed actions",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionRecord"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database error"
+          }
+        }
+      }
+    },
+    "/v2/Actions/RelatedTo/Chapter/{ChapterId}": {
+      "get": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Returns API.Schema.ActionsContext.ActionRecord related to API.Controllers.DTOs.Chapter",
+        "parameters": [
+          {
+            "name": "ChapterId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of performed actions",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionRecord"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database error"
+          }
+        }
+      }
+    },
     "/v2/Chapters/{MangaId}": {
       "get": {
         "tags": [
@@ -3189,7 +3261,9 @@
     "schemas": {
       "ActionRecord": {
         "required": [
-          "key"
+          "action",
+          "key",
+          "performedAt"
         ],
         "type": "object",
         "properties": {
@@ -3198,13 +3272,24 @@
           },
           "performedAt": {
             "type": "string",
-            "description": "UTC Time when Action was performed",
+            "description": "<inheritdoc cref=\"P:API.Schema.ActionsContext.ActionRecord.PerformedAt\" />",
             "format": "date-time"
+          },
+          "mangaId": {
+            "type": "string",
+            "description": "MangaId if Record is API.Schema.ActionsContext.Actions.Generic.ActionWithMangaRecord",
+            "nullable": true
+          },
+          "chapterId": {
+            "type": "string",
+            "description": "ChapterId if Record is API.Schema.ActionsContext.Actions.Generic.ActionWithMangaRecord",
+            "nullable": true
           },
           "key": {
             "maxLength": 64,
             "minLength": 16,
-            "type": "string"
+            "type": "string",
+            "description": "Unique Identifier of the DTO"
           }
         },
         "additionalProperties": false

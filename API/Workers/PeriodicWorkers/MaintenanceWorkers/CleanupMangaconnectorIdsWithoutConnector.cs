@@ -31,7 +31,10 @@ public class CleanupMangaconnectorIdsWithoutConnector : BaseWorkerWithContexts
         int deletedMangaIds = await MangaContext.MangaConnectorToManga.Where(mcId => connectorNames.All(name => name != mcId.MangaConnectorName)).ExecuteDeleteAsync(CancellationToken);
         Log.Info($"Deleted {deletedMangaIds} mangaIds.");
         
-        await MangaContext.SaveChangesAsync(CancellationToken);
+        
+        if(await MangaContext.Sync(CancellationToken, GetType(), "Cleanup done") is { success: false } e)
+            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+        
         return [];
     }
 }

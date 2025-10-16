@@ -1,3 +1,4 @@
+using API.Controllers.DTOs;
 using API.Schema.ActionsContext;
 using API.Schema.ActionsContext.Actions;
 using Asp.Versioning;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using ActionRecord = API.Controllers.DTOs.ActionRecord;
 
 namespace API.Controllers;
 
@@ -26,34 +28,66 @@ public class ActionsController(ActionsContext context) : Controller
 
     public sealed record Interval(DateTime Start, DateTime End);
     /// <summary>
-    /// Returns <see cref="ActionRecord"/> performed in <see cref="Interval"/>
+    /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> performed in <see cref="Interval"/>
     /// </summary>
     /// <response code="200">List of performed actions</response>
     /// <response code="500">Database error</response>
     [HttpPost("Interval")]
-    [ProducesResponseType<List<ActionRecord>>(Status200OK, "application/json")]
+    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<List<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Interval interval)
+    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Interval interval)
     {
         if (await context.Actions.Where(a => a.PerformedAt >= interval.Start && a.PerformedAt <= interval.End)
                 .ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
-        return TypedResults.Ok(actions);
+        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
     }
     
     /// <summary>
-    /// Returns <see cref="ActionRecord"/> with <paramref name="Type"/> <see cref="ActionsEnum"/>
+    /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> with <paramref name="Type"/> <see cref="ActionsEnum"/>
     /// </summary>
     /// <response code="200">List of performed actions</response>
     /// <response code="500">Database error</response>
     [HttpGet("Type/{Type}")]
-    [ProducesResponseType<List<ActionRecord>>(Status200OK, "application/json")]
+    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<List<ActionRecord>>, InternalServerError>> GetActionsWithType(ActionsEnum Type)
+    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsWithType(ActionsEnum Type)
     {
         if (await context.Actions.Where(a => a.Action == Type)
                 .ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
-        return TypedResults.Ok(actions);
+        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
+    }
+    
+    /// <summary>
+    /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> related to <see cref="Manga"/>
+    /// </summary>
+    /// <response code="200">List of performed actions</response>
+    /// <response code="500">Database error</response>
+    [HttpGet("RelatedTo/Manga/{MangaId}")]
+    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToManga(string MangaId)
+    {
+        if(await context.Actions.FromSqlInterpolated($"""SELECT * FROM public."Actions" WHERE "MangaId" = {MangaId}""").ToListAsync() is not { } actions)
+            return TypedResults.InternalServerError();
+        
+        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
+    }
+    
+    /// <summary>
+    /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> related to <see cref="Chapter"/>
+    /// </summary>
+    /// <response code="200">List of performed actions</response>
+    /// <response code="500">Database error</response>
+    [HttpGet("RelatedTo/Chapter/{ChapterId}")]
+    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToChapter(string ChapterId)
+    {
+        if(await context.Actions.FromSqlInterpolated($"""SELECT * FROM public."Actions" WHERE "ChapterId" = {ChapterId}""").ToListAsync() is not { } actions)
+            return TypedResults.InternalServerError();
+        
+        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
     }
 }

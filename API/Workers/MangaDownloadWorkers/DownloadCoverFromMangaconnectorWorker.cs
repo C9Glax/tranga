@@ -50,13 +50,15 @@ public class DownloadCoverFromMangaconnectorWorker(MangaConnectorId<Manga> mcId,
             Log.Error($"Could not get Cover for MangaConnectorId {mangaConnectorId}.");
             return [];
         }
-        MangaContext.Entry(mangaConnectorId.Obj).Property(m => m.CoverFileNameInCache).CurrentValue = coverFileName;
+        
+        await MangaContext.Entry(mangaConnectorId).Reference(m => m.Obj).LoadAsync(CancellationToken);
+        mangaConnectorId.Obj.CoverFileNameInCache = coverFileName;
 
         if(await MangaContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } mangaContextException)
             Log.Error($"Failed to save database changes: {mangaContextException.exceptionMessage}");
         
         ActionsContext.Actions.Add(new CoverDownloadedActionRecord(mcId.Obj, coverFileName));
-        if(await MangaContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } actionsContextException)
+        if(await ActionsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } actionsContextException)
             Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
         
         return [];
