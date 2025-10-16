@@ -10,13 +10,20 @@
         "tags": [
           "Actions"
         ],
-        "summary": "Returns the available Action Types (API.Schema.ActionsContext.ActionRecord.Action) performed by Tranga",
+        "summary": "Returns the available Action Types (API.Schema.ActionsContext.Actions.ActionsEnum)",
         "responses": {
           "200": {
-            "description": "List of performed action-types"
-          },
-          "500": {
-            "description": "Database error"
+            "description": "List of action-types",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionsEnum"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -53,7 +60,17 @@
         },
         "responses": {
           "200": {
-            "description": "List of performed actions"
+            "description": "List of performed actions",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionRecord"
+                  }
+                }
+              }
+            }
           },
           "500": {
             "description": "Database error"
@@ -66,20 +83,30 @@
         "tags": [
           "Actions"
         ],
-        "summary": "Returns API.Schema.ActionsContext.ActionRecord with type Type",
+        "summary": "Returns API.Schema.ActionsContext.ActionRecord with TypeAPI.Schema.ActionsContext.Actions.ActionsEnum",
         "parameters": [
           {
             "name": "Type",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/ActionsEnum"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of performed actions"
+            "description": "List of performed actions",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionRecord"
+                  }
+                }
+              }
+            }
           },
           "500": {
             "description": "Database error"
@@ -3160,6 +3187,40 @@
   },
   "components": {
     "schemas": {
+      "ActionRecord": {
+        "required": [
+          "key"
+        ],
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ActionsEnum"
+          },
+          "performedAt": {
+            "type": "string",
+            "description": "UTC Time when Action was performed",
+            "format": "date-time"
+          },
+          "key": {
+            "maxLength": 64,
+            "minLength": 16,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ActionsEnum": {
+        "enum": [
+          "Startup",
+          "ChapterDownloaded",
+          "ChaptersRetrieved",
+          "CoverDownloaded",
+          "DataMoved",
+          "LibraryMoved",
+          "MetadataUpdated"
+        ],
+        "type": "string"
+      },
       "AltTitle": {
         "required": [
           "language",

@@ -16,7 +16,7 @@ namespace API.Migrations.Actions
                 columns: table => new
                 {
                     Key = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Action = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Action = table.Column<int>(type: "integer", maxLength: 128, nullable: false),
                     PerformedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ChapterId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     MangaId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),

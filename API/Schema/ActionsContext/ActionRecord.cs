@@ -1,16 +1,17 @@
 using System.ComponentModel.DataAnnotations;
+using API.Schema.ActionsContext.Actions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema.ActionsContext;
 
 [PrimaryKey("Key")]
-public abstract class ActionRecord(string action, DateTime performedAt) : Identifiable
+public abstract class ActionRecord(ActionsEnum action, DateTime performedAt) : Identifiable
 {
     /// <summary>
     /// Constant string that describes the performed Action
     /// </summary>
     [StringLength(128)]
-    public string Action { get; init; } = action;
+    public ActionsEnum Action { get; init; } = action;
     
     /// <summary>
     /// UTC Time when Action was performed

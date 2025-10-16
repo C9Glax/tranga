@@ -3,9 +3,9 @@ using API.Schema.MangaContext;
 
 namespace API.Schema.ActionsContext.Actions.Generic;
 
-public abstract class ActionWithMangaRecord(string action, DateTime performedAt, string mangaId) : ActionRecord(action, performedAt)
+public abstract class ActionWithMangaRecord(ActionsEnum action, DateTime performedAt, string mangaId) : ActionRecord(action, performedAt)
 {
-    protected ActionWithMangaRecord(string action, DateTime performedAt, Manga manga) : this(action, performedAt, manga.Key) { }
+    protected ActionWithMangaRecord(ActionsEnum action, DateTime performedAt, Manga manga) : this(action, performedAt, manga.Key) { }
     
     /// <summary>
     /// <see cref="Schema.MangaContext.Manga"/> for which the cover was downloaded

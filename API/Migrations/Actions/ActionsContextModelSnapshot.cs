@@ -28,10 +28,9 @@ namespace API.Migrations.Actions
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("Action")
-                        .IsRequired()
+                    b.Property<int>("Action")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("PerformedAt")
                         .HasColumnType("timestamp with time zone");
@@ -40,7 +39,7 @@ namespace API.Migrations.Actions
 
                     b.ToTable("Actions");
 
-                    b.HasDiscriminator<string>("Action").HasValue("ActionRecord");
+                    b.HasDiscriminator<int>("Action");
 
                     b.UseTphMappingStrategy();
                 });
@@ -54,7 +53,7 @@ namespace API.Migrations.Actions
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.HasDiscriminator().HasValue("Chapter.Downloaded");
+                    b.HasDiscriminator().HasValue(1);
                 });
 
             modelBuilder.Entity("API.Schema.ActionsContext.Actions.ChaptersRetrievedActionRecord", b =>
@@ -67,7 +66,7 @@ namespace API.Migrations.Actions
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.HasDiscriminator().HasValue("Manga.ChaptersRetrieved");
+                    b.HasDiscriminator().HasValue(2);
                 });
 
             modelBuilder.Entity("API.Schema.ActionsContext.Actions.CoverDownloadedActionRecord", b =>
@@ -85,7 +84,7 @@ namespace API.Migrations.Actions
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.HasDiscriminator().HasValue("Manga.CoverDownloaded");
+                    b.HasDiscriminator().HasValue(3);
                 });
 
             modelBuilder.Entity("API.Schema.ActionsContext.Actions.DataMovedActionRecord", b =>
@@ -102,7 +101,7 @@ namespace API.Migrations.Actions
                         .HasMaxLength(2048)
                         .HasColumnType("character varying(2048)");
 
-                    b.HasDiscriminator().HasValue("Tranga.DataMoved");
+                    b.HasDiscriminator().HasValue(4);
                 });
 
             modelBuilder.Entity("API.Schema.ActionsContext.Actions.LibraryMovedActionRecord", b =>
@@ -120,7 +119,7 @@ namespace API.Migrations.Actions
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.HasDiscriminator().HasValue("Manga.LibraryMoved");
+                    b.HasDiscriminator().HasValue(5);
                 });
 
             modelBuilder.Entity("API.Schema.ActionsContext.Actions.MetadataUpdatedActionRecord", b =>
@@ -138,14 +137,14 @@ namespace API.Migrations.Actions
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
-                    b.HasDiscriminator().HasValue("Manga.MetadataUpdated");
+                    b.HasDiscriminator().HasValue(6);
                 });
 
             modelBuilder.Entity("API.Schema.ActionsContext.Actions.StartupActionRecord", b =>
                 {
                     b.HasBaseType("API.Schema.ActionsContext.ActionRecord");
 
-                    b.HasDiscriminator().HasValue("Tranga.Started");
+                    b.HasDiscriminator().HasValue(0);
                 });
 #pragma warning restore 612, 618
         }

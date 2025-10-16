@@ -11,12 +11,12 @@ public class ActionsContext(DbContextOptions<ActionsContext> options) : TrangaBa
     {
         modelBuilder.Entity<ActionRecord>()
             .HasDiscriminator(a => a.Action)
-            .HasValue<ChapterDownloadedActionRecord>(ChapterDownloadedActionRecord.ChapterDownloadedAction)
-            .HasValue<CoverDownloadedActionRecord>(CoverDownloadedActionRecord.CoverDownloadedAction)
-            .HasValue<ChaptersRetrievedActionRecord>(ChaptersRetrievedActionRecord.ChaptersRetrievedAction)
-            .HasValue<MetadataUpdatedActionRecord>(MetadataUpdatedActionRecord.MetadataUpdatedAction)
-            .HasValue<DataMovedActionRecord>(DataMovedActionRecord.DataMovedAction)
-            .HasValue<LibraryMovedActionRecord>(LibraryMovedActionRecord.LibraryMovedAction)
-            .HasValue<StartupActionRecord>(StartupActionRecord.StartupAction);
+            .HasValue<ChapterDownloadedActionRecord>(ActionsEnum.ChapterDownloaded)
+            .HasValue<CoverDownloadedActionRecord>(ActionsEnum.CoverDownloaded)
+            .HasValue<ChaptersRetrievedActionRecord>(ActionsEnum.ChaptersRetrieved)
+            .HasValue<MetadataUpdatedActionRecord>(ActionsEnum.MetadataUpdated)
+            .HasValue<DataMovedActionRecord>(ActionsEnum.DataMoved)
+            .HasValue<LibraryMovedActionRecord>(ActionsEnum.LibraryMoved)
+            .HasValue<StartupActionRecord>(ActionsEnum.Startup);
     }
 }

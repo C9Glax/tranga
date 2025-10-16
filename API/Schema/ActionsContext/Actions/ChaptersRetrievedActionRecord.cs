@@ -3,10 +3,10 @@ using API.Schema.MangaContext;
 
 namespace API.Schema.ActionsContext.Actions;
 
-public sealed class ChaptersRetrievedActionRecord(string action, DateTime performedAt, string mangaId)
+public sealed class ChaptersRetrievedActionRecord(ActionsEnum action, DateTime performedAt, string mangaId)
     : ActionWithMangaRecord(action, performedAt, mangaId)
 {
-    public ChaptersRetrievedActionRecord(Manga manga) : this(ChaptersRetrievedAction, DateTime.UtcNow, manga.Key) { }
+    public ChaptersRetrievedActionRecord(Manga manga) : this(ActionsEnum.ChaptersRetrieved, DateTime.UtcNow, manga.Key) { }
 
     public const string ChaptersRetrievedAction = "Manga.ChaptersRetrieved";
 }

@@ -1,0 +1,12 @@
+namespace API.Schema.ActionsContext.Actions;
+
+public enum ActionsEnum
+{
+    Startup = 0,
+    ChapterDownloaded = 1,
+    ChaptersRetrieved = 2,
+    CoverDownloaded = 3,
+    DataMoved = 4,
+    LibraryMoved = 5,
+    MetadataUpdated = 6
+}
