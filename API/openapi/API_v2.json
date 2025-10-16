@@ -28,32 +28,32 @@
         }
       }
     },
-    "/v2/Actions/Interval": {
+    "/v2/Actions/Filter": {
       "post": {
         "tags": [
           "Actions"
         ],
-        "summary": "Returns API.Schema.ActionsContext.ActionRecord performed in API.Controllers.ActionsController.Interval",
+        "summary": "Returns API.Schema.ActionsContext.ActionRecord performed in !:Interval",
         "requestBody": {
           "content": {
             "application/json-patch+json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Interval"
+                "$ref": "#/components/schemas/Filter"
               }
             },
             "application/json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Interval"
+                "$ref": "#/components/schemas/Filter"
               }
             },
             "text/json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Interval"
+                "$ref": "#/components/schemas/Filter"
               }
             },
             "application/*+json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Interval"
+                "$ref": "#/components/schemas/Filter"
               }
             }
           }
@@ -3659,16 +3659,29 @@
         },
         "additionalProperties": false
       },
-      "Interval": {
+      "Filter": {
         "type": "object",
         "properties": {
           "start": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "end": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
+          },
+          "mangaId": {
+            "type": "string",
+            "nullable": true
+          },
+          "chapterId": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/ActionsEnum"
           }
         },
         "additionalProperties": false

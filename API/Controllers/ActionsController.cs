@@ -26,20 +26,24 @@ public class ActionsController(ActionsContext context) : Controller
         return TypedResults.Ok(Enum.GetValues<ActionsEnum>());
     }
 
-    public sealed record Interval(DateTime Start, DateTime End);
+    public sealed record Filter(DateTime? Start, DateTime? End, string? MangaId, string? ChapterId, ActionsEnum? Action);
     /// <summary>
     /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> performed in <see cref="Interval"/>
     /// </summary>
     /// <response code="200">List of performed actions</response>
     /// <response code="500">Database error</response>
-    [HttpPost("Interval")]
+    [HttpPost("Filter")]
     [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Interval interval)
+    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Filter filter)
     {
-        if (await context.Actions.Where(a => a.PerformedAt >= interval.Start && a.PerformedAt <= interval.End)
+        if (await context.Filter(filter.MangaId, filter.ChapterId)
+                .Where(a => filter.Start == null || a.PerformedAt >= filter.Start)
+                .Where(a => filter.End == null || a.PerformedAt >= filter.End)
+                .Where(a => filter.Action == null || a.Action == filter.Action)
                 .ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
+        
         return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
     }
     
@@ -69,7 +73,7 @@ public class ActionsController(ActionsContext context) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToManga(string MangaId)
     {
-        if(await context.Actions.FromSqlInterpolated($"""SELECT * FROM public."Actions" WHERE "MangaId" = {MangaId}""").ToListAsync(HttpContext.RequestAborted) is not { } actions)
+        if(await context.FilterManga(MangaId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
         
         return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
@@ -85,7 +89,7 @@ public class ActionsController(ActionsContext context) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToChapter(string ChapterId)
     {
-        if(await context.Actions.FromSqlInterpolated($"""SELECT * FROM public."Actions" WHERE "ChapterId" = {ChapterId}""").ToListAsync(HttpContext.RequestAborted) is not { } actions)
+        if(await context.FilterChapter(ChapterId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
         
         return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
