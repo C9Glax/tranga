@@ -1,4 +1,3 @@
-using API.Workers;
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -37,7 +36,7 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
         }
         catch (Exception e)
         {
-            Log.Error("Sync failed:", e);
+            Log.Error($"Syncing {changesCount} changes {GetType().Name} {trigger?.Name} {reason} failed:", e);
             return (false, e.Message);
         }
     }
