@@ -71,6 +71,7 @@ public class MangaPark : MangaConnector
         return GetMangaFromUrl(new Uri(baseUri, $"title/{mangaIdOnSite}").ToString());
     }
 
+    private readonly Regex _urlRex = new(@".*\/title\/(\d*)(?:[^\/]*\/(\d*))?.*");
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
         if (downloadClient.MakeRequest(url, RequestType.Default).Result is
@@ -90,7 +91,7 @@ public class MangaPark : MangaConnector
                 Log.Debug("Cover not found.");
                 return null;
             }
-            string coverUrl = $"{url[..url.IndexOf('/', 9)]}{coverRelative}";
+            string coverUrl = $"{url[..url.IndexOf('/', 9)]}{coverRelative} ";
 
             MangaReleaseStatus releaseStatus = document.GetNodeWith("Yn_5")?.InnerText.ToLower() switch
             {
@@ -120,9 +121,13 @@ public class MangaPark : MangaConnector
                 .Select(n => HttpUtility.HtmlDecode(n.InnerText))
                 .Select(t => new AltTitle(string.Empty, t))
                 .ToList()??[];
+
+            if (_urlRex.Match(url).Groups[1] is not { Success: true } match)
+                return null;
+            string id = match.Value;
             
             Manga m = new (name, description, coverUrl, releaseStatus, authors, mangaTags, links, altTitles);
-            MangaConnectorId<Manga> mcId = new(m, this, url.Split('/').Last(), url);
+            MangaConnectorId<Manga> mcId = new(m, this, id, url);
             m.MangaConnectorIds.Add(mcId);
             return (m, mcId);
         }
@@ -167,7 +172,7 @@ public class MangaPark : MangaConnector
         return ret.ToArray();
     }
 
-    private static readonly Regex VolChTitleRex = new(@"(?:.*(?:Vol\.?(?:ume)?)\s*([0-9]+))?.*(?:Ch\.?(?:apter)?)\s*((?:\d+\.)*[0-9]+)\s*(?::|-\s+(.*))?", RegexOptions.Compiled);
+    private static readonly Regex VolChTitleRex = new(@"(?:.*(?:Vol\.?(?:ume)?)\s*([0-9]+))?.*(?:Ch\.?(?:apter)?)\s*((?:\d+\.)*[0-9]+)\s*(?::|-\s+(.*))?");
     private (Chapter, MangaConnectorId<Chapter>)? ParseChapter(Manga manga, HtmlNode chapterNode, Uri baseUri)
     {
         HtmlNode linkNode = chapterNode.SelectSingleNode("./div[1]/a");
@@ -198,9 +203,13 @@ public class MangaPark : MangaConnector
         string? title = titleNode is not null ? HttpUtility.HtmlDecode(titleNode.InnerText)[2..] : (linkMatch.Groups[3].Success ? linkMatch.Groups[3].Value : null);
 
         string url = new Uri(baseUri, linkNode.GetAttributeValue("href", "")).ToString();
-        string id = linkNode.GetAttributeValue("href", "")[7..];
+        string href = linkNode.GetAttributeValue("href", "");
+        
+        if (_urlRex.Match(url).Groups[1] is not { Success: true } mangaMatch || _urlRex.Match(url).Groups[2] is not { Success: true } chapterMatch)
+            return null;
+        string id = string.Join('/', mangaMatch.Value, chapterMatch.Value);
             
-        Chapter chapter = new (manga, chapterNumber, volumeNumber, title);
+        Chapter chapter = new (manga, chapterNumber, volumeNumber, title);    
         MangaConnectorId<Chapter> chId = new(chapter, this, id, url);
         chapter.MangaConnectorIds.Add(chId);
         
