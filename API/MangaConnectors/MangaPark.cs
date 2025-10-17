@@ -71,10 +71,12 @@ public class MangaPark : MangaConnector
         return GetMangaFromUrl(new Uri(baseUri, $"title/{mangaIdOnSite}").ToString());
     }
 
-    private readonly Regex _urlRex = new(@".*\/title\/(\d*)(?:[^\/]*\/(\d*))?.*");
+    private readonly Regex _urlRex = new(@"((.*)\/title\/(\d*))(?:[^\/]*\/(\d*))?.*");
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
-        if (downloadClient.MakeRequest(url, RequestType.Default).Result is
+        if (_urlRex.Match(url) is not { Success: true } matchedUrl || matchedUrl.Groups[1] is not { Success: true } cleanedUrl)
+            return null;
+        if (downloadClient.MakeRequest(cleanedUrl.Value, RequestType.Default).Result is
             { StatusCode: >= HttpStatusCode.OK and < HttpStatusCode.Ambiguous } result)
         {
             HtmlDocument document= result.CreateDocument();
@@ -91,7 +93,10 @@ public class MangaPark : MangaConnector
                 Log.Debug("Cover not found.");
                 return null;
             }
-            string coverUrl = $"{url[..url.IndexOf('/', 9)]}{coverRelative} ";
+
+            if (matchedUrl.Groups[2] is not { Success: true } baseUrl)
+                return null;
+            string coverUrl = $"{baseUrl.Value}{coverRelative} ";
 
             MangaReleaseStatus releaseStatus = document.GetNodeWith("Yn_5")?.InnerText.ToLower() switch
             {
@@ -122,12 +127,11 @@ public class MangaPark : MangaConnector
                 .Select(t => new AltTitle(string.Empty, t))
                 .ToList()??[];
 
-            if (_urlRex.Match(url).Groups[1] is not { Success: true } match)
+            if (matchedUrl.Groups[3] is not { Success: true } idMatch)
                 return null;
-            string id = match.Value;
             
             Manga m = new (name, description, coverUrl, releaseStatus, authors, mangaTags, links, altTitles);
-            MangaConnectorId<Manga> mcId = new(m, this, id, url);
+            MangaConnectorId<Manga> mcId = new(m, this, idMatch.Value, cleanedUrl.Value);
             m.MangaConnectorIds.Add(mcId);
             return (m, mcId);
         }
@@ -203,14 +207,15 @@ public class MangaPark : MangaConnector
         string? title = titleNode is not null ? HttpUtility.HtmlDecode(titleNode.InnerText)[2..] : (linkMatch.Groups[3].Success ? linkMatch.Groups[3].Value : null);
 
         string url = new Uri(baseUri, linkNode.GetAttributeValue("href", "")).ToString();
-        string href = linkNode.GetAttributeValue("href", "");
+        if (_urlRex.Match(url) is not { Success: true } matchedUrl)
+            return null;
         
-        if (_urlRex.Match(url).Groups[1] is not { Success: true } mangaMatch || _urlRex.Match(url).Groups[2] is not { Success: true } chapterMatch)
+        if (matchedUrl.Groups[3] is not { Success: true } mangaMatch || matchedUrl.Groups[4] is not { Success: true } chapterMatch)
             return null;
         string id = string.Join('/', mangaMatch.Value, chapterMatch.Value);
             
         Chapter chapter = new (manga, chapterNumber, volumeNumber, title);    
-        MangaConnectorId<Chapter> chId = new(chapter, this, id, url);
+        MangaConnectorId<Chapter> chId = new(chapter, this, string.Join('/', matchedUrl.Groups[3].Value, matchedUrl.Groups[4].Value), string.Join('/', matchedUrl.Groups[2].Value, "title", matchedUrl.Groups[3].Value, matchedUrl.Groups[4].Value));
         chapter.MangaConnectorIds.Add(chId);
         
         return (chapter, chId);
