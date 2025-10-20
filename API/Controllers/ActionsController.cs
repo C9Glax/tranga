@@ -59,6 +59,6 @@ public class ActionsController(ActionsContext context) : Controller
             .Where(a => filter.Action == null || a.Action == filter.Action)
             .CountAsync(HttpContext.RequestAborted);
         
-        return TypedResults.Ok(new PagedResponse<ActionRecord>(actions.Select(a => new ActionRecord(a)), page, totalResults / pageSize, totalResults));
+        return TypedResults.Ok(new PagedResponse<ActionRecord>(actions.Select(a => new ActionRecord(a)), page, (totalResults - 1) / pageSize + 1, totalResults));
     }
 }

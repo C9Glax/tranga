@@ -35,6 +35,6 @@ public static class PagedResponseHelper
     {
         int totalCount = data.Count();
         IEnumerable<T> pageData = data.Take(new Range(pageSize * (page - 1), pageSize * page));
-        return new PagedResponse<T>(pageData, page, totalCount / pageSize, totalCount);
+        return new PagedResponse<T>(pageData, page, (totalCount - 1) / pageSize + 1, totalCount);
     }
 }
