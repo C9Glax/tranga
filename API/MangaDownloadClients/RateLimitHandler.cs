@@ -11,7 +11,7 @@ public class RateLimitHandler() : DelegatingHandler(new HttpClientHandler())
     private readonly RateLimiter _limiter = new SlidingWindowRateLimiter(new ()
     {
         AutoReplenishment = true,
-        PermitLimit = 240,
+        PermitLimit = 120,
         QueueLimit = 120,
         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
         SegmentsPerWindow = 60,
