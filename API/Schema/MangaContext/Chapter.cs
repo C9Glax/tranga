@@ -163,7 +163,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
 
         stringBuilder.Append(".cbz");
 
-        return stringBuilder.ToString();
+        return stringBuilder.ToString().CleanNameForWindows();
     }
 
     private string? GetFullFilepath()
