@@ -115,7 +115,11 @@ public class MangaPark : MangaConnector
                 .ToList()??[];
 
             ICollection<MangaTag> mangaTags = document.GetNodesWith("kd_0")?
-                .Select(n => HttpUtility.HtmlDecode(n.InnerText))
+                .SelectMany(n =>
+                {
+                    string text = HttpUtility.HtmlDecode(n.InnerText);
+                    return text.Split('•').Select(t => t.Trim());
+                })
                 .Select(t => new MangaTag(t))
                 .ToList()??[];
 
@@ -123,7 +127,12 @@ public class MangaPark : MangaConnector
 
             ICollection<AltTitle> altTitles = document.GetNodeWith("tz_2")?
                 .ChildNodes.Where(n => n.InnerText.Trim().Length > 1)
-                .Select(n => HttpUtility.HtmlDecode(n.InnerText))
+                ?
+                .SelectMany(n =>
+                {
+                    string text = HttpUtility.HtmlDecode(n.InnerText);
+                    return text.Split('•').Select(t => t.Trim());
+                })
                 .Select(t => new AltTitle(string.Empty, t))
                 .ToList()??[];
 
