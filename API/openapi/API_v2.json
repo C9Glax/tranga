@@ -34,7 +34,30 @@
           "Actions"
         ],
         "summary": "Returns API.Schema.ActionsContext.ActionRecord performed in !:Interval",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page to request (default 1)",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Size of Page (default 10)",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
         "requestBody": {
+          "description": "",
           "content": {
             "application/json-patch+json; x-version=2.0": {
               "schema": {
@@ -64,118 +87,7 @@
             "content": {
               "application/json; x-version=2.0": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActionRecord"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Database error"
-          }
-        }
-      }
-    },
-    "/v2/Actions/Type/{Type}": {
-      "get": {
-        "tags": [
-          "Actions"
-        ],
-        "summary": "Returns API.Schema.ActionsContext.ActionRecord with TypeAPI.Schema.ActionsContext.Actions.ActionsEnum",
-        "parameters": [
-          {
-            "name": "Type",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/ActionsEnum"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of performed actions",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActionRecord"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Database error"
-          }
-        }
-      }
-    },
-    "/v2/Actions/RelatedTo/Manga/{MangaId}": {
-      "get": {
-        "tags": [
-          "Actions"
-        ],
-        "summary": "Returns API.Schema.ActionsContext.ActionRecord related to API.Controllers.DTOs.Manga",
-        "parameters": [
-          {
-            "name": "MangaId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of performed actions",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActionRecord"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Database error"
-          }
-        }
-      }
-    },
-    "/v2/Actions/RelatedTo/Chapter/{ChapterId}": {
-      "get": {
-        "tags": [
-          "Actions"
-        ],
-        "summary": "Returns API.Schema.ActionsContext.ActionRecord related to API.Controllers.DTOs.Chapter",
-        "parameters": [
-          {
-            "name": "ChapterId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of performed actions",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ActionRecord"
-                  }
+                  "$ref": "#/components/schemas/ActionRecordPagedResponse"
                 }
               }
             }
@@ -3460,6 +3372,40 @@
             "minLength": 16,
             "type": "string",
             "description": "Unique Identifier of the DTO"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ActionRecordPagedResponse": {
+        "required": [
+          "data",
+          "page",
+          "totalCount",
+          "totalPages"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActionRecord"
+            },
+            "description": "The data"
+          },
+          "page": {
+            "type": "integer",
+            "description": "The page-number",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "The total number of pages (max page)",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "The total number of entries for this request",
+            "format": "int32"
           }
         },
         "additionalProperties": false

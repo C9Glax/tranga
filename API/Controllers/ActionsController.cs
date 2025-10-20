@@ -27,72 +27,34 @@ public class ActionsController(ActionsContext context) : Controller
     }
 
     public sealed record Filter(DateTime? Start, DateTime? End, string? MangaId, string? ChapterId, ActionsEnum? Action);
+
     /// <summary>
     /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> performed in <see cref="Interval"/>
     /// </summary>
+    /// <param name="filter"></param>
+    /// <param name="page">Page to request (default 1)</param>
+    /// <param name="pageSize">Size of Page (default 10)</param>
     /// <response code="200">List of performed actions</response>
     /// <response code="500">Database error</response>
     [HttpPost("Filter")]
-    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
+    [ProducesResponseType<PagedResponse<ActionRecord>>(Status200OK, "application/json")]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Filter filter)
+    public async Task<Results<Ok<PagedResponse<ActionRecord>>, InternalServerError>> GetActionsInterval([FromBody]Filter filter, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
     {
         if (await context.FilterActions(filter.MangaId, filter.ChapterId)
                 .Where(a => filter.Start == null || a.PerformedAt >= filter.Start.Value.ToUniversalTime())
                 .Where(a => filter.End == null || a.PerformedAt <= filter.End.Value.ToUniversalTime())
                 .Where(a => filter.Action == null || a.Action == filter.Action) 
                 .OrderByDescending(a => a.PerformedAt)
+                .Skip((page - 1) * pageSize).Take(pageSize)
                 .ToListAsync(HttpContext.RequestAborted) is not { } actions)
             return TypedResults.InternalServerError();
+        int totalResults = await context.FilterActions(filter.MangaId, filter.ChapterId)
+            .Where(a => filter.Start == null || a.PerformedAt >= filter.Start.Value.ToUniversalTime())
+            .Where(a => filter.End == null || a.PerformedAt <= filter.End.Value.ToUniversalTime())
+            .Where(a => filter.Action == null || a.Action == filter.Action)
+            .CountAsync(HttpContext.RequestAborted);
         
-        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
-    }
-    
-    /// <summary>
-    /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> with <paramref name="Type"/> <see cref="ActionsEnum"/>
-    /// </summary>
-    /// <response code="200">List of performed actions</response>
-    /// <response code="500">Database error</response>
-    [HttpGet("Type/{Type}")]
-    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
-    [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsWithType(ActionsEnum Type)
-    {
-        if (await context.Actions.Where(a => a.Action == Type)
-                .ToListAsync(HttpContext.RequestAborted) is not { } actions)
-            return TypedResults.InternalServerError();
-        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
-    }
-    
-    /// <summary>
-    /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> related to <see cref="Manga"/>
-    /// </summary>
-    /// <response code="200">List of performed actions</response>
-    /// <response code="500">Database error</response>
-    [HttpGet("RelatedTo/Manga/{MangaId}")]
-    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
-    [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToManga(string MangaId)
-    {
-        if(await context.FilterActionsManga(MangaId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
-            return TypedResults.InternalServerError();
-        
-        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
-    }
-    
-    /// <summary>
-    /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> related to <see cref="Chapter"/>
-    /// </summary>
-    /// <response code="200">List of performed actions</response>
-    /// <response code="500">Database error</response>
-    [HttpGet("RelatedTo/Chapter/{ChapterId}")]
-    [ProducesResponseType<IEnumerable<ActionRecord>>(Status200OK, "application/json")]
-    [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<IEnumerable<ActionRecord>>, InternalServerError>> GetActionsRelatedToChapter(string ChapterId)
-    {
-        if(await context.FilterActionsChapter(ChapterId).ToListAsync(HttpContext.RequestAborted) is not { } actions)
-            return TypedResults.InternalServerError();
-        
-        return TypedResults.Ok(actions.Select(a => new ActionRecord(a)));
+        return TypedResults.Ok(new PagedResponse<ActionRecord>(actions.Select(a => new ActionRecord(a)), page, totalResults / pageSize, totalResults));
     }
 }
