@@ -18,4 +18,5 @@ public struct Constants
     public static readonly bool UpdateChaptersDownloadedBeforeStarting = bool.Parse(Environment.GetEnvironmentVariable("CHECK_CHAPTERS_BEFORE_START") ?? "true");
     
     public static readonly bool CreateComicInfoXml = bool.Parse(Environment.GetEnvironmentVariable("CREATE_COMICINFO_XML") ?? "true");
+    public static readonly bool ZeroVolumeInFilenameIfNull = bool.Parse(Environment.GetEnvironmentVariable("ALWAYS_INCLUDE_VOLUME_IN_FILENAME") ?? "false");
 }

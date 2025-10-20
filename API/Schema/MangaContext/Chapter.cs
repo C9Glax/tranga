@@ -113,7 +113,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     {
         string archiveNamingScheme = Tranga.Settings.ChapterNamingScheme;
         StringBuilder stringBuilder = new();
-        foreach (Match nullable in  NullableRex.Matches(archiveNamingScheme))
+        foreach (Match nullable in NullableRex.Matches(archiveNamingScheme))
         {
             if (nullable.Groups[3].Success)
             {
@@ -151,7 +151,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
             string? value = placeholder switch
             {
                 'M' => ParentManga?.Name,
-                'V' => VolumeNumber?.ToString(),
+                'V' => VolumeNumber?.ToString() ?? (Constants.ZeroVolumeInFilenameIfNull ? "0" : null),
                 'C' => ChapterNumber,
                 'T' => Title,
                 'A' => ParentManga?.Authors?.FirstOrDefault()?.AuthorName,
