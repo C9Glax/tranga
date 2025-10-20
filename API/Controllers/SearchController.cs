@@ -64,6 +64,7 @@ public class SearchController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public async Task<Results<Ok<MinimalManga>, NotFound<string>, InternalServerError<string>>> GetMangaFromUrl([FromQuery]string url)
     {
+        url = url.Trim('"', '\'', ' '); //Trim extraneous values
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals("Global", StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return TypedResults.InternalServerError("Could not find Global Connector.");
 
