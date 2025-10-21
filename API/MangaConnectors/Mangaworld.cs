@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Web;
+using System.Collections.Specialized;
 using API.MangaDownloadClients;
 using API.Schema.MangaContext;
 using HtmlAgilityPack;
@@ -9,20 +10,6 @@ namespace API.MangaConnectors;
 
 public sealed class Mangaworld : MangaConnector
 {
-    // Strongly-typed series identifier instead of passing "id/slug" strings around.
-    private readonly record struct SeriesId(int Id, string Slug);
-
-    private static bool TryParseSeriesId(string s, out SeriesId series)
-    {
-        series = default;
-        if (string.IsNullOrWhiteSpace(s)) return false;
-        var parts = s.Split('/', 2);
-        if (parts.Length != 2) return false;
-        if (!int.TryParse(parts[0], NumberStyles.None, CultureInfo.InvariantCulture, out var id)) return false;
-        series = new SeriesId(id, parts[1]);
-        return true;
-    }
-
     public Mangaworld() : base(
         "Mangaworld",
         ["it"],
@@ -40,8 +27,8 @@ public sealed class Mangaworld : MangaConnector
 
     public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
-        Uri baseUri = new("https://www.mangaworld.cx/");
-        Uri searchUrl = new(baseUri, "archive?keyword=" + HttpUtility.UrlEncode(mangaSearchName));
+        Uri baseUri = new Uri("https://www.mangaworld.cx/");
+        Uri searchUrl = new Uri(baseUri, "archive?keyword=" + HttpUtility.UrlEncode(mangaSearchName));
 
         using HttpResponseMessage res =
             downloadClient.MakeRequest(searchUrl.ToString(), RequestType.Default).Result;
@@ -49,18 +36,18 @@ public sealed class Mangaworld : MangaConnector
         if ((int)res.StatusCode < 200 || (int)res.StatusCode >= 300)
             return [];
 
-        using StreamReader sr = new(res.Content.ReadAsStream());
+        using StreamReader sr = new StreamReader(res.Content.ReadAsStream());
         string html = sr.ReadToEnd();
 
-        HtmlDocument doc = new();
+        HtmlDocument doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         HtmlNodeCollection? anchors = doc.DocumentNode.SelectNodes("//a[@href and contains(@href,'/manga/')]");
         if (anchors is null || anchors.Count < 1)
             return [];
 
-        List<(Manga, MangaConnectorId<Manga>)> list = [];
-        HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
+        List<(Manga, MangaConnectorId<Manga>)> list = new List<(Manga, MangaConnectorId<Manga>)>();
+        HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (HtmlNode a in anchors)
         {
@@ -70,7 +57,6 @@ public sealed class Mangaworld : MangaConnector
 
             string canonical = new Uri(baseUri, href).ToString();
 
-            // de-dup
             if (!seen.Add(canonical))
                 continue;
 
@@ -94,10 +80,14 @@ public sealed class Mangaworld : MangaConnector
 
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite)
     {
-        if (!TryParseSeriesId(mangaIdOnSite, out var sid))
+        string[] parts = mangaIdOnSite.Split('/', 2);
+        if (parts.Length != 2)
             return null;
 
-        var seriesUrl = new Uri($"https://www.mangaworld.cx/manga/{sid.Id}/{sid.Slug}/");
+        string id = parts[0];
+        string slug = parts[1];
+
+        Uri seriesUrl = new Uri($"https://www.mangaworld.cx/manga/{id}/{slug}/");
 
         using HttpResponseMessage res =
             downloadClient.MakeRequest(seriesUrl.ToString(), RequestType.MangaInfo).Result;
@@ -105,16 +95,16 @@ public sealed class Mangaworld : MangaConnector
         if ((int)res.StatusCode < 200 || (int)res.StatusCode >= 300)
             return null;
 
-        using StreamReader sr = new(res.Content.ReadAsStream());
+        using StreamReader sr = new StreamReader(res.Content.ReadAsStream());
         string html = sr.ReadToEnd();
 
-        HtmlDocument doc = new();
+        HtmlDocument doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         string title =
             doc.DocumentNode.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", null)
             ?? doc.DocumentNode.SelectSingleNode("//h1")?.InnerText?.Trim()
-            ?? sid.Slug.Replace('-', ' ');
+            ?? slug.Replace('-', ' ');
 
         title = CleanTitleSuffix(title);
 
@@ -138,7 +128,7 @@ public sealed class Mangaworld : MangaConnector
         if (!string.IsNullOrWhiteSpace(detailRawStatus))
             status = MapItalianStatus(detailRawStatus);
 
-        Manga m = new(
+        Manga m = new Manga(
             HtmlEntity.DeEntitize(title).Trim(),
             description,
             cover,
@@ -149,17 +139,20 @@ public sealed class Mangaworld : MangaConnector
             [],
             originalLanguage: "it");
 
-        MangaConnectorId<Manga> mcId = new(m, this, $"{sid.Id}/{sid.Slug}", seriesUrl.ToString());
+        MangaConnectorId<Manga> mcId = new MangaConnectorId<Manga>(m, this, $"{id}/{slug}", seriesUrl.ToString());
         m.MangaConnectorIds.Add(mcId);
         return (m, mcId);
     }
 
     public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> mangaId, string? language = null)
     {
-        if (!TryParseSeriesId(mangaId.IdOnConnectorSite, out var sid))
+        string[] parts = mangaId.IdOnConnectorSite.Split('/', 2);
+        if (parts.Length != 2)
             return [];
 
-        string seriesUrl = $"https://www.mangaworld.cx/manga/{sid.Id}/{sid.Slug}/";
+        string id = parts[0];
+        string slug = parts[1];
+        string seriesUrl = $"https://www.mangaworld.cx/manga/{id}/{slug}/";
 
         string html = FetchHtmlWithFallback(seriesUrl, out Uri baseUri);
         if (string.IsNullOrEmpty(html))
@@ -167,7 +160,7 @@ public sealed class Mangaworld : MangaConnector
 
         html = Regex.Replace(html, @"<!--M#.*?-->", "", RegexOptions.Singleline);
 
-        HtmlDocument doc = new();
+        HtmlDocument doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         List<(Chapter, MangaConnectorId<Chapter>)> chapters = ParseChaptersFromHtml(mangaId.Obj, doc, baseUri);
@@ -191,18 +184,18 @@ public sealed class Mangaworld : MangaConnector
         if ((int)res.StatusCode < 200 || (int)res.StatusCode >= 300)
             return [];
 
-        using StreamReader sr = new(res.Content.ReadAsStream());
+        using StreamReader sr = new StreamReader(res.Content.ReadAsStream());
         string html = sr.ReadToEnd();
 
-        Uri baseUri = new(url);
-        HtmlDocument doc = new();
+        Uri baseUri = new Uri(url);
+        HtmlDocument doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         HtmlNodeCollection imageNodes = doc.DocumentNode.SelectNodes("//img[@data-src or @src or @srcset]") ?? new HtmlNodeCollection(null);
         IEnumerable<string> fromDom = imageNodes
             .SelectMany(i =>
             {
-                var list = new List<string>();
+                List<string> list = new List<string>();
                 string ds = i.GetAttributeValue("data-src", "");
                 string s = i.GetAttributeValue("src", "");
                 string ss = i.GetAttributeValue("srcset", "");
@@ -226,36 +219,36 @@ public sealed class Mangaworld : MangaConnector
         return fromDom.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
     }
 
-    private static readonly Regex SeriesUrl = new(@"https?://[^/]+/manga/(?<id>\d+)/(?<slug>[^/]+)/?", RegexOptions.IgnoreCase);
+    private static readonly Regex SeriesUrl = new Regex(@"https?://[^/]+/manga/(?<id>\d+)/(?<slug>[^/]+)/?", RegexOptions.IgnoreCase);
 
     private List<(Chapter, MangaConnectorId<Chapter>)> ParseChaptersFromHtml(Manga manga, HtmlDocument document, Uri baseUri)
     {
-        List<(Chapter, MangaConnectorId<Chapter>)> ret = [];
-        HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
+        List<(Chapter, MangaConnectorId<Chapter>)> ret = new List<(Chapter, MangaConnectorId<Chapter>)>();
+        HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        var volumeElements = document.DocumentNode.SelectNodes("//div[contains(@class,'volume-element')]");
+        HtmlNodeCollection? volumeElements = document.DocumentNode.SelectNodes("//div[contains(@class,'volume-element')]");
         if (volumeElements != null && volumeElements.Count > 0)
         {
-            foreach (var volNode in volumeElements)
+            foreach (HtmlNode volNode in volumeElements)
             {
                 int volumeNumber = 0;
-                var volText = volNode.SelectSingleNode(".//p[contains(@class,'volume-name')]")?.InnerText ?? "";
-                var vm = Regex.Match(volText, @"[Vv]olume\s+([0-9]+)");
+                string volText = volNode.SelectSingleNode(".//p[contains(@class,'volume-name')]")?.InnerText ?? "";
+                Match vm = Regex.Match(volText, @"[Vv]olume\s+([0-9]+)");
                 if (vm.Success && int.TryParse(vm.Groups[1].Value, NumberStyles.None, CultureInfo.InvariantCulture, out int volParsed))
                     volumeNumber = volParsed;
 
-                var chapterNodes = volNode.SelectNodes(".//div[contains(@class,'chapter')]/a[@href]") ?? new HtmlNodeCollection(null);
-                foreach (var ch in chapterNodes)
+                HtmlNodeCollection chapterNodes = volNode.SelectNodes(".//div[contains(@class,'chapter')]/a[@href]") ?? new HtmlNodeCollection(null);
+                foreach (HtmlNode ch in chapterNodes)
                     TryAddChapterNode(manga, ch, baseUri, volumeNumber, ret, seen);
             }
         }
 
         if (ret.Count == 0)
         {
-            var flatNodes = document.DocumentNode.SelectNodes("//div[contains(@class,'chapters-wrapper')]//a[contains(@class,'chap')]");
+            HtmlNodeCollection? flatNodes = document.DocumentNode.SelectNodes("//div[contains(@class,'chapters-wrapper')]//a[contains(@class,'chap')]");
             if (flatNodes != null && flatNodes.Count > 0)
             {
-                foreach (var a in flatNodes)
+                foreach (HtmlNode a in flatNodes)
                     TryAddChapterNode(manga, a, baseUri, 0, ret, seen);
             }
         }
@@ -267,20 +260,20 @@ public sealed class Mangaworld : MangaConnector
         List<(Chapter, MangaConnectorId<Chapter>)> acc, HashSet<string> dedup)
     {
         string label = anchor.SelectSingleNode(".//span")?.InnerText ?? anchor.InnerText ?? "";
-        var cm = Regex.Match(label, @"(?:[Cc]apitolo|[Cc]hapter)\s*([0-9]+(?:\.[0-9]+)?)");
+        Match cm = Regex.Match(label, @"(?:[Cc]apitolo|[Cc]hapter)\s*([0-9]+(?:\.[0-9]+)?)");
         if (!cm.Success) return;
 
-        // Strong type: parse as decimal and format invariant at the boundary.
-        var chapterText = cm.Groups[1].Value.Trim();
-        if (!decimal.TryParse(chapterText, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var chNum))
+        // parse numero capitolo come decimal; format invariant al confine
+        string chapterText = cm.Groups[1].Value.Trim();
+        if (!decimal.TryParse(chapterText, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal chNum))
             return;
         string chapterNumber = chNum.ToString(CultureInfo.InvariantCulture);
 
         string href = anchor.GetAttributeValue("href", "");
         if (string.IsNullOrWhiteSpace(href))
         {
-            var raw = anchor.OuterHtml;
-            var mHref = Regex.Match(raw, @"href\s*=\s*[""']?([^'""\s>]+)", RegexOptions.IgnoreCase);
+            string raw = anchor.OuterHtml;
+            Match mHref = Regex.Match(raw, @"href\s*=\s*[""']?([^'""\s>]+)", RegexOptions.IgnoreCase);
             if (mHref.Success)
                 href = mHref.Groups[1].Value;
         }
@@ -290,14 +283,14 @@ public sealed class Mangaworld : MangaConnector
         string abs = MakeAbsoluteUrl(baseUri, href);
         string ensured = EnsureReaderUrl(abs);
 
-        var idMatch = Regex.Match(ensured, @"manga\/([0-9]+\/[a-z0-9\-]+\/read\/[a-z0-9]+)", RegexOptions.IgnoreCase);
+        Match idMatch = Regex.Match(ensured, @"manga\/([0-9]+\/[a-z0-9\-]+\/read\/[a-z0-9]+)", RegexOptions.IgnoreCase);
         if (!idMatch.Success) return;
 
         string id = idMatch.Groups[1].Value;
         if (!dedup.Add(id)) return;
 
-        Chapter chapter = new(manga, chapterNumber, volumeNumber);
-        MangaConnectorId<Chapter> chId = new(chapter, this, id, ensured);
+        Chapter chapter = new Chapter(manga, chapterNumber, volumeNumber);
+        MangaConnectorId<Chapter> chId = new MangaConnectorId<Chapter>(chapter, this, id, ensured);
         chapter.MangaConnectorIds.Add(chId);
         acc.Add((chapter, chId));
     }
@@ -316,12 +309,12 @@ public sealed class Mangaworld : MangaConnector
         return basePart + query;
     }
 
-    // Uri overload to keep things strongly typed internally.
+    // Overload Uri per mantenere typing interno.
     private static Uri EnsureReaderUrl(Uri url)
     {
-        var ub = new UriBuilder(url);
-        var path = EnsureReaderUrlHasPage(ub.Path);
-        var q = HttpUtility.ParseQueryString(ub.Query ?? "");
+        UriBuilder ub = new UriBuilder(url);
+        string path = EnsureReaderUrlHasPage(ub.Path);
+        NameValueCollection q = HttpUtility.ParseQueryString(ub.Query ?? "");
         if (!"list".Equals(q["style"], StringComparison.OrdinalIgnoreCase))
             q["style"] = "list";
         ub.Path = path;
@@ -369,7 +362,7 @@ public sealed class Mangaworld : MangaConnector
 
     private string FetchHtmlWithFallback(string seriesUrl, out Uri baseUri)
     {
-        baseUri = new(seriesUrl);
+        baseUri = new Uri(seriesUrl);
         HttpResponseMessage res;
         try
         {
@@ -379,7 +372,7 @@ public sealed class Mangaworld : MangaConnector
         {
             return "";
         }
-        using StreamReader sr = new(res.Content.ReadAsStream());
+        using StreamReader sr = new StreamReader(res.Content.ReadAsStream());
         return sr.ReadToEnd();
     }
 }
