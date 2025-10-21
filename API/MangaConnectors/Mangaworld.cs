@@ -154,9 +154,6 @@ public sealed class Mangaworld : MangaConnector
         return (m, mcId);
     }
 
-    public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName, string? language = null)
-        => SearchManga(mangaSearchName); // base overload safety, ignore language (site is IT)
-
     public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> mangaId, string? language = null)
     {
         if (!TryParseSeriesId(mangaId.IdOnConnectorSite, out var sid))
