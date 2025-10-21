@@ -1,3 +1,11 @@
+**READ**: https://github.com/C9Glax/tranga/issues/405#issuecomment-3258760555
+**READ**: https://github.com/C9Glax/tranga/issues/450
+
+<h2>
+Do not use docker-compose.yaml from master branch! It is no longer supported! Check `cuttingedge`-branch for Tranga v2!
+If you want to stay on v1, switch your docker-tag to `oldstable`!
+</h2>
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
