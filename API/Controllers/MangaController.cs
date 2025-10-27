@@ -85,7 +85,7 @@ public class MangaController(MangaContext context, ActionsContext actionsContext
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok<Manga>, NotFound<string>>> GetManga (string MangaId)
     {
-        if (await context.MangaIncludeAll().FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
+        if (await context.MangaWithMetadata().Include(m => m.MangaConnectorIds).FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
             return TypedResults.NotFound(nameof(MangaId));
         
         IEnumerable<MangaConnectorId> ids = manga.MangaConnectorIds.Select(id => new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
@@ -311,7 +311,7 @@ public class MangaController(MangaContext context, ActionsContext actionsContext
         if (await context.Authors.FirstOrDefaultAsync(a => a.Key == AuthorId, HttpContext.RequestAborted) is not { } _)
             return TypedResults.NotFound(nameof(AuthorId));
 
-        if (await context.MangaIncludeAll()
+        if (await context.MangaWithMetadata().Include(m => m.MangaConnectorIds)
                 .Where(m => m.Authors.Any(a => a.Key == AuthorId))
                 .OrderBy(m => m.Name)
                 .ToListAsync(HttpContext.RequestAborted) is not { } result)
