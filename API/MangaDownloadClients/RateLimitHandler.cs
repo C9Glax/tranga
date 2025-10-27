@@ -13,9 +13,9 @@ public class RateLimitHandler() : DelegatingHandler(new HttpClientHandler())
         AutoReplenishment = true,
         QueueLimit = 60,
         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-        ReplenishmentPeriod = TimeSpan.FromMinutes(1),
-        TokenLimit = 120,
-        TokensPerPeriod = 100
+        ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+        TokenLimit = 6,
+        TokensPerPeriod = 3
     });
     
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
