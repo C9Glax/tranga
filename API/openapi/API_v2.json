@@ -186,25 +186,8 @@
               }
             }
           },
-          "404": {
-            "description": "API.Schema.MangaContext.Manga with MangaId not found",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
+          "500": {
+            "description": "Error during Database request"
           }
         }
       }
@@ -278,7 +261,7 @@
             }
           },
           "404": {
-            "description": "API.Schema.MangaContext.Manga with MangaId not found.",
+            "description": "Not Found",
             "content": {
               "text/plain; x-version=2.0": {
                 "schema": {
@@ -288,14 +271,7 @@
             }
           },
           "500": {
-            "description": "Error during Database request",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Error during Database request"
           }
         }
       }
@@ -368,15 +344,8 @@
               }
             }
           },
-          "404": {
-            "description": "API.Schema.MangaContext.Manga with MangaId not found.",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+          "500": {
+            "description": "Error during Database request"
           }
         }
       }

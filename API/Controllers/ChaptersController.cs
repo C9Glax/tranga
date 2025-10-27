@@ -24,20 +24,22 @@ public class ChaptersController(MangaContext context) : Controller
     /// <param name="pageSize">Size of Page (default 10)</param>
     /// <response code="200"></response>
     /// <response code="400">Page data wrong</response>
-    /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found</response>
+    /// <response code="500">Error during Database request</response>
     [HttpGet("Manga/{MangaId}")]
     [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status404NotFound)]
-    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, NotFound<string>>> GetChapters(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, InternalServerError>> GetChapters(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
     {
         if (page < 1 || pageSize < 1)
             return TypedResults.BadRequest();
 
-        if(await context.Mangas.Include(m => m.Chapters).FirstOrDefaultAsync(m => m.Key == MangaId) is not { } manga)
-            return TypedResults.NotFound(nameof(MangaId));
-
-        PagedResponse<Chapter> pagedResponse = manga.Chapters.OrderDescending().CreatePagedResponse(page, pageSize)
+        if (await context.Chapters
+                .Include(ch => ch.MangaConnectorIds)
+                .Where(ch => ch.ParentMangaId == MangaId)
+                .ToListAsync(HttpContext.RequestAborted) is not { } dbChapters)
+            return TypedResults.InternalServerError();
+        PagedResponse<Chapter> pagedResponse = dbChapters.OrderDescending().CreatePagedResponse(page, pageSize)
             .ToType(c =>
             {
                 IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
@@ -57,22 +59,24 @@ public class ChaptersController(MangaContext context) : Controller
     /// <param name="pageSize">Size of Page (default 10)</param>
     /// <response code="200"></response>
     /// <response code="400">Page data wrong</response>
-    /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found.</response>
     /// <response code="500">Error during Database request</response>
     [HttpGet("Downloaded/{MangaId}")]
     [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, NotFound<string>, InternalServerError<string>>> GetChaptersDownloaded(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, InternalServerError>> GetChaptersDownloaded(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
     {
         if (page < 1 || pageSize < 1)
             return TypedResults.BadRequest();
+        
+        if (await context.Chapters
+                .Include(ch => ch.MangaConnectorIds)
+                .Where(ch => ch.ParentMangaId == MangaId && ch.Downloaded)
+                .ToListAsync(HttpContext.RequestAborted) is not { } dbChapters)
+            return TypedResults.InternalServerError();
 
-        if(await context.Mangas.Include(m => m.Chapters.Where(c => c.Downloaded)).FirstOrDefaultAsync(m => m.Key == MangaId) is not { } manga)
-            return TypedResults.NotFound(nameof(MangaId));
-
-        PagedResponse<Chapter> pagedResponse = manga.Chapters.OrderDescending().CreatePagedResponse(page, pageSize)
+        PagedResponse<Chapter> pagedResponse = dbChapters.OrderDescending().CreatePagedResponse(page, pageSize)
             .ToType(c =>
             {
                 IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
@@ -92,20 +96,23 @@ public class ChaptersController(MangaContext context) : Controller
     /// <param name="pageSize">Size of Page (default 10)</param>
     /// <response code="200"></response>
     /// <response code="400">Page data wrong</response>
-    /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found.</response>
+    /// <response code="500">Error during Database request</response>
     [HttpGet("NotDownloaded/{MangaId}")]
     [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, NotFound<string>>> GetChaptersNotDownloaded(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, InternalServerError>> GetChaptersNotDownloaded(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
     {
         if (page < 1 || pageSize < 1)
             return TypedResults.BadRequest();
 
-        if(await context.Mangas.Include(m => m.Chapters.Where(c => c.Downloaded == false)).FirstOrDefaultAsync(m => m.Key == MangaId) is not { } manga)
-            return TypedResults.NotFound(nameof(MangaId));
+        if (await context.Chapters
+                .Include(ch => ch.MangaConnectorIds)
+                .Where(ch => ch.ParentMangaId == MangaId && ch.Downloaded == false)
+                .ToListAsync(HttpContext.RequestAborted) is not { } dbChapters)
+            return TypedResults.InternalServerError();
 
-        PagedResponse<Chapter> pagedResponse = manga.Chapters.OrderDescending().CreatePagedResponse(page, pageSize)
+        PagedResponse<Chapter> pagedResponse = dbChapters.OrderDescending().CreatePagedResponse(page, pageSize)
             .ToType(c =>
             {
                 IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
