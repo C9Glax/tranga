@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using Chapter = API.Controllers.DTOs.Chapter;
-using Manga = JikanDotNet.Manga;
 
 // ReSharper disable InconsistentNaming
 
@@ -41,8 +40,8 @@ public class ChaptersController(MangaContext context) : Controller
         PagedResponse<Chapter> pagedResponse = manga.Chapters.OrderDescending().CreatePagedResponse(page, pageSize)
             .ToType(c =>
             {
-                IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-                    new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+                IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
+                    new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
                 return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded,
                     c.FileName);
             });
@@ -76,8 +75,8 @@ public class ChaptersController(MangaContext context) : Controller
         PagedResponse<Chapter> pagedResponse = manga.Chapters.OrderDescending().CreatePagedResponse(page, pageSize)
             .ToType(c =>
             {
-                IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-                    new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+                IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
+                    new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
                 return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded,
                     c.FileName);
             });
@@ -89,6 +88,8 @@ public class ChaptersController(MangaContext context) : Controller
     /// Returns all <see cref="Chapter"/> not downloaded for <see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/>
     /// </summary>
     /// <param name="MangaId"><see cref="Schema.MangaContext.Manga"/>.Key</param>
+    /// <param name="page">Page to request (default 1)</param>
+    /// <param name="pageSize">Size of Page (default 10)</param>
     /// <response code="200"></response>
     /// <response code="400">Page data wrong</response>
     /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found.</response>
@@ -107,8 +108,8 @@ public class ChaptersController(MangaContext context) : Controller
         PagedResponse<Chapter> pagedResponse = manga.Chapters.OrderDescending().CreatePagedResponse(page, pageSize)
             .ToType(c =>
             {
-                IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-                    new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+                IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
+                    new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
                 return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded,
                     c.FileName);
             });
@@ -139,8 +140,8 @@ public class ChaptersController(MangaContext context) : Controller
         if (c is null)
             return TypedResults.NoContent();
             
-        IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-            new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+        IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
+            new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
         return TypedResults.Ok(new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName));
     }
     
@@ -171,8 +172,8 @@ public class ChaptersController(MangaContext context) : Controller
         if (c is null)
             return TypedResults.NoContent();
             
-        IEnumerable<MangaConnectorId> ids = c.MangaConnectorIds.Select(id =>
-            new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+        IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
+            new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
         return TypedResults.Ok(new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded, c.FileName));
     }
 
@@ -214,8 +215,8 @@ public class ChaptersController(MangaContext context) : Controller
         if (await context.Chapters.FirstOrDefaultAsync(c => c.Key == ChapterId, HttpContext.RequestAborted) is not { } chapter)
             return TypedResults.NotFound(nameof(ChapterId));
         
-        IEnumerable<MangaConnectorId> ids = chapter.MangaConnectorIds.Select(id =>
-            new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+        IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = chapter.MangaConnectorIds.Select(id =>
+            new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
         return TypedResults.Ok(new Chapter(chapter.Key, chapter.ParentMangaId, chapter.VolumeNumber, chapter.ChapterNumber, chapter.Title,ids, chapter.Downloaded, chapter.FileName));
     }
     
@@ -230,36 +231,36 @@ public class ChaptersController(MangaContext context) : Controller
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok, NotFound<string>>> DeleteChapter (string ChapterId)
     {
-        if (await context.Chapters.Where(c => c.Key == ChapterId).ExecuteDeleteAsync<Schema.MangaContext.Chapter>(HttpContext.RequestAborted) < 1)
+        if (await context.Chapters.Where(c => c.Key == ChapterId).ExecuteDeleteAsync(HttpContext.RequestAborted) < 1)
             return TypedResults.NotFound(nameof(ChapterId));
         return TypedResults.Ok();
     }
 
     /// <summary>
-    /// Returns the <see cref="MangaConnectorId{Chapter}"/> with <see cref="MangaConnectorId{Chapter}"/>.Key
+    /// Returns the <see cref="DTOs.MangaConnectorId{Chapter}"/> with <see cref="DTOs.MangaConnectorId{Chapter}"/>.Key
     /// </summary>
-    /// <param name="MangaConnectorIdId">Key of <see cref="MangaConnectorId{Chapter}"/></param>
+    /// <param name="MangaConnectorIdId">Key of <see cref="DTOs.MangaConnectorId{Chapter}"/></param>
     /// <response code="200"></response>
-    /// <response code="404"><see cref="MangaConnectorId{Manga}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
+    /// <response code="404"><see cref="DTOs.MangaConnectorId{Chapter}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
     [HttpGet("ConnectorId/{MangaConnectorIdId}")]
-    [ProducesResponseType<MangaConnectorId>(Status200OK, "application/json")]
+    [ProducesResponseType<DTOs.MangaConnectorId<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    public async Task<Results<Ok<MangaConnectorId>, NotFound<string>>> GetChapterMangaConnectorId (string MangaConnectorIdId)
+    public async Task<Results<Ok<DTOs.MangaConnectorId<Chapter>>, NotFound<string>>> GetChapterMangaConnectorId (string MangaConnectorIdId)
     {
         if (await context.MangaConnectorToChapter.FirstOrDefaultAsync(c => c.Key == MangaConnectorIdId, HttpContext.RequestAborted) is not { } mcIdManga)
             return TypedResults.NotFound(nameof(MangaConnectorIdId));
 
-        MangaConnectorId result = new (mcIdManga.Key, mcIdManga.MangaConnectorName, mcIdManga.ObjId, mcIdManga.WebsiteUrl, mcIdManga.UseForDownload);
+        DTOs.MangaConnectorId<Chapter> result = new (mcIdManga.Key, mcIdManga.MangaConnectorName, mcIdManga.ObjId, mcIdManga.WebsiteUrl, mcIdManga.UseForDownload);
         
         return TypedResults.Ok(result);
     }
 
     /// <summary>
-    /// Deletes the <see cref="MangaConnectorId{Chapter}"/> with <see cref="MangaConnectorId{Chapter}"/>.Key
+    /// Deletes the <see cref="DTOs.MangaConnectorId{Chapter}"/> with <see cref="DTOs.MangaConnectorId{Chapter}"/>.Key
     /// </summary>
-    /// <param name="MangaConnectorIdId">Key of <see cref="MangaConnectorId{Chapter}"/></param>
+    /// <param name="MangaConnectorIdId">Key of <see cref="DTOs.MangaConnectorId{Chapter}"/></param>
     /// <response code="200"></response>
-    /// <response code="404"><see cref="MangaConnectorId{Manga}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
+    /// <response code="404"><see cref="DTOs.MangaConnectorId{Chapter}"/> with <paramref name="MangaConnectorIdId"/> not found</response>
     [HttpDelete("ConnectorId/{MangaConnectorIdId}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]

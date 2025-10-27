@@ -7,7 +7,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// Shortened Version of <see cref="Manga"/>
 /// </summary>
-public record MinimalManga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId> MangaConnectorIds) : Identifiable(Key)
+public record MinimalManga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId<Manga>> MangaConnectorIds) : Identifiable(Key)
 {
     /// <summary>
     /// Name of the Manga
@@ -35,5 +35,5 @@ public record MinimalManga(string Key, string Name, string Description, MangaRel
     /// </summary>
     [Required]
     [Description("Ids of the Manga on MangaConnectors")]
-    public IEnumerable<MangaConnectorId> MangaConnectorIds { get; init; } = MangaConnectorIds;
+    public IEnumerable<MangaConnectorId<Manga>> MangaConnectorIds { get; init; } = MangaConnectorIds;
 }
