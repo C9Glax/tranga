@@ -8,14 +8,14 @@ public class RateLimitHandler() : DelegatingHandler(new HttpClientHandler())
 {
     private ILog Log { get; init; } = LogManager.GetLogger(typeof(RateLimitHandler));
 
-    private readonly RateLimiter _limiter = new SlidingWindowRateLimiter(new ()
+    private readonly RateLimiter _limiter = new TokenBucketRateLimiter(new()
     {
         AutoReplenishment = true,
-        PermitLimit = 120,
-        QueueLimit = 120,
+        QueueLimit = 60,
         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-        SegmentsPerWindow = 60,
-        Window = TimeSpan.FromSeconds(60)
+        ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+        TokenLimit = 120,
+        TokensPerPeriod = 100
     });
     
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
