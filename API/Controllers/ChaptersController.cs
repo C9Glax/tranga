@@ -27,7 +27,7 @@ public class ChaptersController(MangaContext context) : Controller
     /// <response code="400">Page data wrong</response>
     /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found</response>
     [HttpGet("Manga/{MangaId}")]
-    [ProducesResponseType<List<Chapter>>(Status200OK, "application/json")]
+    [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status404NotFound)]
     public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, NotFound<string>>> GetChapters(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
@@ -61,7 +61,7 @@ public class ChaptersController(MangaContext context) : Controller
     /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found.</response>
     /// <response code="500">Error during Database request</response>
     [HttpGet("Downloaded/{MangaId}")]
-    [ProducesResponseType<Chapter[]>(Status200OK, "application/json")]
+    [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
@@ -93,7 +93,7 @@ public class ChaptersController(MangaContext context) : Controller
     /// <response code="400">Page data wrong</response>
     /// <response code="404"><see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/> not found.</response>
     [HttpGet("NotDownloaded/{MangaId}")]
-    [ProducesResponseType<List<Chapter>>(Status200OK, "application/json")]
+    [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType<string>(Status404NotFound, "text/plain")]
     public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, NotFound<string>>> GetChaptersNotDownloaded(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)

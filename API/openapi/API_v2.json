@@ -161,10 +161,7 @@
             "content": {
               "application/json; x-version=2.0": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Chapter"
-                  }
+                  "$ref": "#/components/schemas/ChapterPagedResponse"
                 }
               }
             }
@@ -255,10 +252,7 @@
             "content": {
               "application/json; x-version=2.0": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Chapter"
-                  }
+                  "$ref": "#/components/schemas/ChapterPagedResponse"
                 }
               }
             }
@@ -347,10 +341,7 @@
             "content": {
               "application/json; x-version=2.0": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Chapter"
-                  }
+                  "$ref": "#/components/schemas/ChapterPagedResponse"
                 }
               }
             }
@@ -3584,6 +3575,40 @@
         },
         "additionalProperties": false,
         "description": "API.Schema.MangaContext.Chapter DTO"
+      },
+      "ChapterPagedResponse": {
+        "required": [
+          "data",
+          "page",
+          "totalCount",
+          "totalPages"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Chapter"
+            },
+            "description": "The data"
+          },
+          "page": {
+            "type": "integer",
+            "description": "The page-number",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "The total number of pages (max page)",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "The total number of entries for this request",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
       },
       "CoverSize": {
         "enum": [
