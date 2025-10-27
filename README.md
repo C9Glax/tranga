@@ -141,6 +141,7 @@ The file also includes [tranga-website](https://github.com/C9Glax/tranga-website
 | CHECK_CHAPTERS_BEFORE_START       | `true`                                                                                   |
 | CREATE_COMICINFO_XML              | `true`                                                                                   |
 | ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`                                                                                  |
+| HTTP_REQUEST_TIMEOUT              | `10`                                                                                     |
 
 For compatibility do not execute the compose as root (which you should not do anyways...) but as user that can
 access the folder. Permission conflicts with Komga and Kavita should thus be limited.

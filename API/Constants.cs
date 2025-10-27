@@ -19,4 +19,6 @@ public struct Constants
     
     public static readonly bool CreateComicInfoXml = bool.Parse(Environment.GetEnvironmentVariable("CREATE_COMICINFO_XML") ?? "true");
     public static readonly bool ZeroVolumeInFilenameIfNull = bool.Parse(Environment.GetEnvironmentVariable("ALWAYS_INCLUDE_VOLUME_IN_FILENAME") ?? "false");
+    
+    public static readonly int HttpRequestTimeout =  int.Parse(Environment.GetEnvironmentVariable("HTTP_REQUEST_TIMEOUT") ?? "10");
 }
