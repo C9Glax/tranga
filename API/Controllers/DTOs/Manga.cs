@@ -7,7 +7,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// <see cref="Schema.MangaContext.Manga"/> DTO
 /// </summary>
-public sealed record Manga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId<Manga>> MangaConnectorIds, float IgnoreChaptersBefore, uint? Year, string? OriginalLanguage, IEnumerable<string> ChapterIds, IEnumerable<Author> Authors, IEnumerable<string> Tags, IEnumerable<Link> Links, IEnumerable<AltTitle> AltTitles, string? FileLibraryId)
+public sealed record Manga(string Key, string Name, string Description, MangaReleaseStatus ReleaseStatus, IEnumerable<MangaConnectorId<Manga>> MangaConnectorIds, float IgnoreChaptersBefore, uint? Year, string? OriginalLanguage, IEnumerable<Author> Authors, IEnumerable<string> Tags, IEnumerable<Link> Links, IEnumerable<AltTitle> AltTitles, string? FileLibraryId)
     : MinimalManga(Key, Name, Description, ReleaseStatus, MangaConnectorIds)
 {
     /// <summary>
@@ -28,13 +28,6 @@ public sealed record Manga(string Key, string Name, string Description, MangaRel
     /// </summary>
     [Description("Release Language")]
     public string? OriginalLanguage { get; init; } = OriginalLanguage;
-    
-    /// <summary>
-    /// Keys of ChapterDTOs
-    /// </summary>
-    [Required]
-    [Description("Keys of ChapterDTOs")]
-    public IEnumerable<string> ChapterIds { get; init; } = ChapterIds;
     
     /// <summary>
     /// Author-names

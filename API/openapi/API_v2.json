@@ -3983,7 +3983,6 @@
         "required": [
           "altTitles",
           "authors",
-          "chapterIds",
           "description",
           "fileLibraryId",
           "ignoreChaptersBefore",
@@ -4011,13 +4010,6 @@
             "type": "string",
             "description": "Release Language",
             "nullable": true
-          },
-          "chapterIds": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Keys of ChapterDTOs"
           },
           "authors": {
             "type": "array",
