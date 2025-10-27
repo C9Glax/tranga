@@ -684,6 +684,88 @@
         }
       }
     },
+    "/v2/Chapters/{ChapterId}/DownloadFrom/{MangaConnectorName}/{IsRequested}": {
+      "patch": {
+        "tags": [
+          "Chapters"
+        ],
+        "summary": "(Un-)Marks API.Controllers.DTOs.Chapter as requested for Download from API.MangaConnectors.MangaConnector",
+        "parameters": [
+          {
+            "name": "ChapterId",
+            "in": "path",
+            "description": "API.Controllers.DTOs.Chapter with ChapterId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "MangaConnectorName",
+            "in": "path",
+            "description": "API.MangaConnectors.MangaConnector with MangaConnectorName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsRequested",
+            "in": "path",
+            "description": "true to mark as requested, false to mark as not-requested",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "ChapterId or MangaConnectorName not found",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "API.Controllers.DTOs.Chapter was not linked to API.MangaConnectors.MangaConnector, so nothing changed",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "API.Controllers.DTOs.Chapter is not linked to API.MangaConnectors.MangaConnector yet. Search for API.Controllers.DTOs.Chapter on API.MangaConnectors.MangaConnector first (to create a API.Controllers.DTOs.MangaConnectorId`1).",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/FileLibrary": {
       "get": {
         "tags": [

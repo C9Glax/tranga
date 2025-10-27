@@ -1,5 +1,6 @@
 using API.Controllers.DTOs;
 using API.Schema.MangaContext;
+using API.Workers.MangaDownloadWorkers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -275,6 +276,50 @@ public class ChaptersController(MangaContext context) : Controller
     {
         if (await context.MangaConnectorToChapter.Where(c => c.Key == MangaConnectorIdId).ExecuteDeleteAsync(HttpContext.RequestAborted) < 1)
             return TypedResults.NotFound(nameof(MangaConnectorIdId));
+        return TypedResults.Ok();
+    }
+
+    /// <summary>
+    /// (Un-)Marks <see cref="Chapter"/> as requested for Download from <see cref="API.MangaConnectors.MangaConnector"/>
+    /// </summary>
+    /// <param name="ChapterId"><see cref="Chapter"/> with <paramref name="ChapterId"/></param>
+    /// <param name="MangaConnectorName"><see cref="API.MangaConnectors.MangaConnector"/> with <paramref name="MangaConnectorName"/></param>
+    /// <param name="IsRequested">true to mark as requested, false to mark as not-requested</param>
+    /// <response code="200"></response>
+    /// <response code="404"><paramref name="ChapterId"/> or <paramref name="MangaConnectorName"/> not found</response>
+    /// <response code="412"><see cref="Chapter"/> was not linked to <see cref="API.MangaConnectors.MangaConnector"/>, so nothing changed</response>
+    /// <response code="428"><see cref="Chapter"/> is not linked to <see cref="API.MangaConnectors.MangaConnector"/> yet. Search for <see cref="Chapter"/> on <see cref="API.MangaConnectors.MangaConnector"/> first (to create a <see cref="DTOs.MangaConnectorId{T}"/>).</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPatch("{ChapterId}/DownloadFrom/{MangaConnectorName}/{IsRequested}")]
+    [ProducesResponseType(Status200OK)]
+    [ProducesResponseType<string>(Status404NotFound,  "text/plain")]
+    [ProducesResponseType<string>(Status412PreconditionFailed,  "text/plain")]
+    [ProducesResponseType<string>(Status428PreconditionRequired,  "text/plain")]
+    [ProducesResponseType<string>(Status500InternalServerError,  "text/plain")]
+    public async Task<Results<Ok, NotFound<string>, StatusCodeHttpResult, InternalServerError<string>>> MarkAsRequested(string ChapterId, string MangaConnectorName, bool IsRequested)
+    {
+        if (await context.Chapters.FirstOrDefaultAsync(ch => ch.Key == ChapterId, HttpContext.RequestAborted) is not { } _)
+            return TypedResults.NotFound(nameof(ChapterId));
+        if(!Tranga.TryGetMangaConnector(MangaConnectorName, out API.MangaConnectors.MangaConnector? _))
+            return TypedResults.NotFound(nameof(MangaConnectorName));
+
+        if (context.MangaConnectorToChapter
+                .FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == ChapterId)
+            is not { } mcId)
+        {
+            if(IsRequested)
+                return TypedResults.StatusCode(Status428PreconditionRequired);
+            else
+                return TypedResults.StatusCode(Status412PreconditionFailed);
+        }
+
+        mcId.UseForDownload = IsRequested;
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
+            return TypedResults.InternalServerError(result.exceptionMessage);
+
+        DownloadChapterFromMangaconnectorWorker worker = new(mcId);
+        Tranga.AddWorker(worker);
+        
         return TypedResults.Ok();
     }
 }
