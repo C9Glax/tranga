@@ -133,6 +133,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page to request (default 1)",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Size of Page (default 10)",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
           }
         ],
         "responses": {
@@ -145,6 +165,26 @@
                   "items": {
                     "$ref": "#/components/schemas/Chapter"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Page data wrong",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -172,49 +212,6 @@
         }
       }
     },
-    "/v2/Chapters/Downloaded": {
-      "get": {
-        "tags": [
-          "Chapters"
-        ],
-        "summary": "Returns all downloaded API.Controllers.DTOs.Chapter for API.Schema.MangaContext.Manga with MangaId",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Chapter"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "API.Schema.MangaContext.Manga with MangaId not found.",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error during Database request",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v2/Chapters/Downloaded/{MangaId}": {
       "get": {
         "tags": [
@@ -230,6 +227,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page to request (default 1)",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Size of Page (default 10)",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
           }
         ],
         "responses": {
@@ -242,6 +259,26 @@
                   "items": {
                     "$ref": "#/components/schemas/Chapter"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Page data wrong",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -258,39 +295,6 @@
           },
           "500": {
             "description": "Error during Database request",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/Chapters/NotDownloaded": {
-      "get": {
-        "tags": [
-          "Chapters"
-        ],
-        "summary": "Returns all API.Controllers.DTOs.Chapter not downloaded for API.Schema.MangaContext.Manga with MangaId",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Chapter"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "API.Schema.MangaContext.Manga with MangaId not found.",
             "content": {
               "text/plain; x-version=2.0": {
                 "schema": {
@@ -317,6 +321,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
           }
         ],
         "responses": {
@@ -329,6 +351,26 @@
                   "items": {
                     "$ref": "#/components/schemas/Chapter"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Page data wrong",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }

@@ -48,17 +48,11 @@ public class ActionsController(ActionsContext context) : Controller
         if (await context.FilterActions(filter.MangaId, filter.ChapterId)
                 .Where(a => filter.Start == null || a.PerformedAt >= filter.Start.Value.ToUniversalTime())
                 .Where(a => filter.End == null || a.PerformedAt <= filter.End.Value.ToUniversalTime())
-                .Where(a => filter.Action == null || a.Action == filter.Action) 
-                .OrderByDescending(a => a.PerformedAt)
-                .Skip((page - 1) * pageSize).Take(pageSize)
-                .ToListAsync(HttpContext.RequestAborted) is not { } actions)
+                .Where(a => filter.Action == null || a.Action == filter.Action)
+                .CreatePagedResponse(a => a.PerformedAt, page, pageSize, HttpContext.RequestAborted)
+            is not { } result)
             return TypedResults.InternalServerError();
-        int totalResults = await context.FilterActions(filter.MangaId, filter.ChapterId)
-            .Where(a => filter.Start == null || a.PerformedAt >= filter.Start.Value.ToUniversalTime())
-            .Where(a => filter.End == null || a.PerformedAt <= filter.End.Value.ToUniversalTime())
-            .Where(a => filter.Action == null || a.Action == filter.Action)
-            .CountAsync(HttpContext.RequestAborted);
         
-        return TypedResults.Ok(new PagedResponse<ActionRecord>(actions.Select(a => new ActionRecord(a)), page, (totalResults - 1) / pageSize + 1, totalResults));
+        return TypedResults.Ok(result.ToType(a => new ActionRecord(a)));
     }
 }

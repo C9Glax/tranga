@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers.DTOs;
 
@@ -37,4 +39,23 @@ public static class PagedResponseHelper
         IEnumerable<T> pageData = data.Take(new Range(pageSize * (page - 1), pageSize * page));
         return new PagedResponse<T>(pageData, page, (totalCount - 1) / pageSize + 1, totalCount);
     }
+
+    public static async Task<PagedResponse<T>> CreatePagedResponse<T>(this IQueryable<T> queryable, int page, int pageSize, CancellationToken ct)
+        where T : class
+    {
+        int totalResults = await queryable.CountAsync(ct);
+        List<T> listAsync = await queryable.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+        return new (listAsync, page, (totalResults - 1) / pageSize + 1, totalResults);
+    }
+
+    public static async Task<PagedResponse<T>> CreatePagedResponse<T, TKey>(this IQueryable<T> queryable, Expression<Func<T, TKey>> keySelector, int page, int pageSize, CancellationToken ct)
+        where T : class
+    {
+        int totalResults = await queryable.OrderByDescending(keySelector).CountAsync(ct);
+        List<T> listAsync = await queryable.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+        return new (listAsync, page, (totalResults - 1) / pageSize + 1, totalResults);
+    }
+
+    public static PagedResponse<TOut> ToType<TIn, TOut>(this PagedResponse<TIn> pagedResponse, Func<TIn, TOut> mapper)
+        where TIn : class where TOut : class => new PagedResponse<TOut>(pagedResponse.Data.Select(mapper), pagedResponse.Page, pagedResponse.TotalPages, pagedResponse.TotalCount);
 }
