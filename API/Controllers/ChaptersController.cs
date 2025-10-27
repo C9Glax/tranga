@@ -287,13 +287,11 @@ public class ChaptersController(MangaContext context) : Controller
     /// <param name="IsRequested">true to mark as requested, false to mark as not-requested</param>
     /// <response code="200"></response>
     /// <response code="404"><paramref name="ChapterId"/> or <paramref name="MangaConnectorName"/> not found</response>
-    /// <response code="412"><see cref="Chapter"/> was not linked to <see cref="API.MangaConnectors.MangaConnector"/>, so nothing changed</response>
     /// <response code="428"><see cref="Chapter"/> is not linked to <see cref="API.MangaConnectors.MangaConnector"/> yet. Search for <see cref="Chapter"/> on <see cref="API.MangaConnectors.MangaConnector"/> first (to create a <see cref="DTOs.MangaConnectorId{T}"/>).</response>
     /// <response code="500">Error during Database Operation</response>
     [HttpPatch("{ChapterId}/DownloadFrom/{MangaConnectorName}/{IsRequested}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType<string>(Status404NotFound,  "text/plain")]
-    [ProducesResponseType<string>(Status412PreconditionFailed,  "text/plain")]
     [ProducesResponseType<string>(Status428PreconditionRequired,  "text/plain")]
     [ProducesResponseType<string>(Status500InternalServerError,  "text/plain")]
     public async Task<Results<Ok, NotFound<string>, StatusCodeHttpResult, InternalServerError<string>>> MarkAsRequested(string ChapterId, string MangaConnectorName, bool IsRequested)
@@ -305,20 +303,20 @@ public class ChaptersController(MangaContext context) : Controller
 
         if (context.MangaConnectorToChapter
                 .FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == ChapterId)
-            is not { } mcId)
+            is not { } chId)
         {
-            if(IsRequested)
-                return TypedResults.StatusCode(Status428PreconditionRequired);
-            else
-                return TypedResults.StatusCode(Status412PreconditionFailed);
+            return TypedResults.StatusCode(Status428PreconditionRequired);
         }
 
-        mcId.UseForDownload = IsRequested;
+        chId.UseForDownload = IsRequested;
         if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
 
-        DownloadChapterFromMangaconnectorWorker worker = new(mcId);
-        Tranga.AddWorker(worker);
+        if (IsRequested)
+        {
+            DownloadChapterFromMangaconnectorWorker worker = new(chId);
+            Tranga.AddWorker(worker);
+        }
         
         return TypedResults.Ok();
     }

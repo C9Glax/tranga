@@ -733,16 +733,6 @@
               }
             }
           },
-          "412": {
-            "description": "API.Controllers.DTOs.Chapter was not linked to API.MangaConnectors.MangaConnector, so nothing changed",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "428": {
             "description": "API.Controllers.DTOs.Chapter is not linked to API.MangaConnectors.MangaConnector yet. Search for API.Controllers.DTOs.Chapter on API.MangaConnectors.MangaConnector first (to create a API.Controllers.DTOs.MangaConnectorId`1).",
             "content": {
