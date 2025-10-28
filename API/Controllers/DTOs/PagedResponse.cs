@@ -33,6 +33,14 @@ public sealed record PagedResponse<T>(IEnumerable<T> Data, int Page, int TotalPa
 
 public static class PagedResponseHelper
 {
+    /// <summary>
+    /// Creates a PagedResponse from a sorted <see cref="IEnumerable{T}"/>
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="page"></param>
+    /// <param name="pageSize"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public static PagedResponse<T> CreatePagedResponse<T>(this IEnumerable<T> data, int page, int pageSize) where T : class
     {
         int totalCount = data.Count();
@@ -59,6 +67,14 @@ public static class PagedResponseHelper
         return new (listAsync, page, (totalResults - 1) / pageSize + 1, totalResults);
     }
 
+    /// <summary>
+    /// Converts the Datatype of a Pagedresult to desired new type using a conversion function
+    /// </summary>
+    /// <param name="pagedResponse"></param>
+    /// <param name="mapper">conversion funciton</param>
+    /// <typeparam name="TIn"></typeparam>
+    /// <typeparam name="TOut"></typeparam>
+    /// <returns></returns>
     public static PagedResponse<TOut> ToType<TIn, TOut>(this PagedResponse<TIn> pagedResponse, Func<TIn, TOut> mapper)
         where TIn : class where TOut : class => new PagedResponse<TOut>(pagedResponse.Data.Select(mapper), pagedResponse.Page, pagedResponse.TotalPages, pagedResponse.TotalCount);
 }
