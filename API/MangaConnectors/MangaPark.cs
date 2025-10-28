@@ -81,11 +81,13 @@ public class MangaPark : MangaConnector
         {
             HtmlDocument document= result.CreateDocument();
 
-            if (document.GetNodeWith("q1_1")?.GetAttributeValue("title", string.Empty) is not { Length: >0 } name)
+            if (document.GetNodeWith("q1_1")?.GetAttributeValue("title", string.Empty) is not { Length: > 0 } name)
             {
                 Log.Debug("Name not found.");
                 return null;
             }
+            else
+                name = HttpUtility.HtmlDecode(name);
             string description = HttpUtility.HtmlDecode(document.GetNodeWith("0a_9")?.InnerText ?? string.Empty);
 
             if (document.GetNodeWith("q1_1")?.GetAttributeValue("src", string.Empty) is not { Length: >0 } coverRelative)
