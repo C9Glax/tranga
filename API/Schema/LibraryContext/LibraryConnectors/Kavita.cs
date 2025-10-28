@@ -1,100 +1,80 @@
-﻿using System.Text.Json;
-using System.Text.Json.Nodes;
+﻿using System.Net.Http.Headers;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using Newtonsoft.Json.Linq;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
-public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.Kavita, baseUrl, auth)
+public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.Kavita, baseUrl, GetToken(baseUrl, auth))
 {
-    public Kavita(string baseUrl, string username, string password) : 
-        this(baseUrl, GetToken(baseUrl, username, password))
+    private readonly HttpClient _netClient = new HttpClient()
     {
-    }
-    
-    
-    private static string GetToken(string baseUrl, string username, string password)
-    {
-        HttpClient client = new()
+        BaseAddress = new Uri(baseUrl),
+        DefaultRequestHeaders =
         {
+            Authorization = new AuthenticationHeaderValue("Bearer", auth),
+            Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
+        }
+    };
+    
+    
+    private static string GetToken(string baseUrl, string apiKey)
+    {
+        HttpClient netClient = new HttpClient()
+        {
+            BaseAddress = new Uri(baseUrl),
             DefaultRequestHeaders =
             {
-                { "Accept", "application/json" }
+                Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
             }
         };
-        HttpRequestMessage requestMessage = new ()
+        JObject requestData = new () { { "apiKey", apiKey } };
+
+        if (netClient.PostAsJsonAsync("/api/Account/login", requestData).Result is not
+            { IsSuccessStatusCode: true } responseMessage)
         {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri($"{baseUrl}/api/Account/login"),
-            Content = new StringContent($"{{\"username\":\"{username}\",\"password\":\"{password}\"}}", System.Text.Encoding.UTF8, "application/json")
-        };
-        try
-        {
-            HttpResponseMessage response = client.Send(requestMessage);
-            if (response.IsSuccessStatusCode)
-            {
-                JsonObject? result = JsonSerializer.Deserialize<JsonObject>(response.Content.ReadAsStream());
-                if (result is not null)
-                    return result["token"]!.GetValue<string>();
-            }
-            else
-            {
-            }
+            throw new Exception("Could not connect to the Library instance");
         }
-        catch (HttpRequestException)
+        
+        if(responseMessage.Content.ReadFromJsonAsync<JObject>().Result is not { } data)
         {
-            
+            throw new Exception("Could not parse the response");
         }
-        return "";
+
+        return data.TryGetValue("token", out JToken? token) ? token.Value<string>()! : throw new Exception("Could not parse the response");
     }
 
     public override async Task UpdateLibrary(CancellationToken ct)
     {
-        try
-        {
-            foreach (KavitaLibrary lib in await GetLibraries(ct))
-                await NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.Id}", "Bearer", Auth, HttpMethod.Post, ct);
-        }
-        catch (Exception e)
-        {
-            Log.Error(e);
-        }
-    }
+        List<int> ids = await GetLibraries(ct);
+        JObject requestData = new () { { "ids", JsonConvert.SerializeObject(ids) } };
 
-    internal override async Task<bool> Test(CancellationToken ct)
-    {
-        foreach (KavitaLibrary lib in await GetLibraries(ct))
-            if (await NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/scan?libraryId={lib.Id}", "Bearer", Auth, HttpMethod.Post, ct) is { CanRead: true })
-                return true;
-        return false;
+        await _netClient.PostAsJsonAsync("/api/Library/scan-multiple", requestData, ct);
     }
 
     /// <summary>
     /// Fetches all libraries available to the user
     /// </summary>
     /// <returns>Array of KavitaLibrary</returns>
-    private async Task<IEnumerable<KavitaLibrary>> GetLibraries(CancellationToken ct)
+    private async Task<List<int>> GetLibraries(CancellationToken ct)
     {
-        if(await NetClient.MakeRequest($"{BaseUrl}/api/ToFileLibrary/libraries", "Bearer", Auth, HttpMethod.Get, ct) is not { CanRead: true } data)
+        if(await _netClient.GetStringAsync("/api/Library/libraries", ct) is not { } responseData)
         {
-            Log.Info("No libraries found");
-            return [];
-        }
-        if(await JsonSerializer.DeserializeAsync<KavitaLibrary[]>(data, JsonSerializerOptions.Web, ct) is not { } ret)
-        {
-            Log.Debug("Parsing libraries failed.");
+            Log.Error("Unable to fetch libraries");
             return [];
         }
 
-        return ret;
+        JArray librariesJson = JArray.Parse(responseData);
+        return librariesJson.SelectTokens("id").Values<int>().ToList();
     }
-    
-    private struct KavitaLibrary
+
+    internal override async Task<bool> Test(CancellationToken ct)
     {
-        [JsonProperty("id")]
-        public required int Id { get; init; }
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        [JsonProperty("name")]
-        public required string Name { get; init; }
+        if(await _netClient.GetAsync("/api/Account", ct) is not { IsSuccessStatusCode: true })
+        {
+            Log.Error("Unable to fetch account");
+            return false;
+        }
+
+        return true;
     }
 }

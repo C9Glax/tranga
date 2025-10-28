@@ -1011,59 +1011,6 @@
             "description": "Error during Database Operation"
           }
         }
-      },
-      "put": {
-        "tags": [
-          "LibraryConnector"
-        ],
-        "summary": "Creates a new API.Controllers.DTOs.LibraryConnector",
-        "requestBody": {
-          "description": "",
-          "content": {
-            "application/json-patch+json; x-version=2.0": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateLibraryConnectorRecord"
-              }
-            },
-            "application/json; x-version=2.0": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateLibraryConnectorRecord"
-              }
-            },
-            "text/json; x-version=2.0": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateLibraryConnectorRecord"
-              }
-            },
-            "application/*+json; x-version=2.0": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateLibraryConnectorRecord"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error during Database Operation",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/v2/LibraryConnector/{LibraryConnectorId}": {
@@ -1149,6 +1096,156 @@
         }
       }
     },
+    "/v2/LibraryConnector/Kavita": {
+      "put": {
+        "tags": [
+          "LibraryConnector"
+        ],
+        "summary": "Creates a new API.Schema.LibraryContext.LibraryConnectors.KavitaAPI.Controllers.DTOs.LibraryConnector (<seealso cref=\"T:API.Schema.LibraryContext.LibraryConnectors.LibraryConnector\" />)",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKavitaRecord"
+              }
+            },
+            "application/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKavitaRecord"
+              }
+            },
+            "text/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKavitaRecord"
+              }
+            },
+            "application/*+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKavitaRecord"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unable to log into account",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/LibraryConnector/Komga": {
+      "put": {
+        "tags": [
+          "LibraryConnector"
+        ],
+        "summary": "Creates a new API.Schema.LibraryContext.LibraryConnectors.KomgaAPI.Controllers.DTOs.LibraryConnector (<seealso cref=\"T:API.Schema.LibraryContext.LibraryConnectors.LibraryConnector\" />)",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKomgaRecord"
+              }
+            },
+            "application/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKomgaRecord"
+              }
+            },
+            "text/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKomgaRecord"
+              }
+            },
+            "application/*+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKomgaRecord"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unable to log into account",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/Maintenance/CleanupNoDownloadManga": {
       "post": {
         "tags": [
@@ -1165,6 +1262,27 @@
               "text/plain; x-version=2.0": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/Maintenance/CleanupActions": {
+      "post": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Removes all API.Schema.ActionsContext.ActionRecord",
+        "responses": {
+          "200": {
+            "description": "Number of deleted records",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
                 }
               }
             }
@@ -3733,33 +3851,44 @@
         },
         "additionalProperties": false
       },
-      "CreateLibraryConnectorRecord": {
+      "CreateKavitaRecord": {
         "required": [
-          "libraryType",
-          "password",
-          "url",
-          "username"
+          "apiKey",
+          "url"
         ],
         "type": "object",
         "properties": {
-          "libraryType": {
-            "$ref": "#/components/schemas/LibraryType"
-          },
           "url": {
             "minLength": 1,
             "type": "string",
             "description": "The Url of the Library instance",
             "format": "uri"
           },
-          "username": {
+          "apiKey": {
             "minLength": 1,
             "type": "string",
-            "description": "The Username to authenticate to the Library instance"
+            "description": "The ApiKey to authenticate to the Library instance"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateKomgaRecord": {
+        "required": [
+          "apiKey",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The Url of the Library instance",
+            "format": "uri"
           },
-          "password": {
+          "apiKey": {
             "minLength": 1,
             "type": "string",
-            "description": "The Password to authenticate to the Library instance"
+            "description": "The ApiKey to authenticate to the Library instance"
           }
         },
         "additionalProperties": false

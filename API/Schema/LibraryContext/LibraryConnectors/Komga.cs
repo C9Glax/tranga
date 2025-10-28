@@ -1,66 +1,51 @@
-﻿using System.Text.Json;
-using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+﻿using Newtonsoft.Json.Linq;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
-public class Komga(string baseUrl, string auth) : LibraryConnector(LibraryType.Komga, baseUrl, auth)
+public sealed class Komga(string baseUrl, string auth) : LibraryConnector(LibraryType.Komga, baseUrl, auth)
 {
-    public Komga(string baseUrl, string username, string password)
-        : this(baseUrl, Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")))
+    private readonly HttpClient _httpClient = new HttpClient()
     {
-    }
+        BaseAddress = new Uri(baseUrl),
+        DefaultRequestHeaders =
+        {
+            { "X-API-Key", auth }
+        }
+    };
     
     public override async Task UpdateLibrary(CancellationToken ct)
     {
-        try
+        List<string> libraryIds = await GetLibraryIds(ct);
+        foreach (string libraryId in libraryIds)
         {
-            foreach (KomgaLibrary lib in  await GetLibraries(ct))
-                await NetClient.MakeRequest($"{BaseUrl}/api/v1/libraries/{lib.Id}/scan", "Basic", Auth, HttpMethod.Post, ct);
+            await _httpClient.PostAsync($"/api/v1/libraries/{libraryId}/scan", null, ct);
         }
-        catch (Exception e)
-        {
-            Log.Error(e);
-        }
-    }
-
-    internal override async Task<bool> Test(CancellationToken ct)
-    {
-        foreach (KomgaLibrary lib in await GetLibraries(ct))
-            if (await NetClient.MakeRequest($"{BaseUrl}/api/v1/libraries/{lib.Id}/scan", "Basic", Auth, HttpMethod.Post, ct) is { CanRead: true})
-                return true;
-        return false;
     }
 
     /// <summary>
     /// Fetches all libraries available to the user
     /// </summary>
     /// <returns>Array of KomgaLibraries</returns>
-    private async Task<IEnumerable<KomgaLibrary>> GetLibraries(CancellationToken ct)
+    private async Task<List<string>> GetLibraryIds(CancellationToken ct)
     {
-        if (await NetClient.MakeRequest($"{BaseUrl}/api/v1/libraries", "Basic", Auth, HttpMethod.Get, ct) is not { CanRead: true } data)
+        if (await _httpClient.GetStringAsync("/api/v1/libraries", ct) is not { } responseData)
         {
-            Log.Debug("No libraries found");
+            Log.Error("Unable to fetch libraries");
             return [];
         }
 
-        if (await JsonSerializer.DeserializeAsync<KomgaLibrary[]>(data, JsonSerializerOptions.Web, ct) is not
-            { } ret)
-        {
-            Log.Debug("Parsing libraries failed.");
-            return [];
-        }
-
-        return ret ;
+        JArray librariesJson = JArray.Parse(responseData);
+        return librariesJson.SelectTokens("id").Values<string>().ToList()!;
     }
 
-    private readonly record struct KomgaLibrary
+    internal override async Task<bool> Test(CancellationToken ct)
     {
-        [JsonProperty("id")]
-        public required string Id { get; init; }
+        if (await _httpClient.GetAsync("/api/v2/users/me", ct) is not { IsSuccessStatusCode: true })
+        {
+            Log.Error("Unable to fetch account");
+            return false;
+        }
 
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        [JsonProperty("name")]
-        public required string Name { get; init; }
+        return true;
     }
 }
