@@ -40,19 +40,22 @@ public static class PagedResponseHelper
         return new PagedResponse<T>(pageData, page, (totalCount - 1) / pageSize + 1, totalCount);
     }
 
-    public static async Task<PagedResponse<T>> CreatePagedResponse<T>(this IQueryable<T> queryable, int page, int pageSize, CancellationToken ct)
-        where T : class
-    {
-        int totalResults = await queryable.CountAsync(ct);
-        List<T> listAsync = await queryable.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
-        return new (listAsync, page, (totalResults - 1) / pageSize + 1, totalResults);
-    }
-
+    /// <summary>
+    /// Creates a Paged result from a Query. Results are sorted by key-selector in descending order
+    /// </summary>
+    /// <param name="queryable"></param>
+    /// <param name="keySelector"></param>
+    /// <param name="page"></param>
+    /// <param name="pageSize"></param>
+    /// <param name="ct"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <returns></returns>
     public static async Task<PagedResponse<T>> CreatePagedResponse<T, TKey>(this IQueryable<T> queryable, Expression<Func<T, TKey>> keySelector, int page, int pageSize, CancellationToken ct)
         where T : class
     {
-        int totalResults = await queryable.OrderByDescending(keySelector).CountAsync(ct);
-        List<T> listAsync = await queryable.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+        int totalResults = await queryable.CountAsync(ct);
+        List<T> listAsync = await queryable.OrderByDescending(keySelector).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
         return new (listAsync, page, (totalResults - 1) / pageSize + 1, totalResults);
     }
 
