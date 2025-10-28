@@ -11,11 +11,11 @@ public class RateLimitHandler() : DelegatingHandler(new HttpClientHandler())
     private readonly RateLimiter _limiter = new TokenBucketRateLimiter(new()
     {
         AutoReplenishment = true,
-        QueueLimit = 60,
+        QueueLimit = 100,
         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
         ReplenishmentPeriod = TimeSpan.FromSeconds(1),
-        TokenLimit = 6,
-        TokensPerPeriod = 3
+        TokenLimit = Tranga.Settings.UserAgent.Equals(TrangaSettings.DefaultUserAgent) ? int.Min(Constants.RequestsPerMinute , 90) : Constants.RequestsPerMinute,
+        TokensPerPeriod = Constants.RequestsPerMinute / 60
     });
     
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
