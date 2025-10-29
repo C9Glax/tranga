@@ -46,11 +46,11 @@ public class ChaptersController(MangaContext context) : Controller
         {
             if(filter.Downloaded.HasValue)
                 queryable = queryable.Where(ch => ch.Downloaded == filter.Downloaded.Value);
-            if(filter.Name is not null)
+            if(filter.Name is not null && !string.IsNullOrWhiteSpace(filter.Name))
                 queryable = queryable.Where(ch => ch.Title != null && ch.Title.Contains(filter.Name));
             if(filter.VolumeNumber is not null)
                 queryable = queryable.Where(ch => ch.VolumeNumber == filter.VolumeNumber);
-            if(filter.ChapterNumber is not null)
+            if(filter.ChapterNumber is not null && !string.IsNullOrWhiteSpace(filter.ChapterNumber))
                 queryable = queryable.Where(ch => ch.ChapterNumber == filter.ChapterNumber);
         }
 
