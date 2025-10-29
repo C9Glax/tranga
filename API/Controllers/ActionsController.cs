@@ -1,4 +1,5 @@
 using API.Controllers.DTOs;
+using API.Controllers.Requests;
 using API.Schema.ActionsContext;
 using API.Schema.ActionsContext.Actions;
 using Asp.Versioning;
@@ -26,8 +27,6 @@ public class ActionsController(ActionsContext context) : Controller
         return TypedResults.Ok(Enum.GetValues<ActionsEnum>());
     }
 
-    public sealed record Filter(DateTime? Start, DateTime? End, string? MangaId, string? ChapterId, ActionsEnum? Action);
-
     /// <summary>
     /// Returns <see cref="Schema.ActionsContext.ActionRecord"/> performed in <see cref="Interval"/>
     /// </summary>
@@ -41,7 +40,7 @@ public class ActionsController(ActionsContext context) : Controller
     [ProducesResponseType<PagedResponse<ActionRecord>>(Status200OK, "application/json")]
     [ProducesResponseType(Status500InternalServerError)]
     [ProducesResponseType(Status400BadRequest)]
-    public async Task<Results<Ok<PagedResponse<ActionRecord>>, BadRequest, InternalServerError>> GetActionsInterval([FromBody]Filter filter, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
+    public async Task<Results<Ok<PagedResponse<ActionRecord>>, BadRequest, InternalServerError>> GetActionsInterval([FromBody]ActionsFilterRecord filter, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
     {
         if (page < 1 || pageSize < 1)
             return TypedResults.BadRequest();

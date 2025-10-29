@@ -61,22 +61,22 @@
           "content": {
             "application/json-patch+json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Filter"
+                "$ref": "#/components/schemas/ActionsFilterRecord"
               }
             },
             "application/json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Filter"
+                "$ref": "#/components/schemas/ActionsFilterRecord"
               }
             },
             "text/json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Filter"
+                "$ref": "#/components/schemas/ActionsFilterRecord"
               }
             },
             "application/*+json; x-version=2.0": {
               "schema": {
-                "$ref": "#/components/schemas/Filter"
+                "$ref": "#/components/schemas/ActionsFilterRecord"
               }
             }
           }
@@ -119,7 +119,7 @@
       }
     },
     "/v2/Chapters/Manga/{MangaId}": {
-      "get": {
+      "post": {
         "tags": [
           "Chapters"
         ],
@@ -155,164 +155,31 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChapterPagedResponse"
-                }
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/ChapterFilterRecord"
               }
-            }
-          },
-          "400": {
-            "description": "Page data wrong",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
+            },
+            "application/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/ChapterFilterRecord"
               }
-            }
-          },
-          "500": {
-            "description": "Error during Database request"
-          }
-        }
-      }
-    },
-    "/v2/Chapters/Downloaded/{MangaId}": {
-      "get": {
-        "tags": [
-          "Chapters"
-        ],
-        "summary": "Returns all downloaded API.Controllers.DTOs.Chapter for API.Schema.MangaContext.Manga with MangaId",
-        "parameters": [
-          {
-            "name": "MangaId",
-            "in": "path",
-            "description": "API.Schema.MangaContext.Manga.Key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page to request (default 1)",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "Size of Page (default 10)",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
+            },
+            "text/json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/ChapterFilterRecord"
+              }
+            },
+            "application/*+json; x-version=2.0": {
+              "schema": {
+                "$ref": "#/components/schemas/ChapterFilterRecord"
+              }
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChapterPagedResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Page data wrong",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json; x-version=2.0": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error during Database request"
-          }
-        }
-      }
-    },
-    "/v2/Chapters/NotDownloaded/{MangaId}": {
-      "get": {
-        "tags": [
-          "Chapters"
-        ],
-        "summary": "Returns all API.Controllers.DTOs.Chapter not downloaded for API.Schema.MangaContext.Manga with MangaId",
-        "parameters": [
-          {
-            "name": "MangaId",
-            "in": "path",
-            "description": "API.Schema.MangaContext.Manga.Key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page to request (default 1)",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "Size of Page (default 10)",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
-            }
-          }
-        ],
+        },
         "responses": {
           "200": {
             "description": "",
@@ -3636,6 +3503,33 @@
         ],
         "type": "string"
       },
+      "ActionsFilterRecord": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "mangaId": {
+            "type": "string",
+            "nullable": true
+          },
+          "chapterId": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/ActionsEnum"
+          }
+        },
+        "additionalProperties": false
+      },
       "AltTitle": {
         "required": [
           "language",
@@ -3736,6 +3630,29 @@
         },
         "additionalProperties": false,
         "description": "API.Schema.MangaContext.Chapter DTO"
+      },
+      "ChapterFilterRecord": {
+        "type": "object",
+        "properties": {
+          "downloaded": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "volumeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "chapterNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "ChapterMangaConnectorId": {
         "required": [
@@ -4048,33 +3965,6 @@
             "minLength": 16,
             "type": "string",
             "description": "Unique Identifier of the DTO"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Filter": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "mangaId": {
-            "type": "string",
-            "nullable": true
-          },
-          "chapterId": {
-            "type": "string",
-            "nullable": true
-          },
-          "action": {
-            "$ref": "#/components/schemas/ActionsEnum"
           }
         },
         "additionalProperties": false

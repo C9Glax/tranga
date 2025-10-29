@@ -1,9 +1,11 @@
 using API.Controllers.DTOs;
+using API.Controllers.Requests;
 using API.Schema.MangaContext;
 using API.Workers.MangaDownloadWorkers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using Chapter = API.Controllers.DTOs.Chapter;
@@ -21,98 +23,39 @@ public class ChaptersController(MangaContext context) : Controller
     /// Returns all <see cref="Schema.MangaContext.Chapter"/> of <see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/>
     /// </summary>
     /// <param name="MangaId"><see cref="Schema.MangaContext.Manga"/>.Key</param>
+    /// <param name="filter"></param>
     /// <param name="page">Page to request (default 1)</param>
     /// <param name="pageSize">Size of Page (default 10)</param>
     /// <response code="200"></response>
     /// <response code="400">Page data wrong</response>
     /// <response code="500">Error during Database request</response>
-    [HttpGet("Manga/{MangaId}")]
+    [HttpPost("Manga/{MangaId}")]
     [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
     [ProducesResponseType(Status400BadRequest)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, InternalServerError>> GetChapters(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
+    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, InternalServerError>> GetChapters(string MangaId, [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]ChapterFilterRecord? filter = null, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
     {
         if (page < 1 || pageSize < 1)
             return TypedResults.BadRequest();
 
-        if (await context.Chapters
-                .Include(ch => ch.MangaConnectorIds)
-                .Where(ch => ch.ParentMangaId == MangaId)
-                .ToListAsync(HttpContext.RequestAborted) is not { } dbChapters)
-            return TypedResults.InternalServerError();
-        PagedResponse<Chapter> pagedResponse = dbChapters.OrderDescending().CreatePagedResponse(page, pageSize)
-            .ToType(c =>
-            {
-                IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
-                    new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-                return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded,
-                    c.FileName);
-            });
-
-        return TypedResults.Ok(pagedResponse);
-    }
-    
-    /// <summary>
-    /// Returns all downloaded <see cref="Chapter"/> for <see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/>
-    /// </summary>
-    /// <param name="MangaId"><see cref="Schema.MangaContext.Manga"/>.Key</param>
-    /// <param name="page">Page to request (default 1)</param>
-    /// <param name="pageSize">Size of Page (default 10)</param>
-    /// <response code="200"></response>
-    /// <response code="400">Page data wrong</response>
-    /// <response code="500">Error during Database request</response>
-    [HttpGet("Downloaded/{MangaId}")]
-    [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
-    [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType<string>(Status404NotFound, "text/plain")]
-    [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, InternalServerError>> GetChaptersDownloaded(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
-    {
-        if (page < 1 || pageSize < 1)
-            return TypedResults.BadRequest();
+        IQueryable<Schema.MangaContext.Chapter> queryable = context.Chapters
+            .Include(ch => ch.MangaConnectorIds)
+            .Where(ch => ch.ParentMangaId == MangaId);
         
-        if (await context.Chapters
-                .Include(ch => ch.MangaConnectorIds)
-                .Where(ch => ch.ParentMangaId == MangaId && ch.Downloaded)
-                .ToListAsync(HttpContext.RequestAborted) is not { } dbChapters)
+        if (filter is not null)
+        {
+            if(filter.Downloaded.HasValue)
+                queryable = queryable.Where(ch => ch.Downloaded == filter.Downloaded.Value);
+            if(filter.Name is not null)
+                queryable = queryable.Where(ch => ch.Title != null && ch.Title.Contains(filter.Name));
+            if(filter.VolumeNumber is not null)
+                queryable = queryable.Where(ch => ch.VolumeNumber == filter.VolumeNumber);
+            if(filter.ChapterNumber is not null)
+                queryable = queryable.Where(ch => ch.ChapterNumber == filter.ChapterNumber);
+        }
+
+        if (await queryable.ToListAsync(HttpContext.RequestAborted) is not { } dbChapters)
             return TypedResults.InternalServerError();
-
-        PagedResponse<Chapter> pagedResponse = dbChapters.OrderDescending().CreatePagedResponse(page, pageSize)
-            .ToType(c =>
-            {
-                IEnumerable<DTOs.MangaConnectorId<Chapter>> ids = c.MangaConnectorIds.Select(id =>
-                    new DTOs.MangaConnectorId<Chapter>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-                return new Chapter(c.Key, c.ParentMangaId, c.VolumeNumber, c.ChapterNumber, c.Title, ids, c.Downloaded,
-                    c.FileName);
-            });
-
-        return TypedResults.Ok(pagedResponse);
-    }
-    
-    /// <summary>
-    /// Returns all <see cref="Chapter"/> not downloaded for <see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/>
-    /// </summary>
-    /// <param name="MangaId"><see cref="Schema.MangaContext.Manga"/>.Key</param>
-    /// <param name="page">Page to request (default 1)</param>
-    /// <param name="pageSize">Size of Page (default 10)</param>
-    /// <response code="200"></response>
-    /// <response code="400">Page data wrong</response>
-    /// <response code="500">Error during Database request</response>
-    [HttpGet("NotDownloaded/{MangaId}")]
-    [ProducesResponseType<PagedResponse<Chapter>>(Status200OK, "application/json")]
-    [ProducesResponseType(Status400BadRequest)]
-    [ProducesResponseType(Status500InternalServerError)]
-    public async Task<Results<Ok<PagedResponse<Chapter>>, BadRequest, InternalServerError>> GetChaptersNotDownloaded(string MangaId, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
-    {
-        if (page < 1 || pageSize < 1)
-            return TypedResults.BadRequest();
-
-        if (await context.Chapters
-                .Include(ch => ch.MangaConnectorIds)
-                .Where(ch => ch.ParentMangaId == MangaId && ch.Downloaded == false)
-                .ToListAsync(HttpContext.RequestAborted) is not { } dbChapters)
-            return TypedResults.InternalServerError();
-
         PagedResponse<Chapter> pagedResponse = dbChapters.OrderDescending().CreatePagedResponse(page, pageSize)
             .ToType(c =>
             {
