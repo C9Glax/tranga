@@ -1808,6 +1808,91 @@
         }
       }
     },
+    "/v2/Manga/ForceRecheck": {
+      "post": {
+        "tags": [
+          "Manga"
+        ],
+        "summary": "Force re-check failed/undownloaded API.Schema.MangaContext.Chapter for API.Controllers.DTOs.Manga",
+        "responses": {
+          "200": {
+            "description": "Affected Records",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/Manga/ForceRecheck/{mangaId}": {
+      "post": {
+        "tags": [
+          "Manga"
+        ],
+        "summary": "Force re-check failed/undownloaded API.Schema.MangaContext.Chapter for API.Controllers.DTOs.Manga",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "description": "(optional)API.Controllers.DTOs.Manga.Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Affected Records",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/Manga/ForceRecheck/Chapter/{chapterId}": {
+      "post": {
+        "tags": [
+          "Manga"
+        ],
+        "summary": "Force re-check a specific API.Schema.MangaContext.Chapter by deleting its record.",
+        "parameters": [
+          {
+            "name": "chapterId",
+            "in": "path",
+            "description": "API.Schema.MangaContext.Chapter.Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Affected records",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/MangaConnector": {
       "get": {
         "tags": [

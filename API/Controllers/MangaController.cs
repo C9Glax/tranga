@@ -404,4 +404,39 @@ public class MangaController(MangaContext context, ActionsContext actionsContext
         
         return TypedResults.Ok(result);
     }
+
+    /// <summary>
+    /// Force re-check failed/undownloaded <see cref="Chapter"/> for <see cref="Manga"/>
+    /// </summary>
+    /// <param name="mangaId">(optional)<see cref="Manga"/>.Key</param>
+    /// <response code="200">Affected Records</response>
+    [HttpPost("ForceRecheck")]
+    [HttpPost("ForceRecheck/{mangaId?}")]
+    [ProducesResponseType<int>(Status200OK, "text/plain")]
+    public async Task<Ok<int>> ForceRecheckMangaChapters(string? mangaId = null)
+    {
+        IQueryable<Schema.MangaContext.MangaConnectorId<Chapter>> queryable = context.MangaConnectorToChapter.Where(chId  => chId.Obj!.Downloaded);
+        if(mangaId is not null)
+            queryable = queryable.Where(chId => chId.Obj!.ParentMangaId == mangaId);
+        
+        int rowsAffected = await queryable.ExecuteDeleteAsync(HttpContext.RequestAborted);
+
+        return TypedResults.Ok(rowsAffected);
+    }
+
+    /// <summary>
+    /// Force re-check a specific <see cref="Chapter"/> by deleting its record.
+    /// </summary>
+    /// <param name="chapterId"><see cref="Chapter"/>.Key</param>
+    /// <response code="200">Affected records</response>
+    [HttpPost("ForceRecheck/Chapter/{chapterId}")]
+    [ProducesResponseType<int>(Status200OK, "text/plain")]
+    public async Task<Ok<int>> ForceRecheckChapter(string chapterId)
+    {
+        IQueryable<Schema.MangaContext.MangaConnectorId<Chapter>> queryable = context.MangaConnectorToChapter.Where(chId  => chId.ObjId == chapterId);
+        
+        int rowsAffected = await queryable.ExecuteDeleteAsync(HttpContext.RequestAborted);
+
+        return TypedResults.Ok(rowsAffected);
+    }
 }
