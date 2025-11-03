@@ -56,7 +56,9 @@ For available endpoints check `http(s)://<hostedInstance>/swagger`
 
 **This repository** _**does not**_ include a frontend. A frontend can take many forms, such as a website:
 
-[tranga-website](https://github.com/C9Glax/tranga-website)
+[tranga-website](https://github.com/C9Glax/tranga-website) (Original)
+
+[tranga-yacobGUI](https://github.com/yacob841/tranga-yacobGUI) (Third Party)
 
 When downloading a chapter (meaning the images that make-up the manga) from a Website, Tranga will
 additionally try and fetch Metadata from the same website or enhance it from third-party sources.
