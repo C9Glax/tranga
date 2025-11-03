@@ -34,17 +34,17 @@ public class SearchController(MangaContext context) : Controller
         if (connector.Enabled is false)
             return TypedResults.StatusCode(Status412PreconditionFailed);
         
-        (Manga manga, MangaConnectorId<Manga> id)[] mangas = connector.SearchManga(Query);
+        (Manga manga, Schema.MangaContext.MangaConnectorId<Manga> id)[] mangas = connector.SearchManga(Query);
 
-        IEnumerable<(Manga manga, MangaConnectorId<Manga> id)> addedManga =
+        IEnumerable<(Manga manga, Schema.MangaContext.MangaConnectorId<Manga> id)> addedManga =
             mangas.Select(kv => context.AddMangaToContext(kv, HttpContext.RequestAborted))
                 .Where(t => t.Result is not null)
                 .Select(t => t.Result)
-                .Cast<(Manga manga, MangaConnectorId<Manga> id)>();
+                .Cast<(Manga manga, Schema.MangaContext.MangaConnectorId<Manga> id)>();
         IEnumerable<MinimalManga> result = addedManga.Select(manga => manga.manga).Select(m =>
         {
-            IEnumerable<MangaConnectorId> ids = m.MangaConnectorIds.Select(id =>
-                new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+            IEnumerable<DTOs.MangaConnectorId<DTOs.Manga>> ids = m.MangaConnectorIds.Select(id =>
+                new DTOs.MangaConnectorId<DTOs.Manga>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
             return new MinimalManga(m.Key, m.Name, m.Description, m.ReleaseStatus, ids);
         });
 
@@ -74,8 +74,8 @@ public class SearchController(MangaContext context) : Controller
         if(await context.AddMangaToContext(manga, HttpContext.RequestAborted) is not { } addedManga)
             return TypedResults.InternalServerError("Could not add Manga to context");  
         
-        IEnumerable<MangaConnectorId> ids = m.MangaConnectorIds.Select(id =>
-            new MangaConnectorId(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
+        IEnumerable<DTOs.MangaConnectorId<DTOs.Manga>> ids = m.MangaConnectorIds.Select(id =>
+            new DTOs.MangaConnectorId<DTOs.Manga>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
         MinimalManga result = new (m.Key, m.Name, m.Description, m.ReleaseStatus, ids);
 
         return TypedResults.Ok(result);

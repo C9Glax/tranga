@@ -262,7 +262,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     {
         Log.Debug($"Copying cover for {manga}");
 
-        manga = await MangaContext.MangaIncludeAll().FirstAsync(m => m.Key == manga.Key, CancellationToken);
+        manga = await MangaContext.MangaWithMetadata().Include(m => m.MangaConnectorIds).FirstAsync(m => m.Key == manga.Key, CancellationToken);
         string publicationFolder;
         try
         {

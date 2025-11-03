@@ -8,14 +8,14 @@ public class RateLimitHandler() : DelegatingHandler(new HttpClientHandler())
 {
     private ILog Log { get; init; } = LogManager.GetLogger(typeof(RateLimitHandler));
 
-    private readonly RateLimiter _limiter = new SlidingWindowRateLimiter(new ()
+    private readonly RateLimiter _limiter = new TokenBucketRateLimiter(new()
     {
         AutoReplenishment = true,
-        PermitLimit = 120,
-        QueueLimit = 120,
+        QueueLimit = 100,
         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-        SegmentsPerWindow = 60,
-        Window = TimeSpan.FromSeconds(60)
+        ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+        TokenLimit = Tranga.Settings.UserAgent.Equals(TrangaSettings.DefaultUserAgent) ? int.Min(Constants.RequestsPerMinute , 90) : Constants.RequestsPerMinute,
+        TokensPerPeriod = Constants.RequestsPerMinute / 60
     });
     
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

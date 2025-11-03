@@ -7,7 +7,7 @@ internal class HttpDownloadClient : IDownloadClient
 {
     private static readonly HttpClient Client = new(handler: Tranga.RateLimitHandler)
     {
-        Timeout = TimeSpan.FromSeconds(10),
+        Timeout = TimeSpan.FromSeconds(Constants.HttpRequestTimeout),
         DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
         DefaultRequestHeaders = { { "User-Agent", Tranga.Settings.UserAgent } }
     };

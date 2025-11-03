@@ -9,6 +9,7 @@ using API.Workers.MangaDownloadWorkers;
 using API.Workers.PeriodicWorkers;
 using API.Workers.PeriodicWorkers.MaintenanceWorkers;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 
 namespace API;
 
@@ -202,8 +203,9 @@ public static class Tranga
         context.ChangeTracker.Clear();
         Log.Debug($"Adding Manga to Context: {addManga}");
         (Manga,MangaConnectorId<Manga>)? result;
-        if (await context.FindMangaLike(addManga, token) is { } manga)
+        if (await context.FindMangaLike(addManga, token) is { } mangaId)
         {
+            Manga manga = await context.MangaIncludeAll().FirstAsync(m => m.Key == mangaId, token);
             Log.Debug($"Merging with existing Manga: {manga}");
             foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
             {

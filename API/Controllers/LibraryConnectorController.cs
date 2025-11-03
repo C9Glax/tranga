@@ -5,6 +5,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using LibraryConnector = API.Controllers.DTOs.LibraryConnector;
 
@@ -52,29 +53,51 @@ public class LibraryConnectorController(LibraryContext context) : Controller
     }
     
     /// <summary>
-    /// Creates a new <see cref="LibraryConnector"/>
+    /// Creates a new <see cref="Kavita"/> <see cref="LibraryConnector"/> (<seealso cref="Schema.LibraryContext.LibraryConnectors.LibraryConnector"/>)
     /// </summary>
     /// <param name="requestData"></param>
     /// <response code="201"></response>
+    /// <response code="401">Unable to log into account</response>
     /// <response code="500">Error during Database Operation</response>
-    [HttpPut]
+    [HttpPut("Kavita")]
     [ProducesResponseType<string>(Status201Created, "text/plain")]
+    [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
-    public async Task<Results<Created<string>, InternalServerError<string>>> CreateConnector ([FromBody]CreateLibraryConnectorRecord requestData)
+    public async Task<Results<Created<string>, UnauthorizedHttpResult, InternalServerError<string>>> CreateKavita ([FromBody]CreateKavitaRecord requestData)
     {
-        //TODO verify data
-        API.Schema.LibraryContext.LibraryConnectors.LibraryConnector connector = requestData.LibraryType switch
-        {
-            LibraryType.Kavita => new Kavita(requestData.Url, requestData.Username, requestData.Password),
-            LibraryType.Komga => new Komga(requestData.Url, requestData.Username, requestData.Password),
-            _ => throw new NotImplementedException()
-        };
-        
-        context.LibraryConnectors.Add(connector);
-        
-        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
+        EntityEntry<Schema.LibraryContext.LibraryConnectors.LibraryConnector> entityEntry
+            = await context.LibraryConnectors.AddAsync(new Kavita(requestData.Url, requestData.ApiKey), HttpContext.RequestAborted);
+
+        if (!await entityEntry.Entity.Test(HttpContext.RequestAborted))
+            return TypedResults.Unauthorized();
+
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), "Adding Komga Connector") is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
-        return TypedResults.Created(string.Empty, connector.Key);
+        return TypedResults.Created(string.Empty, entityEntry.Entity.Key);
+    }
+    
+    /// <summary>
+    /// Creates a new <see cref="Komga"/> <see cref="LibraryConnector"/> (<seealso cref="Schema.LibraryContext.LibraryConnectors.LibraryConnector"/>)
+    /// </summary>
+    /// <param name="requestData"></param>
+    /// <response code="201"></response>
+    /// <response code="401">Unable to log into account</response>
+    /// <response code="500">Error during Database Operation</response>
+    [HttpPut("Komga")]
+    [ProducesResponseType<string>(Status201Created, "text/plain")]
+    [ProducesResponseType(Status401Unauthorized)]
+    [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+    public async Task<Results<Created<string>, UnauthorizedHttpResult ,InternalServerError<string>>> CreateKomga ([FromBody]CreateKomgaRecord requestData)
+    {
+        EntityEntry<Schema.LibraryContext.LibraryConnectors.LibraryConnector> entityEntry
+            = await context.LibraryConnectors.AddAsync(new Komga(requestData.Url, requestData.ApiKey), HttpContext.RequestAborted);
+        
+        if (!await entityEntry.Entity.Test(HttpContext.RequestAborted))
+            return TypedResults.Unauthorized();
+
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), "Adding Komga Connector") is { success: false } result)
+            return TypedResults.InternalServerError(result.exceptionMessage);
+        return TypedResults.Created(string.Empty, entityEntry.Entity.Key);
     }
     
     /// <summary>

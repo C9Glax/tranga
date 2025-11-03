@@ -7,7 +7,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// <see cref="MangaConnectorId{T}"/> DTO
 /// </summary>
-public sealed record MangaConnectorId(string Key, string MangaConnectorName, string ForeignKey, string? WebsiteUrl, bool UseForDownload) : Identifiable(Key)
+public sealed record MangaConnectorId<T>(string Key, string MangaConnectorName, string ForeignKey, string? WebsiteUrl, bool UseForDownload) : Identifiable(Key) where T : class
 {
     /// <summary>
     /// Name of the Connector
