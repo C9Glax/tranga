@@ -154,7 +154,10 @@ try //Connect to DB and apply migrations
         {
             await context.FileLibraries.AddAsync(new(Tranga.Settings.DefaultDownloadLocation, "Default FileLibrary"),
                 CancellationToken.None);
-            await context.Sync(CancellationToken.None, reason: "Add default library");
+            
+
+            if(await context.Sync(CancellationToken.None, reason: "Add default library") is { success: false } contextException)
+                log.Error($"Failed to save database changes: {contextException.exceptionMessage}");
         }
     }
 
@@ -163,7 +166,8 @@ try //Connect to DB and apply migrations
         NotificationsContext context = scope.ServiceProvider.GetRequiredService<NotificationsContext>();
         await context.Database.MigrateAsync(CancellationToken.None);
 
-        context.Notifications.ExecuteDelete();
+        int deleted = await context.Notifications.ExecuteDeleteAsync(CancellationToken.None);
+        log.Debug($"Deleted {deleted} old notifications.");
         string[] emojis =
         [
             "(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=",
@@ -174,7 +178,8 @@ try //Connect to DB and apply migrations
             new("Tranga Started", emojis[Random.Shared.Next(0, emojis.Length - 1)], NotificationUrgency.High),
             CancellationToken.None);
 
-        await context.Sync(CancellationToken.None, reason: "Startup notification");
+        if(await context.Sync(CancellationToken.None, reason: "Startup notification") is { success: false } contextException)
+            log.Error($"Failed to save database changes: {contextException.exceptionMessage}");
     }
 
     using (IServiceScope scope = app.Services.CreateScope())
@@ -191,12 +196,13 @@ try //Connect to DB and apply migrations
         await context.Database.MigrateAsync(CancellationToken.None);
         context.Actions.Add(new StartupActionRecord());
 
-        await context.Sync(CancellationToken.None, reason: "Startup actions");
+        if(await context.Sync(CancellationToken.None, reason: "Startup actions") is { success: false } contextException)
+            log.Error($"Failed to save database changes: {contextException.exceptionMessage}");
     }
 }
 catch (Exception e)
 {
-    log.Debug("Migrations failed!", e);
+    log.Fatal("Migrations failed!", e);
     return;
 }
 
