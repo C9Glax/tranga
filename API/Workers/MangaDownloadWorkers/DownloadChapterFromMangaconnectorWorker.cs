@@ -6,6 +6,7 @@ using API.MangaConnectors;
 using API.Schema.ActionsContext;
 using API.Schema.ActionsContext.Actions;
 using API.Schema.MangaContext;
+using API.Schema.NotificationsContext;
 using API.Workers.PeriodicWorkers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -31,11 +32,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     private MangaContext MangaContext = null!;
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private ActionsContext ActionsContext = null!;
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    private NotificationsContext NotificationsContext = null!;
 
     protected override void SetContexts(IServiceScope serviceScope)
     {
         MangaContext = GetContext<MangaContext>(serviceScope);
         ActionsContext = GetContext<ActionsContext>(serviceScope);
+        NotificationsContext = GetContext<NotificationsContext>(serviceScope);
     }
     
     protected override async Task<BaseWorker[]> DoWorkInternal()
@@ -192,9 +196,16 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         
         Log.Debug($"Downloaded chapter {chapter}.");
 
-        ActionsContext.Actions.Add(new ChapterDownloadedActionRecord(chapter.ParentManga, chapter));
+        await ActionsContext.Actions.AddAsync(new ChapterDownloadedActionRecord(chapter.ParentManga, chapter));
         if(await ActionsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } actionsContextException)
             Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
+
+        await NotificationsContext.Notifications.AddAsync(new Notification(
+            "Chapter downloaded",
+            $"{chapter.ParentManga.Name} Ch. {chapter.ChapterNumber} - {chapter.FileName}"
+            ), CancellationToken);
+        if(await NotificationsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } notificationsContextException)
+            Log.Error($"Failed to save database changes: {notificationsContextException.exceptionMessage}");
 
         bool refreshLibrary = await CheckLibraryRefresh();
         if(refreshLibrary)
