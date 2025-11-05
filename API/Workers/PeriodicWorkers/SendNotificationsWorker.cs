@@ -27,8 +27,13 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Sending notifications...");
+        if (await NotificationsContext.Notifications.Where(n => n.IsSent == false).ToListAsync(CancellationToken) is not
+            { Count: > 0 } unsentNotifications)
+        {
+            Log.Debug("No new notifications.");
+            return [];
+        }
         List<NotificationConnector> connectors = await NotificationsContext.NotificationConnectors.ToListAsync(CancellationToken);
-        List<Notification> unsentNotifications = await NotificationsContext.Notifications.Where(n => n.IsSent == false).ToListAsync(CancellationToken);
         
         Log.Debug($"Sending {unsentNotifications.Count} notifications to {connectors.Count} connectors...");
         
