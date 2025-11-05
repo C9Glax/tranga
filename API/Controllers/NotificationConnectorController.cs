@@ -89,10 +89,14 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     public async Task<Results<Created<string>, InternalServerError<string>>> CreateGotifyConnector ([FromBody]CreateGotifyConnectorRecord createGotifyConnectorData)
     {
         //TODO Validate Data
+
+        Uri uri = new Uri(createGotifyConnectorData.Url);
+        string url = $"{uri.Scheme}://{uri.DnsSafeHost}{uri.AbsolutePath}/message";
+        
         CreateNotificationConnectorRecord gotifyConnector = new ()
         {
             Name = createGotifyConnectorData.Name,
-            Url = createGotifyConnectorData.Url,
+            Url = url,
             HttpMethod = "POST",
             Body =
                 $"{{\"message\": \"%text\", \"title\": \"%title\", \"Priority\": {createGotifyConnectorData.Priority}}}",
