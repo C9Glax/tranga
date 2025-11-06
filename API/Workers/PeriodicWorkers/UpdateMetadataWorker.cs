@@ -37,7 +37,7 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
         List<MetadataEntry> metadataEntriesToUpdate = await MangaContext.MangaConnectorToManga
             .Where(m => m.UseForDownload) // Get marked Manga
             .Join(
-                MangaContext.MetadataEntries.Include(e => e.MetadataFetcher).Include(e => e.Manga),
+                MangaContext.MetadataEntries.Include(e => e.Manga),
                 mcId => mcId.ObjId,
                 e => e.MangaId,
                 (mcId, e) => e) // return MetadataEntry
@@ -47,8 +47,10 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
         foreach (MetadataEntry metadataEntry in metadataEntriesToUpdate)
         {
             Log.DebugFormat("Updating metadata of {0}...", metadataEntry);
-            await metadataEntry.MetadataFetcher.UpdateMetadata(metadataEntry, MangaContext, CancellationToken);
-            ActionsContext.Actions.Add(new MetadataUpdatedActionRecord(metadataEntry.Manga, metadataEntry.MetadataFetcher));
+            if(Tranga.MetadataFetchers.FirstOrDefault(f => f.Name == metadataEntry.MetadataFetcherName) is not { } fetcher)
+                continue;
+            await fetcher.UpdateMetadata(metadataEntry, MangaContext, CancellationToken);
+            ActionsContext.Actions.Add(new MetadataUpdatedActionRecord(metadataEntry.Manga, fetcher));
         }
         Log.Debug("Updated metadata.");
 

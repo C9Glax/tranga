@@ -10,9 +10,6 @@ public class MetadataEntry
     [JsonIgnore]
     public Manga Manga { get; init; } = null!;
     public string MangaId  { get; init; }
-    [JsonIgnore]
-    [NotMapped]
-    public MetadataFetcher MetadataFetcher { get; init; } = null!;
     public string MetadataFetcherName { get; init; }
     public string Identifier { get; init; }
 
@@ -20,7 +17,6 @@ public class MetadataEntry
     {
         this.Manga = manga;
         this.MangaId = manga.Key;
-        this.MetadataFetcher = fetcher;
         this.MetadataFetcherName = fetcher.Name;
         this.Identifier = identifier;
     }

@@ -2425,6 +2425,77 @@
         }
       }
     },
+    "/v2/MetadataFetcher/{MetadataFetcherName}/Update/{MangaId}": {
+      "post": {
+        "tags": [
+          "MetadataFetcher"
+        ],
+        "summary": "Updates the Metadata of API.Schema.MangaContext.Manga with MangaId",
+        "parameters": [
+          {
+            "name": "MangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "MetadataFetcherName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata updated"
+          },
+          "400": {
+            "description": "API.Schema.MangaContext.MetadataFetchers.MetadataFetcher not found",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "No API.Schema.MangaContext.MetadataFetchers.MetadataEntry linking API.Schema.MangaContext.Manga and API.Schema.MangaContext.MetadataFetchers.MetadataFetcher found",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/NotificationConnector": {
       "get": {
         "tags": [
