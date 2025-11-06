@@ -150,14 +150,14 @@ try //Connect to DB and apply migrations
         MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
         await context.Database.MigrateAsync(CancellationToken.None);
 
-        if (!context.FileLibraries.Any())
+        if (!await context.FileLibraries.AnyAsync())
         {
-            await context.FileLibraries.AddAsync(new(Tranga.Settings.DefaultDownloadLocation, "Default FileLibrary"),
+            await context.FileLibraries.AddAsync(new(TrangaSettings.DefaultDownloadLocation, "Default FileLibrary"),
                 CancellationToken.None);
             
 
             if(await context.Sync(CancellationToken.None, reason: "Add default library") is { success: false } contextException)
-                log.Error($"Failed to save database changes: {contextException.exceptionMessage}");
+                log.ErrorFormat("Failed to save database changes: {0}", contextException.exceptionMessage);
         }
     }
 
@@ -167,7 +167,7 @@ try //Connect to DB and apply migrations
         await context.Database.MigrateAsync(CancellationToken.None);
 
         int deleted = await context.Notifications.ExecuteDeleteAsync(CancellationToken.None);
-        log.Debug($"Deleted {deleted} old notifications.");
+        log.DebugFormat("Deleted {0} old notifications.", deleted);
         string[] emojis =
         [
             "(•‿•)", "(づ \u25d5‿\u25d5 )づ", "( \u02d8\u25bd\u02d8)っ\u2668", "=\uff3e\u25cf \u22cf \u25cf\uff3e=",
@@ -179,7 +179,7 @@ try //Connect to DB and apply migrations
             CancellationToken.None);
 
         if(await context.Sync(CancellationToken.None, reason: "Startup notification") is { success: false } contextException)
-            log.Error($"Failed to save database changes: {contextException.exceptionMessage}");
+            log.ErrorFormat("Failed to save database changes: {0}", contextException.exceptionMessage);
     }
 
     using (IServiceScope scope = app.Services.CreateScope())
@@ -197,7 +197,7 @@ try //Connect to DB and apply migrations
         context.Actions.Add(new StartupActionRecord());
 
         if(await context.Sync(CancellationToken.None, reason: "Startup actions") is { success: false } contextException)
-            log.Error($"Failed to save database changes: {contextException.exceptionMessage}");
+            log.ErrorFormat("Failed to save database changes: {0}", contextException.exceptionMessage);
     }
 }
 catch (Exception e)
@@ -212,4 +212,4 @@ Tranga.StartupTasks();
 Tranga.AddDefaultWorkers();
 
 log.Info("Running app.");
-app.Run();
+await app.RunAsync();

@@ -20,9 +20,9 @@ public class RateLimitHandler() : DelegatingHandler(new HttpClientHandler())
     
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        Log.Debug($"Requesting lease {request.RequestUri}");
+        Log.DebugFormat("Requesting lease {0}", request.RequestUri);
         using RateLimitLease lease = await _limiter.AcquireAsync(permitCount: 1, cancellationToken);
-        Log.Debug($"lease {lease.IsAcquired} {request.RequestUri}");
+        Log.DebugFormat("Acquired lease {0}", request.RequestUri);
 
         return lease.IsAcquired
             ? await base.SendAsync(request, cancellationToken)

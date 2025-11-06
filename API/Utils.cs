@@ -30,11 +30,11 @@ public static class Utils
         StringBuilder sb = new ();
         foreach (char c in name)
         {
-            if (c >= 32 && c < 127 && ForbiddenCharsBelow127.Contains(c) == false)
+            if (c >= 32 && c < 127 && !ForbiddenCharsBelow127.Contains(c))
                 sb.Append(c);
             else if (c > 127 && c < 152 && IncludeCharsAbove127.Contains(c))
                 sb.Append(c);
-            else if(c >= 152 && c <= 255 && ForbiddenCharsAbove152.Contains(c) == false)
+            else if(c >= 152 && c <= 255 && !ForbiddenCharsAbove152.Contains(c))
                 sb.Append(c);
         }
         return sb.ToString();

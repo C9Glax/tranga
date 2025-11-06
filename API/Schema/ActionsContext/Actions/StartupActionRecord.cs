@@ -1,6 +1,6 @@
 namespace API.Schema.ActionsContext.Actions;
 
-public sealed class StartupActionRecord(ActionsEnum action, DateTime performedAt) : ActionRecord(action, performedAt)
+public sealed class StartupActionRecord(Actions action, DateTime performedAt) : ActionRecord(action, performedAt)
 {
-    public StartupActionRecord() : this(ActionsEnum.Startup, DateTime.UtcNow) { }
+    public StartupActionRecord() : this(Actions.Startup, DateTime.UtcNow) { }
 }

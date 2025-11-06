@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Schema.ActionsContext.Actions;
 
-public sealed class DataMovedActionRecord(ActionsEnum action, DateTime performedAt, string from, string to) : ActionRecord(action, performedAt)
+public sealed class DataMovedActionRecord(Actions action, DateTime performedAt, string from, string to) : ActionRecord(action, performedAt)
 {
-    public DataMovedActionRecord(string from, string to) : this(ActionsEnum.DataMoved, DateTime.UtcNow, from, to) { }
+    public DataMovedActionRecord(string from, string to) : this(Actions.DataMoved, DateTime.UtcNow, from, to) { }
     
     /// <summary>
     /// From path

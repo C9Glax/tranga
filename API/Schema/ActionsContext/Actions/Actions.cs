@@ -1,6 +1,6 @@
 namespace API.Schema.ActionsContext.Actions;
 
-public enum ActionsEnum
+public enum Actions
 {
     Startup = 0,
     ChapterDownloaded = 1,

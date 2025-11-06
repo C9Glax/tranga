@@ -17,14 +17,14 @@ namespace API.Controllers;
 public class ActionsController(ActionsContext context) : ControllerBase
 {
     /// <summary>
-    /// Returns the available Action Types (<see cref="ActionsEnum"/>)
+    /// Returns the available Action Types (<see cref="Actions"/>)
     /// </summary>
     /// <response code="200">List of action-types</response>
     [HttpGet("Types")]
-    [ProducesResponseType<ActionsEnum[]>(Status200OK, "application/json")]
-    public Ok<ActionsEnum[]> GetAvailableActions()
+    [ProducesResponseType<Actions[]>(Status200OK, "application/json")]
+    public Ok<Actions[]> GetAvailableActions()
     {
-        return TypedResults.Ok(Enum.GetValues<ActionsEnum>());
+        return TypedResults.Ok(Enum.GetValues<Actions>());
     }
 
     /// <summary>

@@ -16,16 +16,16 @@ internal class HttpDownloadClient : IDownloadClient
     
     public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null, CancellationToken? cancellationToken = null)
     {
-        Log.Debug($"Using {typeof(HttpDownloadClient).FullName} for {url}");
+        Log.DebugFormat("Using {0} for {1}", typeof(HttpDownloadClient).FullName, url);
         HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
         if (referrer is not null)
             requestMessage.Headers.Referrer = new (referrer);
-        Log.Debug($"Requesting {url}");
+        Log.DebugFormat("Requesting {0}", url);
         
         try
         {
             HttpResponseMessage response = await Client.SendAsync(requestMessage, cancellationToken ?? CancellationToken.None);
-            Log.Debug($"Request {url} returned {(int)response.StatusCode} {response.StatusCode}");
+            Log.DebugFormat("Request {0} returned {1} {2}", url, (int)response.StatusCode, response.StatusCode.ToString());
             if(response.IsSuccessStatusCode)
                 return response;
 

@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Schema.ActionsContext;
 
 [PrimaryKey("Key")]
-public abstract class ActionRecord(ActionsEnum action, DateTime performedAt) : Identifiable
+public abstract class ActionRecord(Actions.Actions action, DateTime performedAt) : Identifiable
 {
     /// <summary>
     /// Constant string that describes the performed Action
     /// </summary>
     [StringLength(128)]
-    public ActionsEnum Action { get; init; } = action;
+    public Actions.Actions Action { get; init; } = action;
     
     /// <summary>
     /// UTC Time when Action was performed

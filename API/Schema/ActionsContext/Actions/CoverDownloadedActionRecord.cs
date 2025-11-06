@@ -4,10 +4,10 @@ using API.Schema.MangaContext;
 
 namespace API.Schema.ActionsContext.Actions;
 
-public sealed class CoverDownloadedActionRecord(ActionsEnum action, DateTime performedAt, string mangaId, string filename)
+public sealed class CoverDownloadedActionRecord(Actions action, DateTime performedAt, string mangaId, string filename)
     : ActionRecord(action, performedAt), IActionWithMangaRecord
 {
-    public CoverDownloadedActionRecord(Manga manga, string filename) : this(ActionsEnum.CoverDownloaded, DateTime.UtcNow, manga.Key, filename) { }
+    public CoverDownloadedActionRecord(Manga manga, string filename) : this(Actions.CoverDownloaded, DateTime.UtcNow, manga.Key, filename) { }
 
     /// <summary>
     /// Filename on disk

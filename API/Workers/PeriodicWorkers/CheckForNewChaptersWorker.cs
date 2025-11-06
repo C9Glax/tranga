@@ -29,7 +29,7 @@ public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<Ba
             .Include(id => id.Obj)
             .Where(id => id.UseForDownload)
             .ToListAsync(CancellationToken);
-        Log.Debug($"Creating {connectorIdsManga.Count} update jobs...");
+        Log.DebugFormat("Creating {0} update jobs...", connectorIdsManga.Count);
 
         List<BaseWorker> newWorkers = connectorIdsManga.Select(id => new RetrieveMangaChaptersFromMangaconnectorWorker(id, Tranga.Settings.DownloadLanguage))
             .ToList<BaseWorker>();

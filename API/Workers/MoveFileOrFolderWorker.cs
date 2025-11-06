@@ -25,13 +25,13 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
             FileInfo fi = new (FromLocation);
             if (!fi.Exists)
             {
-                Log.Error($"File does not exist at {FromLocation}");
+                Log.ErrorFormat("File does not exist at {0}", FromLocation);
                 return [];
             }
 
             if (File.Exists(ToLocation))//Do not override existing
             {
-                Log.Error($"File already exists at {ToLocation}");
+                Log.ErrorFormat("File already exists at {0}", ToLocation);
                 return [];
             } 
             if(fi.Attributes.HasFlag(FileAttributes.Directory))
@@ -46,17 +46,17 @@ public class MoveFileOrFolderWorker(string toLocation, string fromLocation, IEnu
 
         ActionsContext.Actions.Add(new DataMovedActionRecord(FromLocation, ToLocation));
         if(await ActionsContext.Sync(CancellationToken, GetType(), "Library Moved") is { success: false } actionsContextException)
-            Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", actionsContextException.exceptionMessage);
 
         return [];
     }
 
-    private void MoveDirectory(FileInfo from, string toLocation)
+    private static void MoveDirectory(FileInfo from, string toLocation)
     {
         Directory.Move(from.FullName, toLocation);        
     }
 
-    private void MoveFile(FileInfo from, string toLocation)
+    private static void MoveFile(FileInfo from, string toLocation)
     {
         File.Move(from.FullName, toLocation);
     }

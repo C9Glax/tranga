@@ -5,10 +5,10 @@ using API.Schema.MangaContext.MetadataFetchers;
 
 namespace API.Schema.ActionsContext.Actions;
 
-public sealed class MetadataUpdatedActionRecord(ActionsEnum action, DateTime performedAt, string mangaId, string metadataFetcher)
+public sealed class MetadataUpdatedActionRecord(Actions action, DateTime performedAt, string mangaId, string metadataFetcher)
     : ActionRecord(action, performedAt), IActionWithMangaRecord
 {
-    public MetadataUpdatedActionRecord(Manga manga, MetadataFetcher fetcher) : this(ActionsEnum.MetadataUpdated, DateTime.UtcNow, manga.Key, fetcher.Name) { }
+    public MetadataUpdatedActionRecord(Manga manga, MetadataFetcher fetcher) : this(Actions.MetadataUpdated, DateTime.UtcNow, manga.Key, fetcher.Name) { }
 
     /// <summary>
     /// Filename on disk

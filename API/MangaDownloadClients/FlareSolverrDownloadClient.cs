@@ -14,7 +14,7 @@ public class FlareSolverrDownloadClient(HttpClient client) : IDownloadClient
 
     public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null, CancellationToken? cancellationToken = null)
     {
-        Log.Debug($"Using {typeof(FlareSolverrDownloadClient).FullName} for {url}");
+        Log.DebugFormat("Using {0} for {1}", typeof(FlareSolverrDownloadClient).FullName, url);
         if(referrer is not null)
             Log.Warn("Client can not set referrer");
         if (Tranga.Settings.FlareSolverrUrl == string.Empty)
@@ -41,7 +41,7 @@ public class FlareSolverrDownloadClient(HttpClient client) : IDownloadClient
             Content = new StringContent(JsonConvert.SerializeObject(requestObj)),
         };
         requestMessage.Content.Headers.ContentType = new ("application/json");
-        Log.Debug($"Requesting {url}");
+        Log.DebugFormat("Requesting {0}", url);
         
         HttpResponseMessage? response;
         try
@@ -75,26 +75,26 @@ public class FlareSolverrDownloadClient(HttpClient client) : IDownloadClient
         JObject responseObj = JObject.Parse(responseString);
         if (!IsInCorrectFormat(responseObj, out string? reason))
         {
-            Log.Error($"Wrong format: {reason}");
+            Log.ErrorFormat("Wrong format: {0}", reason);
             return new(HttpStatusCode.InternalServerError);
         }
 
         string statusResponse = responseObj["status"]!.Value<string>()!;
         if (statusResponse != "ok")
         {
-            Log.Debug($"Status is not ok: {statusResponse}");
+            Log.DebugFormat("Status is not ok: {0}", statusResponse);
             return new(HttpStatusCode.InternalServerError);
         }
         JObject solution = (responseObj["solution"] as JObject)!;
 
         if (!Enum.TryParse(solution["status"]!.Value<int>().ToString(), out HttpStatusCode statusCode))
         {
-            Log.Error($"Wrong format: Cant parse status code: {solution["status"]!.Value<int>()}");
+            Log.ErrorFormat("Wrong format: Cant parse status code: {0}", solution["status"]!.Value<int>());
             return new(HttpStatusCode.InternalServerError);
         }
         if (statusCode < HttpStatusCode.OK || statusCode >= HttpStatusCode.MultipleChoices)
         {
-            Log.Debug($"Status is: {statusCode}");
+            Log.DebugFormat("Status is: {0}", statusCode);
             return new (statusCode);
         }
 

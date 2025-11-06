@@ -29,7 +29,7 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
 
     public void SendNotification(string title, string notificationText)
     {
-        Log.Info($"Sending notification: {title} - {notificationText}");
+        Log.InfoFormat("Sending notification: {0} - {1}", title, notificationText);
         string formattedUrl = FormatStr(Url, title, notificationText);
         string formattedBody = FormatStr(Body, title, notificationText);
         Dictionary<string, string> formattedHeaders = Headers.ToDictionary(h => h.Key, 
@@ -40,13 +40,13 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
             request.Headers.Add(key, value);
         request.Content = new StringContent(formattedBody);
         request.Content.Headers.ContentType = new ("application/json");
-        Log.Debug($"Request: {request}");
+        Log.DebugFormat("Request: {0}", request);
 
         HttpResponseMessage response = Client.Send(request);
-        Log.Debug($"Response status code: {response.StatusCode} {response.Content.ReadAsStringAsync().Result}");
+        Log.DebugFormat("Response status code: {0} {1}", response.StatusCode, response.Content.ReadAsStringAsync().Result);
     }
 
-    private string FormatStr(string str, string title, string text)
+    private static string FormatStr(string str, string title, string text)
     {
         StringBuilder sb = new (str);
         sb.Replace("%title", title);

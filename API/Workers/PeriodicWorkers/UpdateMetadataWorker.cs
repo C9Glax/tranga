@@ -42,21 +42,21 @@ public class UpdateMetadataWorker(TimeSpan? interval = null, IEnumerable<BaseWor
                 e => e.MangaId,
                 (mcId, e) => e) // return MetadataEntry
             .ToListAsync(CancellationToken);
-        Log.Debug($"Updating metadata of {metadataEntriesToUpdate.Count} manga...");
+        Log.DebugFormat("Updating metadata of {0} manga...", metadataEntriesToUpdate.Count);
 
         foreach (MetadataEntry metadataEntry in metadataEntriesToUpdate)
         {
-            Log.Debug($"Updating metadata of {metadataEntry}...");
+            Log.DebugFormat("Updating metadata of {0}...", metadataEntry);
             await metadataEntry.MetadataFetcher.UpdateMetadata(metadataEntry, MangaContext, CancellationToken);
             ActionsContext.Actions.Add(new MetadataUpdatedActionRecord(metadataEntry.Manga, metadataEntry.MetadataFetcher));
         }
         Log.Debug("Updated metadata.");
 
         if(await MangaContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
-            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", e.exceptionMessage);
         
         if(await ActionsContext.Sync(CancellationToken, GetType(), "Metadata Updated") is { success: false } actionsContextException)
-            Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", actionsContextException.exceptionMessage);
 
         return [];
     }

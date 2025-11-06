@@ -27,7 +27,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Sending notifications...");
-        if (await NotificationsContext.Notifications.Where(n => n.IsSent == false).ToListAsync(CancellationToken) is not
+        if (await NotificationsContext.Notifications.Where(n => !n.IsSent).ToListAsync(CancellationToken) is not
             { Count: > 0 } unsentNotifications)
         {
             Log.Debug("No new notifications.");
@@ -35,7 +35,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
         }
         List<NotificationConnector> connectors = await NotificationsContext.NotificationConnectors.ToListAsync(CancellationToken);
         
-        Log.Debug($"Sending {unsentNotifications.Count} notifications to {connectors.Count} connectors...");
+        Log.DebugFormat("Sending {0} notifications to {1} connectors...", unsentNotifications.Count, connectors.Count);
         
         unsentNotifications.ForEach(notification =>
         {
@@ -49,7 +49,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
         Log.Debug("Notifications sent.");
         
         if(await NotificationsContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
-            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", e.exceptionMessage);
             
         return [];
     }

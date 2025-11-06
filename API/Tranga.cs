@@ -21,7 +21,7 @@ public static class Tranga
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
     internal static readonly MangaConnector[] MangaConnectors = [new Global(), new MangaDex(), new Mangaworld(), new MangaPark()];
-    internal static TrangaSettings Settings = TrangaSettings.Load();
+    internal static readonly TrangaSettings Settings = TrangaSettings.Load();
     
     // ReSharper disable MemberCanBePrivate.Global
     internal static readonly UpdateMetadataWorker UpdateMetadataWorker = new ();
@@ -75,7 +75,7 @@ public static class Tranga
 
     public static void AddWorker(BaseWorker worker)
     {
-        Log.Debug($"Adding Worker {worker}");
+        Log.DebugFormat("Adding Worker {0}", worker);
         KnownWorkers.Add(worker);
         if(worker is not IPeriodic)
             StartWorker(worker, RemoveFromKnownWorkers(worker));
@@ -87,7 +87,7 @@ public static class Tranga
 
     private static void AddPeriodicWorker(BaseWorker worker, IPeriodic periodic)
     {
-        Log.Debug($"Adding Periodic {worker}");
+        Log.DebugFormat("Adding Periodic {0}", worker);
         Task periodicTask = RefreshedPeriodicTask(worker, periodic);
         PeriodicWorkers.TryAdd((worker as IPeriodic)!, periodicTask);
         periodicTask.Start();
@@ -95,7 +95,7 @@ public static class Tranga
 
     private static Task RefreshedPeriodicTask(BaseWorker worker, IPeriodic periodic) => new (() =>
     {
-        Log.Debug($"Waiting {periodic.Interval} for next run of {worker}");
+        Log.DebugFormat("Waiting {0} for next run of {1}", periodic.Interval, worker);
         Thread.Sleep(periodic.Interval);
         StartWorker(worker, RefreshTask(worker, periodic));
     });
@@ -104,10 +104,10 @@ public static class Tranga
     {
         if (worker.State < WorkerExecutionState.Created) //Failed
         {
-            Log.Debug($"Task {worker} failed. Not refreshing.");
+            Log.DebugFormat("Task {0} failed. Not refreshing.", worker);
             return;
         } 
-        Log.Debug($"Refreshing {worker}");
+        Log.DebugFormat("Refreshing {0}", worker);
         Task periodicTask = RefreshedPeriodicTask(worker, periodic);
         PeriodicWorkers.AddOrUpdate((worker as IPeriodic)!, periodicTask, (_, _) => periodicTask);
         periodicTask.Start();
@@ -132,7 +132,7 @@ public static class Tranga
     
     internal static void StartWorker(BaseWorker worker, Action? finishedCallback = null)
     {
-        Log.Debug($"Starting {worker}");
+        Log.DebugFormat("Starting {0}", worker);
         if (ServiceProvider is null)
         {
             Log.Fatal("ServiceProvider is null");
@@ -142,7 +142,7 @@ public static class Tranga
 
         while (RunningWorkers.Count > Settings.MaxConcurrentWorkers)
         {
-            Log.Warn($"{worker}: Max worker concurrency reached ({Settings.MaxConcurrentWorkers})! Waiting {Settings.WorkCycleTimeoutMs}ms...");
+            Log.WarnFormat("{0}: Max worker concurrency reached ({1})! Waiting {2}ms...", worker, Settings.MaxConcurrentWorkers, Settings.WorkCycleTimeoutMs);
             Thread.Sleep(Settings.WorkCycleTimeoutMs);
         }
 
@@ -158,24 +158,24 @@ public static class Tranga
 
     private static Action DefaultAfterWork(BaseWorker worker, Action? callback = null) => () =>
     {
-        Log.Debug($"DefaultAfterWork {worker}");
+        Log.DebugFormat("DefaultAfterWork {0}", worker);
         try
         {
             if (RunningWorkers.TryGetValue(worker, out Task<BaseWorker[]>? task))
             {
                 if (!task.IsCompleted)
                 {
-                    Log.Debug($"Waiting for Children to exit {worker}");
+                    Log.DebugFormat("Waiting for Children to exit {0}", worker);
                     task.Wait();
                 }
                 if (task.IsCompletedSuccessfully)
                 {
-                    Log.Debug($"Children done {worker}");
+                    Log.DebugFormat("Children done {0}", worker);
                     BaseWorker[] newWorkers = task.Result;
-                    Log.Debug($"{worker} created {newWorkers.Length} new Workers.");
+                    Log.DebugFormat("{0} created {1} new Workers.", worker, newWorkers.Length);
                     AddWorkers(newWorkers);
                 }else
-                    Log.Warn($"Children failed: {worker}");
+                    Log.WarnFormat("Children failed: {0}", worker);
             }
             RunningWorkers.Remove(worker, out _);
         }
@@ -188,7 +188,7 @@ public static class Tranga
 
     internal static void StopWorker(BaseWorker worker)
     {
-        Log.Debug($"Stopping {worker}");
+        Log.DebugFormat("Stopping {0}", worker);
         if(worker is IPeriodic periodicWorker)
             PeriodicWorkers.Remove(periodicWorker, out _);
         worker.Cancel();
@@ -201,12 +201,12 @@ public static class Tranga
     internal static async Task<(Manga manga, MangaConnectorId<Manga> id)?> AddMangaToContext(this MangaContext context, Manga addManga, MangaConnectorId<Manga> addMcId, CancellationToken token)
     {
         context.ChangeTracker.Clear();
-        Log.Debug($"Adding Manga to Context: {addManga}");
+        Log.DebugFormat("Adding Manga to Context: {0}", addManga);
         (Manga,MangaConnectorId<Manga>)? result;
         if (await context.FindMangaLike(addManga, token) is { } mangaId)
         {
             Manga manga = await context.MangaIncludeAll().FirstAsync(m => m.Key == mangaId, token);
-            Log.Debug($"Merging with existing Manga: {manga}");
+            Log.DebugFormat("Merging with existing Manga: {0}", manga);
             foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
             {
                 mcId.Obj = manga;

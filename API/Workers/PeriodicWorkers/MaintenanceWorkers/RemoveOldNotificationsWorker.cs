@@ -25,10 +25,10 @@ public class RemoveOldNotificationsWorker(TimeSpan? interval = null, IEnumerable
     {
         Log.Debug("Removing old notifications...");
         int removed = await NotificationsContext.Notifications.Where(n => n.IsSent).ExecuteDeleteAsync(CancellationToken);
-        Log.Debug($"Removed {removed} old notifications...");
+        Log.DebugFormat("Removed {0} old notifications...", removed);
         
         if(await NotificationsContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
-            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", e.exceptionMessage);
         
         return [];
     }

@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using API.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -32,15 +33,15 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
         if (netClient.PostAsJsonAsync("/api/Account/login", requestData).Result is not
             { IsSuccessStatusCode: true } responseMessage)
         {
-            throw new Exception("Could not connect to the Library instance");
+            throw new ParsingException("Could not connect to the Library instance");
         }
         
         if(responseMessage.Content.ReadFromJsonAsync<JObject>().Result is not { } data)
         {
-            throw new Exception("Could not parse the response");
+            throw new ParsingException("Could not parse the response");
         }
 
-        return data.TryGetValue("token", out JToken? token) ? token.Value<string>()! : throw new Exception("Could not parse the response");
+        return data.TryGetValue("token", out JToken? token) ? token.Value<string>()! : throw new ParsingException("Could not parse the response");
     }
 
     public override async Task UpdateLibrary(CancellationToken ct)

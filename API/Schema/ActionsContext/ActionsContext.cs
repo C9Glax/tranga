@@ -12,13 +12,13 @@ public class ActionsContext(DbContextOptions<ActionsContext> options) : TrangaBa
     {
         modelBuilder.Entity<ActionRecord>()
             .HasDiscriminator(a => a.Action)
-            .HasValue<ChapterDownloadedActionRecord>(ActionsEnum.ChapterDownloaded)
-            .HasValue<CoverDownloadedActionRecord>(ActionsEnum.CoverDownloaded)
-            .HasValue<ChaptersRetrievedActionRecord>(ActionsEnum.ChaptersRetrieved)
-            .HasValue<MetadataUpdatedActionRecord>(ActionsEnum.MetadataUpdated)
-            .HasValue<DataMovedActionRecord>(ActionsEnum.DataMoved)
-            .HasValue<LibraryMovedActionRecord>(ActionsEnum.LibraryMoved)
-            .HasValue<StartupActionRecord>(ActionsEnum.Startup);
+            .HasValue<ChapterDownloadedActionRecord>(Schema.ActionsContext.Actions.Actions.ChapterDownloaded)
+            .HasValue<CoverDownloadedActionRecord>(Schema.ActionsContext.Actions.Actions.CoverDownloaded)
+            .HasValue<ChaptersRetrievedActionRecord>(Schema.ActionsContext.Actions.Actions.ChaptersRetrieved)
+            .HasValue<MetadataUpdatedActionRecord>(Schema.ActionsContext.Actions.Actions.MetadataUpdated)
+            .HasValue<DataMovedActionRecord>(Schema.ActionsContext.Actions.Actions.DataMoved)
+            .HasValue<LibraryMovedActionRecord>(Schema.ActionsContext.Actions.Actions.LibraryMoved)
+            .HasValue<StartupActionRecord>(Schema.ActionsContext.Actions.Actions.Startup);
 
         modelBuilder.Entity<ChapterDownloadedActionRecord>().Property(a => a.MangaId).HasColumnName("MangaId");
         modelBuilder.Entity<ChapterDownloadedActionRecord>().Property(a => a.ChapterId).HasColumnName("ChapterId");

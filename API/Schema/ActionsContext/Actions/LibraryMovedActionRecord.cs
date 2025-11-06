@@ -4,10 +4,10 @@ using API.Schema.MangaContext;
 
 namespace API.Schema.ActionsContext.Actions;
 
-public sealed class LibraryMovedActionRecord(ActionsEnum action, DateTime performedAt, string mangaId, string fileLibraryId)
+public sealed class LibraryMovedActionRecord(Actions action, DateTime performedAt, string mangaId, string fileLibraryId)
     : ActionRecord(action, performedAt), IActionWithMangaRecord
 {
-    public LibraryMovedActionRecord(Manga manga, FileLibrary library) : this(ActionsEnum.LibraryMoved, DateTime.UtcNow, manga.Key, library.Key) { }
+    public LibraryMovedActionRecord(Manga manga, FileLibrary library) : this(Actions.LibraryMoved, DateTime.UtcNow, manga.Key, library.Key) { }
     
     /// <summary>
     /// <see cref="Schema.MangaContext.FileLibrary"/> for which the cover was downloaded

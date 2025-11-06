@@ -24,7 +24,7 @@ public sealed record ActionRecord : Identifiable
     /// <inheritdoc cref="Schema.ActionsContext.ActionRecord.Action" />
     /// </summary>
     [Required]
-    public ActionsEnum Action { get; init; }
+    public Actions Action { get; init; }
     
     /// <summary>
     /// <inheritdoc cref="Schema.ActionsContext.ActionRecord.PerformedAt" />

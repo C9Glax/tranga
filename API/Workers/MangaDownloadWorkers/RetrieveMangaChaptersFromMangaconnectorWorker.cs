@@ -31,7 +31,7 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
     
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        Log.Debug($"Getting Chapters for MangaConnectorId {_mangaConnectorIdId}...");
+        Log.DebugFormat("Getting Chapters for MangaConnectorId {0}...", _mangaConnectorIdId);
         // Getting MangaConnector info
         if (await MangaContext.MangaConnectorToManga
                 .Include(id => id.Obj)
@@ -47,19 +47,19 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
             Log.Error("Could not get MangaConnector.");
             return []; //TODO Exception?
         }
-        Log.Debug($"Getting Chapters for MangaConnectorId {mangaConnectorId}...");
+        Log.DebugFormat("Getting Chapters for MangaConnectorId {0}...", mangaConnectorId);
         
         Manga manga = mangaConnectorId.Obj;
         
         // Retrieve available Chapters from Connector
         (Chapter chapter, MangaConnectorId<Chapter> chapterId)[] allChapters =
             mangaConnector.GetChapters(mangaConnectorId, language).DistinctBy(c => c.Item1.Key).ToArray();
-        Log.Debug($"Got {allChapters.Length} chapters from connector.");
+        Log.DebugFormat("Got {0} chapters from connector.", allChapters.Length);
         
         // Filter for new Chapters
         List<(Chapter chapter, MangaConnectorId<Chapter> chapterId)> newChapters = allChapters.Where<(Chapter chapter, MangaConnectorId<Chapter> chapterId)>(ch =>
             manga.Chapters.All(c => c.Key != ch.chapter.Key)).ToList();
-        Log.Debug($"Got {newChapters.Count} new chapters.");
+        Log.DebugFormat("Got {0} new chapters.", newChapters.Count);
 
         // Add Chapters to Manga
         manga.Chapters = manga.Chapters.Union(newChapters.Select(ch => ch.chapter)).ToList();
@@ -74,7 +74,7 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         // Match tracked entities of Chapters
         foreach (MangaConnectorId<Chapter> newId in newIds)
             newId.Obj = manga.Chapters.First(ch => ch.Key == newId.ObjId);
-        Log.Debug($"Got {newIds.Count} new download-Ids.");
+        Log.DebugFormat("Got {0} new download-Ids.", newIds.Count);
         
         // Add new ChapterIds to Database
         MangaContext.MangaConnectorToChapter.AddRange(newIds);
@@ -89,11 +89,11 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         }
 
         if(await MangaContext.Sync(CancellationToken, GetType(), "Chapters retrieved") is { success: false } mangaContextException)
-            Log.Error($"Failed to save database changes: {mangaContextException.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", mangaContextException.exceptionMessage);
 
         ActionsContext.Actions.Add(new ChaptersRetrievedActionRecord(manga));
         if(await ActionsContext.Sync(CancellationToken, GetType(), "Chapters retrieved") is { success: false } actionsContextException)
-            Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", actionsContextException.exceptionMessage);
 
         return [];
     }

@@ -25,18 +25,18 @@ public abstract class TrangaBaseContext<T> : DbContext where T : DbContext
     internal async Task<(bool success, string? exceptionMessage)> Sync(CancellationToken token, Type? trigger = null, string? reason = null)
     {
         int changesCount = ChangeTracker.Entries().Count(e => e.State is not EntityState.Unchanged and not EntityState.Detached);
-        Log.Debug($"Syncing {changesCount} changes {GetType().Name} {trigger?.Name} {reason}...");
+        Log.DebugFormat("Syncing {0} changes {1} {2} {3}...", changesCount, GetType().Name, trigger?.Name, reason);
         if (changesCount < 1)
             return (true, null);
         try
         {
             int changedRows = await this.SaveChangesAsync(token);
-            Log.Debug($"Synced {changedRows} rows...");
+            Log.DebugFormat("Synced {0} rows...", changedRows);
             return (true, null);
         }
         catch (Exception e)
         {
-            Log.Error($"Syncing {changesCount} changes {GetType().Name} {trigger?.Name} {reason} failed:", e);
+            Log.ErrorFormat("Syncing {0} changes {1} {2} {3} failed: {4}", changesCount, GetType().Name, trigger?.Name, reason, e);
             return (false, e.Message);
         }
     }

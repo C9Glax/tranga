@@ -34,7 +34,7 @@ public abstract class BaseWorker : Identifiable
     /// </summary>
     public void Cancel()
     {
-        Log.Debug($"Cancelled {this}");
+        Log.DebugFormat("Cancelled {0}", ToString());
         this.State = WorkerExecutionState.Cancelled;
         _cancellationTokenSource.Cancel();
     }
@@ -44,7 +44,7 @@ public abstract class BaseWorker : Identifiable
     /// </summary>
     protected void Fail()
     {
-        Log.Debug($"Failed {this}");
+        Log.DebugFormat("Failed {0}", ToString());
         this.State = WorkerExecutionState.Failed;
         _cancellationTokenSource.Cancel();
     }
@@ -74,7 +74,7 @@ public abstract class BaseWorker : Identifiable
     public Task<BaseWorker[]> DoWork(Action? callback = null)
     {
         // Start the worker
-        Log.Debug($"Checking {this}");
+        Log.DebugFormat("Checking {0}", ToString());
         _cancellationTokenSource = new(TimeSpan.FromMinutes(10));
         State = WorkerExecutionState.Waiting;
         
@@ -87,7 +87,7 @@ public abstract class BaseWorker : Identifiable
             return new (WaitForDependencies);
         
         // Run the actual work
-        Log.Info($"Running {this}");
+        Log.InfoFormat("Running {0}", ToString());
         DateTime startTime = DateTime.UtcNow;
         State = WorkerExecutionState.Running;
         Task<BaseWorker[]> task = DoWorkInternal();
@@ -98,7 +98,7 @@ public abstract class BaseWorker : Identifiable
     private Action Finish(DateTime startTime, Action? callback = null) => () =>
     {
         DateTime endTime = DateTime.UtcNow;
-        Log.Info($"Completed {this}\n\t{endTime.Subtract(startTime).TotalMilliseconds} ms");
+        Log.InfoFormat("Completed {0}\n\t{1} ms", this, endTime.Subtract(startTime).TotalMilliseconds);
         this.State = WorkerExecutionState.Completed;
         if(this is IPeriodic periodic)
             periodic.LastExecution = DateTime.UtcNow;
@@ -109,8 +109,8 @@ public abstract class BaseWorker : Identifiable
 
     private BaseWorker[] WaitForDependencies()
     {
-        Log.Info($"Waiting for {MissingDependencies.Count()} Dependencies {this}:\n\t{string.Join("\n\t", MissingDependencies.Select(d => d.ToString()))}");
-        while (_cancellationTokenSource.IsCancellationRequested == false && MissingDependencies.Any())
+        Log.InfoFormat("Waiting for {0} Dependencies {1}:\n\t{2}", MissingDependencies.Count(), this, string.Join("\n\t", MissingDependencies.Select(d => d.ToString())));
+        while (!_cancellationTokenSource.IsCancellationRequested && MissingDependencies.Any())
         {
             Thread.Sleep(Tranga.Settings.WorkCycleTimeoutMs);  
         }

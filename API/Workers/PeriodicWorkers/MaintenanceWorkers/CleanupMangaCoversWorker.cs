@@ -36,12 +36,12 @@ public class CleanupMangaCoversWorker(TimeSpan? interval = null, IEnumerable<Bas
             return;
         string[] extraneousFiles = directory
             .GetFiles()
-            .Where(f => retainFilenames.Contains(f.Name) == false)
+            .Where(f => !retainFilenames.Contains(f.Name))
             .Select(f => f.FullName)
             .ToArray();
         foreach (string path in extraneousFiles)
         {
-            Log.Info($"Deleting {path}");
+            Log.InfoFormat("Deleting {0}", path);
             File.Delete(path);
         }
     }

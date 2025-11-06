@@ -1,3 +1,4 @@
+using API.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Workers;
@@ -11,10 +12,10 @@ public abstract class BaseWorkerWithContexts(IEnumerable<BaseWorker>? dependsOn 
     /// <typeparam name="T">Type of <see cref="DbContext"/></typeparam>
     /// <returns>Context in scope</returns>
     /// <exception cref="Exception">Scope not set</exception>
-    protected T GetContext<T>(IServiceScope scope) where T : DbContext
+    protected static T GetContext<T>(IServiceScope scope) where T : DbContext
     {
         if (scope is not { } serviceScope)
-            throw new Exception("Scope not set!");
+            throw new ScopeNotSetException();
         return serviceScope.ServiceProvider.GetRequiredService<T>();
     }
 

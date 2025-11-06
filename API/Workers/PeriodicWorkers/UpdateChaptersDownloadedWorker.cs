@@ -25,7 +25,7 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
     {
         Log.Debug("Checking chapter files...");
         List<Chapter> chapters = await MangaContext.Chapters.ToListAsync(CancellationToken);
-        Log.Debug($"Checking {chapters.Count} chapters...");
+        Log.DebugFormat("Checking {0} chapters...", chapters.Count);
         foreach (Chapter chapter in chapters)
         {
             try
@@ -39,7 +39,7 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
         }
 
         if(await MangaContext.Sync(CancellationToken, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } e)
-            Log.Error($"Failed to save database changes: {e.exceptionMessage}");
+            Log.ErrorFormat("Failed to save database changes: {0}", e.exceptionMessage);
         
         return [];
     }
