@@ -36,7 +36,7 @@ public class NotificationConnector(string name, string url, Dictionary<string, s
             h => FormatStr(h.Value, title, notificationText));
 
         HttpRequestMessage request = new(System.Net.Http.HttpMethod.Parse(HttpMethod), formattedUrl);
-        foreach (var (key, value) in formattedHeaders)
+        foreach ((string key, string value) in formattedHeaders)
             request.Headers.Add(key, value);
         request.Content = new StringContent(formattedBody);
         request.Content.Headers.ContentType = new ("application/json");

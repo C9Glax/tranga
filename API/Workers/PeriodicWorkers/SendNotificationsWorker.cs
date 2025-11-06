@@ -47,7 +47,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
             }
             connectors.ForEach(connector =>
             {
-                connector.SendNotification(groupedNotification.Title, string.Join('\n', groupedNotification.Notifications.Select(n => n.Message)));
+                connector.SendNotification(groupedNotification.Title, string.Join(", ", groupedNotification.Notifications.Select(n => n.Message)));
             });
             groupedNotification.Notifications.ForEach(n => n.IsSent = true);
         }
