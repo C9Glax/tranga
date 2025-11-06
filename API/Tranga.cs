@@ -212,12 +212,18 @@ public static class Tranga
                 mcId.Obj = manga;
                 mcId.ObjId = manga.Key;
             }
+            manga.MangaConnectorIds = manga.MangaConnectorIds.UnionBy(addManga.MangaConnectorIds, id => id.MangaConnectorName).ToList();
+            foreach (Chapter addMangaChapter in addManga.Chapters)
+            {
+                manga.Chapters.Add(new Chapter(manga, addMangaChapter.ChapterNumber, addMangaChapter.VolumeNumber, addMangaChapter.Title)
+                {
+                    MangaConnectorIds = addMangaChapter.MangaConnectorIds
+                });
+            }
             manga.MangaTags = manga.MangaTags.UnionBy(addManga.MangaTags, tag => tag.Tag).ToList();
             manga.Authors = manga.Authors.UnionBy(addManga.Authors, author => author.Key).ToList();
             manga.Links = manga.Links.UnionBy(addManga.Links, link => link.Key).ToList();
             manga.AltTitles = manga.AltTitles.UnionBy(addManga.AltTitles, altTitle => altTitle.Key).ToList();
-            manga.Chapters = manga.Chapters.UnionBy(addManga.Chapters, chapter => chapter.Key).ToList();
-            manga.MangaConnectorIds = manga.MangaConnectorIds.UnionBy(addManga.MangaConnectorIds, id => id.MangaConnectorName).ToList();
             
             result = (manga, manga.MangaConnectorIds.First(id => id.MangaConnectorName == addMcId.MangaConnectorName));
         }
