@@ -16,16 +16,20 @@ public class MangaConnectorId<T> : Identifiable where T : Identifiable
     [Url] [StringLength(512)] public string? WebsiteUrl { get; internal init; }
     public bool UseForDownload { get; internal set; }
 
-    public MangaConnectorId(T obj, MangaConnector mangaConnector, string idOnConnectorSite, string? websiteUrl, bool useForDownload = false)
-        : base(TokenGen.CreateToken(typeof(MangaConnectorId<T>), mangaConnector.Name, idOnConnectorSite))
+    public MangaConnectorId(T obj, string mangaConnectorName, string idOnConnectorSite, string? websiteUrl,
+        bool useForDownload = false)
+        : base(TokenGen.CreateToken(typeof(MangaConnectorId<T>), mangaConnectorName, idOnConnectorSite))
     {
         this.Obj = obj;
         this.ObjId = obj.Key;
-        this.MangaConnectorName = mangaConnector.Name;
+        this.MangaConnectorName = mangaConnectorName;
         this.IdOnConnectorSite = idOnConnectorSite;
         this.WebsiteUrl = websiteUrl;
         this.UseForDownload = useForDownload;
     }
+
+    public MangaConnectorId(T obj, MangaConnector mangaConnector, string idOnConnectorSite, string? websiteUrl, bool useForDownload = false)
+        : this(obj, mangaConnector.Name, idOnConnectorSite, websiteUrl, useForDownload) { }
 
     /// <summary>
     /// EF CORE ONLY!!!
