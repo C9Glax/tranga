@@ -2876,6 +2876,26 @@
         }
       }
     },
+    "/v2/Stats": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Returns the Server-Stats",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/Search/{MangaConnectorName}/{Query}": {
       "get": {
         "tags": [
@@ -4584,6 +4604,44 @@
           }
         },
         "additionalProperties": { }
+      },
+      "Stats": {
+        "type": "object",
+        "properties": {
+          "numberManga": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberChapters": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "missingChapters": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "downloadedChapters": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sentNotifications": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "actionsTaken": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberAuthors": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberTags": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
       },
       "TrangaSettings": {
         "type": "object",
