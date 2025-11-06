@@ -43,6 +43,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
                 DateTime.UtcNow.Subtract(Constants.NotificationSendInterval * 2))
             {
                 Log.DebugFormat("Not sending notification {0}, not enough time has passed for bundling notifications. ({1} minutes need to pass with no new notifications)", groupedNotification.Title, (Constants.NotificationSendInterval * 2).TotalMinutes);
+                continue;
             }
             connectors.ForEach(connector =>
             {
