@@ -145,6 +145,8 @@ The file also includes [tranga-website](https://github.com/C9Glax/tranga-website
 | ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`          | Override to always include a volume in filenames (default as `Vol. 0`)                                           |
 | HTTP_REQUEST_TIMEOUT              | `10`             | Request timeout for Mangaconnectors                                                                              |
 | REQUESTS_PER_MINUTE               | `90`             | Maximum requests per minute for Mangaconnectors                                                                  |
+| MINUTES_BETWEEN_NOTIFICATIONS     | `1`              | Interval at which Tranga checks if notifications need to be sent.                                                |
+| HOURS_BETWEEN_NEW_CHAPTERS_CHECK  | `3`              | Interval at which Tranga checks if there are new chapters for a manga                                            |
 
 ### Bare-Metal
 

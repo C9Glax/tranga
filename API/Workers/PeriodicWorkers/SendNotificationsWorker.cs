@@ -14,7 +14,7 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
     : BaseWorkerWithContexts(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
-    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(1);
+    public TimeSpan Interval { get; set; } = interval??Constants.NotificationSendInterval;
     
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private NotificationsContext NotificationsContext = null!;
@@ -39,6 +39,11 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
 
         foreach (var groupedNotification in unsentNotifications.GroupBy(n => n.Title, n => n).Select(g => new { Title = g.Key, Notifications = g.ToList() }))
         {
+            if (groupedNotification.Notifications.MaxBy(n => n.Date)!.Date >
+                DateTime.UtcNow.Subtract(Constants.NotificationSendInterval * 2))
+            {
+                Log.DebugFormat("Not sending notification {0}, not enough time has passed for bundling notifications. ({1} minutes need to pass with no new notifications)", groupedNotification.Title, (Constants.NotificationSendInterval * 2).TotalMinutes);
+            }
             connectors.ForEach(connector =>
             {
                 connector.SendNotification(groupedNotification.Title, string.Join('\n', groupedNotification.Notifications.Select(n => n.Message)));
