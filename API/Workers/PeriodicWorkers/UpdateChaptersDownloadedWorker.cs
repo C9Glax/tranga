@@ -30,7 +30,10 @@ public class UpdateChaptersDownloadedWorker(TimeSpan? interval = null, IEnumerab
         {
             try
             {
-                chapter.Downloaded = await chapter.CheckDownloaded(MangaContext, CancellationToken);
+                bool downloaded = await chapter.CheckDownloaded(MangaContext, CancellationToken);
+                chapter.Downloaded = downloaded;
+                if (!downloaded)
+                    chapter.FileName = null;
             }
             catch (Exception exception)
             {
