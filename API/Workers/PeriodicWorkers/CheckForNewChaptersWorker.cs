@@ -12,7 +12,7 @@ public class CheckForNewChaptersWorker(TimeSpan? interval = null, IEnumerable<Ba
     : BaseWorkerWithContexts(dependsOn), IPeriodic
 {
     public DateTime LastExecution { get; set; } = DateTime.UnixEpoch;
-    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromMinutes(60);
+    public TimeSpan Interval { get; set; } = interval??TimeSpan.FromHours(3);
     
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private MangaContext MangaContext = null!;
