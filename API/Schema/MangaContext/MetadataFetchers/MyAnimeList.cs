@@ -29,8 +29,9 @@ public class MyAnimeList : MetadataFetcher
 
     public override MetadataSearchResult[] SearchMetadataEntry(string searchTerm)
     {
-        
+        Log.DebugFormat("Searching '{0}'...", searchTerm);
         ICollection<JikanDotNet.Manga> resultData = Jikan.SearchMangaAsync(searchTerm).Result.Data;
+        Log.DebugFormat("Found {0} results.", resultData.Count);
         if (resultData.Count < 1)
             return [];
         return resultData.Select(data =>
@@ -48,6 +49,7 @@ public class MyAnimeList : MetadataFetcher
     /// <exception cref="DbUpdateException"></exception>
     public override async Task UpdateMetadata(MetadataEntry metadataEntry, MangaContext dbContext, CancellationToken token)
     {
+        Log.DebugFormat("Updating Metadata: {0}", metadataEntry.MangaId);
         Manga? dbManga = metadataEntry.Manga; //Might be null!
         if (dbManga is null)
         {
@@ -69,13 +71,17 @@ public class MyAnimeList : MetadataFetcher
         try
         {
             long id = long.Parse(metadataEntry.Identifier);
-            if(await Jikan.GetMangaFullDataAsync(id, token) is not { } response)
-                throw new DbUpdateException("Manga Data not found");
+            if (await Jikan.GetMangaFullDataAsync(id, token) is not { } response)
+            {
+                Log.ErrorFormat("Manga Data not found: {0}", metadataEntry.MangaId);
+                return;
+            }
             resultData = response.Data;
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw new FormatException("ID was not in correct format");
+            Log.Error(e);
+            return;
         }
 
         dbManga.Name = resultData.Titles.First().Title;
@@ -85,7 +91,10 @@ public class MyAnimeList : MetadataFetcher
         dbManga.Authors.Clear();
         dbManga.Authors = resultData.Authors.Select(a => new Author(a.Name)).ToList();
 
-        await dbContext.Sync(token, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name);
+        if (await dbContext.Sync(token, GetType(), "Update metadata") is { success: true })
+        {
+            Log.InfoFormat("Updated Metadata: {0}", metadataEntry.MangaId);
+        }
     }
     
 }

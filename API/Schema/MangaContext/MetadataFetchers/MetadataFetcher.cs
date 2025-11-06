@@ -1,3 +1,4 @@
+using log4net;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Schema.MangaContext.MetadataFetchers;
@@ -8,9 +9,12 @@ public abstract class MetadataFetcher
     // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public string Name { get; init; }
 
+    protected ILog Log;
+
     protected MetadataFetcher()
     {
         this.Name = this.GetType().Name;
+        this.Log = LogManager.GetLogger(Name);
     }
     
     /// <summary>
@@ -19,6 +23,7 @@ public abstract class MetadataFetcher
     internal MetadataFetcher(string name)
     {
         this.Name = name;
+        this.Log = LogManager.GetLogger(Name);
     }
 
     internal MetadataEntry CreateMetadataEntry(Manga manga, string identifier) =>
