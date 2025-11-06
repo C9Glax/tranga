@@ -207,27 +207,11 @@ public static class Tranga
         {
             Manga manga = await context.MangaIncludeAll().FirstAsync(m => m.Key == mangaId, token);
             Log.DebugFormat("Merging with existing Manga: {0}", manga);
-            foreach (MangaConnectorId<Manga> mcId in addManga.MangaConnectorIds)
-            {
-                mcId.Obj = manga;
-                mcId.ObjId = manga.Key;
-            }
-            manga.MangaConnectorIds = manga.MangaConnectorIds.UnionBy(addManga.MangaConnectorIds, id => id.MangaConnectorName).ToList();
-            foreach (Chapter addMangaChapter in addManga.Chapters)
-            {
-                Chapter newChapter = new (manga, addMangaChapter.ChapterNumber, addMangaChapter.VolumeNumber, addMangaChapter.Title);
-                newChapter.MangaConnectorIds = addMangaChapter.MangaConnectorIds
-                    .Select(existing =>
-                        new MangaConnectorId<Chapter>(newChapter, existing.MangaConnectorName, existing.IdOnConnectorSite, existing.WebsiteUrl, existing.UseForDownload))
-                    .ToList();
-                manga.Chapters.Add(newChapter);
-            }
-            manga.MangaTags = manga.MangaTags.UnionBy(addManga.MangaTags, tag => tag.Tag).ToList();
-            manga.Authors = manga.Authors.UnionBy(addManga.Authors, author => author.Key).ToList();
-            manga.Links = manga.Links.UnionBy(addManga.Links, link => link.Key).ToList();
-            manga.AltTitles = manga.AltTitles.UnionBy(addManga.AltTitles, altTitle => altTitle.Key).ToList();
+
+            MangaConnectorId<Manga> newId = new(manga, addMcId.MangaConnectorName, addMcId.IdOnConnectorSite, addMcId.WebsiteUrl, addMcId.UseForDownload);
+            manga.MangaConnectorIds.Add(newId);
             
-            result = (manga, manga.MangaConnectorIds.First(id => id.MangaConnectorName == addMcId.MangaConnectorName));
+            result = (manga, newId);
         }
         else
         {
