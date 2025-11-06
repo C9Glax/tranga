@@ -71,12 +71,12 @@ public class SearchController(MangaContext context) : ControllerBase
         if(connector.GetMangaFromUrl(url) is not ({ } m, not null) manga)
             return TypedResults.NotFound("Could not retrieve Manga");
         
-        if(await context.AddMangaToContext(manga, HttpContext.RequestAborted) is null)
+        if(await context.AddMangaToContext(manga, HttpContext.RequestAborted) is not { } added)
             return TypedResults.InternalServerError("Could not add Manga to context");  
         
-        IEnumerable<DTOs.MangaConnectorId<DTOs.Manga>> ids = m.MangaConnectorIds.Select(id =>
+        IEnumerable<DTOs.MangaConnectorId<DTOs.Manga>> ids = added.manga.MangaConnectorIds.Select(id =>
             new DTOs.MangaConnectorId<DTOs.Manga>(id.Key, id.MangaConnectorName, id.ObjId, id.WebsiteUrl, id.UseForDownload));
-        MinimalManga result = new (m.Key, m.Name, m.Description, m.ReleaseStatus, ids);
+        MinimalManga result = new (added.manga.Key, added.manga.Name, added.manga.Description, added.manga.ReleaseStatus, ids);
 
         return TypedResults.Ok(result);
     }

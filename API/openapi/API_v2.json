@@ -10,7 +10,7 @@
         "tags": [
           "Actions"
         ],
-        "summary": "Returns the available Action Types (API.Schema.ActionsContext.Actions.ActionsEnum)",
+        "summary": "Returns the available Action Types (API.Schema.ActionsContext.Actions.Actions)",
         "responses": {
           "200": {
             "description": "List of action-types",
@@ -19,7 +19,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ActionsEnum"
+                    "$ref": "#/components/schemas/Actions"
                   }
                 }
               }
@@ -3496,7 +3496,7 @@
         "type": "object",
         "properties": {
           "action": {
-            "$ref": "#/components/schemas/ActionsEnum"
+            "$ref": "#/components/schemas/Actions"
           },
           "performedAt": {
             "type": "string",
@@ -3576,7 +3576,7 @@
         },
         "additionalProperties": false
       },
-      "ActionsEnum": {
+      "Actions": {
         "enum": [
           "Startup",
           "ChapterDownloaded",
@@ -3610,7 +3610,7 @@
             "nullable": true
           },
           "action": {
-            "$ref": "#/components/schemas/ActionsEnum"
+            "$ref": "#/components/schemas/Actions"
           }
         },
         "additionalProperties": false
@@ -4517,11 +4517,6 @@
       "TrangaSettings": {
         "type": "object",
         "properties": {
-          "defaultDownloadLocation": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
           "userAgent": {
             "type": "string",
             "nullable": true
