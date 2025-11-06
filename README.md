@@ -52,7 +52,7 @@ _**how**?_
 
 Tranga (this repository) is a REST-API and worker in one. Tranga provides REST-Endpoints to configure workers (Jobs).
 Requests include searches for Manga, creating and starting Jobs such as downloading available chapters.
-For available endpoints check `http(s)://<hostedInstance>/swagger`
+For available endpoints check `http(s)://<hostedInstance>/swagger` or `API/openapi/API_v2.json`
 
 **This repository** _**does not**_ include a frontend. A frontend can take many forms, such as a website:
 
@@ -130,24 +130,21 @@ downloaded (where Komga/Kavita can access them for example).
 The file also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the
 [Tranga-Website Repository](https://github.com/C9Glax/tranga-website) README.
 
-| Environment Variable              | default          | Description                                                                                                       |
-|-----------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------|
-| POSTGRES_HOST                     | `tranga-pg:5432` | host-address of postgres database                                                                                 |
-| POSTGRES_DB                       | `postgres`       | name of database                                                                                                  |
-| POSTGRES_USER                     | `postgres`       | username used for database authentication                                                                         |
-| POSTGRES_PASSWORD                 | `postgres`       | password used for database authentication                                                                         |
-| DOWNLOAD_LOCATION                 | `/Manga`         | Target-Directory for Downloads (Container path!)                                                                  |
-| FLARESOLVERR_URL                  | <empty>          | URL of Flaresolverr-Instance                                                                                      |
-| POSTGRES_COMMAND_TIMEOUT          | `60`             | [Timeout of Postgres-commands](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout)  |
-| POSTGRES_CONNECTION_TIMEOUT       | `30`             | Timeout for postgres-databaes connection
-| CHECK_CHAPTERS_BEFORE_START       | `true`           | Whether to update database downloaded chapters column
-| CREATE_COMICINFO_XML              | `true`           | Whether to include ComicInfo.xml in .cbz-Archives
-| ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`          | Override to always include a volume in filenames (default as `Vol. 0`)
-| HTTP_REQUEST_TIMEOUT              | `10`             | Request timeout for Mangaconnectors
-| REQUESTS_PER_MINUTE               | `90`             | Maximum requests per minute for Mangaconnectors
-
-For compatibility do not execute the compose as root (which you should not do anyways...) but as user that can
-access the folder. Permission conflicts with Komga and Kavita should thus be limited.
+| Environment Variable              | default          | Description                                                                                                      |
+|-----------------------------------|------------------|------------------------------------------------------------------------------------------------------------------|
+| POSTGRES_HOST                     | `tranga-pg:5432` | host-address of postgres database                                                                                |
+| POSTGRES_DB                       | `postgres`       | name of database                                                                                                 |
+| POSTGRES_USER                     | `postgres`       | username used for database authentication                                                                        |
+| POSTGRES_PASSWORD                 | `postgres`       | password used for database authentication                                                                        |
+| DOWNLOAD_LOCATION                 | `/Manga`         | Target-Directory for Downloads (Container path!)                                                                 |
+| FLARESOLVERR_URL                  | <empty>          | URL of Flaresolverr-Instance                                                                                     |
+| POSTGRES_COMMAND_TIMEOUT          | `60`             | [Timeout of Postgres-commands](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout) |
+| POSTGRES_CONNECTION_TIMEOUT       | `30`             | Timeout for postgres-databaes connection                                                                         |
+| CHECK_CHAPTERS_BEFORE_START       | `true`           | Whether to update database downloaded chapters column                                                            |
+| CREATE_COMICINFO_XML              | `true`           | Whether to include ComicInfo.xml in .cbz-Archives                                                                |
+| ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`          | Override to always include a volume in filenames (default as `Vol. 0`)                                           |
+| HTTP_REQUEST_TIMEOUT              | `10`             | Request timeout for Mangaconnectors                                                                              |
+| REQUESTS_PER_MINUTE               | `90`             | Maximum requests per minute for Mangaconnectors                                                                  |
 
 ### Bare-Metal
 

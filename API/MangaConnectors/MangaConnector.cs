@@ -50,7 +50,7 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
         
         HttpResponseMessage coverResult = downloadClient.MakeRequest(mangaId.Obj.CoverUrl, RequestType.MangaCover, $"https://{match.Groups[1].Value}").Result;
         if ((int)coverResult.StatusCode < 200 || (int)coverResult.StatusCode >= 300)
-            return SaveCoverImageToCache(mangaId, --retries);
+            return SaveCoverImageToCache(mangaId, retries - 1);
             
         try
         {

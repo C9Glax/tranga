@@ -10,10 +10,10 @@ namespace API.MangaConnectors;
 
 public class MangaPark : MangaConnector
 {
-    public MangaPark() : base("MangaPark", 
+    public MangaPark() : base(nameof(MangaPark), 
         ["en"],
         ["mangapark.com", "mangapark.net", "mangapark.org", "mangapark.me", "mangapark.io", "mangapark.to", "comicpark.org", "comicpark.to", "readpark.org", "readpark.net", "parkmanga.com", "parkmanga.net", "parkmanga.org", "mpark.to"], 
-        "/blahaj.png")
+        "/favicon.png")
     {
         this.downloadClient = new HttpDownloadClient();
     }
@@ -28,7 +28,7 @@ public class MangaPark : MangaConnector
 
     private (Manga, MangaConnectorId<Manga>)[]? SearchMangaWithDomain(string mangaSearchName, string domain)
     {
-        Log.Debug($"Using domain {domain}");
+        Log.DebugFormat("Using domain {0}", domain);
         Uri baseUri = new($"https://{domain}/");
         
         List<(Manga, MangaConnectorId<Manga>)> ret = [];
@@ -66,7 +66,7 @@ public class MangaPark : MangaConnector
 
     private (Manga, MangaConnectorId<Manga>)? GetMangaFromIdWithDomain(string mangaIdOnSite, string domain)
     {
-        Log.Debug($"Using domain {domain}");
+        Log.DebugFormat("Using domain {0}", domain);
         Uri baseUri = new ($"https://{domain}/");
         return GetMangaFromUrl(new Uri(baseUri, $"title/{mangaIdOnSite}").ToString());
     }
@@ -86,8 +86,7 @@ public class MangaPark : MangaConnector
                 Log.Debug("Name not found.");
                 return null;
             }
-            else
-                name = HttpUtility.HtmlDecode(name);
+            name = HttpUtility.HtmlDecode(name);
             string description = HttpUtility.HtmlDecode(document.GetNodeWith("0a_9")?.InnerText ?? string.Empty);
 
             if (document.GetNodeWith("q1_1")?.GetAttributeValue("src", string.Empty) is not { Length: >0 } coverRelative)
@@ -159,7 +158,7 @@ public class MangaPark : MangaConnector
 
     private (Chapter, MangaConnectorId<Chapter>)[]? GetChaptersFromDomain(MangaConnectorId<Manga> mangaId, string domain)
     {
-        Log.Debug($"Using domain {domain}");
+        Log.DebugFormat("Using domain {0}", domain);
         Uri baseUri = new ($"https://{domain}/");
         Uri requestUri = new (baseUri, $"title/{mangaId.IdOnConnectorSite}");
 
@@ -200,10 +199,10 @@ public class MangaPark : MangaConnector
 
         if (!linkMatch.Success || !linkMatch.Groups[2].Success)
         {
-            Log.Debug($"Not in standard Volume/Chapter format: {linkNodeText}");
+            Log.DebugFormat("Not in standard Volume/Chapter format: {0}", linkNodeText);
             if (Match(linkNodeText, @"[^\d]*((?:\d+\.)*\d+)[^\d]*") is not { Success: true } match)
             {
-                Log.Debug($"Unable to parse chapter-number: {linkNodeText}");
+                Log.DebugFormat("Unable to parse chapter-number: {0}", linkNodeText);
                 return null;
             }
             chapterNumber = match.Groups[1].Value;
@@ -226,7 +225,7 @@ public class MangaPark : MangaConnector
         string id = string.Join('/', mangaMatch.Value, chapterMatch.Value);
             
         Chapter chapter = new (manga, chapterNumber, volumeNumber, title);    
-        MangaConnectorId<Chapter> chId = new(chapter, this, string.Join('/', matchedUrl.Groups[3].Value, matchedUrl.Groups[4].Value), string.Join('/', matchedUrl.Groups[2].Value, "title", matchedUrl.Groups[3].Value, matchedUrl.Groups[4].Value));
+        MangaConnectorId<Chapter> chId = new(chapter, this, id, string.Join('/', matchedUrl.Groups[2].Value, nameof(title), matchedUrl.Groups[3].Value, matchedUrl.Groups[4].Value));
         chapter.MangaConnectorIds.Add(chId);
         
         return (chapter, chId);
@@ -242,7 +241,7 @@ public class MangaPark : MangaConnector
 
     private string[]? GetChapterImageUrlsFromDomain(MangaConnectorId<Chapter> chapterId, string domain)
     {
-        Log.Debug($"Using domain {domain}");
+        Log.DebugFormat("Using domain {0}", domain);
         Uri baseUri = new ($"https://{domain}/");
         Uri requestUri = new (baseUri, $"title/{chapterId.IdOnConnectorSite}");
         if (downloadClient.MakeRequest(requestUri.ToString(), RequestType.Default).Result is

@@ -25,12 +25,12 @@ public class Global : MangaConnector
         do
         {
             Thread.Sleep(500);
-            Log.Debug($"Waiting for search to finish: {tasks.Count(t => !t.IsCompleted)}");
+            Log.DebugFormat("Waiting for search to finish: {0}", tasks.Count(t => !t.IsCompleted));
         }while(tasks.Any(t => !t.IsCompleted));
         
         //Concatenate all results into one
         (Manga, MangaConnectorId<Manga>)[] ret = tasks.Select(t => t.IsCompletedSuccessfully ? t.Result : []).SelectMany(i => i).ToArray();
-        Log.Debug($"Got {ret.Length} results.");
+        Log.DebugFormat("Got {0} results.", ret.Length);
         return ret;
     }
 
@@ -45,12 +45,12 @@ public class Global : MangaConnector
         return null;
     }
 
-    public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga,
+    public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> mangaId,
         string? language = null)
     {
-        if (!Tranga.TryGetMangaConnector(manga.MangaConnectorName, out MangaConnector? mangaConnector))
+        if (!Tranga.TryGetMangaConnector(mangaId.MangaConnectorName, out MangaConnector? mangaConnector))
             return [];
-        return mangaConnector.GetChapters(manga, language);
+        return mangaConnector.GetChapters(mangaId, language);
     }
 
     internal override string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId)
