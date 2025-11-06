@@ -36,15 +36,15 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
         List<NotificationConnector> connectors = await NotificationsContext.NotificationConnectors.ToListAsync(CancellationToken);
         
         Log.DebugFormat("Sending {0} notifications to {1} connectors...", unsentNotifications.Count, connectors.Count);
-        
-        unsentNotifications.ForEach(notification =>
+
+        foreach (var groupedNotification in unsentNotifications.GroupBy(n => n.Title, n => n).Select(g => new { Title = g.Key, Notifications = g.ToList() }))
         {
             connectors.ForEach(connector =>
             {
-                connector.SendNotification(notification.Title, notification.Message);
-                NotificationsContext.Entry(notification).Property(n => n.IsSent).CurrentValue = true;
+                connector.SendNotification(groupedNotification.Title, string.Join('\n', groupedNotification.Notifications.Select(n => n.Message)));
             });
-        });
+            groupedNotification.Notifications.ForEach(n => n.IsSent = true);
+        }
         
         Log.Debug("Notifications sent.");
         
