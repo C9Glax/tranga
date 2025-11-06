@@ -11,7 +11,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{version:apiVersion}/[controller]")]
-public class WorkerController : Controller
+public class WorkerController : ControllerBase
 {
     /// <summary>
     /// Returns all <see cref="BaseWorker"/>

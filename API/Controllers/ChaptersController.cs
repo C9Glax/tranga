@@ -17,7 +17,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class ChaptersController(MangaContext context) : Controller
+public class ChaptersController(MangaContext context) : ControllerBase
 {
     /// <summary>
     /// Returns all <see cref="Schema.MangaContext.Chapter"/> of <see cref="Schema.MangaContext.Manga"/> with <paramref name="MangaId"/>
@@ -244,8 +244,8 @@ public class ChaptersController(MangaContext context) : Controller
         if(!Tranga.TryGetMangaConnector(MangaConnectorName, out API.MangaConnectors.MangaConnector? _))
             return TypedResults.NotFound(nameof(MangaConnectorName));
 
-        if (context.MangaConnectorToChapter
-                .FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == ChapterId)
+        if (await context.MangaConnectorToChapter
+                .FirstOrDefaultAsync(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == ChapterId, HttpContext.RequestAborted)
             is not { } chId)
         {
             return TypedResults.StatusCode(Status428PreconditionRequired);

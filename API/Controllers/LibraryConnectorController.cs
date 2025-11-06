@@ -16,7 +16,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class LibraryConnectorController(LibraryContext context) : Controller
+public class LibraryConnectorController(LibraryContext context) : ControllerBase
 {
     /// <summary>
     /// Gets all configured <see cref="DTOs.LibraryConnector"/>

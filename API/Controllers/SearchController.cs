@@ -13,7 +13,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SearchController(MangaContext context) : Controller
+public class SearchController(MangaContext context) : ControllerBase
 {
     /// <summary>
     /// Initiate a search for a <see cref="Schema.MangaContext.Manga"/> on <see cref="MangaConnector"/> with searchTerm
@@ -31,7 +31,7 @@ public class SearchController(MangaContext context) : Controller
     {
         if(Tranga.MangaConnectors.FirstOrDefault(c => c.Name.Equals(MangaConnectorName, StringComparison.InvariantCultureIgnoreCase)) is not { } connector)
             return TypedResults.NotFound(nameof(MangaConnectorName));
-        if (connector.Enabled is false)
+        if (!connector.Enabled)
             return TypedResults.StatusCode(Status412PreconditionFailed);
         
         (Manga manga, Schema.MangaContext.MangaConnectorId<Manga> id)[] mangas = connector.SearchManga(Query);
@@ -71,7 +71,7 @@ public class SearchController(MangaContext context) : Controller
         if(connector.GetMangaFromUrl(url) is not ({ } m, not null) manga)
             return TypedResults.NotFound("Could not retrieve Manga");
         
-        if(await context.AddMangaToContext(manga, HttpContext.RequestAborted) is not { } addedManga)
+        if(await context.AddMangaToContext(manga, HttpContext.RequestAborted) is null)
             return TypedResults.InternalServerError("Could not add Manga to context");  
         
         IEnumerable<DTOs.MangaConnectorId<DTOs.Manga>> ids = m.MangaConnectorIds.Select(id =>

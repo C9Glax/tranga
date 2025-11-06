@@ -16,7 +16,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/")]
-public class QueryController(MangaContext context) : Controller
+public class QueryController(MangaContext context) : ControllerBase
 {
     /// <summary>
     /// Returns the <see cref="Author"/> with <paramref name="AuthorId"/>

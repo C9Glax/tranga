@@ -15,7 +15,7 @@ namespace API.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("v{v:apiVersion}/[controller]")]
-public class NotificationConnectorController(NotificationsContext context) : Controller
+public class NotificationConnectorController(NotificationsContext context) : ControllerBase
 {
     /// <summary>
     /// Gets all configured <see cref="NotificationConnector"/>

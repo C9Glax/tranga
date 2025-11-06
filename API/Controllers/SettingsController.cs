@@ -11,7 +11,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class SettingsController() : Controller
+public class SettingsController() : ControllerBase
 {
     /// <summary>
     /// Get all <see cref="Tranga.Settings"/>

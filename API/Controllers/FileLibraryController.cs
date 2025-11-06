@@ -14,7 +14,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class FileLibraryController(MangaContext context) : Controller
+public class FileLibraryController(MangaContext context) : ControllerBase
 {
     /// <summary>
     /// Returns all <see cref="DTOs.FileLibrary"/>

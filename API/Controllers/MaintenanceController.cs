@@ -12,7 +12,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MaintenanceController(MangaContext mangaContext, ActionsContext actionContext) : Controller
+public class MaintenanceController(MangaContext mangaContext, ActionsContext actionContext) : ControllerBase
 {
     
     /// <summary>

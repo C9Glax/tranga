@@ -24,7 +24,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaController(MangaContext context, ActionsContext actionsContext) : Controller
+public class MangaController(MangaContext context, ActionsContext actionsContext) : ControllerBase
 {
     
     /// <summary>
@@ -255,8 +255,8 @@ public class MangaController(MangaContext context, ActionsContext actionsContext
         if(!Tranga.TryGetMangaConnector(MangaConnectorName, out API.MangaConnectors.MangaConnector? _))
             return TypedResults.NotFound(nameof(MangaConnectorName));
 
-        if (context.MangaConnectorToManga
-                .FirstOrDefault(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == MangaId)
+        if (await context.MangaConnectorToManga
+                .FirstOrDefaultAsync(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == MangaId, HttpContext.RequestAborted)
             is not { } mcId)
         {
             if(IsRequested)

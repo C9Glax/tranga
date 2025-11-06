@@ -14,7 +14,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class ActionsController(ActionsContext context) : Controller
+public class ActionsController(ActionsContext context) : ControllerBase
 {
     /// <summary>
     /// Returns the available Action Types (<see cref="ActionsEnum"/>)
