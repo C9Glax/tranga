@@ -24,5 +24,5 @@ public struct Constants
     public static readonly int RequestsPerMinute =  int.Parse(Environment.GetEnvironmentVariable("REQUESTS_PER_MINUTE") ?? "90");
     
     public static readonly TimeSpan NotificationSendInterval = TimeSpan.FromMinutes(int.Parse(Environment.GetEnvironmentVariable("MINUTES_BETWEEN_NOTIFICATIONS") ?? "1"));
-    public static readonly TimeSpan CheckForNewChaptersInterval = TimeSpan.FromMinutes(int.Parse(Environment.GetEnvironmentVariable("HOURS_BETWEEN_NEW_CHAPTERS_CHECK") ?? "3"));
+    public static readonly TimeSpan CheckForNewChaptersInterval = TimeSpan.FromHours(int.Parse(Environment.GetEnvironmentVariable("HOURS_BETWEEN_NEW_CHAPTERS_CHECK") ?? "3"));
 }
