@@ -5,38 +5,34 @@ using Newtonsoft.Json.Linq;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
-public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.Kavita, baseUrl, GetToken(baseUrl, auth))
+public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.Kavita, baseUrl, auth)
 {
     private readonly HttpClient _netClient = new HttpClient()
     {
         BaseAddress = new Uri(baseUrl),
         DefaultRequestHeaders =
         {
-            Authorization = new AuthenticationHeaderValue("Bearer", auth),
             Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
         }
     };
     
-    
-    private static string GetToken(string baseUrl, string apiKey)
+    /// <summary>
+    /// Get a new JWT Token
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ParsingException"></exception>
+    private async Task<string> GetToken()
     {
-        HttpClient netClient = new HttpClient()
-        {
-            BaseAddress = new Uri(baseUrl),
-            DefaultRequestHeaders =
-            {
-                Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
-            }
-        };
-        JObject requestData = new () { { "apiKey", apiKey } };
+        string apiKey = $"apiKey={Auth}";
+        string pluginName = "pluginName=Tranga";
+        string path = $"/api/Plugin/authenticate?{apiKey}&{pluginName}";
 
-        if (netClient.PostAsJsonAsync("/api/Account/login", requestData).Result is not
-            { IsSuccessStatusCode: true } responseMessage)
+        if (await _netClient.PostAsync(path, null) is not { IsSuccessStatusCode: true } responseMessage)
         {
             throw new ParsingException("Could not connect to the Library instance");
         }
         
-        if(responseMessage.Content.ReadFromJsonAsync<JObject>().Result is not { } data)
+        if(JObject.Parse(await responseMessage.Content.ReadAsStringAsync()) is not { } data)
         {
             throw new ParsingException("Could not parse the response");
         }
@@ -44,11 +40,21 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
         return data.TryGetValue("token", out JToken? token) ? token.Value<string>()! : throw new ParsingException("Could not parse the response");
     }
 
+    /// <summary>
+    /// Refreshes the JWT Token
+    /// </summary>
+    private async Task RefreshAuth()
+    {
+        string token = await GetToken();
+        _netClient.DefaultRequestHeaders.Add("Authorization", new AuthenticationHeaderValue("Bearer", token).ToString());
+    }
+
     public override async Task UpdateLibrary(CancellationToken ct)
     {
         List<int> ids = await GetLibraries(ct);
         JObject requestData = new () { { "ids", JsonConvert.SerializeObject(ids) } };
 
+        await RefreshAuth();
         await _netClient.PostAsJsonAsync("/api/Library/scan-multiple", requestData, ct);
     }
 
@@ -58,6 +64,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     /// <returns>Array of KavitaLibrary</returns>
     private async Task<List<int>> GetLibraries(CancellationToken ct)
     {
+        await RefreshAuth();
         if(await _netClient.GetStringAsync("/api/Library/libraries", ct) is not { } responseData)
         {
             Log.Error("Unable to fetch libraries");
@@ -70,6 +77,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
 
     internal override async Task<bool> Test(CancellationToken ct)
     {
+        await RefreshAuth();
         if(await _netClient.GetAsync("/api/Account", ct) is not { IsSuccessStatusCode: true })
         {
             Log.Error("Unable to fetch account");
