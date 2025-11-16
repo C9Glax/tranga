@@ -46,7 +46,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     private async Task RefreshAuth()
     {
         string token = await GetToken();
-        _netClient.DefaultRequestHeaders.Add("Authorization", new AuthenticationHeaderValue("Bearer", token).ToString());
+        _netClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
     public override async Task UpdateLibrary(CancellationToken ct)
