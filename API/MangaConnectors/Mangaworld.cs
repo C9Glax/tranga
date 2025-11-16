@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Text;
 using System.Globalization;
 using System.Web;
 using API.MangaDownloadClients;
@@ -26,8 +27,23 @@ public sealed class Mangaworld : MangaConnector
 
     public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
-        Uri baseUri = new ("https://www.mangaworld.cx/");
-        Uri searchUrl = new Uri(baseUri, "archive?keyword=" + HttpUtility.UrlEncode(mangaSearchName));
+        // 1) Tentativo con la stringa così com'è
+        (Manga, MangaConnectorId<Manga>)[] first = SearchOnce(mangaSearchName);
+        if (first.Length > 0)
+            return first;
+
+        // 2) Fallback: rimuovi diacritici / caratteri strani
+        string fallback = RemoveDiacritics(mangaSearchName);
+        if (!string.Equals(fallback, mangaSearchName, StringComparison.Ordinal))
+            return SearchOnce(fallback);
+
+        return first;
+    }
+
+    private (Manga, MangaConnectorId<Manga>)[] SearchOnce(string query)
+    {
+        Uri baseUri = new("https://www.mangaworld.cx/");
+        Uri searchUrl = new(baseUri, "archive?keyword=" + HttpUtility.UrlEncode(query));
 
         using HttpResponseMessage res =
             downloadClient.MakeRequest(searchUrl.ToString(), RequestType.Default).Result;
@@ -35,18 +51,18 @@ public sealed class Mangaworld : MangaConnector
         if ((int)res.StatusCode < 200 || (int)res.StatusCode >= 300)
             return [];
 
-        using StreamReader sr = new StreamReader(res.Content.ReadAsStream());
+        using StreamReader sr = new(res.Content.ReadAsStream());
         string html = sr.ReadToEnd();
 
-        HtmlDocument doc = new HtmlDocument();
+        HtmlDocument doc = new();
         doc.LoadHtml(html);
 
         HtmlNodeCollection? anchors = doc.DocumentNode.SelectNodes("//a[@href and contains(@href,'/manga/')]");
         if (anchors is null || anchors.Count < 1)
             return [];
 
-        List<(Manga, MangaConnectorId<Manga>)> list = new List<(Manga, MangaConnectorId<Manga>)>();
-        HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        List<(Manga, MangaConnectorId<Manga>)> list = new();
+        HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (HtmlNode a in anchors)
         {
@@ -63,7 +79,7 @@ public sealed class Mangaworld : MangaConnector
             if (manga is null)
                 continue;
 
-            list.Add(((Manga, MangaConnectorId<Manga>))manga);
+            list.Add(manga.Value);
         }
 
         return list.ToArray();
@@ -127,13 +143,24 @@ public sealed class Mangaworld : MangaConnector
         if (!string.IsNullOrWhiteSpace(detailRawStatus))
             status = MapItalianStatus(detailRawStatus);
 
+        // Generi (badge/link dopo l'etichetta "Generi:")
+        List<MangaTag> tags =
+            doc.DocumentNode
+               .SelectNodes("//span[normalize-space(text())='Generi:']/following-sibling::a")
+               ?.Select(a => HtmlEntity.DeEntitize(a.InnerText).Trim())
+               .Where(s => !string.IsNullOrWhiteSpace(s))
+               .Distinct(StringComparer.OrdinalIgnoreCase)
+               .Select(s => new MangaTag(s))
+               .ToList()
+            ?? [];
+
         Manga m = new Manga(
             HtmlEntity.DeEntitize(title).Trim(),
             description,
             cover,
             status,
             [],
-            [],
+            tags,
             [],
             [],
             originalLanguage: "it");
@@ -176,8 +203,8 @@ public sealed class Mangaworld : MangaConnector
 
         string html = res.Content.ReadAsStringAsync().Result;
 
-        Uri baseUri = new (url);
-        HtmlDocument doc = new ();
+        Uri baseUri = new(url);
+        HtmlDocument doc = new();
         doc.LoadHtml(html);
 
         HtmlNodeCollection imageNodes = doc.DocumentNode.SelectNodes("//img[@data-src or @src or @srcset]") ?? new HtmlNodeCollection(null);
@@ -214,8 +241,8 @@ public sealed class Mangaworld : MangaConnector
 
     private List<(Chapter, MangaConnectorId<Chapter>)> ParseChaptersFromHtml(Manga manga, HtmlDocument document, Uri baseUri)
     {
-        List<(Chapter, MangaConnectorId<Chapter>)> ret = new ();
-        HashSet<string> seen = new (StringComparer.OrdinalIgnoreCase);
+        List<(Chapter, MangaConnectorId<Chapter>)> ret = new();
+        HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
 
         HtmlNodeCollection? volumeElements = document.DocumentNode.SelectNodes("//div[contains(@class,'volume-element')]");
         if (volumeElements is { Count: > 0 })
@@ -236,9 +263,9 @@ public sealed class Mangaworld : MangaConnector
 
         if (ret.Count != 0)
             return ret;
-        if(document.DocumentNode.SelectNodes("//div[contains(@class,'chapters-wrapper')]//a[contains(@class,'chap')]") is not { Count: > 0 } flatNodes)
+        if (document.DocumentNode.SelectNodes("//div[contains(@class,'chapters-wrapper')]//a[contains(@class,'chap')]") is not { Count: > 0 } flatNodes)
             return ret;
-        
+
         foreach (HtmlNode a in flatNodes)
             TryAddChapterNode(manga, a, baseUri, 0, ret, seen);
 
@@ -336,6 +363,23 @@ public sealed class Mangaworld : MangaConnector
         return node?.InnerText?.Trim();
     }
 
+    private static string RemoveDiacritics(string s)
+    {
+        if (string.IsNullOrEmpty(s))
+            return s;
+
+        string norm = s.Normalize(NormalizationForm.FormD);
+        Span<char> buffer = stackalloc char[norm.Length];
+        int i = 0;
+        foreach (char c in norm)
+        {
+            UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (uc != UnicodeCategory.NonSpacingMark)
+                buffer[i++] = c;
+        }
+        return new string(buffer[..i]).Normalize(NormalizationForm.FormC);
+    }
+
     private string FetchHtmlWithFallback(string seriesUrl, out Uri baseUri)
     {
         baseUri = new Uri(seriesUrl);
@@ -352,3 +396,4 @@ public sealed class Mangaworld : MangaConnector
         return sr.ReadToEnd();
     }
 }
+
