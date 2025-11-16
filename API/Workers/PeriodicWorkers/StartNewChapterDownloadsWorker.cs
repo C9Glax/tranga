@@ -30,13 +30,18 @@ public class StartNewChapterDownloadsWorker(TimeSpan? interval = null, IEnumerab
         // Get missing chapters
         List<MangaConnectorId<Chapter>> missingChapters = await GetMissingChapters(MangaContext, CancellationToken);
         
-        Log.DebugFormat("Found {0} missing downloads.", missingChapters.Count);
+        Log.DebugFormat("Found {0} missing chapters.", missingChapters.Count);
+        List<string> chaptersDownloading = Tranga.GetRunningWorkers()
+            .Where(w => w is DownloadChapterFromMangaconnectorWorker)
+            .Select(w => ((DownloadChapterFromMangaconnectorWorker)w).ChapterIdId).ToList();
+        missingChapters.RemoveAll(ch => chaptersDownloading.Contains(ch.Key));
+        Log.DebugFormat("{0} chapter not being downloaded", missingChapters.Count);
         
         // Maximum Concurrent workers
         int downloadWorkers = Tranga.GetRunningWorkers().Count(w => w.GetType() == typeof(DownloadChapterFromMangaconnectorWorker));
         int amountNewWorkers = Math.Min(Tranga.Settings.MaxConcurrentDownloads, Tranga.Settings.MaxConcurrentDownloads - downloadWorkers);
         
-        Log.DebugFormat("{0} running download Workers. {1} new download Workers.", downloadWorkers, amountNewWorkers);
+        Log.DebugFormat("{0} running download Workers. {1} available new download Workers.", downloadWorkers, amountNewWorkers);
         IEnumerable<MangaConnectorId<Chapter>> newDownloadChapters = missingChapters.OrderBy(ch => ch.Obj, new Chapter.ChapterComparer()).Take(amountNewWorkers);
 
         // Create new jobs
