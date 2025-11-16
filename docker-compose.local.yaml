@@ -17,7 +17,7 @@ services:
       - POSTGRES_HOST=tranga-pg
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
-      - CHECK_CHAPTERS_BEFORE_START=false
+      - MATCH_EXACT_CHAPTER_NAME=false
     restart: unless-stopped
     logging:
       driver: json-file

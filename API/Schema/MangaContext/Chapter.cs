@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
+using Soenneker.Utils.String.NeedlemanWunsch;
 
 namespace API.Schema.MangaContext;
 
@@ -72,7 +73,8 @@ public class Chapter : Identifiable, IComparable<Chapter>
         };
     }
 
-    
+
+    private readonly Regex _chRex = new Regex(@"C(?:(?:h?\.?)|(?:hapter\.?))?.?([0-9]+)");
     /// <summary>
     /// Checks the filesystem if an archive at the ArchiveFilePath exists
     /// </summary>
@@ -88,16 +90,49 @@ public class Chapter : Identifiable, IComparable<Chapter>
                .FirstOrDefaultAsync(c => c.Key == this.Key, token??CancellationToken.None) is not { } chapter)
             throw new KeyNotFoundException("Unable to find chapter");
 
-        if (chapter.ParentManga.Library is null)
+        if (chapter.ParentManga.Library is null || (chapter.FileName is null && Constants.DownloadedChaptersCheckMatchExactName))
+        {
+            this.Downloaded = false;
+            this.FileName = null;
             return false;
-        if (chapter.FileName is null)
-            return false;
+        }
         
-        this.Downloaded = File.Exists(chapter.FullArchiveFilePath);
+        if (File.Exists(chapter.FullArchiveFilePath))
+        {
+            this.Downloaded = true;
+            this.FileName = new FileInfo(chapter.FullArchiveFilePath).Name;
+        }else if (Constants.DownloadedChaptersCheckMatchExactName)
+        {
+            this.Downloaded = false;
+            this.FileName = null;
+        }else
+        {
+            string directoryPath = chapter.ParentManga.FullDirectoryPath;
+            if (!Directory.Exists(directoryPath))
+            {
+                this.Downloaded = false;
+                return false;
+            }
+
+            string? existingFile = Directory.EnumerateFiles(directoryPath).Select(path => new FileInfo(path).Name).FirstOrDefault(file =>
+            {
+                double similarity = NeedlemanWunschStringUtil.CalculateSimilarityPercentage(file, this.FileName ?? GetArchiveFileName());
+                if (similarity > 90)
+                    return true;
+
+                Match chMatch = _chRex.Match(file);
+                if (!chMatch.Groups[1].Success)
+                    return false;
+                return chMatch.Groups[1].Value == this.ChapterNumber;
+            });
+            this.Downloaded = existingFile is not null;
+            this.FileName = existingFile is not null ? new FileInfo(existingFile).Name : null;
+        }
+        
         await context.Sync(token??CancellationToken.None, GetType(), $"CheckDownloaded {this} {this.Downloaded}");
         return this.Downloaded;
     } 
-
+    
     /// Placeholders:
     /// %M Obj Name
     /// %V Volume
@@ -109,7 +144,11 @@ public class Chapter : Identifiable, IComparable<Chapter>
     /// %Y Year (Obj)
     private static readonly Regex NullableRex = new(@"\?([a-zA-Z])\(([^\)]*)\)|(.+?)");
     private static readonly Regex ReplaceRexx = new(@"%([a-zA-Z])|(.+?)");
-    private string GetArchiveFilePath()
+    /// <summary>
+    /// Returns the formatted Filename of the Archive for this chapter. Formatting is done according to <see cref="TrangaSettings.ChapterNamingScheme"/>
+    /// </summary>
+    /// <returns>A filename</returns>
+    private string GetArchiveFileName()
     {
         string archiveNamingScheme = Tranga.Settings.ChapterNamingScheme;
         StringBuilder stringBuilder = new();
@@ -170,7 +209,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     {
         try
         {
-            return Path.Join(ParentManga.FullDirectoryPath, this.FileName is null ? GetArchiveFilePath() : FileName);
+            return Path.Join(ParentManga.FullDirectoryPath, this.FileName is null ? GetArchiveFileName() : FileName);
         }
         catch (Exception)
         {
