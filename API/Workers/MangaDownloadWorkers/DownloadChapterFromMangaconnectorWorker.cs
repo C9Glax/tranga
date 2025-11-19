@@ -26,7 +26,7 @@ namespace API.Workers.MangaDownloadWorkers;
 public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> chId, IEnumerable<BaseWorker>? dependsOn = null)
     : BaseWorkerWithContexts(dependsOn)
 {
-    private readonly string _mangaConnectorIdId = chId.Key;
+    public readonly string ChapterIdId = chId.Key;
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private MangaContext MangaContext = null!;
@@ -44,13 +44,13 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
-        Log.Debug($"Downloading chapter for MangaConnectorId {_mangaConnectorIdId}...");
+        Log.Debug($"Downloading chapter for MangaConnectorId {ChapterIdId}...");
         // Getting MangaConnector info
         if (await MangaContext.MangaConnectorToChapter
                 .Include(id => id.Obj)
                 .ThenInclude(c => c.ParentManga)
                 .ThenInclude(m => m.Library)
-                .FirstOrDefaultAsync(c => c.Key == _mangaConnectorIdId, CancellationToken) is not { } mangaConnectorId)
+                .FirstOrDefaultAsync(c => c.Key == ChapterIdId, CancellationToken) is not { } mangaConnectorId)
         {
             Log.Error("Could not get MangaConnectorId.");
             return [];
@@ -324,5 +324,5 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         Log.Debug($"Copied cover from {fullCoverPath} to {newFilePath}");
     }
 
-    public override string ToString() => $"{base.ToString()} {_mangaConnectorIdId}";
+    public override string ToString() => $"{base.ToString()} {ChapterIdId}";
 }
