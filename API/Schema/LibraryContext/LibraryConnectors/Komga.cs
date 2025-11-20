@@ -15,6 +15,7 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
     
     public override async Task UpdateLibrary(CancellationToken ct)
     {
+        Log.Debug("Updating Libraries...");
         List<string> libraryIds = await GetLibraryIds(ct);
         foreach (string libraryId in libraryIds)
         {
@@ -31,6 +32,7 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
     /// <returns>Array of KomgaLibraries</returns>
     private async Task<List<string>> GetLibraryIds(CancellationToken ct)
     {
+        Log.Debug("Getting Libraries...");
         if (await _httpClient.GetStringAsync("api/v1/libraries", ct) is not { } responseData)
         {
             Log.Error("Unable to fetch libraries");
@@ -43,6 +45,7 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
 
     internal override async Task<bool> Test(CancellationToken ct)
     {
+        Log.Debug("Testing...");
         if (await _httpClient.GetAsync("api/v2/users/me", ct) is { IsSuccessStatusCode: false } res)
         {
             Log.ErrorFormat("Unable to fetch account: {0} {1}", res.StatusCode, res.Content.ReadAsStringAsync(ct));
