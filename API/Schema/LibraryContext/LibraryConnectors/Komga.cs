@@ -4,7 +4,7 @@ namespace API.Schema.LibraryContext.LibraryConnectors;
 
 public sealed class Komga(string baseUrl, string auth) : LibraryConnector(LibraryType.Komga, baseUrl, auth)
 {
-    private readonly HttpClient _httpClient = new HttpClient()
+    private readonly HttpClient _httpClient = new ()
     {
         BaseAddress = new Uri(baseUrl),
         DefaultRequestHeaders =
@@ -18,7 +18,10 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
         List<string> libraryIds = await GetLibraryIds(ct);
         foreach (string libraryId in libraryIds)
         {
-            await _httpClient.PostAsync($"/api/v1/libraries/{libraryId}/scan", null, ct);
+            if (await _httpClient.PostAsync($"api/v1/libraries/{libraryId}/scan", null, ct) is { IsSuccessStatusCode: false } res)
+            {
+                Log.ErrorFormat("Unable to update library {0}: {1} {2}", libraryId, res.StatusCode, res.Content.ReadAsStringAsync(ct));
+            }
         }
     }
 
@@ -28,7 +31,7 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
     /// <returns>Array of KomgaLibraries</returns>
     private async Task<List<string>> GetLibraryIds(CancellationToken ct)
     {
-        if (await _httpClient.GetStringAsync("/api/v1/libraries", ct) is not { } responseData)
+        if (await _httpClient.GetStringAsync("api/v1/libraries", ct) is not { } responseData)
         {
             Log.Error("Unable to fetch libraries");
             return [];
@@ -40,9 +43,9 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
 
     internal override async Task<bool> Test(CancellationToken ct)
     {
-        if (await _httpClient.GetAsync("/api/v2/users/me", ct) is not { IsSuccessStatusCode: true })
+        if (await _httpClient.GetAsync("api/v2/users/me", ct) is { IsSuccessStatusCode: false } res)
         {
-            Log.Error("Unable to fetch account");
+            Log.ErrorFormat("Unable to fetch account: {0} {1}", res.StatusCode, res.Content.ReadAsStringAsync(ct));
             return false;
         }
 
