@@ -21,7 +21,7 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
         {
             if (await _httpClient.PostAsync($"api/v1/libraries/{libraryId}/scan", null, ct) is { IsSuccessStatusCode: false } res)
             {
-                Log.ErrorFormat("Unable to update library {0}: {1} {2}", libraryId, res.StatusCode, res.Content.ReadAsStringAsync(ct));
+                Log.ErrorFormat("Unable to update library {0}: {1} {3} {2}", libraryId, res.StatusCode, res.Content.ReadAsStringAsync(ct), res.RequestMessage?.RequestUri);
             }
         }
     }
@@ -48,7 +48,7 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
         Log.Debug("Testing...");
         if (await _httpClient.GetAsync("api/v2/users/me", ct) is { IsSuccessStatusCode: false } res)
         {
-            Log.ErrorFormat("Unable to fetch account: {0} {1}", res.StatusCode, res.Content.ReadAsStringAsync(ct));
+            Log.ErrorFormat("Unable to fetch account: {0} {2} {1}", res.StatusCode, await res.Content.ReadAsStringAsync(ct), res.RequestMessage?.RequestUri);
             return false;
         }
 
