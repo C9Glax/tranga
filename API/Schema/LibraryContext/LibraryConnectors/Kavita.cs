@@ -23,6 +23,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     /// <exception cref="ParsingException"></exception>
     private async Task<string> GetToken()
     {
+        Log.Debug("Getting Token...");
         string apiKey = $"apiKey={Auth}";
         string pluginName = "pluginName=Tranga";
         string path = $"/api/Plugin/authenticate?{apiKey}&{pluginName}";
@@ -45,12 +46,14 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     /// </summary>
     private async Task RefreshAuth()
     {
+        Log.Debug("Refreshing auth...");
         string token = await GetToken();
         _netClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
     public override async Task UpdateLibrary(CancellationToken ct)
     {
+        Log.Debug("Updating Libraries...");
         List<int> ids = await GetLibraries(ct);
         JObject requestData = new () { { "ids", JsonConvert.SerializeObject(ids) } };
 
@@ -64,6 +67,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     /// <returns>Array of KavitaLibrary</returns>
     private async Task<List<int>> GetLibraries(CancellationToken ct)
     {
+        Log.Debug("Getting Libraries...");
         await RefreshAuth();
         if(await _netClient.GetStringAsync("/api/Library/libraries", ct) is not { } responseData)
         {
@@ -77,6 +81,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
 
     internal override async Task<bool> Test(CancellationToken ct)
     {
+        Log.Debug("Testing...");
         await RefreshAuth();
         if(await _netClient.GetAsync("/api/Account", ct) is not { IsSuccessStatusCode: true })
         {
