@@ -15,7 +15,7 @@ public class AsuraComic : MangaConnector
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
     new protected static readonly ILog Log = LogManager.GetLogger(typeof(AsuraComic));
 
-    public AsuraComic() : base("AsuraComic", ["en"], ["asuracomic.net"], "https://asuracomic.net/favicon.ico")
+    public AsuraComic() : base("AsuraComic", ["en"], ["asuracomic.net"], "https://asuracomic.net/images/logo.webp")
     {
         this.downloadClient = new HttpDownloadClient(); // Use Http for all (no RequestResult)
     }
@@ -34,12 +34,10 @@ public class AsuraComic : MangaConnector
         }
 
         string html = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        Log.Debug($"Search HTML length: {html.Length}");
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         HtmlNodeCollection? nodes = doc.DocumentNode.SelectNodes("//a[starts-with(@href, 'series/')]"); // Match v1 XPath
-        Log.Debug($"Found {nodes?.Count ?? 0} series nodes in search HTML");
         if (nodes is null || nodes.Count < 1)
         {
             Log.Error("No series links found");
@@ -59,7 +57,6 @@ public class AsuraComic : MangaConnector
                 string fullUrl = $"https://asuracomic.net{href}";
                 if (seenUrls.Add(fullUrl))
                 {
-                    Log.Debug($"Fetching from {fullUrl}"); // Debug URL
                     var manga = GetMangaFromUrl(fullUrl);
                     if (manga.HasValue)
                     {
@@ -207,63 +204,68 @@ public class AsuraComic : MangaConnector
             return [];
 
         var seenHrefs = new HashSet<string>();
+        Regex chapterIdRegex = new(@"\/chapter\/([0-9]+(?:\.[0-9]+)?)");
         List<(Chapter, MangaConnectorId<Chapter>)> chapters = new();
+
+        var baseUri = new Uri(manga.WebsiteUrl);
         foreach (HtmlNode chapterNode in chapterNodes)
         {
-            string href = chapterNode.GetAttributeValue("href", "");
-            if (string.IsNullOrEmpty(href) || !seenHrefs.Add(href))
+            // Filter out premium chapters: Skip if anchor contains SVG (premium badge icon)
+            if (chapterNode.Descendants("svg").Any())
+            {
+                Log.Debug($"Skipping premium chapter (SVG icon detected): {chapterNode.InnerText.Trim()}");
                 continue;
-
-            Log.Debug($"Raw href: '{href}', baseSlug: '{baseSlug}'");  // Debug: Check logs for patterns
-
-            string fullUrl;
-            if (href.StartsWith("http"))
-            {
-                fullUrl = href;
             }
-            else if (href.StartsWith("/series/"))
+
+            string text = chapterNode.InnerText.Trim();
+            string href = chapterNode.GetAttributeValue("href", "");
+            if (string.IsNullOrEmpty(href)) continue;
+
+            // Build full URL correctly using Uri resolution (handles relative/absolute)
+            string url = new Uri(baseUri, href).ToString();
+            Log.Debug($"Generated chapter URL: {url} from href: {href}");  // Debug log (remove after test)
+
+            var chIdMatch = chapterIdRegex.Match(href);
+            if (!chIdMatch.Success) continue;
+
+            string chapterId = chIdMatch.Groups[1].Value;  // e.g., "216"
+            if (!text.StartsWith("Chapter ", StringComparison.OrdinalIgnoreCase)) continue;
+
+            string chapterNumber;
+            string? chapterTitle;
+
+            // Primary: Extract title from text after "Chapter {chapterId}"
+            var chapterStr = $"Chapter {chapterId}";
+            var index = text.IndexOf(chapterStr, StringComparison.OrdinalIgnoreCase);
+            if (index >= 0)
             {
-                fullUrl = $"https://asuracomic.net{href}";
+                var titleStart = index + chapterStr.Length;
+                string rawTitle = text.Substring(titleStart).TrimStart();
+                // Trim leading punctuation/space (e.g., " - 19th Floor" → "19th Floor")
+                rawTitle = rawTitle.TrimStart('-', ':', ' ', '\t');
+                chapterTitle = HtmlEntity.DeEntitize(rawTitle);  // Decode entities
+                chapterNumber = chapterId;
             }
             else
             {
-                // Fix: Normalize href (ensure leading /)
-                if (!href.StartsWith("/"))
-                    href = "/" + href;
+                // Fallback: Original regex parsing (for non-numeric IDs or mismatches)
+                Regex chapterRegex = new(@"Chapter ([0-9]+(?:\.[0-9]+)?)(.*)?");
+                Match match = chapterRegex.Match(text);
+                if (!match.Success) continue;
 
-                // Check if href already includes baseSlug + /chapter/ (e.g., "/slug/chapter/N")
-                if (href.StartsWith($"/{baseSlug}/chapter/"))
-                {
-                    // Already has slug; prepend only /series
-                    fullUrl = $"https://asuracomic.net/series{href}";
-                }
-                else if (Regex.Match(href, @"^/[^/]+/chapter/").Success)
-                {
-                    // Has some slug + /chapter/ but not matching baseSlug (site variation); prepend /series and replace mismatched slug with baseSlug
-                    string mismatchedSlug = href.Substring(1, href.IndexOf('/', 1) - 1);  // Extract first segment after /
-                    fullUrl = $"https://asuracomic.net/series/{baseSlug}{href.Substring(href.IndexOf('/', 1))}";
-                }
-                else
-                {
-                    // No slug; prepend full /series/{baseSlug}
-                    fullUrl = $"https://asuracomic.net/series/{baseSlug}{href}";
-                }
+                chapterNumber = match.Groups[1].Value;
+                string? rawTitle = match.Groups[2].Success ? match.Groups[2].Value.TrimStart('-', ':', ' ', '\t') : null;
+                chapterTitle = rawTitle != null ? HtmlEntity.DeEntitize(rawTitle) : null;
             }
 
-            Log.Debug($"Constructed fullUrl: '{fullUrl}'");  // Debug: Verify output
+            if (!float.TryParse(chapterNumber, out _)) continue;  // Invalid number
 
-            Match match = Regex.Match(chapterNode.InnerText.Trim(), @"Chapter\s+([0-9]+(?:\.[0-9]+)?)(?:\s*(.*))?", RegexOptions.IgnoreCase);
-            if (!match.Success)
-                continue;
+            chapterNumber = NormalizeNumber(chapterNumber);
 
-            string chapterNumber = match.Groups[1].Value;
-            string? chapterTitle = match.Groups[2].Success && !string.IsNullOrWhiteSpace(match.Groups[2].Value) ? match.Groups[2].Value.Trim() : null;
-
-            Chapter ch = new(manga.Obj, chapterNumber, null, chapterTitle);
-            string chapterId = href.StartsWith("/series/") ? href.Substring("/series/".Length) : href;
-            MangaConnectorId<Chapter> mcId = new(ch, this, chapterId, fullUrl);
-            ch.MangaConnectorIds.Add(mcId);
-            chapters.Add((ch, mcId));
+            Chapter chapter = new(manga.Obj, chapterNumber, null, chapterTitle);
+            MangaConnectorId<Chapter> mcId = new(chapter, this, href, url);
+            chapter.MangaConnectorIds.Add(mcId);
+            chapters.Add((chapter, mcId));
         }
 
         Log.Info($"Found {chapters.Count} chapters for {manga.Obj.Name}");
@@ -299,8 +301,6 @@ public class AsuraComic : MangaConnector
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
-        Log.Debug($"HTML snippet (first 500 chars): {doc.DocumentNode.OuterHtml.Substring(0, Math.Min(500, doc.DocumentNode.OuterHtml.Length))}");
-
         HtmlNodeCollection? imageNodes = doc.DocumentNode.SelectNodes("//img[contains(@alt, 'chapter page') or contains(@alt, 'Chapter') or @class='page-break']");
         if (imageNodes is null || imageNodes.Count == 0)
         {
@@ -332,6 +332,14 @@ public class AsuraComic : MangaConnector
         if (relativeOrAbsolute.StartsWith("http", StringComparison.OrdinalIgnoreCase))
             return relativeOrAbsolute;
         return new Uri(baseUri, relativeOrAbsolute).ToString();
+    }
+
+    private static string NormalizeNumber(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return "0";
+        input = input.Trim();
+        var match = Regex.Match(input, @"^0*(\d+(?:\.\d+)?)");
+        return match.Success ? match.Groups[1].Value : input;
     }
 
     private static bool IsValidImageUrl(string url)
