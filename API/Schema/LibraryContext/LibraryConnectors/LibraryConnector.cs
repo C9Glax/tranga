@@ -2,8 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using log4net;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace API.Schema.LibraryContext.LibraryConnectors;
 
@@ -36,21 +34,13 @@ public abstract class LibraryConnector : Identifiable
         this.Log = LogManager.GetLogger(GetType());
     }
 
+    /// <summary>
+    /// Builds a full path from a relative one with the base being the base-Path (<seealso cref="BaseUrl"/>) of the LibraryConnector
+    /// </summary>
+    protected Uri BuildUri(string relativePath) => new (new(BaseUrl), relativePath);
+
     public override string ToString() => $"{base.ToString()} {this.LibraryType} {this.BaseUrl}";
     
     public abstract Task UpdateLibrary(CancellationToken ct);
     internal abstract Task<bool> Test(CancellationToken ct);
-}
-
-public enum LibraryType
-{
-    /// <summary>
-    /// <seealso cref="Komga"/>
-    /// </summary>
-    Komga,
-    
-    /// <summary>
-    /// <seealso cref="Kavita"/>
-    /// </summary>
-    Kavita
 }
