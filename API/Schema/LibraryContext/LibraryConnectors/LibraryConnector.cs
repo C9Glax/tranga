@@ -34,10 +34,7 @@ public abstract class LibraryConnector : Identifiable
         this.Log = LogManager.GetLogger(GetType());
     }
 
-    /// <summary>
-    /// Builds a full path from a relative one with the base being the base-Path (<seealso cref="BaseUrl"/>) of the LibraryConnector
-    /// </summary>
-    protected Uri BuildUri(string relativePath) => new (new(BaseUrl), relativePath);
+    protected Uri BuildUri(string relativePath) => Utils.BuildUri(BaseUrl, relativePath);
 
     public override string ToString() => $"{base.ToString()} {this.LibraryType} {this.BaseUrl}";
     
