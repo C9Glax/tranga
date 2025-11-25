@@ -202,7 +202,7 @@ public static class Tranga
     {
         context.ChangeTracker.Clear();
         Log.DebugFormat("Adding Manga to Context: {0}", addManga);
-        (Manga, MangaConnectorId<Manga>)? result;
+        (Manga,MangaConnectorId<Manga>)? result;
         if (await context.FindMangaLike(addManga, token) is { } mangaId)
         {
             Manga manga = await context.MangaIncludeAll().FirstAsync(m => m.Key == mangaId, token);
