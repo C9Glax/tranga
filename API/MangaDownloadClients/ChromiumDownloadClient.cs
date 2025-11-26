@@ -48,7 +48,7 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
                 }
                 Log.InfoFormat("Using local Chromium at {0}", localPath);
 
-                var launchOptions = new LaunchOptions
+                LaunchOptions launchOptions = new()
                 {
                     Headless = true,
                     Timeout = 60000, 
@@ -91,14 +91,7 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
         }
     }
 
-    public Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null, CancellationToken? cancellationToken = null)
-    {
-        // Delegate to internal method (sync wrapper for async interface)
-        var result = MakeRequestInternal(url, referrer);
-        return Task.FromResult(result);
-    }
-
-    internal HttpResponseMessage MakeRequestInternal(string url, string? referrer = null, string? clickButton = null)
+    public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null, CancellationToken? cancellationToken = null)
     {
         // v1 fallback: Use HTTP for direct images (faster, no browser)
         if (_imageUrlRex.IsMatch(url))
@@ -131,11 +124,6 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
             {
                 var headers = new Dictionary<string, string> { { "Referer", referrer } };
                 page.SetExtraHttpHeadersAsync(headers).GetAwaiter().GetResult();
-            }
-
-            if (!string.IsNullOrEmpty(clickButton))
-            {
-                Log.Warn("Chromium client ignoring clickButton parameter (not implemented).");
             }
 
             NavigationOptions navOptions = new() { WaitUntil = new[] { WaitUntilNavigation.Load } };

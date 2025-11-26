@@ -294,7 +294,7 @@ public class AsuraComic : MangaConnector
         }
 
         // Use Chromium for JS-rendered images; dispose after use
-        using var chromium = new ChromiumDownloadClient();
+        using ChromiumDownloadClient chromium = new ChromiumDownloadClient();
         HttpResponseMessage response = chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer).GetAwaiter().GetResult();
 
         if ((int)response.StatusCode < 200 || (int)response.StatusCode >= 300)
