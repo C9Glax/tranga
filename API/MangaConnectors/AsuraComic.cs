@@ -11,10 +11,6 @@ namespace API.MangaConnectors;
 
 public class AsuraComic : MangaConnector
 {
-    // Use 'new' to hide base Log
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
-    new protected static readonly ILog Log = LogManager.GetLogger(typeof(AsuraComic));
-
     public AsuraComic() : base("AsuraComic", ["en"], ["asuracomic.net"], "https://asuracomic.net/favicon.ico")
     {
         this.downloadClient = new HttpDownloadClient(); // Use Http for all

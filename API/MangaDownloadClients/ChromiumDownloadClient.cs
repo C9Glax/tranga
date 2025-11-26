@@ -36,46 +36,28 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
         lock (_lock)
         {
             if (_browser != null) return;  // Double-check lock
-
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));  // Increased to 120s
             try
             {
                 Log.Debug("Starting Chromium init.");
 
                 // Check for local Chrome path from ENV (skip download if present)
                 string? localPath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH") ?? Environment.GetEnvironmentVariable("CHROME_BIN");
-                bool useLocal = !string.IsNullOrEmpty(localPath) && System.IO.File.Exists(localPath);
-                if (useLocal)
+                if (string.IsNullOrEmpty(localPath) || !System.IO.File.Exists(localPath))
                 {
-                    Log.Debug($"Using local Chrome at {localPath} (skipping download)");
+                    throw new InvalidOperationException($"Local Chromium binary not found at {localPath}. Set PUPPETEER_EXECUTABLE_PATH or CHROME_BIN.");
                 }
-                else
-                {
-                    // Fallback to download if no local
-                    for (int attempt = 1; attempt <= 3; attempt++)
-                    {
-                        try
-                        {
-                            new BrowserFetcher().DownloadAsync().GetAwaiter().GetResult(); // Sync wait
-                            break;
-                        }
-                        catch (Exception ex) when (attempt < 3)
-                        {
-                            Log.Warn($"Download attempt {attempt} failed: {ex.Message}. Retrying...");
-                        }
-                    }
-                }
+                Log.InfoFormat("Using local Chromium at {0}", localPath);
 
                 var launchOptions = new LaunchOptions
                 {
                     Headless = true,
-                    Timeout = 120000,  // Increased to 2min
-                    ExecutablePath = localPath,  // Use local if available; Puppeteer will use default if null
+                    Timeout = 60000, 
+                    ExecutablePath = localPath,
                     Args = Environment.GetEnvironmentVariable("PUPPETEER_ARGS")?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new[] { 
                         "--no-sandbox", 
                         "--disable-setuid-sandbox", 
                         "--disable-dev-shm-usage",
-                        "--disable-gpu"  // v1 arg for stability
+                        "--disable-gpu"
                     }
                 };
                 // Launch with options and null loggerFactory
@@ -87,10 +69,6 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
             {
                 Log.Error($"Failed to initialize Chromium browser: {ex.Message}");
                 _browser = null;
-            }
-            finally
-            {
-                cts?.Dispose();
             }
         }
     }
@@ -160,8 +138,16 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
                 Log.Warn("Chromium client ignoring clickButton parameter (not implemented).");
             }
 
-            // v1-style: Simple GoToAsync without ReferrerPolicy (avoids protocol error)
-            var navOptions = new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load }, Timeout = 120000 };  // Increased to 2min
+            NavigationOptions navOptions = new() { WaitUntil = new[] { WaitUntilNavigation.Load } };
+            string waitTimeStr = Environment.GetEnvironmentVariable("CHROMIUM_WAIT_TIME") ?? "15";
+            if (int.TryParse(waitTimeStr, out int waitTimeSeconds) && waitTimeSeconds > 0)
+            {
+                navOptions.Timeout = waitTimeSeconds * 1000;
+            }
+            else
+            {
+                navOptions.Timeout = 15000;  // Default 15s
+            }
             bool success = false;
             Exception lastEx = null;
             for (int retry = 0; retry < 3; retry++)
