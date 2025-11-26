@@ -17,15 +17,10 @@ FROM base AS runtime
 USER root
 
 RUN apt-get update \
-    # && apt-get install -y wget gnupg2 apt-utils ca-certificates fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release xdg-utils \
-    # Add more fonts for full rendering
-    # && apt-get install -y fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
-    # Install Chromium and deps (no Chrome for Testing download)
-    && apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0 libgtk-3-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libxshmfence1 libnss3 chromium \
-    # Clean up
-    && apt-get autopurge -y \
-    && apt-get autoclean -y \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+  && apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0 libgtk-3-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libxshmfence1 libnss3 chromium \
+  && apt-get autopurge -y \
+  && apt-get autoclean -y \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # Expose port
 EXPOSE 6531

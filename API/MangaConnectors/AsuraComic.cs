@@ -11,7 +11,7 @@ namespace API.MangaConnectors;
 
 public class AsuraComic : MangaConnector
 {
-    public AsuraComic() : base("AsuraComic", ["en"], ["asuracomic.net"], "https://asuracomic.net/favicon.ico")
+    public AsuraComic() : base("AsuraComic", ["en"], ["asuracomic.net"], "https://asuracomic.net/images/logo.webp")
     {
         this.downloadClient = new HttpDownloadClient(); // Use Http for all
     }
@@ -169,13 +169,7 @@ public class AsuraComic : MangaConnector
         // Match original constructor (null language for consistent Key)
         Manga manga = new(cleanTitle, description, coverUrl, releaseStatus, authors, tags, links, altTitles, null, 0f, year, null);
         
-        // Workaround for Tranga merge duplicate Key: Append unique suffix to IdOnConnectorSite (e.g., timestamp hash)
-        // This ensures each search creates a unique MangaConnectorId.Key, preventing EF conflict on add during merge.
-        // Multiple IDs per manga/connector are harmless (allows URL variations if site changes).
-        string uniqueSuffix = (DateTime.UtcNow.Ticks % 1000000).ToString("D6"); // 6-digit unique per ~10s
-        string uniqueId = $"{mangaId}-{uniqueSuffix}";
-        
-        MangaConnectorId<Manga> mcId = new(manga, this, uniqueId, url);
+        MangaConnectorId<Manga> mcId = new(manga, this, mangaId, url);
         manga.MangaConnectorIds.Add(mcId);
         
         return (manga, mcId);
@@ -184,8 +178,7 @@ public class AsuraComic : MangaConnector
     public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga, string? language = null)
     {
         Log.InfoFormat("Fetching chapters for: {0}", manga.IdOnConnectorSite);
-        // Strip unique suffix for base slug
-        string baseSlug = manga.IdOnConnectorSite.Contains('-') ? manga.IdOnConnectorSite[..manga.IdOnConnectorSite.LastIndexOf('-')] : manga.IdOnConnectorSite;
+        string baseSlug = manga.IdOnConnectorSite;
         string websiteUrl = manga.WebsiteUrl ?? $"https://asuracomic.net/series/{baseSlug}";
         HttpResponseMessage response = downloadClient.MakeRequest(websiteUrl, RequestType.Default).GetAwaiter().GetResult();
         if (!response.IsSuccessStatusCode)
