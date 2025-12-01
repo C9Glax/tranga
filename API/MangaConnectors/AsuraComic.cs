@@ -114,11 +114,11 @@ public class AsuraComic : MangaConnector
         return ParseMangaFromHtml(doc, mangaIdOnSite, url); // Use full slug as ID
     }
 
-    private (Manga, MangaConnectorId<Manga>) ParseMangaFromHtml(HtmlDocument doc, string mangaId, string url)
+    private (Manga, MangaConnectorId<Manga>) ParseMangaFromHtml(HtmlDocument doc, string mangaIdOnSite, string url)
     {
         // Title with cleanup (kept for robustness, but simple decode to match original)
         HtmlNode? titleNode = doc.DocumentNode.SelectSingleNode("//title");
-        string rawTitle = Regex.Match(titleNode?.InnerText ?? mangaId, @"(.*) - Asura Scans").Groups[1].Value.Trim();
+        string rawTitle = Regex.Match(titleNode?.InnerText ?? mangaIdOnSite, @"(.*) - Asura Scans").Groups[1].Value.Trim();
         string cleanTitle = HtmlEntity.DeEntitize(rawTitle).Trim(); // Simple decode like original
 
         // Cover
@@ -169,7 +169,7 @@ public class AsuraComic : MangaConnector
         // Match original constructor (null language for consistent Key)
         Manga manga = new(cleanTitle, description, coverUrl, releaseStatus, authors, tags, links, altTitles, null, 0f, year, null);
         
-        MangaConnectorId<Manga> mcId = new(manga, this, mangaId, url);
+        MangaConnectorId<Manga> mcId = new(manga, this, mangaIdOnSite, url);
         manga.MangaConnectorIds.Add(mcId);
         
         return (manga, mcId);
@@ -178,7 +178,8 @@ public class AsuraComic : MangaConnector
     public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga, string? language = null)
     {
         Log.InfoFormat("Fetching chapters for: {0}", manga.IdOnConnectorSite);
-        string baseSlug = manga.IdOnConnectorSite;
+        // Strip unique suffix for base slug (if any, but none now)
+        string baseSlug = manga.IdOnConnectorSite.Contains('-') ? manga.IdOnConnectorSite[..manga.IdOnConnectorSite.LastIndexOf('-')] : manga.IdOnConnectorSite;
         string websiteUrl = manga.WebsiteUrl ?? $"https://asuracomic.net/series/{baseSlug}";
         HttpResponseMessage response = downloadClient.MakeRequest(websiteUrl, RequestType.Default).GetAwaiter().GetResult();
         if (!response.IsSuccessStatusCode)
@@ -258,8 +259,9 @@ public class AsuraComic : MangaConnector
 
             Chapter ch = new(manga.Obj, chapterNumber, null, chapterTitle);
             string chapterIdFromHref = href.Substring(href.LastIndexOf('/') + 1);
-            // Fix: Append unique suffix to chapterId to avoid duplicate key on re-run
-            string uniqueChapterId = $"{chapterIdFromHref}-{DateTime.UtcNow.Ticks % 1000000:D6}";
+            // Fix: Use manga's hash + chapter number for unique ID (consistent on re-run)
+            string hash = baseSlug.Split('-').Last();  // Extract hash (e.g., "fc9f12dc")
+            string uniqueChapterId = $"{hash}-{chapterIdFromHref}";
             MangaConnectorId<Chapter> mcId = new(ch, this, uniqueChapterId, fullUrl);
             ch.MangaConnectorIds.Add(mcId);
             chapters.Add((ch, mcId));

@@ -208,36 +208,10 @@ public static class Tranga
             Manga manga = await context.MangaIncludeAll().FirstAsync(m => m.Key == mangaId, token);
             Log.DebugFormat("Merging with existing Manga: {0}", manga);
 
-            // Check for existing MangaConnectorId to avoid duplicate key tracking conflict
-            var existingMcId = manga.MangaConnectorIds
-                .FirstOrDefault(id => id.MangaConnectorName == addMcId.MangaConnectorName 
-                                      && id.IdOnConnectorSite == addMcId.IdOnConnectorSite);
-
-            MangaConnectorId<Manga> mcIdToUse;
-            if (existingMcId == null)
-            {
-                // Create new if not exists (matches original constructor signature)
-                mcIdToUse = new MangaConnectorId<Manga>(manga, addMcId.MangaConnectorName, addMcId.IdOnConnectorSite, addMcId.WebsiteUrl, addMcId.UseForDownload);
-                manga.MangaConnectorIds.Add(mcIdToUse);
-                Log.DebugFormat("Added new MangaConnectorId for {0}", addMcId.MangaConnectorName);
-            }
-            else
-            {
-                // Reuse existing; recreate if URL changed (init-only safe via constructor)
-                mcIdToUse = existingMcId;
-                if (existingMcId.WebsiteUrl != addMcId.WebsiteUrl)
-                {
-                    // Recreate with updated URL (matches original constructor)
-                    var updatedMcId = new MangaConnectorId<Manga>(manga, existingMcId.MangaConnectorName, existingMcId.IdOnConnectorSite, addMcId.WebsiteUrl, existingMcId.UseForDownload);
-                    // Remove old, add new (EF will track the replacement)
-                    manga.MangaConnectorIds.Remove(existingMcId);
-                    manga.MangaConnectorIds.Add(updatedMcId);
-                    mcIdToUse = updatedMcId;
-                    Log.DebugFormat("Updated/Recreated MangaConnectorId for {0} (URL changed)", addMcId.MangaConnectorName);
-                }
-            }
+            MangaConnectorId<Manga> newId = new(manga, addMcId.MangaConnectorName, addMcId.IdOnConnectorSite, addMcId.WebsiteUrl, addMcId.UseForDownload);
+            manga.MangaConnectorIds.Add(newId);
             
-            result = (manga, mcIdToUse);
+            result = (manga, newId);
         }
         else
         {
