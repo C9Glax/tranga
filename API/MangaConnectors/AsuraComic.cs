@@ -178,8 +178,8 @@ public class AsuraComic : MangaConnector
     public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga, string? language = null)
     {
         Log.InfoFormat("Fetching chapters for: {0}", manga.IdOnConnectorSite);
-        // Strip unique suffix for base slug (if any, but none now)
-        string baseSlug = manga.IdOnConnectorSite.Contains('-') ? manga.IdOnConnectorSite[..manga.IdOnConnectorSite.LastIndexOf('-')] : manga.IdOnConnectorSite;
+        // Use full IdOnConnectorSite as baseSlug (includes site's hash, no stripping)
+        string baseSlug = manga.IdOnConnectorSite;
         string websiteUrl = manga.WebsiteUrl ?? $"https://asuracomic.net/series/{baseSlug}";
         HttpResponseMessage response = downloadClient.MakeRequest(websiteUrl, RequestType.Default).GetAwaiter().GetResult();
         if (!response.IsSuccessStatusCode)
@@ -280,7 +280,6 @@ public class AsuraComic : MangaConnector
             return [];
         }
 
-        // Get manga's series URL as referrer (simulates navigation from chapter list)
         string? referrer = null;
         if (chapterId.Obj.ParentManga.MangaConnectorIds is not null && chapterId.Obj.ParentManga.MangaConnectorIds.Any())
         {
@@ -288,45 +287,50 @@ public class AsuraComic : MangaConnector
                 .FirstOrDefault(id => id.MangaConnectorName == this.Name)?.WebsiteUrl;
         }
 
-        // Use Chromium for JS-rendered images; dispose after use
-        using ChromiumDownloadClient chromium = new ChromiumDownloadClient();
-        HttpResponseMessage response = chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer).GetAwaiter().GetResult();
-
-        if ((int)response.StatusCode < 200 || (int)response.StatusCode >= 300)
+        // Sync wrapper for async MakeRequest
+        ChromiumDownloadClient chromium = new();
+        try
         {
-            Log.Error("Failed to load chapter page with Chromium");
-            return [];
-        }
+            HttpResponseMessage response = chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer).GetAwaiter().GetResult();
 
-        string html = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        HtmlDocument doc = new();
-        doc.LoadHtml(html);
-
-        // Temporary debug: Log HTML snippet (remove after verification)
-        Log.DebugFormat("HTML snippet (first 500 chars): {0}", doc.DocumentNode.OuterHtml.Substring(0, Math.Min(500, doc.DocumentNode.OuterHtml.Length)));
-
-        // v1 selector: //img[contains(@alt, 'chapter page')]
-        HtmlNodeCollection? imageNodes = doc.DocumentNode.SelectNodes("//img[contains(@alt, 'chapter page') or contains(@alt, 'Chapter') or @class='page-break']");
-        if (imageNodes is null || imageNodes.Count == 0)
-        {
-            Log.Warn("No chapter page images found");
-            return [];
-        }
-
-        string[] imageUrls = imageNodes
-            .Select(i => 
+            if ((int)response.StatusCode < 200 || (int)response.StatusCode >= 300)
             {
-                string src = i.GetAttributeValue("src", "");
-                if (string.IsNullOrEmpty(src))
-                    src = i.GetAttributeValue("data-src", ""); // Fallback for lazy-load
-                if (!src.StartsWith("http"))
-                    src = "https://asuracomic.net" + src; // Absolute URL if relative
-                return src;
-            })
-            .Where(u => !string.IsNullOrEmpty(u))
-            .ToArray();
+                Log.Error("Failed to load chapter page with Chromium");
+                return [];
+            }
 
-        Log.InfoFormat("Found {0} images for chapter {1}", imageUrls.Length, chapterId.Obj);
-        return imageUrls;
+            string html = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            HtmlDocument doc = new();
+            doc.LoadHtml(html);
+
+            Log.DebugFormat("HTML snippet (first 500 chars): {0}", doc.DocumentNode.OuterHtml.Substring(0, Math.Min(500, doc.DocumentNode.OuterHtml.Length)));
+
+            HtmlNodeCollection? imageNodes = doc.DocumentNode.SelectNodes("//img[contains(@alt, 'chapter page') or contains(@alt, 'Chapter') or @class='page-break']");
+            if (imageNodes is null || imageNodes.Count == 0)
+            {
+                Log.Warn("No chapter page images found");
+                return [];
+            }
+
+            string[] imageUrls = imageNodes
+                .Select(i => 
+                {
+                    string src = i.GetAttributeValue("src", "");
+                    if (string.IsNullOrEmpty(src))
+                        src = i.GetAttributeValue("data-src", "");
+                    if (!src.StartsWith("http"))
+                        src = "https://asuracomic.net" + src;
+                    return src;
+                })
+                .Where(u => !string.IsNullOrEmpty(u))
+                .ToArray();
+
+            Log.InfoFormat("Found {0} images for chapter {1}", imageUrls.Length, chapterId.Obj);
+            return imageUrls;
+        }
+        finally
+        {
+            chromium.DisposeAsync().AsTask().GetAwaiter().GetResult();  // Sync dispose
+        }
     }
 }

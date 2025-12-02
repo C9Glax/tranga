@@ -15,15 +15,16 @@ using API.MangaDownloadClients;  // For HttpDownloadClient and IDownloadClient
 
 namespace API.MangaDownloadClients;
 
-internal class ChromiumDownloadClient : IDownloadClient, IDisposable
+internal class ChromiumDownloadClient : IDownloadClient, IAsyncDisposable
 {
     private static readonly ILog Log = LogManager.GetLogger(typeof(ChromiumDownloadClient));
     private IBrowser? _browser;  // Instance-level: Avoids shared state races
     private readonly HttpDownloadClient _httpFallback;
     private readonly object _lock = new();  // Instance lock for init
     private static readonly Regex _imageUrlRex = new(@"https?:\/\/.*\.(?:p?jpe?g|gif|a?png|bmp|avif|webp)(\?.*)?");  // v1 image fallback regex
-    private static readonly SemaphoreSlim _pageSemaphore = new(2, 2);  // Limit concurrent pages to 2
-    
+    private long _activePages = 0;  // Manual counter for active pages
+    private readonly int _maxPages = 2;  // Limit to 2 concurrent pages
+
     public ChromiumDownloadClient()
     {
         _httpFallback = new();  // Fallback for direct images
@@ -73,19 +74,19 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         if (_browser != null)
         {
             try
             {
-                _browser.CloseAsync().GetAwaiter().GetResult();
-                _browser.DisposeAsync().GetAwaiter().GetResult();
+                await _browser.CloseAsync();
+                await _browser.DisposeAsync();
                 Log.Debug("Chromium browser disposed.");
             }
             catch (Exception ex)
             {
-                Log.Warn($"Error disposing browser: {ex.Message}");
+                Log.WarnFormat("Error disposing browser: {0}", ex.Message);
             }
             _browser = null;
         }
@@ -93,37 +94,40 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
 
     public async Task<HttpResponseMessage> MakeRequest(string url, RequestType requestType, string? referrer = null, CancellationToken? cancellationToken = null)
     {
-        // v1 fallback: Use HTTP for direct images (faster, no browser)
+        Log.DebugFormat("Using {0} for {1}", typeof(ChromiumDownloadClient).FullName, url);
+
         if (_imageUrlRex.IsMatch(url))
         {
-            // Use public MakeRequest with default RequestType
-            return _httpFallback.MakeRequest(url, RequestType.Default, referrer).GetAwaiter().GetResult();
+            HttpDownloadClient httpClient = new();
+            return await httpClient.MakeRequest(url, requestType, referrer, cancellationToken);
         }
 
         EnsureBrowserInitialized();  // Lazy init if needed
 
         if (_browser is null)
         {
-            Log.Warn("Browser not initialized; falling back to empty result.");
+            Log.Warn("Browser not initialized; returning error.");
             return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
         }
 
-        _pageSemaphore.Wait();  // Limit concurrent pages
+        // Wait for available slot (async poll loop)
+        while (Interlocked.Read(ref _activePages) >= _maxPages)
+        {
+            await Task.Delay(50, cancellationToken ?? CancellationToken.None);  // Poll every 50ms
+        }
+
+        Interlocked.Increment(ref _activePages);  // Increment counter
         IPage? page = null;
         try
         {
-            var pageTask = _browser.NewPageAsync();
-            pageTask.Wait(); // Sync wait
-            page = pageTask.Result;
+            page = await _browser.NewPageAsync();
 
-            // Set consistent User-Agent to match HttpDownloadClient (anti-bot)
-            page.SetUserAgentAsync(Tranga.Settings.UserAgent).GetAwaiter().GetResult();
+            await page.SetUserAgentAsync(Tranga.Settings.UserAgent);
 
-            // v1-style: Set referrer header only if provided (skip if null to avoid invalid)
             if (!string.IsNullOrEmpty(referrer))
             {
-                var headers = new Dictionary<string, string> { { "Referer", referrer } };
-                page.SetExtraHttpHeadersAsync(headers).GetAwaiter().GetResult();
+                Dictionary<string, string> headers = new() { { "Referer", referrer } };
+                await page.SetExtraHttpHeadersAsync(headers);
             }
 
             NavigationOptions navOptions = new() { WaitUntil = new[] { WaitUntilNavigation.Load } };
@@ -136,61 +140,48 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
             {
                 navOptions.Timeout = 15000;  // Default 15s
             }
+
             bool success = false;
-            Exception lastEx = null;
+            Exception? lastEx = null;
             for (int retry = 0; retry < 3; retry++)
             {
                 try
                 {
-                    var gotoTask = page.GoToAsync(url, navOptions);
-                    gotoTask.Wait();
-                    if (gotoTask.Result != null)
-                    {
-                        Log.Debug($"Page loaded on retry {retry + 1}. {url}");
-                        success = true;
-                        break;
-                    }
+                    // Simple GoToAsync overload (no navOptions/CT to avoid generic issues)
+                    await page.GoToAsync(url);
+                    success = true;
+                    Log.DebugFormat("Page loaded on retry {0}. {1}", retry + 1, url);
+                    break;
                 }
                 catch (Exception ex) when (ex is TaskCanceledException || ex.Message.Contains("Timeout"))
                 {
                     lastEx = ex;
-                    Log.Warn($"Timeout for {url} on retry {retry + 1}; waiting {1000 * (retry + 1)}ms...");
-                    Task.Delay(1000 * (retry + 1)).Wait();  // Backoff
-                    // Recreate page on retry
-                    page.CloseAsync().GetAwaiter().GetResult();
-                    pageTask = _browser.NewPageAsync();
-                    pageTask.Wait();
-                    page = pageTask.Result;
+                    Log.WarnFormat("Timeout for {0} on retry {1}; waiting {2}ms...", url, retry + 1, 1000 * (retry + 1));
+                    await Task.Delay(1000 * (retry + 1));
+                    await page.CloseAsync();
+                    page = await _browser.NewPageAsync();
                 }
             }
 
             if (!success)
             {
-                Log.Error($"Chromium request failed for {url} after retries: {lastEx?.Message}");
+                Log.ErrorFormat("Chromium request failed for {0} after retries: {1}", url, lastEx?.Message);
                 return new HttpResponseMessage(HttpStatusCode.GatewayTimeout);
             }
 
-            Log.Debug($"Page loaded. {url}");  // v1 log
+            Log.DebugFormat("Page loaded. {0}", url);
 
-            // Trigger lazy-load by scrolling (v2 enhancement for Asura images)
-            page.EvaluateExpressionAsync("window.scrollTo(0, document.body.scrollHeight);").GetAwaiter().GetResult();
-            Task.Delay(2000).Wait();  // Wait after scroll
+            await page.EvaluateExpressionAsync("window.scrollTo(0, document.body.scrollHeight);");
+            await Task.Delay(2000);  // Hardcoded scroll wait
 
-            var contentTask = page.GetContentAsync();
-            contentTask.Wait();
-            string html = contentTask.Result ?? string.Empty;
+            string html = await page.GetContentAsync();
 
-            var content = new StringContent(html, Encoding.UTF8, "text/html");
+            StringContent content = new(html, Encoding.UTF8, "text/html");
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+            HttpResponseMessage responseMessage = new(HttpStatusCode.OK) { Content = content };
 
-            Log.Debug($"Chromium rendered {url} successfully.");
+            Log.DebugFormat("Chromium rendered {0} successfully.", url);
             return responseMessage;
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"Chromium request failed for {url}: {ex.Message}");
-            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
         }
         finally
         {
@@ -198,14 +189,14 @@ internal class ChromiumDownloadClient : IDownloadClient, IDisposable
             {
                 try
                 {
-                    page.CloseAsync().GetAwaiter().GetResult();
+                    await page.CloseAsync();
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn($"Error closing page: {ex.Message}");
+                    Log.WarnFormat("Error closing page: {0}", ex.Message);
                 }
             }
-            _pageSemaphore.Release();
+            Interlocked.Decrement(ref _activePages);  // Decrement counter
         }
     }
 }
