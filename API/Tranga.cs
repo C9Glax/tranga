@@ -126,7 +126,10 @@ public static class Tranga
     }
 
     private static readonly HashSet<BaseWorker> KnownWorkers = new();
-    public static BaseWorker[] GetKnownWorkers() =>  KnownWorkers.ToArray();
+    public static BaseWorker[] GetKnownWorkers() => KnownWorkers.ToArray();
+
+    public static IEnumerable<Task> GetWorkerTasks(IEnumerable<BaseWorker> workers) =>
+        RunningWorkers.Where(k => workers.Contains(k.Key)).Select(k => k.Value);
     private static readonly ConcurrentDictionary<BaseWorker, Task<BaseWorker[]>> RunningWorkers = new();
     public static BaseWorker[] GetRunningWorkers() => RunningWorkers.Keys.ToArray();
     
