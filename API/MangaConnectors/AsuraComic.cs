@@ -74,15 +74,18 @@ public class AsuraComic : MangaConnector
         return mangas.DistinctBy(r => r.Item1.Key).ToArray(); // Dedup by manga Key
     }
 
-    public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
+   public override (Manga, MangaConnectorId<Manga>)? GetMangaFromUrl(string url)
     {
         Log.InfoFormat("Fetching manga from URL: {0}", url);
-        Match urlMatch = Regex.Match(url, @"https?://(?:www\.)?asuracomic\.net/series/(?<id>[^/]+)");
+        // Robust regex: Capture full slug before optional UID
+        Match urlMatch = Regex.Match(url, @"https?://(?:www\.)?asuracomic\.net/series/(?<coreSlug>[^-]+(?:-[^-]+)*?)(?:-(?<uid>[a-f0-9]{8}))?$");
         if (!urlMatch.Success)
             return null;
 
-        string id = urlMatch.Groups["id"].Value;
-        // Fetch once using url (no double fetch)
+        string coreSlug = urlMatch.Groups["coreSlug"].Value;
+        string storedUrl = $"https://asuracomic.net/series/{coreSlug}-*";  // Stable wildcard
+
+        // Fetch once using full url (no double fetch)
         HttpResponseMessage response = downloadClient.MakeRequest(url, RequestType.MangaInfo).GetAwaiter().GetResult();
         if (!response.IsSuccessStatusCode)
         {
@@ -94,7 +97,7 @@ public class AsuraComic : MangaConnector
         HtmlDocument doc = new();
         doc.LoadHtml(html);
 
-        return ParseMangaFromHtml(doc, id, url);
+        return ParseMangaFromHtml(doc, coreSlug, storedUrl);
     }
 
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite)
@@ -169,6 +172,7 @@ public class AsuraComic : MangaConnector
         // Match original constructor (null language for consistent Key)
         Manga manga = new(cleanTitle, description, coverUrl, releaseStatus, authors, tags, links, altTitles, null, 0f, year, null);
         
+        // Use mangaIdOnSite for ID (core slug, consistent)
         MangaConnectorId<Manga> mcId = new(manga, this, mangaIdOnSite, url);
         manga.MangaConnectorIds.Add(mcId);
         
@@ -178,8 +182,10 @@ public class AsuraComic : MangaConnector
     public override (Chapter, MangaConnectorId<Chapter>)[] GetChapters(MangaConnectorId<Manga> manga, string? language = null)
     {
         Log.InfoFormat("Fetching chapters for: {0}", manga.IdOnConnectorSite);
-        // Use full IdOnConnectorSite as baseSlug (includes site's hash, no stripping)
-        string baseSlug = manga.IdOnConnectorSite;
+        // Use full WebsiteUrl for baseSlug (includes site's current hash, no stripping)
+        string baseSlug = manga.WebsiteUrl ?? manga.IdOnConnectorSite;
+        if (baseSlug.Contains("series/"))
+            baseSlug = baseSlug.Substring(baseSlug.IndexOf("series/") + 7);  // Extract slug from URL
         string websiteUrl = manga.WebsiteUrl ?? $"https://asuracomic.net/series/{baseSlug}";
         HttpResponseMessage response = downloadClient.MakeRequest(websiteUrl, RequestType.Default).GetAwaiter().GetResult();
         if (!response.IsSuccessStatusCode)
@@ -259,9 +265,9 @@ public class AsuraComic : MangaConnector
 
             Chapter ch = new(manga.Obj, chapterNumber, null, chapterTitle);
             string chapterIdFromHref = href.Substring(href.LastIndexOf('/') + 1);
-            // Fix: Use manga's hash + chapter number for unique ID (consistent on re-run)
-            string hash = baseSlug.Split('-').Last();  // Extract hash (e.g., "fc9f12dc")
-            string uniqueChapterId = $"{hash}-{chapterIdFromHref}";
+            // Fix: Prefix with core slug for unique ID (e.g., "raising-villains-the-right-way-13")
+            string coreSlug = baseSlug.Replace("-*", "");  // Remove wildcard for chapter ID
+            string uniqueChapterId = $"{coreSlug}-{chapterNumber}";
             MangaConnectorId<Chapter> mcId = new(ch, this, uniqueChapterId, fullUrl);
             ch.MangaConnectorIds.Add(mcId);
             chapters.Add((ch, mcId));
