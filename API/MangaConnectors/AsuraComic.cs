@@ -6,6 +6,9 @@ using API.Schema.MangaContext;
 using log4net;
 using System.Collections.Generic;
 using System.Linq; // For OrderBy
+using System.Text.Json;
+using System.Text;
+using System.Threading;
 
 namespace API.MangaConnectors;
 
@@ -185,7 +188,7 @@ public class AsuraComic : MangaConnector
         // Use full WebsiteUrl for baseSlug (includes site's current hash, no stripping)
         string baseSlug = manga.WebsiteUrl ?? manga.IdOnConnectorSite;
         if (baseSlug.Contains("series/"))
-            baseSlug = baseSlug.Substring(baseSlug.IndexOf("series/") + 7);  // Extract slug from URL
+            baseSlug = baseSlug.Substring(baseSlug.IndexOf("series/") + 7); // Extract slug from URL
         string websiteUrl = manga.WebsiteUrl ?? $"https://asuracomic.net/series/{baseSlug}";
         HttpResponseMessage response = downloadClient.MakeRequest(websiteUrl, RequestType.Default).GetAwaiter().GetResult();
         if (!response.IsSuccessStatusCode)
@@ -193,15 +196,74 @@ public class AsuraComic : MangaConnector
             Log.Error("Failed to load chapters page");
             return [];
         }
-
         string html = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
         HtmlDocument doc = new();
         doc.LoadHtml(html);
 
+        // Parse JSON for Early Access flags
+        Dictionary<string, bool> earlyAccessDict = new Dictionary<string, bool>();
+        HtmlNode? scriptNode = doc.DocumentNode.SelectSingleNode("//script[contains(text(), 'is_early_access')]");
+        if (scriptNode != null)
+        {
+            string scriptText = scriptNode.InnerText;
+            scriptText = scriptText.Replace("\\", "");
+            Match? jsonMatch = Regex.Match(scriptText, @"""chapters"":\s*\[(.*?)\],\s*""comic""", RegexOptions.Singleline);
+            if (jsonMatch.Success)
+            {
+                string chaptersJson = jsonMatch.Groups[1].Value;
+                chaptersJson = chaptersJson.Trim().Trim(',');
+                chaptersJson = "[" + chaptersJson + "]";
+                try
+                {
+                    byte[] jsonBytes = Encoding.UTF8.GetBytes(chaptersJson);
+                    JsonElement jsonChapters = JsonSerializer.Deserialize<JsonElement>(jsonBytes, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (jsonChapters.ValueKind == JsonValueKind.Array)
+                    {
+                        int arrayLength = jsonChapters.GetArrayLength();
+                        foreach (JsonElement chapter in jsonChapters.EnumerateArray())
+                        {
+                            if (chapter.TryGetProperty("name", out JsonElement nameProp))
+                            {
+                                string chNum = "";
+                                if (nameProp.ValueKind == JsonValueKind.Number)
+                                {
+                                    chNum = nameProp.GetInt32().ToString();
+                                }
+                                else if (nameProp.ValueKind == JsonValueKind.String)
+                                {
+                                    chNum = nameProp.GetString() ?? "";
+                                }
+                                if (!string.IsNullOrEmpty(chNum) && chapter.TryGetProperty("is_early_access", out JsonElement eaProp))
+                                {
+                                    bool isEa = eaProp.ValueKind == JsonValueKind.True || (eaProp.ValueKind == JsonValueKind.String && eaProp.GetString()?.ToLower() == "true");
+                                    if (isEa)
+                                    {
+                                        earlyAccessDict[chNum] = true;
+                                    }
+                                }
+                            }
+                        }
+                        Log.DebugFormat("Parsed {0} Early Access chapters from JSON: {1}", earlyAccessDict.Count, string.Join(", ", earlyAccessDict.Keys));
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Log.WarnFormat("Failed to parse wrapped chapters JSON: {0}", ex.Message);
+                }
+            }
+            else
+            {
+                Log.WarnFormat("No chapters array found in unescaped script");
+            }
+        }
+        else
+        {
+            Log.WarnFormat("No script with 'is_early_access' found");
+        }
+
         HtmlNodeCollection? chapterNodes = doc.DocumentNode.SelectNodes("//a[contains(@href, '/chapter/')]");
         if (chapterNodes is null)
             return [];
-
         HashSet<string> seenHrefs = new();
         List<(Chapter, MangaConnectorId<Chapter>)> chapters = new();
         foreach (HtmlNode chapterNode in chapterNodes)
@@ -209,11 +271,9 @@ public class AsuraComic : MangaConnector
             string href = chapterNode.GetAttributeValue("href", "");
             if (string.IsNullOrEmpty(href) || !seenHrefs.Add(href))
                 continue;
-
             // Normalize href (ensure leading /)
             if (!href.StartsWith("/"))
                 href = "/" + href;
-
             // Extract /chapter/N part and prepend /series/{baseSlug} (avoids duplication)
             int chapterIndex = href.IndexOf("/chapter/", StringComparison.OrdinalIgnoreCase);
             string fullUrl;
@@ -226,12 +286,9 @@ public class AsuraComic : MangaConnector
             {
                 fullUrl = $"https://asuracomic.net/series/{baseSlug}{href}";
             }
-
             string text = chapterNode.InnerText.Trim();
             string chapterNumber;
             string? chapterTitle;
-
-            // Primary: Extract title from text after "Chapter {chapterId}" (from href)
             Match chIdMatch = Regex.Match(href, @"/chapter/(\d+)");
             if (chIdMatch.Success)
             {
@@ -248,31 +305,34 @@ public class AsuraComic : MangaConnector
                 }
                 else
                 {
-                    // Fallback: Original regex parsing
                     Regex chapterRegex = new(@"Chapter ([0-9]+(?:\.[0-9]+)?)(.*)?");
                     Match match = chapterRegex.Match(text);
                     if (!match.Success) continue;
-
                     chapterNumber = match.Groups[1].Value;
                     string? rawTitle = match.Groups[2].Success ? match.Groups[2].Value.TrimStart('-', ':', ' ', '\t') : null;
                     chapterTitle = rawTitle != null ? HtmlEntity.DeEntitize(rawTitle) : null;
                 }
+
+                // Skip Early Access chapters from JSON
+                if (earlyAccessDict.ContainsKey(chapterNumber))
+                {
+                    Log.DebugFormat("Skipping Early Access chapter: {0} ({1})", chapterNumber, chapterTitle ?? "Unknown");
+                    continue;
+                }
             }
             else
             {
-                continue;  // Skip if no chapter ID in href
+                continue; // Skip if no chapter ID in href
             }
-
             Chapter ch = new(manga.Obj, chapterNumber, null, chapterTitle);
             string chapterIdFromHref = href.Substring(href.LastIndexOf('/') + 1);
             // Fix: Prefix with core slug for unique ID (e.g., "raising-villains-the-right-way-13")
-            string coreSlug = baseSlug.Replace("-*", "");  // Remove wildcard for chapter ID
+            string coreSlug = baseSlug.Replace("-*", ""); // Remove wildcard for chapter ID
             string uniqueChapterId = $"{coreSlug}-{chapterNumber}";
             MangaConnectorId<Chapter> mcId = new(ch, this, uniqueChapterId, fullUrl);
             ch.MangaConnectorIds.Add(mcId);
             chapters.Add((ch, mcId));
         }
-
         Log.InfoFormat("Found {0} chapters for {1}", chapters.Count, manga.Obj.Name);
         return chapters.OrderBy(c => c.Item1, new Chapter.ChapterComparer()).ToArray();
     }
