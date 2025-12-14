@@ -73,26 +73,34 @@ public abstract class BaseWorker : Identifiable
     /// </returns>
     public Task<BaseWorker[]> DoWork(Action? callback = null)
     {
-        // Start the worker
-        Log.DebugFormat("Checking {0}", ToString());
-        _cancellationTokenSource = new(TimeSpan.FromMinutes(10));
-        State = WorkerExecutionState.Waiting;
-        
-        // Wait for dependencies, start them if necessary
-        BaseWorker[] missingDependenciesThatNeedStarting = MissingDependencies.Where(d => d.State < WorkerExecutionState.Waiting).ToArray();
-        if(missingDependenciesThatNeedStarting.Any())
-            return new (() => missingDependenciesThatNeedStarting);
+        try
+        {
+            // Start the worker
+            Log.DebugFormat("Checking {0}", ToString());
+            _cancellationTokenSource = new(TimeSpan.FromMinutes(10));
+            State = WorkerExecutionState.Waiting;
+            
+            // Wait for dependencies, start them if necessary
+            BaseWorker[] missingDependenciesThatNeedStarting = MissingDependencies.Where(d => d.State < WorkerExecutionState.Waiting).ToArray();
+            if(missingDependenciesThatNeedStarting.Any())
+                return new (() => missingDependenciesThatNeedStarting);
 
-        if (MissingDependencies.Any())
-            return new (WaitForDependencies);
-        
-        // Run the actual work
-        Log.InfoFormat("Running {0}", ToString());
-        DateTime startTime = DateTime.UtcNow;
-        State = WorkerExecutionState.Running;
-        Task<BaseWorker[]> task = DoWorkInternal();
-        task.GetAwaiter().OnCompleted(Finish(startTime, callback));
-        return task;
+            if (MissingDependencies.Any())
+                return new (WaitForDependencies);
+            
+            // Run the actual work
+            Log.InfoFormat("Running {0}", ToString());
+            DateTime startTime = DateTime.UtcNow;
+            State = WorkerExecutionState.Running;
+            Task<BaseWorker[]> task = DoWorkInternal();
+            task.GetAwaiter().OnCompleted(Finish(startTime, callback));
+            return task;
+        }
+        catch (Exception e)
+        { 
+            Log.Error(e.ToString());
+            return Task.FromException<BaseWorker[]>(e);
+        }
     }
 
     private Action Finish(DateTime startTime, Action? callback = null) => () =>
