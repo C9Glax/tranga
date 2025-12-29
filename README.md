@@ -148,6 +148,7 @@ The file also includes [tranga-website](https://github.com/C9Glax/tranga-website
 | REQUESTS_PER_MINUTE               | `90`             | Maximum requests per minute for Mangaconnectors                                                                  |
 | MINUTES_BETWEEN_NOTIFICATIONS     | `1`              | Interval at which Tranga checks if notifications need to be sent.                                                |
 | HOURS_BETWEEN_NEW_CHAPTERS_CHECK  | `3`              | Interval at which Tranga checks if there are new chapters for a manga                                            |
+| WORKER_TIMEOUT                    | `600`            | Seconds a worker can take before being forcefully cancelled                                                      |
 
 ### Bare-Metal
 

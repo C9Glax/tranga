@@ -77,7 +77,7 @@ public abstract class BaseWorker : Identifiable
         {
             // Start the worker
             Log.DebugFormat("Checking {0}", ToString());
-            _cancellationTokenSource = new(TimeSpan.FromMinutes(10));
+            _cancellationTokenSource = new(Constants.WorkerTimeout);
             State = WorkerExecutionState.Waiting;
             
             // Wait for dependencies, start them if necessary
