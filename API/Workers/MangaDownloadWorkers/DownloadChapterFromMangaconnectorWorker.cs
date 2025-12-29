@@ -107,10 +107,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if (!Directory.Exists(directoryPath))
         {
             Log.Info($"Creating publication Directory: {directoryPath}");
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                Directory.CreateDirectory(directoryPath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
-            else
-                Directory.CreateDirectory(directoryPath);
+            Directory.CreateDirectory(directoryPath);
         }
 
         Log.Info($"Downloading images: {chapter}");
@@ -184,10 +181,6 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         {
             images.ForEach(i => i.Dispose());
         }
-        
-        Log.Debug("Setting Permissions");
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(saveArchiveFilePath, UserRead | UserWrite | UserExecute | GroupRead | GroupWrite | GroupExecute );
 
         chapter.Downloaded = true;
         chapter.FileName = new FileInfo(saveArchiveFilePath).Name;
@@ -319,8 +312,6 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         string fullCoverPath = Path.Join(TrangaSettings.CoverImageCacheOriginal, coverFileNameInCache);
         string newFilePath = Path.Join(publicationFolder, $"cover.{Path.GetFileName(coverFileNameInCache).Split('.')[^1]}" );
         File.Copy(fullCoverPath, newFilePath, true);
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            File.SetUnixFileMode(newFilePath, GroupRead | GroupWrite | UserRead | UserWrite | OtherRead | OtherWrite);
         Log.Debug($"Copied cover from {fullCoverPath} to {newFilePath}");
     }
 

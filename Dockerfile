@@ -7,9 +7,11 @@ FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:$DOTNET AS build-env
 WORKDIR /src
 COPY Tranga.sln /src
 COPY API/API.csproj /src/API/API.csproj
-RUN dotnet restore /src/Tranga.sln
+RUN dotnet restore /src/API/API.csproj
+
 COPY . /src/
-RUN dotnet publish -c Release --property:OutputPath=/publish -maxcpucount:1
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet publish /src/API/API.csproj -c Release --property:OutputPath=/publish -maxcpucount:1 --no-cache
 
 FROM base AS runtime
 

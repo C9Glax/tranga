@@ -1,0 +1,35 @@
+name: Unit Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.x'
+
+      - name: Restore dependencies
+        run: dotnet restore ./Tranga.sln
+
+      - name: Build the solution
+        run: dotnet build ./Tranga.sln --configuration Release --no-restore
+
+      - name: Run unit tests with report
+        run: dotnet test ./Tests/Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=TestResults.trx"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v5
+        with:
+          name: TestResults
+          path: ./Tests/TestResults/TestResults.trx

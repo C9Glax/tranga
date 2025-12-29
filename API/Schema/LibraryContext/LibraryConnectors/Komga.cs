@@ -6,7 +6,6 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
 {
     private readonly HttpClient _httpClient = new ()
     {
-        BaseAddress = new Uri(baseUrl),
         DefaultRequestHeaders =
         {
             { "X-API-Key", auth }
@@ -19,9 +18,9 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
         List<string> libraryIds = await GetLibraryIds(ct);
         foreach (string libraryId in libraryIds)
         {
-            if (await _httpClient.PostAsync($"api/v1/libraries/{libraryId}/scan", null, ct) is { IsSuccessStatusCode: false } res)
+            if (await _httpClient.PostAsync(BuildUri($"api/v1/libraries/{libraryId}/scan"), null, ct) is { IsSuccessStatusCode: false } res)
             {
-                Log.ErrorFormat("Unable to update library {0}: {1} {2}", libraryId, res.StatusCode, res.Content.ReadAsStringAsync(ct));
+                Log.ErrorFormat("Unable to update library {0}: {1} {3} {2}", libraryId, res.StatusCode, res.Content.ReadAsStringAsync(ct), res.RequestMessage?.RequestUri);
             }
         }
     }
@@ -33,7 +32,7 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
     private async Task<List<string>> GetLibraryIds(CancellationToken ct)
     {
         Log.Debug("Getting Libraries...");
-        if (await _httpClient.GetStringAsync("api/v1/libraries", ct) is not { } responseData)
+        if (await _httpClient.GetStringAsync(BuildUri("api/v1/libraries"), ct) is not { } responseData)
         {
             Log.Error("Unable to fetch libraries");
             return [];
@@ -46,9 +45,9 @@ public sealed class Komga(string baseUrl, string auth) : LibraryConnector(Librar
     internal override async Task<bool> Test(CancellationToken ct)
     {
         Log.Debug("Testing...");
-        if (await _httpClient.GetAsync("api/v2/users/me", ct) is { IsSuccessStatusCode: false } res)
+        if (await _httpClient.GetAsync(BuildUri("api/v2/users/me"), ct) is { IsSuccessStatusCode: false } res)
         {
-            Log.ErrorFormat("Unable to fetch account: {0} {1}", res.StatusCode, res.Content.ReadAsStringAsync(ct));
+            Log.ErrorFormat("Unable to fetch account: {0} {2} {1}", res.StatusCode, await res.Content.ReadAsStringAsync(ct), res.RequestMessage?.RequestUri);
             return false;
         }
 

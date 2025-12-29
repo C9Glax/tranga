@@ -17,9 +17,10 @@ public sealed class Mangaworld : MangaConnector
             "mangaworld.cx","www.mangaworld.cx",
             "mangaworld.bz","www.mangaworld.bz",
             "mangaworld.fun","www.mangaworld.fun",
-            "mangaworld.ac","www.mangaworld.ac"
+            "mangaworld.ac","www.mangaworld.ac",
+            "mangaworld.mx","www.mangaworld.mx"
         ],
-        "https://www.mangaworld.cx/public/assets/seo/favicon-96x96.png?v=3"
+        "https://www.mangaworld.mx/public/assets/seo/favicon-96x96.png?v=3"
     )
     {
         downloadClient = new HttpDownloadClient();
@@ -42,7 +43,7 @@ public sealed class Mangaworld : MangaConnector
 
     private (Manga, MangaConnectorId<Manga>)[] SearchOnce(string query)
     {
-        Uri baseUri = new("https://www.mangaworld.cx/");
+        Uri baseUri = new("https://www.mangaworld.mx/");
         Uri searchUrl = new(baseUri, "archive?keyword=" + HttpUtility.UrlEncode(query));
 
         using HttpResponseMessage res =
@@ -102,7 +103,7 @@ public sealed class Mangaworld : MangaConnector
         string id = parts[0];
         string slug = parts[1];
 
-        Uri seriesUrl = new Uri($"https://www.mangaworld.cx/manga/{id}/{slug}/");
+        Uri seriesUrl = new Uri($"https://www.mangaworld.mx/manga/{id}/{slug}/");
 
         using HttpResponseMessage res =
             downloadClient.MakeRequest(seriesUrl.ToString(), RequestType.MangaInfo).Result;
@@ -178,7 +179,7 @@ public sealed class Mangaworld : MangaConnector
 
         string id = parts[0];
         string slug = parts[1];
-        string seriesUrl = $"https://www.mangaworld.cx/manga/{id}/{slug}/";
+        string seriesUrl = $"https://www.mangaworld.mx/manga/{id}/{slug}/";
 
         string html = FetchHtmlWithFallback(seriesUrl, out Uri baseUri);
         if (string.IsNullOrEmpty(html))
@@ -195,7 +196,7 @@ public sealed class Mangaworld : MangaConnector
 
     internal override string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId)
     {
-        string raw = chapterId.WebsiteUrl ?? $"https://www.mangaworld.cx/manga/{chapterId.IdOnConnectorSite}";
+        string raw = chapterId.WebsiteUrl ?? $"https://www.mangaworld.mx/manga/{chapterId.IdOnConnectorSite}";
         string url = EnsureReaderUrl(raw);
 
         if (downloadClient.MakeRequest(url, RequestType.MangaInfo).Result is not { IsSuccessStatusCode: true } res)
@@ -232,7 +233,7 @@ public sealed class Mangaworld : MangaConnector
                 return list;
             })
             .Select(x => MakeAbsoluteUrl(baseUri, x))
-            .Where(u => u.ToLowerInvariant().StartsWith("http") && (u.EndsWith(".jpg") || u.EndsWith(".png") || u.EndsWith(".webp")));
+            .Where(u => u.ToLowerInvariant().StartsWith("http") && (u.EndsWith(".jpg") || u.EndsWith(".jpeg") || u.EndsWith(".png") || u.EndsWith(".webp")));
 
         return fromDom.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
     }
