@@ -9,7 +9,6 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
 {
     private readonly HttpClient _netClient = new HttpClient()
     {
-        BaseAddress = new Uri(baseUrl),
         DefaultRequestHeaders =
         {
             Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
@@ -28,7 +27,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
         string pluginName = "pluginName=Tranga";
         string path = $"/api/Plugin/authenticate?{apiKey}&{pluginName}";
 
-        if (await _netClient.PostAsync(path, null) is not { IsSuccessStatusCode: true } responseMessage)
+        if (await _netClient.PostAsync(BuildUri(path), null) is not { IsSuccessStatusCode: true } responseMessage)
         {
             throw new ParsingException("Could not connect to the Library instance");
         }
@@ -58,7 +57,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
         JObject requestData = new () { { "ids", JsonConvert.SerializeObject(ids) } };
 
         await RefreshAuth();
-        await _netClient.PostAsJsonAsync("/api/Library/scan-multiple", requestData, ct);
+        await _netClient.PostAsJsonAsync(BuildUri("/api/Library/scan-multiple"), requestData, ct);
     }
 
     /// <summary>
@@ -69,7 +68,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     {
         Log.Debug("Getting Libraries...");
         await RefreshAuth();
-        if(await _netClient.GetStringAsync("/api/Library/libraries", ct) is not { } responseData)
+        if(await _netClient.GetStringAsync(BuildUri("/api/Library/libraries"), ct) is not { } responseData)
         {
             Log.Error("Unable to fetch libraries");
             return [];
@@ -83,7 +82,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     {
         Log.Debug("Testing...");
         await RefreshAuth();
-        if(await _netClient.GetAsync("/api/Account", ct) is not { IsSuccessStatusCode: true })
+        if(await _netClient.GetAsync(BuildUri("/api/Account"), ct) is not { IsSuccessStatusCode: true })
         {
             Log.Error("Unable to fetch account");
             return false;

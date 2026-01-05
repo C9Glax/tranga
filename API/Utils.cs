@@ -39,4 +39,11 @@ public static class Utils
         }
         return sb.ToString();
     }
+
+    /// <summary>
+    /// Builds a URI
+    /// </summary>
+    public static Uri BuildUri(string basePath, string relativePath) => BuildUri(new Uri(basePath), relativePath);
+    
+    public static Uri BuildUri(Uri basePath, string relativePath) => new (new Uri(basePath.AbsoluteUri.TrimEnd('/') + '/'), relativePath.TrimStart('/')); //Shenanigans
 }
