@@ -20,7 +20,7 @@ public static class Tranga
     
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
-    internal static readonly MangaConnector[] MangaConnectors = [new Global(), new MangaDex(), new Mangaworld(), new MangaPark()];
+    internal static readonly MangaConnector[] MangaConnectors = [new Global(), new AsuraComic(), new MangaDex(), new Mangaworld(), new MangaPark()];
     internal static readonly TrangaSettings Settings = TrangaSettings.Load();
     
     // ReSharper disable MemberCanBePrivate.Global
@@ -202,16 +202,41 @@ public static class Tranga
     {
         context.ChangeTracker.Clear();
         Log.DebugFormat("Adding Manga to Context: {0}", addManga);
-        (Manga,MangaConnectorId<Manga>)? result;
+        (Manga, MangaConnectorId<Manga>)? result;
         if (await context.FindMangaLike(addManga, token) is { } mangaId)
         {
             Manga manga = await context.MangaIncludeAll().FirstAsync(m => m.Key == mangaId, token);
             Log.DebugFormat("Merging with existing Manga: {0}", manga);
 
-            MangaConnectorId<Manga> newId = new(manga, addMcId.MangaConnectorName, addMcId.IdOnConnectorSite, addMcId.WebsiteUrl, addMcId.UseForDownload);
-            manga.MangaConnectorIds.Add(newId);
+            // Check for existing MangaConnectorId to avoid duplicate key tracking conflict
+            var existingMcId = manga.MangaConnectorIds
+                .FirstOrDefault(id => id.MangaConnectorName == addMcId.MangaConnectorName 
+                                      && id.IdOnConnectorSite == addMcId.IdOnConnectorSite);
+
+            MangaConnectorId<Manga> mcIdToUse;
+            if (existingMcId == null)
+            {
+                // Create new if not exists (matches original constructor signature)
+                mcIdToUse = new MangaConnectorId<Manga>(manga, addMcId.MangaConnectorName, addMcId.IdOnConnectorSite, addMcId.WebsiteUrl, addMcId.UseForDownload);
+                manga.MangaConnectorIds.Add(mcIdToUse);
+                Log.DebugFormat("Added new MangaConnectorId for {0}", addMcId.MangaConnectorName);
+            }
+            else
+            {
+                // Reuse existing; recreate if URL changed (init-only safe via constructor)
+                mcIdToUse = existingMcId;
+                if (existingMcId.WebsiteUrl != addMcId.WebsiteUrl)
+                {
+                    // Recreate with constructor (sets init-only WebsiteUrl)
+                    var updatedMcId = new MangaConnectorId<Manga>(manga, existingMcId.MangaConnectorName, existingMcId.IdOnConnectorSite, addMcId.WebsiteUrl, existingMcId.UseForDownload);
+                    manga.MangaConnectorIds.Remove(existingMcId);
+                    manga.MangaConnectorIds.Add(updatedMcId);
+                    mcIdToUse = updatedMcId;
+                    Log.DebugFormat("Updated/Recreated MangaConnectorId for {0} (URL changed)", addMcId.MangaConnectorName);
+                }
+            }
             
-            result = (manga, newId);
+            result = (manga, mcIdToUse);
         }
         else
         {
