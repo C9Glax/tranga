@@ -20,7 +20,7 @@ public static class Tranga
     
     private static readonly ILog Log = LogManager.GetLogger(typeof(Tranga));
     internal static readonly MetadataFetcher[] MetadataFetchers = [new MyAnimeList()];
-    internal static readonly MangaConnector[] MangaConnectors = [new Global(), new AsuraComic(), new MangaDex(), new Mangaworld(), new MangaPark()];
+    internal static readonly MangaConnector[] MangaConnectors = [new Global(), new AsuraComic(), new MangaDex(), new Mangaworld()];
     internal static readonly TrangaSettings Settings = TrangaSettings.Load();
     
     // ReSharper disable MemberCanBePrivate.Global
