@@ -37,7 +37,7 @@ public class WeebCentral : MangaConnector
         HtmlDocument doc = new();
         doc.LoadHtml(html);
 
-        HtmlNodeCollection? nodes = doc.DocumentNode.SelectNodes("//a[contains(@href, 'series/')]"); // Match v1 XPath
+        HtmlNodeCollection? nodes = doc.DocumentNode.SelectNodes("//a[contains(@href, 'series/')]");
         Log.DebugFormat("Found {0} series nodes in search HTML", nodes?.Count ?? 0);
         if (nodes is null || nodes.Count < 1)
         {
@@ -102,7 +102,7 @@ public class WeebCentral : MangaConnector
 
     public override (Manga, MangaConnectorId<Manga>)? GetMangaFromId(string mangaIdOnSite)
     {
-        string url = $"https://https://weebcentral.com/series/{mangaIdOnSite}";
+        string url = $"https://weebcentral.com/series/{mangaIdOnSite}";
         HttpResponseMessage response = downloadClient.MakeRequest(url, RequestType.MangaInfo).GetAwaiter().GetResult();
         if (!response.IsSuccessStatusCode)
         {
@@ -206,36 +206,29 @@ public class WeebCentral : MangaConnector
         if (chapterNodes is null)
             return [];
 
-        HashSet<string> seenHrefs = new();
         List<(Chapter, MangaConnectorId<Chapter>)> chapters = new();
 
         foreach (HtmlNode node in chapterNodes)
         {
             string href = node.GetAttributeValue("href", "").Trim();
-			// https://weebcentral.com/chapters/01J76XYWSYSQ65VK67RK3RS0JJ
-
             string text = node.InnerText.Trim();
 
-            // Get chapter number - supports decimals
+            // Get chapter number - supports decimals and multiple WeebCentral chapter naming schemes
             string chapterNumber;
-                Match textMatch = Regex.Match(text, @"Chapter\s*([\d\.]+)", RegexOptions.IgnoreCase);
-                if (!textMatch.Success)
-                    continue;
-                chapterNumber = textMatch.Groups[1].Value;
-
+			var match = Regex.Match(text, @"(?:chapter|ch\.?|episode|ep\.?|day|hunt|round|part|\#)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+			if (match.Success)
+				chapterNumber = match.Groups[1].Value;
+			else
+			{
+				// fallback for specials
+				chapterNumber = "0";
+				Log.Warn($"Unknown chapter format: {text}");
+			}
 
             string? title = null;
             string chapterStr = $"Chapter {chapterNumber}";
 
-			const int MaxTitleLength = 255;
-
-			if (!string.IsNullOrEmpty(title) && title.Length > MaxTitleLength)
-			{
-				Log.Warn($"Chapter title too long ({title.Length}), truncating");
-				title = title[..MaxTitleLength];
-			}
             Chapter ch = new(manga.Obj, chapterNumber, null, title);
-            string coreSlug = baseSlug.Replace("-*", "");
 			string chapterIdOnSite = new Uri(href).Segments.Last();
 			string canonicalChapterUrl = $"https://weebcentral.com/chapters/{chapterIdOnSite}";
             MangaConnectorId<Chapter> mcId = new(ch, this, chapterIdOnSite, canonicalChapterUrl);
