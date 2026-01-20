@@ -36,8 +36,8 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
 - [MangaWorld](https://www.mangaworld.cx) (it)
-- [AsuraComic](https://asurascanz.com) (en) thanks @yacob841
-- [WeebCentral](https://weebcentral.com/) (en) thanks @yacob841
+- [AsuraComic](https://asurascanz.com) (en) thanks [@yacob841](https://github.com/yacob841)
+- [WeebCentral](https://weebcentral.com/) (en) thanks [@TheyCallMeTravis](https://github.com/TheyCallMeTravis)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
@@ -242,6 +242,7 @@ Tranga is using a **code-first** EF-Core approach. If you modify the database(co
 
 1. Copy one of the existing connectors, or start from scratch and inherit from `API.Schema.MangaConnectors.MangaConnector`.
 2. Add the new Connector as Object-Instance in `Tranga.cs` to the MangaConnector-Array `connectors`.
+3. Add the discriminator to the `MangaContext.cs` `MangaConnector`-Entity
 
 ### How to test locally
 
