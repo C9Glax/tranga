@@ -215,7 +215,7 @@ public class WeebCentral : MangaConnector
 
             // Get chapter number - supports decimals and multiple WeebCentral chapter naming schemes
             string chapterNumber;
-			var match = Regex.Match(text, @"(?:chapter|ch\.?|episode|ep\.?|day|hunt|round|part|\#)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+			var match = Regex.Match(text, @"(?:chapter|ch\.?|episode|ep\.?|day|days|hunt|round|part|page|rating|mission|\#)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
 			if (match.Success)
 				chapterNumber = match.Groups[1].Value;
 			else
