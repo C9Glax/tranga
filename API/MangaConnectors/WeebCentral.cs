@@ -256,50 +256,46 @@ public class WeebCentral : MangaConnector
                 .FirstOrDefault(id => id.MangaConnectorName == this.Name)?.WebsiteUrl;
         }
 
-        // Sync wrapper for async MakeRequest
-        ChromiumDownloadClient chromium = new();
-        try
-        {
-            HttpResponseMessage response = chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer).GetAwaiter().GetResult();
+		return GetChapterImageUrlsAsync(chapterId, referrer).GetAwaiter().GetResult();
+	}
 
-            if ((int)response.StatusCode < 200 || (int)response.StatusCode >= 300)
-            {
-                Log.Error("Failed to load chapter page with Chromium");
-                return [];
-            }
+	private async Task<string[]> GetChapterImageUrlsAsync(MangaConnectorId<Chapter> chapterId, string? referrer)
+	{
+		await using var chromium = new ChromiumDownloadClient();
+		
+		HttpResponseMessage response = await chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer);
 
-            string html = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            HtmlDocument doc = new();
-            doc.LoadHtml(html);
+		if ((int)response.StatusCode < 200 || (int)response.StatusCode >= 300)
+		{
+			Log.Error("Failed to load chapter page with Chromium");
+			return [];
+		}
 
-            Log.DebugFormat("HTML snippet (first 500 chars): {0}", doc.DocumentNode.OuterHtml.Substring(0, Math.Min(500, doc.DocumentNode.OuterHtml.Length)));
+		string html = await response.Content.ReadAsStringAsync();
+		
+		HtmlDocument doc = new();
+		doc.LoadHtml(html);
 
-            HtmlNodeCollection? imageNodes = doc.DocumentNode.SelectNodes("//img[starts-with(@alt, 'Page')]");
-            if (imageNodes is null || imageNodes.Count == 0)
-            {
-                Log.Warn("No chapter page images found");
-                return [];
-            }
+		HtmlNodeCollection? imageNodes = doc.DocumentNode.SelectNodes("//img[starts-with(@alt, 'Page')]");
+		
+		if (imageNodes is null || imageNodes.Count == 0)
+		{
+			Log.Warn("No chapter page images found");
+			return [];
+		}
 
-            string[] imageUrls = imageNodes
-                .Select(i => 
-                {
-                    string src = i.GetAttributeValue("src", "");
-                    if (string.IsNullOrEmpty(src))
-                        src = i.GetAttributeValue("data-src", "");
-                    if (!src.StartsWith("http"))
-                        src = "https://lastation.us" + src;
-                    return src;
-                })
-                .Where(u => !string.IsNullOrEmpty(u))
-                .ToArray();
+		string[] imageUrls = imageNodes
+			.Select(i => 
+			{
+				string src = i.GetAttributeValue("src", "");
+				if (string.IsNullOrEmpty(src))
+					src = i.GetAttributeValue("data-src", "");
+				return src;
+			})
+			.Where(u => !string.IsNullOrEmpty(u))
+			.ToArray();
 
-            Log.InfoFormat("Found {0} images for chapter {1}", imageUrls.Length, chapterId.Obj);
-            return imageUrls;
-        }
-        finally
-        {
-            chromium.DisposeAsync().AsTask().GetAwaiter().GetResult();  // Sync dispose
-        }
-    }
+		Log.InfoFormat("Found {0} images for chapter {1}", imageUrls.Length, chapterId.Obj);
+		return imageUrls;
+	}
 }
