@@ -24,7 +24,7 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
             .HasValue<Global>("Global")
             .HasValue<AsuraComic>("AsuraComic")
             .HasValue<MangaDex>("MangaDex")
-            .HasValue<Mangaworld>("Mangaworld");
+            .HasValue<Mangaworld>("Mangaworld")
             .HasValue<WeebCentral>("WeebCentral");
 
         //Manga has many Chapters
