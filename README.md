@@ -37,6 +37,7 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
 - [MangaWorld](https://www.mangaworld.cx) (it)
 - [AsuraComic](https://asurascanz.com) (en) thanks @yacob841
+- [WeebCentral](https://weebcentral.com/) (en) thanks @yacob841
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
