@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
 using log4net;
-using Microsoft.Extensions.Logging;
 using PuppeteerSharp;
-using API;  // For Tranga.Settings.UserAgent
-using API.MangaDownloadClients;  // For HttpDownloadClient and IDownloadClient
 
 namespace API.MangaDownloadClients;
 
