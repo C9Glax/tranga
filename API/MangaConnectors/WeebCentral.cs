@@ -211,8 +211,7 @@ public class WeebCentral : MangaConnector
         foreach (HtmlNode node in chapterNodes)
         {
             string href = node.GetAttributeValue("href", "").Trim();
-			var titleSpan = node.SelectSingleNode(".//span[@class='']");
-            string text = titleSpan.InnerText.Trim();
+			string text = node.SelectSingleNode(".//span[@class='']").InnerText.Trim();
 
 			// Get volume/season number - if applicable
 			int? volumeNumber = null;
