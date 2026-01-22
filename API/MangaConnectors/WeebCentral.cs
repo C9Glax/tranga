@@ -211,24 +211,31 @@ public class WeebCentral : MangaConnector
         foreach (HtmlNode node in chapterNodes)
         {
             string href = node.GetAttributeValue("href", "").Trim();
-            string text = node.InnerText.Trim();
+			var titleSpan = node.SelectSingleNode(".//span[@class='']");
+            string text = titleSpan.InnerText.Trim();
 
-            // Get chapter number - supports decimals and multiple WeebCentral chapter naming schemes
+			// Get volume/season number - if applicable
+			int? volumeNumber = null;
+			var volMatch = Regex.Match(text, @"(?:volume|vol\.?|season|s\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+			if (volMatch.Success)
+				volumeNumber = int.Parse(volMatch.Groups[1].Value);
+			
+            // Get chapter number - supports decimals
             string chapterNumber;
-			var match = Regex.Match(text, @"(?:chapter|ch\.?|episode|ep\.?|day|days|hunt|round|part|page|rating|mission|\#)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
-			if (match.Success)
-				chapterNumber = match.Groups[1].Value;
+			var chMatch = Regex.Match(text, @"(?:chapter|ch\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+			if (chMatch.Success)
+				chapterNumber = chMatch.Groups[1].Value;
 			else
 			{
-				// fallback for specials
-				chapterNumber = "0";
-				Log.Warn($"Unknown chapter format: {text}");
+				// If "chapter" or "ch" is not found, take the last number in the string
+				var numberMatches = Regex.Matches(text, @"\d+(\.\d+)?");
+				chapterNumber = numberMatches[numberMatches.Count - 1].Value;
+				Log.Warn($"Unknown chapter format detected. Using last number in string: {chapterNumber}");
 			}
 
             string? title = null;
-            string chapterStr = $"Chapter {chapterNumber}";
 
-            Chapter ch = new(manga.Obj, chapterNumber, null, title);
+            Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, title);
 			string chapterIdOnSite = new Uri(href).Segments.Last();
 			string canonicalChapterUrl = $"https://weebcentral.com/chapters/{chapterIdOnSite}";
             MangaConnectorId<Chapter> mcId = new(ch, this, chapterIdOnSite, canonicalChapterUrl);
