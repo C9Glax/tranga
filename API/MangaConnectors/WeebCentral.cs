@@ -228,8 +228,17 @@ public class WeebCentral : MangaConnector
 			{
 				// If "chapter" or "ch" is not found, take the last number in the string
 				var numberMatches = Regex.Matches(text, @"\d+(\.\d+)?");
-				chapterNumber = numberMatches[numberMatches.Count - 1].Value;
-				Log.Warn($"Unknown chapter format detected. Using last number in string: {chapterNumber}");
+				if (numberMatches.Count > 0)
+				{
+					chapterNumber = numberMatches[numberMatches.Count - 1].Value;
+					Log.Warn($"Unknown chapter format detected. Using last number in string: {chapterNumber}");
+				}
+				else
+				{
+					//fallback for everything else
+					chapterNumber = "0";
+					Log.Warn($"Unknown chapter format: {text}");
+				}
 			}
 
             string? title = null;
