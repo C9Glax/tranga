@@ -223,7 +223,7 @@ public class WeebCentral : MangaConnector
             // Only use lines that have a number and at least one other character.
             // This is needed because the text also contains additional garbage text.
             // If the detection breaks, maybe only allowing lines with the chapter number at the very end helps.
-            Regex titleRegex = new Regex(@"[^\r\n]*?(?:(?:s|vol)\.? ?(\d)+[ ][^\r\n]*?)?(?<=[^\d\s\.][^\r\n]*)(\d+(?:[\.]\d+)*)[^\d\r\n]*$", RegexOptions.IgnoreCase|RegexOptions.Multiline);
+            Regex titleRegex = new Regex(@"[^\r\n]*?(?:(?:s|vol)\.? ?(\d)+[ ][^\r\n]*?)?(?<=[^\d\s\.][^\r\n]*) (\d+(?:[\.]\d+)*)[^\d\r\n]*$", RegexOptions.IgnoreCase|RegexOptions.Multiline);
 
             // Selection is the whole line the title was found in.
             // Group 1 is volume/season integer, if detected.
