@@ -213,8 +213,6 @@ public class WeebCentral : MangaConnector
             string href = node.GetAttributeValue("href", "").Trim();
             string text = node.InnerText.Trim();
 
-            Log.Debug($"Got chapter with Name text: '{text}'"); //TODO: remove
-
             string chapterNumber;
             int? volumeNumber = null;
             string? chapterTitle = null;
@@ -234,10 +232,8 @@ public class WeebCentral : MangaConnector
 
 			if (match.Success)
             {
-                chapterTitle = match.Value.Trim(); // Use the whole line as title but remove whitespace
-                Log.Debug($"Selected title: '{chapterTitle}'"); //TODO: remove
-
 				chapterNumber = match.Groups[2].Value;
+                chapterTitle = match.Value.Trim(); // Use the whole line as title but remove whitespace
 
                 // Set the volumeNumber to Group 1 of regex if it has a result
                 if (match.Groups[1].Success)
