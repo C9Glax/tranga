@@ -213,11 +213,46 @@ public class WeebCentral : MangaConnector
             string href = node.GetAttributeValue("href", "").Trim();
             string text = node.InnerText.Trim();
 
-            // Get chapter number - supports decimals and multiple WeebCentral chapter naming schemes
+            Log.Debug($"Got chapter with Name text: '{text}'"); //TODO: remove
+
             string chapterNumber;
-			var match = Regex.Match(text, @"(?:chapter|ch\.?|episode|ep\.?|day|days|hunt|round|part|page|rating|mission|\#)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+            int? volumeNumber = null;
+            string? chapterTitle = null;
+
+            // Try to detect volume and chapter numbers.
+            // Group 1: volume numbers after 'S' or 'Vol.'
+            // Group 2: the last number with dot seperation like 1.1 or 1.12.4
+            // Only use lines that have a number and at least one other character.
+            // This is needed because the text also contains additional garbage text.
+            // If the detection breaks, maybe only allowing lines with the chapter number at the very end helps.
+            Regex titleRegex = new Regex(@"[^\r\n]*?(?:(?:s|vol)\.? ?(\d)+[ ][^\r\n]*?)?(?<=[^\d\s\.][^\r\n]*)(\d+(?:[\.]\d+)*)[^\d\r\n]*$", RegexOptions.IgnoreCase|RegexOptions.Multiline);
+
+            // Selection is the whole line the title was found in.
+            // Group 1 is volume/season integer, if detected.
+            // Group 2 is the chapter number / the last number in the title with the format: \d+(\.\d+)*
+			Match match = titleRegex.Match(text);
+
 			if (match.Success)
-				chapterNumber = match.Groups[1].Value;
+            {
+                chapterTitle = match.Value.Trim(); // Use the whole line as title but remove whitespace
+                Log.Debug($"Selected title: '{chapterTitle}'"); //TODO: remove
+
+				chapterNumber = match.Groups[2].Value;
+
+                // Set the volumeNumber to Group 1 of regex if it has a result
+                if (match.Groups[1].Success)
+                {
+                    int detectedVolumeNumber;
+                    if (int.TryParse(match.Groups[1].Value, out detectedVolumeNumber))
+                    {
+                        volumeNumber = detectedVolumeNumber;
+                    }
+                    else
+                    {
+                        Log.Warn($"Unknown volume format: {match.Groups[1].Value}");
+                    }   
+                }
+            }
 			else
 			{
 				// fallback for specials
@@ -225,10 +260,7 @@ public class WeebCentral : MangaConnector
 				Log.Warn($"Unknown chapter format: {text}");
 			}
 
-            string? title = null;
-            string chapterStr = $"Chapter {chapterNumber}";
-
-            Chapter ch = new(manga.Obj, chapterNumber, null, title);
+            Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, chapterTitle);
 			string chapterIdOnSite = new Uri(href).Segments.Last();
 			string canonicalChapterUrl = $"https://weebcentral.com/chapters/{chapterIdOnSite}";
             MangaConnectorId<Chapter> mcId = new(ch, this, chapterIdOnSite, canonicalChapterUrl);
