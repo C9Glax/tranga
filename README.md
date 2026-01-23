@@ -93,19 +93,24 @@ The container also spins up a Swagger site at `http://<url>/swagger`.
 
 ## Built With
 
-- ASP.NET
-  - EF Core
+**💙 [Blåhaj](https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/) 🦈**
+- [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet)
+  - [EF Core](https://learn.microsoft.com/en-us/ef/core/)
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
-- [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
+  - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
 - [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
+- [Puppeteersharp](https://www.puppeteersharp.com/)
+  - [Puppeteer](https://github.com/puppeteer/puppeteer) 
+  - [Chromium](https://www.chromium.org/Home/)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
 - [Jikan](https://jikan.moe/)
   - [Jikan.Net](https://github.com/Ervie/jikan.net)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
-- 💙 Blåhaj 🦈
+- [Log4Net](https://logging.apache.org/log4net/index.html)
+- [xUnit](https://xunit.net/index.html?tabs=cs)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
