@@ -215,9 +215,14 @@ public class WeebCentral : MangaConnector
 
 			// Get volume/season number - if applicable
 			int? volumeNumber = null;
-			var volMatch = Regex.Match(text, @"(?:volume|vol\.?|season|s\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+			var volMatch = Regex.Match(text, @"(?:volume|vol\.?|season|s\.?)\s*([\d]?)", RegexOptions.IgnoreCase);
 			if (volMatch.Success)
-				volumeNumber = int.Parse(volMatch.Groups[1].Value);
+			{
+				if (int.TryParse(volMatch.Groups[1].Value, out int parsedVolume))
+					volumeNumber = parsedVolume;
+				else
+					Log.Warn($"Failed to parse volume number: {volMatch.Groups[1].Value}");
+			}
 			
             // Get chapter number - supports decimals
             string chapterNumber;
@@ -235,9 +240,9 @@ public class WeebCentral : MangaConnector
 				}
 				else
 				{
-					//fallback for everything else
-					chapterNumber = "0";
-					Log.Warn($"Unknown chapter format: {text}");
+					// For everything else, log and continue
+					Log.Warn($"Unknown chapter format ignored: {text}");
+					continue;
 				}
 			}
 
