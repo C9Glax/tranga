@@ -1,5 +1,5 @@
 ﻿# syntax=docker/dockerfile:1
-ARG DOTNET=9.0
+ARG DOTNET=10.0
 FROM mcr.microsoft.com/dotnet/aspnet:$DOTNET AS base
 WORKDIR /publish
 
@@ -18,11 +18,11 @@ FROM base AS runtime
 # Temporarily switch to root for Chromium install
 USER root
 
-RUN apt-get update \
-  && apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0 libgtk-3-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libxshmfence1 libnss3 chromium \
-  && apt-get autopurge -y \
-  && apt-get autoclean -y \
-  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+RUN apt-get update
+RUN apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0 libgtk-3-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libxshmfence1 libnss3 chromium
+RUN apt-get autopurge -y \
+    && apt-get autoclean -y
+RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # Expose port
 EXPOSE 6531
@@ -32,10 +32,10 @@ ARG UNAME=tranga
 ARG UID=1000
 ARG GID=1000
 RUN groupadd -g $GID -o $UNAME \
-  && useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME \
-  && mkdir /usr/share/tranga-api \
-  && mkdir /Manga \
-  && chown 1000:1000 /usr/share/tranga-api \
+  && useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+RUN mkdir /usr/share/tranga-api \
+  && mkdir /Manga
+RUN chown 1000:1000 /usr/share/tranga-api \
   && chown 1000:1000 /Manga \
   # Ensure Chromium is executable
   && chmod +x /usr/bin/chromium

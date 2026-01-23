@@ -92,9 +92,6 @@
               }
             }
           },
-          "500": {
-            "description": "Database error"
-          },
           "400": {
             "description": "Page data wrong",
             "content": {
@@ -114,6 +111,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Database error"
           }
         }
       }
@@ -600,8 +600,8 @@
               }
             }
           },
-          "428": {
-            "description": "API.Controllers.DTOs.Chapter is not linked to API.MangaConnectors.MangaConnector yet. Search for API.Controllers.DTOs.Chapter on API.MangaConnectors.MangaConnector first (to create a API.Controllers.DTOs.MangaConnectorId`1).",
+          "500": {
+            "description": "Error during Database Operation",
             "content": {
               "text/plain; x-version=2.0": {
                 "schema": {
@@ -610,8 +610,8 @@
               }
             }
           },
-          "500": {
-            "description": "Error during Database Operation",
+          "428": {
+            "description": "API.Controllers.DTOs.Chapter is not linked to API.MangaConnectors.MangaConnector yet. Search for API.Controllers.DTOs.Chapter on API.MangaConnectors.MangaConnector first (to create a API.Controllers.DTOs.MangaConnectorId`1).",
             "content": {
               "text/plain; x-version=2.0": {
                 "schema": {
@@ -1005,6 +1005,16 @@
               }
             }
           },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unable to log into account",
             "content": {
@@ -1021,16 +1031,6 @@
               "text/json; x-version=2.0": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error during Database Operation",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -1080,6 +1080,16 @@
               }
             }
           },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unable to log into account",
             "content": {
@@ -1096,16 +1106,6 @@
               "text/json; x-version=2.0": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error during Database Operation",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -1362,17 +1362,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "JPEG Image",
-            "content": {
-              "image/jpeg; x-version=2.0": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
           "204": {
             "description": "Cover not loaded"
           },
@@ -1402,6 +1391,17 @@
               "text/plain; x-version=2.0": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "JPEG Image",
+            "content": {
+              "image/jpeg; x-version=2.0": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -1517,6 +1517,16 @@
               }
             }
           },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "412": {
             "description": "API.Controllers.DTOs.Manga was not linked to API.MangaConnectors.MangaConnector, so nothing changed",
             "content": {
@@ -1529,16 +1539,6 @@
           },
           "428": {
             "description": "API.Controllers.DTOs.Manga is not linked to API.MangaConnectors.MangaConnector yet. Search for API.Controllers.DTOs.Manga on API.MangaConnectors.MangaConnector first (to create a API.Controllers.DTOs.MangaConnectorId`1).",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error during Database Operation",
             "content": {
               "text/plain; x-version=2.0": {
                 "schema": {
@@ -2122,11 +2122,18 @@
               }
             }
           },
+          "404": {
+            "description": "API.Schema.MangaContext.Manga with MangaId not found",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal Server Error"
-          },
-          "404": {
-            "description": "API.Schema.MangaContext.Manga with MangaId not found"
           }
         }
       }
@@ -2392,6 +2399,16 @@
               }
             }
           },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "412": {
             "description": "No API.Schema.MangaContext.MetadataFetchers.MetadataEntry linking API.Schema.MangaContext.Manga and API.Schema.MangaContext.MetadataFetchers.MetadataFetcher found",
             "content": {
@@ -2408,16 +2425,6 @@
               "text/json; x-version=2.0": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error during Database Operation",
-            "content": {
-              "text/plain; x-version=2.0": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -3536,8 +3543,8 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "Accepted"
+          "200": {
+            "description": ""
           },
           "404": {
             "description": "API.Workers.BaseWorker with WorkerId could not be found",
@@ -3548,6 +3555,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Accepted"
           },
           "412": {
             "description": "API.Workers.BaseWorker was already not running",
@@ -3568,9 +3578,6 @@
                 }
               }
             }
-          },
-          "200": {
-            "description": ""
           }
         }
       }
@@ -4745,5 +4752,46 @@
         "type": "string"
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Actions"
+    },
+    {
+      "name": "Chapters"
+    },
+    {
+      "name": "FileLibrary"
+    },
+    {
+      "name": "LibraryConnector"
+    },
+    {
+      "name": "Maintenance"
+    },
+    {
+      "name": "Manga"
+    },
+    {
+      "name": "MangaConnector"
+    },
+    {
+      "name": "MetadataFetcher"
+    },
+    {
+      "name": "NotificationConnector"
+    },
+    {
+      "name": "Query"
+    },
+    {
+      "name": "Search"
+    },
+    {
+      "name": "Settings"
+    },
+    {
+      "name": "Worker"
+    }
+  ]
 }
