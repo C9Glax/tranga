@@ -109,6 +109,7 @@ The container also spins up a Swagger site at `http://<url>/swagger`.
 - [Jikan](https://jikan.moe/)
   - [Jikan.Net](https://github.com/Ervie/jikan.net)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
+- [GitInfo](https://github.com/devlooped/GitInfo)
 - [Log4Net](https://logging.apache.org/log4net/index.html)
 - [xUnit](https://xunit.net/index.html?tabs=cs)
 
