@@ -83,9 +83,6 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if (imageUrls.Length < 1)
         {
             Log.Info($"No imageUrls for chapter {chapter}");
-            mangaConnectorId.UseForDownload = false; // Do not try to download from this again
-            if(await MangaContext.Sync(CancellationToken, GetType(), "Disable Id") is { success: false } result)
-                Log.Error(result.exceptionMessage);
             return [];
         }
 
