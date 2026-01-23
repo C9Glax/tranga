@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -23,20 +23,20 @@
         <PackageReference Include="JikanDotNet" Version="2.10.1" />
         <PackageReference Include="LinkDotNet.BuildInformation" Version="2.1.2" />
         <PackageReference Include="log4net" Version="3.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.9" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="Npgsql" Version="10.0.1" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-        <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="3.0.979" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="9.0.6" />
+        <PackageReference Include="Soenneker.Utils.String.NeedlemanWunsch" Version="4.0.983" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="10.1.0" />
         <PackageReference Include="PuppeteerSharp" Version="20.2.5" />
         <PackageReference Include="System.Drawing.Common" Version="10.0.2" />
     </ItemGroup>
