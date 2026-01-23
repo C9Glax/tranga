@@ -11,7 +11,7 @@ RUN apt-get update \
     && add-apt-repository ppa:xtradeb/apps
 
 RUN apt-get update \
-  && apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0 libgtk-3-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2t64 libxshmfence1 libnss3 ungoogled-chromium \
+  && apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0 libgtk-3-0t64 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2t64 libxshmfence1 libnss3 ungoogled-chromium \
   && apt-get autopurge -y \
   && apt-get autoclean -y \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
