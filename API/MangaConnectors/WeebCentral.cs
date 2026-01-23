@@ -215,7 +215,7 @@ public class WeebCentral : MangaConnector
 
 			// Get volume/season number - if applicable
 			int? volumeNumber = null;
-			var volMatch = Regex.Match(text, @"(?:volume|vol\.?|season|s\.?)\s*([\d]?)", RegexOptions.IgnoreCase);
+			Match volMatch = Regex.Match(text, @"(?:volume|vol\.?|season|s\.?)\s*([\d]?)", RegexOptions.IgnoreCase);
 			if (volMatch.Success)
 			{
 				if (int.TryParse(volMatch.Groups[1].Value, out int parsedVolume))
@@ -226,16 +226,16 @@ public class WeebCentral : MangaConnector
 			
             // Get chapter number - supports decimals
             string chapterNumber;
-			var chMatch = Regex.Match(text, @"(?:chapter|ch\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+			Match chMatch = Regex.Match(text, @"(?:chapter|ch\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
 			if (chMatch.Success)
 				chapterNumber = chMatch.Groups[1].Value;
 			else
 			{
 				// If "chapter" or "ch" is not found, take the last number in the string
-				var numberMatches = Regex.Matches(text, @"\d+(\.\d+)?");
+				MatchCollection numberMatches = Regex.Matches(text, @"\d+(\.\d+)?");
 				if (numberMatches.Count > 0)
 				{
-					chapterNumber = numberMatches[numberMatches.Count - 1].Value;
+					chapterNumber = numberMatches.Last().Value;
 					Log.Warn($"Unknown chapter format detected. Using last number in string: {chapterNumber}");
 				}
 				else
@@ -281,7 +281,7 @@ public class WeebCentral : MangaConnector
 
 	private async Task<string[]> GetChapterImageUrlsAsync(MangaConnectorId<Chapter> chapterId, string? referrer)
 	{
-		await using var chromium = new ChromiumDownloadClient();
+		await using ChromiumDownloadClient chromium = new ChromiumDownloadClient();
 		
 		HttpResponseMessage response = await chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer);
 
