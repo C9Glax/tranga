@@ -111,7 +111,7 @@ builder.Services.AddControllers(options =>
 });
 builder.Services.AddScoped<ILog>(_ => LogManager.GetLogger("API"));
 
-builder.WebHost.UseUrls("http://*:6531");
+builder.WebHost.UseUrls($"http://*:{TrangaSettings.Port}");
 
 log.Info("Starting app...");
 WebApplication app = builder.Build();

@@ -17,11 +17,12 @@ riderModule.iml
 /dataSources/
 /dataSources.local.xml
 /.idea
-cover.jpg
-cover.png
 /.vscode
 /.vs/
 Tranga/Properties/launchSettings.json
-/Manga
-/settings
 *.DotSettings.user
+
+Manga/
+debug/
+cover.jpg
+cover.png

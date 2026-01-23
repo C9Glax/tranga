@@ -139,6 +139,7 @@ The file also includes [tranga-website](https://github.com/C9Glax/tranga-website
 
 | Environment Variable              | default          | Description                                                                                                      |
 |-----------------------------------|------------------|------------------------------------------------------------------------------------------------------------------|
+| PORT                              | `6531`           | Port for the API Endpoints (Don't change this unless you know what you are doing)                                |
 | POSTGRES_HOST                     | `tranga-pg:5432` | host-address of postgres database                                                                                |
 | POSTGRES_DB                       | `postgres`       | name of database                                                                                                 |
 | POSTGRES_USER                     | `postgres`       | username used for database authentication                                                                        |
