@@ -211,24 +211,44 @@ public class WeebCentral : MangaConnector
         foreach (HtmlNode node in chapterNodes)
         {
             string href = node.GetAttributeValue("href", "").Trim();
-            string text = node.InnerText.Trim();
+			string text = node.SelectSingleNode(".//span[@class='']").InnerText.Trim();
 
-            // Get chapter number - supports decimals and multiple WeebCentral chapter naming schemes
+			// Get volume/season number - if applicable
+			int? volumeNumber = null;
+			Match volMatch = Regex.Match(text, @"(?:volume|vol\.?|season|s\.?)\s*([\d]?)", RegexOptions.IgnoreCase);
+			if (volMatch.Success)
+			{
+				if (int.TryParse(volMatch.Groups[1].Value, out int parsedVolume))
+					volumeNumber = parsedVolume;
+				else
+					Log.Warn($"Failed to parse volume number: {volMatch.Groups[1].Value}");
+			}
+			
+            // Get chapter number - supports decimals
             string chapterNumber;
-			var match = Regex.Match(text, @"(?:chapter|ch\.?|episode|ep\.?|day|days|hunt|round|part|page|rating|mission|\#)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
-			if (match.Success)
-				chapterNumber = match.Groups[1].Value;
+			Match chMatch = Regex.Match(text, @"(?:chapter|ch\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+			if (chMatch.Success)
+				chapterNumber = chMatch.Groups[1].Value;
 			else
 			{
-				// fallback for specials
-				chapterNumber = "0";
-				Log.Warn($"Unknown chapter format: {text}");
+				// If "chapter" or "ch" is not found, take the last number in the string
+				MatchCollection numberMatches = Regex.Matches(text, @"\d+(\.\d+)?");
+				if (numberMatches.Count > 0)
+				{
+					chapterNumber = numberMatches.Last().Value;
+					Log.Warn($"Unknown chapter format detected. Using last number in string: {chapterNumber}");
+				}
+				else
+				{
+					// For everything else, log and continue
+					Log.Warn($"Unknown chapter format ignored: {text}");
+					continue;
+				}
 			}
 
             string? title = null;
-            string chapterStr = $"Chapter {chapterNumber}";
 
-            Chapter ch = new(manga.Obj, chapterNumber, null, title);
+            Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, title);
 			string chapterIdOnSite = new Uri(href).Segments.Last();
 			string canonicalChapterUrl = $"https://weebcentral.com/chapters/{chapterIdOnSite}";
             MangaConnectorId<Chapter> mcId = new(ch, this, chapterIdOnSite, canonicalChapterUrl);
@@ -261,7 +281,7 @@ public class WeebCentral : MangaConnector
 
 	private async Task<string[]> GetChapterImageUrlsAsync(MangaConnectorId<Chapter> chapterId, string? referrer)
 	{
-		await using var chromium = new ChromiumDownloadClient();
+		await using ChromiumDownloadClient chromium = new ChromiumDownloadClient();
 		
 		HttpResponseMessage response = await chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer);
 
