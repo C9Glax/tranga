@@ -5,10 +5,12 @@ using Newtonsoft.Json.Converters;
 
 namespace API;
 
-public struct TrangaSettings()
+public struct TrangaSettings
 {
-
-    [JsonIgnore] public static string WorkingDirectory => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "tranga-api");
+    [JsonIgnore] public static int Port => int.Parse(Environment.GetEnvironmentVariable("PORT") ?? "6531");
+    [JsonIgnore] public static bool Debug => bool.Parse(Environment.GetEnvironmentVariable("DEBUG") ?? "false");
+    [JsonIgnore] public static string AppData => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Debug ? "./debug" :"/usr/share" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+    [JsonIgnore] public static string WorkingDirectory => Path.Join(AppData, "tranga-api");
     [JsonIgnore] public static string SettingsFilePath => Path.Join(WorkingDirectory, "settings.json");
     [JsonIgnore] public static string CoverImageCache => Path.Join(WorkingDirectory, "imageCache");
     [JsonIgnore] public static string CoverImageCacheOriginal => Path.Join(CoverImageCache, "original");
@@ -46,7 +48,12 @@ public struct TrangaSettings()
 
     public LibraryRefreshSetting LibraryRefreshSetting { get; set; } = LibraryRefreshSetting.AfterMangaFinished;
 
-    public int RefreshLibraryWhileDownloadingEveryMinutes { get; set; } = 10; 
+    public int RefreshLibraryWhileDownloadingEveryMinutes { get; set; } = 10;
+
+    public TrangaSettings()
+    {
+        Directory.CreateDirectory(WorkingDirectory);
+    }
 
     public static TrangaSettings Load()
     {
