@@ -36,7 +36,8 @@ Tranga can download Chapters and Metadata from "Scanlation" sites such as
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
 - [MangaWorld](https://www.mangaworld.cx) (it)
-- [MangaPark](https://www.mangapark.com) (en)
+- [AsuraComic](https://asurascanz.com) (en) thanks [@yacob841](https://github.com/yacob841)
+- [WeebCentral](https://weebcentral.com/) (en) thanks [@TheyCallMeTravis](https://github.com/TheyCallMeTravis)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
 
 and trigger a library-scan with [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/).  
@@ -92,19 +93,25 @@ The container also spins up a Swagger site at `http://<url>/swagger`.
 
 ## Built With
 
-- ASP.NET
-  - EF Core
+**💙 [Blåhaj](https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/) 🦈**
+- [ASP.NET](https://dotnet.microsoft.com/en-us/apps/aspnet)
+  - [EF Core](https://learn.microsoft.com/en-us/ef/core/)
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
-- [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
+  - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
 - [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
+- [Puppeteersharp](https://www.puppeteersharp.com/)
+  - [Puppeteer](https://github.com/puppeteer/puppeteer) 
+  - [Chromium](https://www.chromium.org/Home/)
 - [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
 - [Jikan](https://jikan.moe/)
   - [Jikan.Net](https://github.com/Ervie/jikan.net)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
-- 💙 Blåhaj 🦈
+- [GitInfo](https://github.com/devlooped/GitInfo)
+- [Log4Net](https://logging.apache.org/log4net/index.html)
+- [xUnit](https://xunit.net/index.html?tabs=cs)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -132,6 +139,7 @@ The file also includes [tranga-website](https://github.com/C9Glax/tranga-website
 
 | Environment Variable              | default          | Description                                                                                                      |
 |-----------------------------------|------------------|------------------------------------------------------------------------------------------------------------------|
+| PORT                              | `6531`           | Port for the API Endpoints (Don't change this unless you know what you are doing)                                |
 | POSTGRES_HOST                     | `tranga-pg:5432` | host-address of postgres database                                                                                |
 | POSTGRES_DB                       | `postgres`       | name of database                                                                                                 |
 | POSTGRES_USER                     | `postgres`       | username used for database authentication                                                                        |
@@ -148,6 +156,7 @@ The file also includes [tranga-website](https://github.com/C9Glax/tranga-website
 | REQUESTS_PER_MINUTE               | `90`             | Maximum requests per minute for Mangaconnectors                                                                  |
 | MINUTES_BETWEEN_NOTIFICATIONS     | `1`              | Interval at which Tranga checks if notifications need to be sent.                                                |
 | HOURS_BETWEEN_NEW_CHAPTERS_CHECK  | `3`              | Interval at which Tranga checks if there are new chapters for a manga                                            |
+| WORKER_TIMEOUT                    | `600`            | Seconds a worker can take before being forcefully cancelled                                                      |
 
 ### Bare-Metal
 
@@ -240,6 +249,7 @@ Tranga is using a **code-first** EF-Core approach. If you modify the database(co
 
 1. Copy one of the existing connectors, or start from scratch and inherit from `API.Schema.MangaConnectors.MangaConnector`.
 2. Add the new Connector as Object-Instance in `Tranga.cs` to the MangaConnector-Array `connectors`.
+3. Add the discriminator to the `MangaContext.cs` `MangaConnector`-Entity
 
 ### How to test locally
 

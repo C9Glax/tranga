@@ -2,6 +2,7 @@
 using API.Schema.MangaContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations.Manga
 {
     [DbContext(typeof(MangaContext))]
-    partial class MangaContextModelSnapshot : ModelSnapshot
+    [Migration("20260105234703_Remove-Mangapark")]
+    partial class RemoveMangapark
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -328,13 +331,6 @@ namespace API.Migrations.Manga
                     b.HasIndex("MangaIds");
 
                     b.ToTable("MangaTagToManga");
-                });
-
-            modelBuilder.Entity("API.MangaConnectors.AsuraComic", b =>
-                {
-                    b.HasBaseType("API.MangaConnectors.MangaConnector");
-
-                    b.HasDiscriminator().HasValue("AsuraComic");
                 });
 
             modelBuilder.Entity("API.MangaConnectors.Global", b =>

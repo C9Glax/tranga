@@ -4,10 +4,13 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:5976",
+      "applicationUrl": "http://127.0.0.1:5976",
       "sslPort": 44332,
       "environmentVariables": {
-        "POSTGRES_Host": "localhost:5432"
+        "POSTGRES_HOST": "127.0.0.1:5432",
+        "POSTGRES_PASSWORD": "postgres",
+        "DEBUG": "true",
+        "DOWNLOAD_LOCATION": "./Manga"
       }
     }
   },
@@ -17,10 +20,13 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5287",
+      "applicationUrl": "http://127.0.0.1:5287",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "POSTGRES_Host": "localhost:5432"
+        "POSTGRES_HOST": "127.0.0.1:5432",
+        "POSTGRES_PASSWORD": "postgres",
+        "DEBUG": "true",
+        "DOWNLOAD_LOCATION": "./Manga"
       }
     },
     "https": {
@@ -28,10 +34,13 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7206;http://localhost:5287",
+      "applicationUrl": "https://127.0.0.1:7206;http://127.0.0.1:5287",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "POSTGRES_Host": "localhost:5432"
+        "POSTGRES_HOST": "127.0.0.1:5432",
+        "POSTGRES_PASSWORD": "postgres",
+        "DEBUG": "true",
+        "DOWNLOAD_LOCATION": "./Manga"
       }
     },
     "IIS Express": {
@@ -40,7 +49,10 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "POSTGRES_Host": "localhost:5432"
+        "POSTGRES_HOST": "127.0.0.1:5432",
+        "POSTGRES_PASSWORD": "postgres",
+        "DEBUG": "true",
+        "DOWNLOAD_LOCATION": "./Manga"
       }
     }
   }

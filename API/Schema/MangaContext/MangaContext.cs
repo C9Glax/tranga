@@ -22,9 +22,10 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
         modelBuilder.Entity<MangaConnector>()
             .HasDiscriminator(c => c.Name)
             .HasValue<Global>("Global")
+            .HasValue<AsuraComic>("AsuraComic")
             .HasValue<MangaDex>("MangaDex")
-            .HasValue<MangaPark>("MangaPark")
-            .HasValue<Mangaworld>("Mangaworld");
+            .HasValue<Mangaworld>("Mangaworld")
+            .HasValue<WeebCentral>("WeebCentral");
 
         //Manga has many Chapters
         modelBuilder.Entity<Manga>()
