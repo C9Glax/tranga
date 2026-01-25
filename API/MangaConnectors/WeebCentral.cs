@@ -215,7 +215,7 @@ public class WeebCentral : MangaConnector
 
 			// Get volume/season number - if applicable
 			int? volumeNumber = null;
-			Match volMatch = Regex.Match(text, @"(?:volume|vol\.?|season|s\.?)\s*([\d]?)", RegexOptions.IgnoreCase);
+			Match volMatch = Regex.Match(text, @"^(?:volume|vol\.?|season|s\.?)\s*([\d]+)", RegexOptions.IgnoreCase);
 			if (volMatch.Success)
 			{
 				if (int.TryParse(volMatch.Groups[1].Value, out int parsedVolume))
