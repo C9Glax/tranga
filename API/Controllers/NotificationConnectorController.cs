@@ -90,8 +90,10 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     {
         //TODO Validate Data
 
-        Uri uri = new Uri(createGotifyConnectorData.Url);
-        string url = $"{uri.Scheme}://{uri.DnsSafeHost}{uri.AbsolutePath}/message";
+        UriBuilder builder = new UriBuilder(createGotifyConnectorData.Url);
+		builder.Path = builder.Path.TrimEnd('/') + "/message";
+
+		string url = builder.Uri.ToString();
         
         CreateNotificationConnectorRecord gotifyConnector = new ()
         {
