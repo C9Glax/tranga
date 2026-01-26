@@ -250,23 +250,37 @@ public class MangaController(MangaContext context, ActionsContext actionsContext
     [ProducesResponseType<string>(Status500InternalServerError,  "text/plain")]
     public async Task<Results<Ok, NotFound<string>, StatusCodeHttpResult, InternalServerError<string>>> MarkAsRequested(string MangaId, string MangaConnectorName, bool IsRequested)
     {
-        if (await context.Mangas.FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } _)
+        if (await context.Mangas
+                .Include(m => m.Chapters)
+                .ThenInclude(c => c.MangaConnectorIds.Where(chID => chID.MangaConnectorName == MangaConnectorName))
+                .Include(m => m.MangaConnectorIds.Where(mId => mId.MangaConnectorName == MangaConnectorName))
+                .FirstOrDefaultAsync(m => m.Key == MangaId, HttpContext.RequestAborted) is not { } manga)
             return TypedResults.NotFound(nameof(MangaId));
         if(!Tranga.TryGetMangaConnector(MangaConnectorName, out API.MangaConnectors.MangaConnector? _))
             return TypedResults.NotFound(nameof(MangaConnectorName));
 
-        if (await context.MangaConnectorToManga
-                .FirstOrDefaultAsync(id => id.MangaConnectorName == MangaConnectorName && id.ObjId == MangaId, HttpContext.RequestAborted)
-            is not { } mcId)
+        if (manga.MangaConnectorIds.FirstOrDefault(mId => mId.MangaConnectorName == MangaConnectorName) is not { } mcId)
         {
             if(IsRequested)
                 return TypedResults.StatusCode(Status428PreconditionRequired);
             else
                 return TypedResults.StatusCode(Status412PreconditionFailed);
         }
+        else
+        {
+            mcId.UseForDownload = IsRequested;
+        }
 
-        mcId.UseForDownload = IsRequested;
-        if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
+        if (manga.Chapters.SelectMany(ch =>
+                ch.MangaConnectorIds.Where(chID => chID.MangaConnectorName == MangaConnectorName)) is { } chIds)
+        {
+            foreach (Schema.MangaContext.MangaConnectorId<Chapter> chId in chIds)
+            {
+                chId.UseForDownload = IsRequested;
+            }
+        }
+
+        if(await context.Sync(HttpContext.RequestAborted, GetType(), "Update download from MangaConnector.") is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);
 
         DownloadCoverFromMangaconnectorWorker downloadCover = new(mcId);

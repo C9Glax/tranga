@@ -211,50 +211,60 @@ public class WeebCentral : MangaConnector
         foreach (HtmlNode node in chapterNodes)
         {
             string href = node.GetAttributeValue("href", "").Trim();
-            string text = node.InnerText.Trim();
+			string text = node.SelectSingleNode(".//span[@class='']").InnerText.Trim();
 
             string chapterNumber;
             int? volumeNumber = null;
             string? chapterTitle = null;
 
-            // Try to detect volume and chapter numbers.
+            // Get volume number and last number as fallback chapter number:
             // Group 1: volume numbers after 'S' or 'Vol.'
             // Group 2: the last number with dot seperation like 1.1 or 1.12.4
             // Only use lines that have a number and at least one other character.
             // This is needed because the text also contains additional garbage text.
             // If the detection breaks, maybe only allowing lines with the chapter number at the very end helps.
             Regex titleRegex = new Regex(@"[^\r\n]*?(?:(?:s|vol)\.? ?(\d)+[ ][^\r\n]*?)?(?<=[^\d\s\.][^\r\n]*) (\d+(?:[\.]\d+)*)[^\d\r\n]*$", RegexOptions.IgnoreCase|RegexOptions.Multiline);
-
             // Selection is the whole line the title was found in.
             // Group 1 is volume/season integer, if detected.
             // Group 2 is the chapter number / the last number in the title with the format: \d+(\.\d+)*
-			Match match = titleRegex.Match(text);
+            Match match = titleRegex.Match(text);
 
-			if (match.Success)
+            // Get chapter number by prefix - supports decimals
+			Match chMatch = Regex.Match(text, @"(?:chapter|ch\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
+            if (chMatch.Success)
+                chapterNumber = chMatch.Groups[1].Value;
+            else
             {
-				chapterNumber = match.Groups[2].Value;
-                chapterTitle = match.Value.Trim(); // Use the whole line as title but remove whitespace
-
-                // Set the volumeNumber to Group 1 of regex if it has a result
-                if (match.Groups[1].Success)
+			    if (match.Success)
                 {
-                    int detectedVolumeNumber;
-                    if (int.TryParse(match.Groups[1].Value, out detectedVolumeNumber))
-                    {
-                        volumeNumber = detectedVolumeNumber;
-                    }
-                    else
-                    {
-                        Log.Warn($"Unknown volume format: {match.Groups[1].Value}");
-                    }   
+                    // If "chapter" or "ch" is not found, take the last number in the string
+                    chapterNumber = match.Groups[2].Value;
+					Log.Warn($"Unknown chapter format detected. Using last number in string: {chapterNumber}");
+                }
+                else
+                {
+                    // For everything else, log and continue
+                    Log.Warn($"Unknown chapter format ignored: {text}");
+                    continue;
                 }
             }
-			else
-			{
-				// fallback for specials
-				chapterNumber = "0";
-				Log.Warn($"Unknown chapter format: {text}");
-			}
+
+            // Set the volumeNumber to Group 1 of titleRegex if it has a result
+            if (match.Groups[1].Success)
+            {
+                int detectedVolumeNumber;
+                if (int.TryParse(match.Groups[1].Value, out detectedVolumeNumber))
+                {
+                    volumeNumber = detectedVolumeNumber;
+                }
+                else
+                {
+                    Log.Warn($"Failed to parse volume number: {match.Groups[1].Value}");
+                }   
+            }
+
+            // Use the whole line as title but remove whitespace
+            chapterTitle = match.Value.Trim();
 
             Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, chapterTitle);
 			string chapterIdOnSite = new Uri(href).Segments.Last();
@@ -289,7 +299,7 @@ public class WeebCentral : MangaConnector
 
 	private async Task<string[]> GetChapterImageUrlsAsync(MangaConnectorId<Chapter> chapterId, string? referrer)
 	{
-		await using var chromium = new ChromiumDownloadClient();
+		await using ChromiumDownloadClient chromium = new ChromiumDownloadClient();
 		
 		HttpResponseMessage response = await chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer);
 
