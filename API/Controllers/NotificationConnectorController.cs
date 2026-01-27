@@ -88,9 +88,17 @@ public class NotificationConnectorController(NotificationsContext context) : Con
     [ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
     public async Task<Results<Created<string>, InternalServerError<string>>> CreateGotifyConnector ([FromBody]CreateGotifyConnectorRecord createGotifyConnectorData)
     {
-        //TODO Validate Data
+		if (!Uri.TryCreate(createGotifyConnectorData.Url, UriKind.Absolute, out var uri))
+		{
+			return TypedResults.InternalServerError("Invalid URL");
+		}
 
-        UriBuilder builder = new UriBuilder(createGotifyConnectorData.Url);
+		if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+		{
+			return TypedResults.InternalServerError("Only HTTP/HTTPS URLs are allowed");
+		}
+
+        UriBuilder builder = new UriBuilder(uri);
 		builder.Path = builder.Path.TrimEnd('/') + "/message";
 
 		string url = builder.Uri.ToString();
