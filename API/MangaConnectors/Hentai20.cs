@@ -16,7 +16,8 @@ public class Hentai20 : MangaConnector
             "Hentai20",
             ["en"],
             ["hentai20.io"],
-            "https://hentai20.io/wp-content/uploads/2024/05/cropped-210da20ddb1be20edd43583bcaf1061f628cbc16-300x300.jpg"
+            "https://hentai20.io/wp-content/uploads/2024/05/cropped-210da20ddb1be20edd43583bcaf1061f628cbc16-300x300.jpg",
+			true
         )
     {
         this.downloadClient = new HttpDownloadClient();
@@ -285,3 +286,4 @@ public class Hentai20 : MangaConnector
 		return imageUrls;
     }
 }
+
