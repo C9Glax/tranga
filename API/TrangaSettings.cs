@@ -49,6 +49,8 @@ public struct TrangaSettings
     public LibraryRefreshSetting LibraryRefreshSetting { get; set; } = LibraryRefreshSetting.AfterMangaFinished;
 
     public int RefreshLibraryWhileDownloadingEveryMinutes { get; set; } = 10;
+	
+	public bool ShowNsfw { get; set; } = false;
 
     public TrangaSettings()
     {
@@ -126,4 +128,10 @@ public struct TrangaSettings
         this.RefreshLibraryWhileDownloadingEveryMinutes = value;
         Save();
     }
+	
+	public void SetShowNsfw(bool enabled)
+	{
+		this.ShowNsfw = enabled;
+		Save();
+	}
 }
