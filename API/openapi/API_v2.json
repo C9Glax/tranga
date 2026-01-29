@@ -3513,6 +3513,46 @@
         }
       }
     },
+	"/v2/Settings/ShowNSFW": {
+	  "get": {
+		"tags": ["Settings"],
+		"summary": "Get current ShowNSFW setting",
+		"responses": {
+		  "200": {
+			"description": "Current ShowNSFW value",
+			"content": {
+			  "text/plain; x-version=2.0": {
+				"schema": {
+				  "type": "boolean"
+				}
+			  }
+			}
+		  }
+		}
+	  }
+	},
+	"/v2/Settings/ShowNSFW/{enabled}": {
+	  "patch": {
+		"tags": ["Settings"],
+		"summary": "Show or hide NSFW connectors",
+		"parameters": [
+		  {
+			"name": "enabled",
+			"in": "path",
+			"description": "Set true to allow NSFW connectors, false to block",
+			"required": true,
+			"schema": {
+			  "type": "boolean"
+			}
+		  }
+		],
+		"responses": {
+		  "200": {
+			"description": ""
+		  }
+		}
+	  }
+	},
     "/v2/Worker": {
       "get": {
         "tags": [
