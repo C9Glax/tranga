@@ -3760,6 +3760,7 @@
         "required": [
           "chapterNumber",
           "downloaded",
+          "isOfficial",
           "key",
           "mangaConnectorIds",
           "mangaId",
@@ -3791,6 +3792,10 @@
           "downloaded": {
             "type": "boolean",
             "description": "Whether Chapter is Downloaded (on disk)"
+          },
+          "isOfficial": {
+            "type": "boolean",
+            "description": "Whether Chapter is official"
           },
           "mangaConnectorIds": {
             "type": "array",
