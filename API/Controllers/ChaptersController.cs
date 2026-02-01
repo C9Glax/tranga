@@ -263,4 +263,40 @@ public class ChaptersController(MangaContext context) : ControllerBase
         
         return TypedResults.Ok();
     }
+	
+	/// <summary>
+	/// Marks or unmarks a Chapter as official
+	/// </summary>
+	/// <param name="ChapterId">Chapter.Key</param>
+	/// <param name="isOfficial">true = official, false = unofficial</param>
+	/// <response code="200"></response>
+	/// <response code="404">Chapter not found</response>
+	/// <response code="500">Error during Database Operation</response>
+	[HttpPatch("{ChapterId}/Official/{isOfficial}")]
+	[ProducesResponseType(Status200OK)]
+	[ProducesResponseType<string>(Status404NotFound, "text/plain")]
+	[ProducesResponseType<string>(Status500InternalServerError, "text/plain")]
+	public async Task<Results<Ok, NotFound<string>, InternalServerError<string>>> 
+		SetOfficialStatus(string ChapterId, bool isOfficial)
+	{
+		if (await context.Chapters
+				.FirstOrDefaultAsync(c => c.Key == ChapterId, HttpContext.RequestAborted)
+			is not { } chapter)
+		{
+			return TypedResults.NotFound(nameof(ChapterId));
+		}
+
+		chapter.IsOfficial = isOfficial;
+
+		if (await context.Sync(
+				HttpContext.RequestAborted,
+				GetType(),
+				System.Reflection.MethodBase.GetCurrentMethod()?.Name)
+			is { success: false } result)
+		{
+			return TypedResults.InternalServerError(result.exceptionMessage);
+		}
+
+		return TypedResults.Ok();
+	}
 }
