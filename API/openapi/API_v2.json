@@ -623,6 +623,59 @@
         }
       }
     },
+    "/v2/Chapters/{ChapterId}/Official/{isOfficial}": {
+      "patch": {
+        "tags": [
+          "Chapters"
+        ],
+        "summary": "Marks or unmarks a Chapter as official",
+        "parameters": [
+          {
+            "name": "ChapterId",
+            "in": "path",
+            "description": "Chapter.Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isOfficial",
+            "in": "path",
+            "description": "true = official, false = unofficial",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "Chapter not found",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/FileLibrary": {
       "get": {
         "tags": [
