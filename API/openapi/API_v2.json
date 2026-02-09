@@ -2043,6 +2043,92 @@
         }
       }
     },
+	"/v2/MangaConnector/NSFW/{NSFW}": {
+      "get": {
+        "tags": [
+          "MangaConnector"
+        ],
+        "summary": "Get all API.MangaConnectors.MangaConnector (Scanlation-Sites) with NSFW-Status",
+        "parameters": [
+          {
+            "name": "NSFW",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json; x-version=2.0": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MangaConnector"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/MangaConnector/{MangaConnectorName}/SetNSFW/{NSFW}": {
+      "patch": {
+        "tags": [
+          "MangaConnector"
+        ],
+        "summary": "Flags API.MangaConnectors.MangaConnector (Scanlation-Sites) as NSFW with Name",
+        "parameters": [
+          {
+            "name": "MangaConnectorName",
+            "in": "path",
+            "description": "API.MangaConnectors.MangaConnector.Name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NSFW",
+            "in": "path",
+            "description": "Set true to flag as NSFW, false to flag as not NSFW",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "API.MangaConnectors.MangaConnector (Scanlation-Sites) with Name not found.",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error during Database Operation",
+            "content": {
+              "text/plain; x-version=2.0": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/MetadataFetcher": {
       "get": {
         "tags": [
@@ -3427,6 +3513,46 @@
         }
       }
     },
+	"/v2/Settings/ShowNSFW": {
+	  "get": {
+		"tags": ["Settings"],
+		"summary": "Get current ShowNSFW setting",
+		"responses": {
+		  "200": {
+			"description": "Current ShowNSFW value",
+			"content": {
+			  "text/plain; x-version=2.0": {
+				"schema": {
+				  "type": "boolean"
+				}
+			  }
+			}
+		  }
+		}
+	  }
+	},
+	"/v2/Settings/ShowNSFW/{enabled}": {
+	  "patch": {
+		"tags": ["Settings"],
+		"summary": "Show or hide NSFW connectors",
+		"parameters": [
+		  {
+			"name": "enabled",
+			"in": "path",
+			"description": "Set true to allow NSFW connectors, false to block",
+			"required": true,
+			"schema": {
+			  "type": "boolean"
+			}
+		  }
+		],
+		"responses": {
+		  "200": {
+			"description": ""
+		  }
+		}
+	  }
+	},
     "/v2/Worker": {
       "get": {
         "tags": [
@@ -4322,7 +4448,8 @@
           "enabled",
           "iconUrl",
           "key",
-          "supportedLanguages"
+          "supportedLanguages",
+		  "nsfw"
         ],
         "type": "object",
         "properties": {
