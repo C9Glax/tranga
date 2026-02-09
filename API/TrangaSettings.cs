@@ -5,7 +5,7 @@ using Newtonsoft.Json.Converters;
 
 namespace API;
 
-public struct TrangaSettings
+public class TrangaSettings
 {
     [JsonIgnore] public static int Port => int.Parse(Environment.GetEnvironmentVariable("PORT") ?? "6531");
     [JsonIgnore] public static bool Debug => bool.Parse(Environment.GetEnvironmentVariable("DEBUG") ?? "false");
@@ -51,6 +51,9 @@ public struct TrangaSettings
     public int RefreshLibraryWhileDownloadingEveryMinutes { get; set; } = 10;
 	
 	public bool ShowNsfw { get; set; } = false;
+	
+    private static readonly TrangaSettings _instance = Load();
+    public static TrangaSettings Instance => _instance;
 
     public TrangaSettings()
     {
