@@ -72,6 +72,18 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
 				existing.Downloaded = false;
 				existing.FileName = null;
 			}
+			
+			if (existing.IsOfficial == null && incomingChapter.IsOfficial == true)
+			{
+				Log.Info($"Chapter {existing.ChapterNumber} changed from NULL to OFFICIAL; not redownloading at this time.");
+				existing.IsOfficial = true;
+			}
+			
+			if (existing.IsOfficial == null && incomingChapter.IsOfficial == false)
+			{
+				Log.Info($"Chapter {existing.ChapterNumber} changed from NULL to FALSE; not redownloading at this time.");
+				existing.IsOfficial = false;
+			}
 		}
         
         // Filter for new Chapters
