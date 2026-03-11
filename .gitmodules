@@ -1,0 +1,3 @@
+[submodule "extensions-source"]
+	path = extensions-source
+	url = https://github.com/keiyoushi/extensions-source.git
