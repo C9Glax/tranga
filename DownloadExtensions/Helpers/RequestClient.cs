@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 
-namespace Extensions.Helpers;
+namespace DownloadExtensions.Helpers;
 
 internal sealed class RequestClient : HttpClient
 {

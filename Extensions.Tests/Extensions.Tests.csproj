@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Extensions\Extensions.csproj" />
+      <ProjectReference Include="..\DownloadExtensions\DownloadExtensions.csproj" />
     </ItemGroup>
 
 </Project>

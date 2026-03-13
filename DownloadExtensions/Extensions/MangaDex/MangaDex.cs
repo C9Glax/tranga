@@ -1,19 +1,19 @@
 using System.Text.Json.Nodes;
-using Extensions.Data;
-using Extensions.Extensions.MangaDex.DTOs;
-using Extensions.Helpers;
+using DownloadExtensions.Data;
+using DownloadExtensions.Extensions.MangaDex.DTOs;
+using DownloadExtensions.Helpers;
 
-namespace Extensions.Extensions.MangaDex;
+namespace DownloadExtensions.Extensions.MangaDex;
 
 public sealed class MangaDex : IExtension<MangaDex>
 {
+    public Guid Identifier { get; init; } = Guid.Parse("019ce521-deaf-7739-9e14-eb6f4afc86e2");
+
+    public string Name { get; init; } = "MangaDex";
+    
     public Language[] SupportedLanguages { get; init; } = ["en-us"];
     
     public string BaseUrl { get; init; } = new ("https://api.mangadex.org/");
-
-    private sealed record ChapterIdentifier(Guid Value) : IChapterIdentifier<MangaDex>;
-
-    private sealed record MangaIdentifier(Guid Value) : IMangaIdentifier<MangaDex>;
 
     private readonly RequestClient _client = new ();
 
@@ -63,7 +63,7 @@ public sealed class MangaDex : IExtension<MangaDex>
             if(await GetCover(manga, ct) is not { } cover)
                 continue;
             string url = $"https://mangadex.org/title/{manga.Id}";
-            MangaIdentifier identifier = new(manga.Id);
+            string identifier = manga.Id.ToString();
             result.Add(new Manga<MangaDex>(title, url, identifier, cover, description));
         }
         return result;
@@ -101,7 +101,7 @@ public sealed class MangaDex : IExtension<MangaDex>
         {
             Path = "/chapter"
         };
-        uriBuilder.AddQueryParameter("manga", (manga.Identifier as MangaIdentifier)!.Value.ToString());
+        uriBuilder.AddQueryParameter("manga", manga.Identifier);
         
         HttpRequestMessage message = new(HttpMethod.Get, uriBuilder.Uri);
         return message;
@@ -116,7 +116,7 @@ public sealed class MangaDex : IExtension<MangaDex>
                 continue; // Skip chapters from external providers
             string number = chapter.Attributes.Chapter;
             string url = $"https://mangadex.org/chapter/{chapter.Id}";
-            ChapterIdentifier identifier = new(chapter.Id);
+            string identifier = chapter.Id.ToString();
             string? volume = chapter.Attributes.Volume;
             string? title = chapter.Attributes.Title;
             result.Add(new Chapter<MangaDex>(number, url, identifier, volume, title));
@@ -149,7 +149,7 @@ public sealed class MangaDex : IExtension<MangaDex>
     {
         UriBuilder uriBuilder = new(BaseUrl)
         {
-            Path = $"/at-home/server/{(chapter.Identifier as ChapterIdentifier)!.Value.ToString()}"
+            Path = $"/at-home/server/{chapter.Identifier}"
         };
         HttpRequestMessage message = new(HttpMethod.Get, uriBuilder.Uri);
         if (await _client.SendAsyncAndParseJson<MangaDexAtHomeResultDTO>(message, ct) is not { } response)

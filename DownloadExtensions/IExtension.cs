@@ -1,10 +1,20 @@
-using Extensions.Data;
-using Extensions.Helpers;
+using DownloadExtensions.Data;
+using DownloadExtensions.Helpers;
 
-namespace Extensions;
+namespace DownloadExtensions;
 
 public interface IExtension<T> where T : IExtension<T>
 {
+    /// <summary>
+    /// The unique Extension Identifier
+    /// </summary>
+    public Guid Identifier { get; init; }
+    
+    /// <summary>
+    /// The name of the Extension
+    /// </summary>
+    public string Name { get; init; }
+    
     /// <summary>
     /// The languages supported by the extension.
     /// </summary>

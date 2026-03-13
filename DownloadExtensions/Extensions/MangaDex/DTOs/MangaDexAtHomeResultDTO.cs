@@ -1,4 +1,4 @@
-namespace Extensions.Extensions.MangaDex.DTOs;
+namespace DownloadExtensions.Extensions.MangaDex.DTOs;
 // ReSharper disable ClassNeverInstantiated.Global
 
 internal record MangaDexAtHomeResultDTO(string Result, string BaseUrl, MangaDexAtHomeChapterDTO Chapter) : MangaDexResponse(Result);

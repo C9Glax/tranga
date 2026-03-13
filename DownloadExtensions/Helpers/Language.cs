@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Extensions.Helpers;
+namespace DownloadExtensions.Helpers;
 
 public sealed class Language(string name) : CultureInfo(name)
 {

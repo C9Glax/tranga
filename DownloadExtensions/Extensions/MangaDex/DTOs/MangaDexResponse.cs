@@ -1,4 +1,4 @@
-namespace Extensions.Extensions.MangaDex.DTOs;
+namespace DownloadExtensions.Extensions.MangaDex.DTOs;
 
 public abstract record MangaDexResponse(string Result);
 

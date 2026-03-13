@@ -1,4 +1,4 @@
-namespace Extensions.Data;
+namespace DownloadExtensions.Data;
 
 /// <summary>
 /// The Manga-Info returned by an Extension
@@ -10,9 +10,7 @@ namespace Extensions.Data;
 public record Manga<T>(
     string Title,
     string Url,
-    IMangaIdentifier<T> Identifier,
+    string Identifier,
     MemoryStream Cover,
     string? Description = null
 ) where T : IExtension<T>;
-
-public interface IMangaIdentifier<T> where T : IExtension<T>;

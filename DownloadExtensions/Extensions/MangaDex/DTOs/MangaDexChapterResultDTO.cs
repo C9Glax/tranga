@@ -1,5 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Extensions.Extensions.MangaDex.DTOs;
+namespace DownloadExtensions.Extensions.MangaDex.DTOs;
 
 internal sealed record MangaDexChapterResultDTO(string Result, string Response, MangaDexChapterDTO[] Data, int Limit, int Offset, int Total)
     : MangaDexCollectionResponse<MangaDexChapterDTO>(Result, Response, Data, Limit, Offset, Total);

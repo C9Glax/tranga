@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Extensions.Extensions.MangaDex.DTOs;
+namespace DownloadExtensions.Extensions.MangaDex.DTOs;
 
 internal sealed record MangaDexSearchResultDTO(string Result, string Response, MangaDexMangaDTO[] Data, int Limit, int Offset, int Total)
     : MangaDexCollectionResponse<MangaDexMangaDTO>(Result, Response, Data, Limit, Offset, Total);

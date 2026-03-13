@@ -1,4 +1,4 @@
-namespace Extensions.Data;
+namespace DownloadExtensions.Data;
 
 public enum ReleaseStatus
 {

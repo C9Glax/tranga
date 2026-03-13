@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workers", "Workers\Workers.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{FBD3D82E-38FC-415F-8047-8B3E7B0CDD79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{0B7C8AA9-85F9-42B0-B5DF-1DFC1B8C060D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadExtensions", "DownloadExtensions\DownloadExtensions.csproj", "{0B7C8AA9-85F9-42B0-B5DF-1DFC1B8C060D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Tests", "Extensions.Tests\Extensions.Tests.csproj", "{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}"
 EndProject

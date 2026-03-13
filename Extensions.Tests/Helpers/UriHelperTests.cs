@@ -1,4 +1,4 @@
-using Extensions.Helpers;
+using DownloadExtensions.Helpers;
 
 namespace Extensions.Tests.Helpers;
 

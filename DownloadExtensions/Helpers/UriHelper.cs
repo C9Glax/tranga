@@ -1,4 +1,4 @@
-namespace Extensions.Helpers;
+namespace DownloadExtensions.Helpers;
 
 public static class UriHelper
 {

@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace Extensions.Extensions.MangaDex.DTOs;
+namespace DownloadExtensions.Extensions.MangaDex.DTOs;
 
 internal sealed class MangaDexRelationshipsDTO : List<MangaDexRelationshipDTO>;
 

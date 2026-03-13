@@ -1,0 +1,9 @@
+namespace DownloadExtensions.Data;
+
+public sealed record Chapter<T>(
+    string Number,
+    string Url,
+    string Identifier,
+    string? Volume = null,
+    string? Title = null
+) where T : IExtension<T>;

@@ -1,5 +1,5 @@
-using Extensions.Extensions;
-using Extensions.Extensions.MangaDex;
+using DownloadExtensions.Extensions;
+using DownloadExtensions.Extensions.MangaDex;
 
 namespace Extensions.Tests.Extensions;
 
