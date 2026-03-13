@@ -1,8 +1,8 @@
 using System.Text.Json.Nodes;
 using Common.Data;
+using Common.Helpers;
 using DownloadExtensions.Data;
 using DownloadExtensions.Extensions.MangaDex.DTOs;
-using DownloadExtensions.Helpers;
 
 namespace DownloadExtensions.Extensions.MangaDex;
 

@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
 
-namespace DownloadExtensions.Helpers;
+namespace Common.Helpers;
 
-internal sealed class RequestClient : HttpClient
+public sealed class RequestClient : HttpClient
 {
     public override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {

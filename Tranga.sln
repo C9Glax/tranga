@@ -24,6 +24,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workers.Tests", "Workers.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataExtensions.Tests", "MetadataExtensions.Tests\MetadataExtensions.Tests.csproj", "{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers", "Common.Helpers\Common.Helpers.csproj", "{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers.Tests", "Common.Helpers.Tests\Common.Helpers.Tests.csproj", "{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,5 +82,13 @@ Global
 		{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

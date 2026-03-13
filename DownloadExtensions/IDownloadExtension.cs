@@ -1,6 +1,5 @@
 using Common.Data;
 using DownloadExtensions.Data;
-using DownloadExtensions.Helpers;
 
 namespace DownloadExtensions;
 

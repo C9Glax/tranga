@@ -1,3 +1,5 @@
+using Data;
+
 namespace Database.MangaContext;
 
 public sealed record DbChapter : IRef
@@ -10,9 +12,5 @@ public sealed record DbChapter : IRef
     
     public DbManga? Manga { get; init; }
     
-    public string? Title { get; init; }
-    
-    public string? Number { get; init; }
-    
-    public string? Volume { get; init; }
+    public ComicInfo? ComicInfo { get; init; }
 }
