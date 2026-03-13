@@ -1,6 +1,6 @@
 using DownloadExtensions.Helpers;
 
-namespace Extensions.Tests.Helpers;
+namespace DownloadExtensions.Tests.Helpers;
 
 public class UriHelperTests
 {

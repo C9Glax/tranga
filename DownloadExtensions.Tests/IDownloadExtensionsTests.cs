@@ -1,6 +1,6 @@
 ﻿using DownloadExtensions;
 
-namespace Extensions.Tests;
+namespace DownloadExtensions.Tests;
 
 public abstract class IDownloadExtensionsTests<T> where T : IDownloadExtension<T>, new()
 {

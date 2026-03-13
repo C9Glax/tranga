@@ -1,4 +1,4 @@
-namespace Extensions.Tests;
+namespace DownloadExtensions.Tests;
 
 public sealed class RequestClientTests
 {

@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Databa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadExtensions", "DownloadExtensions\DownloadExtensions.csproj", "{0B7C8AA9-85F9-42B0-B5DF-1DFC1B8C060D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Tests", "Extensions.Tests\Extensions.Tests.csproj", "{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadExtensions.Tests", "DownloadExtensions.Tests\DownloadExtensions.Tests.csproj", "{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataExtensions", "MetadataExtensions\MetadataExtensions.csproj", "{724012E4-13A4-46F3-A9B6-BF6DE68DE18C}"
 EndProject
