@@ -9,4 +9,10 @@ public sealed record DbChapter : IRef
     public Guid MangaId { get; init; }
     
     public DbManga? Manga { get; init; }
+    
+    public string? Title { get; init; }
+    
+    public string? Number { get; init; }
+    
+    public string? Volume { get; init; }
 }

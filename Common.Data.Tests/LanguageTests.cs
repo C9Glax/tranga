@@ -1,6 +1,4 @@
-using DownloadExtensions.Helpers;
-
-namespace Extensions.Tests.Helpers;
+namespace Common.Data.Tests;
 
 public class LanguageTests
 {

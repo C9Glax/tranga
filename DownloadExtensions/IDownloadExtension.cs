@@ -1,3 +1,4 @@
+using Common.Data;
 using DownloadExtensions.Data;
 using DownloadExtensions.Helpers;
 
@@ -36,16 +37,16 @@ public interface IDownloadExtension<T> where T : IDownloadExtension<T>
     /// <summary>
     /// Returns the chapters of a Manga.
     /// </summary>
-    /// <param name="manga"></param>
+    /// <param name="mangaInfo"></param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<List<Chapter<T>>?> GetChapters(Manga<T> manga, CancellationToken ct);
+    public Task<List<ChapterInfo<T>>?> GetChapters(MangaInfo<T> mangaInfo, CancellationToken ct);
 
     /// <summary>
     /// Returns the images of a chapter.
     /// </summary>
-    /// <param name="chapter"></param>
+    /// <param name="chapterInfo"></param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<List<ChapterImage<T>>?> GetChapterImages(Chapter<T> chapter, CancellationToken ct);
+    public Task<List<ChapterImage<T>>?> GetChapterImages(ChapterInfo<T> chapterInfo, CancellationToken ct);
 }

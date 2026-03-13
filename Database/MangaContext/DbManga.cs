@@ -1,3 +1,5 @@
+using Data;
+
 namespace Database.MangaContext;
 
 public sealed record DbManga : IRef
@@ -13,4 +15,6 @@ public sealed record DbManga : IRef
     public ICollection<ExtensionId<DbManga>>? ExtensionIds { get; init; }
     
     public ICollection<DbChapter>? Chapters { get; init; }
+    
+    public ComicInfo? ComicInfo { get; init; }
 }

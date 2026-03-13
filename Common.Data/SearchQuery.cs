@@ -1,6 +1,4 @@
-using DownloadExtensions.Helpers;
-
-namespace DownloadExtensions.Data;
+namespace Common.Data;
 
 public sealed record SearchQuery(
     string? Title = null,

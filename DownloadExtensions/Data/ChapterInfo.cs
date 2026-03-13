@@ -1,6 +1,6 @@
 namespace DownloadExtensions.Data;
 
-public sealed record Chapter<T>(
+public sealed record ChapterInfo<T>(
     string Number,
     string Url,
     string Identifier,

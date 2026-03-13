@@ -25,6 +25,11 @@ public class Context : DbContext
             .WithOne(e => e.Parent)
             .HasForeignKey(e => e.ParentId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<DbManga>()
+            .HasOne(m => m.ComicInfo)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
         #endregion
 
         #region DbChapter

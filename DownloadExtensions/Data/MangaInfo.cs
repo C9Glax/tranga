@@ -7,7 +7,7 @@ namespace DownloadExtensions.Data;
 /// <param name="Url">Url to the page of the Manga</param>
 /// <param name="Cover">Cover-Image of the Manga</param>
 /// <param name="Description">Description of the Manga</param>
-public record Manga<T>(
+public record MangaInfo<T>(
     string Title,
     string Url,
     string Identifier,

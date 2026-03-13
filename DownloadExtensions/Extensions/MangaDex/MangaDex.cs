@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Common.Data;
 using DownloadExtensions.Data;
 using DownloadExtensions.Extensions.MangaDex.DTOs;
 using DownloadExtensions.Helpers;
@@ -64,7 +65,7 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
                 continue;
             string url = $"https://mangadex.org/title/{manga.Id}";
             string identifier = manga.Id.ToString();
-            result.Add(new Manga<MangaDex>(title, url, identifier, cover, description));
+            result.Add(new MangaInfo<MangaDex>(title, url, identifier, cover, description));
         }
         return result;
     }
@@ -86,30 +87,30 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
     #endregion
 
     #region Chapters
-    public async Task<List<Chapter<MangaDex>>?> GetChapters(Manga<MangaDex> manga, CancellationToken ct)
+    public async Task<List<ChapterInfo<MangaDex>>?> GetChapters(MangaInfo<MangaDex> mangaInfo, CancellationToken ct)
     {
-        HttpRequestMessage request = CreateChaptersRequest(manga);
+        HttpRequestMessage request = CreateChaptersRequest(mangaInfo);
         MangaDexChapterResultDTO? result = await _client.SendAsyncAndParseJson<MangaDexChapterResultDTO>(request, ct);
         if (result is null || result.Result != "ok")
             return null;
         return ParseChaptersResult(result.Data);
     }
     
-    private HttpRequestMessage CreateChaptersRequest(Manga<MangaDex> manga)
+    private HttpRequestMessage CreateChaptersRequest(MangaInfo<MangaDex> mangaInfo)
     {
         UriBuilder uriBuilder = new(BaseUrl)
         {
             Path = "/chapter"
         };
-        uriBuilder.AddQueryParameter("manga", manga.Identifier);
+        uriBuilder.AddQueryParameter("manga", mangaInfo.Identifier);
         
         HttpRequestMessage message = new(HttpMethod.Get, uriBuilder.Uri);
         return message;
     }
     
-    private List<Chapter<MangaDex>> ParseChaptersResult(MangaDexChapterDTO[] chapters)
+    private List<ChapterInfo<MangaDex>> ParseChaptersResult(MangaDexChapterDTO[] chapters)
     {
-        List<Chapter<MangaDex>> result = new();
+        List<ChapterInfo<MangaDex>> result = new();
         foreach (MangaDexChapterDTO chapter in chapters)
         {
             if(chapter.Attributes.ExternalUrl is not null)
@@ -119,16 +120,16 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
             string identifier = chapter.Id.ToString();
             string? volume = chapter.Attributes.Volume;
             string? title = chapter.Attributes.Title;
-            result.Add(new Chapter<MangaDex>(number, url, identifier, volume, title));
+            result.Add(new ChapterInfo<MangaDex>(number, url, identifier, volume, title));
         }
         return result;
     }
     #endregion
 
     #region Images
-    public async Task<List<ChapterImage<MangaDex>>?> GetChapterImages(Chapter<MangaDex> chapter, CancellationToken ct)
+    public async Task<List<ChapterImage<MangaDex>>?> GetChapterImages(ChapterInfo<MangaDex> chapterInfo, CancellationToken ct)
     {
-        if (await GetChapterImageUrls(chapter, ct) is not { } urls)
+        if (await GetChapterImageUrls(chapterInfo, ct) is not { } urls)
             return null;
 
         List<ChapterImage<MangaDex>> images = new();
@@ -139,17 +140,17 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
             MemoryStream memoryStream = new ();
             Stream data = await response.Content.ReadAsStreamAsync(ct);
             await data.CopyToAsync(memoryStream, ct);
-            images.Add(new ChapterImage<MangaDex>(chapter.Identifier, i, memoryStream));
+            images.Add(new ChapterImage<MangaDex>(chapterInfo.Identifier, i, memoryStream));
         }
 
         return images;
     }
 
-    private async Task<List<string>?> GetChapterImageUrls(Chapter<MangaDex> chapter, CancellationToken ct)
+    private async Task<List<string>?> GetChapterImageUrls(ChapterInfo<MangaDex> chapterInfo, CancellationToken ct)
     {
         UriBuilder uriBuilder = new(BaseUrl)
         {
-            Path = $"/at-home/server/{chapter.Identifier}"
+            Path = $"/at-home/server/{chapterInfo.Identifier}"
         };
         HttpRequestMessage message = new(HttpMethod.Get, uriBuilder.Uri);
         if (await _client.SendAsyncAndParseJson<MangaDexAtHomeResultDTO>(message, ct) is not { } response)
