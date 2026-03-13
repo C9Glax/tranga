@@ -13,4 +13,4 @@ public record Manga<T>(
     string Identifier,
     MemoryStream Cover,
     string? Description = null
-) where T : IExtension<T>;
+) where T : IDownloadExtension<T>;

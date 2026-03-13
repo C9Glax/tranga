@@ -3,7 +3,7 @@ using DownloadExtensions.Helpers;
 
 namespace DownloadExtensions;
 
-public interface IExtension<T> where T : IExtension<T>
+public interface IDownloadExtension<T> where T : IDownloadExtension<T>
 {
     /// <summary>
     /// The unique Extension Identifier

@@ -6,4 +6,4 @@ public sealed record Chapter<T>(
     string Identifier,
     string? Volume = null,
     string? Title = null
-) where T : IExtension<T>;
+) where T : IDownloadExtension<T>;

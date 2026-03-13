@@ -5,7 +5,7 @@ using DownloadExtensions.Helpers;
 
 namespace DownloadExtensions.Extensions.MangaDex;
 
-public sealed class MangaDex : IExtension<MangaDex>
+public sealed class MangaDex : IDownloadExtension<MangaDex>
 {
     public Guid Identifier { get; init; } = Guid.Parse("019ce521-deaf-7739-9e14-eb6f4afc86e2");
 
