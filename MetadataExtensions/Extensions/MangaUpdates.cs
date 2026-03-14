@@ -1,14 +1,14 @@
 using Common.Data;
 using Common.Helpers;
 using Data;
-using MetadataExtensions.GeneratedClasses.MangaUpdates;
+using NSwagClients.GeneratedClients;
 
 namespace MetadataExtensions.Extensions;
 
 public class MangaUpdates : IMetadataExtension
 {
     // ReSharper disable once InconsistentNaming
-    private readonly MangaUpdatesClient Client = new MangaUpdatesClient(new RequestClient());
+    private readonly MangaUpdatesApiClient Client = new (new RequestClient());
     
     public string BaseUrl
     {
@@ -21,68 +21,50 @@ public class MangaUpdates : IMetadataExtension
         // If MangaUpdates ID is included, try getting the series directly first
         if (searchQuery.MangaUpdatesSeriesId is { } id)
         {
-            ComicInfo? comicInfo = await GetFromId(id, ct);
-            if (comicInfo is not null)
-                return [comicInfo];
+            SeriesModelV1 series = await Client.RetrieveSeriesAsync(id, cancellationToken: ct);
+            return
+            [
+                new ComicInfo()
+                {
+                    Series = series.Title,
+                    Summary = series.Description,
+                    Year = series.Year is null ? -1 : int.Parse(series.Year),
+                    Writer = series.Authors is null ? "" : string.Join(',', series.Authors.Select(a => a.Name)),
+                    Publisher = series.Publishers is null ? "" : string.Join(',', series.Publishers.Select(p => p.Publisher_name)),
+                    Genre = series.Genres is null ? "" : string.Join(',', series.Genres.Select(g => g.Genre)),
+                    Web = series.Url,
+                    Manga = Data.Manga.Yes,
+                    Notes = series.Type.ToString()
+                }
+            ];
         }
         
         // Search
-        SeriesSearchRequestV1 request = CreateRequest(searchQuery);
-        try
+        SeriesSearchResponseV1 list = await Client.SearchSeriesPostAsync(new SeriesSearchRequestV1()
         {
-            SeriesSearchResponseV1 response = await Client.SearchSeriesPostAsync(request, ct);
-            return ParseResponse(response);
-        }
-        catch (MangaUpdatesApiException)
-        {
-            return null;
-        }
-    }
-    
-    private async Task<ComicInfo?> GetFromId(int id, CancellationToken ct)
-    {
-        try
-        {
-            SeriesModelV1 series = await Client.RetrieveSeriesAsync(false, id, ct);
-            return ParseSeriesModel(series);
-        }
-        catch (MangaUpdatesApiException)
-        {
-            return null;
-        }
-    }
-
-    private SeriesSearchRequestV1 CreateRequest(SearchQuery searchQuery)
-    {
-        SeriesSearchRequestV1 request = new()
-        {
-            Page = 10
-        };
+            
+        }, ct);
         
-        if (searchQuery.Title is not null)
+        if (list.Results is null)
+            return null;
+
+        List<ComicInfo> ret = new();
+        foreach (SeriesModelSearchV1? listResult in list.Results.Select(r => r.Record))
         {
-            request.Search = searchQuery.Title;
-            request.Stype = SeriesSearchRequestV1Stype.Title;
+            if(listResult is null)
+                continue;
+            ret.Add(new ComicInfo()
+            {
+                Series = listResult.Title,
+                Summary = listResult.Description,
+                Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
+                Genre = listResult.Genres is null ? "" : string.Join(',', listResult.Genres.Select(g => g.Genre)),
+                Web = listResult.Url,
+                Manga = Data.Manga.Yes,
+                Notes = listResult.Type.ToString()
+            });
         }
-        if (searchQuery.Year is not null)
-            request.Year = searchQuery.Year.ToString();
-        if (searchQuery.Tags is { Length: > 0 })
-            request.Genre = searchQuery.Tags;
 
-        return request;
+        return ret;
     }
-
-    private List<ComicInfo> ParseResponse(SeriesSearchResponseV1 response)
-    {
-        // TODO
-        return [];
-    }
-
-    private ComicInfo ParseSeriesModel(SeriesModelV1 response) =>
-        new ()
-        {
-            Series = response.Title,
-            Year = int.Parse(response.Year),
-            // TODO
-        };
 }

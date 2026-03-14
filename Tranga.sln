@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers", "Common.He
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers.Tests", "Common.Helpers.Tests\Common.Helpers.Tests.csproj", "{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSwagClients", "NSwagClients\NSwagClients.csproj", "{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,5 +92,9 @@ Global
 		{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -4,6 +4,8 @@
 // </auto-generated>
 //----------------------
 
+#nullable enable
+
 #pragma warning disable 108 // Disable "CS0108 '{derivedDto}.ToJson()' hides inherited member '{dtoBase}.ToJson()'. Use the new keyword if hiding was intended."
 #pragma warning disable 114 // Disable "CS0114 '{derivedDto}.RaisePropertyChanged(String)' hides inherited member 'dtoBase.RaisePropertyChanged(String)'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword."
 #pragma warning disable 472 // Disable "CS0472 The result of the expression is always 'false' since a value of type 'Int32' is never equal to 'null' of type 'Int32?'
@@ -20,12 +22,12 @@
 #pragma warning disable 8625 // Disable "CS8625 Cannot convert null literal to non-nullable reference type"
 #pragma warning disable 8765 // Disable "CS8765 Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes)."
 
-namespace MetadataExtensions.GeneratedClasses.MangaUpdates
+namespace NSwagClients.GeneratedClients
 {
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class MangaUpdatesClient : MangaUpdates
+    public partial class MangaUpdatesApiClient 
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -36,7 +38,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         private System.Text.Json.JsonSerializerOptions _instanceSettings;
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public MangaUpdatesClient(System.Net.Http.HttpClient httpClient)
+        public MangaUpdatesApiClient(System.Net.Http.HttpClient httpClient)
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             BaseUrl = "https://api.mangaupdates.com/v1";
@@ -72,23 +74,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
-        /// <summary>
-        /// add a category
-        /// </summary>
-        /// <returns>Category was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddAboutusCategoryAsync(AboutusCategoryModelUpdateV1 body)
-        {
-            return AddAboutusCategoryAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a category
         /// </summary>
         /// <returns>Category was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddAboutusCategoryAsync(AboutusCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddAboutusCategoryAsync(AboutusCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -179,27 +171,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// returns a single category
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="category_id">Aboutus Category id</param>
-        /// <returns>Return category record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<AboutusCategoryModelV1> RetrieveAboutusCategoryAsync(bool? unrenderedFields, int category_id)
-        {
-            return RetrieveAboutusCategoryAsync(unrenderedFields, category_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// returns a single category
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="category_id">Aboutus Category id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return category record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<AboutusCategoryModelV1> RetrieveAboutusCategoryAsync(bool? unrenderedFields, int category_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<AboutusCategoryModelV1> RetrieveAboutusCategoryAsync(int category_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -283,17 +263,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a category
-        /// </summary>
-        /// <param name="category_id">Aboutus Category id</param>
-        /// <returns>Category was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteAboutusCategoryAsync(int category_id)
-        {
-            return DeleteAboutusCategoryAsync(category_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a category
@@ -301,7 +270,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="category_id">Aboutus Category id</param>
         /// <returns>Category was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAboutusCategoryAsync(int category_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAboutusCategoryAsync(int category_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -395,17 +364,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a category
-        /// </summary>
-        /// <param name="category_id">id of category</param>
-        /// <returns>Category was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateAboutusCategoryAsync(int category_id, AboutusCategoryModelUpdateV1 body)
-        {
-            return UpdateAboutusCategoryAsync(category_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a category
@@ -413,7 +371,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="category_id">id of category</param>
         /// <returns>Category was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateAboutusCategoryAsync(int category_id, AboutusCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateAboutusCategoryAsync(int category_id, AboutusCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -514,23 +472,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// returns categories and users
-        /// </summary>
-        /// <returns>List of categories and users</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AboutusCategoryModelV1>> RetrieveAboutusCategoriesAndUsersAsync()
-        {
-            return RetrieveAboutusCategoriesAndUsersAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// returns categories and users
         /// </summary>
         /// <returns>List of categories and users</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AboutusCategoryModelV1>> RetrieveAboutusCategoriesAndUsersAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AboutusCategoryModelV1>> RetrieveAboutusCategoriesAndUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -598,17 +546,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// returns description of site
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Description of the site</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<AboutusDescriptionModelV1> RetrieveAboutusDescriptionAsync(bool? unrenderedFields)
-        {
-            return RetrieveAboutusDescriptionAsync(unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// returns description of site
@@ -616,7 +553,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Description of the site</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<AboutusDescriptionModelV1> RetrieveAboutusDescriptionAsync(bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<AboutusDescriptionModelV1> RetrieveAboutusDescriptionAsync(bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -690,23 +627,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update description of site
-        /// </summary>
-        /// <returns>Description of the site updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateAboutusDescriptionAsync(AboutusDescriptionModelV1 body)
-        {
-            return UpdateAboutusDescriptionAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update description of site
         /// </summary>
         /// <returns>Description of the site updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateAboutusDescriptionAsync(AboutusDescriptionModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateAboutusDescriptionAsync(AboutusDescriptionModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -797,23 +724,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// reorder aboutus
-        /// </summary>
-        /// <returns>Categories and users were reordered</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ReorderAboutusAsync(System.Collections.Generic.IEnumerable<AboutusCategoryReorderModelV1> body)
-        {
-            return ReorderAboutusAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// reorder aboutus
         /// </summary>
         /// <returns>Categories and users were reordered</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReorderAboutusAsync(System.Collections.Generic.IEnumerable<AboutusCategoryReorderModelV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReorderAboutusAsync(System.Collections.Generic.IEnumerable<AboutusCategoryReorderModelV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -904,17 +821,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a user to a category
-        /// </summary>
-        /// <param name="category_id">Aboutus Category id</param>
-        /// <returns>User was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddAboutusCategoryUserAsync(int category_id, AboutusUserModelUpdateV1 body)
-        {
-            return AddAboutusCategoryUserAsync(category_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a user to a category
@@ -922,7 +828,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="category_id">Aboutus Category id</param>
         /// <returns>User was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddAboutusCategoryUserAsync(int category_id, AboutusUserModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddAboutusCategoryUserAsync(int category_id, AboutusUserModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -1024,18 +930,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a user from a category
-        /// </summary>
-        /// <param name="category_id">Aboutus Category id</param>
-        /// <param name="entry_id">Aboutus Category User Entry id</param>
-        /// <returns>User was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteAboutusCategoryUserAsync(int category_id, int entry_id)
-        {
-            return DeleteAboutusCategoryUserAsync(category_id, entry_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a user from a category
@@ -1044,7 +938,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="entry_id">Aboutus Category User Entry id</param>
         /// <returns>User was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAboutusCategoryUserAsync(int category_id, int entry_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAboutusCategoryUserAsync(int category_id, int entry_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -1133,23 +1027,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve the public captcha key
-        /// </summary>
-        /// <returns>Return captcha record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> CaptchaAsync()
-        {
-            return CaptchaAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve the public captcha key
         /// </summary>
         /// <returns>Return captcha record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> CaptchaAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> CaptchaAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1217,17 +1101,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// confirm deletion of your account
-        /// </summary>
-        /// <param name="auth_hash">auth hash from email confirmation</param>
-        /// <returns>Account was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ConfirmDeleteAccountAsync(string auth_hash)
-        {
-            return ConfirmDeleteAccountAsync(auth_hash, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// confirm deletion of your account
@@ -1235,7 +1108,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="auth_hash">auth hash from email confirmation</param>
         /// <returns>Account was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmDeleteAccountAsync(string auth_hash, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmDeleteAccountAsync(string auth_hash, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (auth_hash == null)
                 throw new System.ArgumentNullException("auth_hash");
@@ -1318,17 +1191,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete your account
-        /// </summary>
-        /// <param name="captcha_response">response of captcha</param>
-        /// <returns>Account was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteAccountAsync(string captcha_response)
-        {
-            return DeleteAccountAsync(captcha_response, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete your account
@@ -1336,7 +1198,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="captcha_response">response of captcha</param>
         /// <returns>Account was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAccountAsync(string captcha_response, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAccountAsync(string captcha_response, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (captcha_response == null)
                 throw new System.ArgumentNullException("captcha_response");
@@ -1431,17 +1293,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a password change using an auth hash
-        /// </summary>
-        /// <param name="auth_hash">auth hash from email confirmation</param>
-        /// <returns>Password was changed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ConfirmAndChangePasswordAsync(string auth_hash, UserModelUpdatePasswordV1 body)
-        {
-            return ConfirmAndChangePasswordAsync(auth_hash, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a password change using an auth hash
@@ -1449,7 +1300,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="auth_hash">auth hash from email confirmation</param>
         /// <returns>Password was changed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmAndChangePasswordAsync(string auth_hash, UserModelUpdatePasswordV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmAndChangePasswordAsync(string auth_hash, UserModelUpdatePasswordV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (auth_hash == null)
                 throw new System.ArgumentNullException("auth_hash");
@@ -1538,17 +1389,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// send a forgotten password email
-        /// </summary>
-        /// <param name="captcha_response">response of captcha</param>
-        /// <returns>Email was sent</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ForgotPasswordAsync(string captcha_response, AccountForgotPassModelV1 body)
-        {
-            return ForgotPasswordAsync(captcha_response, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// send a forgotten password email
@@ -1556,7 +1396,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="captcha_response">response of captcha</param>
         /// <returns>Email was sent</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ForgotPasswordAsync(string captcha_response, AccountForgotPassModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ForgotPasswordAsync(string captcha_response, AccountForgotPassModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (captcha_response == null)
                 throw new System.ArgumentNullException("captcha_response");
@@ -1645,23 +1485,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// create a session token
-        /// </summary>
-        /// <returns>Login successful</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> LoginAsync(AccountLoginModelV1 body)
-        {
-            return LoginAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// create a session token
         /// </summary>
         /// <returns>Login successful</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LoginAsync(AccountLoginModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LoginAsync(AccountLoginModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -1752,23 +1582,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// create a session token as a cookie
-        /// </summary>
-        /// <returns>Login successful</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> LoginWithCookieAsync(AccountLoginModelV1 body)
-        {
-            return LoginWithCookieAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// create a session token as a cookie
         /// </summary>
         /// <returns>Login successful</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LoginWithCookieAsync(AccountLoginModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LoginWithCookieAsync(AccountLoginModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -1859,23 +1679,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a session token
-        /// </summary>
-        /// <returns>Logout successful</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> LogoutAsync()
-        {
-            return LogoutAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a session token
         /// </summary>
         /// <returns>Logout successful</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LogoutAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LogoutAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1954,17 +1764,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// preview what will be unsubscribed (no auth required)
-        /// </summary>
-        /// <param name="token">Unsubscribe token from email</param>
-        /// <returns>Preview of unsubscribe action</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<Response> PreviewNotificationUnsubscribeAsync(string token)
-        {
-            return PreviewNotificationUnsubscribeAsync(token, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// preview what will be unsubscribed (no auth required)
@@ -1972,7 +1771,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="token">Unsubscribe token from email</param>
         /// <returns>Preview of unsubscribe action</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<Response> PreviewNotificationUnsubscribeAsync(string token, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<Response> PreviewNotificationUnsubscribeAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (token == null)
                 throw new System.ArgumentNullException("token");
@@ -2054,17 +1853,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// confirm and execute unsubscribe (no auth required)
-        /// </summary>
-        /// <param name="token">Unsubscribe token from email</param>
-        /// <returns>Successfully unsubscribed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ConfirmNotificationUnsubscribeAsync(string token)
-        {
-            return ConfirmNotificationUnsubscribeAsync(token, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// confirm and execute unsubscribe (no auth required)
@@ -2072,7 +1860,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="token">Unsubscribe token from email</param>
         /// <returns>Successfully unsubscribed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmNotificationUnsubscribeAsync(string token, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmNotificationUnsubscribeAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (token == null)
                 throw new System.ArgumentNullException("token");
@@ -2155,23 +1943,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the profile for the current user
-        /// </summary>
-        /// <returns>Return user record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<UserModelV1> ProfileAsync()
-        {
-            return ProfileAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the profile for the current user
         /// </summary>
         /// <returns>Return user record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UserModelV1> ProfileAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<UserModelV1> ProfileAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2255,23 +2033,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// refresh session token cookie
-        /// </summary>
-        /// <returns>Refresh successful</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RefreshCookieAsync()
-        {
-            return RefreshCookieAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// refresh session token cookie
         /// </summary>
         /// <returns>Refresh successful</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RefreshCookieAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RefreshCookieAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2351,17 +2119,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// confirm a new member registration
-        /// </summary>
-        /// <param name="auth_hash">auth hash from email confirmation</param>
-        /// <returns>Member was confirmed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ConfirmRegistrationAsync(string auth_hash)
-        {
-            return ConfirmRegistrationAsync(auth_hash, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// confirm a new member registration
@@ -2369,7 +2126,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="auth_hash">auth hash from email confirmation</param>
         /// <returns>Member was confirmed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmRegistrationAsync(string auth_hash, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ConfirmRegistrationAsync(string auth_hash, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (auth_hash == null)
                 throw new System.ArgumentNullException("auth_hash");
@@ -2452,17 +2209,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// register a new member
-        /// </summary>
-        /// <param name="captcha_response">response of captcha</param>
-        /// <returns>Member was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RegisterMemberAsync(string captcha_response, UserModelRegisterV1 body)
-        {
-            return RegisterMemberAsync(captcha_response, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// register a new member
@@ -2470,7 +2216,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="captcha_response">response of captcha</param>
         /// <returns>Member was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RegisterMemberAsync(string captcha_response, UserModelRegisterV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RegisterMemberAsync(string captcha_response, UserModelRegisterV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (captcha_response == null)
                 throw new System.ArgumentNullException("captcha_response");
@@ -2559,17 +2305,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// send an auth email to a user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Auth email was sent</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ResendAuthEmailAsync(long id)
-        {
-            return ResendAuthEmailAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// send an auth email to a user
@@ -2577,7 +2312,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Auth email was sent</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ResendAuthEmailAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ResendAuthEmailAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -2660,17 +2395,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// send a forgotten password email to a user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Auth email was sent</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> SendForgotEmailAsync(long id)
-        {
-            return SendForgotEmailAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// send a forgotten password email to a user
@@ -2678,7 +2402,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Auth email was sent</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> SendForgotEmailAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> SendForgotEmailAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -2761,23 +2485,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add an author
-        /// </summary>
-        /// <returns>Author was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddAuthorAsync(AuthorsModelUpdateV1 body)
-        {
-            return AddAuthorAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add an author
         /// </summary>
         /// <returns>Author was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddAuthorAsync(AuthorsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddAuthorAsync(AuthorsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -2874,27 +2588,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific author
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="id">Author id</param>
-        /// <returns>Return author record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<AuthorsModelV1> RetrieveAuthorAsync(bool? unrenderedFields, int id)
-        {
-            return RetrieveAuthorAsync(unrenderedFields, id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific author
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="id">Author id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return author record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<AuthorsModelV1> RetrieveAuthorAsync(bool? unrenderedFields, int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<AuthorsModelV1> RetrieveAuthorAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -2978,17 +2680,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete an author
-        /// </summary>
-        /// <param name="id">id of author</param>
-        /// <returns>Author delete transaction submitted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteAuthorAsync(int id)
-        {
-            return DeleteAuthorAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete an author
@@ -2996,7 +2687,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of author</param>
         /// <returns>Author delete transaction submitted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAuthorAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteAuthorAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -3096,17 +2787,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update an author
-        /// </summary>
-        /// <param name="id">id of author</param>
-        /// <returns>Author was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateAuthorAsync(int id, AuthorsModelUpdateV1 body)
-        {
-            return UpdateAuthorAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update an author
@@ -3114,7 +2794,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of author</param>
         /// <returns>Author was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateAuthorAsync(int id, AuthorsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateAuthorAsync(int id, AuthorsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -3227,17 +2907,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get locks for a specific author
-        /// </summary>
-        /// <param name="id">Author id</param>
-        /// <returns>Return author lock records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AuthorsLockModelV1>> RetrieveAuthorLocksAsync(long id)
-        {
-            return RetrieveAuthorLocksAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get locks for a specific author
@@ -3245,7 +2914,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Author id</param>
         /// <returns>Return author lock records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AuthorsLockModelV1>> RetrieveAuthorLocksAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AuthorsLockModelV1>> RetrieveAuthorLocksAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -3324,18 +2993,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// lock a field of an author
-        /// </summary>
-        /// <param name="id">id of author</param>
-        /// <param name="item">field name</param>
-        /// <returns>Field was locked</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> LockAuthorFieldAsync(long id, string item, AuthorsLockModelUpdateV1 body)
-        {
-            return LockAuthorFieldAsync(id, item, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// lock a field of an author
@@ -3344,7 +3001,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="item">field name</param>
         /// <returns>Field was locked</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LockAuthorFieldAsync(long id, string item, AuthorsLockModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LockAuthorFieldAsync(long id, string item, AuthorsLockModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -3461,18 +3118,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// unlock a field of an author
-        /// </summary>
-        /// <param name="id">id of author</param>
-        /// <param name="item">field name</param>
-        /// <returns>Field was unlocked</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UnlockAuthorFieldAsync(long id, string item)
-        {
-            return UnlockAuthorFieldAsync(id, item, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// unlock a field of an author
@@ -3481,7 +3126,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="item">field name</param>
         /// <returns>Field was unlocked</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UnlockAuthorFieldAsync(long id, string item, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UnlockAuthorFieldAsync(long id, string item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -3582,23 +3227,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search authors
-        /// </summary>
-        /// <returns>List of authors</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<AuthorsSearchResponseV1> SearchAuthorsPostAsync(AuthorsSearchRequestV1 body)
-        {
-            return SearchAuthorsPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search authors
         /// </summary>
         /// <returns>List of authors</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<AuthorsSearchResponseV1> SearchAuthorsPostAsync(AuthorsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<AuthorsSearchResponseV1> SearchAuthorsPostAsync(AuthorsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -3683,17 +3318,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the list of series for a specific author
-        /// </summary>
-        /// <param name="id">Author id</param>
-        /// <returns>Return series list</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<AuthorsSeriesListResponseV1> RetrieveAuthorSeriesAsync(long id, AuthorsSeriesListRequestV1 body)
-        {
-            return RetrieveAuthorSeriesAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the list of series for a specific author
@@ -3701,7 +3325,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Author id</param>
         /// <returns>Return series list</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<AuthorsSeriesListResponseV1> RetrieveAuthorSeriesAsync(long id, AuthorsSeriesListRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<AuthorsSeriesListResponseV1> RetrieveAuthorSeriesAsync(long id, AuthorsSeriesListRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -3803,18 +3427,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update the image of an author
-        /// </summary>
-        /// <param name="id">id of author</param>
-        /// <param name="image">Image to update</param>
-        /// <returns>Image was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateImageAsync(long id, FileParameter image)
-        {
-            return UpdateImageAsync(id, image, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update the image of an author
@@ -3823,7 +3435,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="image">Image to update</param>
         /// <returns>Image was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateImageAsync(long id, FileParameter image, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateImageAsync(long id, FileParameter image = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -3945,17 +3557,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete the image of an author
-        /// </summary>
-        /// <param name="id">id of author</param>
-        /// <returns>Image was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteImageAsync(long id)
-        {
-            return DeleteImageAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete the image of an author
@@ -3963,7 +3564,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of author</param>
         /// <returns>Image was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteImageAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteImageAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -4064,23 +3665,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// combine two categories across the database
-        /// </summary>
-        /// <returns>Transaction has started</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> BulkCombineSeriesCategoriesAsync(SeriesCategoryUpdateModelV1 body)
-        {
-            return BulkCombineSeriesCategoriesAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// combine two categories across the database
         /// </summary>
         /// <returns>Transaction has started</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> BulkCombineSeriesCategoriesAsync(SeriesCategoryUpdateModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> BulkCombineSeriesCategoriesAsync(SeriesCategoryUpdateModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4177,23 +3768,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a category across the database
-        /// </summary>
-        /// <returns>Transaction has started</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> BulkDeleteSeriesCategoriesAsync(CategoriesModelUpdateV1 body)
-        {
-            return BulkDeleteSeriesCategoriesAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a category across the database
         /// </summary>
         /// <returns>Transaction has started</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> BulkDeleteSeriesCategoriesAsync(CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> BulkDeleteSeriesCategoriesAsync(CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4290,23 +3871,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// find a category by prefix
-        /// </summary>
-        /// <returns>Return categories records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CategoriesModelV1>> FindCategoryByPrefixAsync(CategoriesModelUpdateV1 body)
-        {
-            return FindCategoryByPrefixAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// find a category by prefix
         /// </summary>
         /// <returns>Return categories records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CategoriesModelV1>> FindCategoryByPrefixAsync(CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CategoriesModelV1>> FindCategoryByPrefixAsync(CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4381,23 +3952,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// find a category by name
-        /// </summary>
-        /// <returns>Return categories record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<CategoriesModelV1> FindCategoryByExactAsync(CategoriesModelUpdateV1 body)
-        {
-            return FindCategoryByExactAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// find a category by name
         /// </summary>
         /// <returns>Return categories record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<CategoriesModelV1> FindCategoryByExactAsync(CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<CategoriesModelV1> FindCategoryByExactAsync(CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4478,23 +4039,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search categories
-        /// </summary>
-        /// <returns>Return categories records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<CategoriesSearchResponseV1> SearchCategoriesPostAsync(CategoriesSearchRequestV1 body)
-        {
-            return SearchCategoriesPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search categories
         /// </summary>
         /// <returns>Return categories records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<CategoriesSearchResponseV1> SearchCategoriesPostAsync(CategoriesSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<CategoriesSearchResponseV1> SearchCategoriesPostAsync(CategoriesSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4569,23 +4120,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add an convo
-        /// </summary>
-        /// <returns>Convo was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddConvoAsync(ConvoModelAddV1 body)
-        {
-            return AddConvoAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add an convo
         /// </summary>
         /// <returns>Convo was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddConvoAsync(ConvoModelAddV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddConvoAsync(ConvoModelAddV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4676,23 +4217,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// abandon convos in bulk
-        /// </summary>
-        /// <returns>Bulk abandon result</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AbandonConvoBulkAsync(ConvoBulkModelV1 body)
-        {
-            return AbandonConvoBulkAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// abandon convos in bulk
         /// </summary>
         /// <returns>Bulk abandon result</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AbandonConvoBulkAsync(ConvoBulkModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AbandonConvoBulkAsync(ConvoBulkModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4767,23 +4298,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete convos in bulk
-        /// </summary>
-        /// <returns>Bulk deletion result</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteConvoBulkAsync(ConvoBulkModelV1 body)
-        {
-            return DeleteConvoBulkAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete convos in bulk
         /// </summary>
         /// <returns>Bulk deletion result</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteConvoBulkAsync(ConvoBulkModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteConvoBulkAsync(ConvoBulkModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -4858,18 +4379,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return convo record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoModelV1> RetrieveConvoAsync(int id, bool? unrenderedFields)
-        {
-            return RetrieveConvoAsync(id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific convo
@@ -4878,7 +4387,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return convo record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoModelV1> RetrieveConvoAsync(int id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoModelV1> RetrieveConvoAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -4962,17 +4471,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>Convo was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteConvoAsync(int id)
-        {
-            return DeleteConvoAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a convo
@@ -4980,7 +4478,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>Convo was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteConvoAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteConvoAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -5058,17 +4556,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>Convo was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateConvoAsync(int id, ConvoModelUpdateV1 body)
-        {
-            return UpdateConvoAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a convo
@@ -5076,7 +4563,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>Convo was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateConvoAsync(int id, ConvoModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateConvoAsync(int id, ConvoModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -5171,17 +4658,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// return whether the user is ignored
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>User ignore record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoUserIgnoreModelV1> IsUserIgnoredAsync(int user_id)
-        {
-            return IsUserIgnoredAsync(user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// return whether the user is ignored
@@ -5189,7 +4665,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>User ignore record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoUserIgnoreModelV1> IsUserIgnoredAsync(int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoUserIgnoreModelV1> IsUserIgnoredAsync(int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -5277,17 +4753,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// ignore a user
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>User was ignored</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> IgnoreUserAsync(int user_id)
-        {
-            return IgnoreUserAsync(user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// ignore a user
@@ -5295,7 +4760,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>User was ignored</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> IgnoreUserAsync(int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> IgnoreUserAsync(int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -5384,17 +4849,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove ignore for a user
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>User ignore was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UnIgnoreUserAsync(int user_id)
-        {
-            return UnIgnoreUserAsync(user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove ignore for a user
@@ -5402,7 +4856,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>User ignore was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UnIgnoreUserAsync(int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UnIgnoreUserAsync(int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -5490,23 +4944,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// display unread messages
-        /// </summary>
-        /// <returns>List of convos</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoInboxAsync()
-        {
-            return ConvoInboxAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// display unread messages
         /// </summary>
         /// <returns>List of convos</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoInboxAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoInboxAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -5574,23 +5018,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve number of unread messages
-        /// </summary>
-        /// <returns>Return number of new convos</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoInboxCountAsync()
-        {
-            return ConvoInboxCountAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve number of unread messages
         /// </summary>
         /// <returns>Return number of new convos</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoInboxCountAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoInboxCountAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -5658,23 +5092,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// display sent messages
-        /// </summary>
-        /// <returns>List of convos</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoSentAsync(PerPageSearchRequestV1 body)
-        {
-            return ConvoSentAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// display sent messages
         /// </summary>
         /// <returns>List of convos</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoSentAsync(PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoSentAsync(PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -5749,23 +5173,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// display received (and read) messages
-        /// </summary>
-        /// <returns>List of convos</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoReceivedAsync(PerPageSearchRequestV1 body)
-        {
-            return ConvoReceivedAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// display received (and read) messages
         /// </summary>
         /// <returns>List of convos</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoReceivedAsync(PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> ConvoReceivedAsync(PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -5840,17 +5254,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a message to a convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>Message was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddConvoMessageAsync(int id, ConvoMessageModelUpdateV1 body)
-        {
-            return AddConvoMessageAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a message to a convo
@@ -5858,7 +5261,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>Message was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddConvoMessageAsync(int id, ConvoMessageModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddConvoMessageAsync(int id, ConvoMessageModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -5954,17 +5357,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// list convo messages
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>List of convo messages</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoMessageSearchResponseV1> ListConvoMessagesAsync(int id, ConvoMessageListRequestV1 body)
-        {
-            return ListConvoMessagesAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// list convo messages
@@ -5972,7 +5364,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>List of convo messages</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoMessageSearchResponseV1> ListConvoMessagesAsync(int id, ConvoMessageListRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoMessageSearchResponseV1> ListConvoMessagesAsync(int id, ConvoMessageListRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6058,19 +5450,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific convo message
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <param name="message_id">Convo message id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return convo message record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoMessageModelV1> RetrieveConvoMessageAsync(long id, long message_id, bool? unrenderedFields)
-        {
-            return RetrieveConvoMessageAsync(id, message_id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific convo message
@@ -6080,7 +5459,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return convo message record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoMessageModelV1> RetrieveConvoMessageAsync(long id, long message_id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoMessageModelV1> RetrieveConvoMessageAsync(long id, long message_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6169,18 +5548,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a convo message
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <param name="message_id">Convo message id</param>
-        /// <returns>Message was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateConvoMessageAsync(int id, int message_id, ConvoMessageModelUpdateV1 body)
-        {
-            return UpdateConvoMessageAsync(id, message_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a convo message
@@ -6189,7 +5556,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="message_id">Convo message id</param>
         /// <returns>Message was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateConvoMessageAsync(int id, int message_id, ConvoMessageModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateConvoMessageAsync(int id, int message_id, ConvoMessageModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6295,18 +5662,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific convo message location
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <param name="message_id">Convo message id</param>
-        /// <returns>Return convo message record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RetrieveConvoMessageLocationAsync(long id, long message_id)
-        {
-            return RetrieveConvoMessageLocationAsync(id, message_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific convo message location
@@ -6315,7 +5670,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="message_id">Convo message id</param>
         /// <returns>Return convo message record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrieveConvoMessageLocationAsync(long id, long message_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrieveConvoMessageLocationAsync(long id, long message_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6393,17 +5748,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>List of convo messages</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoMessageSearchResponseV1> SearchConvoMessagesPostAsync(int id, ConvoMessageSearchRequestV1 body)
-        {
-            return SearchConvoMessagesPostAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search convo
@@ -6411,7 +5755,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>List of convo messages</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoMessageSearchResponseV1> SearchConvoMessagesPostAsync(int id, ConvoMessageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoMessageSearchResponseV1> SearchConvoMessagesPostAsync(int id, ConvoMessageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6497,17 +5841,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// abandon a convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>Convo was abandoned</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AbandonConvoAsync(int id)
-        {
-            return AbandonConvoAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// abandon a convo
@@ -6515,7 +5848,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>Convo was abandoned</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AbandonConvoAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AbandonConvoAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6595,17 +5928,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// invite a user to a convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>User was invited</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> InviteUserToConvoAsync(int id, System.Collections.Generic.IEnumerable<ConvoParticipantModelAddV1> body)
-        {
-            return InviteUserToConvoAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// invite a user to a convo
@@ -6613,7 +5935,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>User was invited</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> InviteUserToConvoAsync(int id, System.Collections.Generic.IEnumerable<ConvoParticipantModelAddV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> InviteUserToConvoAsync(int id, System.Collections.Generic.IEnumerable<ConvoParticipantModelAddV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6719,17 +6041,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// join a convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>Join successful</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> JoinConvoAsync(int id)
-        {
-            return JoinConvoAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// join a convo
@@ -6737,7 +6048,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>Join successful</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> JoinConvoAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> JoinConvoAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6827,18 +6138,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// kick a user from a convo
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <param name="user_id">User id</param>
-        /// <returns>User was kicked from convo</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> KickUserFromConvoAsync(int id, int user_id)
-        {
-            return KickUserFromConvoAsync(id, user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// kick a user from a convo
@@ -6847,7 +6146,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>User was kicked from convo</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> KickUserFromConvoAsync(int id, int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> KickUserFromConvoAsync(int id, int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -6947,17 +6246,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get list of convo participants
-        /// </summary>
-        /// <param name="id">Convo id</param>
-        /// <returns>Return convo participants</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ConvoParticipantModelV1>> RetrieveConvoParticipantsAsync(int id)
-        {
-            return RetrieveConvoParticipantsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get list of convo participants
@@ -6965,7 +6253,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Convo id</param>
         /// <returns>Return convo participants</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ConvoParticipantModelV1>> RetrieveConvoParticipantsAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ConvoParticipantModelV1>> RetrieveConvoParticipantsAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -7044,23 +6332,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search convo
-        /// </summary>
-        /// <returns>List of convos</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ConvoSearchResponseV1> SearchConvoPostAsync(ConvoSearchRequestV1 body)
-        {
-            return SearchConvoPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search convo
         /// </summary>
         /// <returns>List of convos</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> SearchConvoPostAsync(ConvoSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ConvoSearchResponseV1> SearchConvoPostAsync(ConvoSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -7135,23 +6413,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve all categories and questions
-        /// </summary>
-        /// <returns>Return category and question records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<FaqCategoryQuestionsModelV1>> RetrieveAllFaqCategoriesAndQuestionsAsync()
-        {
-            return RetrieveAllFaqCategoriesAndQuestionsAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve all categories and questions
         /// </summary>
         /// <returns>Return category and question records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<FaqCategoryQuestionsModelV1>> RetrieveAllFaqCategoriesAndQuestionsAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<FaqCategoryQuestionsModelV1>> RetrieveAllFaqCategoriesAndQuestionsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7219,23 +6487,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a faq category
-        /// </summary>
-        /// <returns>Faq category was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddFaqCategoryAsync(FaqCategoryModelUpdateV1 body)
-        {
-            return AddFaqCategoryAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a faq category
         /// </summary>
         /// <returns>Faq category was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddFaqCategoryAsync(FaqCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddFaqCategoryAsync(FaqCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -7326,27 +6584,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific category
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="category_id">Faq category id</param>
-        /// <returns>Return category record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FaqCategoryModelV1> RetrieveFaqCategoryAsync(bool? unrenderedFields, int category_id)
-        {
-            return RetrieveFaqCategoryAsync(unrenderedFields, category_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific category
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="category_id">Faq category id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return category record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FaqCategoryModelV1> RetrieveFaqCategoryAsync(bool? unrenderedFields, int category_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FaqCategoryModelV1> RetrieveFaqCategoryAsync(int category_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -7430,17 +6676,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a faq category
-        /// </summary>
-        /// <param name="category_id">id of faq category</param>
-        /// <returns>Faq Category was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteFaqCategoryAsync(int category_id)
-        {
-            return DeleteFaqCategoryAsync(category_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a faq category
@@ -7448,7 +6683,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="category_id">id of faq category</param>
         /// <returns>Faq Category was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteFaqCategoryAsync(int category_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteFaqCategoryAsync(int category_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -7532,17 +6767,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a faq category
-        /// </summary>
-        /// <param name="category_id">id of faq category</param>
-        /// <returns>Faq was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateFaqCategoryAsync(int category_id, FaqCategoryModelUpdateV1 body)
-        {
-            return UpdateFaqCategoryAsync(category_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a faq category
@@ -7550,7 +6774,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="category_id">id of faq category</param>
         /// <returns>Faq was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateFaqCategoryAsync(int category_id, FaqCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateFaqCategoryAsync(int category_id, FaqCategoryModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -7645,17 +6869,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve all quesitons for a category
-        /// </summary>
-        /// <param name="category_id">Faq category id</param>
-        /// <returns>Return question records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<FaqQuestionModelV1>> RetrieveAllFaqCategoryQuestionsAsync(int category_id)
-        {
-            return RetrieveAllFaqCategoryQuestionsAsync(category_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve all quesitons for a category
@@ -7663,7 +6876,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="category_id">Faq category id</param>
         /// <returns>Return question records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<FaqQuestionModelV1>> RetrieveAllFaqCategoryQuestionsAsync(int category_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<FaqQuestionModelV1>> RetrieveAllFaqCategoryQuestionsAsync(int category_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -7742,17 +6955,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a faq question
-        /// </summary>
-        /// <param name="category_id">id of category to add question to</param>
-        /// <returns>Faq question was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddFaqQuestionAsync(int category_id, FaqQuestionModelUpdateV1 body)
-        {
-            return AddFaqQuestionAsync(category_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a faq question
@@ -7760,7 +6962,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="category_id">id of category to add question to</param>
         /// <returns>Faq question was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddFaqQuestionAsync(int category_id, FaqQuestionModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddFaqQuestionAsync(int category_id, FaqQuestionModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -7856,29 +7058,16 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific question for a category
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="category_id">Faq category id</param>
-        /// <param name="question_id">Faq question id</param>
-        /// <returns>Return question record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FaqQuestionModelV1> RetrieveFaqQuestionAsync(bool? unrenderedFields, int category_id, int question_id)
-        {
-            return RetrieveFaqQuestionAsync(unrenderedFields, category_id, question_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific question for a category
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="category_id">Faq category id</param>
         /// <param name="question_id">Faq question id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return question record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FaqQuestionModelV1> RetrieveFaqQuestionAsync(bool? unrenderedFields, int category_id, int question_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FaqQuestionModelV1> RetrieveFaqQuestionAsync(int category_id, int question_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -7967,18 +7156,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete an faq
-        /// </summary>
-        /// <param name="category_id">Faq category id</param>
-        /// <param name="question_id">Faq question id</param>
-        /// <returns>Faq question was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteFaqQuestionAsync(int category_id, int question_id)
-        {
-            return DeleteFaqQuestionAsync(category_id, question_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete an faq
@@ -7987,7 +7164,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="question_id">Faq question id</param>
         /// <returns>Faq question was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteFaqQuestionAsync(int category_id, int question_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteFaqQuestionAsync(int category_id, int question_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -8076,18 +7253,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a faq question
-        /// </summary>
-        /// <param name="category_id">Faq category id</param>
-        /// <param name="question_id">Faq question id</param>
-        /// <returns>Faq was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateFaqQuestionAsync(int category_id, int question_id, FaqQuestionModelUpdateV1 body)
-        {
-            return UpdateFaqQuestionAsync(category_id, question_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a faq question
@@ -8096,7 +7261,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="question_id">Faq question id</param>
         /// <returns>Faq was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateFaqQuestionAsync(int category_id, int question_id, FaqQuestionModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateFaqQuestionAsync(int category_id, int question_id, FaqQuestionModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (category_id == null)
                 throw new System.ArgumentNullException("category_id");
@@ -8196,23 +7361,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// reorder faq
-        /// </summary>
-        /// <returns>Faq was reordered</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ReorderFaqAsync(System.Collections.Generic.IEnumerable<FaqCategoryReorderModelV1> body)
-        {
-            return ReorderFaqAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// reorder faq
         /// </summary>
         /// <returns>Faq was reordered</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReorderFaqAsync(System.Collections.Generic.IEnumerable<FaqCategoryReorderModelV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReorderFaqAsync(System.Collections.Generic.IEnumerable<FaqCategoryReorderModelV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -8303,18 +7458,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a forum admin
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="user_id">User id</param>
-        /// <returns>Forum admin was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddForumAdminAsync(int forum_id, int user_id)
-        {
-            return AddForumAdminAsync(forum_id, user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a forum admin
@@ -8323,7 +7466,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>Forum admin was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddForumAdminAsync(int forum_id, int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddForumAdminAsync(int forum_id, int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -8417,18 +7560,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a forum admin
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="user_id">User id</param>
-        /// <returns>Forum admin was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RemoveForumAdminAsync(int forum_id, int user_id)
-        {
-            return RemoveForumAdminAsync(forum_id, user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a forum admin
@@ -8437,7 +7568,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>Forum admin was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveForumAdminAsync(int forum_id, int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveForumAdminAsync(int forum_id, int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -8530,27 +7661,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve a forum
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="forum_id">Forum id</param>
-        /// <returns>Return topic record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumForumModelV1> RetrieveForumAsync(bool? unrenderedFields, int forum_id)
-        {
-            return RetrieveForumAsync(unrenderedFields, forum_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve a forum
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="forum_id">Forum id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return topic record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumForumModelV1> RetrieveForumAsync(bool? unrenderedFields, int forum_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumForumModelV1> RetrieveForumAsync(int forum_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -8634,17 +7753,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a forum topic
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <returns>Forum topic was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddTopicAsync(int forum_id, ForumTopicModelAddV1 body)
-        {
-            return AddTopicAsync(forum_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a forum topic
@@ -8652,7 +7760,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="forum_id">Forum id</param>
         /// <returns>Forum topic was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddTopicAsync(int forum_id, ForumTopicModelAddV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddTopicAsync(int forum_id, ForumTopicModelAddV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -8753,23 +7861,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// show forum admin log
-        /// </summary>
-        /// <returns>Return log records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumAdminHistorySearchResponseV1> ShowLogPostAsync(ForumAdminHistorySearchRequestV1 body)
-        {
-            return ShowLogPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// show forum admin log
         /// </summary>
         /// <returns>Return log records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumAdminHistorySearchResponseV1> ShowLogPostAsync(ForumAdminHistorySearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumAdminHistorySearchResponseV1> ShowLogPostAsync(ForumAdminHistorySearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -8860,23 +7958,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// show forum categories and forums
-        /// </summary>
-        /// <returns>List of forums</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumCategoryModelListV1>> ListCategoriesAsync()
-        {
-            return ListCategoriesAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// show forum categories and forums
         /// </summary>
         /// <returns>List of forums</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumCategoryModelListV1>> ListCategoriesAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumCategoryModelListV1>> ListCategoriesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8944,23 +8032,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// show popular forums
-        /// </summary>
-        /// <returns>List of forums</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumForumModelListV1>> ListPopularForumsAsync()
-        {
-            return ListPopularForumsAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// show popular forums
         /// </summary>
         /// <returns>List of forums</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumForumModelListV1>> ListPopularForumsAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumForumModelListV1>> ListPopularForumsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9028,18 +8106,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// list posts in topic that I made
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Return post id list</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumPostByUserResponseV1> ListPostsByMeAsync(int forum_id, int topic_id)
-        {
-            return ListPostsByMeAsync(forum_id, topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// list posts in topic that I made
@@ -9048,7 +8114,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Return post id list</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumPostByUserResponseV1> ListPostsByMeAsync(int forum_id, int topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumPostByUserResponseV1> ListPostsByMeAsync(int forum_id, int topic_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -9132,18 +8198,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// list posts in topic
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Return post records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumPostListResponseV1> ListPostsAsync(int forum_id, int topic_id, PerPageSearchRequestV1 body)
-        {
-            return ListPostsAsync(forum_id, topic_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// list posts in topic
@@ -9152,7 +8206,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Return post records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumPostListResponseV1> ListPostsAsync(int forum_id, int topic_id, PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumPostListResponseV1> ListPostsAsync(int forum_id, int topic_id, PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -9253,18 +8307,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// list topics
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="with_first_post">Also return the first post of each topic</param>
-        /// <returns>Return topic records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumTopicListResponseV1> ListTopicsAsync(int forum_id, bool? with_first_post, ForumTopicListRequestV1 body)
-        {
-            return ListTopicsAsync(forum_id, with_first_post, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// list topics
@@ -9273,7 +8315,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="with_first_post">Also return the first post of each topic</param>
         /// <returns>Return topic records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumTopicListResponseV1> ListTopicsAsync(int forum_id, bool? with_first_post, ForumTopicListRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumTopicListResponseV1> ListTopicsAsync(int forum_id, ForumTopicListRequestV1 body, bool? with_first_post = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -9375,23 +8417,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// list global topics
-        /// </summary>
-        /// <returns>Return topic records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumTopicListResponseV1> ListGlobalTopicsAsync()
-        {
-            return ListGlobalTopicsAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// list global topics
         /// </summary>
         /// <returns>Return topic records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumTopicListResponseV1> ListGlobalTopicsAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumTopicListResponseV1> ListGlobalTopicsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9459,17 +8491,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// lookup a series to find the forum id
-        /// </summary>
-        /// <param name="series_id">Series id</param>
-        /// <returns>Series lookup response</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumLookupResponseV1> LookupSeriesAsync(int series_id)
-        {
-            return LookupSeriesAsync(series_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// lookup a series to find the forum id
@@ -9477,7 +8498,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="series_id">Series id</param>
         /// <returns>Series lookup response</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupSeriesAsync(int series_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupSeriesAsync(int series_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (series_id == null)
                 throw new System.ArgumentNullException("series_id");
@@ -9555,17 +8576,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// lookup a topic to find the forum id
-        /// </summary>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Topic lookup response</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumLookupResponseV1> LookupTopicAsync(int topic_id)
-        {
-            return LookupTopicAsync(topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// lookup a topic to find the forum id
@@ -9573,7 +8583,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Topic lookup response</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupTopicAsync(int topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupTopicAsync(int topic_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (topic_id == null)
                 throw new System.ArgumentNullException("topic_id");
@@ -9651,17 +8661,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// lookup a post to find the forum and topic id
-        /// </summary>
-        /// <param name="post_id">Post id</param>
-        /// <returns>Post lookup response</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumLookupResponseV1> LookupPostAsync(int post_id)
-        {
-            return LookupPostAsync(post_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// lookup a post to find the forum and topic id
@@ -9669,7 +8668,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="post_id">Post id</param>
         /// <returns>Post lookup response</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupPostAsync(int post_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupPostAsync(int post_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (post_id == null)
                 throw new System.ArgumentNullException("post_id");
@@ -9747,23 +8746,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve temporary poll images
-        /// </summary>
-        /// <returns>Return image records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumPollTempImageModelV1>> RetrieveTemporaryPollImagesAsync()
-        {
-            return RetrieveTemporaryPollImagesAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve temporary poll images
         /// </summary>
         /// <returns>Return image records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumPollTempImageModelV1>> RetrieveTemporaryPollImagesAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumPollTempImageModelV1>> RetrieveTemporaryPollImagesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9831,18 +8820,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a temporary poll image
-        /// </summary>
-        /// <param name="image">Image to update</param>
-        /// <param name="caption">Image caption</param>
-        /// <returns>Image was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddTemporaryPollImageAsync(FileParameter image, string caption)
-        {
-            return AddTemporaryPollImageAsync(image, caption, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a temporary poll image
@@ -9851,7 +8828,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="caption">Image caption</param>
         /// <returns>Image was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddTemporaryPollImageAsync(FileParameter image, string caption, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddTemporaryPollImageAsync(FileParameter image = null, string? caption = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9963,18 +8940,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a forum topic poll (if present)
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Topic poll was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateTopicPollAsync(int forum_id, int topic_id, ForumPollModelUpdateV1 body)
-        {
-            return UpdateTopicPollAsync(forum_id, topic_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a forum topic poll (if present)
@@ -9983,7 +8948,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Topic poll was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateTopicPollAsync(int forum_id, int topic_id, ForumPollModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateTopicPollAsync(int forum_id, int topic_id, ForumPollModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10084,19 +9049,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a vote to a forum poll
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <param name="choice_id">Choice id</param>
-        /// <returns>Poll vote was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddPollVoteAsync(int forum_id, int topic_id, int choice_id)
-        {
-            return AddPollVoteAsync(forum_id, topic_id, choice_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a vote to a forum poll
@@ -10106,7 +9058,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="choice_id">Choice id</param>
         /// <returns>Poll vote was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPollVoteAsync(int forum_id, int topic_id, int choice_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPollVoteAsync(int forum_id, int topic_id, int choice_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10211,18 +9163,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve my vote from the poll
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Return poll vote record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumPollVoteModelV1> RetrieveVoteAsync(int forum_id, int topic_id)
-        {
-            return RetrieveVoteAsync(forum_id, topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve my vote from the poll
@@ -10231,7 +9171,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Return poll vote record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumPollVoteModelV1> RetrieveVoteAsync(int forum_id, int topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumPollVoteModelV1> RetrieveVoteAsync(int forum_id, int topic_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10325,29 +9265,16 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve a forum topic
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Return topic record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumTopicModelV1> RetrieveTopicAsync(bool? unrenderedFields, int forum_id, int topic_id)
-        {
-            return RetrieveTopicAsync(unrenderedFields, forum_id, topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve a forum topic
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="forum_id">Forum id</param>
         /// <param name="topic_id">Topic id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return topic record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumTopicModelV1> RetrieveTopicAsync(bool? unrenderedFields, int forum_id, int topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumTopicModelV1> RetrieveTopicAsync(int forum_id, int topic_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10436,18 +9363,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a forum post
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Forum post was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddPostAsync(int forum_id, int topic_id, ForumPostModelUpdateV1 body)
-        {
-            return AddPostAsync(forum_id, topic_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a forum post
@@ -10456,7 +9371,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Forum post was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPostAsync(int forum_id, int topic_id, ForumPostModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPostAsync(int forum_id, int topic_id, ForumPostModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10562,18 +9477,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a topic
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Topic delete transaction submitted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteTopicAsync(int forum_id, int topic_id)
-        {
-            return DeleteTopicAsync(forum_id, topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a topic
@@ -10582,7 +9485,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Topic delete transaction submitted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteTopicAsync(int forum_id, int topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteTopicAsync(int forum_id, int topic_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10675,18 +9578,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a forum topic
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Forum topic was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateTopicAsync(int forum_id, int topic_id, ForumTopicModelUpdateV1 body)
-        {
-            return UpdateTopicAsync(forum_id, topic_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a forum topic
@@ -10695,7 +9586,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Forum topic was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateTopicAsync(int forum_id, int topic_id, ForumTopicModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateTopicAsync(int forum_id, int topic_id, ForumTopicModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10795,31 +9686,17 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve a forum post
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <param name="post_id">Post id</param>
-        /// <returns>Return post record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumPostModelV1> RetrievePostAsync(bool? unrenderedFields, int forum_id, int topic_id, int post_id)
-        {
-            return RetrievePostAsync(unrenderedFields, forum_id, topic_id, post_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve a forum post
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="forum_id">Forum id</param>
         /// <param name="topic_id">Topic id</param>
         /// <param name="post_id">Post id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return post record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumPostModelV1> RetrievePostAsync(bool? unrenderedFields, int forum_id, int topic_id, int post_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumPostModelV1> RetrievePostAsync(int forum_id, int topic_id, int post_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -10913,19 +9790,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a post
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <param name="post_id">Post id</param>
-        /// <returns>Post delete transaction submitted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeletePostAsync(int forum_id, int topic_id, int post_id)
-        {
-            return DeletePostAsync(forum_id, topic_id, post_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a post
@@ -10935,7 +9799,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="post_id">Post id</param>
         /// <returns>Post delete transaction submitted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeletePostAsync(int forum_id, int topic_id, int post_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeletePostAsync(int forum_id, int topic_id, int post_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -11033,19 +9897,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a forum post
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <param name="post_id">Post id</param>
-        /// <returns>Forum post was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdatePostAsync(int forum_id, int topic_id, int post_id, ForumPostModelUpdateV1 body)
-        {
-            return UpdatePostAsync(forum_id, topic_id, post_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a forum post
@@ -11055,7 +9906,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="post_id">Post id</param>
         /// <returns>Forum post was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdatePostAsync(int forum_id, int topic_id, int post_id, ForumPostModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdatePostAsync(int forum_id, int topic_id, int post_id, ForumPostModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -11166,19 +10017,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// report a forum post
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <param name="post_id">Post id</param>
-        /// <returns>Forum post was reported</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ReportPostAsync(int forum_id, int topic_id, int post_id, ForumPostReportModelUpdateV1 body)
-        {
-            return ReportPostAsync(forum_id, topic_id, post_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// report a forum post
@@ -11188,7 +10026,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="post_id">Post id</param>
         /// <returns>Forum post was reported</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReportPostAsync(int forum_id, int topic_id, int post_id, ForumPostReportModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReportPostAsync(int forum_id, int topic_id, int post_id, ForumPostReportModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -11300,19 +10138,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a post report
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <param name="post_id">Post id</param>
-        /// <returns>Post report was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeletePostReportAsync(int forum_id, int topic_id, int post_id)
-        {
-            return DeletePostReportAsync(forum_id, topic_id, post_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a post report
@@ -11322,7 +10147,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="post_id">Post id</param>
         /// <returns>Post report was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeletePostReportAsync(int forum_id, int topic_id, int post_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeletePostReportAsync(int forum_id, int topic_id, int post_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -11421,23 +10246,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// show reported posts
-        /// </summary>
-        /// <returns>Return Reported Posts</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumPostReportModelV1>> ListReportedPostsAsync()
-        {
-            return ListReportedPostsAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// show reported posts
         /// </summary>
         /// <returns>Return Reported Posts</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumPostReportModelV1>> ListReportedPostsAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumPostReportModelV1>> ListReportedPostsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -11511,19 +10326,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve a forum post location within topic
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <param name="post_id">Post id</param>
-        /// <returns>Return post record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RetrievePostLocationAsync(int forum_id, int topic_id, int post_id)
-        {
-            return RetrievePostLocationAsync(forum_id, topic_id, post_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve a forum post location within topic
@@ -11533,7 +10335,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="post_id">Post id</param>
         /// <returns>Return post record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrievePostLocationAsync(int forum_id, int topic_id, int post_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrievePostLocationAsync(int forum_id, int topic_id, int post_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -11622,23 +10424,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search forum
-        /// </summary>
-        /// <returns>Return search results</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumSearchResponseV1> SearchForumPostAsync(ForumSearchRequestV1 body)
-        {
-            return SearchForumPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search forum
         /// </summary>
         /// <returns>Return search results</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumSearchResponseV1> SearchForumPostAsync(ForumSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumSearchResponseV1> SearchForumPostAsync(ForumSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -11723,17 +10515,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search specific forum
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <returns>Return search results</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumSearchResponseV1> SearchSpecificForumPostAsync(int forum_id, ForumSearchRequestV1 body)
-        {
-            return SearchSpecificForumPostAsync(forum_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search specific forum
@@ -11741,7 +10522,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="forum_id">Forum id</param>
         /// <returns>Return search results</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumSearchResponseV1> SearchSpecificForumPostAsync(int forum_id, ForumSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumSearchResponseV1> SearchSpecificForumPostAsync(int forum_id, ForumSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -11831,18 +10612,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search specific topic
-        /// </summary>
-        /// <param name="forum_id">Forum id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Return search results</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumSearchResponseV1> SearchSpecificTopicPostAsync(int forum_id, int topic_id, ForumSearchRequestV1 body)
-        {
-            return SearchSpecificTopicPostAsync(forum_id, topic_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search specific topic
@@ -11851,7 +10620,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Return search results</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumSearchResponseV1> SearchSpecificTopicPostAsync(int forum_id, int topic_id, ForumSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumSearchResponseV1> SearchSpecificTopicPostAsync(int forum_id, int topic_id, ForumSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (forum_id == null)
                 throw new System.ArgumentNullException("forum_id");
@@ -11946,17 +10715,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// show warn history for a user
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>Warn history</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumWarnModelV1>> ListWarnHistoryForUserAsync(int user_id)
-        {
-            return ListWarnHistoryForUserAsync(user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// show warn history for a user
@@ -11964,7 +10722,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>Warn history</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumWarnModelV1>> ListWarnHistoryForUserAsync(int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ForumWarnModelV1>> ListWarnHistoryForUserAsync(int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -12043,17 +10801,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// gets the current warn status for user
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>Warn status</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ForumWarnModelV1> GetCurrentWarnForUserAsync(int user_id)
-        {
-            return GetCurrentWarnForUserAsync(user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// gets the current warn status for user
@@ -12061,7 +10808,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>Warn status</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumWarnModelV1> GetCurrentWarnForUserAsync(int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ForumWarnModelV1> GetCurrentWarnForUserAsync(int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -12139,17 +10886,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a user warn level
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>User warn was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateUserWarnLevelAsync(int user_id, ForumWarnModelUpdateV1 body)
-        {
-            return UpdateUserWarnLevelAsync(user_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a user warn level
@@ -12157,7 +10893,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>User warn was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateUserWarnLevelAsync(int user_id, ForumWarnModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateUserWarnLevelAsync(int user_id, ForumWarnModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -12258,23 +10994,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get genres
-        /// </summary>
-        /// <returns>Return genres</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GenreModelStatsV1>> RetrieveGenresAsync()
-        {
-            return RetrieveGenresAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get genres
         /// </summary>
         /// <returns>Return genres</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GenreModelStatsV1>> RetrieveGenresAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GenreModelStatsV1>> RetrieveGenresAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -12342,23 +11068,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a genre
-        /// </summary>
-        /// <returns>Genre add transaction submitted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddGenreAsync(GenreModelUpdateV1 body)
-        {
-            return AddGenreAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a genre
         /// </summary>
         /// <returns>Genre add transaction submitted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddGenreAsync(GenreModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddGenreAsync(GenreModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -12449,18 +11165,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get genres
-        /// </summary>
-        /// <param name="id">Genre id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return genre</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GenreModelStatsV1> RetrieveGenreByIdAsync(int id, bool? unrenderedFields)
-        {
-            return RetrieveGenreByIdAsync(id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get genres
@@ -12469,7 +11173,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return genre</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GenreModelStatsV1> RetrieveGenreByIdAsync(int id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GenreModelStatsV1> RetrieveGenreByIdAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -12547,17 +11251,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a genre
-        /// </summary>
-        /// <param name="id">id of genre</param>
-        /// <returns>Genre was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteGenreAsync(int id)
-        {
-            return DeleteGenreAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a genre
@@ -12565,7 +11258,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of genre</param>
         /// <returns>Genre was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteGenreAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteGenreAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -12665,17 +11358,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a genre
-        /// </summary>
-        /// <param name="id">id of genre</param>
-        /// <returns>Genre was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateGenreAsync(int id, GenreModelUpdateV1 body)
-        {
-            return UpdateGenreAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a genre
@@ -12683,7 +11365,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of genre</param>
         /// <returns>Genre was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateGenreAsync(int id, GenreModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateGenreAsync(int id, GenreModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -12784,23 +11466,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add an group
-        /// </summary>
-        /// <returns>Group was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddGroupAsync(GroupsModelUpdateV1 body)
-        {
-            return AddGroupAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add an group
         /// </summary>
         /// <returns>Group was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddGroupAsync(GroupsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddGroupAsync(GroupsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -12897,27 +11569,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific group
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="id">Group id</param>
-        /// <returns>Return group record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GroupsModelV1> RetrieveGroupAsync(bool? unrenderedFields, long id)
-        {
-            return RetrieveGroupAsync(unrenderedFields, id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific group
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="id">Group id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return group record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GroupsModelV1> RetrieveGroupAsync(bool? unrenderedFields, long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GroupsModelV1> RetrieveGroupAsync(long id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -13001,17 +11661,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a group
-        /// </summary>
-        /// <param name="id">id of group</param>
-        /// <returns>Group delete transaction submitted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteGroupAsync(int id)
-        {
-            return DeleteGroupAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a group
@@ -13019,7 +11668,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of group</param>
         /// <returns>Group delete transaction submitted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteGroupAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteGroupAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -13119,17 +11768,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update an group
-        /// </summary>
-        /// <param name="id">id of group</param>
-        /// <returns>Group was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateGroupAsync(int id, GroupsModelUpdateV1 body)
-        {
-            return UpdateGroupAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update an group
@@ -13137,7 +11775,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of group</param>
         /// <returns>Group was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateGroupAsync(int id, GroupsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateGroupAsync(int id, GroupsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -13244,17 +11882,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// reject and delete a group
-        /// </summary>
-        /// <param name="id">id of group</param>
-        /// <returns>Group reject transaction submitted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RejectGroupAsync(int id)
-        {
-            return RejectGroupAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// reject and delete a group
@@ -13262,7 +11889,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of group</param>
         /// <returns>Group reject transaction submitted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RejectGroupAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RejectGroupAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -13364,23 +11991,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search groups
-        /// </summary>
-        /// <returns>List of groups</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GroupsSearchResponseV1> SearchGroupsPostAsync(GroupsSearchRequestV1 body)
-        {
-            return SearchGroupsPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search groups
         /// </summary>
         /// <returns>List of groups</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GroupsSearchResponseV1> SearchGroupsPostAsync(GroupsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GroupsSearchResponseV1> SearchGroupsPostAsync(GroupsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -13465,17 +12082,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the list of series and release frequency for a specific group
-        /// </summary>
-        /// <param name="id">Group id</param>
-        /// <returns>Return series list</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GroupsSeriesListResponseV1> RetrieveGroupSeriesAsync(long id)
-        {
-            return RetrieveGroupSeriesAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the list of series and release frequency for a specific group
@@ -13483,7 +12089,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Group id</param>
         /// <returns>Return series list</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GroupsSeriesListResponseV1> RetrieveGroupSeriesAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GroupsSeriesListResponseV1> RetrieveGroupSeriesAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -13568,23 +12174,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve list of user lists
-        /// </summary>
-        /// <returns>Return list records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ListsModelV1>> RetrieveListsAsync()
-        {
-            return RetrieveListsAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve list of user lists
         /// </summary>
         /// <returns>Return list records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ListsModelV1>> RetrieveListsAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ListsModelV1>> RetrieveListsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -13652,23 +12248,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a custom user list
-        /// </summary>
-        /// <returns>List was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddCustomListAsync(ListsModelUpdateV1 body)
-        {
-            return AddCustomListAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a custom user list
         /// </summary>
         /// <returns>List was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddCustomListAsync(ListsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddCustomListAsync(ListsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -13759,18 +12345,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve list metadata and options
-        /// </summary>
-        /// <param name="id">List id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return list record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ListsModelV1> RetrieveListByIdAsync(int id, bool? unrenderedFields)
-        {
-            return RetrieveListByIdAsync(id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve list metadata and options
@@ -13779,7 +12353,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return list record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsModelV1> RetrieveListByIdAsync(int id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ListsModelV1> RetrieveListByIdAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -13863,17 +12437,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a custom list
-        /// </summary>
-        /// <param name="id">id of list</param>
-        /// <returns>Custom list was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteCustomListAsync(int id)
-        {
-            return DeleteCustomListAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a custom list
@@ -13881,7 +12444,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of list</param>
         /// <returns>Custom list was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteCustomListAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteCustomListAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -13969,17 +12532,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a user list
-        /// </summary>
-        /// <param name="id">id of list</param>
-        /// <returns>User list was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateListAsync(int id, ListsModelUpdateV1 body)
-        {
-            return UpdateListAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a user list
@@ -13987,7 +12539,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of list</param>
         /// <returns>User list was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateListAsync(int id, ListsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateListAsync(int id, ListsModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -14088,17 +12640,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve list of user lists
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>Return list records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ListsModelV1>> RetrievePublicListsAsync(int user_id)
-        {
-            return RetrievePublicListsAsync(user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve list of user lists
@@ -14106,7 +12647,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>Return list records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ListsModelV1>> RetrievePublicListsAsync(int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ListsModelV1>> RetrievePublicListsAsync(int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -14178,17 +12719,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve stats for user public lists
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <returns>Return public list stats records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ListsPublicStatsModelV1> RetrievePublicListStatsAsync(int user_id)
-        {
-            return RetrievePublicListStatsAsync(user_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve stats for user public lists
@@ -14196,7 +12726,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="user_id">User id</param>
         /// <returns>Return public list stats records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsPublicStatsModelV1> RetrievePublicListStatsAsync(int user_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ListsPublicStatsModelV1> RetrievePublicListStatsAsync(int user_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -14269,18 +12799,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search lists
-        /// </summary>
-        /// <param name="user_id">User id</param>
-        /// <param name="id">list id to search</param>
-        /// <returns>Return list records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ListsPublicSearchResponseV1> SearchPublicListsPostAsync(int user_id, int id, ListsSearchRequestV1 body)
-        {
-            return SearchPublicListsPostAsync(user_id, id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search lists
@@ -14289,7 +12807,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">list id to search</param>
         /// <returns>Return list records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsPublicSearchResponseV1> SearchPublicListsPostAsync(int user_id, int id, ListsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ListsPublicSearchResponseV1> SearchPublicListsPostAsync(int user_id, int id, ListsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -14373,17 +12891,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search lists
-        /// </summary>
-        /// <param name="id">list id to search</param>
-        /// <returns>Return list records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ListsSearchResponseV1> SearchListsPostAsync(int id, ListsSearchRequestV1 body)
-        {
-            return SearchListsPostAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search lists
@@ -14391,7 +12898,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">list id to search</param>
         /// <returns>Return list records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsSearchResponseV1> SearchListsPostAsync(int id, ListsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ListsSearchResponseV1> SearchListsPostAsync(int id, ListsSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -14471,23 +12978,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a series to a list
-        /// </summary>
-        /// <returns>Series was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task AddListSeriesAsync(System.Collections.Generic.IEnumerable<ListsSeriesModelUpdateV1> body)
-        {
-            return AddListSeriesAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a series to a list
         /// </summary>
         /// <returns>Series was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task AddListSeriesAsync(System.Collections.Generic.IEnumerable<ListsSeriesModelUpdateV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task AddListSeriesAsync(System.Collections.Generic.IEnumerable<ListsSeriesModelUpdateV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -14568,17 +13065,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a list of series to a list
-        /// </summary>
-        /// <param name="id">id of list</param>
-        /// <returns>Series were (partially) added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddListSeriesBulkAsync(int id, System.Collections.Generic.IEnumerable<ListsBulkAddModelV1> body)
-        {
-            return AddListSeriesBulkAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a list of series to a list
@@ -14586,7 +13072,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of list</param>
         /// <returns>Series were (partially) added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddListSeriesBulkAsync(int id, System.Collections.Generic.IEnumerable<ListsBulkAddModelV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddListSeriesBulkAsync(int id, System.Collections.Generic.IEnumerable<ListsBulkAddModelV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -14688,23 +13174,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a series from a list
-        /// </summary>
-        /// <returns>Series were removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteListSeriesAsync(System.Collections.Generic.IEnumerable<int> body)
-        {
-            return DeleteListSeriesAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a series from a list
         /// </summary>
         /// <returns>Series were removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteListSeriesAsync(System.Collections.Generic.IEnumerable<int> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteListSeriesAsync(System.Collections.Generic.IEnumerable<int> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -14795,18 +13271,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve list series item
-        /// </summary>
-        /// <param name="series_id">Series id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return list series record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ListsSeriesModelV1> RetrieveListSeriesAsync(int series_id, bool? unrenderedFields)
-        {
-            return RetrieveListSeriesAsync(series_id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve list series item
@@ -14815,7 +13279,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return list series record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsSeriesModelV1> RetrieveListSeriesAsync(int series_id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ListsSeriesModelV1> RetrieveListSeriesAsync(int series_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (series_id == null)
                 throw new System.ArgumentNullException("series_id");
@@ -14899,23 +13363,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a series list item
-        /// </summary>
-        /// <returns>Series list items were updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateListSeriesAsync(System.Collections.Generic.IEnumerable<ListsSeriesModelUpdateV1> body)
-        {
-            return UpdateListSeriesAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a series list item
         /// </summary>
         /// <returns>Series list items were updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateListSeriesAsync(System.Collections.Generic.IEnumerable<ListsSeriesModelUpdateV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateListSeriesAsync(System.Collections.Generic.IEnumerable<ListsSeriesModelUpdateV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -15006,18 +13460,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// retrieve users who have similar interests based on series
-        /// </summary>
-        /// <param name="list_name">name of list</param>
-        /// <param name="series_id">Series id</param>
-        /// <returns>Return similar user records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ListsSimilarUsersResponseV1> RetrieveSimilarUsersBySeriesAsync(List_name list_name, int series_id)
-        {
-            return RetrieveSimilarUsersBySeriesAsync(list_name, series_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// retrieve users who have similar interests based on series
@@ -15026,7 +13468,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="series_id">Series id</param>
         /// <returns>Return similar user records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsSimilarUsersResponseV1> RetrieveSimilarUsersBySeriesAsync(List_name list_name, int series_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ListsSimilarUsersResponseV1> RetrieveSimilarUsersBySeriesAsync(List_name list_name, int series_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (list_name == null)
                 throw new System.ArgumentNullException("list_name");
@@ -15109,23 +13551,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the current time
-        /// </summary>
-        /// <returns>Current Time</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<TimeV1> TimeAsync()
-        {
-            return TimeAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the current time
         /// </summary>
         /// <returns>Current Time</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<TimeV1> TimeAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<TimeV1> TimeAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -15193,23 +13625,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// list online users
-        /// </summary>
-        /// <returns>Return online users</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<MiscOnlineUsersModelV1> ListOnlineUsersAsync()
-        {
-            return ListOnlineUsersAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// list online users
         /// </summary>
         /// <returns>Return online users</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<MiscOnlineUsersModelV1> ListOnlineUsersAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<MiscOnlineUsersModelV1> ListOnlineUsersAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -15277,17 +13699,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the status of a bulk transaction
-        /// </summary>
-        /// <param name="transaction_id">the transaction id</param>
-        /// <returns>Return transaction status</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<MiscSlowTransactionStatusResponseV1> RetrieveSlowTransactionStatusAsync(string transaction_id)
-        {
-            return RetrieveSlowTransactionStatusAsync(transaction_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the status of a bulk transaction
@@ -15295,7 +13706,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="transaction_id">the transaction id</param>
         /// <returns>Return transaction status</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<MiscSlowTransactionStatusResponseV1> RetrieveSlowTransactionStatusAsync(string transaction_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<MiscSlowTransactionStatusResponseV1> RetrieveSlowTransactionStatusAsync(string transaction_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (transaction_id == null)
                 throw new System.ArgumentNullException("transaction_id");
@@ -15373,23 +13784,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// show various site stats
-        /// </summary>
-        /// <returns>Return site stats</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<MiscStatsModelV1> SiteStatsAsync()
-        {
-            return SiteStatsAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// show various site stats
         /// </summary>
         /// <returns>Return site stats</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<MiscStatsModelV1> SiteStatsAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<MiscStatsModelV1> SiteStatsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -15457,23 +13858,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the active poll
-        /// </summary>
-        /// <returns>Return poll record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PollModelV1> RetrievePollAsync()
-        {
-            return RetrievePollAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the active poll
         /// </summary>
         /// <returns>Return poll record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PollModelV1> RetrievePollAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PollModelV1> RetrievePollAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -15541,23 +13932,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a new poll
-        /// </summary>
-        /// <returns>Poll was successfully added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddPollAsync(PollModelUpdateV1 body)
-        {
-            return AddPollAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a new poll
         /// </summary>
         /// <returns>Poll was successfully added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPollAsync(PollModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPollAsync(PollModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -15648,23 +14029,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// archive the active poll
-        /// </summary>
-        /// <returns>Poll was successfully archived</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ArchivePollAsync()
-        {
-            return ArchivePollAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// archive the active poll
         /// </summary>
         /// <returns>Poll was successfully archived</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ArchivePollAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ArchivePollAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -15748,23 +14119,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search archived polls
-        /// </summary>
-        /// <returns>List of polls</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PollArchiveSearchResponseV1> SearchPollArchivePostAsync(PollArchiveSearchRequestV1 body)
-        {
-            return SearchPollArchivePostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search archived polls
         /// </summary>
         /// <returns>List of polls</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PollArchiveSearchResponseV1> SearchPollArchivePostAsync(PollArchiveSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PollArchiveSearchResponseV1> SearchPollArchivePostAsync(PollArchiveSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -15849,23 +14210,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// vote in a poll
-        /// </summary>
-        /// <returns>Vote was successfully added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> VotePollNoAnswerAsync()
-        {
-            return VotePollNoAnswerAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// vote in a poll
         /// </summary>
         /// <returns>Vote was successfully added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> VotePollNoAnswerAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> VotePollNoAnswerAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -15944,17 +14295,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// vote in a poll answer
-        /// </summary>
-        /// <param name="answer_id">id of answer to vote for</param>
-        /// <returns>Vote was successfully added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> VotePollAnswerAsync(int answer_id)
-        {
-            return VotePollAnswerAsync(answer_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// vote in a poll answer
@@ -15962,7 +14302,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="answer_id">id of answer to vote for</param>
         /// <returns>Vote was successfully added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> VotePollAnswerAsync(int answer_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> VotePollAnswerAsync(int answer_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (answer_id == null)
                 throw new System.ArgumentNullException("answer_id");
@@ -16045,23 +14385,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get information about whether the user has voted
-        /// </summary>
-        /// <returns>Return poll voter status record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PollVoteStatusModelV1> RetrieveVoteStatusAsync()
-        {
-            return RetrieveVoteStatusAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get information about whether the user has voted
         /// </summary>
         /// <returns>Return poll voter status record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PollVoteStatusModelV1> RetrieveVoteStatusAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PollVoteStatusModelV1> RetrieveVoteStatusAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -16129,23 +14459,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add an publisher
-        /// </summary>
-        /// <returns>Publisher was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddPublisherAsync(PublishersModelUpdateV1 body)
-        {
-            return AddPublisherAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add an publisher
         /// </summary>
         /// <returns>Publisher was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPublisherAsync(PublishersModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddPublisherAsync(PublishersModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -16242,27 +14562,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific publisher
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="id">Publisher id</param>
-        /// <returns>Return publisher record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PublishersModelV1> RetrievePublisherAsync(bool? unrenderedFields, int id)
-        {
-            return RetrievePublisherAsync(unrenderedFields, id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific publisher
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="id">Publisher id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return publisher record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PublishersModelV1> RetrievePublisherAsync(bool? unrenderedFields, int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PublishersModelV1> RetrievePublisherAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -16346,17 +14654,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a publisher
-        /// </summary>
-        /// <param name="id">id of publisher</param>
-        /// <returns>Publisher delete transaction submitted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeletePublisherAsync(int id)
-        {
-            return DeletePublisherAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a publisher
@@ -16364,7 +14661,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of publisher</param>
         /// <returns>Publisher delete transaction submitted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeletePublisherAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeletePublisherAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -16464,17 +14761,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a publisher
-        /// </summary>
-        /// <param name="id">id of publisher</param>
-        /// <returns>Publisher was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdatePublisherAsync(int id, PublishersModelUpdateV1 body)
-        {
-            return UpdatePublisherAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a publisher
@@ -16482,7 +14768,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of publisher</param>
         /// <returns>Publisher was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdatePublisherAsync(int id, PublishersModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdatePublisherAsync(int id, PublishersModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -16589,23 +14875,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search publishers
-        /// </summary>
-        /// <returns>Return publisher records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PublishersSearchResponseV1> SearchPublishersPostAsync(PublishersSearchRequestV1 body)
-        {
-            return SearchPublishersPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search publishers
         /// </summary>
         /// <returns>Return publisher records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PublishersSearchResponseV1> SearchPublishersPostAsync(PublishersSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PublishersSearchResponseV1> SearchPublishersPostAsync(PublishersSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -16690,17 +14966,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the list of series for a specific publisher
-        /// </summary>
-        /// <param name="id">Publisher id</param>
-        /// <returns>Return series list</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PublishersSeriesListResponseV1> RetrievePublisherSeriesAsync(long id)
-        {
-            return RetrievePublisherSeriesAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the list of series for a specific publisher
@@ -16708,7 +14973,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Publisher id</param>
         /// <returns>Return series list</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PublishersSeriesListResponseV1> RetrievePublisherSeriesAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PublishersSeriesListResponseV1> RetrievePublisherSeriesAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -16793,17 +15058,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the list of series for a specific publication
-        /// </summary>
-        /// <param name="pubname">Publication name</param>
-        /// <returns>Return series list</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PublishersPublicationResponseV1> RetrievePublicationSeriesAsync(string pubname)
-        {
-            return RetrievePublicationSeriesAsync(pubname, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the list of series for a specific publication
@@ -16811,7 +15065,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="pubname">Publication name</param>
         /// <returns>Return series list</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PublishersPublicationResponseV1> RetrievePublicationSeriesAsync(string pubname, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PublishersPublicationResponseV1> RetrievePublicationSeriesAsync(string pubname, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (pubname == null)
                 throw new System.ArgumentNullException("pubname");
@@ -16907,23 +15161,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add an release
-        /// </summary>
-        /// <returns>Release was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddReleaseAsync(System.Collections.Generic.IEnumerable<ReleaseModelUpdateV1> body)
-        {
-            return AddReleaseAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add an release
         /// </summary>
         /// <returns>Release was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddReleaseAsync(System.Collections.Generic.IEnumerable<ReleaseModelUpdateV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddReleaseAsync(System.Collections.Generic.IEnumerable<ReleaseModelUpdateV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -17020,27 +15264,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific release
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="id">Release id</param>
-        /// <returns>Return release record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReleaseModelV1> RetrieveReleaseAsync(bool? unrenderedFields, int id)
-        {
-            return RetrieveReleaseAsync(unrenderedFields, id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific release
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="id">Release id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return release record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReleaseModelV1> RetrieveReleaseAsync(bool? unrenderedFields, int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReleaseModelV1> RetrieveReleaseAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -17130,17 +15362,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a release
-        /// </summary>
-        /// <param name="id">id of release</param>
-        /// <returns>Release was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteReleaseAsync(int id)
-        {
-            return DeleteReleaseAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a release
@@ -17148,7 +15369,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of release</param>
         /// <returns>Release was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteReleaseAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteReleaseAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -17248,17 +15469,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update an release
-        /// </summary>
-        /// <param name="id">id of release</param>
-        /// <returns>Release was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateReleaseAsync(int id, ReleaseModelUpdateV1 body)
-        {
-            return UpdateReleaseAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update an release
@@ -17266,7 +15476,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of release</param>
         /// <returns>Release was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateReleaseAsync(int id, ReleaseModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateReleaseAsync(int id, ReleaseModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -17373,23 +15583,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search releases to moderate
-        /// </summary>
-        /// <returns>Return release records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReleaseModerateResponseV1> ModerateReleasesPostAsync(ReleaseModerateRequestV1 body)
-        {
-            return ModerateReleasesPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search releases to moderate
         /// </summary>
         /// <returns>Return release records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReleaseModerateResponseV1> ModerateReleasesPostAsync(ReleaseModerateRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReleaseModerateResponseV1> ModerateReleasesPostAsync(ReleaseModerateRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -17474,18 +15674,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// show releases by day
-        /// </summary>
-        /// <param name="page">Start page</param>
-        /// <param name="include_metadata">Include series metadata (if available)</param>
-        /// <returns>Return release records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReleaseSearchResponseV1> ListReleasesByDayAsync(long? page, bool? include_metadata)
-        {
-            return ListReleasesByDayAsync(page, include_metadata, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// show releases by day
@@ -17494,7 +15682,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="include_metadata">Include series metadata (if available)</param>
         /// <returns>Return release records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReleaseSearchResponseV1> ListReleasesByDayAsync(long? page, bool? include_metadata, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReleaseSearchResponseV1> ListReleasesByDayAsync(long? page = null, bool? include_metadata = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -17572,23 +15760,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// releases rss feed
-        /// </summary>
-        /// <returns>Return release feed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<string> ReleaseRssFeedAsync()
-        {
-            return ReleaseRssFeedAsync(System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// releases rss feed
         /// </summary>
         /// <returns>Return release feed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<string> ReleaseRssFeedAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<string> ReleaseRssFeedAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -17656,23 +15834,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search releases
-        /// </summary>
-        /// <returns>Return release records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReleaseSearchResponseV1> SearchReleasesPostAsync(ReleaseSearchRequestV1 body)
-        {
-            return SearchReleasesPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search releases
         /// </summary>
         /// <returns>Return release records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReleaseSearchResponseV1> SearchReleasesPostAsync(ReleaseSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReleaseSearchResponseV1> SearchReleasesPostAsync(ReleaseSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -17757,23 +15925,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a review
-        /// </summary>
-        /// <returns>Review was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddReviewAsync(ReviewModelUpdateV1 body)
-        {
-            return AddReviewAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a review
         /// </summary>
         /// <returns>Review was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddReviewAsync(ReviewModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddReviewAsync(ReviewModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -17864,17 +16022,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a review comment
-        /// </summary>
-        /// <param name="id">Review id</param>
-        /// <returns>Review comment was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddReviewCommentAsync(long id, ReviewCommentModelUpdateV1 body)
-        {
-            return AddReviewCommentAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a review comment
@@ -17882,7 +16029,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Review id</param>
         /// <returns>Review comment was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddReviewCommentAsync(long id, ReviewCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddReviewCommentAsync(long id, ReviewCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -17978,19 +16125,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific review comment
-        /// </summary>
-        /// <param name="id">Review id</param>
-        /// <param name="comment_id">Review comment id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return review comment record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReviewCommentModelV1> RetrieveReviewCommentAsync(long id, long comment_id, bool? unrenderedFields)
-        {
-            return RetrieveReviewCommentAsync(id, comment_id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific review comment
@@ -18000,7 +16134,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return review comment record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReviewCommentModelV1> RetrieveReviewCommentAsync(long id, long comment_id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReviewCommentModelV1> RetrieveReviewCommentAsync(long id, long comment_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -18089,18 +16223,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a review comment
-        /// </summary>
-        /// <param name="id">id of review</param>
-        /// <param name="comment_id">id of review comment</param>
-        /// <returns>Review comment was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteReviewCommentAsync(int id, int comment_id)
-        {
-            return DeleteReviewCommentAsync(id, comment_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a review comment
@@ -18109,7 +16231,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">id of review comment</param>
         /// <returns>Review comment was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteReviewCommentAsync(int id, int comment_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteReviewCommentAsync(int id, int comment_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -18214,18 +16336,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a review comment
-        /// </summary>
-        /// <param name="id">id of review</param>
-        /// <param name="comment_id">id of review comment</param>
-        /// <returns>Review comment was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateReviewCommentAsync(int id, int comment_id, ReviewCommentModelUpdateV1 body)
-        {
-            return UpdateReviewCommentAsync(id, comment_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a review comment
@@ -18234,7 +16344,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">id of review comment</param>
         /// <returns>Review comment was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateReviewCommentAsync(int id, int comment_id, ReviewCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateReviewCommentAsync(int id, int comment_id, ReviewCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -18346,23 +16456,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// moderate review comments
-        /// </summary>
-        /// <returns>Return reviews comment moderation records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReviewCommentSearchResponseV1> ReviewCommentsModerationPostAsync(ReviewCommentSearchRequestV1 body)
-        {
-            return ReviewCommentsModerationPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// moderate review comments
         /// </summary>
         /// <returns>Return reviews comment moderation records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReviewCommentSearchResponseV1> ReviewCommentsModerationPostAsync(ReviewCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReviewCommentSearchResponseV1> ReviewCommentsModerationPostAsync(ReviewCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -18437,17 +16537,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search review comments
-        /// </summary>
-        /// <param name="id">Review id</param>
-        /// <returns>Return review comment records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReviewCommentSearchResponseV1> SearchReviewCommentsPostAsync(long id, ReviewCommentSearchRequestV1 body)
-        {
-            return SearchReviewCommentsPostAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search review comments
@@ -18455,7 +16544,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Review id</param>
         /// <returns>Return review comment records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReviewCommentSearchResponseV1> SearchReviewCommentsPostAsync(long id, ReviewCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReviewCommentSearchResponseV1> SearchReviewCommentsPostAsync(long id, ReviewCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -18535,18 +16624,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific review
-        /// </summary>
-        /// <param name="id">Review id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return review record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReviewModelV1> RetrieveReviewAsync(long id, bool? unrenderedFields)
-        {
-            return RetrieveReviewAsync(id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific review
@@ -18555,7 +16632,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return review record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReviewModelV1> RetrieveReviewAsync(long id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReviewModelV1> RetrieveReviewAsync(long id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -18639,17 +16716,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a review
-        /// </summary>
-        /// <param name="id">id of review</param>
-        /// <returns>Review was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteReviewAsync(int id)
-        {
-            return DeleteReviewAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a review
@@ -18657,7 +16723,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of review</param>
         /// <returns>Review was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteReviewAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteReviewAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -18757,17 +16823,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a review
-        /// </summary>
-        /// <param name="id">id of review</param>
-        /// <returns>Review was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateReviewAsync(int id, ReviewModelUpdateV1 body)
-        {
-            return UpdateReviewAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a review
@@ -18775,7 +16830,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of review</param>
         /// <returns>Review was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateReviewAsync(int id, ReviewModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateReviewAsync(int id, ReviewModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -18882,23 +16937,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search reviews
-        /// </summary>
-        /// <returns>Return review records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ReviewSearchResponseV1> SearchReviewsPostAsync(ReviewSearchRequestV1 body)
-        {
-            return SearchReviewsPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search reviews
         /// </summary>
         /// <returns>Return review records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ReviewSearchResponseV1> SearchReviewsPostAsync(ReviewSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ReviewSearchResponseV1> SearchReviewsPostAsync(ReviewSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -18973,23 +17018,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add an series
-        /// </summary>
-        /// <returns>Series was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddSeriesAsync(SeriesModelUpdateV1 body)
-        {
-            return AddSeriesAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add an series
         /// </summary>
         /// <returns>Series was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesAsync(SeriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesAsync(SeriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -19086,17 +17121,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// combine two series categories
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series categories were combined</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> CombineSeriesCategoriesAsync(int id, SeriesCategoryUpdateModelV1 body)
-        {
-            return CombineSeriesCategoriesAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// combine two series categories
@@ -19104,7 +17128,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series categories were combined</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> CombineSeriesCategoriesAsync(int id, SeriesCategoryUpdateModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> CombineSeriesCategoriesAsync(int id, SeriesCategoryUpdateModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -19212,17 +17236,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// deletes a series category
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series category was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesCategoryAsync(int id, CategoriesModelUpdateV1 body)
-        {
-            return DeleteSeriesCategoryAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// deletes a series category
@@ -19230,7 +17243,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series category was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesCategoryAsync(int id, CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesCategoryAsync(int id, CategoriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -19338,17 +17351,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// renames a series category
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series category was renamed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RenameSeriesCategoryAsync(int id, SeriesCategoryUpdateModelV1 body)
-        {
-            return RenameSeriesCategoryAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// renames a series category
@@ -19356,7 +17358,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series category was renamed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RenameSeriesCategoryAsync(int id, SeriesCategoryUpdateModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RenameSeriesCategoryAsync(int id, SeriesCategoryUpdateModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -19464,17 +17466,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get category votes for the current user
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <returns>Return vote records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SeriesCategoryVoteModelV1>> RetrieveSeriesCategoryVotesAsync(long id)
-        {
-            return RetrieveSeriesCategoryVotesAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get category votes for the current user
@@ -19482,7 +17473,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Series id</param>
         /// <returns>Return vote records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SeriesCategoryVoteModelV1>> RetrieveSeriesCategoryVotesAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SeriesCategoryVoteModelV1>> RetrieveSeriesCategoryVotesAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -19555,17 +17546,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a vote for a category on a series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series category vote was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCategoryVoteAsync(int id, SeriesCategoryVoteModelV1 body)
-        {
-            return AddSeriesCategoryVoteAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a vote for a category on a series
@@ -19573,7 +17553,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series category vote was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCategoryVoteAsync(int id, SeriesCategoryVoteModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCategoryVoteAsync(int id, SeriesCategoryVoteModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -19669,17 +17649,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove series category vote for user
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series category vote was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RemoveSeriesCategoryVoteAsync(int id, SeriesCategoryVoteDeleteModelV1 body)
-        {
-            return RemoveSeriesCategoryVoteAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove series category vote for user
@@ -19687,7 +17656,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series category vote was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveSeriesCategoryVoteAsync(int id, SeriesCategoryVoteDeleteModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveSeriesCategoryVoteAsync(int id, SeriesCategoryVoteDeleteModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -19783,17 +17752,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a series comment
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series comment was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCommentAsync(int id, SeriesCommentModelUpdateV1 body)
-        {
-            return AddSeriesCommentAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a series comment
@@ -19801,7 +17759,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series comment was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCommentAsync(int id, SeriesCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCommentAsync(int id, SeriesCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -19897,19 +17855,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific series comment
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <param name="comment_id">Series comment id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return series comment record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesCommentModelV1> RetrieveSeriesCommentAsync(long id, long comment_id, bool? unrenderedFields)
-        {
-            return RetrieveSeriesCommentAsync(id, comment_id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific series comment
@@ -19919,7 +17864,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return series comment record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesCommentModelV1> RetrieveSeriesCommentAsync(long id, long comment_id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesCommentModelV1> RetrieveSeriesCommentAsync(long id, long comment_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20008,18 +17953,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a series comment
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="comment_id">id of series comment</param>
-        /// <returns>Series comment was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesCommentAsync(int id, int comment_id)
-        {
-            return DeleteSeriesCommentAsync(id, comment_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a series comment
@@ -20028,7 +17961,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">id of series comment</param>
         /// <returns>Series comment was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesCommentAsync(int id, int comment_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesCommentAsync(int id, int comment_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20133,18 +18066,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a series comment
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="comment_id">id of series comment</param>
-        /// <returns>Series comment was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesCommentAsync(int id, int comment_id, SeriesCommentModelUpdateV1 body)
-        {
-            return UpdateSeriesCommentAsync(id, comment_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a series comment
@@ -20153,7 +18074,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">id of series comment</param>
         /// <returns>Series comment was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesCommentAsync(int id, int comment_id, SeriesCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesCommentAsync(int id, int comment_id, SeriesCommentModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20265,23 +18186,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// moderate series comments
-        /// </summary>
-        /// <returns>Return series comment moderation records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesCommentModerationResponseV1> SeriesCommentsModerationPostAsync(SeriesCommentSearchRequestV1 body)
-        {
-            return SeriesCommentsModerationPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// moderate series comments
         /// </summary>
         /// <returns>Return series comment moderation records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesCommentModerationResponseV1> SeriesCommentsModerationPostAsync(SeriesCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesCommentModerationResponseV1> SeriesCommentsModerationPostAsync(SeriesCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -20356,18 +18267,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// report a series comment
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="comment_id">id of series comment</param>
-        /// <returns>Series comment was reported</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ReportSeriesCommentAsync(int id, int comment_id, SeriesCommentReportModelV1 body)
-        {
-            return ReportSeriesCommentAsync(id, comment_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// report a series comment
@@ -20376,7 +18275,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">id of series comment</param>
         /// <returns>Series comment was reported</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReportSeriesCommentAsync(int id, int comment_id, SeriesCommentReportModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ReportSeriesCommentAsync(int id, int comment_id, SeriesCommentReportModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20489,18 +18388,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get my series comment
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <returns>Return series comment record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesCommentModelV1> RetrieveMySeriesCommentAsync(long id, bool? unrenderedFields)
-        {
-            return RetrieveMySeriesCommentAsync(id, unrenderedFields, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get my series comment
@@ -20509,7 +18396,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return series comment record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesCommentModelV1> RetrieveMySeriesCommentAsync(long id, bool? unrenderedFields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesCommentModelV1> RetrieveMySeriesCommentAsync(long id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20594,18 +18481,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific series comment location
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <param name="comment_id">Series comment id</param>
-        /// <returns>Return series comment location</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RetrieveSeriesCommentLocationAsync(long id, long comment_id)
-        {
-            return RetrieveSeriesCommentLocationAsync(id, comment_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific series comment location
@@ -20614,7 +18489,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">Series comment id</param>
         /// <returns>Return series comment location</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrieveSeriesCommentLocationAsync(long id, long comment_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrieveSeriesCommentLocationAsync(long id, long comment_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20692,17 +18567,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search series comments
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <returns>Return series comment records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesCommentSearchResponseV1> SearchSeriesCommentsPostAsync(long id, SeriesCommentSearchRequestV1 body)
-        {
-            return SearchSeriesCommentsPostAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search series comments
@@ -20710,7 +18574,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Series id</param>
         /// <returns>Return series comment records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesCommentSearchResponseV1> SearchSeriesCommentsPostAsync(long id, SeriesCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesCommentSearchResponseV1> SearchSeriesCommentsPostAsync(long id, SeriesCommentSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20790,18 +18654,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// set usefulness of a series comment
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="comment_id">id of series comment</param>
-        /// <returns>Series comment useful was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCommentUsefulFlagAsync(int id, int comment_id, SeriesCommentUsefulModelV1 body)
-        {
-            return AddSeriesCommentUsefulFlagAsync(id, comment_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// set usefulness of a series comment
@@ -20810,7 +18662,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">id of series comment</param>
         /// <returns>Series comment useful was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCommentUsefulFlagAsync(int id, int comment_id, SeriesCommentUsefulModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddSeriesCommentUsefulFlagAsync(int id, int comment_id, SeriesCommentUsefulModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -20911,18 +18763,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove usefulness of a series comment
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="comment_id">id of series comment</param>
-        /// <returns>Series comment useful was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RemoveSeriesCommentUsefulFlagAsync(int id, int comment_id)
-        {
-            return RemoveSeriesCommentUsefulFlagAsync(id, comment_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove usefulness of a series comment
@@ -20931,7 +18771,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="comment_id">id of series comment</param>
         /// <returns>Series comment useful was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveSeriesCommentUsefulFlagAsync(int id, int comment_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveSeriesCommentUsefulFlagAsync(int id, int comment_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21031,27 +18871,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific series
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="id">Series id</param>
-        /// <returns>Return series record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesModelV1> RetrieveSeriesAsync(bool? unrenderedFields, int id)
-        {
-            return RetrieveSeriesAsync(unrenderedFields, id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific series
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="id">Series id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return series record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesModelV1> RetrieveSeriesAsync(bool? unrenderedFields, int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesModelV1> RetrieveSeriesAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21135,17 +18963,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesAsync(int id)
-        {
-            return DeleteSeriesAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a series
@@ -21153,7 +18970,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21253,17 +19070,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update an series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesAsync(int id, SeriesModelUpdateV1 body)
-        {
-            return UpdateSeriesAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update an series
@@ -21271,7 +19077,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesAsync(int id, SeriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesAsync(int id, SeriesModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21384,17 +19190,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get the list of groups scanlating a specific series
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <returns>Return series list</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesGroupListResponseV1> RetrieveSeriesGroupsAsync(long id)
-        {
-            return RetrieveSeriesGroupsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get the list of groups scanlating a specific series
@@ -21402,7 +19197,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Series id</param>
         /// <returns>Return series list</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesGroupListResponseV1> RetrieveSeriesGroupsAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesGroupListResponseV1> RetrieveSeriesGroupsAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21487,17 +19282,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search series history
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <returns>Return series records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesHistorySearchResponseV1> SearchSeriesHistoryPostAsync(long id, PerPageSearchRequestV1 body)
-        {
-            return SearchSeriesHistoryPostAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search series history
@@ -21505,7 +19289,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Series id</param>
         /// <returns>Return series records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesHistorySearchResponseV1> SearchSeriesHistoryPostAsync(long id, PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesHistorySearchResponseV1> SearchSeriesHistoryPostAsync(long id, PerPageSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21595,17 +19379,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific series lock
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <returns>Return series lock records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SeriesLockModelV1>> RetrieveSeriesLocksAsync(long id)
-        {
-            return RetrieveSeriesLocksAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific series lock
@@ -21613,7 +19386,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Series id</param>
         /// <returns>Return series lock records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SeriesLockModelV1>> RetrieveSeriesLocksAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SeriesLockModelV1>> RetrieveSeriesLocksAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21692,18 +19465,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// lock a field of an series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="item">field name</param>
-        /// <returns>Field was locked</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> LockSeriesFieldAsync(long id, string item, SeriesLockModelUpdateV1 body)
-        {
-            return LockSeriesFieldAsync(id, item, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// lock a field of an series
@@ -21712,7 +19473,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="item">field name</param>
         /// <returns>Field was locked</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LockSeriesFieldAsync(long id, string item, SeriesLockModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> LockSeriesFieldAsync(long id, string item, SeriesLockModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21825,18 +19586,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// unlock a field of an series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="item">field name</param>
-        /// <returns>Field was unlocked</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UnlockSeriesFieldAsync(long id, string item)
-        {
-            return UnlockSeriesFieldAsync(id, item, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// unlock a field of an series
@@ -21845,7 +19594,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="item">field name</param>
         /// <returns>Field was unlocked</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UnlockSeriesFieldAsync(long id, string item, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UnlockSeriesFieldAsync(long id, string item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -21952,18 +19701,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific series rank location
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <param name="type">Stat type</param>
-        /// <returns>Return series rank location</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RetrieveSeriesRankLocationAsync(long id, string type)
-        {
-            return RetrieveSeriesRankLocationAsync(id, type, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific series rank location
@@ -21972,7 +19709,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="type">Stat type</param>
         /// <returns>Return series rank location</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrieveSeriesRankLocationAsync(long id, string type, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RetrieveSeriesRankLocationAsync(long id, string type, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22049,17 +19786,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific series rating for a user
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <returns>Return series rating records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesRatingModelV1> RetrieveUserSeriesRatingAsync(long id)
-        {
-            return RetrieveUserSeriesRatingAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific series rating for a user
@@ -22067,7 +19793,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Series id</param>
         /// <returns>Return series rating records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesRatingModelV1> RetrieveUserSeriesRatingAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesRatingModelV1> RetrieveUserSeriesRatingAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22146,17 +19872,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update the user rating for a series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series rating was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateUserSeriesRatingAsync(long id, SeriesRatingModelV1 body)
-        {
-            return UpdateUserSeriesRatingAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update the user rating for a series
@@ -22164,7 +19879,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series rating was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateUserSeriesRatingAsync(long id, SeriesRatingModelV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateUserSeriesRatingAsync(long id, SeriesRatingModelV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22266,17 +19981,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a series rating for a user
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Series rating was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteUserSeriesRatingAsync(int id)
-        {
-            return DeleteUserSeriesRatingAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a series rating for a user
@@ -22284,7 +19988,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Series rating was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteUserSeriesRatingAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteUserSeriesRatingAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22369,17 +20073,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a the series rating rainbow
-        /// </summary>
-        /// <param name="id">Series id</param>
-        /// <returns>Return series rating records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesRatingRainbowModelV1> RetrieveSeriesRatingRainbowAsync(long id)
-        {
-            return RetrieveSeriesRatingRainbowAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a the series rating rainbow
@@ -22387,7 +20080,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Series id</param>
         /// <returns>Return series rating records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesRatingRainbowModelV1> RetrieveSeriesRatingRainbowAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesRatingRainbowModelV1> RetrieveSeriesRatingRainbowAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22466,17 +20159,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// releases rss feed for a specific series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Return release feed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<string> SeriesReleaseRssFeedAsync(long id)
-        {
-            return SeriesReleaseRssFeedAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// releases rss feed for a specific series
@@ -22484,7 +20166,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Return release feed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<string> SeriesReleaseRssFeedAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<string> SeriesReleaseRssFeedAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22557,23 +20239,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search series
-        /// </summary>
-        /// <returns>Return series records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SeriesSearchResponseV1> SearchSeriesPostAsync(SeriesSearchRequestV1 body)
-        {
-            return SearchSeriesPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search series
         /// </summary>
         /// <returns>Return series records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesSearchResponseV1> SearchSeriesPostAsync(SeriesSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SeriesSearchResponseV1> SearchSeriesPostAsync(SeriesSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -22658,18 +20330,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update the image of an series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <param name="image">Image to update</param>
-        /// <returns>Image was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesImageAsync(long id, FileParameter image)
-        {
-            return UpdateSeriesImageAsync(id, image, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update the image of an series
@@ -22678,7 +20338,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="image">Image to update</param>
         /// <returns>Image was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesImageAsync(long id, FileParameter image, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateSeriesImageAsync(long id, FileParameter image = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22800,17 +20460,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete the image of an series
-        /// </summary>
-        /// <param name="id">id of series</param>
-        /// <returns>Image was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesImageAsync(long id)
-        {
-            return DeleteSeriesImageAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete the image of an series
@@ -22818,7 +20467,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of series</param>
         /// <returns>Image was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesImageAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteSeriesImageAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -22919,23 +20568,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a member
-        /// </summary>
-        /// <returns>Member was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddMemberAsync(UserModelUpdateV1 body)
-        {
-            return AddMemberAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a member
         /// </summary>
         /// <returns>Member was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberAsync(UserModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberAsync(UserModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -23032,21 +20671,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search change requests for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="page">Start page</param>
-        /// <param name="perpage">Items per page</param>
-        /// <param name="orderby">order by field</param>
-        /// <param name="asc">Direction of results</param>
-        /// <returns>Return member change requests</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<UserChangeRequestSearchResponseV1> SearchMemberChangeRequestsAsync(long id, int? page, int? perpage, Orderby? orderby, Asc? asc)
-        {
-            return SearchMemberChangeRequestsAsync(id, page, perpage, orderby, asc, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search change requests for a specific user
@@ -23058,7 +20682,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="asc">Direction of results</param>
         /// <returns>Return member change requests</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UserChangeRequestSearchResponseV1> SearchMemberChangeRequestsAsync(long id, int? page, int? perpage, Orderby? orderby, Asc? asc, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<UserChangeRequestSearchResponseV1> SearchMemberChangeRequestsAsync(long id, int? page = null, int? perpage = null, Orderby? orderby = null, Asc? asc = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -23161,17 +20785,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a change request
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Change request was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddMemberChangeRequestAsync(long id, UserChangeRequestModelUpdateV1 body)
-        {
-            return AddMemberChangeRequestAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a change request
@@ -23179,7 +20792,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Change request was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberChangeRequestAsync(long id, UserChangeRequestModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberChangeRequestAsync(long id, UserChangeRequestModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -23293,18 +20906,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get change requests for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="request_id">Change request id</param>
-        /// <returns>Return member change requests</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<UserChangeRequestModelV1> RetrieveMemberChangeRequestAsync(long id, long request_id)
-        {
-            return RetrieveMemberChangeRequestAsync(id, request_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get change requests for a specific user
@@ -23313,7 +20914,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="request_id">Change request id</param>
         /// <returns>Return member change requests</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UserChangeRequestModelV1> RetrieveMemberChangeRequestAsync(long id, long request_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<UserChangeRequestModelV1> RetrieveMemberChangeRequestAsync(long id, long request_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -23402,18 +21003,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a change request
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="request_id">Change request id</param>
-        /// <returns>Change request was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberChangeRequestAsync(long id, long request_id)
-        {
-            return DeleteMemberChangeRequestAsync(id, request_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a change request
@@ -23422,7 +21011,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="request_id">Change request id</param>
         /// <returns>Change request was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberChangeRequestAsync(long id, long request_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberChangeRequestAsync(long id, long request_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -23523,18 +21112,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a change request
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="request_id">Change request id</param>
-        /// <returns>Change request was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberChangeRequestAsync(long id, long request_id, UserChangeRequestModelUpdateV1 body)
-        {
-            return UpdateMemberChangeRequestAsync(id, request_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a change request
@@ -23543,7 +21120,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="request_id">Change request id</param>
         /// <returns>Change request was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberChangeRequestAsync(long id, long request_id, UserChangeRequestModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberChangeRequestAsync(long id, long request_id, UserChangeRequestModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -23661,27 +21238,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific members
-        /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
-        /// <param name="id">Member id</param>
-        /// <returns>Return user record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<UserModelV1> RetrieveMemberAsync(bool? unrenderedFields, long id)
-        {
-            return RetrieveMemberAsync(unrenderedFields, id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific members
         /// </summary>
-        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <param name="id">Member id</param>
+        /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return user record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UserModelV1> RetrieveMemberAsync(bool? unrenderedFields, long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<UserModelV1> RetrieveMemberAsync(long id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -23765,17 +21330,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a member
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Member was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberAsync(int id)
-        {
-            return DeleteMemberAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a member
@@ -23783,7 +21337,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Member was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -23883,17 +21437,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update a member
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Member was updated</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberAsync(int id, UserModelUpdateV1 body)
-        {
-            return UpdateMemberAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update a member
@@ -23901,7 +21444,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Member was updated</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberAsync(int id, UserModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberAsync(int id, UserModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24014,17 +21557,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get genre filters for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return member filter records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGenreFilterModelV1>> RetrieveMemberGenreFiltersAsync(long id)
-        {
-            return RetrieveMemberGenreFiltersAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get genre filters for a specific user
@@ -24032,7 +21564,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return member filter records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGenreFilterModelV1>> RetrieveMemberGenreFiltersAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGenreFilterModelV1>> RetrieveMemberGenreFiltersAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24117,18 +21649,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// filter a genre for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="genre_id">genre id</param>
-        /// <returns>Filter was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddMemberGenreFilterAsync(long id, int genre_id)
-        {
-            return AddMemberGenreFilterAsync(id, genre_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// filter a genre for a user
@@ -24137,7 +21657,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="genre_id">genre id</param>
         /// <returns>Filter was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberGenreFilterAsync(long id, int genre_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberGenreFilterAsync(long id, int genre_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24244,18 +21764,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a filter for a genre for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="genre_id">genre id</param>
-        /// <returns>Filter was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RemoveMemberGenreFilterAsync(long id, int genre_id)
-        {
-            return RemoveMemberGenreFilterAsync(id, genre_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a filter for a genre for a user
@@ -24264,7 +21772,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="genre_id">genre id</param>
         /// <returns>Filter was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveMemberGenreFilterAsync(long id, int genre_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveMemberGenreFilterAsync(long id, int genre_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24370,17 +21878,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get highlights for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return member highlight records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGenreHighlightModelV1>> RetrieveMemberGenreHighlightsAsync(long id)
-        {
-            return RetrieveMemberGenreHighlightsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get highlights for a specific user
@@ -24388,7 +21885,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return member highlight records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGenreHighlightModelV1>> RetrieveMemberGenreHighlightsAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGenreHighlightModelV1>> RetrieveMemberGenreHighlightsAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24473,18 +21970,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// highlight a genre for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="genre_id">genre id</param>
-        /// <returns>Highlight was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddMemberGenreHighlightAsync(long id, int genre_id, UserGenreHighlightModelUpdateV1 body)
-        {
-            return AddMemberGenreHighlightAsync(id, genre_id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// highlight a genre for a user
@@ -24493,7 +21978,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="genre_id">genre id</param>
         /// <returns>Highlight was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberGenreHighlightAsync(long id, int genre_id, UserGenreHighlightModelUpdateV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberGenreHighlightAsync(long id, int genre_id, UserGenreHighlightModelUpdateV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24606,18 +22091,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a highlight for a genre for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="genre_id">genre id</param>
-        /// <returns>Highlight was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RemoveMemberGenreHighlightAsync(long id, int genre_id)
-        {
-            return RemoveMemberGenreHighlightAsync(id, genre_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a highlight for a genre for a user
@@ -24626,7 +22099,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="genre_id">genre id</param>
         /// <returns>Highlight was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveMemberGenreHighlightAsync(long id, int genre_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveMemberGenreHighlightAsync(long id, int genre_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24732,17 +22205,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// reset genre highlights and filters for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <returns>Filters and highlights were reset</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ResetGenreSettingsAsync(long id)
-        {
-            return ResetGenreSettingsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// reset genre highlights and filters for a user
@@ -24750,7 +22212,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">id of member</param>
         /// <returns>Filters and highlights were reset</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ResetGenreSettingsAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ResetGenreSettingsAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24842,17 +22304,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get group filters for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return member filter records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGroupFilterModelV1>> RetrieveMemberGroupFiltersAsync(long id)
-        {
-            return RetrieveMemberGroupFiltersAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get group filters for a specific user
@@ -24860,7 +22311,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return member filter records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGroupFilterModelV1>> RetrieveMemberGroupFiltersAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserGroupFilterModelV1>> RetrieveMemberGroupFiltersAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -24945,18 +22396,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// filter a group for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="group_id">group id</param>
-        /// <returns>Filter was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddUserGroupFilterAsync(long id, int group_id)
-        {
-            return AddUserGroupFilterAsync(id, group_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// filter a group for a user
@@ -24965,7 +22404,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="group_id">group id</param>
         /// <returns>Filter was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddUserGroupFilterAsync(long id, int group_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddUserGroupFilterAsync(long id, int group_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25072,18 +22511,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a filter for a group for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="group_id">group id</param>
-        /// <returns>Filter was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RemoveUserGroupFilterAsync(long id, int group_id)
-        {
-            return RemoveUserGroupFilterAsync(id, group_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a filter for a group for a user
@@ -25092,7 +22519,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="group_id">group id</param>
         /// <returns>Filter was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveUserGroupFilterAsync(long id, int group_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveUserGroupFilterAsync(long id, int group_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25198,17 +22625,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get notification preferences for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return member notification preferences</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserNotificationPreferenceModelV1>> RetrieveMemberNotificationPreferencesAsync(long id)
-        {
-            return RetrieveMemberNotificationPreferencesAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get notification preferences for a specific user
@@ -25216,7 +22632,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return member notification preferences</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserNotificationPreferenceModelV1>> RetrieveMemberNotificationPreferencesAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserNotificationPreferenceModelV1>> RetrieveMemberNotificationPreferencesAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25301,17 +22717,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// update all notification preferences for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Preferences updated successfully</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberNotificationPreferencesAsync(long id, System.Collections.Generic.IEnumerable<UserNotificationPreferenceUpdateModelV1> body)
-        {
-            return UpdateMemberNotificationPreferencesAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// update all notification preferences for a specific user
@@ -25319,7 +22724,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Preferences updated successfully</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberNotificationPreferencesAsync(long id, System.Collections.Generic.IEnumerable<UserNotificationPreferenceUpdateModelV1> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> UpdateMemberNotificationPreferencesAsync(long id, System.Collections.Generic.IEnumerable<UserNotificationPreferenceUpdateModelV1> body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25421,20 +22826,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get notifications for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="unread_only">Only return unread notifications</param>
-        /// <param name="limit">Number of notifications to return</param>
-        /// <param name="offset">Offset for pagination</param>
-        /// <returns>Return member notifications</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserNotificationModelV1>> RetrieveMemberNotificationsAsync(long id, bool? unread_only, int? limit, int? offset)
-        {
-            return RetrieveMemberNotificationsAsync(id, unread_only, limit, offset, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get notifications for a specific user
@@ -25445,7 +22836,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="offset">Offset for pagination</param>
         /// <returns>Return member notifications</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserNotificationModelV1>> RetrieveMemberNotificationsAsync(long id, bool? unread_only, int? limit, int? offset, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserNotificationModelV1>> RetrieveMemberNotificationsAsync(long id, bool? unread_only = null, int? limit = null, int? offset = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25544,17 +22935,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get unread notification count for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return unread notification count</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<Response2> RetrieveMemberNotificationUnreadCountAsync(long id)
-        {
-            return RetrieveMemberNotificationUnreadCountAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get unread notification count for a specific user
@@ -25562,7 +22942,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return unread notification count</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<Response2> RetrieveMemberNotificationUnreadCountAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<Response2> RetrieveMemberNotificationUnreadCountAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25647,18 +23027,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// mark notifications as read for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="body">Notification IDs to mark as read. If empty or omitted, marks all as read.</param>
-        /// <returns>Notifications marked as read</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<Response3> MarkMemberNotificationsReadAsync(long id, Body body)
-        {
-            return MarkMemberNotificationsReadAsync(id, body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// mark notifications as read for a specific user
@@ -25667,7 +23035,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="body">Notification IDs to mark as read. If empty or omitted, marks all as read.</param>
         /// <returns>Notifications marked as read</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<Response3> MarkMemberNotificationsReadAsync(long id, Body body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<Response3> MarkMemberNotificationsReadAsync(long id, Body? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25756,17 +23124,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get avatars for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return user record</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AvatarModelV1>> RetrieveMemberAvatarsAsync(long id)
-        {
-            return RetrieveMemberAvatarsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get avatars for a specific user
@@ -25774,7 +23131,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return user record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AvatarModelV1>> RetrieveMemberAvatarsAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AvatarModelV1>> RetrieveMemberAvatarsAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -25853,23 +23210,13 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// search members
-        /// </summary>
-        /// <returns>Return user records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<UserSearchResponseV1> SearchMembersPostAsync(UserSearchRequestV1 body)
-        {
-            return SearchMembersPostAsync(body, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// search members
         /// </summary>
         /// <returns>Return user records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UserSearchResponseV1> SearchMembersPostAsync(UserSearchRequestV1 body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<UserSearchResponseV1> SearchMembersPostAsync(UserSearchRequestV1 body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -25944,17 +23291,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a specific member sessions if they exists
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return session records</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<UserSessionResponseV1> RetrieveSessionsAsync(long id)
-        {
-            return RetrieveSessionsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a specific member sessions if they exists
@@ -25962,7 +23298,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return session records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UserSessionResponseV1> RetrieveSessionsAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<UserSessionResponseV1> RetrieveSessionsAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26047,17 +23383,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete all a members sessions
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Member sessions were deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberSessionsAsync(int id)
-        {
-            return DeleteMemberSessionsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete all a members sessions
@@ -26065,7 +23390,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Member sessions were deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberSessionsAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberSessionsAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26160,17 +23485,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get topic subscriptions for a specific user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Return member topic subscriptions</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserSubscribedTopicModelV1>> RetrieveMemberTopicSubscriptionsAsync(long id)
-        {
-            return RetrieveMemberTopicSubscriptionsAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get topic subscriptions for a specific user
@@ -26178,7 +23492,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Return member topic subscriptions</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserSubscribedTopicModelV1>> RetrieveMemberTopicSubscriptionsAsync(long id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserSubscribedTopicModelV1>> RetrieveMemberTopicSubscriptionsAsync(long id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26263,18 +23577,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// get a subscription to a specific topic for a user
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="topic_id">Topic id</param>
-        /// <returns>Return member topic subscriptions</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<UserSubscribedTopicModelV1> RetrieveMemberTopicSubscriptionAsync(long id, long topic_id)
-        {
-            return RetrieveMemberTopicSubscriptionAsync(id, topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// get a subscription to a specific topic for a user
@@ -26283,7 +23585,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">Topic id</param>
         /// <returns>Return member topic subscriptions</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<UserSubscribedTopicModelV1> RetrieveMemberTopicSubscriptionAsync(long id, long topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<UserSubscribedTopicModelV1> RetrieveMemberTopicSubscriptionAsync(long id, long topic_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26372,18 +23674,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a topic subscription for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="topic_id">topic id</param>
-        /// <returns>Topic Subscription was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddUserTopicSubscriptionAsync(long id, int topic_id)
-        {
-            return AddUserTopicSubscriptionAsync(id, topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a topic subscription for a user
@@ -26392,7 +23682,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">topic id</param>
         /// <returns>Topic Subscription was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddUserTopicSubscriptionAsync(long id, int topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddUserTopicSubscriptionAsync(long id, int topic_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26498,18 +23788,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// remove a topic subscription for a user
-        /// </summary>
-        /// <param name="id">id of member</param>
-        /// <param name="topic_id">topic id</param>
-        /// <returns>Topic subscription was removed</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RemoveUserTopicSubscriptionAsync(long id, int topic_id)
-        {
-            return RemoveUserTopicSubscriptionAsync(id, topic_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// remove a topic subscription for a user
@@ -26518,7 +23796,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="topic_id">topic id</param>
         /// <returns>Topic subscription was removed</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveUserTopicSubscriptionAsync(long id, int topic_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RemoveUserTopicSubscriptionAsync(long id, int topic_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26623,19 +23901,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// add a new member avatar
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="image">Image to update</param>
-        /// <param name="title">Title of the new avatar</param>
-        /// <returns>Image was added</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> AddMemberAvatarAsync(long id, FileParameter image, string title)
-        {
-            return AddMemberAvatarAsync(id, image, title, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// add a new member avatar
@@ -26645,7 +23910,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="title">Title of the new avatar</param>
         /// <returns>Image was added</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberAvatarAsync(long id, FileParameter image, string title, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> AddMemberAvatarAsync(long id, FileParameter image = null, string? title = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26774,18 +24039,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// delete a member avatar
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <param name="avatar_id">Avatar id</param>
-        /// <returns>Avatar was deleted</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberAvatarAsync(long id, long avatar_id)
-        {
-            return DeleteMemberAvatarAsync(id, avatar_id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// delete a member avatar
@@ -26794,7 +24047,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="avatar_id">Avatar id</param>
         /// <returns>Avatar was deleted</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberAvatarAsync(long id, long avatar_id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> DeleteMemberAvatarAsync(long id, long avatar_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -26905,17 +24158,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// upgrade a member
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Member was upgraded</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> ApproveMemberUpgradeAsync(int id)
-        {
-            return ApproveMemberUpgradeAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// upgrade a member
@@ -26923,7 +24165,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Member was upgraded</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ApproveMemberUpgradeAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> ApproveMemberUpgradeAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -27019,17 +24261,6 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        /// <summary>
-        /// reject a member upgrade
-        /// </summary>
-        /// <param name="id">Member id</param>
-        /// <returns>Member upgrade was rejected</returns>
-        /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<ApiResponseV1> RejectMemberUpgradeAsync(int id)
-        {
-            return RejectMemberUpgradeAsync(id, System.Threading.CancellationToken.None);
-        }
-
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// reject a member upgrade
@@ -27037,7 +24268,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// <param name="id">Member id</param>
         /// <returns>Member upgrade was rejected</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RejectMemberUpgradeAsync(int id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ApiResponseV1> RejectMemberUpgradeAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -27172,7 +24403,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -27181,7 +24412,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
                 try
                 {
                     var typedBody = System.Text.Json.JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (System.Text.Json.JsonException exception)
                 {
@@ -27196,7 +24427,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
                     using (var responseStream = await ReadAsStreamAsync(response.Content, cancellationToken).ConfigureAwait(false))
                     {
                         var typedBody = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (System.Text.Json.JsonException exception)
@@ -27207,7 +24438,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -27270,15 +24501,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("users")]
-        public System.Collections.Generic.ICollection<AboutusUserModelV1> Users { get; set; }
+        public System.Collections.Generic.ICollection<AboutusUserModelV1>? Users { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27294,9 +24525,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27315,12 +24546,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("users")]
-        public System.Collections.Generic.ICollection<AboutusUserReorderModelV1> Users { get; set; }
+        public System.Collections.Generic.ICollection<AboutusUserReorderModelV1>? Users { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27336,9 +24567,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27357,18 +24588,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Entry_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27384,9 +24615,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27405,9 +24636,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Entry_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27423,9 +24654,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("email")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27448,7 +24679,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Password { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27463,7 +24694,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     public partial record ApiContextV1
     {
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27487,9 +24718,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Reason { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("context")]
-        public ApiValidationErrorsV1 Context { get; set; }
+        public ApiValidationErrorsV1? Context { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27504,7 +24735,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     public partial record ApiValidationErrorsV1
     {
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27520,21 +24751,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("field")]
-        public string Field { get; set; }
+        public string? Field { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_locked")]
-        public TimeV1 Time_locked { get; set; }
+        public TimeV1? Time_locked { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27550,9 +24781,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27568,66 +24799,66 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("image")]
-        public ImageModelV1 Image { get; set; }
+        public ImageModelV1? Image { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("actualname")]
-        public string Actualname { get; set; }
+        public string? Actualname { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("birthday")]
-        public BirthdayModelV1 Birthday { get; set; }
+        public BirthdayModelV1? Birthday { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("birthplace")]
-        public string Birthplace { get; set; }
+        public string? Birthplace { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("bloodtype")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelV1Bloodtype>))]
-        public AuthorsModelV1Bloodtype Bloodtype { get; set; }
+        public AuthorsModelV1Bloodtype? Bloodtype { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("gender")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelV1Gender>))]
-        public AuthorsModelV1Gender Gender { get; set; }
+        public AuthorsModelV1Gender? Gender { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelV1Status>))]
-        public AuthorsModelV1Status Status { get; set; }
+        public AuthorsModelV1Status? Status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status_date")]
-        public StatusDateModelV1 Status_date { get; set; }
+        public StatusDateModelV1? Status_date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<string> Genres { get; set; }
+        public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats Stats { get; set; }
+        public Stats? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("social")]
-        public Social Social { get; set; }
+        public Social? Social { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
-        public string Comments { get; set; }
+        public string? Comments { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin Admin { get; set; }
+        public Admin? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27643,45 +24874,45 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated2> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated2>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("actualname")]
-        public string Actualname { get; set; }
+        public string? Actualname { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("birthday")]
-        public BirthdayModelV1 Birthday { get; set; }
+        public BirthdayModelV1? Birthday { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("birthplace")]
-        public string Birthplace { get; set; }
+        public string? Birthplace { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("bloodtype")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelUpdateV1Bloodtype>))]
-        public AuthorsModelUpdateV1Bloodtype Bloodtype { get; set; }
+        public AuthorsModelUpdateV1Bloodtype? Bloodtype { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("gender")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelUpdateV1Gender>))]
-        public AuthorsModelUpdateV1Gender Gender { get; set; }
+        public AuthorsModelUpdateV1Gender? Gender { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelUpdateV1Status>))]
-        public AuthorsModelUpdateV1Status Status { get; set; }
+        public AuthorsModelUpdateV1Status? Status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status_date")]
-        public StatusDateModelV1 Status_date { get; set; }
+        public StatusDateModelV1? Status_date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("social")]
-        public Social2 Social { get; set; }
+        public Social2? Social { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
-        public string Comments { get; set; }
+        public string? Comments { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin2 Admin { get; set; }
+        public Admin2? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27697,24 +24928,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<string> Genres { get; set; }
+        public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats2 Stats { get; set; }
+        public Stats2? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27730,31 +24961,31 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public System.Collections.Generic.ICollection<string> Genre { get; set; }
+        public System.Collections.Generic.ICollection<string>? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsSearchRequestV1Orderby>))]
-        public AuthorsSearchRequestV1Orderby Orderby { get; set; }
+        public AuthorsSearchRequestV1Orderby? Orderby { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("pending")]
-        public bool Pending { get; set; }
+        public bool? Pending { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27770,18 +25001,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27798,9 +25029,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsSeriesListRequestV1Orderby>))]
-        public AuthorsSeriesListRequestV1Orderby Orderby { get; set; }
+        public AuthorsSeriesListRequestV1Orderby? Orderby { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27816,15 +25047,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_series")]
-        public int Total_series { get; set; }
+        public int? Total_series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_list")]
-        public System.Collections.Generic.ICollection<Series_list> Series_list { get; set; }
+        public System.Collections.Generic.ICollection<Series_list>? Series_list { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genre_list")]
-        public System.Collections.Generic.ICollection<Genre_list> Genre_list { get; set; }
+        public System.Collections.Generic.ICollection<Genre_list>? Genre_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27844,18 +25075,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Category { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("usage")]
-        public int Usage { get; set; }
+        public int? Usage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes")]
-        public int Votes { get; set; }
+        public int? Votes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes_plus")]
-        public int Votes_plus { get; set; }
+        public int? Votes_plus { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes_minus")]
-        public int Votes_minus { get; set; }
+        public int? Votes_minus { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27871,25 +25102,25 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("category")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes")]
-        public int Votes { get; set; }
+        public int? Votes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes_plus")]
-        public int Votes_plus { get; set; }
+        public int? Votes_plus { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes_minus")]
-        public int Votes_minus { get; set; }
+        public int? Votes_minus { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27908,7 +25139,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27924,22 +25155,22 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<CategoriesSearchRequestV1Orderby>))]
-        public CategoriesSearchRequestV1Orderby Orderby { get; set; }
+        public CategoriesSearchRequestV1Orderby? Orderby { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27955,18 +25186,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results2> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results2>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -27982,21 +25213,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("month")]
-        public int Month { get; set; }
+        public int? Month { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("day")]
-        public int Day { get; set; }
+        public int? Day { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("as_string")]
-        public string As_string { get; set; }
+        public string? As_string { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("zodiac")]
-        public string Zodiac { get; set; }
+        public string? Zodiac { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28012,12 +25243,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28033,18 +25264,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("month")]
-        public int Month { get; set; }
+        public int? Month { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("day")]
-        public int Day { get; set; }
+        public int? Day { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("as_string")]
-        public string As_string { get; set; }
+        public string? As_string { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28060,9 +25291,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("convo_id_list")]
-        public System.Collections.Generic.ICollection<int> Convo_id_list { get; set; }
+        public System.Collections.Generic.ICollection<int>? Convo_id_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28078,12 +25309,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28099,30 +25330,30 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("message_id")]
-        public int Message_id { get; set; }
+        public int? Message_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("convo_id")]
-        public int Convo_id { get; set; }
+        public int? Convo_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_id")]
-        public int Author_id { get; set; }
+        public int? Author_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_name")]
-        public string Author_name { get; set; }
+        public string? Author_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_url")]
-        public string Author_url { get; set; }
+        public string? Author_url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("content")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_edit")]
-        public TimeV1 Last_edit { get; set; }
+        public TimeV1? Last_edit { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28138,9 +25369,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("content")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28156,18 +25387,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28183,18 +25414,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results3> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results3>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28210,15 +25441,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic { get; set; }
+        public string? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("participants")]
-        public System.Collections.Generic.ICollection<ConvoParticipantModelAddV1> Participants { get; set; }
+        public System.Collections.Generic.ICollection<ConvoParticipantModelAddV1>? Participants { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("message")]
-        public ConvoMessageModelUpdateV1 Message { get; set; }
+        public ConvoMessageModelUpdateV1? Message { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28234,27 +25465,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("convo_id")]
-        public int Convo_id { get; set; }
+        public int? Convo_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic { get; set; }
+        public string? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_id")]
-        public int Author_id { get; set; }
+        public int? Author_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_name")]
-        public string Author_name { get; set; }
+        public string? Author_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_url")]
-        public string Author_url { get; set; }
+        public string? Author_url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_edit")]
-        public TimeV1 Last_edit { get; set; }
+        public TimeV1? Last_edit { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28270,9 +25501,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic { get; set; }
+        public string? Topic { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28291,7 +25522,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string To { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28307,21 +25538,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_time_seen")]
-        public TimeV1 Last_time_seen { get; set; }
+        public TimeV1? Last_time_seen { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("joined")]
-        public bool Joined { get; set; }
+        public bool? Joined { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28337,15 +25568,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28361,18 +25592,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results4> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results4>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28388,9 +25619,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_ignored")]
-        public bool User_ignored { get; set; }
+        public bool? User_ignored { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28409,12 +25640,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28433,15 +25664,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("questions")]
-        public System.Collections.Generic.ICollection<FaqQuestionOnlyModelV1> Questions { get; set; }
+        public System.Collections.Generic.ICollection<FaqQuestionOnlyModelV1>? Questions { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28457,9 +25688,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28478,12 +25709,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("questions")]
-        public System.Collections.Generic.ICollection<FaqQuestionReorderModelV1> Questions { get; set; }
+        public System.Collections.Generic.ICollection<FaqQuestionReorderModelV1>? Questions { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28502,15 +25733,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Question_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("answer")]
-        public string Answer { get; set; }
+        public string? Answer { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28529,12 +25760,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Question_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28550,12 +25781,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("answer")]
-        public string Answer { get; set; }
+        public string? Answer { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28574,9 +25805,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Question_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28592,15 +25823,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user")]
-        public UserModelSearchV1 User { get; set; }
+        public UserModelSearchV1? User { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("action_time")]
-        public TimeV1 Action_time { get; set; }
+        public TimeV1? Action_time { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("action")]
-        public string Action { get; set; }
+        public string? Action { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28616,15 +25847,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("uid")]
-        public int Uid { get; set; }
+        public int? Uid { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28640,18 +25871,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results5> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results5>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28667,12 +25898,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user")]
-        public UserModelSearchV1 User { get; set; }
+        public UserModelSearchV1? User { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28688,9 +25919,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28706,15 +25937,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("category_id")]
-        public int Category_id { get; set; }
+        public int? Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28730,15 +25961,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("category_id")]
-        public int Category_id { get; set; }
+        public int? Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forums")]
-        public System.Collections.Generic.ICollection<Forums> Forums { get; set; }
+        public System.Collections.Generic.ICollection<Forums>? Forums { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28754,12 +25985,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28775,39 +26006,39 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("category")]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("moderators")]
-        public System.Collections.Generic.ICollection<ForumAdminModelV1> Moderators { get; set; }
+        public System.Collections.Generic.ICollection<ForumAdminModelV1>? Moderators { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public SeriesModelSearchV1 Series { get; set; }
+        public SeriesModelSearchV1? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats3 Stats { get; set; }
+        public Stats3? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_topic")]
-        public ForumTopicModelSearchV1 Last_topic { get; set; }
+        public ForumTopicModelSearchV1? Last_topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin3 Admin { get; set; }
+        public Admin3? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28823,36 +26054,36 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("moderators")]
-        public System.Collections.Generic.ICollection<ForumAdminModelV1> Moderators { get; set; }
+        public System.Collections.Generic.ICollection<ForumAdminModelV1>? Moderators { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public SeriesModelSearchV1 Series { get; set; }
+        public SeriesModelSearchV1? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats4 Stats { get; set; }
+        public Stats4? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_topic")]
-        public ForumTopicModelSearchV1 Last_topic { get; set; }
+        public ForumTopicModelSearchV1? Last_topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin4 Admin { get; set; }
+        public Admin4? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28868,18 +26099,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public int Position { get; set; }
+        public int? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin5 Admin { get; set; }
+        public Admin5? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28895,12 +26126,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28923,12 +26154,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Answer { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes")]
-        public int Votes { get; set; }
+        public int? Votes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("image")]
-        public Image Image { get; set; }
+        public Image? Image { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28951,9 +26182,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Answer { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("temp_image_id")]
-        public int Temp_image_id { get; set; }
+        public int? Temp_image_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28969,18 +26200,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("answers")]
-        public System.Collections.Generic.ICollection<ForumPollAnswerModelV1> Answers { get; set; }
+        public System.Collections.Generic.ICollection<ForumPollAnswerModelV1>? Answers { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes")]
-        public int Votes { get; set; }
+        public int? Votes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin6 Admin { get; set; }
+        public Admin6? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -28996,12 +26227,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("answers")]
-        public System.Collections.Generic.ICollection<ForumPollAnswerModelUpdateV1> Answers { get; set; }
+        public System.Collections.Generic.ICollection<ForumPollAnswerModelUpdateV1>? Answers { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29017,24 +26248,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("image_id")]
-        public int Image_id { get; set; }
+        public int? Image_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("caption")]
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public Url Url { get; set; }
+        public Url? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("height")]
-        public int Height { get; set; }
+        public int? Height { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("width")]
-        public int Width { get; set; }
+        public int? Width { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29050,9 +26281,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("choice_id")]
-        public int Choice_id { get; set; }
+        public int? Choice_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29068,12 +26299,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("post_id_list")]
-        public System.Collections.Generic.ICollection<int> Post_id_list { get; set; }
+        public System.Collections.Generic.ICollection<int>? Post_id_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29089,18 +26320,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results6> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results6>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29116,27 +26347,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("post_id")]
-        public int Post_id { get; set; }
+        public int? Post_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("body")]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public Topic Topic { get; set; }
+        public Topic? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author")]
-        public UserModelSearchV1 Author { get; set; }
+        public UserModelSearchV1? Author { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reply_to")]
-        public Reply_to Reply_to { get; set; }
+        public Reply_to? Reply_to { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_edit")]
-        public Last_edit Last_edit { get; set; }
+        public Last_edit? Last_edit { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29152,21 +26383,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("post_id")]
-        public int Post_id { get; set; }
+        public int? Post_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("body_excerpt")]
-        public string Body_excerpt { get; set; }
+        public string? Body_excerpt { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public Topic2 Topic { get; set; }
+        public Topic2? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author")]
-        public UserModelSearchV1 Author { get; set; }
+        public UserModelSearchV1? Author { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29182,12 +26413,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("body")]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reply_to")]
-        public int Reply_to { get; set; }
+        public int? Reply_to { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29203,30 +26434,30 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("report_id")]
-        public int Report_id { get; set; }
+        public int? Report_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public ForumTopicModelSearchV1 Topic { get; set; }
+        public ForumTopicModelSearchV1? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("post_id")]
-        public int Post_id { get; set; }
+        public int? Post_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("post")]
-        public ForumPostModelSearchV1 Post { get; set; }
+        public ForumPostModelSearchV1? Post { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user")]
-        public UserModelSearchV1 User { get; set; }
+        public UserModelSearchV1? User { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29242,9 +26473,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29261,37 +26492,37 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
 
         [System.Text.Json.Serialization.JsonPropertyName("search_by")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ForumSearchRequestV1Search_by>))]
-        public ForumSearchRequestV1Search_by Search_by { get; set; }
+        public ForumSearchRequestV1Search_by? Search_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("method")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ForumSearchRequestV1Method>))]
-        public ForumSearchRequestV1Method Method { get; set; }
+        public ForumSearchRequestV1Method? Method { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("since")]
-        public int Since { get; set; }
+        public int? Since { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("after_id")]
-        public int After_id { get; set; }
+        public int? After_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("before_id")]
-        public int Before_id { get; set; }
+        public int? Before_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("by_user_id")]
-        public int By_user_id { get; set; }
+        public int? By_user_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("filter_user_id")]
-        public int Filter_user_id { get; set; }
+        public int? Filter_user_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29307,21 +26538,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_results")]
-        public System.Collections.Generic.ICollection<Topic_results> Topic_results { get; set; }
+        public System.Collections.Generic.ICollection<Topic_results>? Topic_results { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("post_results")]
-        public System.Collections.Generic.ICollection<Post_results> Post_results { get; set; }
+        public System.Collections.Generic.ICollection<Post_results>? Post_results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29337,16 +26568,16 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ForumTopicListRequestV1Orderby>))]
-        public ForumTopicListRequestV1Orderby Orderby { get; set; }
+        public ForumTopicListRequestV1Orderby? Orderby { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29362,18 +26593,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results7> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results7>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29389,15 +26620,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public ForumTopicModelUpdateV1 Topic { get; set; }
+        public ForumTopicModelUpdateV1? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("post")]
-        public ForumPostModelUpdateV1 Post { get; set; }
+        public ForumPostModelUpdateV1? Post { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("poll")]
-        public ForumPollModelUpdateV1 Poll { get; set; }
+        public ForumPollModelUpdateV1? Poll { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29413,39 +26644,39 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic { get; set; }
+        public string? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_post")]
-        public ForumPostModelSearchV1 Last_post { get; set; }
+        public ForumPostModelSearchV1? Last_post { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats5 Stats { get; set; }
+        public Stats5? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum")]
-        public Forum Forum { get; set; }
+        public Forum? Forum { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("is_poll")]
-        public bool Is_poll { get; set; }
+        public bool? Is_poll { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("poll")]
-        public ForumPollModelV1 Poll { get; set; }
+        public ForumPollModelV1? Poll { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin7 Admin { get; set; }
+        public Admin7? Admin { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_starter")]
-        public UserModelSearchV1 Topic_starter { get; set; }
+        public UserModelSearchV1? Topic_starter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29461,36 +26692,36 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic { get; set; }
+        public string? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_post")]
-        public ForumPostModelSearchV1 Last_post { get; set; }
+        public ForumPostModelSearchV1? Last_post { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats6 Stats { get; set; }
+        public Stats6? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum")]
-        public Forum2 Forum { get; set; }
+        public Forum2? Forum { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("is_poll")]
-        public bool Is_poll { get; set; }
+        public bool? Is_poll { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin8 Admin { get; set; }
+        public Admin8? Admin { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_starter")]
-        public UserModelSearchV1 Topic_starter { get; set; }
+        public UserModelSearchV1? Topic_starter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29506,15 +26737,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic { get; set; }
+        public string? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum")]
-        public Forum3 Forum { get; set; }
+        public Forum3? Forum { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin9 Admin { get; set; }
+        public Admin9? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29530,10 +26761,10 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("level")]
         public required int Level { get; set; }
@@ -29543,12 +26774,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Reason { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("send_reason")]
-        public bool Send_reason { get; set; }
+        public bool? Send_reason { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("by_user")]
-        public UserModelSearchV1 By_user { get; set; }
+        public UserModelSearchV1? By_user { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29564,12 +26795,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("level")]
         public required int Level { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29592,9 +26823,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Reason { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("send_reason")]
-        public bool Send_reason { get; set; }
+        public bool? Send_reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29610,18 +26841,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("demographic")]
-        public bool Demographic { get; set; }
+        public bool? Demographic { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29637,21 +26868,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats7 Stats { get; set; }
+        public Stats7? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("demographic")]
-        public bool Demographic { get; set; }
+        public bool? Demographic { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29667,15 +26898,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("demographic")]
-        public bool Demographic { get; set; }
+        public bool? Demographic { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29691,33 +26922,33 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("group_id")]
-        public int Group_id { get; set; }
+        public int? Group_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated3> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated3>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("social")]
-        public Social3 Social { get; set; }
+        public Social3? Social { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("notes")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin10 Admin { get; set; }
+        public Admin10? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29733,27 +26964,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("group_id")]
-        public int Group_id { get; set; }
+        public int? Group_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("social")]
-        public Social4 Social { get; set; }
+        public Social4? Social { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("notes")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29769,24 +27000,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated4> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated4>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("social")]
-        public Social5 Social { get; set; }
+        public Social5? Social { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("notes")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin11 Admin { get; set; }
+        public Admin11? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29802,27 +27033,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("pending")]
-        public bool Pending { get; set; }
+        public bool? Pending { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29838,18 +27069,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results8> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results8>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29865,18 +27096,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("release_frequency")]
-        public string Release_frequency { get; set; }
+        public string? Release_frequency { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_titles")]
-        public System.Collections.Generic.ICollection<Series_titles> Series_titles { get; set; }
+        public System.Collections.Generic.ICollection<Series_titles>? Series_titles { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_genres")]
-        public System.Collections.Generic.ICollection<Series_genres> Series_genres { get; set; }
+        public System.Collections.Generic.ICollection<Series_genres>? Series_genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_categories")]
-        public System.Collections.Generic.ICollection<Series_categories> Series_categories { get; set; }
+        public System.Collections.Generic.ICollection<Series_categories>? Series_categories { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29892,24 +27123,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("extension")]
-        public string Extension { get; set; }
+        public string? Extension { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("height")]
-        public int Height { get; set; }
+        public int? Height { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("width")]
-        public int Width { get; set; }
+        public int? Width { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29925,18 +27156,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("height")]
-        public int Height { get; set; }
+        public int? Height { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("width")]
-        public int Width { get; set; }
+        public int? Width { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29952,9 +27183,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29970,15 +27201,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public Url2 Url { get; set; }
+        public Url2? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("height")]
-        public int Height { get; set; }
+        public int? Height { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("width")]
-        public int Width { get; set; }
+        public int? Width { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -29995,12 +27226,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
 
         [System.Text.Json.Serialization.JsonPropertyName("priority")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ListsBulkAddModelV1Priority>))]
-        public ListsBulkAddModelV1Priority Priority { get; set; }
+        public ListsBulkAddModelV1Priority? Priority { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_title")]
-        public string Series_title { get; set; }
+        public string? Series_title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30016,31 +27247,31 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("list_id")]
-        public int List_id { get; set; }
+        public int? List_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ListsModelV1Type>))]
-        public ListsModelV1Type Type { get; set; }
+        public ListsModelV1Type? Type { get; set; }
 
         /// <summary>
         /// Single character icon (emoji or symbol)
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("icon")]
-        public string Icon { get; set; }
+        public string? Icon { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("custom")]
-        public bool Custom { get; set; }
+        public bool? Custom { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("options")]
-        public Options Options { get; set; }
+        public Options? Options { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30056,25 +27287,25 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ListsModelUpdateV1Type>))]
-        public ListsModelUpdateV1Type Type { get; set; }
+        public ListsModelUpdateV1Type? Type { get; set; }
 
         /// <summary>
         /// Single character icon (emoji or symbol)
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("icon")]
-        public string Icon { get; set; }
+        public string? Icon { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("options")]
-        public Options2 Options { get; set; }
+        public Options2? Options { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30090,21 +27321,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("list")]
-        public ListsModelV1 List { get; set; }
+        public ListsModelV1? List { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results9> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results9>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30120,9 +27351,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<Genres> Genres { get; set; }
+        public System.Collections.Generic.ICollection<Genres>? Genres { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30138,15 +27369,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30162,21 +27393,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("list")]
-        public ListsModelV1 List { get; set; }
+        public ListsModelV1? List { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results10> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results10>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30196,24 +27427,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required Series Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("list_id")]
-        public int List_id { get; set; }
+        public int? List_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("list_type")]
-        public string List_type { get; set; }
+        public string? List_type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("list_icon")]
-        public string List_icon { get; set; }
+        public string? List_icon { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        public Status Status { get; set; }
+        public Status? Status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("priority")]
-        public int Priority { get; set; }
+        public int? Priority { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30233,15 +27464,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required Series2 Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("list_id")]
-        public int List_id { get; set; }
+        public int? List_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        public Status2 Status { get; set; }
+        public Status2? Status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("priority")]
-        public int Priority { get; set; }
+        public int? Priority { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30257,12 +27488,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("users")]
-        public System.Collections.Generic.ICollection<Users> Users { get; set; }
+        public System.Collections.Generic.ICollection<Users>? Users { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30278,9 +27509,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("users")]
-        public System.Collections.Generic.ICollection<Users2> Users { get; set; }
+        public System.Collections.Generic.ICollection<Users2>? Users { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30297,24 +27528,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
 
         [System.Text.Json.Serialization.JsonPropertyName("state")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<MiscSlowTransactionStatusResponseV1State>))]
-        public MiscSlowTransactionStatusResponseV1State State { get; set; }
+        public MiscSlowTransactionStatusResponseV1State? State { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("error")]
-        public string Error { get; set; }
+        public string? Error { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("percent")]
-        public double Percent { get; set; }
+        public double? Percent { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("done")]
-        public int Done { get; set; }
+        public int? Done { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total")]
-        public int Total { get; set; }
+        public int? Total { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("return")]
-        public string Return { get; set; }
+        public string? Return { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30330,18 +27561,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_users")]
-        public int Total_users { get; set; }
+        public int? Total_users { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("latest_user")]
-        public UserModelSearchV1 Latest_user { get; set; }
+        public UserModelSearchV1? Latest_user { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total_forum_topics")]
-        public int Total_forum_topics { get; set; }
+        public int? Total_forum_topics { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total_forum_posts")]
-        public int Total_forum_posts { get; set; }
+        public int? Total_forum_posts { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30357,21 +27588,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("poll_id")]
-        public int Poll_id { get; set; }
+        public int? Poll_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("responses")]
-        public System.Collections.Generic.ICollection<string> Responses { get; set; }
+        public System.Collections.Generic.ICollection<string>? Responses { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total_votes")]
-        public int Total_votes { get; set; }
+        public int? Total_votes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_finished")]
-        public TimeV1 Time_finished { get; set; }
+        public TimeV1? Time_finished { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30387,19 +27618,19 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PollArchiveSearchRequestV1Orderby>))]
-        public PollArchiveSearchRequestV1Orderby Orderby { get; set; }
+        public PollArchiveSearchRequestV1Orderby? Orderby { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30415,18 +27646,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results11> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results11>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30442,18 +27673,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("answers")]
-        public System.Collections.Generic.ICollection<Answers> Answers { get; set; }
+        public System.Collections.Generic.ICollection<Answers>? Answers { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total_votes")]
-        public int Total_votes { get; set; }
+        public int? Total_votes { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30469,12 +27700,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("question")]
-        public string Question { get; set; }
+        public string? Question { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("answers")]
-        public System.Collections.Generic.ICollection<Answers2> Answers { get; set; }
+        public System.Collections.Generic.ICollection<Answers2>? Answers { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30490,9 +27721,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("voted")]
-        public bool Voted { get; set; }
+        public bool? Voted { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30508,40 +27739,40 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
-        public int Publisher_id { get; set; }
+        public int? Publisher_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated5> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated5>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersModelV1Type>))]
-        public PublishersModelV1Type Type { get; set; }
+        public PublishersModelV1Type? Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("info")]
-        public string Info { get; set; }
+        public string? Info { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("site")]
-        public string Site { get; set; }
+        public string? Site { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats8 Stats { get; set; }
+        public Stats8? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin12 Admin { get; set; }
+        public Admin12? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30557,25 +27788,25 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
-        public int Publisher_id { get; set; }
+        public int? Publisher_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersModelSearchV1Type>))]
-        public PublishersModelSearchV1Type Type { get; set; }
+        public PublishersModelSearchV1Type? Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats9 Stats { get; set; }
+        public Stats9? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30591,25 +27822,25 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated6> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated6>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersModelUpdateV1Type>))]
-        public PublishersModelUpdateV1Type Type { get; set; }
+        public PublishersModelUpdateV1Type? Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("info")]
-        public string Info { get; set; }
+        public string? Info { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("site")]
-        public string Site { get; set; }
+        public string? Site { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin13 Admin { get; set; }
+        public Admin13? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30625,12 +27856,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher")]
-        public Publisher Publisher { get; set; }
+        public Publisher? Publisher { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_list")]
-        public System.Collections.Generic.ICollection<Series_list2> Series_list { get; set; }
+        public System.Collections.Generic.ICollection<Series_list2>? Series_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30646,28 +27877,28 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersSearchRequestV1Orderby>))]
-        public PublishersSearchRequestV1Orderby Orderby { get; set; }
+        public PublishersSearchRequestV1Orderby? Orderby { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("pending")]
-        public bool Pending { get; set; }
+        public bool? Pending { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30683,18 +27914,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results12> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results12>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30710,12 +27941,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series_list")]
-        public System.Collections.Generic.ICollection<Series_list3> Series_list { get; set; }
+        public System.Collections.Generic.ICollection<Series_list3>? Series_list { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publication_list")]
-        public System.Collections.Generic.ICollection<Publication_list> Publication_list { get; set; }
+        public System.Collections.Generic.ICollection<Publication_list>? Publication_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30731,15 +27962,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("include_metadata")]
-        public bool Include_metadata { get; set; }
+        public bool? Include_metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30755,36 +27986,36 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
-        public string Volume { get; set; }
+        public string? Volume { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("chapter")]
-        public string Chapter { get; set; }
+        public string? Chapter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("groups")]
-        public System.Collections.Generic.ICollection<Groups> Groups { get; set; }
+        public System.Collections.Generic.ICollection<Groups>? Groups { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("release_date")]
-        public string Release_date { get; set; }
+        public string? Release_date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("download_notes")]
-        public string Download_notes { get; set; }
+        public string? Download_notes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("comment")]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin14 Admin { get; set; }
+        public Admin14? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30800,27 +28031,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
-        public string Volume { get; set; }
+        public string? Volume { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("chapter")]
-        public string Chapter { get; set; }
+        public string? Chapter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("groups")]
-        public System.Collections.Generic.ICollection<Groups2> Groups { get; set; }
+        public System.Collections.Generic.ICollection<Groups2>? Groups { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("release_date")]
-        public string Release_date { get; set; }
+        public string? Release_date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30836,33 +28067,33 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
-        public string Volume { get; set; }
+        public string? Volume { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("chapter")]
-        public string Chapter { get; set; }
+        public string? Chapter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("groups")]
-        public System.Collections.Generic.ICollection<Groups3> Groups { get; set; }
+        public System.Collections.Generic.ICollection<Groups3>? Groups { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("release_date")]
-        public string Release_date { get; set; }
+        public string? Release_date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("download_notes")]
-        public string Download_notes { get; set; }
+        public string? Download_notes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("comment")]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeUpdateV1 Time_added { get; set; }
+        public TimeUpdateV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin15 Admin { get; set; }
+        public Admin15? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30878,18 +28109,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("archived")]
-        public bool Archived { get; set; }
+        public bool? Archived { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("disable_paging")]
-        public bool Disable_paging { get; set; }
+        public bool? Disable_paging { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30905,21 +28136,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results13> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results13>? Results { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("group_info")]
-        public System.Collections.Generic.ICollection<Group_info> Group_info { get; set; }
+        public System.Collections.Generic.ICollection<Group_info>? Group_info { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30935,48 +28166,48 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("search_type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ReleaseSearchRequestV1Search_type>))]
-        public ReleaseSearchRequestV1Search_type Search_type { get; set; }
+        public ReleaseSearchRequestV1Search_type? Search_type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ReleaseSearchRequestV1Orderby>))]
-        public ReleaseSearchRequestV1Orderby Orderby { get; set; }
+        public ReleaseSearchRequestV1Orderby? Orderby { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("start_date")]
-        public string Start_date { get; set; }
+        public string? Start_date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("end_date")]
-        public string End_date { get; set; }
+        public string? End_date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("asc")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ReleaseSearchRequestV1Asc>))]
-        public ReleaseSearchRequestV1Asc Asc { get; set; }
+        public ReleaseSearchRequestV1Asc? Asc { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("group_id")]
-        public int Group_id { get; set; }
+        public int? Group_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("pending")]
-        public bool Pending { get; set; }
+        public bool? Pending { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("include_metadata")]
-        public bool Include_metadata { get; set; }
+        public bool? Include_metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -30992,18 +28223,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results14> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results14>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31019,30 +28250,30 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("review_id")]
-        public int Review_id { get; set; }
+        public int? Review_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("subject")]
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("content")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author")]
-        public Author Author { get; set; }
+        public Author? Author { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rating")]
-        public double Rating { get; set; }
+        public double? Rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_updated")]
-        public TimeV1 Time_updated { get; set; }
+        public TimeV1? Time_updated { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31058,18 +28289,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("subject")]
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("content")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rating")]
-        public double Rating { get; set; }
+        public double? Rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin16 Admin { get; set; }
+        public Admin16? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31085,15 +28316,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31109,18 +28340,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results15> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results15>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31136,30 +28367,30 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("body")]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author")]
-        public Author2 Author { get; set; }
+        public Author2? Author { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public SeriesModelSearchV1 Series { get; set; }
+        public SeriesModelSearchV1? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("review")]
-        public Review Review { get; set; }
+        public Review? Review { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin17 Admin { get; set; }
+        public Admin17? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31175,27 +28406,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("body_excerpt")]
-        public string Body_excerpt { get; set; }
+        public string? Body_excerpt { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author")]
-        public Author3 Author { get; set; }
+        public Author3? Author { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public SeriesModelSearchV1 Series { get; set; }
+        public SeriesModelSearchV1? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("review")]
-        public Review2 Review { get; set; }
+        public Review2? Review { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31211,21 +28442,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("body")]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_title")]
-        public string Series_title { get; set; }
+        public string? Series_title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("review")]
-        public Review3 Review { get; set; }
+        public Review3? Review { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin18 Admin { get; set; }
+        public Admin18? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31241,27 +28472,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("pending")]
-        public bool Pending { get; set; }
+        public bool? Pending { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31277,18 +28508,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results16> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results16>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31310,7 +28541,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.Text.Json.Serialization.JsonPropertyName("to")]
         public required CategoriesModelUpdateV1 To { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31330,9 +28561,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Category { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("agree")]
-        public bool Agree { get; set; }
+        public bool? Agree { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31351,7 +28582,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31367,33 +28598,33 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("subject")]
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("content")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author")]
-        public Author4 Author { get; set; }
+        public Author4? Author { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("useful")]
-        public int Useful { get; set; }
+        public int? Useful { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_updated")]
-        public TimeV1 Time_updated { get; set; }
+        public TimeV1? Time_updated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin19 Admin { get; set; }
+        public Admin19? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31409,15 +28640,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("subject")]
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("content")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin20 Admin { get; set; }
+        public Admin20? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31433,18 +28664,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results17> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results17>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31460,9 +28691,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("report_reason")]
-        public string Report_reason { get; set; }
+        public string? Report_reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31479,18 +28710,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
 
         [System.Text.Json.Serialization.JsonPropertyName("method")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesCommentSearchRequestV1Method>))]
-        public SeriesCommentSearchRequestV1Method Method { get; set; }
+        public SeriesCommentSearchRequestV1Method? Method { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31506,18 +28737,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results18> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results18>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31533,9 +28764,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("useful")]
-        public bool Useful { get; set; }
+        public bool? Useful { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31551,12 +28782,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("group_list")]
-        public System.Collections.Generic.ICollection<GroupsModelSearchV1> Group_list { get; set; }
+        public System.Collections.Generic.ICollection<GroupsModelSearchV1>? Group_list { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("release_list")]
-        public System.Collections.Generic.ICollection<ReleaseModelSearchV1> Release_list { get; set; }
+        public System.Collections.Generic.ICollection<ReleaseModelSearchV1>? Release_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31572,21 +28803,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("change_id")]
-        public int Change_id { get; set; }
+        public int? Change_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("action")]
-        public string Action { get; set; }
+        public string? Action { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("changed")]
-        public string Changed { get; set; }
+        public string? Changed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31602,21 +28833,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_title")]
-        public string Series_title { get; set; }
+        public string? Series_title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results19> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results19>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31632,21 +28863,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("field")]
-        public string Field { get; set; }
+        public string? Field { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_locked")]
-        public TimeV1 Time_locked { get; set; }
+        public TimeV1? Time_locked { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31662,9 +28893,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31680,88 +28911,88 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated7> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated7>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("image")]
-        public ImageModelV1 Image { get; set; }
+        public ImageModelV1? Image { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesModelV1Type>))]
-        public SeriesModelV1Type Type { get; set; }
+        public SeriesModelV1Type? Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public string Year { get; set; }
+        public string? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("bayesian_rating")]
-        public double Bayesian_rating { get; set; }
+        public double? Bayesian_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rating_votes")]
-        public int Rating_votes { get; set; }
+        public int? Rating_votes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<Genres2> Genres { get; set; }
+        public System.Collections.Generic.ICollection<Genres2>? Genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("categories")]
-        public System.Collections.Generic.ICollection<CategoriesModelV1> Categories { get; set; }
+        public System.Collections.Generic.ICollection<CategoriesModelV1>? Categories { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("latest_chapter")]
-        public int Latest_chapter { get; set; }
+        public int? Latest_chapter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("licensed")]
-        public bool Licensed { get; set; }
+        public bool? Licensed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("completed")]
-        public bool Completed { get; set; }
+        public bool? Completed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("anime")]
-        public Anime Anime { get; set; }
+        public Anime? Anime { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("related_series")]
-        public System.Collections.Generic.ICollection<Related_series> Related_series { get; set; }
+        public System.Collections.Generic.ICollection<Related_series>? Related_series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("authors")]
-        public System.Collections.Generic.ICollection<Authors> Authors { get; set; }
+        public System.Collections.Generic.ICollection<Authors>? Authors { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publishers")]
-        public System.Collections.Generic.ICollection<Publishers> Publishers { get; set; }
+        public System.Collections.Generic.ICollection<Publishers>? Publishers { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publications")]
-        public System.Collections.Generic.ICollection<Publications> Publications { get; set; }
+        public System.Collections.Generic.ICollection<Publications>? Publications { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("recommendations")]
-        public System.Collections.Generic.ICollection<SeriesRecommendationsModelV1> Recommendations { get; set; }
+        public System.Collections.Generic.ICollection<SeriesRecommendationsModelV1>? Recommendations { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("category_recommendations")]
-        public System.Collections.Generic.ICollection<SeriesRecommendationsModelV1> Category_recommendations { get; set; }
+        public System.Collections.Generic.ICollection<SeriesRecommendationsModelV1>? Category_recommendations { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rank")]
-        public Rank Rank { get; set; }
+        public Rank? Rank { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin21 Admin { get; set; }
+        public Admin21? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31777,49 +29008,49 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("image")]
-        public ImageModelV1 Image { get; set; }
+        public ImageModelV1? Image { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesModelSearchV1Type>))]
-        public SeriesModelSearchV1Type Type { get; set; }
+        public SeriesModelSearchV1Type? Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public string Year { get; set; }
+        public string? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("bayesian_rating")]
-        public double Bayesian_rating { get; set; }
+        public double? Bayesian_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rating_votes")]
-        public int Rating_votes { get; set; }
+        public int? Rating_votes { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<Genres3> Genres { get; set; }
+        public System.Collections.Generic.ICollection<Genres3>? Genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("latest_chapter")]
-        public int Latest_chapter { get; set; }
+        public int? Latest_chapter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rank")]
-        public Rank2 Rank { get; set; }
+        public Rank2? Rank { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin22 Admin { get; set; }
+        public Admin22? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31835,55 +29066,55 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("associated")]
-        public System.Collections.Generic.ICollection<Associated8> Associated { get; set; }
+        public System.Collections.Generic.ICollection<Associated8>? Associated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesModelUpdateV1Type>))]
-        public SeriesModelUpdateV1Type Type { get; set; }
+        public SeriesModelUpdateV1Type? Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public string Year { get; set; }
+        public string? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<Genres4> Genres { get; set; }
+        public System.Collections.Generic.ICollection<Genres4>? Genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("categories")]
-        public System.Collections.Generic.ICollection<CategoriesModelUpdateV1> Categories { get; set; }
+        public System.Collections.Generic.ICollection<CategoriesModelUpdateV1>? Categories { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("licensed")]
-        public bool Licensed { get; set; }
+        public bool? Licensed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("completed")]
-        public bool Completed { get; set; }
+        public bool? Completed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("anime")]
-        public Anime2 Anime { get; set; }
+        public Anime2? Anime { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("related_series")]
-        public System.Collections.Generic.ICollection<Related_series2> Related_series { get; set; }
+        public System.Collections.Generic.ICollection<Related_series2>? Related_series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("authors")]
-        public System.Collections.Generic.ICollection<Authors2> Authors { get; set; }
+        public System.Collections.Generic.ICollection<Authors2>? Authors { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publishers")]
-        public System.Collections.Generic.ICollection<Publishers2> Publishers { get; set; }
+        public System.Collections.Generic.ICollection<Publishers2>? Publishers { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publications")]
-        public System.Collections.Generic.ICollection<Publications2> Publications { get; set; }
+        public System.Collections.Generic.ICollection<Publications2>? Publications { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin23 Admin { get; set; }
+        public Admin23? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31902,9 +29133,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required double Rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31920,12 +29151,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("average_rating")]
-        public double Average_rating { get; set; }
+        public double? Average_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rainbow")]
-        public System.Collections.Generic.ICollection<Rainbow> Rainbow { get; set; }
+        public System.Collections.Generic.ICollection<Rainbow>? Rainbow { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31941,21 +29172,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series_name")]
-        public string Series_name { get; set; }
+        public string? Series_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_url")]
-        public string Series_url { get; set; }
+        public string? Series_url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_image")]
-        public ImageModelV1 Series_image { get; set; }
+        public ImageModelV1? Series_image { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("weight")]
-        public int Weight { get; set; }
+        public int? Weight { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -31971,77 +29202,77 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public int Added_by { get; set; }
+        public int? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stype")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Stype>))]
-        public SeriesSearchRequestV1Stype Stype { get; set; }
+        public SeriesSearchRequestV1Stype? Stype { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("licensed")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Licensed>))]
-        public SeriesSearchRequestV1Licensed Licensed { get; set; }
+        public SeriesSearchRequestV1Licensed? Licensed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
-        public System.Collections.Generic.ICollection<string> Type { get; set; }
+        public System.Collections.Generic.ICollection<string>? Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public string Year { get; set; }
+        public string? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("filter_types")]
-        public System.Collections.Generic.ICollection<string> Filter_types { get; set; }
+        public System.Collections.Generic.ICollection<string>? Filter_types { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("category")]
-        public System.Collections.Generic.ICollection<string> Category { get; set; }
+        public System.Collections.Generic.ICollection<string>? Category { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("pubname")]
-        public string Pubname { get; set; }
+        public string? Pubname { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("filter")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Filter>))]
-        public SeriesSearchRequestV1Filter Filter { get; set; }
+        public SeriesSearchRequestV1Filter? Filter { get; set; }
 
         /// <summary>
         /// Meant to replace 'filter', it lets you specify multiple filters as an array of strings
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("filters")]
         // TODO(system.text.json): Add ItemConverterType with enum converter when supported
-        public System.Collections.Generic.ICollection<Filters> Filters { get; set; }
+        public System.Collections.Generic.ICollection<Filters>? Filters { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("list")]
-        public string List { get; set; }
+        public string? List { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public System.Collections.Generic.ICollection<string> Genre { get; set; }
+        public System.Collections.Generic.ICollection<string>? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("exclude_genre")]
-        public System.Collections.Generic.ICollection<string> Exclude_genre { get; set; }
+        public System.Collections.Generic.ICollection<string>? Exclude_genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Orderby>))]
-        public SeriesSearchRequestV1Orderby Orderby { get; set; }
+        public SeriesSearchRequestV1Orderby? Orderby { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("pending")]
-        public bool Pending { get; set; }
+        public bool? Pending { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("include_rank_metadata")]
-        public bool Include_rank_metadata { get; set; }
+        public bool? Include_rank_metadata { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("exclude_filtered_genres")]
-        public bool Exclude_filtered_genres { get; set; }
+        public bool? Exclude_filtered_genres { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32057,18 +29288,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results20> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results20>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32084,15 +29315,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("timestamp")]
-        public int Timestamp { get; set; }
+        public int? Timestamp { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("as_rfc3339")]
-        public System.DateTimeOffset As_rfc3339 { get; set; }
+        public System.DateTimeOffset? As_rfc3339 { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("as_string")]
-        public string As_string { get; set; }
+        public string? As_string { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32108,9 +29339,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("timestamp")]
-        public int Timestamp { get; set; }
+        public int? Timestamp { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32126,18 +29357,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("body")]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32153,12 +29384,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("body")]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("archived")]
-        public bool Archived { get; set; }
+        public bool? Archived { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32174,18 +29405,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results21> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results21>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32201,12 +29432,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre_id")]
-        public int Genre_id { get; set; }
+        public int? Genre_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genre_name")]
-        public string Genre_name { get; set; }
+        public string? Genre_name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32222,15 +29453,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre_id")]
-        public int Genre_id { get; set; }
+        public int? Genre_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genre_name")]
-        public string Genre_name { get; set; }
+        public string? Genre_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("color")]
-        public string Color { get; set; }
+        public string? Color { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32246,9 +29477,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("color")]
-        public string Color { get; set; }
+        public string? Color { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32264,15 +29495,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("group_id")]
-        public int Group_id { get; set; }
+        public int? Group_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("group_name")]
-        public string Group_name { get; set; }
+        public string? Group_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("group_url")]
-        public string Group_url { get; set; }
+        public string? Group_url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32288,68 +29519,68 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("email")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("roles")]
-        public System.Collections.Generic.ICollection<UserRolesModelV1> Roles { get; set; }
+        public System.Collections.Generic.ICollection<UserRolesModelV1>? Roles { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("avatar")]
-        public AvatarModelV1 Avatar { get; set; }
+        public AvatarModelV1? Avatar { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_joined")]
-        public TimeV1 Time_joined { get; set; }
+        public TimeV1? Time_joined { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_active_time")]
-        public TimeV1 Last_active_time { get; set; }
+        public TimeV1? Last_active_time { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("gender")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelV1Gender>))]
-        public UserModelV1Gender Gender { get; set; }
+        public UserModelV1Gender? Gender { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("birthday")]
-        public BirthdayModelV1 Birthday { get; set; }
+        public BirthdayModelV1? Birthday { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("age")]
-        public int Age { get; set; }
+        public int? Age { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("timezone")]
-        public int Timezone { get; set; }
+        public int? Timezone { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("signature")]
-        public string Signature { get; set; }
+        public string? Signature { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("location")]
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_title")]
-        public string Forum_title { get; set; }
+        public string? Forum_title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("folding_at_home")]
-        public bool Folding_at_home { get; set; }
+        public bool? Folding_at_home { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("flair")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelV1Flair>))]
-        public UserModelV1Flair Flair { get; set; }
+        public UserModelV1Flair? Flair { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("profile")]
-        public Profile Profile { get; set; }
+        public Profile? Profile { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats10 Stats { get; set; }
+        public Stats10? Stats { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin24 Admin { get; set; }
+        public Admin24? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32365,40 +29596,40 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("avatar")]
-        public AvatarModelSearchV1 Avatar { get; set; }
+        public AvatarModelSearchV1? Avatar { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_joined")]
-        public TimeV1 Time_joined { get; set; }
+        public TimeV1? Time_joined { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("signature")]
-        public string Signature { get; set; }
+        public string? Signature { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_title")]
-        public string Forum_title { get; set; }
+        public string? Forum_title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("folding_at_home")]
-        public bool Folding_at_home { get; set; }
+        public bool? Folding_at_home { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("flair")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelSearchV1Flair>))]
-        public UserModelSearchV1Flair Flair { get; set; }
+        public UserModelSearchV1Flair? Flair { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("profile")]
-        public Profile2 Profile { get; set; }
+        public Profile2? Profile { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("stats")]
-        public Stats11 Stats { get; set; }
+        public Stats11? Stats { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32414,49 +29645,49 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("email")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("password")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("roles")]
-        public System.Collections.Generic.ICollection<UserRolesModelUpdateV1> Roles { get; set; }
+        public System.Collections.Generic.ICollection<UserRolesModelUpdateV1>? Roles { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("new_avatar_id")]
-        public int New_avatar_id { get; set; }
+        public int? New_avatar_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("gender")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelUpdateV1Gender>))]
-        public UserModelUpdateV1Gender Gender { get; set; }
+        public UserModelUpdateV1Gender? Gender { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("birthday")]
-        public BirthdayModelV1 Birthday { get; set; }
+        public BirthdayModelV1? Birthday { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("timezone")]
-        public int Timezone { get; set; }
+        public int? Timezone { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("signature")]
-        public string Signature { get; set; }
+        public string? Signature { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("location")]
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_title")]
-        public string Forum_title { get; set; }
+        public string? Forum_title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("folding_at_home")]
-        public bool Folding_at_home { get; set; }
+        public bool? Folding_at_home { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("profile")]
-        public Profile3 Profile { get; set; }
+        public Profile3? Profile { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("admin")]
-        public Admin25 Admin { get; set; }
+        public Admin25? Admin { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32472,9 +29703,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("password")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32490,15 +29721,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("email")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("password")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32514,30 +29745,30 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("notification_id")]
-        public int Notification_id { get; set; }
+        public int? Notification_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
-        public string Notification_type { get; set; }
+        public string? Notification_type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reference_id")]
-        public int Reference_id { get; set; }
+        public int? Reference_id { get; set; }
 
         /// <summary>
         /// Free-form JSON object. Structure varies by notification type.
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("payload")]
-        public object Payload { get; set; }
+        public object? Payload { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_created")]
-        public TimeV1 Time_created { get; set; }
+        public TimeV1? Time_created { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_read")]
-        public TimeV1 Time_read { get; set; }
+        public TimeV1? Time_read { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("is_read")]
-        public bool Is_read { get; set; }
+        public bool? Is_read { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32553,24 +29784,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
-        public string Notification_type { get; set; }
+        public string? Notification_type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("channel")]
-        public string Channel { get; set; }
+        public string? Channel { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("delivery_method")]
-        public string Delivery_method { get; set; }
+        public string? Delivery_method { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("is_default")]
-        public bool Is_default { get; set; }
+        public bool? Is_default { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_created")]
-        public TimeV1 Time_created { get; set; }
+        public TimeV1? Time_created { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_updated")]
-        public TimeV1 Time_updated { get; set; }
+        public TimeV1? Time_updated { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32586,15 +29817,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
-        public string Notification_type { get; set; }
+        public string? Notification_type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("channel")]
-        public string Channel { get; set; }
+        public string? Channel { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("delivery_method")]
-        public string Delivery_method { get; set; }
+        public string? Delivery_method { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32614,12 +29845,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Role { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_added")]
-        public TimeV1 Time_added { get; set; }
+        public TimeV1? Time_added { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public Added_by Added_by { get; set; }
+        public Added_by? Added_by { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32638,7 +29869,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Role { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32654,29 +29885,29 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("search")]
-        public string Search { get; set; }
+        public string? Search { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("perpage")]
-        public int Perpage { get; set; }
+        public int? Perpage { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("letter")]
-        public string Letter { get; set; }
+        public string? Letter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("role")]
-        public string Role { get; set; }
+        public string? Role { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("orderby")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserSearchRequestV1Orderby>))]
-        public UserSearchRequestV1Orderby Orderby { get; set; }
+        public UserSearchRequestV1Orderby? Orderby { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("asc")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserSearchRequestV1Asc>))]
-        public UserSearchRequestV1Asc Asc { get; set; }
+        public UserSearchRequestV1Asc? Asc { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32692,18 +29923,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("page")]
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results22> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results22>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32719,12 +29950,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("ip")]
-        public string Ip { get; set; }
+        public string? Ip { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_action")]
-        public TimeV1 Last_action { get; set; }
+        public TimeV1? Last_action { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32740,12 +29971,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
-        public int Total_hits { get; set; }
+        public int? Total_hits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("results")]
-        public System.Collections.Generic.ICollection<Results23> Results { get; set; }
+        public System.Collections.Generic.ICollection<Results23>? Results { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32761,15 +29992,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public ForumTopicModelSearchV1 Topic { get; set; }
+        public ForumTopicModelSearchV1? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time_subscribed_since")]
-        public TimeV1 Time_subscribed_since { get; set; }
+        public TimeV1? Time_subscribed_since { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32833,9 +30064,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// List of notification IDs to mark as read. If omitted, all notifications are marked as read.
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("notification_ids")]
-        public System.Collections.Generic.ICollection<int> Notification_ids { get; set; }
+        public System.Collections.Generic.ICollection<int>? Notification_ids { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32854,21 +30085,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         /// unsubscribe or unsubscribe_all
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("action")]
-        public string Action { get; set; }
+        public string? Action { get; set; }
 
         /// <summary>
         /// Notification type being unsubscribed
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
-        public string Notification_type { get; set; }
+        public string? Notification_type { get; set; }
 
         /// <summary>
         /// Username for verification
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32884,9 +30115,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("count")]
-        public int Count { get; set; }
+        public int? Count { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32902,9 +30133,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("marked_count")]
-        public int Marked_count { get; set; }
+        public int? Marked_count { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32923,7 +30154,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -32999,9 +30230,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_series")]
-        public int Total_series { get; set; }
+        public int? Total_series { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33017,15 +30248,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("officialsite")]
-        public string Officialsite { get; set; }
+        public string? Officialsite { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("facebook")]
-        public string Facebook { get; set; }
+        public string? Facebook { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("twitter")]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33041,9 +30272,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33062,7 +30293,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33138,15 +30369,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("officialsite")]
-        public string Officialsite { get; set; }
+        public string? Officialsite { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("facebook")]
-        public string Facebook { get; set; }
+        public string? Facebook { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("twitter")]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33162,9 +30393,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33180,9 +30411,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_series")]
-        public int Total_series { get; set; }
+        public int? Total_series { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33213,15 +30444,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public AuthorsModelSearchV1 Record { get; set; }
+        public AuthorsModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hit_name")]
-        public string Hit_name { get; set; }
+        public string? Hit_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hit_genre")]
-        public System.Collections.Generic.ICollection<string> Hit_genre { get; set; }
+        public System.Collections.Generic.ICollection<string>? Hit_genre { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33249,27 +30480,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public string Year { get; set; }
+        public string? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<string> Genres { get; set; }
+        public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata Metadata { get; set; }
+        public Metadata? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33285,12 +30516,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("count")]
-        public int Count { get; set; }
+        public int? Count { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33324,9 +30555,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public CategoriesModelSearchV1 Record { get; set; }
+        public CategoriesModelSearchV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33342,12 +30573,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ConvoMessageModelV1 Record { get; set; }
+        public ConvoMessageModelV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata2 Metadata { get; set; }
+        public Metadata2? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33363,12 +30594,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ConvoModelV1 Record { get; set; }
+        public ConvoModelV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata3 Metadata { get; set; }
+        public Metadata3? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33384,9 +30615,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ForumAdminHistoryModelV1 Record { get; set; }
+        public ForumAdminHistoryModelV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33402,9 +30633,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum")]
-        public ForumForumModelListV1 Forum { get; set; }
+        public ForumForumModelListV1? Forum { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33420,12 +30651,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("category_id")]
-        public int Category_id { get; set; }
+        public int? Category_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("category_name")]
-        public string Category_name { get; set; }
+        public string? Category_name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33441,12 +30672,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topics")]
-        public int Topics { get; set; }
+        public int? Topics { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("posts")]
-        public int Posts { get; set; }
+        public int? Posts { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33462,15 +30693,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("locked")]
-        public bool Locked { get; set; }
+        public bool? Locked { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hidden")]
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("verify_age")]
-        public bool Verify_age { get; set; }
+        public bool? Verify_age { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33486,12 +30717,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("topics")]
-        public int Topics { get; set; }
+        public int? Topics { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("posts")]
-        public int Posts { get; set; }
+        public int? Posts { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33507,15 +30738,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("locked")]
-        public bool Locked { get; set; }
+        public bool? Locked { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hidden")]
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("verify_age")]
-        public bool Verify_age { get; set; }
+        public bool? Verify_age { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33531,15 +30762,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("locked")]
-        public bool Locked { get; set; }
+        public bool? Locked { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hidden")]
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("verify_age")]
-        public bool Verify_age { get; set; }
+        public bool? Verify_age { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33555,18 +30786,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("height")]
-        public int Height { get; set; }
+        public int? Height { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("width")]
-        public int Width { get; set; }
+        public int? Width { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("thumb_url")]
-        public string Thumb_url { get; set; }
+        public string? Thumb_url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33582,9 +30813,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("image_poll")]
-        public bool Image_poll { get; set; }
+        public bool? Image_poll { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33600,12 +30831,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("original")]
-        public string Original { get; set; }
+        public string? Original { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("thumb")]
-        public string Thumb { get; set; }
+        public string? Thumb { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33621,12 +30852,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ForumPostModelV1 Record { get; set; }
+        public ForumPostModelV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata4 Metadata { get; set; }
+        public Metadata4? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33642,18 +30873,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic1 { get; set; }
+        public string? Topic1 { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_url")]
-        public string Topic_url { get; set; }
+        public string? Topic_url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33669,12 +30900,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("post_id")]
-        public int Post_id { get; set; }
+        public int? Post_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("post_author")]
-        public Post_author Post_author { get; set; }
+        public Post_author? Post_author { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33690,12 +30921,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("by")]
-        public string By { get; set; }
+        public string? By { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("time")]
-        public TimeV1 Time { get; set; }
+        public TimeV1? Time { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33711,18 +30942,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
-        public int Topic_id { get; set; }
+        public int? Topic_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic")]
-        public string Topic { get; set; }
+        public string? Topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_url")]
-        public string Topic_url { get; set; }
+        public string? Topic_url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33762,12 +30993,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ForumTopicModelSearchV1 Record { get; set; }
+        public ForumTopicModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata5 Metadata { get; set; }
+        public Metadata5? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33783,12 +31014,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ForumPostModelSearchV1 Record { get; set; }
+        public ForumPostModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata6 Metadata { get; set; }
+        public Metadata6? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33816,12 +31047,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ForumTopicModelSearchV1 Record { get; set; }
+        public ForumTopicModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata7 Metadata { get; set; }
+        public Metadata7? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33837,12 +31068,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("posts")]
-        public int Posts { get; set; }
+        public int? Posts { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("views")]
-        public int Views { get; set; }
+        public int? Views { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33858,15 +31089,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_name")]
-        public string Forum_name { get; set; }
+        public string? Forum_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33882,15 +31113,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("pinned")]
-        public bool Pinned { get; set; }
+        public bool? Pinned { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("locked")]
-        public bool Locked { get; set; }
+        public bool? Locked { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("global")]
-        public bool Global { get; set; }
+        public bool? Global { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33906,12 +31137,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("posts")]
-        public int Posts { get; set; }
+        public int? Posts { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("views")]
-        public int Views { get; set; }
+        public int? Views { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33927,15 +31158,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_name")]
-        public string Forum_name { get; set; }
+        public string? Forum_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33951,15 +31182,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("pinned")]
-        public bool Pinned { get; set; }
+        public bool? Pinned { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("locked")]
-        public bool Locked { get; set; }
+        public bool? Locked { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("global")]
-        public bool Global { get; set; }
+        public bool? Global { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33975,9 +31206,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -33993,15 +31224,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("pinned")]
-        public bool Pinned { get; set; }
+        public bool? Pinned { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("locked")]
-        public bool Locked { get; set; }
+        public bool? Locked { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("global")]
-        public bool Global { get; set; }
+        public bool? Global { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34017,18 +31248,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public int Series { get; set; }
+        public int? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("authors")]
-        public int Authors { get; set; }
+        public int? Authors { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("filters")]
-        public int Filters { get; set; }
+        public int? Filters { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("highlights")]
-        public int Highlights { get; set; }
+        public int? Highlights { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34047,7 +31278,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34063,24 +31294,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("site")]
-        public string Site { get; set; }
+        public string? Site { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("facebook")]
-        public string Facebook { get; set; }
+        public string? Facebook { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("twitter")]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("irc")]
-        public Irc Irc { get; set; }
+        public Irc? Irc { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum")]
-        public string Forum { get; set; }
+        public string? Forum { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("discord")]
-        public string Discord { get; set; }
+        public string? Discord { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34096,12 +31327,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hold")]
-        public bool Hold { get; set; }
+        public bool? Hold { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34117,24 +31348,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("site")]
-        public string Site { get; set; }
+        public string? Site { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("facebook")]
-        public string Facebook { get; set; }
+        public string? Facebook { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("twitter")]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("irc")]
-        public Irc2 Irc { get; set; }
+        public Irc2? Irc { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum")]
-        public string Forum { get; set; }
+        public string? Forum { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("discord")]
-        public string Discord { get; set; }
+        public string? Discord { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34153,7 +31384,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34169,24 +31400,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("site")]
-        public string Site { get; set; }
+        public string? Site { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("facebook")]
-        public string Facebook { get; set; }
+        public string? Facebook { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("twitter")]
-        public string Twitter { get; set; }
+        public string? Twitter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("irc")]
-        public Irc3 Irc { get; set; }
+        public Irc3? Irc { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum")]
-        public string Forum { get; set; }
+        public string? Forum { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("discord")]
-        public string Discord { get; set; }
+        public string? Discord { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34202,12 +31433,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hold")]
-        public bool Hold { get; set; }
+        public bool? Hold { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34223,12 +31454,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public GroupsModelSearchV1 Record { get; set; }
+        public GroupsModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hit_name")]
-        public string Hit_name { get; set; }
+        public string? Hit_name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34244,18 +31475,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34271,12 +31502,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("count")]
-        public int Count { get; set; }
+        public int? Count { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34292,12 +31523,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("category")]
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("votes")]
-        public int Votes { get; set; }
+        public int? Votes { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34313,12 +31544,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("original")]
-        public string Original { get; set; }
+        public string? Original { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("thumb")]
-        public string Thumb { get; set; }
+        public string? Thumb { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34367,29 +31598,29 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("public")]
-        public bool Public { get; set; }
+        public bool? Public { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("sort")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<OptionsSort>))]
-        public OptionsSort Sort { get; set; }
+        public OptionsSort? Sort { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_rating")]
-        public bool Show_rating { get; set; }
+        public bool? Show_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_status")]
-        public bool Show_status { get; set; }
+        public bool? Show_status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_comment")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<OptionsShow_comment>))]
-        public OptionsShow_comment Show_comment { get; set; }
+        public OptionsShow_comment? Show_comment { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_per_page")]
-        public int Show_per_page { get; set; }
+        public int? Show_per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_latest_chapter")]
-        public bool Show_latest_chapter { get; set; }
+        public bool? Show_latest_chapter { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34426,29 +31657,29 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("public")]
-        public bool Public { get; set; }
+        public bool? Public { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("sort")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Options2Sort>))]
-        public Options2Sort Sort { get; set; }
+        public Options2Sort? Sort { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_rating")]
-        public bool Show_rating { get; set; }
+        public bool? Show_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_status")]
-        public bool Show_status { get; set; }
+        public bool? Show_status { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_comment")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Options2Show_comment>))]
-        public Options2Show_comment Show_comment { get; set; }
+        public Options2Show_comment? Show_comment { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_per_page")]
-        public int Show_per_page { get; set; }
+        public int? Show_per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("show_latest_chapter")]
-        public bool Show_latest_chapter { get; set; }
+        public bool? Show_latest_chapter { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34464,24 +31695,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_title")]
-        public string Series_title { get; set; }
+        public string? Series_title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_url")]
-        public string Series_url { get; set; }
+        public string? Series_url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
-        public int Volume { get; set; }
+        public int? Volume { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("chapter")]
-        public int Chapter { get; set; }
+        public int? Chapter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata8 Metadata { get; set; }
+        public Metadata8? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34497,12 +31728,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre_name")]
-        public string Genre_name { get; set; }
+        public string? Genre_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("count")]
-        public int Count { get; set; }
+        public int? Count { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34518,12 +31749,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ListsSeriesModelV1 Record { get; set; }
+        public ListsSeriesModelV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata9 Metadata { get; set; }
+        public Metadata9? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34542,12 +31773,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34563,12 +31794,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
-        public int Volume { get; set; }
+        public int? Volume { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("chapter")]
-        public int Chapter { get; set; }
+        public int? Chapter { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34587,9 +31818,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34605,18 +31836,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
-        public int Volume { get; set; }
+        public int? Volume { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("chapter")]
-        public int Chapter { get; set; }
+        public int? Chapter { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("increment_volume")]
-        public int Increment_volume { get; set; }
+        public int? Increment_volume { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("increment_chapter")]
-        public int Increment_chapter { get; set; }
+        public int? Increment_chapter { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34632,21 +31863,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_name")]
-        public string User_name { get; set; }
+        public string? User_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_rating")]
-        public double User_rating { get; set; }
+        public double? User_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("intersect_count")]
-        public int Intersect_count { get; set; }
+        public int? Intersect_count { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("percent_match")]
-        public int Percent_match { get; set; }
+        public int? Percent_match { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34662,12 +31893,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public UserModelSearchV1 Record { get; set; }
+        public UserModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata10 Metadata { get; set; }
+        public Metadata10? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34716,9 +31947,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public PollArchiveModelV1 Record { get; set; }
+        public PollArchiveModelV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34734,15 +31965,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("answer_id")]
-        public int Answer_id { get; set; }
+        public int? Answer_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("answer")]
-        public string Answer { get; set; }
+        public string? Answer { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total")]
-        public int Total { get; set; }
+        public int? Total { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34758,9 +31989,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("answer")]
-        public string Answer { get; set; }
+        public string? Answer { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34779,7 +32010,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34861,12 +32092,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_series")]
-        public int Total_series { get; set; }
+        public int? Total_series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total_publications")]
-        public int Total_publications { get; set; }
+        public int? Total_publications { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34882,9 +32113,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34966,12 +32197,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("total_series")]
-        public int Total_series { get; set; }
+        public int? Total_series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("total_publications")]
-        public int Total_publications { get; set; }
+        public int? Total_publications { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -34990,7 +32221,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35072,9 +32303,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35090,15 +32321,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
-        public string Publisher_name { get; set; }
+        public string? Publisher_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
-        public int Publisher_id { get; set; }
+        public int? Publisher_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35114,21 +32345,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("genres")]
-        public System.Collections.Generic.ICollection<string> Genres { get; set; }
+        public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35165,12 +32396,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public PublishersModelSearchV1 Record { get; set; }
+        public PublishersModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hit_name")]
-        public string Hit_name { get; set; }
+        public string? Hit_name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35186,21 +32417,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_id")]
-        public int Series_id { get; set; }
+        public int? Series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public string Year { get; set; }
+        public string? Year { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
-        public TimeV1 Last_updated { get; set; }
+        public TimeV1? Last_updated { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35216,12 +32447,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("publication_name")]
-        public string Publication_name { get; set; }
+        public string? Publication_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("count")]
-        public int Count { get; set; }
+        public int? Count { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35237,15 +32468,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("group_id")]
-        public int Group_id { get; set; }
+        public int? Group_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35261,15 +32492,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("archived")]
-        public bool Archived { get; set; }
+        public bool? Archived { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35285,15 +32516,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("group_id")]
-        public int Group_id { get; set; }
+        public int? Group_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35309,9 +32540,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35327,12 +32558,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("archived")]
-        public bool Archived { get; set; }
+        public bool? Archived { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35348,12 +32579,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ReleaseModelV1 Record { get; set; }
+        public ReleaseModelV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata11 Metadata { get; set; }
+        public Metadata11? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35369,12 +32600,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("group_id")]
-        public int Group_id { get; set; }
+        public int? Group_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hold")]
-        public bool Hold { get; set; }
+        public bool? Hold { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35435,12 +32666,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ReleaseModelSearchV1 Record { get; set; }
+        public ReleaseModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata12 Metadata { get; set; }
+        public Metadata12? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35456,15 +32687,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_info")]
-        public UserModelSearchV1 User_info { get; set; }
+        public UserModelSearchV1? User_info { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35480,9 +32711,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35498,9 +32729,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ReviewCommentModelV1 Record { get; set; }
+        public ReviewCommentModelV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35516,15 +32747,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35540,24 +32771,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user")]
-        public double User { get; set; }
+        public double? User { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("plot")]
-        public double Plot { get; set; }
+        public double? Plot { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("drawing")]
-        public double Drawing { get; set; }
+        public double? Drawing { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("characters")]
-        public double Characters { get; set; }
+        public double? Characters { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("enjoy")]
-        public double Enjoy { get; set; }
+        public double? Enjoy { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("overall")]
-        public double Overall { get; set; }
+        public double? Overall { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35573,9 +32804,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35591,15 +32822,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_id")]
-        public int User_id { get; set; }
+        public int? User_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35615,21 +32846,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("plot")]
-        public double Plot { get; set; }
+        public double? Plot { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("drawing")]
-        public double Drawing { get; set; }
+        public double? Drawing { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("characters")]
-        public double Characters { get; set; }
+        public double? Characters { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("enjoy")]
-        public double Enjoy { get; set; }
+        public double? Enjoy { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("overall")]
-        public double Overall { get; set; }
+        public double? Overall { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35645,21 +32876,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("plot")]
-        public double Plot { get; set; }
+        public double? Plot { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("drawing")]
-        public double Drawing { get; set; }
+        public double? Drawing { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("characters")]
-        public double Characters { get; set; }
+        public double? Characters { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("enjoy")]
-        public double Enjoy { get; set; }
+        public double? Enjoy { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("overall")]
-        public double Overall { get; set; }
+        public double? Overall { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35675,12 +32906,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("moderated")]
-        public bool Moderated { get; set; }
+        public bool? Moderated { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35696,9 +32927,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public ReviewModelSearchV1 Record { get; set; }
+        public ReviewModelSearchV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35717,7 +32948,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35733,12 +32964,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_info")]
-        public UserModelSearchV1 User_info { get; set; }
+        public UserModelSearchV1? User_info { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35754,15 +32985,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("moderated")]
-        public bool Moderated { get; set; }
+        public bool? Moderated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reported")]
-        public bool Reported { get; set; }
+        public bool? Reported { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("report_reason")]
-        public string Report_reason { get; set; }
+        public string? Report_reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35778,12 +33009,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("moderated")]
-        public bool Moderated { get; set; }
+        public bool? Moderated { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reported")]
-        public bool Reported { get; set; }
+        public bool? Reported { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35799,12 +33030,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public SeriesCommentModelV1 Record { get; set; }
+        public SeriesCommentModelV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata13 Metadata { get; set; }
+        public Metadata13? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35832,12 +33063,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public SeriesCommentModelV1 Record { get; set; }
+        public SeriesCommentModelV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata14 Metadata { get; set; }
+        public Metadata14? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35853,9 +33084,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public SeriesHistoryModelV1 Record { get; set; }
+        public SeriesHistoryModelV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35874,7 +33105,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35947,9 +33178,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35965,12 +33196,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("start")]
-        public string Start { get; set; }
+        public string? Start { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("end")]
-        public string End { get; set; }
+        public string? End { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -35986,7 +33217,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("relation_id")]
-        public int Relation_id { get; set; }
+        public int? Relation_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("relation_type")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -35997,15 +33228,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required int Related_series_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("related_series_name")]
-        public string Related_series_name { get; set; }
+        public string? Related_series_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("related_series_url")]
-        public string Related_series_url { get; set; }
+        public string? Related_series_url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("triggered_by_relation_id")]
-        public int Triggered_by_relation_id { get; set; }
+        public int? Triggered_by_relation_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36025,17 +33256,17 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_id")]
-        public int Author_id { get; set; }
+        public int? Author_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsType>))]
         public required AuthorsType Type { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36055,10 +33286,10 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Publisher_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
-        public int Publisher_id { get; set; }
+        public int? Publisher_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -36066,9 +33297,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required PublishersType Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("notes")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36088,12 +33319,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Publication_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
-        public string Publisher_name { get; set; }
+        public string? Publisher_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
-        public int Publisher_id { get; set; }
+        public int? Publisher_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36109,15 +33340,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public Position Position { get; set; }
+        public Position? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("old_position")]
-        public Old_position Old_position { get; set; }
+        public Old_position? Old_position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("lists")]
-        public Lists Lists { get; set; }
+        public Lists? Lists { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36133,12 +33364,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36211,9 +33442,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36229,15 +33460,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("position")]
-        public Position2 Position { get; set; }
+        public Position2? Position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("old_position")]
-        public Old_position2 Old_position { get; set; }
+        public Old_position2? Old_position { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("lists")]
-        public Lists2 Lists { get; set; }
+        public Lists2? Lists { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36253,12 +33484,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("added_by")]
-        public UserModelSearchV1 Added_by { get; set; }
+        public UserModelSearchV1? Added_by { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36277,7 +33508,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Title { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36350,9 +33581,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36368,12 +33599,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("start")]
-        public string Start { get; set; }
+        public string? Start { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("end")]
-        public string End { get; set; }
+        public string? End { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36396,7 +33627,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.Text.Json.Serialization.JsonPropertyName("related_series_id")]
         public required int Related_series_id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36420,7 +33651,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Authors2Type>))]
         public required Authors2Type Type { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36445,9 +33676,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required Publishers2Type Type { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("notes")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36467,9 +33698,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         public required string Publication_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
-        public string Publisher_name { get; set; }
+        public string? Publisher_name { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36485,9 +33716,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36503,12 +33734,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("rating")]
-        public int Rating { get; set; }
+        public int? Rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("count")]
-        public int Count { get; set; }
+        public int? Count { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36647,15 +33878,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public SeriesModelSearchV1 Record { get; set; }
+        public SeriesModelSearchV1? Record { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hit_title")]
-        public string Hit_title { get; set; }
+        public string? Hit_title { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("metadata")]
-        public Metadata15 Metadata { get; set; }
+        public Metadata15? Metadata { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36671,9 +33902,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public UserChangeRequestModelV1 Record { get; set; }
+        public UserChangeRequestModelV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36731,28 +33962,28 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("invisible")]
-        public bool Invisible { get; set; }
+        public bool? Invisible { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hide_birthday")]
-        public bool Hide_birthday { get; set; }
+        public bool? Hide_birthday { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hide_categories")]
-        public bool Hide_categories { get; set; }
+        public bool? Hide_categories { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("filter_types")]
         // TODO(system.text.json): Add ItemConverterType with enum converter when supported
-        public System.Collections.Generic.ICollection<Filter_types> Filter_types { get; set; }
+        public System.Collections.Generic.ICollection<Filter_types>? Filter_types { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
-        public Upgrade Upgrade { get; set; }
+        public Upgrade? Upgrade { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("age18_verified")]
-        public bool Age18_verified { get; set; }
+        public bool? Age18_verified { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36768,39 +33999,39 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_posts")]
-        public int Forum_posts { get; set; }
+        public int? Forum_posts { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_authors")]
-        public int Added_authors { get; set; }
+        public int? Added_authors { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_groups")]
-        public int Added_groups { get; set; }
+        public int? Added_groups { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_publishers")]
-        public int Added_publishers { get; set; }
+        public int? Added_publishers { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_releases")]
-        public int Added_releases { get; set; }
+        public int? Added_releases { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_series")]
-        public int Added_series { get; set; }
+        public int? Added_series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series_edits")]
-        public int Series_edits { get; set; }
+        public int? Series_edits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_edits")]
-        public int Author_edits { get; set; }
+        public int? Author_edits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publisher_edits")]
-        public int Publisher_edits { get; set; }
+        public int? Publisher_edits { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_tags")]
-        public int Added_tags { get; set; }
+        public int? Added_tags { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("moderation")]
-        public Moderation Moderation { get; set; }
+        public Moderation? Moderation { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36816,27 +34047,27 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("registration_ip")]
-        public string Registration_ip { get; set; }
+        public string? Registration_ip { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_series_update")]
-        public TimeV1 Last_series_update { get; set; }
+        public TimeV1? Last_series_update { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("email_approved")]
-        public bool Email_approved { get; set; }
+        public bool? Email_approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("registration_reason")]
-        public string Registration_reason { get; set; }
+        public string? Registration_reason { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
-        public Upgrade2 Upgrade { get; set; }
+        public Upgrade2? Upgrade { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("banned")]
-        public bool Banned { get; set; }
+        public bool? Banned { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36867,9 +34098,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
-        public Upgrade3 Upgrade { get; set; }
+        public Upgrade3? Upgrade { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36885,24 +34116,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_posts")]
-        public int Forum_posts { get; set; }
+        public int? Forum_posts { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_authors")]
-        public int Added_authors { get; set; }
+        public int? Added_authors { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_groups")]
-        public int Added_groups { get; set; }
+        public int? Added_groups { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_publishers")]
-        public int Added_publishers { get; set; }
+        public int? Added_publishers { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_releases")]
-        public int Added_releases { get; set; }
+        public int? Added_releases { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("added_series")]
-        public int Added_series { get; set; }
+        public int? Added_series { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36945,28 +34176,28 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("per_page")]
-        public int Per_page { get; set; }
+        public int? Per_page { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("invisible")]
-        public bool Invisible { get; set; }
+        public bool? Invisible { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hide_birthday")]
-        public bool Hide_birthday { get; set; }
+        public bool? Hide_birthday { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("hide_categories")]
-        public bool Hide_categories { get; set; }
+        public bool? Hide_categories { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("filter_types")]
         // TODO(system.text.json): Add ItemConverterType with enum converter when supported
-        public System.Collections.Generic.ICollection<Filter_types2> Filter_types { get; set; }
+        public System.Collections.Generic.ICollection<Filter_types2>? Filter_types { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
-        public Upgrade4 Upgrade { get; set; }
+        public Upgrade4? Upgrade { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("age18_verified")]
-        public bool Age18_verified { get; set; }
+        public bool? Age18_verified { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -36982,18 +34213,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public bool Approved { get; set; }
+        public bool? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("email_approved")]
-        public bool Email_approved { get; set; }
+        public bool? Email_approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
-        public Upgrade5 Upgrade { get; set; }
+        public Upgrade5? Upgrade { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("banned")]
-        public bool Banned { get; set; }
+        public bool? Banned { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37009,12 +34240,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("uid")]
-        public string Uid { get; set; }
+        public string? Uid { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37072,9 +34303,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public UserModelSearchV1 Record { get; set; }
+        public UserModelSearchV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37090,9 +34321,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("record")]
-        public UserSessionModelV1 Record { get; set; }
+        public UserSessionModelV1? Record { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37108,9 +34339,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_list")]
-        public ListsSeriesModelV1 User_list { get; set; }
+        public ListsSeriesModelV1? User_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37126,9 +34357,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_ignored")]
-        public bool User_ignored { get; set; }
+        public bool? User_ignored { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37144,12 +34375,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("message")]
-        public ConvoMessageModelV1 Message { get; set; }
+        public ConvoMessageModelV1? Message { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("participant")]
-        public ConvoParticipantModelV1 Participant { get; set; }
+        public ConvoParticipantModelV1? Participant { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37165,15 +34396,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_warn")]
-        public ForumWarnModelPublicV1 User_warn { get; set; }
+        public ForumWarnModelPublicV1? User_warn { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reported")]
-        public bool Reported { get; set; }
+        public bool? Reported { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("is_moderator")]
-        public bool Is_moderator { get; set; }
+        public bool? Is_moderator { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37189,15 +34420,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("author_id")]
-        public int Author_id { get; set; }
+        public int? Author_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_name")]
-        public string Author_name { get; set; }
+        public string? Author_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37213,12 +34444,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("is_subscribed")]
-        public bool Is_subscribed { get; set; }
+        public bool? Is_subscribed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("my_latest_post_in_topic")]
-        public int My_latest_post_in_topic { get; set; }
+        public int? My_latest_post_in_topic { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37234,18 +34465,18 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("is_subscribed")]
-        public bool Is_subscribed { get; set; }
+        public bool? Is_subscribed { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("my_latest_post_in_topic")]
-        public int My_latest_post_in_topic { get; set; }
+        public int? My_latest_post_in_topic { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_info")]
-        public Forum_info Forum_info { get; set; }
+        public Forum_info? Forum_info { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("topic_stats")]
-        public Topic_stats Topic_stats { get; set; }
+        public Topic_stats? Topic_stats { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37261,9 +34492,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("first_post")]
-        public ForumPostModelV1 First_post { get; set; }
+        public ForumPostModelV1? First_post { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37279,12 +34510,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("channel")]
-        public string Channel { get; set; }
+        public string? Channel { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("server")]
-        public string Server { get; set; }
+        public string? Server { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37300,12 +34531,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("channel")]
-        public string Channel { get; set; }
+        public string? Channel { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("server")]
-        public string Server { get; set; }
+        public string? Server { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37321,12 +34552,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("channel")]
-        public string Channel { get; set; }
+        public string? Channel { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("server")]
-        public string Server { get; set; }
+        public string? Server { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37426,15 +34657,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_rating")]
-        public double User_rating { get; set; }
+        public double? User_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_comment")]
-        public User_comment User_comment { get; set; }
+        public User_comment? User_comment { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_list")]
-        public ListsSeriesModelV1 User_list { get; set; }
+        public ListsSeriesModelV1? User_list { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37450,12 +34681,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public SeriesModelSearchV1 Series { get; set; }
+        public SeriesModelSearchV1? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_rating")]
-        public double User_rating { get; set; }
+        public double? User_rating { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37471,15 +34702,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("last_active")]
-        public TimeV1 Last_active { get; set; }
+        public TimeV1? Last_active { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("invisible")]
-        public bool Invisible { get; set; }
+        public bool? Invisible { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("source")]
-        public string Source { get; set; }
+        public string? Source { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37495,12 +34726,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public int Series { get; set; }
+        public int? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("like_releases")]
-        public System.Collections.Generic.ICollection<ReleaseModelV1> Like_releases { get; set; }
+        public System.Collections.Generic.ICollection<ReleaseModelV1>? Like_releases { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37516,24 +34747,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public SeriesModelSearchV1 Series { get; set; }
+        public SeriesModelSearchV1? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_list")]
-        public ListsSeriesModelV1 User_list { get; set; }
+        public ListsSeriesModelV1? User_list { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_genre_highlights")]
-        public System.Collections.Generic.ICollection<User_genre_highlights> User_genre_highlights { get; set; }
+        public System.Collections.Generic.ICollection<User_genre_highlights>? User_genre_highlights { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_genre_filters")]
-        public System.Collections.Generic.ICollection<string> User_genre_filters { get; set; }
+        public System.Collections.Generic.ICollection<string>? User_genre_filters { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_group_filters")]
-        public System.Collections.Generic.ICollection<string> User_group_filters { get; set; }
+        public System.Collections.Generic.ICollection<string>? User_group_filters { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("type_filter")]
-        public string Type_filter { get; set; }
+        public string? Type_filter { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37549,12 +34780,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public SeriesModelSearchV1 Series { get; set; }
+        public SeriesModelSearchV1? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("author_series_rating")]
-        public double Author_series_rating { get; set; }
+        public double? Author_series_rating { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37570,12 +34801,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("author_series_rating")]
-        public double Author_series_rating { get; set; }
+        public double? Author_series_rating { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("current_user_useful_rating")]
-        public bool Current_user_useful_rating { get; set; }
+        public bool? Current_user_useful_rating { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37651,21 +34882,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("week")]
-        public int Week { get; set; }
+        public int? Week { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("month")]
-        public int Month { get; set; }
+        public int? Month { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("three_months")]
-        public int Three_months { get; set; }
+        public int? Three_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("six_months")]
-        public int Six_months { get; set; }
+        public int? Six_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37681,21 +34912,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("week")]
-        public int Week { get; set; }
+        public int? Week { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("month")]
-        public int Month { get; set; }
+        public int? Month { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("three_months")]
-        public int Three_months { get; set; }
+        public int? Three_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("six_months")]
-        public int Six_months { get; set; }
+        public int? Six_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37711,21 +34942,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("reading")]
-        public int Reading { get; set; }
+        public int? Reading { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("wish")]
-        public int Wish { get; set; }
+        public int? Wish { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("complete")]
-        public int Complete { get; set; }
+        public int? Complete { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("unfinished")]
-        public int Unfinished { get; set; }
+        public int? Unfinished { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("custom")]
-        public int Custom { get; set; }
+        public int? Custom { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37741,21 +34972,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("week")]
-        public int Week { get; set; }
+        public int? Week { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("month")]
-        public int Month { get; set; }
+        public int? Month { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("three_months")]
-        public int Three_months { get; set; }
+        public int? Three_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("six_months")]
-        public int Six_months { get; set; }
+        public int? Six_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37771,21 +35002,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("week")]
-        public int Week { get; set; }
+        public int? Week { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("month")]
-        public int Month { get; set; }
+        public int? Month { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("three_months")]
-        public int Three_months { get; set; }
+        public int? Three_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("six_months")]
-        public int Six_months { get; set; }
+        public int? Six_months { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("year")]
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37801,21 +35032,21 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("reading")]
-        public int Reading { get; set; }
+        public int? Reading { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("wish")]
-        public int Wish { get; set; }
+        public int? Wish { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("complete")]
-        public int Complete { get; set; }
+        public int? Complete { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("unfinished")]
-        public int Unfinished { get; set; }
+        public int? Unfinished { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("custom")]
-        public int Custom { get; set; }
+        public int? Custom { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37891,12 +35122,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("user_list")]
-        public ListsSeriesModelV1 User_list { get; set; }
+        public ListsSeriesModelV1? User_list { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("user_genre_highlights")]
-        public System.Collections.Generic.ICollection<User_genre_highlights2> User_genre_highlights { get; set; }
+        public System.Collections.Generic.ICollection<User_genre_highlights2>? User_genre_highlights { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37969,12 +35200,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("requested")]
-        public bool Requested { get; set; }
+        public bool? Requested { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -37990,24 +35221,24 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("releases")]
-        public Releases Releases { get; set; }
+        public Releases? Releases { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("series")]
-        public Series3 Series { get; set; }
+        public Series3? Series { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("publishers")]
-        public Publishers3 Publishers { get; set; }
+        public Publishers3? Publishers { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("groups")]
-        public Groups4 Groups { get; set; }
+        public Groups4? Groups { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("authors")]
-        public Authors3 Authors { get; set; }
+        public Authors3? Authors { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("last_action")]
-        public TimeV1 Last_action { get; set; }
+        public TimeV1? Last_action { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38023,9 +35254,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("banned")]
-        public bool Banned { get; set; }
+        public bool? Banned { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38041,12 +35272,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("requested")]
-        public bool Requested { get; set; }
+        public bool? Requested { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38119,12 +35350,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("requested")]
-        public bool Requested { get; set; }
+        public bool? Requested { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38140,9 +35371,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("banned")]
-        public bool Banned { get; set; }
+        public bool? Banned { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38158,15 +35389,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
-        public int Forum_id { get; set; }
+        public int? Forum_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("forum_name")]
-        public string Forum_name { get; set; }
+        public string? Forum_name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38182,12 +35413,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("posts")]
-        public int Posts { get; set; }
+        public int? Posts { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("views")]
-        public int Views { get; set; }
+        public int? Views { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38203,12 +35434,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("comment_id")]
-        public int Comment_id { get; set; }
+        public int? Comment_id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("comment_preview")]
-        public string Comment_preview { get; set; }
+        public string? Comment_preview { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38224,12 +35455,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("color")]
-        public string Color { get; set; }
+        public string? Color { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38245,12 +35476,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("genre")]
-        public string Genre { get; set; }
+        public string? Genre { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("color")]
-        public string Color { get; set; }
+        public string? Color { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38266,15 +35497,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public int Approved { get; set; }
+        public int? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rejected")]
-        public int Rejected { get; set; }
+        public int? Rejected { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("deleted")]
-        public int Deleted { get; set; }
+        public int? Deleted { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38290,15 +35521,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public int Approved { get; set; }
+        public int? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rejected")]
-        public int Rejected { get; set; }
+        public int? Rejected { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("deleted")]
-        public int Deleted { get; set; }
+        public int? Deleted { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38314,15 +35545,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public int Approved { get; set; }
+        public int? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rejected")]
-        public int Rejected { get; set; }
+        public int? Rejected { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("deleted")]
-        public int Deleted { get; set; }
+        public int? Deleted { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38338,15 +35569,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public int Approved { get; set; }
+        public int? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rejected")]
-        public int Rejected { get; set; }
+        public int? Rejected { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("deleted")]
-        public int Deleted { get; set; }
+        public int? Deleted { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38362,15 +35593,15 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("approved")]
-        public int Approved { get; set; }
+        public int? Approved { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("rejected")]
-        public int Rejected { get; set; }
+        public int? Rejected { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("deleted")]
-        public int Deleted { get; set; }
+        public int? Deleted { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
@@ -38389,12 +35620,12 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
         {
         }
 
-        public FileParameter(System.IO.Stream data, string fileName)
+        public FileParameter(System.IO.Stream data, string? fileName)
             : this (data, fileName, null)
         {
         }
 
-        public FileParameter(System.IO.Stream data, string fileName, string contentType)
+        public FileParameter(System.IO.Stream data, string? fileName, string? contentType)
         {
             Data = data;
             FileName = fileName;
@@ -38403,9 +35634,9 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
 
         public System.IO.Stream Data { get; private set; }
 
-        public string FileName { get; private set; }
+        public string? FileName { get; private set; }
 
-        public string ContentType { get; private set; }
+        public string? ContentType { get; private set; }
     }
 
 
@@ -38415,11 +35646,11 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
         public int StatusCode { get; private set; }
 
-        public string Response { get; private set; }
+        public string? Response { get; private set; }
 
         public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
 
-        public MangaUpdatesApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException)
+        public MangaUpdatesApiException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception? innerException)
             : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + ((response == null) ? "(null)" : response.Substring(0, response.Length >= 512 ? 512 : response.Length)), innerException)
         {
             StatusCode = statusCode;
@@ -38438,7 +35669,7 @@ namespace MetadataExtensions.GeneratedClasses.MangaUpdates
     {
         public TResult Result { get; private set; }
 
-        public MangaUpdatesApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException)
+        public MangaUpdatesApiException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception? innerException)
             : base(message, statusCode, response, headers, innerException)
         {
             Result = result;

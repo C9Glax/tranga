@@ -1,0 +1,139 @@
+using Common.Data;
+using Common.Helpers;
+using DownloadExtensions.Data;
+using NSwagClients.GeneratedClients;
+
+namespace DownloadExtensions.Extensions;
+
+public sealed class MangaDex : IDownloadExtension<MangaDex>
+{
+    public Guid Identifier { get; init; } = Guid.Parse("019ce521-deaf-7739-9e14-eb6f4afc86e2");
+
+    public string Name { get; init; } = "MangaDex";
+    
+    public Language[] SupportedLanguages { get; init; } = ["en-us"];
+    
+    // ReSharper disable once ValueParameterNotUsed
+    public string BaseUrl { get => Client.BaseUrl; init => Client.BaseUrl = "https://api.mangadex.org/"; }
+
+    // ReSharper disable once InconsistentNaming
+    private readonly MangaDexApiClient Client = new(new RequestClient());
+
+    #region Search
+    public async Task<MangaSearchResult<MangaDex>?> Search(SearchQuery query, CancellationToken ct)
+    {
+        MangaList list = await Client.GetSearchMangaAsync(
+            includes: [Anonymous4.Cover_art],
+            title: query.Title,
+            availableTranslatedLanguage: query.Language is null ? null : [query.Language],
+            year: query.Year,
+            cancellationToken: ct
+        );
+
+        if (list.Data is null)
+            return null;
+        
+        return await ParseSearchResult(list.Data.ToArray(), query.Language, ct);
+    }
+
+    private async Task<MangaSearchResult<MangaDex>> ParseSearchResult(Manga[] mangas, Language? language, CancellationToken ct)
+    {
+        MangaSearchResult<MangaDex> result = new();
+        foreach (Manga manga in mangas)
+        {
+            if(manga.Id is not { } id)
+                continue;
+            if(manga.Attributes?.Title?.GetLocalizedString(language) is not { } title)
+                continue;
+            if(await GetCover(manga, ct) is not { } cover)
+                continue;
+            string url = $"https://mangadex.org/title/{id}";
+            result.Add(new MangaInfo<MangaDex>(title, url, id.ToString(), cover, manga.Attributes.Description?.GetLocalizedString(language)));
+        }
+        return result;
+    }
+
+    private async Task<MemoryStream?> GetCover(Manga manga, CancellationToken ct)
+    {
+        if (manga.Id is not { } id)
+            return null;
+        if (manga.Relationships?.FirstOrDefault(r => r.Type == "cover_art") is not { Attributes: Attributes attributes })
+            return null;
+        if(!attributes.AdditionalProperties.TryGetValue("fileName", out object? node) || node is not string fileName)
+            return null;
+        Uri requestUri = new($"https://uploads.mangadex.org/covers/{id}/{fileName}");
+        await Client.GetCoverIdAsync(id, cancellationToken: ct);
+        if (await new RequestClient().GetAsync(requestUri, ct) is not { IsSuccessStatusCode: true } response)
+            return null;
+        MemoryStream memoryStream = new ();
+        Stream data = await response.Content.ReadAsStreamAsync(ct);
+        await data.CopyToAsync(memoryStream, ct);
+        return memoryStream;
+    }
+    #endregion
+
+    #region Chapters
+    public async Task<List<ChapterInfo<MangaDex>>?> GetChapters(MangaInfo<MangaDex> mangaInfo, CancellationToken ct)
+    {
+        ChapterList list = await Client.GetChapterAsync(manga: Guid.Parse(mangaInfo.Identifier), cancellationToken: ct);
+
+        if (list.Data is null)
+            return null;
+        
+        return ParseChaptersResult(list.Data.ToArray());
+    }
+    
+    private List<ChapterInfo<MangaDex>> ParseChaptersResult(Chapter[] chapters)
+    {
+        List<ChapterInfo<MangaDex>> result = new();
+        foreach (Chapter chapter in chapters)
+        {
+            if(chapter.Attributes?.ExternalUrl is not null)
+                continue; // Skip chapters from external providers
+            if(chapter.Id is not { } id)
+                continue;
+            if(chapter.Attributes?.Chapter is not { } number)
+                continue;
+            string url = $"https://mangadex.org/chapter/{id}";
+            result.Add(new ChapterInfo<MangaDex>(number, url, id.ToString(), chapter.Attributes?.Volume, chapter.Attributes?.Title));
+        }
+        return result;
+    }
+    #endregion
+
+    #region Images
+    public async Task<List<ChapterImage<MangaDex>>?> GetChapterImages(ChapterInfo<MangaDex> chapterInfo, CancellationToken ct)
+    {
+        Response11 r = await Client.GetAtHomeServerChapterIdAsync(Guid.Parse(chapterInfo.Identifier), cancellationToken: ct);
+        if (r.Chapter?.Data is null)
+            return null;
+        List<string> urls = r.Chapter.Data.Select(image => $"{r.BaseUrl}/data/{r.Chapter.Hash}/{image}").ToList();
+
+        List<ChapterImage<MangaDex>> images = new();
+        RequestClient client = new RequestClient();
+        for (int i = 0; i < urls.Count; i++)
+        {
+            if (await client.GetAsync(urls[i], ct) is not { IsSuccessStatusCode: true } response)
+                return null;
+            MemoryStream memoryStream = new ();
+            Stream data = await response.Content.ReadAsStreamAsync(ct);
+            await data.CopyToAsync(memoryStream, ct);
+            images.Add(new ChapterImage<MangaDex>(chapterInfo.Identifier, i, memoryStream));
+        }
+
+        return images;
+    }
+    #endregion
+}
+
+internal static class Helper
+{
+    public static string? GetLocalizedString(this LocalizedString str, Language? language)
+    {
+        if (language is not null && str.TryGetValue(language, out string? lang))
+            return lang;
+        if (str.FirstOrDefault(kv => kv.Key.Equals("en-us", StringComparison.InvariantCultureIgnoreCase)) is
+            { Value: { } langEnUs }) return langEnUs;
+        return str.FirstOrDefault().Value;
+    }
+}

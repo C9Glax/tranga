@@ -1,5 +1,4 @@
 using DownloadExtensions.Extensions;
-using DownloadExtensions.Extensions.MangaDex;
 
 namespace DownloadExtensions.Tests.Extensions;
 
