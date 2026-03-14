@@ -5,15 +5,13 @@
   - [EF Core](https://learn.microsoft.com/en-us/ef/core/)
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
   - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
-- [Swagger](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/LICENSE)
-- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
-- [Soenneker.Utils.String.NeedlemanWunsch](https://github.com/soenneker/soenneker.utils.string.needlemanwunsch/blob/main/LICENSE)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - [GitInfo](https://github.com/devlooped/GitInfo)
 - [Log4Net](https://logging.apache.org/log4net/index.html)
-- [xUnit](https://xunit.net/index.html?tabs=cs)
+- [xUnit](https://xunit.net/index.html?tabs=cs)- [XmlSchemaClassGenerator](https://github.com/mganss/XmlSchemaClassGenerator)
+- [NSwag](https://github.com/RicoSuter/NSwag)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -47,5 +45,3 @@ Distributed under the GNU GPLv3  License. See [LICENSE](https://github.com/C9Gla
 * [Choose an Open Source License](https://choosealicense.com)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template/tree/master)
 * [Shields.io](https://shields.io/)
-* [XmlSchemaClassGenerator](https://github.com/mganss/XmlSchemaClassGenerator)
-* [NSwag](https://github.com/RicoSuter/NSwag)
