@@ -1,4 +1,4 @@
-using Common.Data;
+using Common.Datatypes;
 using Common.Helpers;
 using Data;
 using NSwagClients.GeneratedClients;
@@ -15,6 +15,8 @@ public class MangaUpdates : IMetadataExtension
         get => Client.BaseUrl;
         init => Client.BaseUrl = value;
     }
+
+    public string Name { get; init; } = "MangaUpdates";
 
     public async Task<List<ComicInfo>?> Search(SearchQuery searchQuery, CancellationToken ct)
     {

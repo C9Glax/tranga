@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Database.MangaContext;
 
-public class Context : DbContext
+public class MangaContext : DbContext
 {
     public DbSet<DbManga> Mangas { get; init; }
     

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Common.Data;
+namespace Common.Datatypes;
 
 public sealed class Language(string name) : CultureInfo(name)
 {

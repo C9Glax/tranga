@@ -1,4 +1,4 @@
-namespace Common.Data;
+namespace Common.Datatypes;
 
 public sealed record SearchQuery(
     string? Title = null,

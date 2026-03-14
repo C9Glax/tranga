@@ -1,4 +1,4 @@
-using Common.Data;
+using Common.Datatypes;
 using Data;
 
 namespace MetadataExtensions;
@@ -9,6 +9,11 @@ public interface IMetadataExtension
      /// The Url used by the <see cref="IMetadataExtension"/>
      /// </summary>
      public string BaseUrl { get; init; }
+     
+     /// <summary>
+     /// The Name of the <see cref="IMetadataExtension"/>
+     /// </summary>
+     public string Name { get; init; }
 
      /// <summary>
      /// Searches the Metadata-Provider using the <paramref name="searchQuery"/>

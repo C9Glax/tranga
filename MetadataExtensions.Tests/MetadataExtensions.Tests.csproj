@@ -18,4 +18,8 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MetadataExtensions\MetadataExtensions.csproj" />
+    </ItemGroup>
+
 </Project>

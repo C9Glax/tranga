@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Data\Common.Data.csproj" />
+      <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
       <ProjectReference Include="..\Common.Helpers\Common.Helpers.csproj" />
       <ProjectReference Include="..\NSwagClients\NSwagClients.csproj" />
     </ItemGroup>

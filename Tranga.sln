@@ -12,9 +12,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadExtensions.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataExtensions", "MetadataExtensions\MetadataExtensions.csproj", "{724012E4-13A4-46F3-A9B6-BF6DE68DE18C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Data", "Common.Data\Common.Data.csproj", "{D345AD5E-804A-4856-A2C3-B24E9986C91A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Datatypes", "Common.Datatypes\Common.Datatypes.csproj", "{D345AD5E-804A-4856-A2C3-B24E9986C91A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Data.Tests", "Common.Data.Tests\Common.Data.Tests.csproj", "{7BA389EE-ED72-434D-9511-B4A816C4F9D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Datatypes.Tests", "Common.Datatypes.Tests\Common.Datatypes.Tests.csproj", "{7BA389EE-ED72-434D-9511-B4A816C4F9D9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Tests", "API.Tests\API.Tests.csproj", "{D7123A3F-7469-4A9B-B9EE-9CC0D862ED92}"
 EndProject

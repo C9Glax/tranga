@@ -1,4 +1,4 @@
-using Common.Data;
+using Common.Datatypes;
 using DownloadExtensions.Data;
 
 namespace DownloadExtensions;

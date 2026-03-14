@@ -2,13 +2,14 @@
 
 namespace DownloadExtensions.Tests;
 
+// ReSharper disable once InconsistentNaming
 public abstract class IDownloadExtensionsTests<T> where T : IDownloadExtension<T>, new()
 {
     // ReSharper disable once InconsistentNaming
     private readonly IDownloadExtension<T> _downloadExtension = new T();
 
     /// <summary>
-    /// Test checks that the <see cref="IDownloadExtension{T}.BaseUrl"/> is set
+    /// Test checks that the <see cref="IDownloadExtension{T}.Identifier"/> is set
     /// </summary>
     [Fact]
     public void IdentifierSet()
