@@ -75,14 +75,13 @@ internal static class Generator
             GenerateClientClasses = true,
             CSharpGeneratorSettings =
             {
-                Namespace = "NSwagClients.GeneratedClients",
+                Namespace = $"NSwagClients.GeneratedClients.{name}",
                 JsonLibrary = CSharpJsonLibrary.SystemTextJson,
                 GenerateNullableReferenceTypes = true,
                 GenerateOptionalPropertiesAsNullable = true,
                 UseRequiredKeyword = true,
                 JsonLibraryVersion = 10,
                 GenerateDefaultValues = true,
-                GenerateNativeRecords = true,
                 GenerateDataAnnotations = true
             },
         };

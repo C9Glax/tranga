@@ -1,8 +1,11 @@
 using API;
+using Database.MangaContext;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<MangaContext>();
 
 WebApplication app = builder.Build();
 

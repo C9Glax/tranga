@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Features;
 
-public sealed class PostSearchMangaEndpoint
+public abstract class PostSearchMangaEndpoint
 {
     public static async Task<Results<Ok<ComicInfo[]>, BadRequest>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
     {

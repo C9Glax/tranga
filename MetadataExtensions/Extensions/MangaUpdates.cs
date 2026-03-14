@@ -1,7 +1,7 @@
 using Common.Datatypes;
 using Common.Helpers;
 using Data;
-using NSwagClients.GeneratedClients;
+using NSwagClients.GeneratedClients.MangaUpdates;
 
 namespace MetadataExtensions.Extensions;
 

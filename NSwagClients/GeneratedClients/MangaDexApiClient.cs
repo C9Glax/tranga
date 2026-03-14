@@ -22,7 +22,7 @@
 #pragma warning disable 8625 // Disable "CS8625 Cannot convert null literal to non-nullable reference type"
 #pragma warning disable 8765 // Disable "CS8765 Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes)."
 
-namespace NSwagClients.GeneratedClients
+namespace NSwagClients.GeneratedClients.MangaDex
 {
     using System = global::System;
 
@@ -11939,7 +11939,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRequest
+    public partial class MangaRequest
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
@@ -12017,13 +12017,13 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record LocalizedString : System.Collections.Generic.Dictionary<string, string>
+    public partial class LocalizedString : System.Collections.Generic.Dictionary<string, string>
     {
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaResponse
+    public partial class MangaResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12048,7 +12048,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ChapterResponse
+    public partial class ChapterResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12073,7 +12073,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Relationship
+    public partial class Relationship
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -12107,7 +12107,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Chapter
+    public partial class Chapter
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -12135,7 +12135,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Manga
+    public partial class Manga
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -12163,7 +12163,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ErrorResponse
+    public partial class ErrorResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12184,7 +12184,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Error
+    public partial class Error
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -12214,7 +12214,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ChapterAttributes
+    public partial class ChapterAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
@@ -12280,7 +12280,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaAttributes
+    public partial class MangaAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
@@ -12366,25 +12366,25 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaCreate : MangaRequest
+    public partial class MangaCreate : MangaRequest
     {
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaEdit : MangaRequest
+    public partial class MangaEdit : MangaRequest
     {
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ChapterEdit : ChapterRequest
+    public partial class ChapterEdit : ChapterRequest
     {
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response
+    public partial class Response
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12403,7 +12403,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Login
+    public partial class Login
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
@@ -12421,7 +12421,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record LoginResponse
+    public partial class LoginResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12443,7 +12443,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CheckResponse
+    public partial class CheckResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12470,7 +12470,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record LogoutResponse
+    public partial class LogoutResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12489,7 +12489,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record RefreshToken
+    public partial class RefreshToken
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("token")]
@@ -12499,7 +12499,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record RefreshResponse
+    public partial class RefreshResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12525,7 +12525,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record AccountActivateResponse
+    public partial class AccountActivateResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12544,7 +12544,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CreateAccount
+    public partial class CreateAccount
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
@@ -12573,7 +12573,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ScanlationGroupResponse
+    public partial class ScanlationGroupResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12598,7 +12598,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ScanlationGroup
+    public partial class ScanlationGroup
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -12626,7 +12626,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ScanlationGroupAttributes
+    public partial class ScanlationGroupAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -12709,7 +12709,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record User
+    public partial class User
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -12737,7 +12737,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UserAttributes
+    public partial class UserAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
@@ -12762,7 +12762,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CreateScanlationGroup
+    public partial class CreateScanlationGroup
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -12815,7 +12815,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ScanlationGroupEdit
+    public partial class ScanlationGroupEdit
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -12882,7 +12882,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CustomListCreate
+    public partial class CustomListCreate
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -12912,7 +12912,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CustomListEdit
+    public partial class CustomListEdit
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -12941,7 +12941,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CustomListResponse
+    public partial class CustomListResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -12966,7 +12966,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CustomList
+    public partial class CustomList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -12994,7 +12994,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CustomListAttributes
+    public partial class CustomListAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -13020,7 +13020,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CoverResponse
+    public partial class CoverResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13044,7 +13044,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Cover
+    public partial class Cover
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -13072,7 +13072,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CoverAttributes
+    public partial class CoverAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
@@ -13109,7 +13109,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CoverEdit
+    public partial class CoverEdit
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
@@ -13141,7 +13141,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record AuthorResponse
+    public partial class AuthorResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13165,7 +13165,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Author
+    public partial class Author
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -13193,7 +13193,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record AuthorAttributes
+    public partial class AuthorAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -13283,7 +13283,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record AuthorEdit
+    public partial class AuthorEdit
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -13360,7 +13360,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record AuthorCreate
+    public partial class AuthorCreate
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -13425,7 +13425,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRecommendation
+    public partial class MangaRecommendation
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -13453,7 +13453,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ApiClientResponse
+    public partial class ApiClientResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13477,7 +13477,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ApiClient
+    public partial class ApiClient
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -13505,7 +13505,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ApiClientAttributes
+    public partial class ApiClientAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -13550,7 +13550,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ApiClientEdit
+    public partial class ApiClientEdit
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("description")]
@@ -13572,7 +13572,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ApiClientCreate
+    public partial class ApiClientCreate
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -13596,7 +13596,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MappingIdBody
+    public partial class MappingIdBody
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
@@ -13609,7 +13609,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MappingIdResponse
+    public partial class MappingIdResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13642,7 +13642,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MappingId
+    public partial class MappingId
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -13670,7 +13670,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MappingIdAttributes
+    public partial class MappingIdAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
@@ -13695,7 +13695,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record TagResponse
+    public partial class TagResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13728,7 +13728,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Tag
+    public partial class Tag
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -13756,7 +13756,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record TagAttributes
+    public partial class TagAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -13785,7 +13785,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UserResponse
+    public partial class UserResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13810,7 +13810,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record SendAccountActivationCode
+    public partial class SendAccountActivationCode
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("email")]
@@ -13820,7 +13820,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record RecoverCompleteBody
+    public partial class RecoverCompleteBody
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("newPassword")]
@@ -13831,7 +13831,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UpdateMangaStatus
+    public partial class UpdateMangaStatus
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("status")]
@@ -13850,7 +13850,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ChapterRequest
+    public partial class ChapterRequest
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
@@ -13891,7 +13891,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CoverList
+    public partial class CoverList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13924,7 +13924,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record AuthorList
+    public partial class AuthorList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13957,7 +13957,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ApiClientList
+    public partial class ApiClientList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -13990,7 +13990,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRecommendationList
+    public partial class MangaRecommendationList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14023,7 +14023,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ChapterList
+    public partial class ChapterList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14056,7 +14056,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ScanlationGroupList
+    public partial class ScanlationGroupList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14089,13 +14089,13 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRelationCreate : MangaRelationRequest
+    public partial class MangaRelationCreate : MangaRelationRequest
     {
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRelationRequest
+    public partial class MangaRelationRequest
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("targetManga")]
@@ -14117,7 +14117,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRelationList
+    public partial class MangaRelationList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14150,7 +14150,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRelationResponse
+    public partial class MangaRelationResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14175,7 +14175,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRelation
+    public partial class MangaRelation
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -14203,7 +14203,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaRelationAttributes
+    public partial class MangaRelationAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("relation")]
@@ -14226,7 +14226,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record MangaList
+    public partial class MangaList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14259,7 +14259,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CustomListList
+    public partial class CustomListList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14292,7 +14292,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UserList
+    public partial class UserList
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14325,7 +14325,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UploadSession
+    public partial class UploadSession
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -14350,7 +14350,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UploadSessionAttributes
+    public partial class UploadSessionAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("isCommitted")]
@@ -14384,7 +14384,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UploadSessionFile
+    public partial class UploadSessionFile
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -14409,7 +14409,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record UploadSessionFileAttributes
+    public partial class UploadSessionFileAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("originalFileName")]
@@ -14444,7 +14444,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ChapterReadMarkerBatch
+    public partial class ChapterReadMarkerBatch
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("chapterIdsRead")]
@@ -14456,7 +14456,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record BeginUploadSession
+    public partial class BeginUploadSession
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("groups")]
@@ -14472,7 +14472,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record BeginEditSession
+    public partial class BeginEditSession
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("version")]
@@ -14482,7 +14482,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record CommitUploadSession
+    public partial class CommitUploadSession
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("chapterDraft")]
@@ -14514,7 +14514,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ChapterDraft
+    public partial class ChapterDraft
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
@@ -14548,7 +14548,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReportListResponse
+    public partial class ReportListResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14582,7 +14582,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Report
+    public partial class Report
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -14610,7 +14610,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReportAttributes
+    public partial class ReportAttributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("details")]
@@ -14638,7 +14638,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ForumsThreadResponse
+    public partial class ForumsThreadResponse
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -14665,7 +14665,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for author/artist entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionAuthor : System.Collections.ObjectModel.Collection<Anonymous15>
+    public partial class ReferenceExpansionAuthor : System.Collections.ObjectModel.Collection<Anonymous15>
     {
 
     }
@@ -14674,7 +14674,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for api_client entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionApiClient : System.Collections.ObjectModel.Collection<Anonymous7>
+    public partial class ReferenceExpansionApiClient : System.Collections.ObjectModel.Collection<Anonymous7>
     {
 
     }
@@ -14683,7 +14683,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for chapter entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionChapter : System.Collections.ObjectModel.Collection<Anonymous11>
+    public partial class ReferenceExpansionChapter : System.Collections.ObjectModel.Collection<Anonymous11>
     {
 
     }
@@ -14692,7 +14692,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for cover art entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionCoverArt : System.Collections.ObjectModel.Collection<Anonymous14>
+    public partial class ReferenceExpansionCoverArt : System.Collections.ObjectModel.Collection<Anonymous14>
     {
 
     }
@@ -14701,7 +14701,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for manga entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionManga : System.Collections.ObjectModel.Collection<Anonymous4>
+    public partial class ReferenceExpansionManga : System.Collections.ObjectModel.Collection<Anonymous4>
     {
 
     }
@@ -14710,7 +14710,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for manga relation entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionMangaRelation : System.Collections.ObjectModel.Collection<Anonymous19>
+    public partial class ReferenceExpansionMangaRelation : System.Collections.ObjectModel.Collection<Anonymous19>
     {
 
     }
@@ -14719,7 +14719,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionMangaRecommendation : System.Collections.ObjectModel.Collection<Anonymous5>
+    public partial class ReferenceExpansionMangaRecommendation : System.Collections.ObjectModel.Collection<Anonymous5>
     {
 
     }
@@ -14728,7 +14728,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for user report entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionReport : System.Collections.ObjectModel.Collection<Anonymous18>
+    public partial class ReferenceExpansionReport : System.Collections.ObjectModel.Collection<Anonymous18>
     {
 
     }
@@ -14737,7 +14737,7 @@ namespace NSwagClients.GeneratedClients
     /// Reference expansion options for scanlation group entities or lists
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record ReferenceExpansionScanlationGroup : System.Collections.ObjectModel.Collection<Anonymous8>
+    public partial class ReferenceExpansionScanlationGroup : System.Collections.ObjectModel.Collection<Anonymous8>
     {
 
     }
@@ -14748,7 +14748,7 @@ namespace NSwagClients.GeneratedClients
     /// <br/>
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record StatisticsDetailsComments
+    public partial class StatisticsDetailsComments
     {
 
         /// <summary>
@@ -14859,7 +14859,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order
+    public partial class Order
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
@@ -14975,7 +14975,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order2
+    public partial class Order2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("score")]
@@ -15012,7 +15012,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body : MangaEdit
+    public partial class Body : MangaEdit
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("artists")]
@@ -15051,7 +15051,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order3
+    public partial class Order3
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -15090,7 +15090,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order4
+    public partial class Order4
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -15125,7 +15125,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order5
+    public partial class Order5
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("username")]
@@ -15216,7 +15216,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order6
+    public partial class Order6
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
@@ -15315,7 +15315,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order7
+    public partial class Order7
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
@@ -15426,7 +15426,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order8
+    public partial class Order8
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
@@ -15507,7 +15507,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order9
+    public partial class Order9
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
@@ -15546,7 +15546,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order10
+    public partial class Order10
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("name")]
@@ -15604,7 +15604,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order11
+    public partial class Order11
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
@@ -15751,7 +15751,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body2
+    public partial class Body2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("version")]
@@ -15776,7 +15776,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order12
+    public partial class Order12
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
@@ -15807,7 +15807,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body3
+    public partial class Body3
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("captchaChallenge")]
@@ -15886,7 +15886,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Order13
+    public partial class Order13
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
@@ -15917,7 +15917,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body4
+    public partial class Body4
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("category")]
@@ -15947,7 +15947,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body5
+    public partial class Body5
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("manga")]
@@ -15978,7 +15978,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body6
+    public partial class Body6
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("rating")]
@@ -15997,7 +15997,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body7
+    public partial class Body7
     {
 
         /// <summary>
@@ -16024,7 +16024,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Body8
+    public partial class Body8
     {
 
         /// <summary>
@@ -16052,7 +16052,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response2
+    public partial class Response2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16073,7 +16073,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response3
+    public partial class Response3
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16091,7 +16091,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response4
+    public partial class Response4
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16113,7 +16113,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response5
+    public partial class Response5
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16135,7 +16135,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response6
+    public partial class Response6
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16154,7 +16154,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response7
+    public partial class Response7
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16173,7 +16173,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response8
+    public partial class Response8
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16195,7 +16195,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response9
+    public partial class Response9
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16214,7 +16214,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response10
+    public partial class Response10
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16236,7 +16236,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response11
+    public partial class Response11
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16264,7 +16264,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response12
+    public partial class Response12
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16285,7 +16285,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response13
+    public partial class Response13
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16307,7 +16307,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response14
+    public partial class Response14
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16326,7 +16326,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response15
+    public partial class Response15
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16359,7 +16359,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response16
+    public partial class Response16
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16384,7 +16384,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response17 : Response
+    public partial class Response17 : Response
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("requiresApproval")]
@@ -16393,7 +16393,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response18
+    public partial class Response18
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16414,7 +16414,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response19
+    public partial class Response19
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16435,7 +16435,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response20
+    public partial class Response20
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16456,7 +16456,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response21
+    public partial class Response21
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16477,7 +16477,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response22
+    public partial class Response22
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16498,7 +16498,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response23
+    public partial class Response23
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16519,7 +16519,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response24
+    public partial class Response24
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16540,7 +16540,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response25
+    public partial class Response25
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16573,7 +16573,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response26
+    public partial class Response26
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16606,7 +16606,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Response27
+    public partial class Response27
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("result")]
@@ -16873,7 +16873,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Token
+    public partial class Token
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("session")]
@@ -16918,7 +16918,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Token2
+    public partial class Token2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("session")]
@@ -17059,7 +17059,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Attributes
+    public partial class Attributes
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("score")]
@@ -17068,7 +17068,7 @@ namespace NSwagClients.GeneratedClients
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
         [System.Text.Json.Serialization.JsonExtensionData]
-        public IDictionary<string, object?> AdditionalProperties
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
             set { _additionalProperties = value; }
@@ -17416,7 +17416,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Data
+    public partial class Data
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("type")]
@@ -18091,7 +18091,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous20
+    public partial class Anonymous20
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("volume")]
@@ -18178,7 +18178,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Chapter2
+    public partial class Chapter2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("hash")]
@@ -18262,7 +18262,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Data2
+    public partial class Data2
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("id")]
@@ -18298,7 +18298,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous22
+    public partial class Anonymous22
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("rating")]
@@ -18319,7 +18319,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous23
+    public partial class Anonymous23
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
@@ -18337,7 +18337,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous24
+    public partial class Anonymous24
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
@@ -18355,7 +18355,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous25
+    public partial class Anonymous25
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
@@ -18373,7 +18373,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous26
+    public partial class Anonymous26
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
@@ -18391,7 +18391,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous27
+    public partial class Anonymous27
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
@@ -18418,7 +18418,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous28
+    public partial class Anonymous28
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("comments")]
@@ -18442,7 +18442,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Ratings
+    public partial class Ratings
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("chapterId")]
@@ -18463,7 +18463,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Attributes2
+    public partial class Attributes2
     {
 
         /// <summary>
@@ -18484,7 +18484,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Anonymous29
+    public partial class Anonymous29
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("chapter")]
@@ -18514,7 +18514,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Attributes3
+    public partial class Attributes3
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("reason")]
@@ -18543,7 +18543,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Rating
+    public partial class Rating
     {
 
         /// <summary>
@@ -18573,7 +18573,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Rating2
+    public partial class Rating2
     {
 
         /// <summary>
@@ -18621,7 +18621,7 @@ namespace NSwagClients.GeneratedClients
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record Distribution
+    public partial class Distribution
     {
 
         [System.Text.Json.Serialization.JsonPropertyName("1")]
