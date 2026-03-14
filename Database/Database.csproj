@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
       <ProjectReference Include="..\DownloadExtensions\DownloadExtensions.csproj" />
+      <ProjectReference Include="..\MetadataExtensions\MetadataExtensions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

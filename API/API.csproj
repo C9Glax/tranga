@@ -16,4 +16,8 @@
       <ProjectReference Include="..\MetadataExtensions\MetadataExtensions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DTOs\" />
+    </ItemGroup>
+
 </Project>

@@ -1,0 +1,21 @@
+using Common.Datatypes;
+using Data;
+using Database.MangaContext;
+using Database.MangaContext.Helpers;
+using MetadataExtensions;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+
+namespace API.Features;
+
+public sealed class PostSearchMangaEndpoint
+{
+    public static async Task<Results<Ok<ComicInfo[]>, BadRequest>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
+    {
+        if (await MetadataExtensionsCollection.MangaUpdates.Search(query, ct) is not { } searchResult)
+            return TypedResults.BadRequest();
+        
+        List<ComicInfo> mergedResult = await mangaContext.MergeComicInfos(searchResult, ct);
+        return TypedResults.Ok(mergedResult.ToArray());
+    }
+}

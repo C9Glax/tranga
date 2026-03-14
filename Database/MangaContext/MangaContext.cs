@@ -11,6 +11,7 @@ public class MangaContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         #region DbManga
+
         modelBuilder.Entity<DbManga>()
             .HasKey(m => m.MangaId);
 
@@ -21,7 +22,7 @@ public class MangaContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DbManga>()
-            .HasMany(m => m.ExtensionIds)
+            .HasMany(m => m.DownloadExtensionIds)
             .WithOne(e => e.Parent)
             .HasForeignKey(e => e.ParentId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -37,7 +38,7 @@ public class MangaContext : DbContext
             .HasKey(c => c.ChapterId);
 
         modelBuilder.Entity<DbChapter>()
-            .HasMany(c => c.ExtensionIds)
+            .HasMany(c => c.DownloadExtensionIds)
             .WithOne(e => e.Parent)
             .HasForeignKey(e => e.ParentId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -49,7 +50,7 @@ public class MangaContext : DbContext
         #endregion
 
         #region ExtensionId
-        modelBuilder.Entity<ExtensionId<IRef>>()
+        modelBuilder.Entity<DownloadExtensionId<IRef>>()
             .HasKey(e => new { e.ExtensionIdentifier, e.Identifier });
         #endregion
     }

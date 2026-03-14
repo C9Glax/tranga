@@ -19,7 +19,7 @@ namespace Data
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlRootAttribute("ComicInfo", Namespace="")]
-    public partial class ComicInfo
+    public abstract record ComicInfo
     {
         
         [System.Xml.Serialization.XmlIgnoreAttribute()]

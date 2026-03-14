@@ -12,9 +12,9 @@ public sealed record DbManga : IRef
     
     public int? MyAnimeListId { get; init; }
     
-    public ICollection<ExtensionId<DbManga>>? ExtensionIds { get; init; }
+    public ICollection<DownloadExtensionId<DbManga>>? DownloadExtensionIds { get; init; }
     
     public ICollection<DbChapter>? Chapters { get; init; }
     
-    public ComicInfo? ComicInfo { get; init; }
+    public ComicInfo? ComicInfo { get; set; }
 }

@@ -5,6 +5,11 @@ using NSwagClients.GeneratedClients;
 
 namespace MetadataExtensions.Extensions;
 
+public sealed record MangaUpdateComicInfo : ComicInfo
+{
+    public int? MangaUpdatesSeriesId { get; init; }
+}
+
 public class MangaUpdates : IMetadataExtension
 {
     // ReSharper disable once InconsistentNaming
@@ -26,8 +31,9 @@ public class MangaUpdates : IMetadataExtension
             SeriesModelV1 series = await Client.RetrieveSeriesAsync(id, cancellationToken: ct);
             return
             [
-                new ComicInfo()
+                new MangaUpdateComicInfo()
                 {
+                    MangaUpdatesSeriesId = series.Series_id,
                     Series = series.Title,
                     Summary = series.Description,
                     Year = series.Year is null ? -1 : int.Parse(series.Year),
@@ -55,8 +61,9 @@ public class MangaUpdates : IMetadataExtension
         {
             if(listResult is null)
                 continue;
-            ret.Add(new ComicInfo()
+            ret.Add(new MangaUpdateComicInfo()
             {
+                MangaUpdatesSeriesId = listResult.Series_id,
                 Series = listResult.Title,
                 Summary = listResult.Description,
                 Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
