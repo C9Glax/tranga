@@ -76,7 +76,7 @@ internal static class Generator
             CSharpGeneratorSettings =
             {
                 Namespace = $"NSwagClients.GeneratedClients.{name}",
-                JsonLibrary = CSharpJsonLibrary.SystemTextJson,
+                JsonLibrary = CSharpJsonLibrary.NewtonsoftJson,
                 GenerateNullableReferenceTypes = true,
                 GenerateOptionalPropertiesAsNullable = true,
                 UseRequiredKeyword = true,

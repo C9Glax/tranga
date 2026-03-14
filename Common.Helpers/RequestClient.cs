@@ -1,9 +1,15 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Common.Helpers;
 
 public sealed class RequestClient : HttpClient
 {
+    public RequestClient()
+    {
+        DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Tranga", "2.1")));
+    }
+    
     public override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         return base.Send(request, cancellationToken);

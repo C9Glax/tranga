@@ -34,8 +34,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
         #pragma warning restore 8618
 
         private System.Net.Http.HttpClient _httpClient;
-        private static System.Lazy<System.Text.Json.JsonSerializerOptions> _settings = new System.Lazy<System.Text.Json.JsonSerializerOptions>(CreateSerializerSettings, true);
-        private System.Text.Json.JsonSerializerOptions _instanceSettings;
+        private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
+        private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public MangaUpdatesApiClient(System.Net.Http.HttpClient httpClient)
@@ -46,9 +46,9 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             Initialize();
         }
 
-        private static System.Text.Json.JsonSerializerOptions CreateSerializerSettings()
+        private static Newtonsoft.Json.JsonSerializerSettings CreateSerializerSettings()
         {
-            var settings = new System.Text.Json.JsonSerializerOptions();
+            var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
         }
@@ -64,9 +64,9 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             }
         }
 
-        protected System.Text.Json.JsonSerializerOptions JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
+        protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _instanceSettings ?? _settings.Value; } }
 
-        static partial void UpdateJsonSerializerSettings(System.Text.Json.JsonSerializerOptions settings);
+        static partial void UpdateJsonSerializerSettings(Newtonsoft.Json.JsonSerializerSettings settings);
 
         partial void Initialize();
 
@@ -91,8 +91,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -385,8 +385,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -644,8 +644,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -741,8 +741,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -842,8 +842,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -1314,8 +1314,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -1410,8 +1410,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -1502,8 +1502,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -1599,8 +1599,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -2230,8 +2230,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -2502,8 +2502,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -2808,8 +2808,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -3018,8 +3018,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -3244,8 +3244,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -3339,8 +3339,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -3682,8 +3682,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -3785,8 +3785,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -3888,8 +3888,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -3969,8 +3969,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4056,8 +4056,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4137,8 +4137,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4234,8 +4234,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4315,8 +4315,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4577,8 +4577,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -5109,8 +5109,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -5190,8 +5190,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -5275,8 +5275,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -5378,8 +5378,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -5573,8 +5573,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -5769,8 +5769,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -5949,8 +5949,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -6349,8 +6349,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -6504,8 +6504,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -6788,8 +6788,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -6976,8 +6976,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -7278,8 +7278,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -7378,8 +7378,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -7774,8 +7774,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -7878,8 +7878,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -8223,8 +8223,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -8329,8 +8329,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -8965,8 +8965,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -9388,8 +9388,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -9603,8 +9603,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -9926,8 +9926,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -10046,8 +10046,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -10441,8 +10441,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -10536,8 +10536,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -10637,8 +10637,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -10907,8 +10907,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -11085,8 +11085,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -11379,8 +11379,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -11483,8 +11483,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -11789,8 +11789,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -12008,8 +12008,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -12265,8 +12265,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -12553,8 +12553,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -12824,8 +12824,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -12912,8 +12912,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -12995,8 +12995,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -13086,8 +13086,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -13191,8 +13191,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -13380,8 +13380,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -13949,8 +13949,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -14136,8 +14136,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -14476,8 +14476,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -14782,8 +14782,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -14892,8 +14892,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -15178,8 +15178,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -15490,8 +15490,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -15600,8 +15600,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -15851,8 +15851,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -15942,8 +15942,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -16043,8 +16043,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -16361,8 +16361,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -16473,8 +16473,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -16558,8 +16558,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -16844,8 +16844,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -16954,8 +16954,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -17035,8 +17035,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -17142,8 +17142,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -17257,8 +17257,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -17372,8 +17372,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -17567,8 +17567,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -17670,8 +17670,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -17773,8 +17773,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -18091,8 +18091,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -18203,8 +18203,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -18292,8 +18292,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -18588,8 +18588,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -18679,8 +18679,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -19091,8 +19091,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -19303,8 +19303,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -19490,8 +19490,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -19893,8 +19893,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -20256,8 +20256,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -20585,8 +20585,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -20806,8 +20806,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -21137,8 +21137,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -21458,8 +21458,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
@@ -21995,8 +21995,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -22738,8 +22738,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
@@ -23046,8 +23046,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -23227,8 +23227,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -24411,10 +24411,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
                 var responseText = await ReadAsStringAsync(response.Content, cancellationToken).ConfigureAwait(false);
                 try
                 {
-                    var typedBody = System.Text.Json.JsonSerializer.Deserialize<T>(responseText, JsonSerializerSettings);
+                    var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
                     return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
-                catch (System.Text.Json.JsonException exception)
+                catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
                     throw new MangaUpdatesApiException(message, (int)response.StatusCode, responseText, headers, exception);
@@ -24425,12 +24425,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
                 try
                 {
                     using (var responseStream = await ReadAsStreamAsync(response.Content, cancellationToken).ConfigureAwait(false))
+                    using (var streamReader = new System.IO.StreamReader(responseStream))
+                    using (var jsonTextReader = new Newtonsoft.Json.JsonTextReader(streamReader))
                     {
-                        var typedBody = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(responseStream, JsonSerializerSettings, cancellationToken).ConfigureAwait(false);
+                        var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
+                        var typedBody = serializer.Deserialize<T>(jsonTextReader);
                         return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
-                catch (System.Text.Json.JsonException exception)
+                catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
                     throw new MangaUpdatesApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
@@ -24497,21 +24500,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AboutusCategoryModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("users")]
+        [Newtonsoft.Json.JsonProperty("users", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<AboutusUserModelV1>? Users { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24524,12 +24527,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AboutusCategoryModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24542,18 +24545,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AboutusCategoryReorderModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("users")]
+        [Newtonsoft.Json.JsonProperty("users", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<AboutusUserReorderModelV1>? Users { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24566,12 +24569,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AboutusDescriptionModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24584,24 +24587,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AboutusUserModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("entry_id")]
+        [Newtonsoft.Json.JsonProperty("entry_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Entry_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24614,12 +24617,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AboutusUserModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24632,15 +24635,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AboutusUserReorderModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("entry_id")]
+        [Newtonsoft.Json.JsonProperty("entry_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Entry_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24653,12 +24656,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AccountForgotPassModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("email")]
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Email { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24671,17 +24674,17 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AccountLoginModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("password")]
+        [Newtonsoft.Json.JsonProperty("password", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Password { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24696,7 +24699,7 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24709,20 +24712,20 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ApiResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Reason { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("context")]
+        [Newtonsoft.Json.JsonProperty("context", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ApiValidationErrorsV1? Context { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24737,7 +24740,7 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24750,24 +24753,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsLockModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("field")]
+        [Newtonsoft.Json.JsonProperty("field", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Field { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_locked")]
+        [Newtonsoft.Json.JsonProperty("time_locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_locked { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24780,12 +24783,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsLockModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24798,69 +24801,69 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("image")]
+        [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ImageModelV1? Image { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("actualname")]
+        [Newtonsoft.Json.JsonProperty("actualname", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Actualname { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("birthday")]
+        [Newtonsoft.Json.JsonProperty("birthday", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public BirthdayModelV1? Birthday { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("birthplace")]
+        [Newtonsoft.Json.JsonProperty("birthplace", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Birthplace { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("bloodtype")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelV1Bloodtype>))]
+        [Newtonsoft.Json.JsonProperty("bloodtype", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsModelV1Bloodtype? Bloodtype { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("gender")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelV1Gender>))]
+        [Newtonsoft.Json.JsonProperty("gender", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsModelV1Gender? Gender { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelV1Status>))]
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsModelV1Status? Status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status_date")]
+        [Newtonsoft.Json.JsonProperty("status_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public StatusDateModelV1? Status_date { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("social")]
+        [Newtonsoft.Json.JsonProperty("social", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Social? Social { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("comments")]
+        [Newtonsoft.Json.JsonProperty("comments", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Comments { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24873,48 +24876,48 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated2>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("actualname")]
+        [Newtonsoft.Json.JsonProperty("actualname", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Actualname { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("birthday")]
+        [Newtonsoft.Json.JsonProperty("birthday", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public BirthdayModelV1? Birthday { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("birthplace")]
+        [Newtonsoft.Json.JsonProperty("birthplace", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Birthplace { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("bloodtype")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelUpdateV1Bloodtype>))]
+        [Newtonsoft.Json.JsonProperty("bloodtype", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsModelUpdateV1Bloodtype? Bloodtype { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("gender")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelUpdateV1Gender>))]
+        [Newtonsoft.Json.JsonProperty("gender", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsModelUpdateV1Gender? Gender { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsModelUpdateV1Status>))]
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsModelUpdateV1Status? Status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status_date")]
+        [Newtonsoft.Json.JsonProperty("status_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public StatusDateModelV1? Status_date { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("social")]
+        [Newtonsoft.Json.JsonProperty("social", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Social2? Social { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("comments")]
+        [Newtonsoft.Json.JsonProperty("comments", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Comments { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin2? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24927,27 +24930,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats2? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -24960,34 +24963,34 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsSearchRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsSearchRequestV1Orderby? Orderby { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("pending")]
+        [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pending { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25000,21 +25003,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25027,13 +25030,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsSeriesListRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsSeriesListRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public AuthorsSeriesListRequestV1Orderby? Orderby { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25046,18 +25049,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AuthorsSeriesListResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_series")]
+        [Newtonsoft.Json.JsonProperty("total_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_list")]
+        [Newtonsoft.Json.JsonProperty("series_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Series_list>? Series_list { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre_list")]
+        [Newtonsoft.Json.JsonProperty("genre_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Genre_list>? Genre_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25070,25 +25073,25 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class CategoriesModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("usage")]
+        [Newtonsoft.Json.JsonProperty("usage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Usage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes")]
+        [Newtonsoft.Json.JsonProperty("votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes_plus")]
+        [Newtonsoft.Json.JsonProperty("votes_plus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes_plus { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes_minus")]
+        [Newtonsoft.Json.JsonProperty("votes_minus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes_minus { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25101,28 +25104,28 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class CategoriesModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes")]
+        [Newtonsoft.Json.JsonProperty("votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes_plus")]
+        [Newtonsoft.Json.JsonProperty("votes_plus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes_plus { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes_minus")]
+        [Newtonsoft.Json.JsonProperty("votes_minus", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes_minus { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25135,13 +25138,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class CategoriesModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25154,25 +25157,25 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class CategoriesSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<CategoriesSearchRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public CategoriesSearchRequestV1Orderby? Orderby { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25185,21 +25188,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class CategoriesSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results2>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25212,24 +25215,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class BirthdayModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("month")]
+        [Newtonsoft.Json.JsonProperty("month", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Month { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("day")]
+        [Newtonsoft.Json.JsonProperty("day", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Day { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("as_string")]
+        [Newtonsoft.Json.JsonProperty("as_string", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? As_string { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("zodiac")]
+        [Newtonsoft.Json.JsonProperty("zodiac", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Zodiac { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25242,15 +25245,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PerPageSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25263,21 +25266,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class StatusDateModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("month")]
+        [Newtonsoft.Json.JsonProperty("month", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Month { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("day")]
+        [Newtonsoft.Json.JsonProperty("day", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Day { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("as_string")]
+        [Newtonsoft.Json.JsonProperty("as_string", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? As_string { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25290,12 +25293,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoBulkModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("convo_id_list")]
+        [Newtonsoft.Json.JsonProperty("convo_id_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<int>? Convo_id_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25308,15 +25311,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoMessageListRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25329,33 +25332,33 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoMessageModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("message_id")]
+        [Newtonsoft.Json.JsonProperty("message_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Message_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("convo_id")]
+        [Newtonsoft.Json.JsonProperty("convo_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Convo_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_id")]
+        [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Author_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_name")]
+        [Newtonsoft.Json.JsonProperty("author_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_url")]
+        [Newtonsoft.Json.JsonProperty("author_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("content")]
+        [Newtonsoft.Json.JsonProperty("content", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Content { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_edit")]
+        [Newtonsoft.Json.JsonProperty("last_edit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_edit { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25368,12 +25371,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoMessageModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("content")]
+        [Newtonsoft.Json.JsonProperty("content", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Content { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25386,21 +25389,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoMessageSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25413,21 +25416,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoMessageSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results3>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25440,18 +25443,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoModelAddV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("participants")]
+        [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ConvoParticipantModelAddV1>? Participants { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("message")]
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ConvoMessageModelUpdateV1? Message { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25464,30 +25467,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("convo_id")]
+        [Newtonsoft.Json.JsonProperty("convo_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Convo_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_id")]
+        [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Author_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_name")]
+        [Newtonsoft.Json.JsonProperty("author_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_url")]
+        [Newtonsoft.Json.JsonProperty("author_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_edit")]
+        [Newtonsoft.Json.JsonProperty("last_edit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_edit { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25500,12 +25503,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25518,13 +25521,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoParticipantModelAddV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("to")]
+        [Newtonsoft.Json.JsonProperty("to", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string To { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25537,24 +25540,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoParticipantModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_time_seen")]
+        [Newtonsoft.Json.JsonProperty("last_time_seen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_time_seen { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("joined")]
+        [Newtonsoft.Json.JsonProperty("joined", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Joined { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25567,18 +25570,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25591,21 +25594,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results4>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25618,12 +25621,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ConvoUserIgnoreModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_ignored")]
+        [Newtonsoft.Json.JsonProperty("user_ignored", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? User_ignored { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25636,18 +25639,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqCategoryModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25660,21 +25663,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqCategoryQuestionsModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("questions")]
+        [Newtonsoft.Json.JsonProperty("questions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<FaqQuestionOnlyModelV1>? Questions { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25687,12 +25690,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqCategoryModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25705,18 +25708,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqCategoryReorderModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("questions")]
+        [Newtonsoft.Json.JsonProperty("questions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<FaqQuestionReorderModelV1>? Questions { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25729,21 +25732,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqQuestionModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("question_id")]
+        [Newtonsoft.Json.JsonProperty("question_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Question_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer")]
+        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Answer { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25756,18 +25759,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqQuestionOnlyModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("question_id")]
+        [Newtonsoft.Json.JsonProperty("question_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Question_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25780,15 +25783,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqQuestionModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer")]
+        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Answer { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25801,15 +25804,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class FaqQuestionReorderModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("question_id")]
+        [Newtonsoft.Json.JsonProperty("question_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Question_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25822,18 +25825,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumAdminHistoryModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user")]
+        [Newtonsoft.Json.JsonProperty("user", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? User { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("action_time")]
+        [Newtonsoft.Json.JsonProperty("action_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Action_time { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("action")]
+        [Newtonsoft.Json.JsonProperty("action", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Action { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25846,18 +25849,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumAdminHistorySearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("uid")]
+        [Newtonsoft.Json.JsonProperty("uid", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Uid { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25870,21 +25873,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumAdminHistorySearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results5>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25897,15 +25900,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumAdminModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user")]
+        [Newtonsoft.Json.JsonProperty("user", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? User { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25918,12 +25921,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumAdminModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25936,18 +25939,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumCategoryModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25960,18 +25963,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumCategoryModelListV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forums")]
+        [Newtonsoft.Json.JsonProperty("forums", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Forums>? Forums { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -25984,15 +25987,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumCategoryModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26005,42 +26008,42 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumForumModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Category? Category { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("moderators")]
+        [Newtonsoft.Json.JsonProperty("moderators", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ForumAdminModelV1>? Moderators { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats3? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_topic")]
+        [Newtonsoft.Json.JsonProperty("last_topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Last_topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin3? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26053,39 +26056,39 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumForumModelListV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("moderators")]
+        [Newtonsoft.Json.JsonProperty("moderators", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ForumAdminModelV1>? Moderators { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats4? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_topic")]
+        [Newtonsoft.Json.JsonProperty("last_topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Last_topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin4? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26098,21 +26101,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumForumModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin5? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26125,15 +26128,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumLookupResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26146,22 +26149,22 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPollAnswerModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer_id")]
+        [Newtonsoft.Json.JsonProperty("answer_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Answer_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer")]
+        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Answer { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes")]
+        [Newtonsoft.Json.JsonProperty("votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("image")]
+        [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Image? Image { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26174,19 +26177,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPollAnswerModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer_id")]
+        [Newtonsoft.Json.JsonProperty("answer_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Answer_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer")]
+        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Answer { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("temp_image_id")]
+        [Newtonsoft.Json.JsonProperty("temp_image_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Temp_image_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26199,21 +26202,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPollModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answers")]
+        [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ForumPollAnswerModelV1>? Answers { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes")]
+        [Newtonsoft.Json.JsonProperty("votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin6? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26226,15 +26229,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPollModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answers")]
+        [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ForumPollAnswerModelUpdateV1>? Answers { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26247,27 +26250,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPollTempImageModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("image_id")]
+        [Newtonsoft.Json.JsonProperty("image_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Image_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("caption")]
+        [Newtonsoft.Json.JsonProperty("caption", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Caption { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Url? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("height")]
+        [Newtonsoft.Json.JsonProperty("height", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Height { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("width")]
+        [Newtonsoft.Json.JsonProperty("width", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Width { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26280,12 +26283,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPollVoteModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("choice_id")]
+        [Newtonsoft.Json.JsonProperty("choice_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Choice_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26298,15 +26301,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPostByUserResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("post_id_list")]
+        [Newtonsoft.Json.JsonProperty("post_id_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<int>? Post_id_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26319,21 +26322,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPostListResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results6>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26346,30 +26349,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPostModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("post_id")]
+        [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Post_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("body")]
+        [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Topic? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author")]
+        [Newtonsoft.Json.JsonProperty("author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Author { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reply_to")]
+        [Newtonsoft.Json.JsonProperty("reply_to", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Reply_to? Reply_to { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_edit")]
+        [Newtonsoft.Json.JsonProperty("last_edit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Last_edit? Last_edit { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26382,24 +26385,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPostModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("post_id")]
+        [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Post_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("body_excerpt")]
+        [Newtonsoft.Json.JsonProperty("body_excerpt", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body_excerpt { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Topic2? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author")]
+        [Newtonsoft.Json.JsonProperty("author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Author { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26412,15 +26415,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPostModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("body")]
+        [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reply_to")]
+        [Newtonsoft.Json.JsonProperty("reply_to", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Reply_to { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26433,33 +26436,33 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPostReportModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("report_id")]
+        [Newtonsoft.Json.JsonProperty("report_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Report_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("post_id")]
+        [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Post_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("post")]
+        [Newtonsoft.Json.JsonProperty("post", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelSearchV1? Post { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user")]
+        [Newtonsoft.Json.JsonProperty("user", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? User { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26472,12 +26475,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumPostReportModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26490,41 +26493,41 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search_by")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ForumSearchRequestV1Search_by>))]
+        [Newtonsoft.Json.JsonProperty("search_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ForumSearchRequestV1Search_by? Search_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("method")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ForumSearchRequestV1Method>))]
+        [Newtonsoft.Json.JsonProperty("method", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ForumSearchRequestV1Method? Method { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("since")]
+        [Newtonsoft.Json.JsonProperty("since", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Since { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("after_id")]
+        [Newtonsoft.Json.JsonProperty("after_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? After_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("before_id")]
+        [Newtonsoft.Json.JsonProperty("before_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Before_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("by_user_id")]
+        [Newtonsoft.Json.JsonProperty("by_user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? By_user_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("filter_user_id")]
+        [Newtonsoft.Json.JsonProperty("filter_user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Filter_user_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26537,24 +26540,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_results")]
+        [Newtonsoft.Json.JsonProperty("topic_results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Topic_results>? Topic_results { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("post_results")]
+        [Newtonsoft.Json.JsonProperty("post_results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Post_results>? Post_results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26567,19 +26570,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumTopicListRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ForumTopicListRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ForumTopicListRequestV1Orderby? Orderby { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26592,21 +26595,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumTopicListResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results7>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26619,18 +26622,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumTopicModelAddV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelUpdateV1? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("post")]
+        [Newtonsoft.Json.JsonProperty("post", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelUpdateV1? Post { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("poll")]
+        [Newtonsoft.Json.JsonProperty("poll", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPollModelUpdateV1? Poll { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26643,42 +26646,42 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumTopicModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_post")]
+        [Newtonsoft.Json.JsonProperty("last_post", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelSearchV1? Last_post { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats5? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum")]
+        [Newtonsoft.Json.JsonProperty("forum", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Forum? Forum { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("is_poll")]
+        [Newtonsoft.Json.JsonProperty("is_poll", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_poll { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("poll")]
+        [Newtonsoft.Json.JsonProperty("poll", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPollModelV1? Poll { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin7? Admin { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_starter")]
+        [Newtonsoft.Json.JsonProperty("topic_starter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Topic_starter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26691,39 +26694,39 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumTopicModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_post")]
+        [Newtonsoft.Json.JsonProperty("last_post", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelSearchV1? Last_post { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats6? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum")]
+        [Newtonsoft.Json.JsonProperty("forum", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Forum2? Forum { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("is_poll")]
+        [Newtonsoft.Json.JsonProperty("is_poll", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_poll { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin8? Admin { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_starter")]
+        [Newtonsoft.Json.JsonProperty("topic_starter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Topic_starter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26736,18 +26739,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumTopicModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum")]
+        [Newtonsoft.Json.JsonProperty("forum", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Forum3? Forum { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin9? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26760,28 +26763,28 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumWarnModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("level")]
+        [Newtonsoft.Json.JsonProperty("level", Required = Newtonsoft.Json.Required.Always)]
         public required int Level { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Reason { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("send_reason")]
+        [Newtonsoft.Json.JsonProperty("send_reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Send_reason { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("by_user")]
+        [Newtonsoft.Json.JsonProperty("by_user", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? By_user { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26794,15 +26797,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumWarnModelPublicV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("level")]
+        [Newtonsoft.Json.JsonProperty("level", Required = Newtonsoft.Json.Required.Always)]
         public required int Level { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26815,19 +26818,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ForumWarnModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("level")]
+        [Newtonsoft.Json.JsonProperty("level", Required = Newtonsoft.Json.Required.Always)]
         public required int Level { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Reason { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("send_reason")]
+        [Newtonsoft.Json.JsonProperty("send_reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Send_reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26840,21 +26843,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GenreModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("demographic")]
+        [Newtonsoft.Json.JsonProperty("demographic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Demographic { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26867,24 +26870,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GenreModelStatsV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats7? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("demographic")]
+        [Newtonsoft.Json.JsonProperty("demographic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Demographic { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26897,18 +26900,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GenreModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("demographic")]
+        [Newtonsoft.Json.JsonProperty("demographic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Demographic { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26921,36 +26924,36 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GroupsModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_id")]
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Group_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated3>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("social")]
+        [Newtonsoft.Json.JsonProperty("social", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Social3? Social { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("active")]
+        [Newtonsoft.Json.JsonProperty("active", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Active { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("notes")]
+        [Newtonsoft.Json.JsonProperty("notes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin10? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26963,30 +26966,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GroupsModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_id")]
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Group_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("social")]
+        [Newtonsoft.Json.JsonProperty("social", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Social4? Social { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("active")]
+        [Newtonsoft.Json.JsonProperty("active", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Active { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("notes")]
+        [Newtonsoft.Json.JsonProperty("notes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -26999,27 +27002,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GroupsModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated4>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("social")]
+        [Newtonsoft.Json.JsonProperty("social", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Social5? Social { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("active")]
+        [Newtonsoft.Json.JsonProperty("active", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Active { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("notes")]
+        [Newtonsoft.Json.JsonProperty("notes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin11? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27032,30 +27035,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GroupsSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("active")]
+        [Newtonsoft.Json.JsonProperty("active", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Active { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("pending")]
+        [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pending { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27068,21 +27071,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GroupsSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results8>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27095,21 +27098,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class GroupsSeriesListResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("release_frequency")]
+        [Newtonsoft.Json.JsonProperty("release_frequency", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Release_frequency { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_titles")]
+        [Newtonsoft.Json.JsonProperty("series_titles", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Series_titles>? Series_titles { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_genres")]
+        [Newtonsoft.Json.JsonProperty("series_genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Series_genres>? Series_genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_categories")]
+        [Newtonsoft.Json.JsonProperty("series_categories", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Series_categories>? Series_categories { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27122,27 +27125,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AvatarModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("extension")]
+        [Newtonsoft.Json.JsonProperty("extension", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Extension { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("height")]
+        [Newtonsoft.Json.JsonProperty("height", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Height { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("width")]
+        [Newtonsoft.Json.JsonProperty("width", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Width { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27155,21 +27158,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AvatarModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("height")]
+        [Newtonsoft.Json.JsonProperty("height", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Height { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("width")]
+        [Newtonsoft.Json.JsonProperty("width", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Width { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27182,12 +27185,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class AvatarModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27200,18 +27203,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ImageModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Url2? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("height")]
+        [Newtonsoft.Json.JsonProperty("height", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Height { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("width")]
+        [Newtonsoft.Json.JsonProperty("width", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Width { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27224,16 +27227,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsBulkAddModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("priority")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ListsBulkAddModelV1Priority>))]
+        [Newtonsoft.Json.JsonProperty("priority", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ListsBulkAddModelV1Priority? Priority { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_title")]
+        [Newtonsoft.Json.JsonProperty("series_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27246,34 +27249,34 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("list_id")]
+        [Newtonsoft.Json.JsonProperty("list_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? List_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ListsModelV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ListsModelV1Type? Type { get; set; }
 
         /// <summary>
         /// Single character icon (emoji or symbol)
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("icon")]
+        [Newtonsoft.Json.JsonProperty("icon", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Icon { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("custom")]
+        [Newtonsoft.Json.JsonProperty("custom", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Custom { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("options")]
+        [Newtonsoft.Json.JsonProperty("options", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Options? Options { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27286,28 +27289,28 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ListsModelUpdateV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ListsModelUpdateV1Type? Type { get; set; }
 
         /// <summary>
         /// Single character icon (emoji or symbol)
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("icon")]
+        [Newtonsoft.Json.JsonProperty("icon", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Icon { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("options")]
+        [Newtonsoft.Json.JsonProperty("options", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Options2? Options { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27320,24 +27323,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsPublicSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("list")]
+        [Newtonsoft.Json.JsonProperty("list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ListsModelV1? List { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results9>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27350,12 +27353,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsPublicStatsModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Genres>? Genres { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27368,18 +27371,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27392,24 +27395,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("list")]
+        [Newtonsoft.Json.JsonProperty("list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ListsModelV1? List { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results10>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27422,31 +27425,31 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsSeriesModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public required Series Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("list_id")]
+        [Newtonsoft.Json.JsonProperty("list_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? List_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("list_type")]
+        [Newtonsoft.Json.JsonProperty("list_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? List_type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("list_icon")]
+        [Newtonsoft.Json.JsonProperty("list_icon", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? List_icon { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Status? Status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("priority")]
+        [Newtonsoft.Json.JsonProperty("priority", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Priority { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27459,22 +27462,22 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsSeriesModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public required Series2 Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("list_id")]
+        [Newtonsoft.Json.JsonProperty("list_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? List_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Status2? Status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("priority")]
+        [Newtonsoft.Json.JsonProperty("priority", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Priority { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27487,15 +27490,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsSimilarUsersResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("users")]
+        [Newtonsoft.Json.JsonProperty("users", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Users>? Users { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27508,12 +27511,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class MiscOnlineUsersModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("users")]
+        [Newtonsoft.Json.JsonProperty("users", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Users2>? Users { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27526,28 +27529,28 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class MiscSlowTransactionStatusResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("state")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<MiscSlowTransactionStatusResponseV1State>))]
+        [Newtonsoft.Json.JsonProperty("state", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MiscSlowTransactionStatusResponseV1State? State { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("error")]
+        [Newtonsoft.Json.JsonProperty("error", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Error { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("percent")]
+        [Newtonsoft.Json.JsonProperty("percent", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Percent { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("done")]
+        [Newtonsoft.Json.JsonProperty("done", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Done { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total")]
+        [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("return")]
+        [Newtonsoft.Json.JsonProperty("return", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Return { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27560,21 +27563,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class MiscStatsModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_users")]
+        [Newtonsoft.Json.JsonProperty("total_users", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_users { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("latest_user")]
+        [Newtonsoft.Json.JsonProperty("latest_user", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Latest_user { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_forum_topics")]
+        [Newtonsoft.Json.JsonProperty("total_forum_topics", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_forum_topics { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_forum_posts")]
+        [Newtonsoft.Json.JsonProperty("total_forum_posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_forum_posts { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27587,24 +27590,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PollArchiveModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("poll_id")]
+        [Newtonsoft.Json.JsonProperty("poll_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Poll_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("responses")]
+        [Newtonsoft.Json.JsonProperty("responses", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Responses { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_votes")]
+        [Newtonsoft.Json.JsonProperty("total_votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_votes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_finished")]
+        [Newtonsoft.Json.JsonProperty("time_finished", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_finished { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27617,22 +27620,22 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PollArchiveSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PollArchiveSearchRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public PollArchiveSearchRequestV1Orderby? Orderby { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27645,21 +27648,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PollArchiveSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results11>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27672,21 +27675,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PollModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("active")]
+        [Newtonsoft.Json.JsonProperty("active", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Active { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answers")]
+        [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Answers>? Answers { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_votes")]
+        [Newtonsoft.Json.JsonProperty("total_votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_votes { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27699,15 +27702,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PollModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answers")]
+        [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Answers2>? Answers { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27720,12 +27723,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PollVoteStatusModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("voted")]
+        [Newtonsoft.Json.JsonProperty("voted", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Voted { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27738,43 +27741,43 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PublishersModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
+        [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Publisher_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated5>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersModelV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public PublishersModelV1Type? Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("info")]
+        [Newtonsoft.Json.JsonProperty("info", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Info { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("site")]
+        [Newtonsoft.Json.JsonProperty("site", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Site { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats8? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin12? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27787,28 +27790,28 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PublishersModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
+        [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Publisher_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersModelSearchV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public PublishersModelSearchV1Type? Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats9? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27821,28 +27824,28 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PublishersModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated6>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersModelUpdateV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public PublishersModelUpdateV1Type? Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("info")]
+        [Newtonsoft.Json.JsonProperty("info", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Info { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("site")]
+        [Newtonsoft.Json.JsonProperty("site", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Site { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin13? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27855,15 +27858,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PublishersPublicationResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher")]
+        [Newtonsoft.Json.JsonProperty("publisher", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Publisher? Publisher { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_list")]
+        [Newtonsoft.Json.JsonProperty("series_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Series_list2>? Series_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27876,31 +27879,31 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PublishersSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersSearchRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public PublishersSearchRequestV1Orderby? Orderby { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("pending")]
+        [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pending { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27913,21 +27916,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PublishersSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results12>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27940,15 +27943,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class PublishersSeriesListResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_list")]
+        [Newtonsoft.Json.JsonProperty("series_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Series_list3>? Series_list { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publication_list")]
+        [Newtonsoft.Json.JsonProperty("publication_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Publication_list>? Publication_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27961,18 +27964,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseDaysSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("include_metadata")]
+        [Newtonsoft.Json.JsonProperty("include_metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Include_metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -27985,39 +27988,39 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("volume")]
+        [Newtonsoft.Json.JsonProperty("volume", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Volume { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("chapter")]
+        [Newtonsoft.Json.JsonProperty("chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Chapter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("groups")]
+        [Newtonsoft.Json.JsonProperty("groups", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Groups>? Groups { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("release_date")]
+        [Newtonsoft.Json.JsonProperty("release_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Release_date { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("download_notes")]
+        [Newtonsoft.Json.JsonProperty("download_notes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Download_notes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("comment")]
+        [Newtonsoft.Json.JsonProperty("comment", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Comment { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin14? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28030,30 +28033,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("volume")]
+        [Newtonsoft.Json.JsonProperty("volume", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Volume { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("chapter")]
+        [Newtonsoft.Json.JsonProperty("chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Chapter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("groups")]
+        [Newtonsoft.Json.JsonProperty("groups", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Groups2>? Groups { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("release_date")]
+        [Newtonsoft.Json.JsonProperty("release_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Release_date { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28066,36 +28069,36 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("volume")]
+        [Newtonsoft.Json.JsonProperty("volume", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Volume { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("chapter")]
+        [Newtonsoft.Json.JsonProperty("chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Chapter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("groups")]
+        [Newtonsoft.Json.JsonProperty("groups", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Groups3>? Groups { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("release_date")]
+        [Newtonsoft.Json.JsonProperty("release_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Release_date { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("download_notes")]
+        [Newtonsoft.Json.JsonProperty("download_notes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Download_notes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("comment")]
+        [Newtonsoft.Json.JsonProperty("comment", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Comment { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeUpdateV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin15? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28108,21 +28111,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseModerateRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("archived")]
+        [Newtonsoft.Json.JsonProperty("archived", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Archived { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("disable_paging")]
+        [Newtonsoft.Json.JsonProperty("disable_paging", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Disable_paging { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28135,24 +28138,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseModerateResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results13>? Results { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_info")]
+        [Newtonsoft.Json.JsonProperty("group_info", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Group_info>? Group_info { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28165,51 +28168,51 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("search_type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ReleaseSearchRequestV1Search_type>))]
+        [Newtonsoft.Json.JsonProperty("search_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ReleaseSearchRequestV1Search_type? Search_type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ReleaseSearchRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ReleaseSearchRequestV1Orderby? Orderby { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("start_date")]
+        [Newtonsoft.Json.JsonProperty("start_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Start_date { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("end_date")]
+        [Newtonsoft.Json.JsonProperty("end_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? End_date { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("asc")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<ReleaseSearchRequestV1Asc>))]
+        [Newtonsoft.Json.JsonProperty("asc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ReleaseSearchRequestV1Asc? Asc { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_id")]
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Group_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("pending")]
+        [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pending { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("include_metadata")]
+        [Newtonsoft.Json.JsonProperty("include_metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Include_metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28222,21 +28225,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReleaseSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results14>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28249,33 +28252,33 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewCommentModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("review_id")]
+        [Newtonsoft.Json.JsonProperty("review_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Review_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("subject")]
+        [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Subject { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("content")]
+        [Newtonsoft.Json.JsonProperty("content", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Content { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author")]
+        [Newtonsoft.Json.JsonProperty("author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Author? Author { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rating")]
+        [Newtonsoft.Json.JsonProperty("rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_updated")]
+        [Newtonsoft.Json.JsonProperty("time_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_updated { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28288,21 +28291,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewCommentModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("subject")]
+        [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Subject { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("content")]
+        [Newtonsoft.Json.JsonProperty("content", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Content { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rating")]
+        [Newtonsoft.Json.JsonProperty("rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin16? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28315,18 +28318,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewCommentSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28339,21 +28342,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewCommentSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results15>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28366,33 +28369,33 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("body")]
+        [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author")]
+        [Newtonsoft.Json.JsonProperty("author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Author2? Author { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("review")]
+        [Newtonsoft.Json.JsonProperty("review", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Review? Review { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin17? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28405,30 +28408,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("body_excerpt")]
+        [Newtonsoft.Json.JsonProperty("body_excerpt", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body_excerpt { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author")]
+        [Newtonsoft.Json.JsonProperty("author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Author3? Author { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("review")]
+        [Newtonsoft.Json.JsonProperty("review", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Review2? Review { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28441,24 +28444,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("body")]
+        [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_title")]
+        [Newtonsoft.Json.JsonProperty("series_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("review")]
+        [Newtonsoft.Json.JsonProperty("review", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Review3? Review { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin18? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28471,30 +28474,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("pending")]
+        [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pending { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28507,21 +28510,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ReviewSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results16>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28534,16 +28537,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCategoryUpdateModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("from")]
+        [Newtonsoft.Json.JsonProperty("from", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public required From From { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("to")]
+        [Newtonsoft.Json.JsonProperty("to", Required = Newtonsoft.Json.Required.Always)]
         public required CategoriesModelUpdateV1 To { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28556,16 +28559,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCategoryVoteModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("agree")]
+        [Newtonsoft.Json.JsonProperty("agree", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Agree { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28578,13 +28581,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCategoryVoteDeleteModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28597,36 +28600,36 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCommentModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("subject")]
+        [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Subject { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("content")]
+        [Newtonsoft.Json.JsonProperty("content", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Content { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author")]
+        [Newtonsoft.Json.JsonProperty("author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Author4? Author { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("useful")]
+        [Newtonsoft.Json.JsonProperty("useful", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Useful { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_updated")]
+        [Newtonsoft.Json.JsonProperty("time_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_updated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin19? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28639,18 +28642,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCommentModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("subject")]
+        [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Subject { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("content")]
+        [Newtonsoft.Json.JsonProperty("content", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Content { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin20? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28663,21 +28666,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCommentModerationResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results17>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28690,12 +28693,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCommentReportModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("report_reason")]
+        [Newtonsoft.Json.JsonProperty("report_reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Report_reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28708,22 +28711,22 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCommentSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("method")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesCommentSearchRequestV1Method>))]
+        [Newtonsoft.Json.JsonProperty("method", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesCommentSearchRequestV1Method? Method { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28736,21 +28739,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCommentSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results18>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28763,12 +28766,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesCommentUsefulModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("useful")]
+        [Newtonsoft.Json.JsonProperty("useful", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Useful { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28781,15 +28784,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesGroupListResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_list")]
+        [Newtonsoft.Json.JsonProperty("group_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<GroupsModelSearchV1>? Group_list { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("release_list")]
+        [Newtonsoft.Json.JsonProperty("release_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ReleaseModelSearchV1>? Release_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28802,24 +28805,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesHistoryModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("change_id")]
+        [Newtonsoft.Json.JsonProperty("change_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Change_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("action")]
+        [Newtonsoft.Json.JsonProperty("action", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Action { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("changed")]
+        [Newtonsoft.Json.JsonProperty("changed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Changed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28832,24 +28835,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesHistorySearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_title")]
+        [Newtonsoft.Json.JsonProperty("series_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results19>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28862,24 +28865,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesLockModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("field")]
+        [Newtonsoft.Json.JsonProperty("field", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Field { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_locked")]
+        [Newtonsoft.Json.JsonProperty("time_locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_locked { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28892,12 +28895,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesLockModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -28910,91 +28913,91 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated7>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("image")]
+        [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ImageModelV1? Image { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesModelV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesModelV1Type? Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("bayesian_rating")]
+        [Newtonsoft.Json.JsonProperty("bayesian_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Bayesian_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rating_votes")]
+        [Newtonsoft.Json.JsonProperty("rating_votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rating_votes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Genres2>? Genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("categories")]
+        [Newtonsoft.Json.JsonProperty("categories", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<CategoriesModelV1>? Categories { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("latest_chapter")]
+        [Newtonsoft.Json.JsonProperty("latest_chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Latest_chapter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("licensed")]
+        [Newtonsoft.Json.JsonProperty("licensed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Licensed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("completed")]
+        [Newtonsoft.Json.JsonProperty("completed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Completed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("anime")]
+        [Newtonsoft.Json.JsonProperty("anime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Anime? Anime { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("related_series")]
+        [Newtonsoft.Json.JsonProperty("related_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Related_series>? Related_series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("authors")]
+        [Newtonsoft.Json.JsonProperty("authors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Authors>? Authors { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publishers")]
+        [Newtonsoft.Json.JsonProperty("publishers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Publishers>? Publishers { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publications")]
+        [Newtonsoft.Json.JsonProperty("publications", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Publications>? Publications { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("recommendations")]
+        [Newtonsoft.Json.JsonProperty("recommendations", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<SeriesRecommendationsModelV1>? Recommendations { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_recommendations")]
+        [Newtonsoft.Json.JsonProperty("category_recommendations", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<SeriesRecommendationsModelV1>? Category_recommendations { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rank")]
+        [Newtonsoft.Json.JsonProperty("rank", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Rank? Rank { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin21? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29007,52 +29010,52 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("image")]
+        [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ImageModelV1? Image { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesModelSearchV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesModelSearchV1Type? Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("bayesian_rating")]
+        [Newtonsoft.Json.JsonProperty("bayesian_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Bayesian_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rating_votes")]
+        [Newtonsoft.Json.JsonProperty("rating_votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rating_votes { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Genres3>? Genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("latest_chapter")]
+        [Newtonsoft.Json.JsonProperty("latest_chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Latest_chapter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rank")]
+        [Newtonsoft.Json.JsonProperty("rank", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Rank2? Rank { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin22? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29065,58 +29068,58 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("associated")]
+        [Newtonsoft.Json.JsonProperty("associated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Associated8>? Associated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("description")]
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Description { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesModelUpdateV1Type>))]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesModelUpdateV1Type? Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Genres4>? Genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("categories")]
+        [Newtonsoft.Json.JsonProperty("categories", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<CategoriesModelUpdateV1>? Categories { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("licensed")]
+        [Newtonsoft.Json.JsonProperty("licensed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Licensed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("completed")]
+        [Newtonsoft.Json.JsonProperty("completed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Completed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("anime")]
+        [Newtonsoft.Json.JsonProperty("anime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Anime2? Anime { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("related_series")]
+        [Newtonsoft.Json.JsonProperty("related_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Related_series2>? Related_series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("authors")]
+        [Newtonsoft.Json.JsonProperty("authors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Authors2>? Authors { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publishers")]
+        [Newtonsoft.Json.JsonProperty("publishers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Publishers2>? Publishers { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publications")]
+        [Newtonsoft.Json.JsonProperty("publications", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Publications2>? Publications { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin23? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29129,15 +29132,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesRatingModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("rating")]
+        [Newtonsoft.Json.JsonProperty("rating", Required = Newtonsoft.Json.Required.Always)]
         public required double Rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29150,15 +29153,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesRatingRainbowModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("average_rating")]
+        [Newtonsoft.Json.JsonProperty("average_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Average_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rainbow")]
+        [Newtonsoft.Json.JsonProperty("rainbow", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Rainbow>? Rainbow { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29171,24 +29174,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesRecommendationsModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_name")]
+        [Newtonsoft.Json.JsonProperty("series_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_url")]
+        [Newtonsoft.Json.JsonProperty("series_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_image")]
+        [Newtonsoft.Json.JsonProperty("series_image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ImageModelV1? Series_image { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("weight")]
+        [Newtonsoft.Json.JsonProperty("weight", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Weight { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29201,80 +29204,79 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stype")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Stype>))]
+        [Newtonsoft.Json.JsonProperty("stype", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesSearchRequestV1Stype? Stype { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("licensed")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Licensed>))]
+        [Newtonsoft.Json.JsonProperty("licensed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesSearchRequestV1Licensed? Licensed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("filter_types")]
+        [Newtonsoft.Json.JsonProperty("filter_types", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Filter_types { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Category { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("pubname")]
+        [Newtonsoft.Json.JsonProperty("pubname", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Pubname { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("filter")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Filter>))]
+        [Newtonsoft.Json.JsonProperty("filter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesSearchRequestV1Filter? Filter { get; set; }
 
         /// <summary>
         /// Meant to replace 'filter', it lets you specify multiple filters as an array of strings
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("filters")]
-        // TODO(system.text.json): Add ItemConverterType with enum converter when supported
+        [Newtonsoft.Json.JsonProperty("filters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public System.Collections.Generic.ICollection<Filters>? Filters { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("list")]
+        [Newtonsoft.Json.JsonProperty("list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? List { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("exclude_genre")]
+        [Newtonsoft.Json.JsonProperty("exclude_genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Exclude_genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<SeriesSearchRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SeriesSearchRequestV1Orderby? Orderby { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("pending")]
+        [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pending { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("include_rank_metadata")]
+        [Newtonsoft.Json.JsonProperty("include_rank_metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Include_rank_metadata { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("exclude_filtered_genres")]
+        [Newtonsoft.Json.JsonProperty("exclude_filtered_genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Exclude_filtered_genres { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29287,21 +29289,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class SeriesSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results20>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29314,18 +29316,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class TimeV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("timestamp")]
+        [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Timestamp { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("as_rfc3339")]
+        [Newtonsoft.Json.JsonProperty("as_rfc3339", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset? As_rfc3339 { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("as_string")]
+        [Newtonsoft.Json.JsonProperty("as_string", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? As_string { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29338,12 +29340,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class TimeUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("timestamp")]
+        [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Timestamp { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29356,21 +29358,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserChangeRequestModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("body")]
+        [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29383,15 +29385,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserChangeRequestModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("body")]
+        [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("archived")]
+        [Newtonsoft.Json.JsonProperty("archived", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Archived { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29404,21 +29406,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserChangeRequestSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results21>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29431,15 +29433,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserGenreFilterModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre_id")]
+        [Newtonsoft.Json.JsonProperty("genre_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Genre_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre_name")]
+        [Newtonsoft.Json.JsonProperty("genre_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre_name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29452,18 +29454,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserGenreHighlightModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre_id")]
+        [Newtonsoft.Json.JsonProperty("genre_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Genre_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre_name")]
+        [Newtonsoft.Json.JsonProperty("genre_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("color")]
+        [Newtonsoft.Json.JsonProperty("color", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Color { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29476,12 +29478,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserGenreHighlightModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("color")]
+        [Newtonsoft.Json.JsonProperty("color", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Color { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29494,18 +29496,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserGroupFilterModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_id")]
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Group_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_name")]
+        [Newtonsoft.Json.JsonProperty("group_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Group_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_url")]
+        [Newtonsoft.Json.JsonProperty("group_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Group_url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29518,71 +29520,71 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("email")]
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Email { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("roles")]
+        [Newtonsoft.Json.JsonProperty("roles", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<UserRolesModelV1>? Roles { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("avatar")]
+        [Newtonsoft.Json.JsonProperty("avatar", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public AvatarModelV1? Avatar { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_joined")]
+        [Newtonsoft.Json.JsonProperty("time_joined", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_joined { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_active_time")]
+        [Newtonsoft.Json.JsonProperty("last_active_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_active_time { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("gender")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelV1Gender>))]
+        [Newtonsoft.Json.JsonProperty("gender", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserModelV1Gender? Gender { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("birthday")]
+        [Newtonsoft.Json.JsonProperty("birthday", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public BirthdayModelV1? Birthday { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("age")]
+        [Newtonsoft.Json.JsonProperty("age", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Age { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("timezone")]
+        [Newtonsoft.Json.JsonProperty("timezone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Timezone { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("signature")]
+        [Newtonsoft.Json.JsonProperty("signature", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Signature { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("location")]
+        [Newtonsoft.Json.JsonProperty("location", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Location { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_title")]
+        [Newtonsoft.Json.JsonProperty("forum_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("folding_at_home")]
+        [Newtonsoft.Json.JsonProperty("folding_at_home", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Folding_at_home { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("flair")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelV1Flair>))]
+        [Newtonsoft.Json.JsonProperty("flair", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserModelV1Flair? Flair { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("profile")]
+        [Newtonsoft.Json.JsonProperty("profile", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Profile? Profile { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats10? Stats { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin24? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29595,43 +29597,43 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserModelSearchV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("avatar")]
+        [Newtonsoft.Json.JsonProperty("avatar", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public AvatarModelSearchV1? Avatar { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_joined")]
+        [Newtonsoft.Json.JsonProperty("time_joined", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_joined { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("signature")]
+        [Newtonsoft.Json.JsonProperty("signature", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Signature { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_title")]
+        [Newtonsoft.Json.JsonProperty("forum_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("folding_at_home")]
+        [Newtonsoft.Json.JsonProperty("folding_at_home", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Folding_at_home { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("flair")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelSearchV1Flair>))]
+        [Newtonsoft.Json.JsonProperty("flair", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserModelSearchV1Flair? Flair { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("profile")]
+        [Newtonsoft.Json.JsonProperty("profile", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Profile2? Profile { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("stats")]
+        [Newtonsoft.Json.JsonProperty("stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Stats11? Stats { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29644,52 +29646,52 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("email")]
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Email { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("password")]
+        [Newtonsoft.Json.JsonProperty("password", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Password { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("roles")]
+        [Newtonsoft.Json.JsonProperty("roles", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<UserRolesModelUpdateV1>? Roles { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("new_avatar_id")]
+        [Newtonsoft.Json.JsonProperty("new_avatar_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? New_avatar_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("gender")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserModelUpdateV1Gender>))]
+        [Newtonsoft.Json.JsonProperty("gender", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserModelUpdateV1Gender? Gender { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("birthday")]
+        [Newtonsoft.Json.JsonProperty("birthday", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public BirthdayModelV1? Birthday { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("timezone")]
+        [Newtonsoft.Json.JsonProperty("timezone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Timezone { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("signature")]
+        [Newtonsoft.Json.JsonProperty("signature", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Signature { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("location")]
+        [Newtonsoft.Json.JsonProperty("location", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Location { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_title")]
+        [Newtonsoft.Json.JsonProperty("forum_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("folding_at_home")]
+        [Newtonsoft.Json.JsonProperty("folding_at_home", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Folding_at_home { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("profile")]
+        [Newtonsoft.Json.JsonProperty("profile", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Profile3? Profile { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("admin")]
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Admin25? Admin { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29702,12 +29704,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserModelUpdatePasswordV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("password")]
+        [Newtonsoft.Json.JsonProperty("password", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Password { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29720,18 +29722,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserModelRegisterV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("email")]
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Email { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("password")]
+        [Newtonsoft.Json.JsonProperty("password", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Password { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29744,33 +29746,33 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserNotificationModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("notification_id")]
+        [Newtonsoft.Json.JsonProperty("notification_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Notification_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
+        [Newtonsoft.Json.JsonProperty("notification_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notification_type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reference_id")]
+        [Newtonsoft.Json.JsonProperty("reference_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Reference_id { get; set; }
 
         /// <summary>
         /// Free-form JSON object. Structure varies by notification type.
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("payload")]
+        [Newtonsoft.Json.JsonProperty("payload", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public object? Payload { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_created")]
+        [Newtonsoft.Json.JsonProperty("time_created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_created { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_read")]
+        [Newtonsoft.Json.JsonProperty("time_read", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_read { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("is_read")]
+        [Newtonsoft.Json.JsonProperty("is_read", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_read { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29783,27 +29785,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserNotificationPreferenceModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
+        [Newtonsoft.Json.JsonProperty("notification_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notification_type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("channel")]
+        [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Channel { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("delivery_method")]
+        [Newtonsoft.Json.JsonProperty("delivery_method", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Delivery_method { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("is_default")]
+        [Newtonsoft.Json.JsonProperty("is_default", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_default { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_created")]
+        [Newtonsoft.Json.JsonProperty("time_created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_created { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_updated")]
+        [Newtonsoft.Json.JsonProperty("time_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_updated { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29816,18 +29818,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserNotificationPreferenceUpdateModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
+        [Newtonsoft.Json.JsonProperty("notification_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notification_type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("channel")]
+        [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Channel { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("delivery_method")]
+        [Newtonsoft.Json.JsonProperty("delivery_method", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Delivery_method { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29840,19 +29842,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserRolesModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("role")]
+        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Role { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_added")]
+        [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Added_by? Added_by { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29865,13 +29867,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserRolesModelUpdateV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("role")]
+        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Role { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29884,32 +29886,32 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserSearchRequestV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("search")]
+        [Newtonsoft.Json.JsonProperty("search", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Search { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("perpage")]
+        [Newtonsoft.Json.JsonProperty("perpage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Perpage { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("letter")]
+        [Newtonsoft.Json.JsonProperty("letter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Letter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("role")]
+        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Role { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("orderby")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserSearchRequestV1Orderby>))]
+        [Newtonsoft.Json.JsonProperty("orderby", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserSearchRequestV1Orderby? Orderby { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("asc")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<UserSearchRequestV1Asc>))]
+        [Newtonsoft.Json.JsonProperty("asc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserSearchRequestV1Asc? Asc { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29922,21 +29924,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserSearchResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("page")]
+        [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results22>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29949,15 +29951,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserSessionModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("ip")]
+        [Newtonsoft.Json.JsonProperty("ip", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Ip { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_action")]
+        [Newtonsoft.Json.JsonProperty("last_action", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_action { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29970,15 +29972,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserSessionResponseV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_hits")]
+        [Newtonsoft.Json.JsonProperty("total_hits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_hits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("results")]
+        [Newtonsoft.Json.JsonProperty("results", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Results23>? Results { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -29991,18 +29993,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class UserSubscribedTopicModelV1
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time_subscribed_since")]
+        [Newtonsoft.Json.JsonProperty("time_subscribed_since", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_subscribed_since { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30015,19 +30017,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum List_name
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read")]
+        [System.Runtime.Serialization.EnumMember(Value = @"read")]
         Read = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"wish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"wish")]
         Wish = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"complete")]
+        [System.Runtime.Serialization.EnumMember(Value = @"complete")]
         Complete = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"unfinished")]
+        [System.Runtime.Serialization.EnumMember(Value = @"unfinished")]
         Unfinished = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"hold")]
+        [System.Runtime.Serialization.EnumMember(Value = @"hold")]
         Hold = 4,
 
     }
@@ -30036,10 +30038,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"score")]
+        [System.Runtime.Serialization.EnumMember(Value = @"score")]
         Score = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"time")]
+        [System.Runtime.Serialization.EnumMember(Value = @"time")]
         Time = 1,
 
     }
@@ -30048,10 +30050,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Asc
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"asc")]
+        [System.Runtime.Serialization.EnumMember(Value = @"asc")]
         Asc = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"desc")]
+        [System.Runtime.Serialization.EnumMember(Value = @"desc")]
         Desc = 1,
 
     }
@@ -30063,12 +30065,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
         /// <summary>
         /// List of notification IDs to mark as read. If omitted, all notifications are marked as read.
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("notification_ids")]
+        [Newtonsoft.Json.JsonProperty("notification_ids", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<int>? Notification_ids { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30084,24 +30086,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
         /// <summary>
         /// unsubscribe or unsubscribe_all
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("action")]
+        [Newtonsoft.Json.JsonProperty("action", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Action { get; set; }
 
         /// <summary>
         /// Notification type being unsubscribed
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("notification_type")]
+        [Newtonsoft.Json.JsonProperty("notification_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notification_type { get; set; }
 
         /// <summary>
         /// Username for verification
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30114,12 +30116,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Response2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("count")]
+        [Newtonsoft.Json.JsonProperty("count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Count { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30132,12 +30134,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Response3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("marked_count")]
+        [Newtonsoft.Json.JsonProperty("marked_count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Marked_count { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30150,13 +30152,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30169,19 +30171,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsModelV1Bloodtype
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"A")]
         A = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"B")]
+        [System.Runtime.Serialization.EnumMember(Value = @"B")]
         B = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"AB")]
+        [System.Runtime.Serialization.EnumMember(Value = @"AB")]
         AB = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"O")]
+        [System.Runtime.Serialization.EnumMember(Value = @"O")]
         O = 4,
 
     }
@@ -30190,16 +30192,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsModelV1Gender
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Male")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Male")]
         Male = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Female")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Female")]
         Female = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Other")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
         Other = 3,
 
     }
@@ -30208,19 +30210,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsModelV1Status
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Active")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Active")]
         Active = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Temporarily Inactive")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Temporarily Inactive")]
         Temporarily_Inactive = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Retired")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Retired")]
         Retired = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Deceased")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Deceased")]
         Deceased = 4,
 
     }
@@ -30229,12 +30231,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_series")]
+        [Newtonsoft.Json.JsonProperty("total_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_series { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30247,18 +30249,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Social
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("officialsite")]
+        [Newtonsoft.Json.JsonProperty("officialsite", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Officialsite { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("facebook")]
+        [Newtonsoft.Json.JsonProperty("facebook", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Facebook { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("twitter")]
+        [Newtonsoft.Json.JsonProperty("twitter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Twitter { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30271,12 +30273,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30289,13 +30291,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30308,19 +30310,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsModelUpdateV1Bloodtype
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"A")]
         A = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"B")]
+        [System.Runtime.Serialization.EnumMember(Value = @"B")]
         B = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"AB")]
+        [System.Runtime.Serialization.EnumMember(Value = @"AB")]
         AB = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"O")]
+        [System.Runtime.Serialization.EnumMember(Value = @"O")]
         O = 4,
 
     }
@@ -30329,16 +30331,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsModelUpdateV1Gender
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Male")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Male")]
         Male = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Female")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Female")]
         Female = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Other")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
         Other = 3,
 
     }
@@ -30347,19 +30349,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsModelUpdateV1Status
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Active")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Active")]
         Active = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Temporarily Inactive")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Temporarily Inactive")]
         Temporarily_Inactive = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Retired")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Retired")]
         Retired = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Deceased")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Deceased")]
         Deceased = 4,
 
     }
@@ -30368,18 +30370,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Social2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("officialsite")]
+        [Newtonsoft.Json.JsonProperty("officialsite", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Officialsite { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("facebook")]
+        [Newtonsoft.Json.JsonProperty("facebook", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Facebook { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("twitter")]
+        [Newtonsoft.Json.JsonProperty("twitter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Twitter { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30392,12 +30394,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30410,12 +30412,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_series")]
+        [Newtonsoft.Json.JsonProperty("total_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_series { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30428,13 +30430,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsSearchRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"name")]
+        [System.Runtime.Serialization.EnumMember(Value = @"name")]
         Name = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"series")]
+        [System.Runtime.Serialization.EnumMember(Value = @"series")]
         Series = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"score")]
+        [System.Runtime.Serialization.EnumMember(Value = @"score")]
         Score = 2,
 
     }
@@ -30443,18 +30445,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public AuthorsModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hit_name")]
+        [Newtonsoft.Json.JsonProperty("hit_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Hit_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hit_genre")]
+        [Newtonsoft.Json.JsonProperty("hit_genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Hit_genre { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30467,10 +30469,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsSeriesListRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"title")]
+        [System.Runtime.Serialization.EnumMember(Value = @"title")]
         Title = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"year")]
+        [System.Runtime.Serialization.EnumMember(Value = @"year")]
         Year = 1,
 
     }
@@ -30479,30 +30481,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series_list
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30515,15 +30517,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Genre_list
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("count")]
+        [Newtonsoft.Json.JsonProperty("count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Count { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30536,16 +30538,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum CategoriesSearchRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"category")]
+        [System.Runtime.Serialization.EnumMember(Value = @"category")]
         Category = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"agree")]
+        [System.Runtime.Serialization.EnumMember(Value = @"agree")]
         Agree = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"disagree")]
+        [System.Runtime.Serialization.EnumMember(Value = @"disagree")]
         Disagree = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"usage")]
+        [System.Runtime.Serialization.EnumMember(Value = @"usage")]
         Usage = 3,
 
     }
@@ -30554,12 +30556,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public CategoriesModelSearchV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30572,15 +30574,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ConvoMessageModelV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata2? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30593,15 +30595,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ConvoModelV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata3? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30614,12 +30616,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results5
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumAdminHistoryModelV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30632,12 +30634,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Forums
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum")]
+        [Newtonsoft.Json.JsonProperty("forum", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumForumModelListV1? Forum { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30650,15 +30652,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Category
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_id")]
+        [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Category_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("category_name")]
+        [Newtonsoft.Json.JsonProperty("category_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Category_name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30671,15 +30673,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topics")]
+        [Newtonsoft.Json.JsonProperty("topics", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topics { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("posts")]
+        [Newtonsoft.Json.JsonProperty("posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Posts { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30692,18 +30694,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("locked")]
+        [Newtonsoft.Json.JsonProperty("locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Locked { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hidden")]
+        [Newtonsoft.Json.JsonProperty("hidden", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hidden { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("verify_age")]
+        [Newtonsoft.Json.JsonProperty("verify_age", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Verify_age { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30716,15 +30718,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("topics")]
+        [Newtonsoft.Json.JsonProperty("topics", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topics { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("posts")]
+        [Newtonsoft.Json.JsonProperty("posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Posts { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30737,18 +30739,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("locked")]
+        [Newtonsoft.Json.JsonProperty("locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Locked { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hidden")]
+        [Newtonsoft.Json.JsonProperty("hidden", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hidden { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("verify_age")]
+        [Newtonsoft.Json.JsonProperty("verify_age", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Verify_age { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30761,18 +30763,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin5
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("locked")]
+        [Newtonsoft.Json.JsonProperty("locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Locked { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hidden")]
+        [Newtonsoft.Json.JsonProperty("hidden", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hidden { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("verify_age")]
+        [Newtonsoft.Json.JsonProperty("verify_age", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Verify_age { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30785,21 +30787,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Image
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("height")]
+        [Newtonsoft.Json.JsonProperty("height", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Height { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("width")]
+        [Newtonsoft.Json.JsonProperty("width", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Width { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("thumb_url")]
+        [Newtonsoft.Json.JsonProperty("thumb_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Thumb_url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30812,12 +30814,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin6
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("image_poll")]
+        [Newtonsoft.Json.JsonProperty("image_poll", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Image_poll { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30830,15 +30832,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Url
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("original")]
+        [Newtonsoft.Json.JsonProperty("original", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Original { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("thumb")]
+        [Newtonsoft.Json.JsonProperty("thumb", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Thumb { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30851,15 +30853,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results6
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata4? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30872,21 +30874,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Topic
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic1 { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_url")]
+        [Newtonsoft.Json.JsonProperty("topic_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic_url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30899,15 +30901,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Reply_to
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("post_id")]
+        [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Post_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("post_author")]
+        [Newtonsoft.Json.JsonProperty("post_author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Post_author? Post_author { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30920,15 +30922,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Last_edit
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("by")]
+        [Newtonsoft.Json.JsonProperty("by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? By { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("time")]
+        [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30941,21 +30943,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Topic2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_id")]
+        [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Topic_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic")]
+        [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_url")]
+        [Newtonsoft.Json.JsonProperty("topic_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic_url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -30968,10 +30970,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ForumSearchRequestV1Search_by
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"post")]
+        [System.Runtime.Serialization.EnumMember(Value = @"post")]
         Post = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"topic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"topic")]
         Topic = 1,
 
     }
@@ -30980,10 +30982,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ForumSearchRequestV1Method
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"fulltext")]
+        [System.Runtime.Serialization.EnumMember(Value = @"fulltext")]
         Fulltext = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"exact")]
+        [System.Runtime.Serialization.EnumMember(Value = @"exact")]
         Exact = 1,
 
     }
@@ -30992,15 +30994,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Topic_results
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata5? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31013,15 +31015,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Post_results
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata6? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31034,10 +31036,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ForumTopicListRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"last_post_date")]
+        [System.Runtime.Serialization.EnumMember(Value = @"last_post_date")]
         Last_post_date = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"topic_start_date")]
+        [System.Runtime.Serialization.EnumMember(Value = @"topic_start_date")]
         Topic_start_date = 1,
 
     }
@@ -31046,15 +31048,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results7
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata7? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31067,15 +31069,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats5
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("posts")]
+        [Newtonsoft.Json.JsonProperty("posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Posts { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("views")]
+        [Newtonsoft.Json.JsonProperty("views", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Views { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31088,18 +31090,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Forum
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_name")]
+        [Newtonsoft.Json.JsonProperty("forum_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31112,18 +31114,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin7
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("pinned")]
+        [Newtonsoft.Json.JsonProperty("pinned", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pinned { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("locked")]
+        [Newtonsoft.Json.JsonProperty("locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Locked { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("global")]
+        [Newtonsoft.Json.JsonProperty("global", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Global { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31136,15 +31138,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats6
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("posts")]
+        [Newtonsoft.Json.JsonProperty("posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Posts { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("views")]
+        [Newtonsoft.Json.JsonProperty("views", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Views { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31157,18 +31159,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Forum2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_name")]
+        [Newtonsoft.Json.JsonProperty("forum_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31181,18 +31183,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin8
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("pinned")]
+        [Newtonsoft.Json.JsonProperty("pinned", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pinned { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("locked")]
+        [Newtonsoft.Json.JsonProperty("locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Locked { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("global")]
+        [Newtonsoft.Json.JsonProperty("global", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Global { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31205,12 +31207,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Forum3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31223,18 +31225,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin9
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("pinned")]
+        [Newtonsoft.Json.JsonProperty("pinned", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pinned { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("locked")]
+        [Newtonsoft.Json.JsonProperty("locked", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Locked { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("global")]
+        [Newtonsoft.Json.JsonProperty("global", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Global { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31247,21 +31249,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats7
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("authors")]
+        [Newtonsoft.Json.JsonProperty("authors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Authors { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("filters")]
+        [Newtonsoft.Json.JsonProperty("filters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Filters { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("highlights")]
+        [Newtonsoft.Json.JsonProperty("highlights", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Highlights { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31274,13 +31276,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31293,27 +31295,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Social3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("site")]
+        [Newtonsoft.Json.JsonProperty("site", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Site { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("facebook")]
+        [Newtonsoft.Json.JsonProperty("facebook", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Facebook { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("twitter")]
+        [Newtonsoft.Json.JsonProperty("twitter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Twitter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("irc")]
+        [Newtonsoft.Json.JsonProperty("irc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Irc? Irc { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum")]
+        [Newtonsoft.Json.JsonProperty("forum", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("discord")]
+        [Newtonsoft.Json.JsonProperty("discord", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Discord { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31326,15 +31328,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin10
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hold")]
+        [Newtonsoft.Json.JsonProperty("hold", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hold { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31347,27 +31349,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Social4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("site")]
+        [Newtonsoft.Json.JsonProperty("site", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Site { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("facebook")]
+        [Newtonsoft.Json.JsonProperty("facebook", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Facebook { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("twitter")]
+        [Newtonsoft.Json.JsonProperty("twitter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Twitter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("irc")]
+        [Newtonsoft.Json.JsonProperty("irc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Irc2? Irc { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum")]
+        [Newtonsoft.Json.JsonProperty("forum", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("discord")]
+        [Newtonsoft.Json.JsonProperty("discord", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Discord { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31380,13 +31382,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31399,27 +31401,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Social5
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("site")]
+        [Newtonsoft.Json.JsonProperty("site", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Site { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("facebook")]
+        [Newtonsoft.Json.JsonProperty("facebook", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Facebook { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("twitter")]
+        [Newtonsoft.Json.JsonProperty("twitter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Twitter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("irc")]
+        [Newtonsoft.Json.JsonProperty("irc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Irc3? Irc { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum")]
+        [Newtonsoft.Json.JsonProperty("forum", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("discord")]
+        [Newtonsoft.Json.JsonProperty("discord", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Discord { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31432,15 +31434,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin11
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hold")]
+        [Newtonsoft.Json.JsonProperty("hold", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hold { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31453,15 +31455,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results8
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public GroupsModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hit_name")]
+        [Newtonsoft.Json.JsonProperty("hit_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Hit_name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31474,21 +31476,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series_titles
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31501,15 +31503,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series_genres
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("count")]
+        [Newtonsoft.Json.JsonProperty("count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Count { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31522,15 +31524,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series_categories
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Category { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("votes")]
+        [Newtonsoft.Json.JsonProperty("votes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Votes { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31543,15 +31545,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Url2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("original")]
+        [Newtonsoft.Json.JsonProperty("original", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Original { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("thumb")]
+        [Newtonsoft.Json.JsonProperty("thumb", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Thumb { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31564,10 +31566,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ListsBulkAddModelV1Priority
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"High")]
+        [System.Runtime.Serialization.EnumMember(Value = @"High")]
         High = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Low")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Low")]
         Low = 1,
 
     }
@@ -31576,19 +31578,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ListsModelV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read")]
+        [System.Runtime.Serialization.EnumMember(Value = @"read")]
         Read = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"wish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"wish")]
         Wish = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"complete")]
+        [System.Runtime.Serialization.EnumMember(Value = @"complete")]
         Complete = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"unfinished")]
+        [System.Runtime.Serialization.EnumMember(Value = @"unfinished")]
         Unfinished = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"hold")]
+        [System.Runtime.Serialization.EnumMember(Value = @"hold")]
         Hold = 4,
 
     }
@@ -31597,32 +31599,32 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Options
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("public")]
+        [Newtonsoft.Json.JsonProperty("public", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Public { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("sort")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<OptionsSort>))]
+        [Newtonsoft.Json.JsonProperty("sort", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public OptionsSort? Sort { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_rating")]
+        [Newtonsoft.Json.JsonProperty("show_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Show_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_status")]
+        [Newtonsoft.Json.JsonProperty("show_status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Show_status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_comment")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<OptionsShow_comment>))]
+        [Newtonsoft.Json.JsonProperty("show_comment", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public OptionsShow_comment? Show_comment { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_per_page")]
+        [Newtonsoft.Json.JsonProperty("show_per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Show_per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_latest_chapter")]
+        [Newtonsoft.Json.JsonProperty("show_latest_chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Show_latest_chapter { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31635,19 +31637,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ListsModelUpdateV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"read")]
+        [System.Runtime.Serialization.EnumMember(Value = @"read")]
         Read = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"wish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"wish")]
         Wish = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"complete")]
+        [System.Runtime.Serialization.EnumMember(Value = @"complete")]
         Complete = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"unfinished")]
+        [System.Runtime.Serialization.EnumMember(Value = @"unfinished")]
         Unfinished = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"hold")]
+        [System.Runtime.Serialization.EnumMember(Value = @"hold")]
         Hold = 4,
 
     }
@@ -31656,32 +31658,32 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Options2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("public")]
+        [Newtonsoft.Json.JsonProperty("public", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Public { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("sort")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Options2Sort>))]
+        [Newtonsoft.Json.JsonProperty("sort", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public Options2Sort? Sort { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_rating")]
+        [Newtonsoft.Json.JsonProperty("show_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Show_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_status")]
+        [Newtonsoft.Json.JsonProperty("show_status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Show_status { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_comment")]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Options2Show_comment>))]
+        [Newtonsoft.Json.JsonProperty("show_comment", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public Options2Show_comment? Show_comment { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_per_page")]
+        [Newtonsoft.Json.JsonProperty("show_per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Show_per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("show_latest_chapter")]
+        [Newtonsoft.Json.JsonProperty("show_latest_chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Show_latest_chapter { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31694,27 +31696,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results9
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_title")]
+        [Newtonsoft.Json.JsonProperty("series_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_url")]
+        [Newtonsoft.Json.JsonProperty("series_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("volume")]
+        [Newtonsoft.Json.JsonProperty("volume", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Volume { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("chapter")]
+        [Newtonsoft.Json.JsonProperty("chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Chapter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata8? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31727,15 +31729,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Genres
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre_name")]
+        [Newtonsoft.Json.JsonProperty("genre_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("count")]
+        [Newtonsoft.Json.JsonProperty("count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Count { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31748,15 +31750,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results10
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ListsSeriesModelV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata9? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31769,18 +31771,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
         public required int Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31793,15 +31795,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Status
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("volume")]
+        [Newtonsoft.Json.JsonProperty("volume", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Volume { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("chapter")]
+        [Newtonsoft.Json.JsonProperty("chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Chapter { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31814,15 +31816,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
         public required int Id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31835,21 +31837,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Status2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("volume")]
+        [Newtonsoft.Json.JsonProperty("volume", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Volume { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("chapter")]
+        [Newtonsoft.Json.JsonProperty("chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Chapter { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("increment_volume")]
+        [Newtonsoft.Json.JsonProperty("increment_volume", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Increment_volume { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("increment_chapter")]
+        [Newtonsoft.Json.JsonProperty("increment_chapter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Increment_chapter { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31862,24 +31864,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Users
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_name")]
+        [Newtonsoft.Json.JsonProperty("user_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? User_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_rating")]
+        [Newtonsoft.Json.JsonProperty("user_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? User_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("intersect_count")]
+        [Newtonsoft.Json.JsonProperty("intersect_count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Intersect_count { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("percent_match")]
+        [Newtonsoft.Json.JsonProperty("percent_match", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Percent_match { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31892,15 +31894,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Users2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata10? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31913,16 +31915,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum MiscSlowTransactionStatusResponseV1State
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"pending")]
+        [System.Runtime.Serialization.EnumMember(Value = @"pending")]
         Pending = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"in progress")]
+        [System.Runtime.Serialization.EnumMember(Value = @"in progress")]
         In_progress = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"complete")]
+        [System.Runtime.Serialization.EnumMember(Value = @"complete")]
         Complete = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"error")]
+        [System.Runtime.Serialization.EnumMember(Value = @"error")]
         Error = 3,
 
     }
@@ -31931,13 +31933,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum PollArchiveSearchRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"time_finished")]
+        [System.Runtime.Serialization.EnumMember(Value = @"time_finished")]
         Time_finished = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"total_votes")]
+        [System.Runtime.Serialization.EnumMember(Value = @"total_votes")]
         Total_votes = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"score")]
+        [System.Runtime.Serialization.EnumMember(Value = @"score")]
         Score = 2,
 
     }
@@ -31946,12 +31948,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results11
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public PollArchiveModelV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31964,18 +31966,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Answers
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer_id")]
+        [Newtonsoft.Json.JsonProperty("answer_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Answer_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer")]
+        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Answer { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total")]
+        [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -31988,12 +31990,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Answers2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("answer")]
+        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Answer { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32006,13 +32008,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated5
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32025,64 +32027,64 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum PublishersModelV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Japanese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Japanese")]
         Japanese = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"English")]
+        [System.Runtime.Serialization.EnumMember(Value = @"English")]
         English = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Korean")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Korean")]
         Korean = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Taiwanese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Taiwanese")]
         Taiwanese = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Chinese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Chinese")]
         Chinese = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Russian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Russian")]
         Russian = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Polish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Polish")]
         Polish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Portuguese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Portuguese")]
         Portuguese = 16,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 17,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Hindi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Hindi")]
         Hindi = 18,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Arabic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Arabic")]
         Arabic = 19,
 
     }
@@ -32091,15 +32093,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats8
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_series")]
+        [Newtonsoft.Json.JsonProperty("total_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_publications")]
+        [Newtonsoft.Json.JsonProperty("total_publications", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_publications { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32112,12 +32114,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin12
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32130,64 +32132,64 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum PublishersModelSearchV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Japanese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Japanese")]
         Japanese = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"English")]
+        [System.Runtime.Serialization.EnumMember(Value = @"English")]
         English = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Korean")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Korean")]
         Korean = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Taiwanese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Taiwanese")]
         Taiwanese = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Chinese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Chinese")]
         Chinese = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Russian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Russian")]
         Russian = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Polish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Polish")]
         Polish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Portuguese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Portuguese")]
         Portuguese = 16,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 17,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Hindi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Hindi")]
         Hindi = 18,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Arabic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Arabic")]
         Arabic = 19,
 
     }
@@ -32196,15 +32198,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats9
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_series")]
+        [Newtonsoft.Json.JsonProperty("total_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("total_publications")]
+        [Newtonsoft.Json.JsonProperty("total_publications", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Total_publications { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32217,13 +32219,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated6
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32236,64 +32238,64 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum PublishersModelUpdateV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Japanese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Japanese")]
         Japanese = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"English")]
+        [System.Runtime.Serialization.EnumMember(Value = @"English")]
         English = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Korean")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Korean")]
         Korean = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Taiwanese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Taiwanese")]
         Taiwanese = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Chinese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Chinese")]
         Chinese = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Russian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Russian")]
         Russian = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Polish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Polish")]
         Polish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Portuguese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Portuguese")]
         Portuguese = 16,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 17,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Hindi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Hindi")]
         Hindi = 18,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Arabic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Arabic")]
         Arabic = 19,
 
     }
@@ -32302,12 +32304,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin13
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32320,18 +32322,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Publisher
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
+        [Newtonsoft.Json.JsonProperty("publisher_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Publisher_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
+        [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Publisher_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32344,24 +32346,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series_list2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("genres")]
+        [Newtonsoft.Json.JsonProperty("genres", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? Genres { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32374,19 +32376,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum PublishersSearchRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"score")]
+        [System.Runtime.Serialization.EnumMember(Value = @"score")]
         Score = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"name")]
+        [System.Runtime.Serialization.EnumMember(Value = @"name")]
         Name = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"series")]
+        [System.Runtime.Serialization.EnumMember(Value = @"series")]
         Series = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"publications")]
+        [System.Runtime.Serialization.EnumMember(Value = @"publications")]
         Publications = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"type")]
+        [System.Runtime.Serialization.EnumMember(Value = @"type")]
         Type = 4,
 
     }
@@ -32395,15 +32397,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results12
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public PublishersModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hit_name")]
+        [Newtonsoft.Json.JsonProperty("hit_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Hit_name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32416,24 +32418,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series_list3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_id")]
+        [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Year { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_updated")]
+        [Newtonsoft.Json.JsonProperty("last_updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_updated { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32446,15 +32448,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Publication_list
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publication_name")]
+        [Newtonsoft.Json.JsonProperty("publication_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Publication_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("count")]
+        [Newtonsoft.Json.JsonProperty("count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Count { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32467,18 +32469,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Groups
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_id")]
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Group_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32491,18 +32493,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin14
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("archived")]
+        [Newtonsoft.Json.JsonProperty("archived", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Archived { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32515,18 +32517,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Groups2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_id")]
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Group_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32539,12 +32541,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Groups3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32557,15 +32559,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin15
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("archived")]
+        [Newtonsoft.Json.JsonProperty("archived", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Archived { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32578,15 +32580,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results13
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ReleaseModelV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata11? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32599,15 +32601,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Group_info
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("group_id")]
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Group_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hold")]
+        [Newtonsoft.Json.JsonProperty("hold", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hold { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32620,10 +32622,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ReleaseSearchRequestV1Search_type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"series")]
+        [System.Runtime.Serialization.EnumMember(Value = @"series")]
         Series = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"regular")]
+        [System.Runtime.Serialization.EnumMember(Value = @"regular")]
         Regular = 1,
 
     }
@@ -32632,19 +32634,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ReleaseSearchRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"date")]
+        [System.Runtime.Serialization.EnumMember(Value = @"date")]
         Date = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"time")]
+        [System.Runtime.Serialization.EnumMember(Value = @"time")]
         Time = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"title")]
+        [System.Runtime.Serialization.EnumMember(Value = @"title")]
         Title = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"vol")]
+        [System.Runtime.Serialization.EnumMember(Value = @"vol")]
         Vol = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"chap")]
+        [System.Runtime.Serialization.EnumMember(Value = @"chap")]
         Chap = 4,
 
     }
@@ -32653,10 +32655,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum ReleaseSearchRequestV1Asc
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"asc")]
+        [System.Runtime.Serialization.EnumMember(Value = @"asc")]
         Asc = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"desc")]
+        [System.Runtime.Serialization.EnumMember(Value = @"desc")]
         Desc = 1,
 
     }
@@ -32665,15 +32667,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results14
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ReleaseModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata12? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32686,18 +32688,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Author
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_info")]
+        [Newtonsoft.Json.JsonProperty("user_info", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? User_info { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32710,12 +32712,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin16
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32728,12 +32730,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results15
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ReviewCommentModelV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32746,18 +32748,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Author2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32770,27 +32772,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Review
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user")]
+        [Newtonsoft.Json.JsonProperty("user", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? User { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("plot")]
+        [Newtonsoft.Json.JsonProperty("plot", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Plot { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("drawing")]
+        [Newtonsoft.Json.JsonProperty("drawing", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Drawing { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("characters")]
+        [Newtonsoft.Json.JsonProperty("characters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Characters { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("enjoy")]
+        [Newtonsoft.Json.JsonProperty("enjoy", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Enjoy { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("overall")]
+        [Newtonsoft.Json.JsonProperty("overall", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Overall { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32803,12 +32805,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin17
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32821,18 +32823,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Author3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_id")]
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? User_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32845,24 +32847,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Review2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("plot")]
+        [Newtonsoft.Json.JsonProperty("plot", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Plot { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("drawing")]
+        [Newtonsoft.Json.JsonProperty("drawing", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Drawing { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("characters")]
+        [Newtonsoft.Json.JsonProperty("characters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Characters { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("enjoy")]
+        [Newtonsoft.Json.JsonProperty("enjoy", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Enjoy { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("overall")]
+        [Newtonsoft.Json.JsonProperty("overall", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Overall { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32875,24 +32877,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Review3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("plot")]
+        [Newtonsoft.Json.JsonProperty("plot", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Plot { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("drawing")]
+        [Newtonsoft.Json.JsonProperty("drawing", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Drawing { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("characters")]
+        [Newtonsoft.Json.JsonProperty("characters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Characters { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("enjoy")]
+        [Newtonsoft.Json.JsonProperty("enjoy", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Enjoy { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("overall")]
+        [Newtonsoft.Json.JsonProperty("overall", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Overall { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32905,15 +32907,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin18
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("moderated")]
+        [Newtonsoft.Json.JsonProperty("moderated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Moderated { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32926,12 +32928,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results16
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ReviewModelSearchV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32944,13 +32946,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class From
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("category")]
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Category { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32963,15 +32965,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Author4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_info")]
+        [Newtonsoft.Json.JsonProperty("user_info", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? User_info { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -32984,18 +32986,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin19
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("moderated")]
+        [Newtonsoft.Json.JsonProperty("moderated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Moderated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reported")]
+        [Newtonsoft.Json.JsonProperty("reported", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Reported { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("report_reason")]
+        [Newtonsoft.Json.JsonProperty("report_reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Report_reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33008,15 +33010,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin20
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("moderated")]
+        [Newtonsoft.Json.JsonProperty("moderated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Moderated { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reported")]
+        [Newtonsoft.Json.JsonProperty("reported", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Reported { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33029,15 +33031,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results17
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesCommentModelV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata13? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33050,10 +33052,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesCommentSearchRequestV1Method
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"useful")]
+        [System.Runtime.Serialization.EnumMember(Value = @"useful")]
         Useful = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"time_added")]
+        [System.Runtime.Serialization.EnumMember(Value = @"time_added")]
         Time_added = 1,
 
     }
@@ -33062,15 +33064,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results18
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesCommentModelV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata14? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33083,12 +33085,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results19
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesHistoryModelV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33101,13 +33103,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated7
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33120,55 +33122,55 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesModelV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Artbook")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Artbook")]
         Artbook = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Doujinshi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Doujinshi")]
         Doujinshi = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Drama CD")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Drama CD")]
         Drama_CD = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manga")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manga")]
         Manga = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhwa")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhwa")]
         Manhwa = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhua")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhua")]
         Manhua = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Novel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Novel")]
         Novel = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"OEL")]
+        [System.Runtime.Serialization.EnumMember(Value = @"OEL")]
         OEL = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 16,
 
     }
@@ -33177,12 +33179,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Genres2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33195,15 +33197,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Anime
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("start")]
+        [Newtonsoft.Json.JsonProperty("start", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Start { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("end")]
+        [Newtonsoft.Json.JsonProperty("end", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? End { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33216,29 +33218,29 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Related_series
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("relation_id")]
+        [Newtonsoft.Json.JsonProperty("relation_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Relation_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("relation_type")]
+        [Newtonsoft.Json.JsonProperty("relation_type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Related_seriesRelation_type>))]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public required Related_seriesRelation_type Relation_type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("related_series_id")]
+        [Newtonsoft.Json.JsonProperty("related_series_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Related_series_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("related_series_name")]
+        [Newtonsoft.Json.JsonProperty("related_series_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Related_series_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("related_series_url")]
+        [Newtonsoft.Json.JsonProperty("related_series_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Related_series_url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("triggered_by_relation_id")]
+        [Newtonsoft.Json.JsonProperty("triggered_by_relation_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Triggered_by_relation_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33251,24 +33253,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Authors
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_id")]
+        [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Author_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<AuthorsType>))]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public required AuthorsType Type { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33281,27 +33283,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Publishers
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
+        [Newtonsoft.Json.JsonProperty("publisher_name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Publisher_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
+        [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Publisher_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<PublishersType>))]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public required PublishersType Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("notes")]
+        [Newtonsoft.Json.JsonProperty("notes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notes { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33314,19 +33316,19 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Publications
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publication_name")]
+        [Newtonsoft.Json.JsonProperty("publication_name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Publication_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
+        [Newtonsoft.Json.JsonProperty("publisher_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Publisher_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_id")]
+        [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Publisher_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33339,18 +33341,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Rank
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Position? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("old_position")]
+        [Newtonsoft.Json.JsonProperty("old_position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Old_position? Old_position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("lists")]
+        [Newtonsoft.Json.JsonProperty("lists", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Lists? Lists { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33363,15 +33365,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin21
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33384,55 +33386,55 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesModelSearchV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Artbook")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Artbook")]
         Artbook = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Doujinshi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Doujinshi")]
         Doujinshi = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Drama CD")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Drama CD")]
         Drama_CD = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manga")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manga")]
         Manga = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhwa")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhwa")]
         Manhwa = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhua")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhua")]
         Manhua = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Novel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Novel")]
         Novel = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"OEL")]
+        [System.Runtime.Serialization.EnumMember(Value = @"OEL")]
         OEL = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 16,
 
     }
@@ -33441,12 +33443,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Genres3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33459,18 +33461,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Rank2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("position")]
+        [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Position2? Position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("old_position")]
+        [Newtonsoft.Json.JsonProperty("old_position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Old_position2? Old_position { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("lists")]
+        [Newtonsoft.Json.JsonProperty("lists", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Lists2? Lists { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33483,15 +33485,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin22
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_by")]
+        [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Added_by { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33504,13 +33506,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Associated8
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Title { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33523,55 +33525,55 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesModelUpdateV1Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Artbook")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Artbook")]
         Artbook = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Doujinshi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Doujinshi")]
         Doujinshi = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Drama CD")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Drama CD")]
         Drama_CD = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manga")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manga")]
         Manga = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhwa")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhwa")]
         Manhwa = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhua")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhua")]
         Manhua = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Novel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Novel")]
         Novel = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"OEL")]
+        [System.Runtime.Serialization.EnumMember(Value = @"OEL")]
         OEL = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 16,
 
     }
@@ -33580,12 +33582,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Genres4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33598,15 +33600,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Anime2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("start")]
+        [Newtonsoft.Json.JsonProperty("start", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Start { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("end")]
+        [Newtonsoft.Json.JsonProperty("end", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? End { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33619,17 +33621,17 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Related_series2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("relation_type")]
+        [Newtonsoft.Json.JsonProperty("relation_type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Related_series2Relation_type>))]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public required Related_series2Relation_type Relation_type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("related_series_id")]
+        [Newtonsoft.Json.JsonProperty("related_series_id", Required = Newtonsoft.Json.Required.Always)]
         public required int Related_series_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33642,18 +33644,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Authors2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("name")]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Authors2Type>))]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public required Authors2Type Type { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33666,21 +33668,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Publishers2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
+        [Newtonsoft.Json.JsonProperty("publisher_name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Publisher_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter<Publishers2Type>))]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public required Publishers2Type Type { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("notes")]
+        [Newtonsoft.Json.JsonProperty("notes", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notes { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33693,16 +33695,16 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Publications2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("publication_name")]
+        [Newtonsoft.Json.JsonProperty("publication_name", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Publication_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_name")]
+        [Newtonsoft.Json.JsonProperty("publisher_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Publisher_name { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33715,12 +33717,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin23
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33733,15 +33735,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Rainbow
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("rating")]
+        [Newtonsoft.Json.JsonProperty("rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("count")]
+        [Newtonsoft.Json.JsonProperty("count", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Count { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33754,10 +33756,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesSearchRequestV1Stype
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"title")]
+        [System.Runtime.Serialization.EnumMember(Value = @"title")]
         Title = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"description")]
+        [System.Runtime.Serialization.EnumMember(Value = @"description")]
         Description = 1,
 
     }
@@ -33766,10 +33768,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesSearchRequestV1Licensed
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"yes")]
+        [System.Runtime.Serialization.EnumMember(Value = @"yes")]
         Yes = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"no")]
+        [System.Runtime.Serialization.EnumMember(Value = @"no")]
         No = 1,
 
     }
@@ -33778,22 +33780,22 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesSearchRequestV1Filter
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"scanlated")]
+        [System.Runtime.Serialization.EnumMember(Value = @"scanlated")]
         Scanlated = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"completed")]
+        [System.Runtime.Serialization.EnumMember(Value = @"completed")]
         Completed = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"oneshots")]
+        [System.Runtime.Serialization.EnumMember(Value = @"oneshots")]
         Oneshots = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"no_oneshots")]
+        [System.Runtime.Serialization.EnumMember(Value = @"no_oneshots")]
         No_oneshots = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"some_releases")]
+        [System.Runtime.Serialization.EnumMember(Value = @"some_releases")]
         Some_releases = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"no_releases")]
+        [System.Runtime.Serialization.EnumMember(Value = @"no_releases")]
         No_releases = 5,
 
     }
@@ -33802,22 +33804,22 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Filters
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"scanlated")]
+        [System.Runtime.Serialization.EnumMember(Value = @"scanlated")]
         Scanlated = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"completed")]
+        [System.Runtime.Serialization.EnumMember(Value = @"completed")]
         Completed = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"oneshots")]
+        [System.Runtime.Serialization.EnumMember(Value = @"oneshots")]
         Oneshots = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"no_oneshots")]
+        [System.Runtime.Serialization.EnumMember(Value = @"no_oneshots")]
         No_oneshots = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"some_releases")]
+        [System.Runtime.Serialization.EnumMember(Value = @"some_releases")]
         Some_releases = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"no_releases")]
+        [System.Runtime.Serialization.EnumMember(Value = @"no_releases")]
         No_releases = 5,
 
     }
@@ -33826,49 +33828,49 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum SeriesSearchRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"score")]
+        [System.Runtime.Serialization.EnumMember(Value = @"score")]
         Score = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"title")]
+        [System.Runtime.Serialization.EnumMember(Value = @"title")]
         Title = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rank")]
+        [System.Runtime.Serialization.EnumMember(Value = @"rank")]
         Rank = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rating")]
+        [System.Runtime.Serialization.EnumMember(Value = @"rating")]
         Rating = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"year")]
+        [System.Runtime.Serialization.EnumMember(Value = @"year")]
         Year = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"date_added")]
+        [System.Runtime.Serialization.EnumMember(Value = @"date_added")]
         Date_added = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"week_pos")]
+        [System.Runtime.Serialization.EnumMember(Value = @"week_pos")]
         Week_pos = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"month1_pos")]
+        [System.Runtime.Serialization.EnumMember(Value = @"month1_pos")]
         Month1_pos = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"month3_pos")]
+        [System.Runtime.Serialization.EnumMember(Value = @"month3_pos")]
         Month3_pos = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"month6_pos")]
+        [System.Runtime.Serialization.EnumMember(Value = @"month6_pos")]
         Month6_pos = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"year_pos")]
+        [System.Runtime.Serialization.EnumMember(Value = @"year_pos")]
         Year_pos = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"list_reading")]
+        [System.Runtime.Serialization.EnumMember(Value = @"list_reading")]
         List_reading = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"list_wish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"list_wish")]
         List_wish = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"list_complete")]
+        [System.Runtime.Serialization.EnumMember(Value = @"list_complete")]
         List_complete = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"list_unfinished")]
+        [System.Runtime.Serialization.EnumMember(Value = @"list_unfinished")]
         List_unfinished = 14,
 
     }
@@ -33877,18 +33879,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results20
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Record { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hit_title")]
+        [Newtonsoft.Json.JsonProperty("hit_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Hit_title { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("metadata")]
+        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Metadata15? Metadata { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33901,12 +33903,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results21
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserChangeRequestModelV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33919,25 +33921,25 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum UserModelV1Gender
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Male")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Male")]
         Male = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Female")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Female")]
         Female = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Alien")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Alien")]
         Alien = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Hermaphrodite")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Hermaphrodite")]
         Hermaphrodite = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Non-binary")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Non-binary")]
         NonBinary = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Other")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
         Other = 6,
 
     }
@@ -33946,13 +33948,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum UserModelV1Flair
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"staff")]
+        [System.Runtime.Serialization.EnumMember(Value = @"staff")]
         Staff = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"moderator")]
+        [System.Runtime.Serialization.EnumMember(Value = @"moderator")]
         Moderator = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"contributor")]
+        [System.Runtime.Serialization.EnumMember(Value = @"contributor")]
         Contributor = 2,
 
     }
@@ -33961,31 +33963,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Profile
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("invisible")]
+        [Newtonsoft.Json.JsonProperty("invisible", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Invisible { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hide_birthday")]
+        [Newtonsoft.Json.JsonProperty("hide_birthday", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hide_birthday { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hide_categories")]
+        [Newtonsoft.Json.JsonProperty("hide_categories", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hide_categories { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("filter_types")]
-        // TODO(system.text.json): Add ItemConverterType with enum converter when supported
+        [Newtonsoft.Json.JsonProperty("filter_types", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public System.Collections.Generic.ICollection<Filter_types>? Filter_types { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
+        [Newtonsoft.Json.JsonProperty("upgrade", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Upgrade? Upgrade { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("age18_verified")]
+        [Newtonsoft.Json.JsonProperty("age18_verified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Age18_verified { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -33998,42 +33999,42 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats10
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_posts")]
+        [Newtonsoft.Json.JsonProperty("forum_posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_posts { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_authors")]
+        [Newtonsoft.Json.JsonProperty("added_authors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_authors { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_groups")]
+        [Newtonsoft.Json.JsonProperty("added_groups", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_groups { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_publishers")]
+        [Newtonsoft.Json.JsonProperty("added_publishers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_publishers { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_releases")]
+        [Newtonsoft.Json.JsonProperty("added_releases", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_releases { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_series")]
+        [Newtonsoft.Json.JsonProperty("added_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series_edits")]
+        [Newtonsoft.Json.JsonProperty("series_edits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series_edits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_edits")]
+        [Newtonsoft.Json.JsonProperty("author_edits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Author_edits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publisher_edits")]
+        [Newtonsoft.Json.JsonProperty("publisher_edits", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Publisher_edits { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_tags")]
+        [Newtonsoft.Json.JsonProperty("added_tags", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_tags { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("moderation")]
+        [Newtonsoft.Json.JsonProperty("moderation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Moderation? Moderation { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34046,30 +34047,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin24
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("registration_ip")]
+        [Newtonsoft.Json.JsonProperty("registration_ip", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Registration_ip { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_series_update")]
+        [Newtonsoft.Json.JsonProperty("last_series_update", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_series_update { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("email_approved")]
+        [Newtonsoft.Json.JsonProperty("email_approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Email_approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("registration_reason")]
+        [Newtonsoft.Json.JsonProperty("registration_reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Registration_reason { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
+        [Newtonsoft.Json.JsonProperty("upgrade", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Upgrade2? Upgrade { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("banned")]
+        [Newtonsoft.Json.JsonProperty("banned", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Banned { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34082,13 +34083,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum UserModelSearchV1Flair
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"staff")]
+        [System.Runtime.Serialization.EnumMember(Value = @"staff")]
         Staff = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"moderator")]
+        [System.Runtime.Serialization.EnumMember(Value = @"moderator")]
         Moderator = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"contributor")]
+        [System.Runtime.Serialization.EnumMember(Value = @"contributor")]
         Contributor = 2,
 
     }
@@ -34097,12 +34098,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Profile2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
+        [Newtonsoft.Json.JsonProperty("upgrade", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Upgrade3? Upgrade { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34115,27 +34116,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Stats11
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_posts")]
+        [Newtonsoft.Json.JsonProperty("forum_posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_posts { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_authors")]
+        [Newtonsoft.Json.JsonProperty("added_authors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_authors { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_groups")]
+        [Newtonsoft.Json.JsonProperty("added_groups", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_groups { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_publishers")]
+        [Newtonsoft.Json.JsonProperty("added_publishers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_publishers { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_releases")]
+        [Newtonsoft.Json.JsonProperty("added_releases", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_releases { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("added_series")]
+        [Newtonsoft.Json.JsonProperty("added_series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Added_series { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34148,25 +34149,25 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum UserModelUpdateV1Gender
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"N/A")]
+        [System.Runtime.Serialization.EnumMember(Value = @"N/A")]
         N_A = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Male")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Male")]
         Male = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Female")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Female")]
         Female = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Alien")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Alien")]
         Alien = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Hermaphrodite")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Hermaphrodite")]
         Hermaphrodite = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Non-binary")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Non-binary")]
         NonBinary = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Other")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
         Other = 6,
 
     }
@@ -34175,31 +34176,30 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Profile3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("per_page")]
+        [Newtonsoft.Json.JsonProperty("per_page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Per_page { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("invisible")]
+        [Newtonsoft.Json.JsonProperty("invisible", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Invisible { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hide_birthday")]
+        [Newtonsoft.Json.JsonProperty("hide_birthday", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hide_birthday { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("hide_categories")]
+        [Newtonsoft.Json.JsonProperty("hide_categories", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hide_categories { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("filter_types")]
-        // TODO(system.text.json): Add ItemConverterType with enum converter when supported
+        [Newtonsoft.Json.JsonProperty("filter_types", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public System.Collections.Generic.ICollection<Filter_types2>? Filter_types { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
+        [Newtonsoft.Json.JsonProperty("upgrade", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Upgrade4? Upgrade { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("age18_verified")]
+        [Newtonsoft.Json.JsonProperty("age18_verified", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Age18_verified { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34212,21 +34212,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Admin25
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("email_approved")]
+        [Newtonsoft.Json.JsonProperty("email_approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Email_approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("upgrade")]
+        [Newtonsoft.Json.JsonProperty("upgrade", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Upgrade5? Upgrade { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("banned")]
+        [Newtonsoft.Json.JsonProperty("banned", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Banned { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34239,15 +34239,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Added_by
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("uid")]
+        [Newtonsoft.Json.JsonProperty("uid", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Uid { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("username")]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34260,28 +34260,28 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum UserSearchRequestV1Orderby
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"username")]
+        [System.Runtime.Serialization.EnumMember(Value = @"username")]
         Username = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"time_added")]
+        [System.Runtime.Serialization.EnumMember(Value = @"time_added")]
         Time_added = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"forum_posts")]
+        [System.Runtime.Serialization.EnumMember(Value = @"forum_posts")]
         Forum_posts = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"added_authors")]
+        [System.Runtime.Serialization.EnumMember(Value = @"added_authors")]
         Added_authors = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"added_releases")]
+        [System.Runtime.Serialization.EnumMember(Value = @"added_releases")]
         Added_releases = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"added_groups")]
+        [System.Runtime.Serialization.EnumMember(Value = @"added_groups")]
         Added_groups = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"added_publishers")]
+        [System.Runtime.Serialization.EnumMember(Value = @"added_publishers")]
         Added_publishers = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"added_series")]
+        [System.Runtime.Serialization.EnumMember(Value = @"added_series")]
         Added_series = 7,
 
     }
@@ -34290,10 +34290,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum UserSearchRequestV1Asc
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"asc")]
+        [System.Runtime.Serialization.EnumMember(Value = @"asc")]
         Asc = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"desc")]
+        [System.Runtime.Serialization.EnumMember(Value = @"desc")]
         Desc = 1,
 
     }
@@ -34302,12 +34302,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results22
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34320,12 +34320,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Results23
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("record")]
+        [Newtonsoft.Json.JsonProperty("record", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserSessionModelV1? Record { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34338,12 +34338,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_list")]
+        [Newtonsoft.Json.JsonProperty("user_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ListsSeriesModelV1? User_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34356,12 +34356,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_ignored")]
+        [Newtonsoft.Json.JsonProperty("user_ignored", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? User_ignored { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34374,15 +34374,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("message")]
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ConvoMessageModelV1? Message { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("participant")]
+        [Newtonsoft.Json.JsonProperty("participant", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ConvoParticipantModelV1? Participant { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34395,18 +34395,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_warn")]
+        [Newtonsoft.Json.JsonProperty("user_warn", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumWarnModelPublicV1? User_warn { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reported")]
+        [Newtonsoft.Json.JsonProperty("reported", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Reported { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("is_moderator")]
+        [Newtonsoft.Json.JsonProperty("is_moderator", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_moderator { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34419,18 +34419,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Post_author
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_id")]
+        [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Author_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_name")]
+        [Newtonsoft.Json.JsonProperty("author_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34443,15 +34443,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata5
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("is_subscribed")]
+        [Newtonsoft.Json.JsonProperty("is_subscribed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_subscribed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("my_latest_post_in_topic")]
+        [Newtonsoft.Json.JsonProperty("my_latest_post_in_topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? My_latest_post_in_topic { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34464,21 +34464,21 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata6
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("is_subscribed")]
+        [Newtonsoft.Json.JsonProperty("is_subscribed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_subscribed { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("my_latest_post_in_topic")]
+        [Newtonsoft.Json.JsonProperty("my_latest_post_in_topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? My_latest_post_in_topic { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_info")]
+        [Newtonsoft.Json.JsonProperty("forum_info", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Forum_info? Forum_info { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("topic_stats")]
+        [Newtonsoft.Json.JsonProperty("topic_stats", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Topic_stats? Topic_stats { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34491,12 +34491,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata7
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("first_post")]
+        [Newtonsoft.Json.JsonProperty("first_post", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelV1? First_post { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34509,15 +34509,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Irc
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("channel")]
+        [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Channel { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("server")]
+        [Newtonsoft.Json.JsonProperty("server", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Server { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34530,15 +34530,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Irc2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("channel")]
+        [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Channel { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("server")]
+        [Newtonsoft.Json.JsonProperty("server", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Server { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34551,15 +34551,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Irc3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("channel")]
+        [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Channel { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("server")]
+        [Newtonsoft.Json.JsonProperty("server", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Server { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34572,25 +34572,25 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum OptionsSort
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"title")]
+        [System.Runtime.Serialization.EnumMember(Value = @"title")]
         Title = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"priority")]
+        [System.Runtime.Serialization.EnumMember(Value = @"priority")]
         Priority = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"date")]
+        [System.Runtime.Serialization.EnumMember(Value = @"date")]
         Date = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rating")]
+        [System.Runtime.Serialization.EnumMember(Value = @"rating")]
         Rating = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"release")]
+        [System.Runtime.Serialization.EnumMember(Value = @"release")]
         Release = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"unread")]
+        [System.Runtime.Serialization.EnumMember(Value = @"unread")]
         Unread = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"userrating")]
+        [System.Runtime.Serialization.EnumMember(Value = @"userrating")]
         Userrating = 6,
 
     }
@@ -34599,13 +34599,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum OptionsShow_comment
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"link")]
+        [System.Runtime.Serialization.EnumMember(Value = @"link")]
         Link = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"text")]
+        [System.Runtime.Serialization.EnumMember(Value = @"text")]
         Text = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"none")]
+        [System.Runtime.Serialization.EnumMember(Value = @"none")]
         None = 2,
 
     }
@@ -34614,25 +34614,25 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Options2Sort
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"title")]
+        [System.Runtime.Serialization.EnumMember(Value = @"title")]
         Title = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"priority")]
+        [System.Runtime.Serialization.EnumMember(Value = @"priority")]
         Priority = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"date")]
+        [System.Runtime.Serialization.EnumMember(Value = @"date")]
         Date = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"rating")]
+        [System.Runtime.Serialization.EnumMember(Value = @"rating")]
         Rating = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"release")]
+        [System.Runtime.Serialization.EnumMember(Value = @"release")]
         Release = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"unread")]
+        [System.Runtime.Serialization.EnumMember(Value = @"unread")]
         Unread = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"userrating")]
+        [System.Runtime.Serialization.EnumMember(Value = @"userrating")]
         Userrating = 6,
 
     }
@@ -34641,13 +34641,13 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Options2Show_comment
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"link")]
+        [System.Runtime.Serialization.EnumMember(Value = @"link")]
         Link = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"text")]
+        [System.Runtime.Serialization.EnumMember(Value = @"text")]
         Text = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"none")]
+        [System.Runtime.Serialization.EnumMember(Value = @"none")]
         None = 2,
 
     }
@@ -34656,18 +34656,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata8
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_rating")]
+        [Newtonsoft.Json.JsonProperty("user_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? User_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_comment")]
+        [Newtonsoft.Json.JsonProperty("user_comment", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public User_comment? User_comment { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_list")]
+        [Newtonsoft.Json.JsonProperty("user_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ListsSeriesModelV1? User_list { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34680,15 +34680,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata9
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_rating")]
+        [Newtonsoft.Json.JsonProperty("user_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? User_rating { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34701,18 +34701,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata10
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_active")]
+        [Newtonsoft.Json.JsonProperty("last_active", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_active { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("invisible")]
+        [Newtonsoft.Json.JsonProperty("invisible", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Invisible { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("source")]
+        [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Source { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34725,15 +34725,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata11
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("like_releases")]
+        [Newtonsoft.Json.JsonProperty("like_releases", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<ReleaseModelV1>? Like_releases { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34746,27 +34746,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata12
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_list")]
+        [Newtonsoft.Json.JsonProperty("user_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ListsSeriesModelV1? User_list { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_genre_highlights")]
+        [Newtonsoft.Json.JsonProperty("user_genre_highlights", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<User_genre_highlights>? User_genre_highlights { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_genre_filters")]
+        [Newtonsoft.Json.JsonProperty("user_genre_filters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? User_genre_filters { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_group_filters")]
+        [Newtonsoft.Json.JsonProperty("user_group_filters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string>? User_group_filters { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("type_filter")]
+        [Newtonsoft.Json.JsonProperty("type_filter", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Type_filter { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34779,15 +34779,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata13
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SeriesModelSearchV1? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_series_rating")]
+        [Newtonsoft.Json.JsonProperty("author_series_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Author_series_rating { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34800,15 +34800,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata14
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("author_series_rating")]
+        [Newtonsoft.Json.JsonProperty("author_series_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Author_series_rating { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("current_user_useful_rating")]
+        [Newtonsoft.Json.JsonProperty("current_user_useful_rating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Current_user_useful_rating { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34821,34 +34821,34 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Related_seriesRelation_type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Prequel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Prequel")]
         Prequel = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Sequel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Sequel")]
         Sequel = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spin-Off")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spin-Off")]
         SpinOff = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Adapted From")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Adapted From")]
         Adapted_From = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Alternate Version")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Alternate Version")]
         Alternate_Version = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Part of Anthology")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Part of Anthology")]
         Part_of_Anthology = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Main Story")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Main Story")]
         Main_Story = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Side Story")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Side Story")]
         Side_Story = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Full Anthology")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Full Anthology")]
         Full_Anthology = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Other")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
         Other = 9,
 
     }
@@ -34857,10 +34857,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum AuthorsType
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Author")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Author")]
         Author = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Artist")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Artist")]
         Artist = 1,
 
     }
@@ -34869,10 +34869,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum PublishersType
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Original")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Original")]
         Original = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"English")]
+        [System.Runtime.Serialization.EnumMember(Value = @"English")]
         English = 1,
 
     }
@@ -34881,24 +34881,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Position
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("week")]
+        [Newtonsoft.Json.JsonProperty("week", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Week { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("month")]
+        [Newtonsoft.Json.JsonProperty("month", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Month { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("three_months")]
+        [Newtonsoft.Json.JsonProperty("three_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Three_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("six_months")]
+        [Newtonsoft.Json.JsonProperty("six_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Six_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Year { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34911,24 +34911,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Old_position
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("week")]
+        [Newtonsoft.Json.JsonProperty("week", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Week { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("month")]
+        [Newtonsoft.Json.JsonProperty("month", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Month { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("three_months")]
+        [Newtonsoft.Json.JsonProperty("three_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Three_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("six_months")]
+        [Newtonsoft.Json.JsonProperty("six_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Six_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Year { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34941,24 +34941,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Lists
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("reading")]
+        [Newtonsoft.Json.JsonProperty("reading", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Reading { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("wish")]
+        [Newtonsoft.Json.JsonProperty("wish", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Wish { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("complete")]
+        [Newtonsoft.Json.JsonProperty("complete", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Complete { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("unfinished")]
+        [Newtonsoft.Json.JsonProperty("unfinished", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Unfinished { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("custom")]
+        [Newtonsoft.Json.JsonProperty("custom", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Custom { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -34971,24 +34971,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Position2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("week")]
+        [Newtonsoft.Json.JsonProperty("week", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Week { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("month")]
+        [Newtonsoft.Json.JsonProperty("month", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Month { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("three_months")]
+        [Newtonsoft.Json.JsonProperty("three_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Three_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("six_months")]
+        [Newtonsoft.Json.JsonProperty("six_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Six_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Year { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35001,24 +35001,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Old_position2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("week")]
+        [Newtonsoft.Json.JsonProperty("week", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Week { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("month")]
+        [Newtonsoft.Json.JsonProperty("month", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Month { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("three_months")]
+        [Newtonsoft.Json.JsonProperty("three_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Three_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("six_months")]
+        [Newtonsoft.Json.JsonProperty("six_months", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Six_months { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("year")]
+        [Newtonsoft.Json.JsonProperty("year", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Year { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35031,24 +35031,24 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Lists2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("reading")]
+        [Newtonsoft.Json.JsonProperty("reading", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Reading { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("wish")]
+        [Newtonsoft.Json.JsonProperty("wish", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Wish { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("complete")]
+        [Newtonsoft.Json.JsonProperty("complete", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Complete { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("unfinished")]
+        [Newtonsoft.Json.JsonProperty("unfinished", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Unfinished { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("custom")]
+        [Newtonsoft.Json.JsonProperty("custom", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Custom { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35061,34 +35061,34 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Related_series2Relation_type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Prequel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Prequel")]
         Prequel = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Sequel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Sequel")]
         Sequel = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spin-Off")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spin-Off")]
         SpinOff = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Adapted From")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Adapted From")]
         Adapted_From = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Alternate Version")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Alternate Version")]
         Alternate_Version = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Part of Anthology")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Part of Anthology")]
         Part_of_Anthology = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Main Story")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Main Story")]
         Main_Story = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Side Story")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Side Story")]
         Side_Story = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Full Anthology")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Full Anthology")]
         Full_Anthology = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Other")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Other")]
         Other = 9,
 
     }
@@ -35097,10 +35097,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Authors2Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Author")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Author")]
         Author = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Artist")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Artist")]
         Artist = 1,
 
     }
@@ -35109,10 +35109,10 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Publishers2Type
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Original")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Original")]
         Original = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"English")]
+        [System.Runtime.Serialization.EnumMember(Value = @"English")]
         English = 1,
 
     }
@@ -35121,15 +35121,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Metadata15
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_list")]
+        [Newtonsoft.Json.JsonProperty("user_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ListsSeriesModelV1? User_list { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("user_genre_highlights")]
+        [Newtonsoft.Json.JsonProperty("user_genre_highlights", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<User_genre_highlights2>? User_genre_highlights { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35142,55 +35142,55 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Filter_types
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Artbook")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Artbook")]
         Artbook = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Doujinshi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Doujinshi")]
         Doujinshi = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Drama CD")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Drama CD")]
         Drama_CD = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manga")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manga")]
         Manga = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhwa")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhwa")]
         Manhwa = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhua")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhua")]
         Manhua = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Novel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Novel")]
         Novel = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"OEL")]
+        [System.Runtime.Serialization.EnumMember(Value = @"OEL")]
         OEL = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 16,
 
     }
@@ -35199,15 +35199,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Upgrade
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("requested")]
+        [Newtonsoft.Json.JsonProperty("requested", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Requested { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35220,27 +35220,27 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Moderation
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("releases")]
+        [Newtonsoft.Json.JsonProperty("releases", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Releases? Releases { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("series")]
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Series3? Series { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("publishers")]
+        [Newtonsoft.Json.JsonProperty("publishers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Publishers3? Publishers { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("groups")]
+        [Newtonsoft.Json.JsonProperty("groups", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Groups4? Groups { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("authors")]
+        [Newtonsoft.Json.JsonProperty("authors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Authors3? Authors { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("last_action")]
+        [Newtonsoft.Json.JsonProperty("last_action", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Last_action { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35253,12 +35253,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Upgrade2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("banned")]
+        [Newtonsoft.Json.JsonProperty("banned", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Banned { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35271,15 +35271,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Upgrade3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("requested")]
+        [Newtonsoft.Json.JsonProperty("requested", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Requested { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35292,55 +35292,55 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public enum Filter_types2
     {
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Artbook")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Artbook")]
         Artbook = 0,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Doujinshi")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Doujinshi")]
         Doujinshi = 1,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Drama CD")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Drama CD")]
         Drama_CD = 2,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Filipino")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Filipino")]
         Filipino = 3,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Indonesian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Indonesian")]
         Indonesian = 4,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manga")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manga")]
         Manga = 5,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhwa")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhwa")]
         Manhwa = 6,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Manhua")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Manhua")]
         Manhua = 7,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Novel")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Novel")]
         Novel = 8,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"OEL")]
+        [System.Runtime.Serialization.EnumMember(Value = @"OEL")]
         OEL = 9,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Thai")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Thai")]
         Thai = 10,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Vietnamese")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Vietnamese")]
         Vietnamese = 11,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Malaysian")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Malaysian")]
         Malaysian = 12,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Nordic")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Nordic")]
         Nordic = 13,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"French")]
+        [System.Runtime.Serialization.EnumMember(Value = @"French")]
         French = 14,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"Spanish")]
+        [System.Runtime.Serialization.EnumMember(Value = @"Spanish")]
         Spanish = 15,
 
-        [System.Text.Json.Serialization.JsonStringEnumMemberName(@"German")]
+        [System.Runtime.Serialization.EnumMember(Value = @"German")]
         German = 16,
 
     }
@@ -35349,15 +35349,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Upgrade4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("requested")]
+        [Newtonsoft.Json.JsonProperty("requested", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Requested { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("reason")]
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Reason { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35370,12 +35370,12 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Upgrade5
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("banned")]
+        [Newtonsoft.Json.JsonProperty("banned", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Banned { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35388,18 +35388,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Forum_info
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_id")]
+        [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Forum_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("forum_name")]
+        [Newtonsoft.Json.JsonProperty("forum_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_name { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("url")]
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35412,15 +35412,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Topic_stats
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("posts")]
+        [Newtonsoft.Json.JsonProperty("posts", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Posts { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("views")]
+        [Newtonsoft.Json.JsonProperty("views", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Views { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35433,15 +35433,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class User_comment
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("comment_id")]
+        [Newtonsoft.Json.JsonProperty("comment_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Comment_id { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("comment_preview")]
+        [Newtonsoft.Json.JsonProperty("comment_preview", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Comment_preview { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35454,15 +35454,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class User_genre_highlights
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("color")]
+        [Newtonsoft.Json.JsonProperty("color", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Color { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35475,15 +35475,15 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class User_genre_highlights2
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("genre")]
+        [Newtonsoft.Json.JsonProperty("genre", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("color")]
+        [Newtonsoft.Json.JsonProperty("color", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Color { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35496,18 +35496,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Releases
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rejected")]
+        [Newtonsoft.Json.JsonProperty("rejected", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rejected { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("deleted")]
+        [Newtonsoft.Json.JsonProperty("deleted", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Deleted { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35520,18 +35520,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Series3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rejected")]
+        [Newtonsoft.Json.JsonProperty("rejected", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rejected { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("deleted")]
+        [Newtonsoft.Json.JsonProperty("deleted", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Deleted { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35544,18 +35544,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Publishers3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rejected")]
+        [Newtonsoft.Json.JsonProperty("rejected", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rejected { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("deleted")]
+        [Newtonsoft.Json.JsonProperty("deleted", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Deleted { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35568,18 +35568,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Groups4
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rejected")]
+        [Newtonsoft.Json.JsonProperty("rejected", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rejected { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("deleted")]
+        [Newtonsoft.Json.JsonProperty("deleted", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Deleted { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
@@ -35592,18 +35592,18 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class Authors3
     {
 
-        [System.Text.Json.Serialization.JsonPropertyName("approved")]
+        [Newtonsoft.Json.JsonProperty("approved", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Approved { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("rejected")]
+        [Newtonsoft.Json.JsonProperty("rejected", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Rejected { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("deleted")]
+        [Newtonsoft.Json.JsonProperty("deleted", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Deleted { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
-        [System.Text.Json.Serialization.JsonExtensionData]
+        [Newtonsoft.Json.JsonExtensionData]
         public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }

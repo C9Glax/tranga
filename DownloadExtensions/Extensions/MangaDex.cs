@@ -1,6 +1,7 @@
 using Common.Datatypes;
 using Common.Helpers;
 using DownloadExtensions.Data;
+using Newtonsoft.Json.Linq;
 using NSwagClients.GeneratedClients.MangaDex;
 
 namespace DownloadExtensions.Extensions;
@@ -57,12 +58,11 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
     {
         if (manga.Id is not { } id)
             return null;
-        if (manga.Relationships?.FirstOrDefault(r => r.Type == "cover_art") is not { Attributes: Attributes attributes })
+        if (manga.Relationships?.FirstOrDefault(r => r.Type == "cover_art") is not { Attributes: JObject attributes })
             return null;
-        if(!attributes.AdditionalProperties.TryGetValue("fileName", out object? node) || node is not string fileName)
+        if(attributes["fileName"]?.Value<string>() is not { } fileName)
             return null;
         Uri requestUri = new($"https://uploads.mangadex.org/covers/{id}/{fileName}");
-        await Client.GetCoverIdAsync(id, cancellationToken: ct);
         if (await new RequestClient().GetAsync(requestUri, ct) is not { IsSuccessStatusCode: true } response)
             return null;
         MemoryStream memoryStream = new ();
