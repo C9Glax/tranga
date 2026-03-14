@@ -75,12 +75,26 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
     #region Chapters
     public async Task<List<ChapterInfo<MangaDex>>?> GetChapters(MangaInfo<MangaDex> mangaInfo, CancellationToken ct)
     {
-        ChapterList list = await Client.GetChapterAsync(manga: Guid.Parse(mangaInfo.Identifier), cancellationToken: ct);
+        int offset = 0;
+        int total = 0;
+        const int limit = 100;
+        List<Chapter> chapters = new();
+        do
+        {
+            ChapterList list = await Client.GetChapterAsync(manga: Guid.Parse(mangaInfo.Identifier), offset: offset,
+                limit: limit, cancellationToken: ct);
+            
+            if (list.Data is null)
+                return null;
+            
+            chapters.AddRange(list.Data);
+            
+            total = list.Total ?? 0;
+            offset += limit;
+        } while (offset < total);
 
-        if (list.Data is null)
-            return null;
         
-        return ParseChaptersResult(list.Data.ToArray());
+        return ParseChaptersResult(chapters.ToArray());
     }
     
     private List<ChapterInfo<MangaDex>> ParseChaptersResult(Chapter[] chapters)
