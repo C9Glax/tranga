@@ -4,11 +4,20 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+    
+    <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <OpenApiGenerateDocumentsOptions>--file-name Tranga-openapi</OpenApiGenerateDocumentsOptions>
+        <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)\openapi</OpenApiDocumentsDirectory>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4"/>
+        <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.5">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Scalar.AspNetCore" Version="2.13.8" />
     </ItemGroup>
 

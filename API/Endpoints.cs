@@ -8,15 +8,15 @@ internal static class Endpoints
 {
     internal static void AddEndpoints(RouteGroupBuilder builder)
     {
-        builder.MapPost("/search", PostSearchMangaEndpoint.Handle)
-            .WithTags("Search");
-        
         builder.MapGroup("/manga").AddMangaEndpoints();
         builder.MapGroup("/chapter").AddChapterEndpoints();
     }
 
     private static void AddMangaEndpoints(this RouteGroupBuilder builder)
     {
+        builder.MapPost("/search", PostSearchMangaEndpoint.Handle)
+            .WithTags("Search");
+        
         builder.MapPost("{mangaId}/watch", PostWatchManga.Handle)
             .WithTags("Download");
     }
