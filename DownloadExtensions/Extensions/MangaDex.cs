@@ -7,7 +7,7 @@ using Manga = NSwagClients.GeneratedClients.MangaDex.Manga;
 
 namespace DownloadExtensions.Extensions;
 
-public sealed class MangaDex : IDownloadExtension<MangaDex>
+public sealed class MangaDex : IDownloadExtension
 {
     public Guid Identifier { get; init; } = Guid.Parse("019ce521-deaf-7739-9e14-eb6f4afc86e2");
 
@@ -22,7 +22,7 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
     private readonly MangaDexApiClient Client = new(new RequestClient());
 
     #region Search
-    public async Task<MangaSearchResult<MangaDex>?> Search(SearchQuery query, CancellationToken ct)
+    public async Task<MangaSearchResult?> Search(SearchQuery query, CancellationToken ct)
     {
         MangaList list = await Client.GetSearchMangaAsync(
             includes: [Anonymous4.Cover_art],
@@ -38,9 +38,9 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
         return await ParseSearchResult(list.Data.ToArray(), query.Language, ct);
     }
 
-    private async Task<MangaSearchResult<MangaDex>> ParseSearchResult(Manga[] mangas, Language? language, CancellationToken ct)
+    private async Task<MangaSearchResult> ParseSearchResult(Manga[] mangas, Language? language, CancellationToken ct)
     {
-        MangaSearchResult<MangaDex> result = new();
+        MangaSearchResult result = new();
         foreach (Manga manga in mangas)
         {
             if(manga.Id is not { } id)
@@ -50,7 +50,7 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
             if(await GetCover(manga, ct) is not { } cover)
                 continue;
             string url = $"https://mangadex.org/title/{id}";
-            result.Add(new MangaInfo<MangaDex>(title, url, id.ToString(), cover, manga.Attributes.Description?.GetLocalizedString(language)));
+            result.Add(new MangaInfo(this.Identifier, title, url, id.ToString(), cover, manga.Attributes.Description?.GetLocalizedString(language)));
         }
         return result;
     }
@@ -74,7 +74,7 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
     #endregion
 
     #region Chapters
-    public async Task<List<ChapterInfo<MangaDex>>?> GetChapters(MangaInfo<MangaDex> mangaInfo, CancellationToken ct)
+    public async Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct)
     {
         int offset = 0;
         int total = 0;
@@ -98,9 +98,9 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
         return ParseChaptersResult(chapters.ToArray());
     }
     
-    private List<ChapterInfo<MangaDex>> ParseChaptersResult(Chapter[] chapters)
+    private List<ChapterInfo> ParseChaptersResult(Chapter[] chapters)
     {
-        List<ChapterInfo<MangaDex>> result = new();
+        List<ChapterInfo> result = new();
         foreach (Chapter chapter in chapters)
         {
             if(chapter.Attributes?.ExternalUrl is not null)
@@ -110,21 +110,21 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
             if(chapter.Attributes?.Chapter is not { } number)
                 continue;
             string url = $"https://mangadex.org/chapter/{id}";
-            result.Add(new ChapterInfo<MangaDex>(number, url, id.ToString(), chapter.Attributes?.Volume, chapter.Attributes?.Title));
+            result.Add(new ChapterInfo(this.Identifier, number, url, id.ToString(), chapter.Attributes?.Volume, chapter.Attributes?.Title));
         }
         return result;
     }
     #endregion
 
     #region Images
-    public async Task<List<ChapterImage<MangaDex>>?> GetChapterImages(ChapterInfo<MangaDex> chapterInfo, CancellationToken ct)
+    public async Task<List<ChapterImage>?> GetChapterImages(ChapterInfo chapterInfo, CancellationToken ct)
     {
         Response11 r = await Client.GetAtHomeServerChapterIdAsync(Guid.Parse(chapterInfo.Identifier), cancellationToken: ct);
         if (r.Chapter?.Data is null)
             return null;
         List<string> urls = r.Chapter.Data.Select(image => $"{r.BaseUrl}/data/{r.Chapter.Hash}/{image}").ToList();
 
-        List<ChapterImage<MangaDex>> images = new();
+        List<ChapterImage> images = new();
         RequestClient client = new RequestClient();
         for (int i = 0; i < urls.Count; i++)
         {
@@ -133,7 +133,7 @@ public sealed class MangaDex : IDownloadExtension<MangaDex>
             MemoryStream memoryStream = new ();
             Stream data = await response.Content.ReadAsStreamAsync(ct);
             await data.CopyToAsync(memoryStream, ct);
-            images.Add(new ChapterImage<MangaDex>(chapterInfo.Identifier, i, memoryStream));
+            images.Add(new ChapterImage(this.Identifier, chapterInfo.Identifier, i, memoryStream));
         }
 
         return images;

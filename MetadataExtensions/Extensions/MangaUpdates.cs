@@ -8,7 +8,7 @@ public sealed record MangaUpdateComicInfo : ComicInfo
     public long? MangaUpdatesSeriesId { get; init; }
 }
 
-public class MangaUpdates : IMetadataExtension<MangaUpdates>
+public class MangaUpdates : IMetadataExtension
 {
     // ReSharper disable once InconsistentNaming
     private readonly MangaUpdatesApiClient Client = new (new RequestClient());

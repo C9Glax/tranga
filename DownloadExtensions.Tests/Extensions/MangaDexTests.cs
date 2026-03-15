@@ -14,9 +14,9 @@ public sealed class MangaDexTests : IDownloadExtensionsTests<MangaDex>
         {
             Title = "Official \"Test\" Manga"
         };
-        MangaSearchResult<MangaDex>? searchResult = await _downloadExtension.Search(searchQuery, ct);
+        MangaSearchResult? searchResult = await _downloadExtension.Search(searchQuery, ct);
         Assert.NotNull(searchResult);
-        MangaInfo<MangaDex>? testManga = searchResult.FirstOrDefault(r => r.Identifier == "f9c33607-9180-4ba6-b85c-e4b5faee7192");
+        MangaInfo? testManga = searchResult.FirstOrDefault(r => r.Identifier == "f9c33607-9180-4ba6-b85c-e4b5faee7192");
         Assert.NotNull(testManga);
         Assert.Equal("Official \"Test\" Manga", testManga.Title);
         Assert.False(string.IsNullOrEmpty(testManga.Description));
@@ -29,13 +29,14 @@ public sealed class MangaDexTests : IDownloadExtensionsTests<MangaDex>
     {
         // https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga
         // https://mangadex.org/chapter/249f2aa4-38a9-428f-8632-9a4aecc013ad
-        MangaInfo<MangaDex> mangaInfo = new (
+        MangaInfo mangaInfo = new (
+            _downloadExtension.Identifier,
             "Official \"Test\" Manga",
             "https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192",
             "f9c33607-9180-4ba6-b85c-e4b5faee7192",
             new MemoryStream()
         );
-        List<ChapterInfo<MangaDex>>? chapters = await _downloadExtension.GetChapters(mangaInfo, ct);
+        List<ChapterInfo>? chapters = await _downloadExtension.GetChapters(mangaInfo, ct);
         Assert.NotNull(chapters);
         Assert.NotEmpty(chapters);
         Assert.True(chapters.Count > 100); // multiple pages
@@ -47,11 +48,13 @@ public sealed class MangaDexTests : IDownloadExtensionsTests<MangaDex>
     public async Task ChapterImagesReturnsImage()
     {
         // https://mangadex.org/chapter/249f2aa4-38a9-428f-8632-9a4aecc013ad
-        ChapterInfo<MangaDex> mangaInfo = new (string.Empty,
+        ChapterInfo mangaInfo = new (
+            _downloadExtension.Identifier,
+            string.Empty,
             "https://mangadex.org/chapter/249f2aa4-38a9-428f-8632-9a4aecc013ad",
             "249f2aa4-38a9-428f-8632-9a4aecc013ad"
         );
-        List<ChapterImage<MangaDex>>? images = await _downloadExtension.GetChapterImages(mangaInfo, ct);
+        List<ChapterImage>? images = await _downloadExtension.GetChapterImages(mangaInfo, ct);
         Assert.NotNull(images);
         Assert.Single(images);
         Assert.Equal("249f2aa4-38a9-428f-8632-9a4aecc013ad", images.First().chapterIdentifier);

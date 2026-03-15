@@ -3,7 +3,7 @@ using DownloadExtensions.Data;
 
 namespace DownloadExtensions;
 
-public interface IDownloadExtension<T> where T : IDownloadExtension<T>
+public interface IDownloadExtension
 {
     /// <summary>
     /// The unique Extension Identifier
@@ -31,7 +31,7 @@ public interface IDownloadExtension<T> where T : IDownloadExtension<T>
     /// <param name="query">The manga to search for.</param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<MangaSearchResult<T>?> Search(SearchQuery query, CancellationToken ct);
+    public Task<MangaSearchResult?> Search(SearchQuery query, CancellationToken ct);
 
     /// <summary>
     /// Returns the chapters of a Manga.
@@ -39,7 +39,7 @@ public interface IDownloadExtension<T> where T : IDownloadExtension<T>
     /// <param name="mangaInfo"></param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<List<ChapterInfo<T>>?> GetChapters(MangaInfo<T> mangaInfo, CancellationToken ct);
+    public Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct);
 
     /// <summary>
     /// Returns the images of a chapter.
@@ -47,5 +47,5 @@ public interface IDownloadExtension<T> where T : IDownloadExtension<T>
     /// <param name="chapterInfo"></param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<List<ChapterImage<T>>?> GetChapterImages(ChapterInfo<T> chapterInfo, CancellationToken ct);
+    public Task<List<ChapterImage>?> GetChapterImages(ChapterInfo chapterInfo, CancellationToken ct);
 }

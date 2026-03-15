@@ -1,14 +1,14 @@
 namespace MetadataExtensions;
 
-public interface IMetadataExtension<T> where T : IMetadataExtension<T>
+public interface IMetadataExtension
 {
      /// <summary>
-     /// The Url used by the <see cref="IMetadataExtension{T}"/>
+     /// The Url used by the <see cref="IMetadataExtension"/>
      /// </summary>
      public string BaseUrl { get; init; }
      
      /// <summary>
-     /// The Name of the <see cref="IMetadataExtension{T}"/>
+     /// The Name of the <see cref="IMetadataExtension"/>
      /// </summary>
      public string Name { get; init; }
 

@@ -1,3 +1,8 @@
 namespace DownloadExtensions.Data;
 
-public sealed record ChapterImage<T>(string chapterIdentifier, int order, MemoryStream image) where T : IDownloadExtension<T>;
+public sealed record ChapterImage(
+    Guid ExtensionIdentifier,
+    string chapterIdentifier,
+    int order,
+    MemoryStream image
+    );
