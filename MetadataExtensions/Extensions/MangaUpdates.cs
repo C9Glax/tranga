@@ -1,6 +1,4 @@
-using Common.Datatypes;
 using Common.Helpers;
-using Data;
 using NSwagClients.GeneratedClients.MangaUpdates;
 
 namespace MetadataExtensions.Extensions;
@@ -10,7 +8,7 @@ public sealed record MangaUpdateComicInfo : ComicInfo
     public long? MangaUpdatesSeriesId { get; init; }
 }
 
-public class MangaUpdates : IMetadataExtension
+public class MangaUpdates : IMetadataExtension<MangaUpdates>
 {
     // ReSharper disable once InconsistentNaming
     private readonly MangaUpdatesApiClient Client = new (new RequestClient());
@@ -23,12 +21,14 @@ public class MangaUpdates : IMetadataExtension
 
     public string Name { get; init; } = "MangaUpdates";
 
-    public async Task<List<ComicInfo>?> Search(SearchQuery searchQuery, CancellationToken ct)
+    public async Task<List<ComicInfo>?> Search(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct)
     {
         // If MangaUpdates ID is included, try getting the series directly first
         if (searchQuery.MangaUpdatesSeriesId is { } id)
         {
             SeriesModelV1 series = await Client.RetrieveSeriesAsync(id, cancellationToken: ct);
+            if (series.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
+                return null;
             return
             [
                 new MangaUpdateComicInfo()
@@ -41,8 +41,9 @@ public class MangaUpdates : IMetadataExtension
                     Publisher = series.Publishers is null ? "" : string.Join(',', series.Publishers.Select(p => p.Publisher_name)),
                     Genre = series.Genres is null ? "" : string.Join(',', series.Genres.Select(g => g.Genre)),
                     Web = series.Url,
-                    Manga = Data.Manga.Yes,
-                    Notes = series.Type.ToString()
+                    Manga = Common.Datatypes.Manga.Yes,
+                    Notes = series.Type.ToString(),
+                    Cover = cover
                 }
             ];
         }
@@ -64,6 +65,8 @@ public class MangaUpdates : IMetadataExtension
         {
             if(listResult is null)
                 continue;
+            if (listResult.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
+                return null;
             ret.Add(new MangaUpdateComicInfo()
             {
                 MangaUpdatesSeriesId = listResult.Series_id,
@@ -72,11 +75,27 @@ public class MangaUpdates : IMetadataExtension
                 Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
                 Genre = listResult.Genres is null ? "" : string.Join(',', listResult.Genres.Select(g => g.Genre)),
                 Web = listResult.Url,
-                Manga = Data.Manga.Yes,
-                Notes = listResult.Type.ToString()
+                Manga = Common.Datatypes.Manga.Yes,
+                Notes = listResult.Type.ToString(),
+                Cover = cover
             });
         }
 
         return ret;
+    }
+
+    private async Task<MemoryStream?> GetCover(string url, CancellationToken ct)
+    {
+        try
+        {
+            Stream data = await new RequestClient().GetStreamAsync(url, ct);
+            MemoryStream ms = new ();
+            await data.CopyToAsync(ms, ct);
+            return ms;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 }

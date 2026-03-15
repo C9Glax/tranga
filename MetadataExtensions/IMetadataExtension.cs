@@ -1,17 +1,14 @@
-using Common.Datatypes;
-using Data;
-
 namespace MetadataExtensions;
 
-public interface IMetadataExtension
+public interface IMetadataExtension<T> where T : IMetadataExtension<T>
 {
      /// <summary>
-     /// The Url used by the <see cref="IMetadataExtension"/>
+     /// The Url used by the <see cref="IMetadataExtension{T}"/>
      /// </summary>
      public string BaseUrl { get; init; }
      
      /// <summary>
-     /// The Name of the <see cref="IMetadataExtension"/>
+     /// The Name of the <see cref="IMetadataExtension{T}"/>
      /// </summary>
      public string Name { get; init; }
 
@@ -21,5 +18,5 @@ public interface IMetadataExtension
      /// <param name="searchQuery">Query to use for searching Manga</param>
      /// <param name="ct">The Cancellation Token for the Task</param>
      /// <returns>A Task representing the long running operation.</returns>
-     public Task<List<ComicInfo>?> Search(SearchQuery searchQuery, CancellationToken ct);
+     public Task<List<ComicInfo>?> Search(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct);
 }

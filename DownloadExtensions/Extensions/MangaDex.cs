@@ -3,6 +3,7 @@ using Common.Helpers;
 using DownloadExtensions.Data;
 using Newtonsoft.Json.Linq;
 using NSwagClients.GeneratedClients.MangaDex;
+using Manga = NSwagClients.GeneratedClients.MangaDex.Manga;
 
 namespace DownloadExtensions.Extensions;
 

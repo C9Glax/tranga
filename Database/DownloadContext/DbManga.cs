@@ -1,14 +1,12 @@
 using Common.Datatypes;
 
-namespace Database.MangaContext;
+namespace Database.DownloadContext;
 
 public sealed record DbManga : IRef
 {
     public Guid MangaId { get; init; }
     
-    public long? MangaUpdatesSeriesId { get; init; }
-    
-    public ICollection<DownloadExtensionId<DbManga>>? DownloadExtensionIds { get; init; }
+    public bool Download { get; set; }
     
     public ICollection<DbChapter>? Chapters { get; init; }
     
