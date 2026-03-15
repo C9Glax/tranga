@@ -8,7 +8,7 @@ namespace API.Features.Manga;
 /// <summary>
 /// Mark a Manga to be (un-)watched for downloads 
 /// </summary>
-public abstract class PostWatchManga
+public abstract class PostWatchMangaEndpoint
 {
     /// <summary>
     /// Mark a Manga to be (un-)watched for downloads 

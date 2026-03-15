@@ -1,3 +1,4 @@
+using Common.Datatypes;
 using Common.Helpers;
 using MetadataExtensions.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -37,4 +38,9 @@ public static class MangaContextHelpers
     {
         Summary = string.IsNullOrEmpty(comicInfo.Summary) ? other.Summary : comicInfo.Summary
     };
+    
+    public static IQueryable<DbManga> FilterManga(this IQueryable<DbManga> queryable, Guid mangaId) =>
+        queryable.Where(m => m.MangaId == mangaId);
+
+    public static IQueryable<DbManga> FilterManga(this MangaContext set, Guid mangaId) => set.Mangas.FilterManga(mangaId);
 }

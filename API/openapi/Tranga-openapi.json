@@ -79,6 +79,45 @@
         }
       }
     },
+    "/manga/{mangaId}/match": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Matches the Manga on all DownloadExtensions",
+        "description": "PostSearchMangaEndpoint",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "description": "The ID of the Manga to search for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A List of matched Manga",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MangaSearchResult"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Manga could not be found"
+          }
+        }
+      }
+    },
     "/chapter/{chapterId}/download": {
       "post": {
         "tags": [
@@ -123,7 +162,8 @@
         "required": [
           "title",
           "description",
-          "coverBase64"
+          "coverBase64",
+          "url"
         ],
         "type": "object",
         "properties": {
@@ -138,6 +178,10 @@
           "coverBase64": {
             "type": "string",
             "description": "The cover image as Base64 string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Url of the Manga"
           }
         },
         "description": "The result of PostSearchMangaEndpoint"
