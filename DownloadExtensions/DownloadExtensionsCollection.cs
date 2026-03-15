@@ -6,7 +6,7 @@ namespace DownloadExtensions;
 
 public static class DownloadExtensionsCollection
 {
-    private static readonly IDownloadExtension[] Extensions =
+    public static readonly IDownloadExtension[] Extensions =
     [
         new MangaDex()
     ];

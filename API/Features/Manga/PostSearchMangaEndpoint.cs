@@ -24,13 +24,13 @@ public abstract class PostSearchMangaEndpoint
     /// <returns>The Search-result</returns>
     /// <response code="200">The Search-result</response>
     /// <response code="500">Error while searching for Manga</response>
-    public static async Task<Results<Ok<MangaSearchResult[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
+    public static async Task<Results<Ok<MangaSearchResultDTO[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
     {
         List<ComicInfo> searchResult = MetadataExtensionsCollection.SearchAll(query, ct);
         
         await mangaContext.InsertNewDataIntoContext(searchResult, ct);
         
-        MangaSearchResult[] convertedResult = searchResult.Select(ci => new MangaSearchResult()
+        MangaSearchResultDTO[] convertedResult = searchResult.Select(ci => new MangaSearchResultDTO()
         {
             Title = ci.Title,
             Description = ci.Summary,

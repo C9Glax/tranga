@@ -3,6 +3,11 @@ namespace MetadataExtensions;
 public interface IMetadataExtension
 {
      /// <summary>
+     /// The unique Extension Identifier
+     /// </summary>
+     public Guid Identifier { get; init; }
+     
+     /// <summary>
      /// The Url used by the <see cref="IMetadataExtension"/>
      /// </summary>
      public string BaseUrl { get; init; }

@@ -30,7 +30,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/MangaSearchResult"
+                    "$ref": "#/components/schemas/MangaSearchResultDTO"
                   }
                 }
               }
@@ -90,7 +90,7 @@
           {
             "name": "mangaId",
             "in": "path",
-            "description": "The ID of the Manga to search for",
+            "description": "The ID of the Manga to match",
             "required": true,
             "schema": {
               "type": "string",
@@ -106,7 +106,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/MangaSearchResult"
+                    "$ref": "#/components/schemas/MangaSearchResultDTO"
                   }
                 }
               }
@@ -145,6 +145,52 @@
           }
         }
       }
+    },
+    "/metadataExtensions": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Get all Metadata-Extensions",
+        "responses": {
+          "200": {
+            "description": "A list of all Metadata-Extension",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataExtensionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/downloadExtensions": {
+      "get": {
+        "tags": [
+          "Download"
+        ],
+        "summary": "Get all Download-Extensions",
+        "responses": {
+          "200": {
+            "description": "A list of all Download-Extension",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DownloadExtensionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -158,7 +204,31 @@
           null
         ]
       },
-      "MangaSearchResult": {
+      "DownloadExtensionDTO": {
+        "required": [
+          "extensionIdentifier",
+          "name",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "extensionIdentifier": {
+            "type": "string",
+            "description": "The unique Identifier of this Extension",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the Extension"
+          },
+          "url": {
+            "type": "string",
+            "description": "The Url of the Extension"
+          }
+        },
+        "description": "A Download-Extension"
+      },
+      "MangaSearchResultDTO": {
         "required": [
           "title",
           "description",
@@ -184,7 +254,31 @@
             "description": "Url of the Manga"
           }
         },
-        "description": "The result of PostSearchMangaEndpoint"
+        "description": "A Search Result"
+      },
+      "MetadataExtensionDTO": {
+        "required": [
+          "extensionIdentifier",
+          "name",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "extensionIdentifier": {
+            "type": "string",
+            "description": "The unique Identifier of this Extension",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the Extension"
+          },
+          "url": {
+            "type": "string",
+            "description": "The Url of the Extension"
+          }
+        },
+        "description": "A Metadata-Extension"
       },
       "SearchQuery": {
         "type": "object",

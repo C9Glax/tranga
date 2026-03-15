@@ -1,4 +1,3 @@
-using Common.Datatypes;
 using Common.Helpers;
 using MetadataExtensions.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +36,7 @@ public static class MangaContextHelpers
     internal static ComicInfo Merge(this Common.Datatypes.ComicInfo comicInfo, ComicInfo other) => other with
     {
         Summary = string.IsNullOrEmpty(comicInfo.Summary) ? other.Summary : comicInfo.Summary
+        // TODO
     };
     
     public static IQueryable<DbManga> FilterManga(this IQueryable<DbManga> queryable, Guid mangaId) =>

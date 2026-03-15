@@ -12,7 +12,9 @@ public class MangaUpdates : IMetadataExtension
 {
     // ReSharper disable once InconsistentNaming
     private readonly MangaUpdatesApiClient Client = new (new RequestClient());
-    
+
+    public Guid Identifier { get; init; } = Guid.Parse("019cf2cb-3aac-7c9c-9580-7091471b6788");
+
     public string BaseUrl
     {
         get => Client.BaseUrl;

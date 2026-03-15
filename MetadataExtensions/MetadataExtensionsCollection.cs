@@ -5,7 +5,7 @@ namespace MetadataExtensions;
 
 public static class MetadataExtensionsCollection
 {
-    private static readonly IMetadataExtension[] Extensions =
+    public static readonly IMetadataExtension[] Extensions =
     [
         new MangaUpdates()
     ];

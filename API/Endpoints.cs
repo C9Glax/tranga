@@ -1,6 +1,8 @@
 using API.Features;
 using API.Features.Chapter;
+using API.Features.DownloadExtensions;
 using API.Features.Manga;
+using API.Features.MetadataExtensions;
 
 namespace API;
 
@@ -10,6 +12,8 @@ internal static class Endpoints
     {
         builder.MapGroup("/manga").AddMangaEndpoints();
         builder.MapGroup("/chapter").AddChapterEndpoints();
+        builder.MapGroup("/metadataExtensions").AddMetadataExtensionEndpoints();
+        builder.MapGroup("/downloadExtensions").AddDownloadExtensionEndpoints();
     }
 
     private static void AddMangaEndpoints(this RouteGroupBuilder builder)
@@ -27,6 +31,18 @@ internal static class Endpoints
     private static void AddChapterEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapPost("{chapterId}/download", PostDownloadChapter.Handle)
+            .WithTags("Download");
+    }
+
+    private static void AddMetadataExtensionEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet(string.Empty, GetMetadataExtensionsEndpoint.Handle)
+            .WithTags("Search");
+    }
+
+    private static void AddDownloadExtensionEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet(string.Empty, GetDownloadExtensionsEndpoint.Handle)
             .WithTags("Download");
     }
 }

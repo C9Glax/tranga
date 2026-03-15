@@ -1,9 +1,9 @@
 namespace API.DTOs;
 
 /// <summary>
-/// The result of <see cref="Features.PostSearchMangaEndpoint"/>
+/// A Search Result
 /// </summary>
-public sealed record MangaSearchResult
+public sealed record MangaSearchResultDTO
 {
     /// <summary>
     /// The title of the Manga
