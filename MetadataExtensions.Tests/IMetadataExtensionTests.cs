@@ -1,10 +1,12 @@
-﻿namespace MetadataExtensions.Tests;
+﻿using Common.Helpers;
+
+namespace MetadataExtensions.Tests;
 
 // ReSharper disable once InconsistentNaming
-public abstract class IMetadataExtensionTests<T> where T : IMetadataExtension, new()
+public abstract class IMetadataExtensionTests<T> : TestContext where T : IMetadataExtension, new()
 {
     // ReSharper disable once InconsistentNaming
-    private readonly T _metadataExtension = new T();
+    protected readonly T _metadataExtension = new T();
     
     /// <summary>
     /// Test checks that the <see cref="IMetadataExtension.Name"/> is set

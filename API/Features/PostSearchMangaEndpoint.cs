@@ -1,3 +1,4 @@
+using API.DTOs;
 using Common.Datatypes;
 using Data;
 using Database.MangaContext;
@@ -10,12 +11,17 @@ namespace API.Features;
 
 public abstract class PostSearchMangaEndpoint
 {
-    public static async Task<Results<Ok<ComicInfo[]>, BadRequest>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
+    public static async Task<Results<Ok<MangaSearchResult[]>, BadRequest>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
     {
         if (await MetadataExtensionsCollection.MangaUpdates.Search(query, ct) is not { } searchResult)
             return TypedResults.BadRequest();
         
         List<ComicInfo> mergedResult = await mangaContext.MergeComicInfos(searchResult, ct);
-        return TypedResults.Ok(mergedResult.ToArray());
+        MangaSearchResult[] convertedResult = mergedResult.Select(ci => new MangaSearchResult()
+        {
+            Title = ci.Title
+        }).ToArray();
+        
+        return TypedResults.Ok(convertedResult);
     }
 }

@@ -6,7 +6,7 @@ public sealed record DbManga : IRef
 {
     public Guid MangaId { get; init; }
     
-    public int? MangaUpdatesSeriesId { get; init; }
+    public long? MangaUpdatesSeriesId { get; init; }
     
     public int? AniListId { get; init; }
     

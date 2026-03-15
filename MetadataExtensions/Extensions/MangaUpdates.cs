@@ -7,7 +7,7 @@ namespace MetadataExtensions.Extensions;
 
 public sealed record MangaUpdateComicInfo : ComicInfo
 {
-    public int? MangaUpdatesSeriesId { get; init; }
+    public long? MangaUpdatesSeriesId { get; init; }
 }
 
 public class MangaUpdates : IMetadataExtension
@@ -18,7 +18,7 @@ public class MangaUpdates : IMetadataExtension
     public string BaseUrl
     {
         get => Client.BaseUrl;
-        init => Client.BaseUrl = value;
+        init => Client.BaseUrl = "https://api.mangaupdates.com/";
     }
 
     public string Name { get; init; } = "MangaUpdates";
@@ -50,7 +50,10 @@ public class MangaUpdates : IMetadataExtension
         // Search
         SeriesSearchResponseV1 list = await Client.SearchSeriesPostAsync(new SeriesSearchRequestV1()
         {
-            
+            Search = searchQuery.Title,
+            Stype = SeriesSearchRequestV1Stype.Title,
+            Page = 1,
+            Perpage = 10
         }, ct);
         
         if (list.Results is null)

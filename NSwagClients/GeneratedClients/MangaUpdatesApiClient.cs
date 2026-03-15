@@ -8498,7 +8498,7 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
         /// <param name="series_id">Series id</param>
         /// <returns>Series lookup response</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupSeriesAsync(int series_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ForumLookupResponseV1> LookupSeriesAsync(long series_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (series_id == null)
                 throw new System.ArgumentNullException("series_id");
@@ -13279,7 +13279,7 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return list series record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsSeriesModelV1> RetrieveListSeriesAsync(int series_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListsSeriesModelV1> RetrieveListSeriesAsync(long series_id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (series_id == null)
                 throw new System.ArgumentNullException("series_id");
@@ -13468,7 +13468,7 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
         /// <param name="series_id">Series id</param>
         /// <returns>Return similar user records</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListsSimilarUsersResponseV1> RetrieveSimilarUsersBySeriesAsync(List_name list_name, int series_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListsSimilarUsersResponseV1> RetrieveSimilarUsersBySeriesAsync(List_name list_name, long series_id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (list_name == null)
                 throw new System.ArgumentNullException("list_name");
@@ -18879,7 +18879,7 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
         /// <param name="unrenderedFields">Output fields in unrendered form for editing</param>
         /// <returns>Return series record</returns>
         /// <exception cref="MangaUpdatesApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SeriesModelV1> RetrieveSeriesAsync(int id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<SeriesModelV1> RetrieveSeriesAsync(long id, bool? unrenderedFields = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -27425,9 +27425,8 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     public partial class ListsSeriesModelV1
     {
 
-        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public required Series Series { get; set; }
+        [Newtonsoft.Json.JsonProperty("series", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Series? Series { get; set; }
 
         [Newtonsoft.Json.JsonProperty("list_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? List_id { get; set; }
@@ -29011,7 +29010,7 @@ namespace NSwagClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }

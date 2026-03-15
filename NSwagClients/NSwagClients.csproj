@@ -23,4 +23,10 @@
       <None Remove="Definitions\MangaUpdates.yaml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="Definitions\MangaUpdates.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

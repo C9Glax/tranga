@@ -82,7 +82,7 @@ internal static class Generator
                 UseRequiredKeyword = true,
                 JsonLibraryVersion = 10,
                 GenerateDefaultValues = true,
-                GenerateDataAnnotations = true
+                GenerateDataAnnotations = true,
             },
         };
 
