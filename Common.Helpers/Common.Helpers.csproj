@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
+      <ProjectReference Include="..\Settings\Settings.csproj" />
     </ItemGroup>
 
 </Project>

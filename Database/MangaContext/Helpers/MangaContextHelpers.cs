@@ -7,21 +7,21 @@ namespace Database.MangaContext.Helpers;
 
 public static class MangaContextHelpers
 {
-    public static async Task<List<(DbManga manga, string url)>> InsertNewDataIntoContext(this MangaContext ctx, List<ComicInfo> comicInfos, CancellationToken ct)
+    public static async Task<List<(ComicInfo comicInfo, DbManga manga, string url)>> InsertNewDataIntoContext(this MangaContext ctx, List<ComicInfo> comicInfos, CancellationToken ct)
     {
-        List<(DbManga manga, string url)> ret = new();
+        List<(ComicInfo comicInfo, DbManga manga, string url)> ret = new();
         foreach (ComicInfo comicInfo in comicInfos)
         {
             if (await ctx.Mangas.FirstOrDefaultAsync(m => m.Title == comicInfo.Title, ct) is not { } existing)
             {
                 DbManga manga = CreateManga(comicInfo);
-                ret.Add((manga, comicInfo.Web));
+                ret.Add((comicInfo, manga, comicInfo.Web));
                 await ctx.Mangas.AddAsync(manga, ct);
             }
             else
             {
                 existing.Merge(comicInfo);
-                ret.Add((existing, comicInfo.Web));
+                ret.Add((comicInfo, existing, comicInfo.Web));
             }
         }
 
@@ -33,7 +33,6 @@ public static class MangaContextHelpers
         MangaUpdatesSeriesId = comicInfo is MangaUpdateComicInfo ci
             ? ci.MangaUpdatesSeriesId
             : null,
-        CoverImageBase64 = comicInfo.Cover.ToCoverBase64(),
         Title = !string.IsNullOrEmpty(comicInfo.Series) ? comicInfo.Series : comicInfo.Title,
         Description = !string.IsNullOrEmpty(comicInfo.Summary) ? comicInfo.Summary : null,
         Year = comicInfo.Year != default ? comicInfo.Year : null,

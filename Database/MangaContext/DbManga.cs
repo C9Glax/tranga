@@ -12,8 +12,6 @@ public sealed record DbManga
     
     public ICollection<DbChapter>? Chapters { get; init; }
     
-    public required string CoverImageBase64 { get; init; }
-    
     public required string Title { get; set; }
     public required string? Description { get; set; }
     public required int? Year { get; set; }

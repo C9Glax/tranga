@@ -10,14 +10,20 @@ internal static class Endpoints
 {
     internal static void AddEndpoints(RouteGroupBuilder builder)
     {
-        builder.MapGroup("/manga").AddMangaEndpoints();
-        builder.MapGroup("/chapter").AddChapterEndpoints();
+        builder.MapGroup("/manga")
+            .WithTags("Manga")
+            .AddMangaEndpoints();
+        builder.MapGroup("/chapter")
+            .WithTags("Chapter")
+            .AddChapterEndpoints();
         builder.MapGroup("/metadataExtensions").AddMetadataExtensionEndpoints();
         builder.MapGroup("/downloadExtensions").AddDownloadExtensionEndpoints();
     }
 
     private static void AddMangaEndpoints(this RouteGroupBuilder builder)
     {
+        builder.MapGet("{mangaId}/cover", GetCoverEndpoint.Handle);
+        
         builder.MapPost("/search", PostSearchMangaEndpoint.Handle)
             .WithTags("Search");
         

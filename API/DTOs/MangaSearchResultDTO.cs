@@ -21,11 +21,6 @@ public sealed record MangaSearchResultDTO
     public required string? Description { get; init; }
     
     /// <summary>
-    /// The cover image as Base64 string
-    /// </summary>
-    public required string CoverBase64 { get; init; }
-    
-    /// <summary>
     /// Url of the Manga
     /// </summary>
     public required string Url { get; init; }

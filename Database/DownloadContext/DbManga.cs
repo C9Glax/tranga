@@ -1,5 +1,3 @@
-using Common.Datatypes;
-
 namespace Database.DownloadContext;
 
 public sealed record DbManga
@@ -9,6 +7,4 @@ public sealed record DbManga
     public bool Download { get; set; }
     
     public ICollection<DbChapter>? Chapters { get; init; }
-    
-    public required string CoverImageBase64 { get; init; }
 }

@@ -1,5 +1,6 @@
 using API.DTOs;
 using Common.Datatypes;
+using Common.Helpers;
 using Database.MangaContext;
 using Database.MangaContext.Helpers;
 using MetadataExtensions;
@@ -27,18 +28,22 @@ public abstract class PostSearchMangaEndpoint
     {
         List<ComicInfo> searchResult = MetadataExtensionsCollection.SearchAll(query, ct);
         
-        List<(DbManga manga, string url)> result = await mangaContext.InsertNewDataIntoContext(searchResult, ct);
+        List<(ComicInfo comicInfo, DbManga manga, string url)> result = await mangaContext.InsertNewDataIntoContext(searchResult, ct);
         
         MangaSearchResultDTO[] convertedResult = result.Select(ci => new MangaSearchResultDTO()
         {
             MangaId = ci.manga.MangaId,
             Title = ci.manga.Title,
             Description = ci.manga.Description ?? null,
-            CoverBase64 = ci.manga.CoverImageBase64,
             Url = ci.url
         }).ToArray();
 
         await mangaContext.SaveChangesAsync(ct);
+        
+        foreach ((ComicInfo comicInfo, DbManga manga, string url) in result)
+        {
+            await MangaCover.SaveCover(manga.MangaId.ToString(), comicInfo.Cover, ct);
+        }
         
         return TypedResults.Ok(convertedResult);
     }
