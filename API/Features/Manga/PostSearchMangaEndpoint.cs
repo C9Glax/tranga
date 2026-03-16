@@ -37,6 +37,8 @@ public abstract class PostSearchMangaEndpoint
             CoverBase64 = ci.manga.CoverImageBase64,
             Url = ci.url
         }).ToArray();
+
+        await mangaContext.SaveChangesAsync(ct);
         
         return TypedResults.Ok(convertedResult);
     }

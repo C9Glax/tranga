@@ -33,6 +33,9 @@ public abstract class PostMatchMangaEndpoint
 
         SearchQuery searchQuery = manga.ToSearchQuery();
         List<MangaInfo> searchResult = DownloadExtensionsCollection.SearchAll(searchQuery, ct);
+        
+        // TODO insert into db
+        
         MangaSearchResultDTO[] convertedResult = searchResult.Select(mi => new MangaSearchResultDTO()
         {
             Title = mi.Title,

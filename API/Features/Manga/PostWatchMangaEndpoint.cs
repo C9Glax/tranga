@@ -26,6 +26,8 @@ public abstract class PostWatchMangaEndpoint
 
         manga.Download = download;
 
+        await downloadContext.SaveChangesAsync(ct);
+
         return TypedResults.Ok();
     }
 }
