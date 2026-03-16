@@ -1,8 +1,6 @@
-using Common.Datatypes;
-
 namespace Database.MangaContext;
 
-public sealed record DbChapter : IRef
+public sealed record DbChapter
 {
     public Guid ChapterId { get; init; }
     
@@ -12,5 +10,8 @@ public sealed record DbChapter : IRef
     
     public DbManga? Manga { get; init; }
     
-    public ComicInfo? ComicInfo { get; set; }
+    public required string? Volume { get; init; }
+    public required string Chapter { get; init; }
+    public required string? Title { get; set; }
+    public required string? Description { get; set; }
 }

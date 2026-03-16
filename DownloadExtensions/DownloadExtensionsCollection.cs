@@ -14,8 +14,6 @@ public static class DownloadExtensionsCollection
     public static List<MangaInfo> SearchAll(SearchQuery query, CancellationToken ct)
     {
         List<Task<MangaSearchResult?>> tasks = Extensions.Select(e => e.Search(query, ct)).ToList();
-        foreach (Task<MangaSearchResult?> task in tasks)
-            task.Start();
         
         Task.WaitAll(tasks, ct);
         

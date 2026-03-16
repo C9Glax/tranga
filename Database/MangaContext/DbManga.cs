@@ -2,7 +2,7 @@ using Common.Datatypes;
 
 namespace Database.MangaContext;
 
-public sealed record DbManga : IRef
+public sealed record DbManga
 {
     public Guid MangaId { get; init; }
     
@@ -14,5 +14,12 @@ public sealed record DbManga : IRef
     
     public required string CoverImageBase64 { get; init; }
     
-    public ComicInfo? ComicInfo { get; set; }
+    public required string Title { get; set; }
+    public required string? Description { get; set; }
+    public required int? Year { get; set; }
+    public required string[]? Authors { get; set; }
+    public required string[]? Artists { get; set; }
+    public required string[]? Genre { get; set; }
+    public required string[]? Tags { get; set; }
+    public required AgeRating? AgeRating { get; set; }
 }

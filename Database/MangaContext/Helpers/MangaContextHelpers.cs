@@ -11,33 +11,38 @@ public static class MangaContextHelpers
     {
         foreach (ComicInfo comicInfo in comicInfos)
         {
-            if (await ctx.Mangas.Include(m => m.ComicInfo).FirstOrDefaultAsync(m => m.ComicInfo!.Title == comicInfo.Title, ct) is not { } existing)
+            if (await ctx.Mangas.FirstOrDefaultAsync(m => m.Title == comicInfo.Title, ct) is not { } existing)
             {
                 DbManga manga = CreateManga(comicInfo);
                 await ctx.Mangas.AddAsync(manga, ct);
             }
             else
             {
-                ComicInfo mergedComicInfo = existing.ComicInfo!.Merge(comicInfo);
-                existing.ComicInfo = mergedComicInfo;
+                existing.Merge(comicInfo);
             }
         }
     }
 
-    internal static DbManga CreateManga(ComicInfo comicInfo) => new()
+    private static DbManga CreateManga(ComicInfo comicInfo) => new()
     {
         MangaUpdatesSeriesId = comicInfo is MangaUpdateComicInfo ci
             ? ci.MangaUpdatesSeriesId
             : null,
-        ComicInfo = comicInfo,
-        CoverImageBase64 = comicInfo.Cover.ToCoverBase64()
+        CoverImageBase64 = comicInfo.Cover.ToCoverBase64(),
+        Title = !string.IsNullOrEmpty(comicInfo.Series) ? comicInfo.Series : comicInfo.Title,
+        Description = !string.IsNullOrEmpty(comicInfo.Summary) ? comicInfo.Summary : null,
+        Year = comicInfo.Year != default ? comicInfo.Year : null,
+        Authors = !string.IsNullOrEmpty(comicInfo.Writer) ? comicInfo.Writer.Split(',') : null,
+        Artists = !string.IsNullOrEmpty(comicInfo.Penciller) ? comicInfo.Penciller.Split(',') : null,
+        Genre = !string.IsNullOrEmpty(comicInfo.Genre) ? comicInfo.Genre.Split(',') : null,
+        Tags = !string.IsNullOrEmpty(comicInfo.Notes) ? comicInfo.Notes.Split('.') : null,
+        AgeRating = comicInfo.AgeRating != default ? comicInfo.AgeRating : null
     };
 
-    internal static ComicInfo Merge(this Common.Datatypes.ComicInfo comicInfo, ComicInfo other) => other with
+    internal static void Merge(this DbManga manga, ComicInfo other)
     {
-        Summary = string.IsNullOrEmpty(comicInfo.Summary) ? other.Summary : comicInfo.Summary
         // TODO
-    };
+    }
     
     public static IQueryable<DbManga> FilterManga(this IQueryable<DbManga> queryable, Guid mangaId) =>
         queryable.Where(m => m.MangaId == mangaId);

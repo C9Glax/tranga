@@ -13,8 +13,6 @@ public static class MetadataExtensionsCollection
     public static List<ComicInfo> SearchAll(SearchQuery searchQuery, CancellationToken ct)
     {
         List<Task<List<ComicInfo>?>> tasks = Extensions.Select(e => e.Search(searchQuery, ct)).ToList();
-        foreach (Task<List<ComicInfo>?> task in tasks)
-            task.Start();
         
         Task.WaitAll(tasks, ct);
         

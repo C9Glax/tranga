@@ -30,6 +30,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers.Tests", "Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSwagClients", "NSwagClients\NSwagClients.csproj", "{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39ADCF67-C411-4DC3-8E4D-675B731D007A}"
+	ProjectSection(SolutionItems) = preProject
+		compose-local.yaml = compose-local.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "Settings\Settings.csproj", "{EC208DB8-709C-44B8-8C92-B783F128FC91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,5 +103,9 @@ Global
 		{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC208DB8-709C-44B8-8C92-B783F128FC91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC208DB8-709C-44B8-8C92-B783F128FC91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC208DB8-709C-44B8-8C92-B783F128FC91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC208DB8-709C-44B8-8C92-B783F128FC91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

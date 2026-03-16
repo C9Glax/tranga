@@ -1,6 +1,6 @@
 namespace Database.MangaContext;
 
-public sealed record DownloadExtensionId<T> where T : IRef
+public sealed record DownloadExtensionId<T>
 {
     public Guid ParentId { get; init; }
     

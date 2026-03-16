@@ -28,7 +28,7 @@ public abstract class PostMatchMangaEndpoint
     /// <response code="404">Manga could not be found</response>
     public static async Task<Results<Ok<MangaSearchResultDTO[]>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, CancellationToken ct)
     {
-        if (await mangaContext.FilterManga(mangaId).Include(m => m.ComicInfo).FirstOrDefaultAsync(ct) is not { } manga)
+        if (await mangaContext.FilterManga(mangaId).FirstOrDefaultAsync(ct) is not { } manga)
             return TypedResults.NotFound();
 
         SearchQuery searchQuery = manga.ToSearchQuery();

@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
 using API;
+using Database;
 using Database.DownloadContext;
 using Database.MangaContext;
 using Microsoft.OpenApi;
+using Npgsql;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -15,17 +17,27 @@ builder.Services.AddOpenApi(opts =>
     opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.Services.AddDbContext<MangaContext>();
-builder.Services.AddDbContext<DownloadContext>();
+builder.Services.AddDbContext<MangaContext>(opts => opts.Configure(null), ServiceLifetime.Scoped, ServiceLifetime.Singleton);
+builder.Services.AddDbContext<DownloadContext>(opts => opts.Configure(null), ServiceLifetime.Scoped, ServiceLifetime.Singleton);
 
 WebApplication app = builder.Build();
 
-app.MapOpenApi();
-app.MapScalarApiReference();
+try
+{
+    await app.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>().ApplyMigrations();
+    await app.Services.CreateScope().ServiceProvider.GetRequiredService<DownloadContext>().ApplyMigrations();
 
-RouteGroupBuilder routeBuilder = app.MapGroup("/");
-Endpoints.AddEndpoints(routeBuilder);
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 
-app.UseHttpsRedirection();
+    RouteGroupBuilder routeBuilder = app.MapGroup("/");
+    Endpoints.AddEndpoints(routeBuilder);
 
-app.Run();
+    app.UseHttpsRedirection();
+
+    app.Run();
+}
+catch (NpgsqlException)
+{
+    // probably build
+}
