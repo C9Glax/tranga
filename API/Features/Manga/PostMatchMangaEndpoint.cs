@@ -38,7 +38,8 @@ public abstract class PostMatchMangaEndpoint
             Title = mi.Title,
             Description = mi.Description ?? string.Empty,
             CoverBase64 = mi.Cover.ToCoverBase64(),
-            Url = mi.Url
+            Url = mi.Url,
+            MangaId = mangaId
         }).ToArray();
 
         return TypedResults.Ok(convertedResult);

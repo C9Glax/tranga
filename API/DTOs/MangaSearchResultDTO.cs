@@ -6,6 +6,11 @@ namespace API.DTOs;
 public sealed record MangaSearchResultDTO
 {
     /// <summary>
+    /// The identifier of the Manga
+    /// </summary>
+    public required Guid MangaId { get; init; }
+    
+    /// <summary>
     /// The title of the Manga
     /// </summary>
     public required string Title { get; init; }

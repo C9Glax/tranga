@@ -35,6 +35,7 @@ public class MangaUpdates : IMetadataExtension
             [
                 new MangaUpdateComicInfo()
                 {
+                    MetadataExtensionIdentifier = this.Identifier,
                     MangaUpdatesSeriesId = series.Series_id,
                     Series = series.Title,
                     Summary = series.Description,
@@ -68,9 +69,10 @@ public class MangaUpdates : IMetadataExtension
             if(listResult is null)
                 continue;
             if (listResult.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
-                return null;
+                continue;
             ret.Add(new MangaUpdateComicInfo()
             {
+                MetadataExtensionIdentifier = this.Identifier,
                 MangaUpdatesSeriesId = listResult.Series_id,
                 Series = listResult.Title,
                 Summary = listResult.Description,

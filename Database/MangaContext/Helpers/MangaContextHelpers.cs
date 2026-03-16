@@ -7,23 +7,28 @@ namespace Database.MangaContext.Helpers;
 
 public static class MangaContextHelpers
 {
-    public static async Task InsertNewDataIntoContext(this MangaContext ctx, List<ComicInfo> comicInfos, CancellationToken ct)
+    public static async Task<List<(DbManga manga, string url)>> InsertNewDataIntoContext(this MangaContext ctx, List<ComicInfo> comicInfos, CancellationToken ct)
     {
+        List<(DbManga manga, string url)> ret = new();
         foreach (ComicInfo comicInfo in comicInfos)
         {
             if (await ctx.Mangas.FirstOrDefaultAsync(m => m.Title == comicInfo.Title, ct) is not { } existing)
             {
                 DbManga manga = CreateManga(comicInfo);
+                ret.Add((manga, comicInfo.Web));
                 await ctx.Mangas.AddAsync(manga, ct);
             }
             else
             {
                 existing.Merge(comicInfo);
+                ret.Add((existing, comicInfo.Web));
             }
         }
+
+        return ret;
     }
 
-    private static DbManga CreateManga(ComicInfo comicInfo) => new()
+    private static DbManga CreateManga(ComicInfo comicInfo) => new ()
     {
         MangaUpdatesSeriesId = comicInfo is MangaUpdateComicInfo ci
             ? ci.MangaUpdatesSeriesId

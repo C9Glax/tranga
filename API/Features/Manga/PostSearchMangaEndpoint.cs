@@ -1,6 +1,5 @@
 using API.DTOs;
 using Common.Datatypes;
-using Common.Helpers;
 using Database.MangaContext;
 using Database.MangaContext.Helpers;
 using MetadataExtensions;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ComicInfo = MetadataExtensions.ComicInfo;
 
-namespace API.Features;
+namespace API.Features.Manga;
 
 /// <summary>
 /// Searches for a Manga
@@ -28,14 +27,15 @@ public abstract class PostSearchMangaEndpoint
     {
         List<ComicInfo> searchResult = MetadataExtensionsCollection.SearchAll(query, ct);
         
-        await mangaContext.InsertNewDataIntoContext(searchResult, ct);
+        List<(DbManga manga, string url)> result = await mangaContext.InsertNewDataIntoContext(searchResult, ct);
         
-        MangaSearchResultDTO[] convertedResult = searchResult.Select(ci => new MangaSearchResultDTO()
+        MangaSearchResultDTO[] convertedResult = result.Select(ci => new MangaSearchResultDTO()
         {
-            Title = ci.Title,
-            Description = ci.Summary,
-            CoverBase64 = ci.Cover.ToCoverBase64(),
-            Url = ci.Web
+            MangaId = ci.manga.MangaId,
+            Title = ci.manga.Title,
+            Description = ci.manga.Description ?? null,
+            CoverBase64 = ci.manga.CoverImageBase64,
+            Url = ci.url
         }).ToArray();
         
         return TypedResults.Ok(convertedResult);
