@@ -13,7 +13,7 @@ public sealed record MangaSearchResultDTO
     /// <summary>
     /// The description of the Manga
     /// </summary>
-    public required string Description { get; init; }
+    public required string? Description { get; init; }
     
     /// <summary>
     /// The cover image as Base64 string
