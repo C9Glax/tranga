@@ -1,6 +1,6 @@
 namespace Common.Helpers.Tests;
 
-public sealed class MangaCoverTests
+public sealed class ImageHelperTests
 {
     // TODO
 }

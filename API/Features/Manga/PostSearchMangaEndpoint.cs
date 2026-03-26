@@ -1,11 +1,13 @@
 using API.DTOs;
 using Common.Datatypes;
 using Common.Helpers;
+using Database;
 using Database.MangaContext;
 using MetadataExtensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Settings;
 
 namespace API.Features.Manga;
 
@@ -93,11 +95,26 @@ public abstract class PostSearchMangaEndpoint
 
     private static async Task SaveCover(DbMetadataLink metadataLink, MemoryStream memoryStream, CancellationToken ct)
     {
-        (string fileName, string path) = await MangaCover.SaveCover(metadataLink.Id.ToString(), memoryStream, ct);
-        metadataLink.Cover = new DbFile()
+        try
         {
-            Name = fileName,
-            Path = path
-        };
+            await memoryStream.ToJpeg(ct);
+            metadataLink.Cover = new DbFile()
+            {
+                Name = $"{metadataLink.Id}.jpg",
+                Path = Constants.CoverDirectory,
+                MimeType = "image/jpeg"
+            };
+            await metadataLink.Cover.SaveFile(memoryStream, ct);
+        }
+        catch
+        {
+            metadataLink.Cover = new DbFile()
+            {
+                Name = $"{metadataLink.Id}",
+                Path = Constants.CoverDirectory,
+                MimeType = "image/png"
+            };
+            await metadataLink.Cover.SaveFile(memoryStream, ct);
+        }
     }
 }

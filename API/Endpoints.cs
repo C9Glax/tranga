@@ -1,5 +1,6 @@
 using API.Features.Chapter;
 using API.Features.DownloadExtensions;
+using API.Features.File;
 using API.Features.Manga;
 using API.Features.MetadataExtensions;
 
@@ -17,6 +18,7 @@ internal static class Endpoints
             .AddChapterEndpoints();
         builder.MapGroup("/metadataExtensions").AddMetadataExtensionEndpoints();
         builder.MapGroup("/downloadExtensions").AddDownloadExtensionEndpoints();
+        builder.MapGet("file/{fileId}", GetFileEndpoint.Handle).WithTags("File");
     }
 
     private static void AddMangaEndpoints(this RouteGroupBuilder builder)

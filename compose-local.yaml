@@ -10,7 +10,7 @@
     ports:
       - "8080:8080"
   tranga-pg:
-    image: postgres:17
+    image: postgres
     container_name: tranga-pg
     ports:
       - "5432:5432"

@@ -12,6 +12,7 @@ COPY ["Common.Datatypes/Common.Datatypes.csproj", "Common.Datatypes/"]
 COPY ["Database/Database.csproj", "Database/"]
 COPY ["DownloadExtensions/DownloadExtensions.csproj", "DownloadExtensions/"]
 COPY ["Common.Helpers/Common.Helpers.csproj", "Common.Helpers/"]
+COPY ["Settings/Settings.csproj", "Settings/"]
 COPY ["NSwagClients/NSwagClients.csproj", "NSwagClients/"]
 COPY ["MetadataExtensions/MetadataExtensions.csproj", "MetadataExtensions/"]
 RUN dotnet restore "API/API.csproj"

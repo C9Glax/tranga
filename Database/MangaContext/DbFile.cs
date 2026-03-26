@@ -7,4 +7,6 @@ public sealed class DbFile
     public required string Name { get; set; }
     
     public required string Path { get; set; }
+    
+    public required string MimeType { get; init; }
 }

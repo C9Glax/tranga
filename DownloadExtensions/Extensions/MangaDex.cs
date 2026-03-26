@@ -13,7 +13,7 @@ public sealed class MangaDex : IDownloadExtension
 
     public string Name { get; init; } = "MangaDex";
     
-    public Language[] SupportedLanguages { get; init; } = ["en-us"];
+    public Language[] SupportedLanguages { get; init; } = ["en-us"!];
     
     // ReSharper disable once ValueParameterNotUsed
     public string BaseUrl { get => Client.BaseUrl; init => Client.BaseUrl = "https://api.mangadex.org/"; }
@@ -145,7 +145,7 @@ internal static class Helper
 {
     public static string? GetLocalizedString(this LocalizedString str, Language? language)
     {
-        if (language is not null && str.TryGetValue(language, out string? lang))
+        if (language is not null && str.TryGetValue(language.Name, out string? lang))
             return lang;
         if (str.FirstOrDefault(kv => kv.Key.Equals("en-us", StringComparison.InvariantCultureIgnoreCase)) is
             { Value: { } langEnUs }) return langEnUs;

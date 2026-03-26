@@ -1,5 +1,6 @@
 using API.Helpers;
 using Common.Helpers;
+using Database;
 using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -39,10 +40,15 @@ public abstract class GetCoverEndpoint
         
         if (await mangaContext.Files.FirstOrDefaultAsync(f => f.Id == metadata.CoverId, ct) is not { } cover)
             return TypedResults.NoContent();
-        
-        if (await MangaCover.LoadCover(cover.Name, ct) is not { } memoryStream)
-            return TypedResults.InternalServerError();
 
-        return TypedResults.File(memoryStream, "image/png", mangaId.ToString());
+        try
+        {
+            MemoryStream memoryStream = await cover.LoadFile(ct);
+            return TypedResults.File(memoryStream, cover.MimeType, cover.Name);
+        }
+        catch
+        {
+            return TypedResults.InternalServerError();
+        }
     }
 }
