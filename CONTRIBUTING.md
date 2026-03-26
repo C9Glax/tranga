@@ -14,6 +14,10 @@ If you want to contribute, please feel free to fork and create a Pull-Request!
       var xyz = Object.GetSomething(); //What is xyz? An Array? A string? An object?
       ```
       
+## Database Schema
+
+![schema.svg](Database/schema.svg)
+
 ## Adding a `DownloadExtension` (formerly "connector")
 
 1. If you have the OpenApi-definition use `NSwagClients.Generator` (see _`NSwagClients/Program.cs`_) to generate client code.
@@ -21,6 +25,7 @@ If you want to contribute, please feel free to fork and create a Pull-Request!
 _`DownloadExtensions/Extensions/MangaDex.cs`_).
 3. Add Tests by extending `IDownloadExtensionsTests` in _`DownloadExtensions.Tests/Extensions`_ (for an example see 
 _`DownloadExtensions.Tests/Extensions/MangaDexTests.cs`_).
+4. Add the `IDownloadExtension` to `DownloadExtensionsCollection` (_`DownloadExtensions/DownloadExtensionsCollection.cs`_).
 
 ## Adding an `MetadataExtension`
 
