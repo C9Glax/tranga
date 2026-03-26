@@ -28,5 +28,5 @@ public sealed record MangaSearchResultDTO
     /// <summary>
     /// Url of the Manga
     /// </summary>
-    public required string Url { get; init; }
+    public string? Url { get; init; }
 }

@@ -36,59 +36,58 @@ public abstract class PostSearchMangaEndpoint
 
     private static async Task<MangaSearchResultDTO[]> InsertNewDataIntoMangaContext(MangaContext mangaContext, List<SearchResult> searchResult, CancellationToken ct)
     {
-        // Crimes have been committed.
-        Dictionary<DbMetadataLink, SearchResult> metadataEntries = (await mangaContext.Mangas.Include(m => m.MetadataLinks)
-            .SelectMany(m => m.MetadataLinks!)
-            .Where(l => searchResult.Any(s =>
-                s.MetadataExtensionIdentifier == l.MetadataExtensionId && s.Identifier == l.Identifier))
-            .ToListAsync(ct))
-            .ToDictionary(l => l,
-                l => searchResult.First(s =>
-                    s.MetadataExtensionIdentifier == l.MetadataExtensionId && s.Identifier == l.Identifier));
-        
-        // So many crimes.
-        List<SearchResult> missing = searchResult.Where(s => !metadataEntries.ContainsValue(s)).ToList();
-        Dictionary<DbManga, SearchResult> mangaEntries = (await mangaContext.Mangas
-                .Include(m => m.MetadataLinks)
-                .Where(m => missing.Any(sr => sr.Series == m.Series))
-                .ToListAsync(ct))
-            .ToDictionary(m => m, m => missing.First(sr => sr.Series == m.Series));
-        
-        missing = missing.Where(s => !mangaEntries.ContainsValue(s)).ToList();
-        
-        // Create new Manga in DB
-        foreach (SearchResult result in missing)
+        Dictionary<DbManga, DbMetadataLink> ret = new();
+        foreach (SearchResult result in searchResult)
         {
-            DbManga manga = new ()
+            if (await mangaContext.Mangas
+                    .Include(m => m.MetadataLinks)
+                    .Select(m => new { manga = m, metadataLinks = m.MetadataLinks! })
+                    .FirstOrDefaultAsync(pair => pair.metadataLinks.Any(l=> l.MetadataExtensionId == result.MetadataExtensionIdentifier && l.Identifier == result.Identifier)
+                        , ct) is { } existing)
             {
-                Series = result.Series,
-                Monitor = false
-            };
-            await mangaContext.AddAsync(manga, ct);
-            mangaEntries.Add(manga, result);
-        }
-        
-        // Create new MetadataLinks in DB
-        foreach ((DbManga manga, SearchResult result) in mangaEntries)
-        {
-            DbMetadataLink link = new ()
+                ret.Add(existing.manga, existing.metadataLinks.First(l => l.MetadataExtensionId == result.MetadataExtensionIdentifier && l.Identifier == result.Identifier));
+            }
+            else if (await mangaContext.Mangas.FirstOrDefaultAsync(m => m.Series == result.Series, ct) is { } manga)
             {
-                MangaId = manga.Id,
-                MetadataExtensionId = result.MetadataExtensionIdentifier,
-                Identifier = result.Identifier,
-            };
-            await SaveCover(link, result.Cover, ct);
-            manga.MetadataLinks!.Add(link);
-            metadataEntries.Add(link, result);
+                DbMetadataLink link = new ()
+                {
+                    MangaId = manga.Id,
+                    MetadataExtensionId = result.MetadataExtensionIdentifier,
+                    Identifier = result.Identifier,
+                };
+                await mangaContext.AddAsync(link, ct);
+                await SaveCover(link, result.Cover, ct);
+                manga.MetadataLinks!.Add(link);
+                ret.Add(manga, link);
+            }
+            else
+            {
+                DbManga newManga = new ()
+                {
+                    Series = result.Series,
+                    Monitor = false
+                };
+                await mangaContext.AddAsync(newManga, ct);
+                DbMetadataLink link = new ()
+                {
+                    MangaId = newManga.Id,
+                    MetadataExtensionId = result.MetadataExtensionIdentifier,
+                    Identifier = result.Identifier,
+                };
+                await mangaContext.AddAsync(link, ct);
+                await SaveCover(link, result.Cover, ct);
+                newManga.MetadataLinks!.Add(link);
+                ret.Add(newManga, link);
+            }
         }
 
-        return metadataEntries.Select(kv => new MangaSearchResultDTO()
+        return ret.Select(kv => new MangaSearchResultDTO()
         {
-            MangaId = kv.Key.MangaId,
-            Description = kv.Key.Summary,
-            MetadataId = kv.Key.Id,
-            Title = kv.Key.Manga!.Series,
-            Url = kv.Key.Url ?? string.Empty
+            MangaId = kv.Key.Id,
+            Description = kv.Value.Summary,
+            MetadataId = kv.Value.Id,
+            Title = kv.Key.Series,
+            Url = kv.Value.Url
         }).ToArray();
     }
 

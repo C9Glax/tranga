@@ -12,6 +12,8 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
     
     public DbSet<DbGenre> Genre { get; init; }
     
+    public DbSet<DbFile> Files { get; init; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         #region DbManga
