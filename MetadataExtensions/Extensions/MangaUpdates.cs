@@ -26,12 +26,16 @@ public class MangaUpdates : IMetadataExtension
             SeriesModelV1 series = await Client.RetrieveSeriesAsync(id, cancellationToken: ct);
             if (series.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
                 return null;
+            if(series.Series_id is null)
+                return null;
+            if(series.Title is null)
+                return null;
             return
             [
                 new SearchResult()
                 {
                     MetadataExtensionIdentifier = this.Identifier,
-                    Identifier = series.Series_id?.ToString(),
+                    Identifier = series.Series_id.ToString()!,
                     Series = series.Title,
                     Summary = series.Description,
                     Year = series.Year is null ? -1 : int.Parse(series.Year),
@@ -62,10 +66,14 @@ public class MangaUpdates : IMetadataExtension
                 continue;
             if (listResult.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
                 continue;
+            if(listResult.Series_id is null)
+                continue;
+            if(listResult.Title is null)
+                continue;
             ret.Add(new SearchResult()
                 {
                     MetadataExtensionIdentifier = this.Identifier,
-                    Identifier = listResult.Series_id?.ToString(),
+                    Identifier = listResult.Series_id.ToString()!,
                     Series = listResult.Title,
                     Summary = listResult.Description,
                     Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
@@ -87,7 +95,7 @@ public class MangaUpdates : IMetadataExtension
             await data.CopyToAsync(ms, ct);
             return ms;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return null;
         }

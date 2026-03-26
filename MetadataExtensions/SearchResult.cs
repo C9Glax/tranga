@@ -12,15 +12,15 @@ public sealed record SearchResult
     
     public string? Summary { get; init; }
     
-    public string[] Tags { get; init; }
+    public string[]? Tags { get; init; }
     
     public int? Year { get; init; }
     
-    public string[] Authors { get; init; }
+    public string[]? Authors { get; init; }
     
-    public string[] Artists { get; init; }
+    public string[]? Artists { get; init; }
     
-    public string[] Genres { get; init; }
+    public string[]? Genres { get; init; }
     
     public string? Url { get; init; }
     
