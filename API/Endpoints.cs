@@ -1,4 +1,3 @@
-using API.Features;
 using API.Features.Chapter;
 using API.Features.DownloadExtensions;
 using API.Features.Manga;
@@ -22,6 +21,10 @@ internal static class Endpoints
 
     private static void AddMangaEndpoints(this RouteGroupBuilder builder)
     {
+        builder.MapGet(string.Empty, GetListMangaEndpoint.Handle);
+        
+        builder.MapGet("{mangaId}", GetMangaEndpoint.Handle);
+        
         builder.MapGet("{mangaId}/cover", GetCoverEndpoint.Handle);
         
         builder.MapPost("/search", PostSearchMangaEndpoint.Handle)
