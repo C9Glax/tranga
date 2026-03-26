@@ -1,4 +1,4 @@
-using Database.DownloadContext;
+using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,14 +13,14 @@ public abstract class PostDownloadChapter
     /// <summary>
     /// Downloads a chapter
     /// </summary>
-    /// <param name="downloadContext"></param>
+    /// <param name="mangaContext"></param>
     /// <param name="chapterId">Id of the Chapter</param>
     /// <param name="ct"></param>
     /// <response code="200">Chapter will be downloaded</response>
     /// <response code="404">Chapter could not be found</response>
-    public static async Task<Results<Ok, NotFound>> Handle(DownloadContext downloadContext, [FromRoute] Guid chapterId, CancellationToken ct)
+    public static async Task<Results<Ok, NotFound>> Handle(MangaContext mangaContext, [FromRoute] Guid chapterId, CancellationToken ct)
     {
-        if (await downloadContext.Chapters.FirstOrDefaultAsync(c => c.ChapterId == chapterId, ct) is not { } chapter)
+        if (await mangaContext.Chapters.FirstOrDefaultAsync(c => c.Id == chapterId, ct) is not { } chapter)
             return TypedResults.NotFound();
 
         // TODO Download code

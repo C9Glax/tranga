@@ -10,13 +10,13 @@ public static class MetadataExtensionsCollection
         new MangaUpdates()
     ];
 
-    public static List<ComicInfo> SearchAll(SearchQuery searchQuery, CancellationToken ct)
+    public static List<SearchResult> SearchAll(SearchQuery searchQuery, CancellationToken ct)
     {
-        List<Task<List<ComicInfo>?>> tasks = Extensions.Select(e => e.Search(searchQuery, ct)).ToList();
+        List<Task<List<SearchResult>?>> tasks = Extensions.Select(e => e.Search(searchQuery, ct)).ToList();
         
         Task.WaitAll(tasks, ct);
         
-        List<ComicInfo> ret = tasks
+        List<SearchResult> ret = tasks
             .Where(t => t is { IsCompleted: true, Result: not null })
             .SelectMany(t => t.Result!).ToList();
 

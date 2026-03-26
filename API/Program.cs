@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using API;
 using Database;
-using Database.DownloadContext;
 using Database.MangaContext;
 using Microsoft.OpenApi;
 using Npgsql;
@@ -18,14 +17,12 @@ builder.Services.AddOpenApi(opts =>
 });
 
 builder.Services.AddDbContext<MangaContext>(opts => opts.Configure(null), ServiceLifetime.Scoped, ServiceLifetime.Singleton);
-builder.Services.AddDbContext<DownloadContext>(opts => opts.Configure(null), ServiceLifetime.Scoped, ServiceLifetime.Singleton);
 
 WebApplication app = builder.Build();
 
 try
 {
     await app.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>().ApplyMigrations();
-    await app.Services.CreateScope().ServiceProvider.GetRequiredService<DownloadContext>().ApplyMigrations();
 
     app.MapOpenApi();
     app.MapScalarApiReference();

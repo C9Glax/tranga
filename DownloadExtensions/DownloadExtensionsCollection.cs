@@ -13,7 +13,7 @@ public static class DownloadExtensionsCollection
 
     public static List<MangaInfo> SearchAll(SearchQuery query, CancellationToken ct)
     {
-        List<Task<MangaSearchResult?>> tasks = Extensions.Select(e => e.Search(query, ct)).ToList();
+        List<Task<List<MangaInfo>?>> tasks = Extensions.Select(e => e.Search(query, ct)).ToList();
         
         Task.WaitAll(tasks, ct);
         

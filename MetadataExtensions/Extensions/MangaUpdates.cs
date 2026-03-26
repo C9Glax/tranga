@@ -3,11 +3,6 @@ using NSwagClients.GeneratedClients.MangaUpdates;
 
 namespace MetadataExtensions.Extensions;
 
-public sealed record MangaUpdateComicInfo : ComicInfo
-{
-    public long? MangaUpdatesSeriesId { get; init; }
-}
-
 public class MangaUpdates : IMetadataExtension
 {
     // ReSharper disable once InconsistentNaming
@@ -23,7 +18,7 @@ public class MangaUpdates : IMetadataExtension
 
     public string Name { get; init; } = "MangaUpdates";
 
-    public async Task<List<ComicInfo>?> Search(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct)
+    public async Task<List<SearchResult>?> Search(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct)
     {
         // If MangaUpdates ID is included, try getting the series directly first
         if (searchQuery.MangaUpdatesSeriesId is { } id)
@@ -33,19 +28,16 @@ public class MangaUpdates : IMetadataExtension
                 return null;
             return
             [
-                new MangaUpdateComicInfo()
+                new SearchResult()
                 {
                     MetadataExtensionIdentifier = this.Identifier,
-                    MangaUpdatesSeriesId = series.Series_id,
+                    Identifier = series.Series_id?.ToString(),
                     Series = series.Title,
                     Summary = series.Description,
                     Year = series.Year is null ? -1 : int.Parse(series.Year),
-                    Writer = series.Authors is null ? "" : string.Join(',', series.Authors.Select(a => a.Name)),
-                    Publisher = series.Publishers is null ? "" : string.Join(',', series.Publishers.Select(p => p.Publisher_name)),
-                    Genre = series.Genres is null ? "" : string.Join(',', series.Genres.Select(g => g.Genre)),
-                    Web = series.Url,
-                    Manga = Common.Datatypes.Manga.Yes,
-                    Notes = series.Type.ToString(),
+                    Authors = series.Authors?.Select(a => a.Name).ToArray() ?? [],
+                    Genres = series.Genres?.Select(g => g.Genre!).ToArray() ?? [],
+                    Url = series.Url,
                     Cover = cover
                 }
             ];
@@ -63,26 +55,24 @@ public class MangaUpdates : IMetadataExtension
         if (list.Results is null)
             return null;
 
-        List<ComicInfo> ret = new();
+        List<SearchResult> ret = new();
         foreach (SeriesModelSearchV1? listResult in list.Results.Select(r => r.Record))
         {
             if(listResult is null)
                 continue;
             if (listResult.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
                 continue;
-            ret.Add(new MangaUpdateComicInfo()
-            {
-                MetadataExtensionIdentifier = this.Identifier,
-                MangaUpdatesSeriesId = listResult.Series_id,
-                Series = listResult.Title,
-                Summary = listResult.Description,
-                Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
-                Genre = listResult.Genres is null ? "" : string.Join(',', listResult.Genres.Select(g => g.Genre)),
-                Web = listResult.Url,
-                Manga = Common.Datatypes.Manga.Yes,
-                Notes = listResult.Type.ToString(),
-                Cover = cover
-            });
+            ret.Add(new SearchResult()
+                {
+                    MetadataExtensionIdentifier = this.Identifier,
+                    Identifier = listResult.Series_id?.ToString(),
+                    Series = listResult.Title,
+                    Summary = listResult.Description,
+                    Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
+                    Genres = listResult.Genres?.Select(g => g.Genre!).ToArray() ?? [],
+                    Url = listResult.Url,
+                    Cover = cover
+                });
         }
 
         return ret;

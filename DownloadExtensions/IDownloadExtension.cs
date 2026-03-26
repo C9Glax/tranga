@@ -31,7 +31,7 @@ public interface IDownloadExtension
     /// <param name="query">The manga to search for.</param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<MangaSearchResult?> Search(SearchQuery query, CancellationToken ct);
+    public Task<List<MangaInfo>?> Search(SearchQuery query, CancellationToken ct);
 
     /// <summary>
     /// Returns the chapters of a Manga.

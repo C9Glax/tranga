@@ -12,9 +12,9 @@ public sealed class MangaUpdatesTests : IMetadataExtensionTests<MangaUpdates>
         {
             Title = "Sousou no Frieren"
         };
-        List<ComicInfo>? result = await _metadataExtension.Search(searchQuery, ct);
+        List<SearchResult>? result = await _metadataExtension.Search(searchQuery, ct);
         Assert.NotNull(result);
-        ComicInfo? manga = result.FirstOrDefault(r => r.Web == "https://www.mangaupdates.com/series/ugf5dzu/sousou-no-frieren");
+        SearchResult? manga = result.FirstOrDefault(r => r.Url == "https://www.mangaupdates.com/series/ugf5dzu/sousou-no-frieren");
         Assert.NotNull(manga);
     }
 }

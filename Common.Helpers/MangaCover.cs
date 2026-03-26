@@ -2,13 +2,14 @@ namespace Common.Helpers;
 
 public static class MangaCover
 {
-    public static async Task SaveCover(string filename, MemoryStream cover, CancellationToken ct)
+    public static async Task<(string fileName, string path)> SaveCover(string filename, MemoryStream cover, CancellationToken ct)
     {
         Directory.CreateDirectory(Settings.Constants.CoverDirectory);
         await using FileStream fs = new(Path.Join(Settings.Constants.CoverDirectory, filename), FileMode.Create,
                    FileAccess.Write);
         cover.Position = 0;
         await cover.CopyToAsync(fs, ct);
+        return (filename, Settings.Constants.CoverDirectory);
     }
 
     public static async Task<MemoryStream?> LoadCover(string filename, CancellationToken ct)

@@ -22,7 +22,7 @@ public sealed class MangaDex : IDownloadExtension
     private readonly MangaDexApiClient Client = new(new RequestClient());
 
     #region Search
-    public async Task<MangaSearchResult?> Search(SearchQuery query, CancellationToken ct)
+    public async Task<List<MangaInfo>?> Search(SearchQuery query, CancellationToken ct)
     {
         MangaList list = await Client.GetSearchMangaAsync(
             includes: [Anonymous4.Cover_art],
@@ -38,9 +38,9 @@ public sealed class MangaDex : IDownloadExtension
         return await ParseSearchResult(list.Data.ToArray(), query.Language, ct);
     }
 
-    private async Task<MangaSearchResult> ParseSearchResult(Manga[] mangas, Language? language, CancellationToken ct)
+    private async Task<List<MangaInfo>> ParseSearchResult(Manga[] mangas, Language? language, CancellationToken ct)
     {
-        MangaSearchResult result = new();
+        List<MangaInfo> result = new();
         foreach (Manga manga in mangas)
         {
             if(manga.Id is not { } id)

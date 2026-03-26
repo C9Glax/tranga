@@ -23,5 +23,5 @@ public interface IMetadataExtension
      /// <param name="searchQuery">Query to use for searching Manga</param>
      /// <param name="ct">The Cancellation Token for the Task</param>
      /// <returns>A Task representing the long running operation.</returns>
-     public Task<List<ComicInfo>?> Search(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct);
+     public Task<List<SearchResult>?> Search(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct);
 }

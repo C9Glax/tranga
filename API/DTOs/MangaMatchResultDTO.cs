@@ -3,7 +3,7 @@ namespace API.DTOs;
 /// <summary>
 /// A Search Result
 /// </summary>
-public sealed record MangaSearchResultDTO
+public sealed record MangaMatchResultDTO
 {
     /// <summary>
     /// The identifier of the Manga
@@ -11,9 +11,9 @@ public sealed record MangaSearchResultDTO
     public required Guid MangaId { get; init; }
     
     /// <summary>
-    /// The identifier of the Metadata entry
+    /// The identifier of the Download entry
     /// </summary>
-    public required Guid MetadataId { get; init; }
+    public required Guid DownloadId { get; init; }
     
     /// <summary>
     /// The title of the Manga

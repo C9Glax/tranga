@@ -14,7 +14,7 @@ public sealed class MangaDexTests : IDownloadExtensionsTests<MangaDex>
         {
             Title = "Official \"Test\" Manga"
         };
-        MangaSearchResult? searchResult = await _downloadExtension.Search(searchQuery, ct);
+        List<MangaInfo>? searchResult = await _downloadExtension.Search(searchQuery, ct);
         Assert.NotNull(searchResult);
         MangaInfo? testManga = searchResult.FirstOrDefault(r => r.Identifier == "f9c33607-9180-4ba6-b85c-e4b5faee7192");
         Assert.NotNull(testManga);

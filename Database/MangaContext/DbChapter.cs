@@ -2,16 +2,25 @@ namespace Database.MangaContext;
 
 public sealed record DbChapter
 {
-    public Guid ChapterId { get; init; }
+    public Guid Id { get; init; }
     
-    public ICollection<DownloadExtensionId<DbChapter>>? DownloadExtensionIds { get; init; }
+    public required Guid DownloadLinkId { get; init; }
     
-    public Guid MangaId { get; init; }
+    public DbDownloadLink? DownloadLink { get; init; }
     
-    public DbManga? Manga { get; init; }
+    public required Guid DownloadExtensionId { get; init; }
     
-    public required string? Volume { get; init; }
+    public required string Identifier { get; init; }
+    
+    public string? Volume { get; init; }
+    
     public required string Chapter { get; init; }
-    public required string? Title { get; set; }
-    public required string? Description { get; set; }
+    
+    public string? Url { get; init; }
+    
+    public required bool Download { get; set; }
+    
+    public Guid? FileId { get; set; }
+    
+    public DbFile? File { get; set; }
 }
