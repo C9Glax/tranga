@@ -1,6 +1,4 @@
-using API.Helpers;
-using Common.Helpers;
-using Database;
+using Database.Helpers;
 using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

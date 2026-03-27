@@ -1,5 +1,6 @@
 using API.DTOs;
 using API.Helpers;
+using Database.Helpers;
 using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

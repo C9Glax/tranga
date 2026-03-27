@@ -55,6 +55,11 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
 
         modelBuilder.Entity<DbDownloadLink>()
             .HasKey(d => d.Id);
+        
+        modelBuilder.Entity<DbDownloadLink>()
+            .HasOne(l => l.Cover)
+            .WithOne()
+            .HasForeignKey<DbDownloadLink>(d => d.CoverId);
 
         modelBuilder.Entity<DbDownloadLink>()
             .HasIndex(d => new { d.DownloadExtensionId, d.Identifier });

@@ -16,6 +16,11 @@ public sealed record MangaSearchResultDTO
     public required Guid MetadataId { get; init; }
     
     /// <summary>
+    /// The identifier of the Cover File
+    /// </summary>
+    public Guid? CoverFileId { get; init; }
+    
+    /// <summary>
     /// The title of the Manga
     /// </summary>
     public required string Title { get; init; }

@@ -3,6 +3,7 @@ using System;
 using Database.MangaContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.MangaContext.Migrations
 {
     [DbContext(typeof(MangaContext))]
-    partial class MangaContextModelSnapshot : ModelSnapshot
+    [Migration("20260327014154_Download-Link-Info")]
+    partial class DownloadLinkInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,7 +172,7 @@ namespace Database.MangaContext.Migrations
                     b.Property<Guid?>("CoverId")
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("Day")
+                    b.Property<int>("Day")
                         .HasColumnType("integer");
 
                     b.Property<byte?>("Demographic")
@@ -189,7 +192,7 @@ namespace Database.MangaContext.Migrations
                     b.Property<Guid>("MetadataExtensionId")
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("Month")
+                    b.Property<int>("Month")
                         .HasColumnType("integer");
 
                     b.Property<byte?>("Rating")
@@ -204,7 +207,7 @@ namespace Database.MangaContext.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("text");
 
-                    b.Property<int?>("Year")
+                    b.Property<int>("Year")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

@@ -1,6 +1,6 @@
 using Database.MangaContext;
 
-namespace Database;
+namespace Database.Helpers;
 
 public static class DbFileHelper
 {
