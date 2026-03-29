@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using API;
 using Database;
 using Database.MangaContext;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Npgsql;
 using Scalar.AspNetCore;
 
@@ -13,6 +14,16 @@ builder.Services.AddOpenApi().ConfigureHttpJsonOptions(opts =>
 });
 
 builder.Services.AddDbContext<MangaContext>(opts => opts.Configure(null), ServiceLifetime.Scoped, ServiceLifetime.Singleton);
+
+builder.Services.AddCors(opts =>
+{
+    opts.AddDefaultPolicy(new CorsPolicy
+    {
+        IsOriginAllowed = (s => true),
+        PreflightMaxAge = null,
+        SupportsCredentials = false
+    });
+});
 
 WebApplication app = builder.Build();
 
