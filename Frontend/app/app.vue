@@ -18,13 +18,26 @@
                     </div>
                 </NuxtLink>
             </template>
+            <template #right>
+                <UButton icon="i-lucide-book-search" @click="searchOverlay.open()">Search <UKbd value="ctrl+k" /></UButton>
+            </template>
         </UHeader>
         <UMain>
             <NuxtLayout>
-                <NuxtPage />
+                <UContainer class="my-4">
+                    <NuxtPage />
+                </UContainer>
             </NuxtLayout>
         </UMain>
     </UApp>
 </template>
 
-<script setup></script>
+<script setup>
+import { LazySearch } from '#components';
+
+const overlay = useOverlay();
+
+const searchOverlay = overlay.create(LazySearch);
+
+defineShortcuts({ ctrl_k: () => searchOverlay.open() });
+</script>
