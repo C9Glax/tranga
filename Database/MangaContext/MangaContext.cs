@@ -20,11 +20,13 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
         modelBuilder.Entity<DbManga>()
             .HasMany(m => m.DownloadLinks)
             .WithOne(d => d.Manga)
-            .HasForeignKey(d => d.MangaId);
+            .HasForeignKey(d => d.MangaId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<DbManga>()
             .HasMany(m => m.MetadataLinks)
             .WithOne(l => l.Manga)
-            .HasForeignKey(l => l.MangaId);
+            .HasForeignKey(l => l.MangaId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<DbManga>()
             .Property(m => m.Series)
@@ -40,7 +42,8 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
         modelBuilder.Entity<DbChapter>()
             .HasOne(c => c.File)
             .WithOne()
-            .HasForeignKey<DbChapter>(c => c.FileId);
+            .HasForeignKey<DbChapter>(c => c.FileId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DbChapter>()
             .HasIndex(c => new { c.DownloadExtensionId, c.Identifier });
