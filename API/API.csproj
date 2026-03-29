@@ -9,7 +9,6 @@
     
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <OpenApiGenerateDocumentsOptions>--file-name Tranga-openapi</OpenApiGenerateDocumentsOptions>
         <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)\openapi</OpenApiDocumentsDirectory>
     </PropertyGroup>
 
