@@ -9,9 +9,13 @@
 - [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - [GitInfo](https://github.com/devlooped/GitInfo)
-- [Log4Net](https://logging.apache.org/log4net/index.html)
-- [xUnit](https://xunit.net/index.html?tabs=cs)- [XmlSchemaClassGenerator](https://github.com/mganss/XmlSchemaClassGenerator)
+- [xUnit](https://xunit.net/index.html?tabs=cs)
+- [XmlSchemaClassGenerator](https://github.com/mganss/XmlSchemaClassGenerator)
 - [NSwag](https://github.com/RicoSuter/NSwag)
+- [Nuxt](https://nuxt.com/)
+  - [Nuxt UI](https://ui.nuxt.com/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [Lucide](https://lucide.dev/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

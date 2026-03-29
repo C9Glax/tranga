@@ -1,0 +1,29 @@
+{
+    "name": "Tranga frontend",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "lint": "eslint .",
+        "typecheck": "nuxt typecheck",
+        "prettier": "prettier . --write"
+    },
+    "dependencies": {
+        "@iconify-json/lucide": "^1.2.98",
+        "@iconify-json/simple-icons": "^1.2.74",
+        "@nuxt/ui": "^4.5.1",
+        "nuxt": "^4.4.2",
+        "tailwindcss": "^4.2.1"
+    },
+    "devDependencies": {
+        "@nuxt/eslint": "^1.15.2",
+        "eslint": "^10.0.3",
+        "prettier": "^3.8.1",
+        "typescript": "^5.9.3",
+        "vue-tsc": "^3.2.5"
+    },
+    "packageManager": "pnpm@10.32.1"
+}
