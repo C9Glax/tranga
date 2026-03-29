@@ -23,7 +23,7 @@ public abstract class GetMangaEndpoint
     /// <returns>Info of the Manga</returns>
     /// <response code="200">Info of the Manga</response>
     /// <response code="404">Manga could not be found</response>
-    public static async Task<Results<Ok<MangaDTO>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, [FromQuery]Includes[] includes, CancellationToken ct)
+    public static async Task<Results<Ok<MangaDTO>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, [FromQuery]Includes[]? includes, CancellationToken ct)
     {
         if (await mangaContext.Mangas
                 .IncludeDownloadLinks(includes.Contains(Includes.DownloadLinks))

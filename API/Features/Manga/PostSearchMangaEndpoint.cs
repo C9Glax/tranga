@@ -25,9 +25,13 @@ public abstract class PostSearchMangaEndpoint
     /// <param name="ct"></param>
     /// <returns>The Search-result</returns>
     /// <response code="200">The Search-result</response>
+    /// <response code="400">Query was malformed</response>
     /// <response code="500">Error while searching for Manga</response>
-    public static async Task<Results<Ok<MangaSearchResultDTO[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
+    public static async Task<Results<Ok<MangaSearchResultDTO[]>, BadRequest, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
     {
+        if (query is { Artist: null, Author: null, ContentRating: null, Language: null, MangaUpdatesSeriesId: null, Tags:null, Title: null })
+            return TypedResults.BadRequest();
+        
         List<SearchResult> searchResult = MetadataExtensionsCollection.SearchAll(query, ct);
         
         MangaSearchResultDTO[] result = await InsertNewDataIntoMangaContext(mangaContext, searchResult, ct);

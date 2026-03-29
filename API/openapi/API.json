@@ -16,7 +16,6 @@
             "name": "includes",
             "in": "query",
             "description": "Additional Information to include",
-            "required": true,
             "schema": {
               "type": "array",
               "items": {
@@ -25,7 +24,7 @@
             }
           },
           {
-            "name": "unmonitored",
+            "name": "includeUnmonitored",
             "in": "query",
             "description": "All known Manga",
             "required": true,
@@ -75,7 +74,6 @@
             "name": "includes",
             "in": "query",
             "description": "Additional Information to include",
-            "required": true,
             "schema": {
               "type": "array",
               "items": {
@@ -171,6 +169,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Query was malformed"
           },
           "500": {
             "description": "Error while searching for Manga"
