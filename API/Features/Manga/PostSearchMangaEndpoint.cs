@@ -2,6 +2,7 @@ using API.DTOs;
 using Common.Datatypes;
 using Common.Helpers;
 using Database;
+using Database.Helpers;
 using Database.MangaContext;
 using MetadataExtensions;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -36,85 +37,76 @@ public abstract class PostSearchMangaEndpoint
         return TypedResults.Ok(result);
     }
 
-    private static async Task<MangaSearchResultDTO[]> InsertNewDataIntoMangaContext(MangaContext mangaContext, List<SearchResult> searchResult, CancellationToken ct)
+    private static async Task<MangaSearchResultDTO[]> InsertNewDataIntoMangaContext(MangaContext mangaContext, List<SearchResult> searchResults, CancellationToken ct)
     {
-        Dictionary<DbManga, DbMetadataLink> ret = new();
-        foreach (SearchResult result in searchResult)
+        List<MangaSearchResultDTO> ret = new ();
+        foreach (SearchResult searchResult in searchResults)
         {
             if (await mangaContext.Mangas
                     .Include(m => m.MetadataLinks)
-                    .Select(m => new { manga = m, metadataLinks = m.MetadataLinks! })
-                    .FirstOrDefaultAsync(pair => pair.metadataLinks.Any(l=> l.MetadataExtensionId == result.MetadataExtensionIdentifier && l.Identifier == result.Identifier)
-                        , ct) is { } existing)
+                    .Select(m => new
+                    { 
+                        Manga = m, MetadataLink = m.MetadataLinks!.FirstOrDefault(l =>
+                            l.MetadataExtensionId == searchResult.MetadataExtensionIdentifier &&
+                            l.Identifier == searchResult.Identifier)
+                    })
+                    .FirstOrDefaultAsync(ct) is { Manga: not null, MetadataLink: not null } existing)
             {
-                ret.Add(existing.manga, existing.metadataLinks.First(l => l.MetadataExtensionId == result.MetadataExtensionIdentifier && l.Identifier == result.Identifier));
-            }
-            else if (await mangaContext.Mangas.FirstOrDefaultAsync(m => m.Series == result.Series, ct) is { } manga)
+                ret.Add(CreateMangaSearchResultDTO(existing.Manga, existing.MetadataLink));
+            } else if (await mangaContext.Mangas
+                           .Include(m => m.MetadataLinks)
+                           .FirstOrDefaultAsync(m => m.Series == searchResult.Series, ct) is { } dbManga)
             {
-                DbMetadataLink link = new ()
-                {
-                    MangaId = manga.Id,
-                    MetadataExtensionId = result.MetadataExtensionIdentifier,
-                    Identifier = result.Identifier,
-                };
-                await mangaContext.AddAsync(link, ct);
-                await SaveCover(link, result.Cover, ct);
-                manga.MetadataLinks!.Add(link);
-                ret.Add(manga, link);
+                DbMetadataLink link = await CreateDbMetadataLink(mangaContext, dbManga, searchResult, ct);
+                ret.Add(CreateMangaSearchResultDTO(dbManga, link));
             }
             else
             {
-                DbManga newManga = new ()
-                {
-                    Series = result.Series,
-                    Monitor = false
-                };
-                await mangaContext.AddAsync(newManga, ct);
-                DbMetadataLink link = new ()
-                {
-                    MangaId = newManga.Id,
-                    MetadataExtensionId = result.MetadataExtensionIdentifier,
-                    Identifier = result.Identifier,
-                };
-                await mangaContext.AddAsync(link, ct);
-                await SaveCover(link, result.Cover, ct);
-                newManga.MetadataLinks!.Add(link);
-                ret.Add(newManga, link);
+                DbManga manga = await CreateDbManga(mangaContext, searchResult, ct);
+                DbMetadataLink link = await CreateDbMetadataLink(mangaContext, manga, searchResult, ct);
+                ret.Add(CreateMangaSearchResultDTO(manga, link));
             }
         }
 
-        return ret.Select(kv => new MangaSearchResultDTO()
-        {
-            MangaId = kv.Key.Id,
-            Description = kv.Value.Summary,
-            MetadataId = kv.Value.Id,
-            Title = kv.Key.Series,
-            Url = kv.Value.Url
-        }).ToArray();
+        return ret.ToArray();
     }
 
-    private static async Task SaveCover(DbMetadataLink metadataLink, MemoryStream memoryStream, CancellationToken ct)
+    private static async Task<DbManga> CreateDbManga(MangaContext mangaContext, SearchResult searchResult, CancellationToken ct)
     {
-        try
+        DbManga manga = new ()
         {
-            await memoryStream.ToJpeg(ct);
-            metadataLink.Cover = new DbFile()
-            {
-                Name = $"{metadataLink.Id}.jpg",
-                Path = Constants.CoverDirectory,
-                MimeType = "image/jpeg"
-            };
-            await metadataLink.Cover.SaveFile(memoryStream, ct);
-        }
-        catch
-        {
-            metadataLink.Cover = new DbFile()
-            {
-                Name = $"{metadataLink.Id}",
-                Path = Constants.CoverDirectory,
-                MimeType = "image/png"
-            };
-            await metadataLink.Cover.SaveFile(memoryStream, ct);
-        }
+            Series = searchResult.Series,
+            Monitor = false
+        };
+        await mangaContext.Mangas.AddAsync(manga, ct);
+        return manga;
     }
+
+    private static async Task<DbMetadataLink> CreateDbMetadataLink(MangaContext mangaContext, DbManga manga, SearchResult searchResult, CancellationToken ct)
+    {
+        DbMetadataLink link = new()
+        {
+            Manga = manga,
+            MangaId = manga.Id,
+            MetadataExtensionId = searchResult.MetadataExtensionIdentifier,
+            Identifier = searchResult.Identifier,
+            Year = searchResult.Year,
+            Artists = searchResult.Artists,
+            Authors = searchResult.Authors,
+            Genres = searchResult.Genres,
+        };
+        await mangaContext.AddAsync(link, ct);
+        await link.SaveCover(mangaContext, searchResult.Cover, ct);
+        return link;
+    }
+
+    private static MangaSearchResultDTO CreateMangaSearchResultDTO(DbManga manga, DbMetadataLink link) => new()
+    {
+        MangaId = manga.Id,
+        MetadataId = link.Id,
+        Title = manga.Series,
+        CoverFileId = link.CoverId,
+        Description = link.Summary,
+        Url = link.Url
+    };
 }

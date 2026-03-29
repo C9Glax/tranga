@@ -8,10 +8,6 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
     
     public DbSet<DbChapter> Chapters { get; init; }
     
-    public DbSet<DbPerson> People { get; init; }
-    
-    public DbSet<DbGenre> Genre { get; init; }
-    
     public DbSet<DbFile> Files { get; init; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,11 +51,12 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
 
         modelBuilder.Entity<DbDownloadLink>()
             .HasKey(d => d.Id);
-        
+
         modelBuilder.Entity<DbDownloadLink>()
             .HasOne(l => l.Cover)
             .WithOne()
-            .HasForeignKey<DbDownloadLink>(d => d.CoverId);
+            .HasForeignKey<DbDownloadLink>(d => d.CoverId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DbDownloadLink>()
             .HasIndex(d => new { d.DownloadExtensionId, d.Identifier });
@@ -74,19 +71,8 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
         modelBuilder.Entity<DbMetadataLink>()
             .HasOne(l => l.Cover)
             .WithOne()
-            .HasForeignKey<DbMetadataLink>(d => d.CoverId);
-        modelBuilder.Entity<DbMetadataLink>()
-            .HasMany(m => m.Authors)
-            .WithMany()
-            .UsingEntity("MangaAuthors");
-        modelBuilder.Entity<DbMetadataLink>()
-            .HasMany(l => l.Artists)
-            .WithMany()
-            .UsingEntity("MangaArtists");
-        modelBuilder.Entity<DbMetadataLink>()
-            .HasMany(l => l.Genres)
-            .WithMany()
-            .UsingEntity("MangaGenres");
+            .HasForeignKey<DbMetadataLink>(d => d.CoverId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DbMetadataLink>()
             .Property(l => l.Language)
@@ -94,28 +80,6 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
 
         modelBuilder.Entity<DbMetadataLink>()
             .HasIndex(l => new { l.MetadataExtensionId, l.Identifier });
-        
-        #endregion
-        
-        #region DbPerson
-
-        modelBuilder.Entity<DbPerson>()
-            .HasKey(p => p.Name);
-
-        modelBuilder.Entity<DbPerson>()
-            .Property(p => p.Name)
-            .HasMaxLength(128);
-        
-        #endregion
-        
-        #region DbGenre
-
-        modelBuilder.Entity<DbGenre>()
-            .HasKey(g => g.Genre);
-
-        modelBuilder.Entity<DbGenre>()
-            .Property(g => g.Genre)
-            .HasMaxLength(128);
         
         #endregion
     }

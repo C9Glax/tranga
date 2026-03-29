@@ -18,7 +18,7 @@ public sealed class DbDownloadLink
     
     public string? Description { get; init; }
     
-    public Guid? CoverId { get; init; }
+    public Guid? CoverId { get; set; }
     
     public DbFile? Cover { get; set; }
     

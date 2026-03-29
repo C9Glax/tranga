@@ -1,5 +1,6 @@
 using API.DTOs;
 using Common.Datatypes;
+using Database.Helpers;
 using Database.MangaContext;
 using DownloadExtensions;
 using DownloadExtensions.Data;
@@ -41,38 +42,48 @@ public abstract class PostMatchMangaEndpoint
         return TypedResults.Ok(result);
     }
 
-    private static async Task<MangaMatchResultDTO[]> InsertNewDataIntoMangaContext(MangaContext mangaContext, DbManga manga, List<MangaInfo> searchResult, CancellationToken ct)
+    private static async Task<MangaMatchResultDTO[]> InsertNewDataIntoMangaContext(MangaContext mangaContext, DbManga manga, List<MangaInfo> searchResults, CancellationToken ct)
     {
-        Dictionary<DbDownloadLink, MangaInfo> existing = (await mangaContext.Mangas.Include(m => m.DownloadLinks).SelectMany(m => m.DownloadLinks!)
-                .Where(l => searchResult.Any(sr =>
-                    sr.ExtensionIdentifier == l.DownloadExtensionId && sr.Identifier == l.Identifier))
-                .ToListAsync(ct))
-            .ToDictionary(l => l,
-                l => searchResult.First(sr =>
-                    sr.ExtensionIdentifier == l.DownloadExtensionId && sr.Identifier == l.Identifier));
+        List<MangaMatchResultDTO> ret = new();
 
-        List<MangaInfo> missing = searchResult.Where(sr => !existing.ContainsValue(sr)).ToList();
-        
-        foreach (MangaInfo mangaInfo in missing)
+        await mangaContext.Entry(manga).Collection(m => m.DownloadLinks!).LoadAsync(ct);
+
+        foreach (MangaInfo mangaInfo in searchResults)
         {
-            DbDownloadLink link = new ()
+            if (manga.DownloadLinks!.FirstOrDefault(l =>
+                    l.DownloadExtensionId == mangaInfo.ExtensionIdentifier && l.Identifier == mangaInfo.Identifier) is
+                { } existing)
             {
-                MangaId = manga.Id,
-                DownloadExtensionId = mangaInfo.ExtensionIdentifier,
-                Identifier = mangaInfo.Identifier,
-                Url = mangaInfo.Url
-            };
-            manga.DownloadLinks!.Add(link);
-            existing.Add(link, mangaInfo);
+                ret.Add(DbDownloadLinkToDTO(existing));
+            }
+            else
+            {
+                DbDownloadLink newLink = new ()
+                {
+                    Description = mangaInfo.Description,
+                    DownloadExtensionId = mangaInfo.ExtensionIdentifier,
+                    Identifier = mangaInfo.Identifier,
+                    MangaId = manga.Id,
+                    Manga = manga,
+                    Title = mangaInfo.Title,
+                    Url = mangaInfo.Url
+                };
+                await mangaContext.AddAsync(newLink, ct);
+                await newLink.SaveCover(mangaContext, mangaInfo.Cover, ct);
+                ret.Add(DbDownloadLinkToDTO(newLink));
+            }
         }
 
-        return existing.Select(kv => new MangaMatchResultDTO()
-        {
-            MangaId = manga.Id,
-            Description = kv.Value.Description,
-            DownloadId = kv.Key.Id,
-            Title = kv.Value.Title,
-            Url = kv.Value.Url
-        }).ToArray();
+        return ret.ToArray();
     }
+
+    private static MangaMatchResultDTO DbDownloadLinkToDTO(DbDownloadLink link) => new ()
+    {
+        CoverFileId = link.CoverId,
+        Description = link.Description,
+        DownloadId = link.Id,
+        MangaId = link.MangaId,
+        Title = link.Title,
+        Url = link.Url
+    };
 }

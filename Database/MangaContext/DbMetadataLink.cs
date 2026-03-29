@@ -36,11 +36,11 @@ public sealed class DbMetadataLink
     
     public string? Language { get; init; }
     
-    public ICollection<DbPerson>? Authors { get; init; } 
+    public string[]? Authors { get; init; } 
     
-    public ICollection<DbPerson>? Artists { get; init; } 
+    public string[]? Artists { get; init; } 
     
-    public ICollection<DbGenre>? Genres { get; init; } 
+    public string[]? Genres { get; init; } 
 }
 
 public enum Status : byte
