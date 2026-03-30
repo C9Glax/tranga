@@ -1,7 +1,7 @@
 <template>
     <UPage>
         <USlideover side="left" title="Options">
-            <UButton label="Options" color="neutral" variant="subtle" class="fixed left-0 top-(--ui-header-height) m-4" />
+            <UButton label="View" color="neutral" variant="soft" class="fixed left-0 top-(--ui-header-height) m-4" />
 
             <template #body>
                 <USwitch v-model="includeUnmonitored" label="Include Unmonitored Manga" />
