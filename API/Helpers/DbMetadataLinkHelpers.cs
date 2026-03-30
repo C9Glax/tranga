@@ -7,6 +7,7 @@ internal static class DbMetadataLinkHelpers
 {
     public static MetadataLinkDTO ToDTO(this DbMetadataLink link) => new()
     {
+        MangaId = link.MangaId,
         MetadataLinkId = link.Id,
         MetadataExtensionId = link.MetadataExtensionId,
         CoverFileId = link.CoverId,

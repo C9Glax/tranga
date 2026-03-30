@@ -7,6 +7,7 @@ internal static class DbDownloadLinkHelpers
 {
     public static DownloadLinkDTO ToDTO(this DbDownloadLink link) => new()
     {
+        MangaId = link.MangaId,
         DownloadLinkId = link.Id,
         DownloadExtensionId = link.DownloadExtensionId,
         CoverFileId = link.CoverId,

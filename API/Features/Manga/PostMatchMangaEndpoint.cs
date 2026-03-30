@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.Helpers;
 using Common.Datatypes;
 using Database.Helpers;
 using Database.MangaContext;
@@ -24,8 +25,8 @@ public abstract class PostMatchMangaEndpoint
     /// <param name="ct"></param>
     /// <returns>A List of matched Manga</returns>
     /// <response code="200">A List of matched Manga</response>
-    /// <response code="404"> could not be found</response>
-    public static async Task<Results<Ok<MangaMatchResultDTO[]>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, CancellationToken ct)
+    /// <response code="404">Manga could not be found</response>
+    public static async Task<Results<Ok<DownloadLinkDTO[]>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, CancellationToken ct)
     {
         if (await mangaContext.Mangas.Include(m => m.DownloadLinks).FirstOrDefaultAsync(m => m.Id == mangaId, ct) is not { } manga)
             return TypedResults.NotFound();
@@ -37,16 +38,16 @@ public abstract class PostMatchMangaEndpoint
         };
         List<MangaInfo> searchResult = DownloadExtensionsCollection.SearchAll(searchQuery, ct);
 
-        MangaMatchResultDTO[] result = await InsertNewDataIntoMangaContext(mangaContext, manga, searchResult, ct);
+        DownloadLinkDTO[] result = await InsertNewDataIntoMangaContext(mangaContext, manga, searchResult, ct);
 
         await mangaContext.SaveChangesAsync(ct);
 
         return TypedResults.Ok(result);
     }
 
-    private static async Task<MangaMatchResultDTO[]> InsertNewDataIntoMangaContext(MangaContext mangaContext, DbManga manga, List<MangaInfo> searchResults, CancellationToken ct)
+    private static async Task<DownloadLinkDTO[]> InsertNewDataIntoMangaContext(MangaContext mangaContext, DbManga manga, List<MangaInfo> searchResults, CancellationToken ct)
     {
-        List<MangaMatchResultDTO> ret = new();
+        List<DownloadLinkDTO> ret = new();
 
         await mangaContext.Entry(manga).Collection(m => m.DownloadLinks!).LoadAsync(ct);
 
@@ -56,7 +57,7 @@ public abstract class PostMatchMangaEndpoint
                     l.DownloadExtensionId == mangaInfo.ExtensionIdentifier && l.Identifier == mangaInfo.Identifier) is
                 { } existing)
             {
-                ret.Add(DbDownloadLinkToDTO(existing));
+                ret.Add(existing.ToDTO());
             }
             else
             {
@@ -73,20 +74,10 @@ public abstract class PostMatchMangaEndpoint
                 };
                 await mangaContext.AddAsync(newLink, ct);
                 await newLink.SaveCover(mangaContext, mangaInfo.Cover, ct);
-                ret.Add(DbDownloadLinkToDTO(newLink));
+                ret.Add(newLink.ToDTO());
             }
         }
 
         return ret.ToArray();
     }
-
-    private static MangaMatchResultDTO DbDownloadLinkToDTO(DbDownloadLink link) => new ()
-    {
-        CoverFileId = link.CoverId,
-        Description = link.Description,
-        DownloadId = link.Id,
-        MangaId = link.MangaId,
-        Title = link.Title,
-        Url = link.Url
-    };
 }

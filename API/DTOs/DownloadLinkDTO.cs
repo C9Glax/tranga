@@ -6,6 +6,11 @@ namespace API.DTOs;
 public sealed record DownloadLinkDTO
 {
     /// <summary>
+    /// ID of the Manga
+    /// </summary>
+    public required Guid MangaId { get; init; }
+    
+    /// <summary>
     /// ID of the DownloadExtension Link Entry
     /// </summary>
     public required Guid DownloadLinkId { get; init; }

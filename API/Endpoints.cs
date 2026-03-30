@@ -18,6 +18,9 @@ internal static class Endpoints
             .AddChapterEndpoints();
         builder.MapGroup("/metadataExtensions").AddMetadataExtensionEndpoints();
         builder.MapGroup("/downloadExtensions").AddDownloadExtensionEndpoints();
+        builder.MapGroup("/matches")
+            .WithTags("Download", "Search")
+            .AddMatchesEndpoints();
         builder.MapGet("file/{fileId}", GetFileEndpoint.Handle).WithTags("File");
     }
 
@@ -37,6 +40,8 @@ internal static class Endpoints
         
         builder.MapPost("{mangaId}/match", PostMatchMangaEndpoint.Handle)
             .WithTags("Search");
+        
+        builder.MapGet("{mangaId}/matched", GetMatchedEndpoint.Handle);
     }
     
     private static void AddChapterEndpoints(this RouteGroupBuilder builder)
@@ -55,11 +60,12 @@ internal static class Endpoints
     {
         builder.MapGet(string.Empty, GetDownloadExtensionsEndpoint.Handle)
             .WithTags("Download");
+    }
 
-        builder.MapGet("{downloadLinkId}", GetDownloadLinkEndpoint.Handle)
-            .WithTags("Download", "Search");
+    private static void AddMatchesEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet("{matchId}", GetDownloadLinkEndpoint.Handle);
 
-        builder.MapPatch("{downloadLinkId}", PatchMatchedEndpoint.Handle)
-            .WithTags("Download", "Search");
+        builder.MapPatch("{matchId}", PatchMatchedEndpoint.Handle);
     }
 }

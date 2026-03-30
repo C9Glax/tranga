@@ -66,7 +66,7 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DbDownloadLink>()
-            .HasIndex(d => new { d.DownloadExtensionId, d.Identifier });
+            .HasIndex(d => new { d.MangaId, d.DownloadExtensionId, d.Identifier });
         
         #endregion
         
@@ -86,7 +86,7 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
             .HasMaxLength(5);
 
         modelBuilder.Entity<DbMetadataLink>()
-            .HasIndex(l => new { l.MetadataExtensionId, l.Identifier });
+            .HasIndex(l => new { l.MangaId, l.MetadataExtensionId, l.Identifier });
         
         #endregion
     }

@@ -8,6 +8,11 @@ namespace API.DTOs;
 public sealed record MetadataLinkDTO
 {
     /// <summary>
+    /// ID of the Manga
+    /// </summary>
+    public required Guid MangaId { get; init; }
+    
+    /// <summary>
     /// ID of the MetadataExtension Link Entry
     /// </summary>
     public required Guid MetadataLinkId { get; init; }
