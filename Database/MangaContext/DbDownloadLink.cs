@@ -22,4 +22,6 @@ public sealed class DbDownloadLink
     
     public DbFile? Cover { get; set; }
     
+    public bool Matched { get; set; }
+    
 }

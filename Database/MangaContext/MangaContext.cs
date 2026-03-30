@@ -6,6 +6,10 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
 {
     public DbSet<DbManga> Mangas { get; init; }
     
+    public DbSet<DbDownloadLink> DownloadLinks { get; init; }
+    
+    public DbSet<DbMetadataLink> MetadataLinks { get; init; }
+    
     public DbSet<DbChapter> Chapters { get; init; }
     
     public DbSet<DbFile> Files { get; init; }

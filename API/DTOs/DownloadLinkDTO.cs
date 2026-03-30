@@ -34,4 +34,9 @@ public sealed record DownloadLinkDTO
     /// Url on the DownloadExtension
     /// </summary>
     public string? Url { get; init; }
+    
+    /// <summary>
+    /// DownloadLink is used as Match for Manga
+    /// </summary>
+    public bool Matched { get; init; }
 }

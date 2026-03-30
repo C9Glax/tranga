@@ -328,6 +328,44 @@
         }
       }
     },
+    "/downloadExtensions/{downloadLinkId}": {
+      "patch": {
+        "tags": [
+          "Download",
+          "Search"
+        ],
+        "summary": "Marks a DownloadLink as Resource for a Manga",
+        "parameters": [
+          {
+            "name": "downloadLinkId",
+            "in": "path",
+            "description": "ID of the DownloadLink",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "matched",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/file/{fileId}": {
       "get": {
         "tags": [
@@ -452,6 +490,10 @@
               "string"
             ],
             "description": "Url on the DownloadExtension"
+          },
+          "matched": {
+            "type": "boolean",
+            "description": "DownloadLink is used as Match for Manga"
           }
         },
         "description": "DownloadExtension Link Entry"

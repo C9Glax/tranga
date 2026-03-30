@@ -12,6 +12,7 @@ internal static class DbDownloadLinkHelpers
         CoverFileId = link.CoverId,
         Title = link.Title,
         Description = link.Description,
-        Url = link.Url
+        Url = link.Url,
+        Matched = link.Matched
     };
 }

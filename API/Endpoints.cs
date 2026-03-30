@@ -55,5 +55,8 @@ internal static class Endpoints
     {
         builder.MapGet(string.Empty, GetDownloadExtensionsEndpoint.Handle)
             .WithTags("Download");
+
+        builder.MapPatch("{downloadLinkId}", PatchMatchedEndpoint.Handle)
+            .WithTags("Download", "Search");
     }
 }
