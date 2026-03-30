@@ -3,7 +3,8 @@
         <div
             v-if="!noBlur"
             class="w-full h-full backdrop-blur-[3px] absolute z-1 bg-linear-[150deg,rgba(245,169,184,0.3)_50%,rgba(91,206,250,0.2)]" />
-        <img :src="`${apiBaseUrl}/manga/${mangaId}/cover`" :class="['z-0 absolute', widthHeight]" />
+        <img v-if="mangaId" :src="`${apiBaseUrl}/manga/${mangaId}/cover`" :class="['z-0 absolute', widthHeight]" />
+        <img v-else-if="fileId" :src="`${apiBaseUrl}/file/${fileId}`" :class="['z-0 absolute', widthHeight]" />
     </div>
 </template>
 
@@ -12,5 +13,5 @@ const widthHeight = 'w-60 h-90';
 
 const apiBaseUrl = useAppConfig().api.baseUrl;
 
-const props = defineProps<{ mangaId: string; noBlur?: boolean }>();
+const props = defineProps<{ mangaId?: string | null; fileId?: string | null; noBlur?: boolean }>();
 </script>
