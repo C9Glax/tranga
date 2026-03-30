@@ -68,7 +68,8 @@ public abstract class PostMatchMangaEndpoint
                     MangaId = manga.Id,
                     Manga = manga,
                     Title = mangaInfo.Title,
-                    Url = mangaInfo.Url
+                    Url = mangaInfo.Url,
+                    Matched = false
                 };
                 await mangaContext.AddAsync(newLink, ct);
                 await newLink.SaveCover(mangaContext, mangaInfo.Cover, ct);
@@ -86,6 +87,6 @@ public abstract class PostMatchMangaEndpoint
         DownloadId = link.Id,
         MangaId = link.MangaId,
         Title = link.Title,
-        Url = link.Url,
+        Url = link.Url
     };
 }
