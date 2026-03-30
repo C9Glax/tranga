@@ -329,6 +329,40 @@
       }
     },
     "/downloadExtensions/{downloadLinkId}": {
+      "get": {
+        "tags": [
+          "Download",
+          "Search"
+        ],
+        "summary": "Returns the DownloadLink with the requested ID",
+        "parameters": [
+          {
+            "name": "downloadLinkId",
+            "in": "path",
+            "description": "ID of the DownloadLink",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadLinkDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
       "patch": {
         "tags": [
           "Download",
