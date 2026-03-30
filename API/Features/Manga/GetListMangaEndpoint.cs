@@ -22,13 +22,13 @@ public abstract class GetListMangaEndpoint
     /// <param name="ct"></param>
     /// <returns>List of Manga</returns>
     /// <response code="200">List of Manga</response>
-    public static async Task<Results<Ok<MangaDTO[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromQuery]GetMangaEndpoint.Includes[]? includes, [FromQuery]bool includeUnmonitored, CancellationToken ct)
+    public static async Task<Results<Ok<MangaDTO[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromQuery]GetMangaEndpoint.Includes[]? includes, [FromQuery]bool? includeUnmonitored, CancellationToken ct)
     {
         // TODO Pagination
         if (await mangaContext.Mangas
                 .IncludeDownloadLinks(includes.Contains(GetMangaEndpoint.Includes.DownloadLinks))
                 .IncludeMetadataLinks(includes.Contains(GetMangaEndpoint.Includes.MetadataLinks))
-                .Where(m => includeUnmonitored || m.Monitor)
+                .Where(m => includeUnmonitored ?? m.Monitor)
                 .ToListAsync(ct) is not { } mangas)
             return TypedResults.InternalServerError();
         

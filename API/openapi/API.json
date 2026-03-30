@@ -27,7 +27,6 @@
             "name": "includeUnmonitored",
             "in": "query",
             "description": "All known Manga",
-            "required": true,
             "schema": {
               "type": "boolean"
             }
