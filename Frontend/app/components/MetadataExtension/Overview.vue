@@ -7,18 +7,19 @@
         external
         :authors="author"
         :badge="badge"
-        :date="date" />
+        :date="date"
+        :ui="{ header: 'aspect-[13/9]', image: 'object-center' }" />
 </template>
 
 <script setup lang="ts">
-import type { components } from '~/composables/tranga-api';
 import { MetadataExtensions } from '~/composables/metadataExtension';
 import type { BadgeProps } from '@nuxt/ui/components/Badge.vue';
 import type { UserProps } from '@nuxt/ui/components/User.vue';
+import type { MetadataLinkDto } from '~/api/trangaApi';
 
 const apiBaseUrl = useAppConfig().api.baseUrl;
 
-const props = defineProps<{ metadataLink: components['schemas']['MetadataLinkDTO'] }>();
+const props = defineProps<{ metadataLink: MetadataLinkDto }>();
 
 const author = computed((): UserProps[] => [
     {

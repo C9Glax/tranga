@@ -1,3 +1,4 @@
 export default class ApiKeys {
-    static Manga = (includeUnmonitored: boolean) => `Manga/${includeUnmonitored}`;
+    static MangaList = (includeUnmonitored: boolean) => `MangaList/${includeUnmonitored}`;
+    static Manga = (id: string, includes: string[]) => `Manga/${id}?${includes.join(',')}`;
 }

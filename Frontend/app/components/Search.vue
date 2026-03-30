@@ -8,12 +8,14 @@
                     size="xl"
                     :ui="{ base: 'px-4 py-3 text-3xl!' }"
                     class="w-full"
+                    :loading="loading"
+                    :disabled="loading"
                     @keyup.enter="search">
                     <template #trailing>
                         <UIcon class="size-7" name="i-lucide-arrow-right" @click="search" />
                     </template>
                 </UInput>
-                <MangaList :items="searchResult" />
+                <MangaList v-model="searchResult" :loading="loading" />
             </div>
         </template>
     </UModal>
@@ -21,13 +23,22 @@
 
 <script setup lang="ts">
 import { MangaList } from '#components';
+import { useTranga } from '~/composables/trangaApi';
+import type { MangaSearchResultDto, PostMangaSearchResponse } from '~/api/trangaApi';
 
 const searchTerm = ref<string>();
-const searchResult = ref();
+const searchResult = ref<MangaSearchResultDto[]>();
+
+const loading = ref<boolean>(false);
 
 const search = async () => {
-    const { data } = await api.POST('/manga/search', { body: { title: searchTerm.value } });
-    searchResult.value = data;
+    try {
+        loading.value = true;
+        const { data } = await useTranga<PostMangaSearchResponse>('/manga/search', { body: { title: searchTerm.value }, method: 'POST' });
+        searchResult.value = data.value;
+    } finally {
+        loading.value = false;
+    }
 };
 
 const placeholders = [

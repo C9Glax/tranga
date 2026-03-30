@@ -10,20 +10,20 @@
         "lint": "eslint .",
         "typecheck": "nuxt typecheck",
         "prettier": "prettier . --write",
-        "openapi-ts": "openapi-typescript ../API/openapi/API.json -o ./app/composables/tranga-api.d.ts && tsc --noEmit"
+        "openapi-ts": "openapi-ts --file app/api/config.ts"
     },
     "dependencies": {
         "@iconify-json/lucide": "^1.2.98",
         "@iconify-json/simple-icons": "^1.2.74",
         "@nuxt/ui": "^4.5.1",
         "nuxt": "^4.4.2",
-        "openapi-fetch": "^0.17.0",
+        "openapi-typescript": "^7.13.0",
         "tailwindcss": "^4.2.1"
     },
     "devDependencies": {
+        "@hey-api/openapi-ts": "0.94.5",
         "@nuxt/eslint": "^1.15.2",
         "eslint": "^10.0.3",
-        "openapi-typescript": "^7.13.0",
         "prettier": "^3.8.1",
         "typescript": "^5.9.3",
         "vue-tsc": "^3.2.5"

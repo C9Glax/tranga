@@ -1,25 +1,20 @@
 <template>
-    <UPage>
-        <UPageHero :title="data?.title" :links="links" orientation="horizontal" reverse>
-            <MangaCover :mangaId="mangaId" noBlur />
-        </UPageHero>
+    <MangaPage v-model="manga" :actions="(m) => [{ label: 'Match', to: `/manga/${m?.mangaId}/match` }]">
         <UBlogPosts>
-            <MetadataExtensionOverview v-for="link in data?.metadataLinks" :key="link.metadataLinkId" :metadata-link="link" />
+            <MetadataExtensionOverview v-for="link in manga?.metadataLinks" :key="link.metadataLinkId" :metadata-link="link" />
         </UBlogPosts>
-    </UPage>
+    </MangaPage>
 </template>
 
 <script setup lang="ts">
-import { MangaCover, MetadataExtensionOverview } from '#components';
-import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
+import { MetadataExtensionOverview } from '#components';
+import type { GetMangaByMangaIdResponse } from '~/api/trangaApi';
+import { useTranga } from '~/composables/trangaApi';
 
 const mangaId = useRoute().params.id as string;
 
-const { data } = await api.GET('/manga/{mangaId}', {
-    params: { path: { mangaId: mangaId }, query: { includes: ['DownloadLinks', 'MetadataLinks'] } },
+const { data: manga } = await useTranga<GetMangaByMangaIdResponse>(() => `/manga/${mangaId}`, {
+    key: ApiKeys.Manga(mangaId, ['DownloadLinks', 'MetadataLinks']),
+    query: { includes: ['DownloadLinks', 'MetadataLinks'] },
 });
-
-const apiBaseUrl = useAppConfig().api.baseUrl;
-
-const links: ButtonProps[] = [{ label: 'Match', to: `/manga/${mangaId}/match` }];
 </script>
