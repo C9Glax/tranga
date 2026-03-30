@@ -98,6 +98,8 @@ public abstract class PostSearchMangaEndpoint
             Artists = searchResult.Artists,
             Authors = searchResult.Authors,
             Genres = searchResult.Genres,
+            Url = searchResult.Url,
+            Summary = searchResult.Summary,
         };
         await mangaContext.AddAsync(link, ct);
         await link.SaveCover(mangaContext, searchResult.Cover, ct);
