@@ -37,7 +37,9 @@ public abstract class PostMatchMangaEndpoint
         };
         List<MangaInfo> searchResult = DownloadExtensionsCollection.SearchAll(searchQuery, ct);
 
-        MangaMatchResultDTO[] result = await InsertNewDataIntoMangaContext(mangaContext, manga, searchResult, ct); 
+        MangaMatchResultDTO[] result = await InsertNewDataIntoMangaContext(mangaContext, manga, searchResult, ct);
+
+        await mangaContext.SaveChangesAsync(ct);
 
         return TypedResults.Ok(result);
     }
@@ -84,6 +86,6 @@ public abstract class PostMatchMangaEndpoint
         DownloadId = link.Id,
         MangaId = link.MangaId,
         Title = link.Title,
-        Url = link.Url
+        Url = link.Url,
     };
 }

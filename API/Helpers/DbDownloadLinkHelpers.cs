@@ -9,6 +9,9 @@ internal static class DbDownloadLinkHelpers
     {
         DownloadLinkId = link.Id,
         DownloadExtensionId = link.DownloadExtensionId,
+        CoverFileId = link.CoverId,
+        Title = link.Title,
+        Description = link.Description,
         Url = link.Url
     };
 }

@@ -14,6 +14,21 @@ public sealed record DownloadLinkDTO
     /// ID of the DownloadExtension
     /// </summary>
     public required Guid DownloadExtensionId { get; init; }
+    
+    /// <summary>
+    /// ID of the Cover-File, if it exists
+    /// </summary>
+    public Guid? CoverFileId { get; init; }
+    
+    /// <summary>
+    /// Name of the Manga
+    /// </summary>
+    public string? Title { get; init; }
+    
+    /// <summary>
+    /// Description of the Manga
+    /// </summary>
+    public string? Description { get; init; }
 
     /// <summary>
     /// Url on the DownloadExtension

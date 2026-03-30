@@ -424,6 +424,28 @@
             "description": "ID of the DownloadExtension",
             "format": "uuid"
           },
+          "coverFileId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "ID of the Cover-File, if it exists",
+            "format": "uuid"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Name of the Manga"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Description of the Manga"
+          },
           "url": {
             "type": [
               "null",
