@@ -9,7 +9,7 @@ public static class DbMangaHelper
         query.Where(m => m.Id == mangaId);
     
     public static IQueryable<DbManga> IncludeDownloadLinks(this IQueryable<DbManga> query, bool include) =>
-        include ? query.Include(m => m.DownloadLinks) : query;
+        include ? query.Include(m => m.DownloadLinks!.Where(d => d.Matched)) : query;
     
     public static IQueryable<DbManga> IncludeMetadataLinks(this IQueryable<DbManga> query, bool include) =>
         include ? query.Include(m => m.MetadataLinks) : query;
