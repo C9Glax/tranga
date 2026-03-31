@@ -6,4 +6,6 @@ export default class ApiKeys {
     static Metadata = (id: string) => `Metadata/${id}`;
 
     static Match = (id: string) => `Match/${id}`;
+
+    static Chapters = (id: string) => `Chapters/${id}`;
 }

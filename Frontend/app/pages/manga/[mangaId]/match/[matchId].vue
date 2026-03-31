@@ -3,12 +3,14 @@
         <template #description>
             <UEditor v-model="description" content-type="markdown" :editable="false" :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
         </template>
+        {{ chapters }}
     </MangaPage>
 </template>
 
 <script setup lang="ts">
 import type {
     GetMangaByMangaIdResponse,
+    GetMatchesByMatchIdChaptersResponse,
     GetMatchesByMatchIdResponse,
     MangaDto,
     PatchMatchesByMatchIdData,
@@ -23,6 +25,10 @@ const matchId = useRoute().params.matchId as string;
 const { data: manga } = await useTranga<GetMangaByMangaIdResponse>(() => `/manga/${mangaId}`, { key: ApiKeys.Manga(mangaId) });
 
 const { data: entry } = await useTranga<GetMatchesByMatchIdResponse>(() => `/matches/${matchId}`, { key: ApiKeys.Match(matchId) });
+
+const { data: chapters } = await useTranga<GetMatchesByMatchIdChaptersResponse>(() => `/matches/${matchId}/chapters`, {
+    key: ApiKeys.Chapters(matchId),
+});
 
 const description = ref(entry.value?.description);
 

@@ -369,7 +369,6 @@
     "/matches/{matchId}": {
       "get": {
         "tags": [
-          "Download",
           "Search"
         ],
         "summary": "Returns the DownloadLink with the requested ID",
@@ -403,7 +402,6 @@
       },
       "patch": {
         "tags": [
-          "Download",
           "Search"
         ],
         "summary": "Marks a DownloadLink as Resource for a Manga",
@@ -434,6 +432,44 @@
           },
           "404": {
             "description": "DownloadLink could not be found"
+          }
+        }
+      }
+    },
+    "/matches/{matchId}/chapters": {
+      "get": {
+        "tags": [
+          "Download"
+        ],
+        "summary": "Get the Chapters of a DownloadLink",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "ID of the DownloadLink",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChapterDTO"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chapters could not be found"
           }
         }
       }
@@ -469,6 +505,69 @@
   },
   "components": {
     "schemas": {
+      "ChapterDTO": {
+        "required": [
+          "chapterId",
+          "downloadLinkId",
+          "downloadExtensionId",
+          "identifier",
+          "chapter",
+          "download"
+        ],
+        "type": "object",
+        "properties": {
+          "chapterId": {
+            "type": "string",
+            "description": "The ID of the Chapter",
+            "format": "uuid"
+          },
+          "downloadLinkId": {
+            "type": "string",
+            "description": "The ID of the related DownloadLink",
+            "format": "uuid"
+          },
+          "downloadExtensionId": {
+            "type": "string",
+            "description": "The ID of the Download Extension",
+            "format": "uuid"
+          },
+          "identifier": {
+            "type": "string",
+            "description": "The ID on the Download Extension"
+          },
+          "volume": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The Volume-number of the Chapter"
+          },
+          "chapter": {
+            "type": "string",
+            "description": "The Chapter-number of the Chapter"
+          },
+          "url": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The URL on the Download Extension"
+          },
+          "download": {
+            "type": "boolean",
+            "description": "Whether Chapter should be downloaded"
+          },
+          "fileId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "ID of the File (if it exists)",
+            "format": "uuid"
+          }
+        },
+        "description": "The Chapter DTO"
+      },
       "ContentRating": {
         "enum": [
           "Safe",

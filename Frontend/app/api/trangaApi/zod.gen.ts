@@ -2,6 +2,23 @@
 
 import * as z from 'zod/mini';
 
+/**
+ * The Chapter DTO
+ */
+export const zChapterDto = z.object({
+    chapterId: z.uuid(),
+    downloadLinkId: z.uuid(),
+    downloadExtensionId: z.uuid(),
+    identifier: z.string(),
+    volume: z.nullish(z.string()),
+    chapter: z.string(),
+    url: z.nullish(z.string()),
+    download: z.boolean(),
+    fileId: z.nullish(z.uuid()),
+});
+
+export type ChapterDtoZodType = z.infer<typeof zChapterDto>;
+
 export const zContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornographic']);
 
 export type ContentRatingZodType = z.infer<typeof zContentRating>;

@@ -2,6 +2,48 @@
 
 export type ClientOptions = { baseUrl: `${string}://${string}` | (string & {}) };
 
+/**
+ * The Chapter DTO
+ */
+export type ChapterDto = {
+    /**
+     * The ID of the Chapter
+     */
+    chapterId: string;
+    /**
+     * The ID of the related DownloadLink
+     */
+    downloadLinkId: string;
+    /**
+     * The ID of the Download Extension
+     */
+    downloadExtensionId: string;
+    /**
+     * The ID on the Download Extension
+     */
+    identifier: string;
+    /**
+     * The Volume-number of the Chapter
+     */
+    volume?: null | string;
+    /**
+     * The Chapter-number of the Chapter
+     */
+    chapter: string;
+    /**
+     * The URL on the Download Extension
+     */
+    url?: null | string;
+    /**
+     * Whether Chapter should be downloaded
+     */
+    download: boolean;
+    /**
+     * ID of the File (if it exists)
+     */
+    fileId?: null | string;
+};
+
 export type ContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 
 export type Demographic = 'Josei' | 'Lolicon' | 'Seinen' | 'Shotacon' | 'Shoujo' | 'ShoujoAi' | 'Shounen' | 'ShounenAi' | 'Yaoi' | 'Yuri';
@@ -530,6 +572,34 @@ export type PatchMatchesByMatchIdResponses = {
      */
     200: unknown;
 };
+
+export type GetMatchesByMatchIdChaptersData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the DownloadLink
+         */
+        matchId: string;
+    };
+    query?: never;
+    url: '/matches/{matchId}/chapters';
+};
+
+export type GetMatchesByMatchIdChaptersErrors = {
+    /**
+     * Chapters could not be found
+     */
+    404: unknown;
+};
+
+export type GetMatchesByMatchIdChaptersResponses = {
+    /**
+     * Chapters
+     */
+    200: Array<ChapterDto>;
+};
+
+export type GetMatchesByMatchIdChaptersResponse = GetMatchesByMatchIdChaptersResponses[keyof GetMatchesByMatchIdChaptersResponses];
 
 export type GetFileByFileIdData = {
     body?: never;

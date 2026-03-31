@@ -19,7 +19,7 @@ internal static class Endpoints
         builder.MapGroup("/metadataExtensions").AddMetadataExtensionEndpoints();
         builder.MapGroup("/downloadExtensions").AddDownloadExtensionEndpoints();
         builder.MapGroup("/matches")
-            .WithTags("Download", "Search")
+            .WithTags("Download")
             .AddMatchesEndpoints();
         builder.MapGet("file/{fileId}", GetFileEndpoint.Handle).WithTags("File");
     }
@@ -64,8 +64,12 @@ internal static class Endpoints
 
     private static void AddMatchesEndpoints(this RouteGroupBuilder builder)
     {
-        builder.MapGet("{matchId}", GetDownloadLinkEndpoint.Handle);
+        builder.MapGet("{matchId}", GetDownloadLinkEndpoint.Handle)
+            .WithTags("Search");
 
-        builder.MapPatch("{matchId}", PatchMatchedEndpoint.Handle);
+        builder.MapPatch("{matchId}", PatchMatchedEndpoint.Handle)
+            .WithTags("Search");
+        
+        builder.MapGet("{matchId}/chapters", GetChaptersEndpoint.Handle);
     }
 }
