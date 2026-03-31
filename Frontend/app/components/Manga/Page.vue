@@ -1,26 +1,41 @@
 <template>
     <UPage>
-        <UPageCTA :links="links" orientation="horizontal" reverse :ui="{ container: 'py-6 sm:py-8 lg:py-8' }">
+        <UPageCTA v-bind="$props" :links="links" orientation="horizontal" reverse :ui="{ container: 'py-6 sm:py-8 lg:py-8' }">
             <template #title>
-                <USkeleton v-if="!manga?.title" class="h-lh" />
-                <p v-else>{{ manga.title }}</p>
+                <p v-if="$props.title">{{ $props.title }}</p>
+                <p v-else-if="manga?.title">{{ manga.title }}</p>
+                <USkeleton v-else class="h-lh" />
             </template>
-            <MangaCover :mangaId="manga?.mangaId" noBlur />
+
+            <!-- Passes through the slots to -->
+            <template v-for="(_, slotName) in $slots" #[slotName]="slotProps">
+                <slot v-if="slotName !== 'default'" :name="slotName as unknown" v-bind="slotProps" />
+                <MangaCover v-else :file-id="coverFileId" :mangaId="manga?.mangaId" noBlur />
+            </template>
+            <MangaCover :file-id="coverFileId" :mangaId="manga?.mangaId" noBlur />
         </UPageCTA>
+
         <UPageSection :ui="{ container: 'sm:py-8 lg:py-8' }">
-            <slot />
+            <slot name="default" />
         </UPageSection>
     </UPage>
 </template>
 
 <script setup lang="ts">
-import { MangaCover } from '#components';
+import { MangaCover, UPageCTA } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { MangaDto } from '~/api/trangaApi';
+import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
 
-const manga = defineModel<MangaDto>();
+export interface MangaPageProps extends PageCTAProps {
+    manga?: MangaDto;
+    coverFileId?: string;
+    actions?: (manga?: MangaDto) => ButtonProps[] | undefined;
+}
 
-const props = defineProps<{ actions?: (manga?: MangaDto) => ButtonProps[] | undefined }>();
+const props = defineProps<MangaPageProps>();
 
-const links = computed(() => (props.actions ? props.actions(manga.value) : undefined));
+defineSlots<PageCTASlots>();
+
+const links = computed(() => (props.actions ? props.actions(props.manga) : undefined));
 </script>

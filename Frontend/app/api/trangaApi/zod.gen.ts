@@ -31,7 +31,16 @@ export type DownloadExtensionDtoZodType = z.infer<typeof zDownloadExtensionDto>;
 /**
  * DownloadExtension Link Entry
  */
-export const zDownloadLinkDto = z.object({ downloadLinkId: z.uuid(), downloadExtensionId: z.uuid(), url: z.nullish(z.string()) });
+export const zDownloadLinkDto = z.object({
+    mangaId: z.uuid(),
+    downloadLinkId: z.uuid(),
+    downloadExtensionId: z.uuid(),
+    coverFileId: z.nullish(z.uuid()),
+    title: z.nullish(z.string()),
+    description: z.nullish(z.string()),
+    url: z.nullish(z.string()),
+    matched: z.optional(z.boolean()),
+});
 
 export type DownloadLinkDtoZodType = z.infer<typeof zDownloadLinkDto>;
 
@@ -41,20 +50,6 @@ export type DownloadLinkDtoZodType = z.infer<typeof zDownloadLinkDto>;
 export const zIncludes = z.enum(['DownloadLinks', 'MetadataLinks']);
 
 export type IncludesZodType = z.infer<typeof zIncludes>;
-
-/**
- * A Search Result
- */
-export const zMangaMatchResultDto = z.object({
-    mangaId: z.uuid(),
-    downloadId: z.uuid(),
-    coverFileId: z.nullish(z.uuid()),
-    title: z.string(),
-    description: z.nullable(z.string()),
-    url: z.nullish(z.string()),
-});
-
-export type MangaMatchResultDtoZodType = z.infer<typeof zMangaMatchResultDto>;
 
 /**
  * A Search Result
@@ -130,6 +125,7 @@ export type StatusZodType = z.infer<typeof zStatus>;
  * MetadataExtension Link Entry
  */
 export const zMetadataLinkDto = z.object({
+    mangaId: z.uuid(),
     metadataLinkId: z.uuid(),
     metadataExtensionId: z.uuid(),
     coverFileId: z.nullish(z.uuid()),

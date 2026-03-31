@@ -7,7 +7,7 @@
                 <USwitch v-model="includeUnmonitored" label="Include Unmonitored Manga" />
             </template>
         </USlideover>
-        <MangaList v-model="mangaList" :loading="status !== 'success'" />
+        <MangaList :mangas="mangaList" :loading="status !== 'success'" />
     </UPage>
 </template>
 

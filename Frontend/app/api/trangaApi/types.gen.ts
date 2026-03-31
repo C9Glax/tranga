@@ -29,6 +29,10 @@ export type DownloadExtensionDto = {
  */
 export type DownloadLinkDto = {
     /**
+     * ID of the Manga
+     */
+    mangaId: string;
+    /**
      * ID of the DownloadExtension Link Entry
      */
     downloadLinkId: string;
@@ -37,9 +41,25 @@ export type DownloadLinkDto = {
      */
     downloadExtensionId: string;
     /**
+     * ID of the Cover-File, if it exists
+     */
+    coverFileId?: null | string;
+    /**
+     * Name of the Manga
+     */
+    title?: null | string;
+    /**
+     * Description of the Manga
+     */
+    description?: null | string;
+    /**
      * Url on the DownloadExtension
      */
     url?: null | string;
+    /**
+     * DownloadLink is used as Match for Manga
+     */
+    matched?: boolean;
 };
 
 /**
@@ -71,36 +91,6 @@ export type MangaDto = {
      * Linked DownloadExtension Entries
      */
     downloadLinks?: null | Array<DownloadLinkDto>;
-};
-
-/**
- * A Search Result
- */
-export type MangaMatchResultDto = {
-    /**
-     * The identifier of the Manga
-     */
-    mangaId: string;
-    /**
-     * The identifier of the Download entry
-     */
-    downloadId: string;
-    /**
-     * The identifier of the Cover File
-     */
-    coverFileId?: null | string;
-    /**
-     * The title of the Manga
-     */
-    title: string;
-    /**
-     * The description of the Manga
-     */
-    description: null | string;
-    /**
-     * Url of the Manga
-     */
-    url?: null | string;
 };
 
 /**
@@ -155,6 +145,10 @@ export type MetadataExtensionDto = {
  * MetadataExtension Link Entry
  */
 export type MetadataLinkDto = {
+    /**
+     * ID of the Manga
+     */
+    mangaId: string;
     /**
      * ID of the MetadataExtension Link Entry
      */
@@ -393,7 +387,7 @@ export type PostMangaByMangaIdMatchData = {
 
 export type PostMangaByMangaIdMatchErrors = {
     /**
-     * could not be found
+     * Manga could not be found
      */
     404: unknown;
 };
@@ -402,10 +396,38 @@ export type PostMangaByMangaIdMatchResponses = {
     /**
      * A List of matched Manga
      */
-    200: Array<MangaMatchResultDto>;
+    200: Array<DownloadLinkDto>;
 };
 
 export type PostMangaByMangaIdMatchResponse = PostMangaByMangaIdMatchResponses[keyof PostMangaByMangaIdMatchResponses];
+
+export type GetMangaByMangaIdMatchedData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the Manga
+         */
+        mangaId: string;
+    };
+    query?: never;
+    url: '/manga/{mangaId}/matched';
+};
+
+export type GetMangaByMangaIdMatchedErrors = {
+    /**
+     * Manga could not be found
+     */
+    404: unknown;
+};
+
+export type GetMangaByMangaIdMatchedResponses = {
+    /**
+     * A List of DownloadLinks
+     */
+    200: Array<DownloadLinkDto>;
+};
+
+export type GetMangaByMangaIdMatchedResponse = GetMangaByMangaIdMatchedResponses[keyof GetMangaByMangaIdMatchedResponses];
 
 export type PostChapterByChapterIdDownloadData = {
     body?: never;
@@ -454,6 +476,60 @@ export type GetDownloadExtensionsResponses = {
 };
 
 export type GetDownloadExtensionsResponse = GetDownloadExtensionsResponses[keyof GetDownloadExtensionsResponses];
+
+export type GetMatchesByMatchIdData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the DownloadLink
+         */
+        matchId: string;
+    };
+    query?: never;
+    url: '/matches/{matchId}';
+};
+
+export type GetMatchesByMatchIdErrors = {
+    /**
+     * DownloadLink could not be found
+     */
+    404: unknown;
+};
+
+export type GetMatchesByMatchIdResponses = {
+    /**
+     * DownloadLink with ID
+     */
+    200: DownloadLinkDto;
+};
+
+export type GetMatchesByMatchIdResponse = GetMatchesByMatchIdResponses[keyof GetMatchesByMatchIdResponses];
+
+export type PatchMatchesByMatchIdData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the DownloadLink
+         */
+        matchId: string;
+    };
+    query: { matched: boolean };
+    url: '/matches/{matchId}';
+};
+
+export type PatchMatchesByMatchIdErrors = {
+    /**
+     * DownloadLink could not be found
+     */
+    404: unknown;
+};
+
+export type PatchMatchesByMatchIdResponses = {
+    /**
+     * Matched changed
+     */
+    200: unknown;
+};
 
 export type GetFileByFileIdData = {
     body?: never;

@@ -2,13 +2,12 @@
     <UBlogPost
         :description="metadataLink.description ?? undefined"
         :image="{ src: `${apiBaseUrl}/file/${metadataLink.coverFileId}`, loading: 'lazy' }"
-        :to="metadataLink.url ?? undefined"
-        target="_blank"
+        :to="`/manga/${mangaId}/metadata/${metadataLink.metadataLinkId}`"
         external
         :authors="author"
         :badge="badge"
         :date="date"
-        :ui="{ header: 'aspect-[13/9]', image: 'object-center' }" />
+        :ui="{ header: 'aspect-[13/9]', image: 'object-center', description: 'h-30 text-ellipsis overflow-hidden' }" />
 </template>
 
 <script setup lang="ts">
@@ -18,6 +17,7 @@ import type { UserProps } from '@nuxt/ui/components/User.vue';
 import type { MetadataLinkDto } from '~/api/trangaApi';
 
 const apiBaseUrl = useAppConfig().api.baseUrl;
+const mangaId = useRoute().params.mangaId as string;
 
 const props = defineProps<{ metadataLink: MetadataLinkDto }>();
 
