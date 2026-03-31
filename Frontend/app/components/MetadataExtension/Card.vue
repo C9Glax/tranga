@@ -1,13 +1,18 @@
 <template>
-    <UBlogPost
-        :description="metadataLink.description ?? undefined"
-        :image="{ src: `${apiBaseUrl}/file/${metadataLink.coverFileId}`, loading: 'lazy' }"
-        :to="`/manga/${mangaId}/metadata/${metadataLink.metadataLinkId}`"
-        external
-        :authors="author"
-        :badge="badge"
-        :date="date"
-        :ui="{ header: 'aspect-[13/9]', image: 'object-center', description: 'h-30 text-ellipsis overflow-hidden' }" />
+    <UChip :ui="{ base: 'h-7 w-7' }" color="info">
+        <template #content>
+            <UIcon name="i-lucide-info" class="size-5" />
+        </template>
+        <UBlogPost
+            :description="metadataLink.description ?? undefined"
+            :image="{ src: `${apiBaseUrl}/file/${metadataLink.coverFileId}`, loading: 'lazy' }"
+            :to="`/manga/${mangaId}/metadata/${metadataLink.metadataLinkId}`"
+            external
+            :authors="author"
+            :badge="badge"
+            :date="date"
+            :ui="{ header: 'aspect-[13/9]', image: 'object-center', description: 'h-30 text-ellipsis overflow-hidden' }" />
+    </UChip>
 </template>
 
 <script setup lang="ts">

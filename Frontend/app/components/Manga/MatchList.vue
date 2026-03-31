@@ -2,14 +2,7 @@
     <UPageGrid :ui="{ base: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4' }">
         <USkeleton v-if="loading" v-for="_ in [...Array(3)]" class="w-60 h-90" />
 
-        <UChip
-            v-if="!loading"
-            v-for="match in matches"
-            :key="match.downloadLinkId"
-            size="3xl"
-            :show="match.matched"
-            :class="widthHeight"
-        >
+        <UChip v-if="!loading" v-for="match in matches" :key="match.downloadLinkId" size="3xl" :show="match.matched" :class="widthHeight">
             <UPageCard
                 :to="`/manga/${match.mangaId}/match/${match.downloadLinkId}`"
                 :class="['relative overflow-clip', widthHeight]"
