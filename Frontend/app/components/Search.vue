@@ -15,14 +15,13 @@
                         <UIcon class="size-7" name="i-lucide-arrow-right" @click="search" />
                     </template>
                 </UInput>
-                <MangaList v-if="searchResult || loading" :mangas="searchResult" :loading="loading" />
+                <MangaMatchList v-if="searchResult || loading" :mangas="searchResult" :loading="loading" />
             </div>
         </template>
     </UModal>
 </template>
 
 <script setup lang="ts">
-import { MangaList } from '#components';
 import { useTranga } from '~/composables/trangaApi';
 import type { MangaSearchResultDto, PostMangaSearchResponse } from '~/api/trangaApi';
 

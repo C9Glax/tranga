@@ -1,5 +1,5 @@
 {
-    "name": "Tranga frontend",
+    "name": "tranga-frontend",
     "private": true,
     "type": "module",
     "scripts": {
@@ -18,7 +18,8 @@
         "@nuxt/ui": "^4.5.1",
         "nuxt": "^4.4.2",
         "openapi-typescript": "^7.13.0",
-        "tailwindcss": "^4.2.1"
+        "tailwindcss": "^4.2.1",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@hey-api/openapi-ts": "0.94.5",

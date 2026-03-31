@@ -21,12 +21,10 @@ public abstract class PatchMatchedEndpoint
     /// <response code="404">DownloadLink could not be found</response>
     public static async Task<Results<Ok, NotFound>> Handle(MangaContext mangaContext, [FromRoute] Guid matchId, [FromQuery]bool matched, CancellationToken ct)
     {
-        if (await mangaContext.DownloadLinks.FirstOrDefaultAsync(l => l.Id == matchId, ct) is not { } link)
+        if(await mangaContext.DownloadLinks.Where(l => l.Id == matchId)
+               .ExecuteUpdateAsync(s =>
+                   s.SetProperty(l => l.Matched, matched), ct) != 1)
             return TypedResults.NotFound();
-
-        link.Matched = matched;
-
-        await mangaContext.SaveChangesAsync(ct);
 
         return TypedResults.Ok();
     }

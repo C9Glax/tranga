@@ -13,8 +13,6 @@ import type {
     GetMatchesByMatchIdChaptersResponse,
     GetMatchesByMatchIdResponse,
     MangaDto,
-    PatchMatchesByMatchIdData,
-    PatchMatchesByMatchIdResponses,
 } from '~/api/trangaApi';
 import { useTranga } from '~/composables/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
@@ -46,10 +44,7 @@ const toggleMatch = async () => {
     if (!entry.value) return;
     try {
         busy.value = true;
-        await useTranga<PatchMatchesByMatchIdResponses, PatchMatchesByMatchIdData>(() => `/matches/${matchId}`, {
-            method: 'patch',
-            query: { matched: !entry.value.matched },
-        });
+        await $tranga(`/matches/${matchId}`, { method: 'patch', query: { matched: !entry.value.matched } });
         await refreshNuxtData([
             ApiKeys.Match(matchId),
             ApiKeys.Manga(mangaId, ['DownloadLinks']),

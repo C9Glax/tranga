@@ -9,7 +9,10 @@
 
 <script setup lang="ts">
 import { MetadataExtensionCard, DownloadExtensionCard } from '#components';
-import type { GetMangaByMangaIdResponse, MangaDto } from '~/api/trangaApi';
+import type {
+    GetMangaByMangaIdResponse,
+    MangaDto,
+} from '~/api/trangaApi';
 import { useTranga } from '~/composables/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
@@ -20,7 +23,44 @@ const { data: manga, status: statusManga } = await useTranga<GetMangaByMangaIdRe
     query: { includes: ['DownloadLinks', 'MetadataLinks'] },
 });
 
+const busy = ref<boolean>(false);
+
 const actions = (manga?: MangaDto): ButtonProps[] | undefined => [
     { label: 'Find Matches', to: `/manga/${manga?.mangaId}/match`, variant: 'soft' },
+    manga?.monitored
+        ? {
+              label: 'Monitored',
+              variant: 'soft',
+              onClick: async () => await toggleMonitored(manga, false),
+              icon: 'i-lucide-check',
+              color: 'primary',
+              disabled: busy.value,
+          }
+        : {
+              label: 'Not Monitored',
+              variant: 'outline',
+              onClick: async () => await toggleMonitored(manga, true),
+              icon: 'i-lucide-x',
+              color: 'neutral',
+              disabled: busy.value,
+          },
 ];
+
+async function toggleMonitored(manga: MangaDto | undefined, monitored: boolean) {
+    if (!manga) return;
+    try {
+        busy.value = true;
+        await $tranga(`/manga/${manga.mangaId}/monitor`, { method: 'patch', query: { monitored: monitored } });
+        await refreshNuxtData([
+            ApiKeys.MangaList(false),
+            ApiKeys.MangaList(true),
+            ApiKeys.Manga(manga?.mangaId),
+            ApiKeys.Manga(manga?.mangaId, ['DownloadLinks']),
+            ApiKeys.Manga(manga?.mangaId, ['MetadataLinks']),
+            ApiKeys.Manga(manga?.mangaId, ['DownloadLinks', 'MetadataLinks']),
+        ]);
+    } finally {
+        busy.value = false;
+    }
+}
 </script>

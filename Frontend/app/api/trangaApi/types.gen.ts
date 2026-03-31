@@ -471,6 +471,32 @@ export type GetMangaByMangaIdMatchedResponses = {
 
 export type GetMangaByMangaIdMatchedResponse = GetMangaByMangaIdMatchedResponses[keyof GetMangaByMangaIdMatchedResponses];
 
+export type PatchMangaByMangaIdMonitorData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the Manga
+         */
+        mangaId: string;
+    };
+    query: { monitored: boolean };
+    url: '/manga/{mangaId}/monitor';
+};
+
+export type PatchMangaByMangaIdMonitorErrors = {
+    /**
+     * Manga could not be found
+     */
+    404: unknown;
+};
+
+export type PatchMangaByMangaIdMonitorResponses = {
+    /**
+     * Monitored changed
+     */
+    200: unknown;
+};
+
 export type PostChapterByChapterIdDownloadData = {
     body?: never;
     path: {

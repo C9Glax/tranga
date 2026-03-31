@@ -292,6 +292,43 @@
         }
       }
     },
+    "/manga/{mangaId}/monitor": {
+      "patch": {
+        "tags": [
+          "Download"
+        ],
+        "summary": "Marks a Manga as Monitored",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "description": "ID of the Manga",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "monitored",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Monitored changed"
+          },
+          "404": {
+            "description": "Manga could not be found"
+          }
+        }
+      }
+    },
     "/chapter/{chapterId}/download": {
       "post": {
         "tags": [

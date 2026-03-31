@@ -42,6 +42,9 @@ internal static class Endpoints
             .WithTags("Search");
         
         builder.MapGet("{mangaId}/matched", GetMatchedEndpoint.Handle);
+        
+        builder.MapPatch("{mangaId}/monitor", PatchMangaMonitoredEndpoint.Handle)
+            .WithTags("Download");
     }
     
     private static void AddChapterEndpoints(this RouteGroupBuilder builder)
