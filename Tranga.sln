@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{CD8A1EF1-D133-435C-8E1D-871A9D756AB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workers", "Workers\Workers.csproj", "{D0DF4A2C-A06F-4522-B2CD-9905582E2017}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{D0DF4A2C-A06F-4522-B2CD-9905582E2017}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{FBD3D82E-38FC-415F-8047-8B3E7B0CDD79}"
 EndProject
@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Tests", "API.Tests\API.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Tests", "Database.Tests\Database.Tests.csproj", "{453E2C99-F313-47B1-BFDA-8DFA9267332C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workers.Tests", "Workers.Tests\Workers.Tests.csproj", "{B4A94FAB-D911-43AC-A096-152A6003B7C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Tests", "Application.Tests\Application.Tests.csproj", "{B4A94FAB-D911-43AC-A096-152A6003B7C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataExtensions.Tests", "MetadataExtensions.Tests\MetadataExtensions.Tests.csproj", "{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}"
 EndProject

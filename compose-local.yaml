@@ -3,7 +3,7 @@
     image: api
     build:
       context: .
-      dockerfile: API/Dockerfile
+      dockerfile: Application/Dockerfile
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
