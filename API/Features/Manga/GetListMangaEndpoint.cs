@@ -28,7 +28,7 @@ public abstract class GetListMangaEndpoint
         if (await mangaContext.Mangas
                 .IncludeDownloadLinks(includes.Contains(GetMangaEndpoint.Includes.DownloadLinks))
                 .IncludeMetadataLinks(includes.Contains(GetMangaEndpoint.Includes.MetadataLinks))
-                .Where(m => includeUnmonitored ?? m.Monitor)
+                .IncludeUnmonitored(includeUnmonitored)
                 .ToListAsync(ct) is not { } mangas)
             return TypedResults.InternalServerError();
         

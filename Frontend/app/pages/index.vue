@@ -16,14 +16,14 @@ import { MangaList } from '#components';
 import { useTranga } from '~/composables/trangaApi';
 import type { GetMangaResponse } from '~/api/trangaApi';
 
-const includeUnmonitored = ref<boolean>(true);
+const includeUnmonitored = useState<boolean>(() => false);
 
 const {
     data: mangaList,
     status,
     refresh,
 } = await useTranga<GetMangaResponse>('/manga', {
-    query: { includeUnmonitored: includeUnmonitored.value },
+    query: { includeUnmonitored: includeUnmonitored },
     key: ApiKeys.MangaList(includeUnmonitored.value),
 });
 

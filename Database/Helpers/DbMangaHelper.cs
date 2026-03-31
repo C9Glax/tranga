@@ -13,6 +13,10 @@ public static class DbMangaHelper
     
     public static IQueryable<DbManga> IncludeMetadataLinks(this IQueryable<DbManga> query, bool include) =>
         include ? query.Include(m => m.MetadataLinks) : query;
+    
+    
+    public static IQueryable<DbManga> IncludeUnmonitored(this IQueryable<DbManga> query, bool? includeUnmonitored) =>
+        includeUnmonitored is true ? query : query.Where(m => m.Monitor == true);
 
     public static IQueryable<DbMetadataLink> GetMetadataLink(this IQueryable<DbManga> query, Guid metadataLink) =>
         query.Include(m => m.MetadataLinks).SelectMany(m => m.MetadataLinks!)
