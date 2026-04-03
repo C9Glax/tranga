@@ -55,4 +55,10 @@ public sealed class API : IAsyncDisposable
         await _app.StopAsync();
         await _app.DisposeAsync();
     }
+
+    public static void Main(string[] args)
+    {
+        API api = new (args);
+        Task.WaitAll(api.Run());
+    }
 }
