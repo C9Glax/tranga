@@ -5,8 +5,8 @@
         </template>
         <UBlogPost
             :description="downloadLink.description ?? undefined"
-            :image="{ src: `${apiBaseUrl}/file/${downloadLink.coverFileId}`, loading: 'lazy' }"
-            :to="`/manga/${mangaId}/match/${downloadLink.downloadLinkId}`"
+            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/file/${downloadLink.coverFileId}`, loading: 'lazy' }"
+            :to="`/manga/${downloadLink.mangaId}/match/${downloadLink.downloadLinkId}`"
             external
             :badge="{ label: downloadLink.downloadLinkId }"
             :authors="author"
@@ -17,9 +17,6 @@
 <script setup lang="ts">
 import type { UserProps } from '@nuxt/ui/components/User.vue';
 import type { DownloadLinkDto } from '~/api/trangaApi';
-
-const apiBaseUrl = useAppConfig().api.baseUrl;
-const mangaId = useRoute().params.mangaId as string;
 
 const props = defineProps<{ downloadLink: DownloadLinkDto }>();
 

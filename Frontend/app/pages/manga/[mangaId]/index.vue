@@ -9,14 +9,12 @@
 
 <script setup lang="ts">
 import { MetadataExtensionCard, DownloadExtensionCard } from '#components';
-import type {
-    GetMangaByMangaIdResponse,
-    MangaDto,
-} from '~/api/trangaApi';
-import { useTranga } from '~/composables/trangaApi';
+import type { GetMangaByMangaIdResponse, MangaDto } from '~/api/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
 const mangaId = useRoute().params.mangaId as string;
+
+const { $tranga } = useNuxtApp();
 
 const { data: manga, status: statusManga } = await useTranga<GetMangaByMangaIdResponse>(() => `/manga/${mangaId}`, {
     key: ApiKeys.Manga(mangaId, ['DownloadLinks', 'MetadataLinks']),
@@ -52,8 +50,7 @@ async function toggleMonitored(manga: MangaDto | undefined, monitored: boolean) 
         busy.value = true;
         await $tranga(`/manga/${manga.mangaId}/monitor`, { method: 'patch', query: { monitored: monitored } });
         await refreshNuxtData([
-            ApiKeys.MangaList(false),
-            ApiKeys.MangaList(true),
+            ApiKeys.MangaList(monitored),
             ApiKeys.Manga(manga?.mangaId),
             ApiKeys.Manga(manga?.mangaId, ['DownloadLinks']),
             ApiKeys.Manga(manga?.mangaId, ['MetadataLinks']),

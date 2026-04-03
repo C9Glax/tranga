@@ -13,7 +13,6 @@
 
 <script setup lang="ts">
 import { MangaList } from '#components';
-import { useTranga } from '~/composables/trangaApi';
 import type { GetMangaResponse } from '~/api/trangaApi';
 
 const includeUnmonitored = useState<boolean>(() => false);

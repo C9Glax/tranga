@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 import { MangaMatchList } from '#components';
-import { useTranga } from '~/composables/trangaApi';
 import type {
     GetMangaByMangaIdMatchedResponse,
     GetMangaByMangaIdResponse,

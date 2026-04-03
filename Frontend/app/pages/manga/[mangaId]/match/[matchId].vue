@@ -14,8 +14,9 @@ import type {
     GetMatchesByMatchIdResponse,
     MangaDto,
 } from '~/api/trangaApi';
-import { useTranga } from '~/composables/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
+
+const { $tranga } = useNuxtApp();
 
 const mangaId = useRoute().params.mangaId as string;
 const matchId = useRoute().params.matchId as string;

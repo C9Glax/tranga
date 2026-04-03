@@ -5,8 +5,8 @@
         </template>
         <UBlogPost
             :description="metadataLink.description ?? undefined"
-            :image="{ src: `${apiBaseUrl}/file/${metadataLink.coverFileId}`, loading: 'lazy' }"
-            :to="`/manga/${mangaId}/metadata/${metadataLink.metadataLinkId}`"
+            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/file/${metadataLink.coverFileId}`, loading: 'lazy' }"
+            :to="`/manga/${metadataLink.mangaId}/metadata/${metadataLink.metadataLinkId}`"
             external
             :authors="author"
             :badge="badge"
@@ -20,9 +20,6 @@ import { MetadataExtensions } from '~/composables/metadataExtension';
 import type { BadgeProps } from '@nuxt/ui/components/Badge.vue';
 import type { UserProps } from '@nuxt/ui/components/User.vue';
 import type { MetadataLinkDto } from '~/api/trangaApi';
-
-const apiBaseUrl = useAppConfig().api.baseUrl;
-const mangaId = useRoute().params.mangaId as string;
 
 const props = defineProps<{ metadataLink: MetadataLinkDto }>();
 

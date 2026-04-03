@@ -8,7 +8,6 @@
 
 <script setup lang="ts">
 import type { GetMangaByMangaIdResponse, MangaDto } from '~/api/trangaApi';
-import { useTranga } from '~/composables/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
 const mangaId = useRoute().params.mangaId as string;

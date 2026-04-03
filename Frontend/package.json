@@ -10,7 +10,8 @@
         "lint": "eslint .",
         "typecheck": "nuxt typecheck",
         "prettier": "prettier . --write",
-        "openapi-ts": "openapi-ts --file app/api/config.ts"
+        "openapi-ts": "openapi-ts --file app/api/config.ts",
+        "precommit": "openapi-ts --file app/api/config.ts &&  nuxt typecheck && prettier . --write"
     },
     "dependencies": {
         "@iconify-json/lucide": "^1.2.98",

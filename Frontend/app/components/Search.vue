@@ -22,8 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTranga } from '~/composables/trangaApi';
-import type { MangaSearchResultDto, PostMangaSearchResponse } from '~/api/trangaApi';
+import type { MangaSearchResultDto, PostMangaSearchResponse, PostMangaSearchErrors } from '~/api/trangaApi';
 
 const searchTerm = ref<string>();
 const searchResult = ref<MangaSearchResultDto[]>();
