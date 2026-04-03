@@ -1,11 +1,16 @@
 namespace Application.Services;
 
-public sealed class ApiService : BackgroundService
+public sealed class ApiService : IHostedService
 {
     private readonly API.API _api = new ([]);
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        return _api.Run(stoppingToken);
+        await _api.Run();
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await _api.DisposeAsync();
     }
 }

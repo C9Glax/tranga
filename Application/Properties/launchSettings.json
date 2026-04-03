@@ -1,7 +1,7 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "Workers": {
+    "Application": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "environmentVariables": {

@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Database;
 using Database.MangaContext;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Scalar.AspNetCore;
 
 namespace API;
@@ -19,19 +18,23 @@ public sealed class API : IAsyncDisposable
             opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
-        builder.Services.AddDbContext<MangaContext>(opts => opts.Configure(null), ServiceLifetime.Scoped, ServiceLifetime.Singleton);
+        builder.Services.AddDbContext<MangaContext>(opts =>
+            opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
 
-        builder.Services.AddCors(opts =>
-        {
-            opts.AddDefaultPolicy(new CorsPolicy
-            {
-                IsOriginAllowed = (s => true),
-                PreflightMaxAge = null,
-                SupportsCredentials = false
-            });
-        });
+        builder.Services.AddCors();
         
         _app = builder.Build();
+
+        _app.UseCors(x => x
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .SetIsOriginAllowed(origin => true) // allow any origin
+            .AllowCredentials()); // allow credentials
+
+        using (MangaContext context = _app.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>())
+        {
+            Task.WaitAll(context.ApplyMigrations());
+        }
 
         RouteGroupBuilder routeBuilder = _app.MapGroup("/");
         Endpoints.AddEndpoints(routeBuilder);
