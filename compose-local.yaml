@@ -3,8 +3,8 @@
     image: application
     container_name: tranga-app
     build:
-      context: Application
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Application/Dockerfile
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres

@@ -1,12 +1,12 @@
 namespace Database.MangaContext;
 
-public sealed class DbFile
+public sealed record DbFile
 {
-    public Guid Id { get; init; }
+    public Guid FileId { get; init; }
     
-    public required string Name { get; set; }
+    public required string Path { get; init; }
     
-    public required string Path { get; set; }
+    public required string Name { get; init; }
     
     public required string MimeType { get; init; }
 }

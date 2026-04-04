@@ -1,14 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Database.MangaContext;
 
 public sealed record DbManga
 {
-    public Guid Id { get; init; }
-    
-    public required string Series { get; init; }
+    public Guid MangaId { get; internal set; }
 
-    public required bool Monitor { get; set; }
+    #region Navigations
     
-    public ICollection<DbDownloadLink>? DownloadLinks { get; init; }
+    public ICollection<DbChapter>? Chapters { get; internal set; }
     
-    public ICollection<DbMetadataLink>? MetadataLinks { get; init; }
+    public ICollection<DbMetadataSource>? MetadataSources { get; internal set; }
+    
+    public ICollection<DbMangaDownloadSources>? DownloadSources { get; internal set; }
+
+    #endregion
 }

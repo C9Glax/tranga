@@ -25,4 +25,8 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="MangaContext\Migrations\" />
+    </ItemGroup>
+
 </Project>

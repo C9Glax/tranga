@@ -10,13 +10,7 @@ public abstract class TrangaDatabaseContext<T>(DbContextOptions<T> options) : Db
         try
         {
             await Database.EnsureCreatedAsync(ct);
-            IEnumerable<string> pendingMigrations = await Database.GetPendingMigrationsAsync(ct);
-            foreach (string pendingMigration in pendingMigrations)
-            {
-                Console.WriteLine($"Applying Migration {pendingMigration}...");
-                await Database.MigrateAsync(pendingMigration, ct);
-                Console.WriteLine($"Migration {pendingMigration} applied!");
-            }
+            await Database.MigrateAsync(ct);
         }
         catch (Exception)
         {
