@@ -6,6 +6,14 @@ export const zContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornogra
 
 export type ContentRatingZodType = z.infer<typeof zContentRating>;
 
+export const zPatchMangaMetadataEntryRequest = z.object({ metadataId: z.uuid() });
+
+export type PatchMangaMetadataEntryRequestZodType = z.infer<typeof zPatchMangaMetadataEntryRequest>;
+
+export const zReleaseStatus = z.enum(['Ongoing', 'Complete', 'Hiatus', 'Cancelled']);
+
+export type ReleaseStatusZodType = z.infer<typeof zReleaseStatus>;
+
 export const zMangaMetadata = z.object({
     metadataId: z.uuid(),
     metadataExtensionId: z.uuid(),
@@ -41,6 +49,7 @@ export const zMangaMetadata = z.object({
     authors: z.optional(z.array(z.string())),
     artists: z.optional(z.array(z.string())),
     url: z.nullable(z.string()),
+    status: z.nullish(zReleaseStatus),
 });
 
 export type MangaMetadataZodType = z.infer<typeof zMangaMetadata>;
@@ -85,13 +94,10 @@ export const zMetadataManga = z.object({
     authors: z.optional(z.array(z.string())),
     artists: z.optional(z.array(z.string())),
     url: z.nullable(z.string()),
+    status: z.nullish(zReleaseStatus),
 });
 
 export type MetadataMangaZodType = z.infer<typeof zMetadataManga>;
-
-export const zPatchMangaMetadataEntryRequest = z.object({ metadataId: z.uuid() });
-
-export type PatchMangaMetadataEntryRequestZodType = z.infer<typeof zPatchMangaMetadataEntryRequest>;
 
 /**
  * The query to use when searching for a Manga

@@ -21,6 +21,7 @@ export type MangaMetadata = {
     authors?: Array<string>;
     artists?: Array<string>;
     url: null | string;
+    status?: null | ReleaseStatus;
 };
 
 export type MetadataManga = {
@@ -39,9 +40,12 @@ export type MetadataManga = {
     authors?: Array<string>;
     artists?: Array<string>;
     url: null | string;
+    status?: null | ReleaseStatus;
 };
 
 export type PatchMangaMetadataEntryRequest = { metadataId: string };
+
+export type ReleaseStatus = 'Ongoing' | 'Complete' | 'Hiatus' | 'Cancelled';
 
 /**
  * The query to use when searching for a Manga
@@ -171,6 +175,24 @@ export type PatchMangasByMangaIdUseMetadataResponses = {
      */
     200: unknown;
 };
+
+export type GetMangasByMangaIdMetadataData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/metadata' };
+
+export type GetMangasByMangaIdMetadataErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type GetMangasByMangaIdMetadataResponses = {
+    /**
+     * OK
+     */
+    200: Array<MangaMetadata>;
+};
+
+export type GetMangasByMangaIdMetadataResponse = GetMangasByMangaIdMetadataResponses[keyof GetMangasByMangaIdMetadataResponses];
 
 export type GetMetadataData = { body?: never; path?: never; query?: never; url: '/metadata' };
 

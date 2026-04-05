@@ -1,3 +1,5 @@
+using Common.Datatypes;
+
 namespace MetadataExtensions;
 
 public sealed record SearchResult
@@ -21,5 +23,7 @@ public sealed record SearchResult
     public string[]? Genres { get; init; }
     
     public string? Url { get; init; }
+    
+    public ReleaseStatus? Status { get; init; }
     
 }

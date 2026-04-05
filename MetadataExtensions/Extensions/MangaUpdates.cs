@@ -1,3 +1,4 @@
+using Common.Datatypes;
 using Common.Helpers;
 using NSwagClients.GeneratedClients.MangaUpdates;
 
@@ -30,6 +31,7 @@ public class MangaUpdates : IMetadataExtension
                 return null;
             if(series.Title is null)
                 return null;
+            ReleaseStatus? status = series.Status.ParseStatus();
             return
             [
                 new SearchResult()
@@ -42,7 +44,8 @@ public class MangaUpdates : IMetadataExtension
                     Authors = series.Authors?.Select(a => a.Name).ToArray() ?? [],
                     Genres = series.Genres?.Select(g => g.Genre!).ToArray() ?? [],
                     Url = series.Url,
-                    Cover = cover
+                    Cover = cover,
+                    Status = status
                 }
             ];
         }
@@ -79,7 +82,7 @@ public class MangaUpdates : IMetadataExtension
                     Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
                     Genres = listResult.Genres?.Select(g => g.Genre!).ToArray() ?? [],
                     Url = listResult.Url,
-                    Cover = cover
+                    Cover = cover,
                 });
         }
 

@@ -11,6 +11,10 @@ export type {
     GetMangasByMangaIdCoverResponses,
     GetMangasByMangaIdData,
     GetMangasByMangaIdErrors,
+    GetMangasByMangaIdMetadataData,
+    GetMangasByMangaIdMetadataErrors,
+    GetMangasByMangaIdMetadataResponse,
+    GetMangasByMangaIdMetadataResponses,
     GetMangasByMangaIdResponse,
     GetMangasByMangaIdResponses,
     GetMangasData,
@@ -36,5 +40,6 @@ export type {
     PostMangasSearchErrors,
     PostMangasSearchResponse,
     PostMangasSearchResponses,
+    ReleaseStatus,
     SearchQuery,
 } from './types.gen';

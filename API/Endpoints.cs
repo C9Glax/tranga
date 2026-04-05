@@ -38,6 +38,9 @@ internal static class Endpoints
 
         builder.MapPatch("{mangaId}/useMetadata", PatchMangaMetadataEntryEndpoint.Handle)
             .WithTags("Metadata");
+        
+        builder.MapGet("{mangaId}/metadata", GetMangaMetadataSourcesEndpoint.Handle)
+            .WithTags("Info", "Metadata");
     }
 
     private static void MapMetadataEndpoints(this RouteGroupBuilder builder)

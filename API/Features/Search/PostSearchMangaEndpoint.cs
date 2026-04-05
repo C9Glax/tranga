@@ -56,6 +56,7 @@ public abstract class PostSearchMangaEndpoint
             Summary = searchResult.Summary,
             Year = searchResult.Year,
             Url = searchResult.Url,
+            Status = searchResult.Status,
             MangaMetadataSources = []
         };
         

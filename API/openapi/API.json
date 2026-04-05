@@ -163,6 +163,43 @@
         }
       }
     },
+    "/mangas/{mangaId}/metadata": {
+      "get": {
+        "tags": [
+          "Info",
+          "Metadata"
+        ],
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MangaMetadata"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/metadata": {
       "get": {
         "tags": [
@@ -383,6 +420,16 @@
               "null",
               "string"
             ]
+          },
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ReleaseStatus"
+              }
+            ]
           }
         }
       },
@@ -492,6 +539,16 @@
               "null",
               "string"
             ]
+          },
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ReleaseStatus"
+              }
+            ]
           }
         }
       },
@@ -506,6 +563,15 @@
             "format": "uuid"
           }
         }
+      },
+      "ReleaseStatus": {
+        "enum": [
+          "Ongoing",
+          "Complete",
+          "Hiatus",
+          "Cancelled",
+          null
+        ]
       },
       "SearchQuery": {
         "type": "object",

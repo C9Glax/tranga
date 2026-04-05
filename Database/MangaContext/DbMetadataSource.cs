@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Common.Datatypes;
 
 namespace Database.MangaContext;
 
@@ -22,6 +23,8 @@ public sealed record DbMetadataSource
     public string? Language { get; set; }
     
     public int? ChaptersNumber { get; set; }
+    
+    public ReleaseStatus? Status { get; init; }
     
     public Guid? CoverId { get; set; }
     

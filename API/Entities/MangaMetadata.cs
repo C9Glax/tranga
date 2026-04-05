@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Common.Datatypes;
 
 namespace API.Entities;
 
@@ -34,4 +35,6 @@ public record MangaMetadata
     public string[] Artists { get; init; }
     
     public required string? Url { get; init; }
+    
+    public ReleaseStatus? Status { get; init; }
 }
