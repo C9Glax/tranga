@@ -41,7 +41,10 @@ public abstract class PostSearchMangaEndpoint
 
     private static async Task<DbMetadataSource> CreateMetadata(MangaContext mangaContext, SearchResult searchResult, CancellationToken ct)
     {
-        DbManga manga = new ();
+        DbManga manga = new ()
+        {
+            Monitored = false
+        };
         await mangaContext.AddAsync(manga, ct);
         
         DbMetadataSource source = new()

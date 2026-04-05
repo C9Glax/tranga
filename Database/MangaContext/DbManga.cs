@@ -6,6 +6,8 @@ public sealed record DbManga
 {
     public Guid MangaId { get; internal set; }
 
+    public required bool Monitored { get; set; } = false;
+
     #region Navigations
     
     public ICollection<DbChapter>? Chapters { get; internal set; }

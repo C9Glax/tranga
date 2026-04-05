@@ -35,4 +35,6 @@ public sealed record MangaMetadata : Manga
     public required string Identifier { get; init; }
     
     public required string? Url { get; init; }
+    
+    public bool? Monitored { get; init; }
 }

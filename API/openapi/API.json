@@ -10,6 +10,15 @@
         "tags": [
           "Info"
         ],
+        "parameters": [
+          {
+            "name": "includeUnmonitored",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -198,6 +207,12 @@
             "type": [
               "null",
               "string"
+            ]
+          },
+          "monitored": {
+            "type": [
+              "null",
+              "boolean"
             ]
           },
           "mangaId": {

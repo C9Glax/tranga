@@ -16,6 +16,7 @@ internal static class MangaDTOHelper
         CoverId = metadata.CoverId,
         MetadataExtensionId = metadata.MetadataExtension,
         Identifier = metadata.Identifier,
-        Url = metadata.Url
+        Url = metadata.Url,
+        Monitored = metadata.Manga?.Monitored
     };
 }

@@ -1,18 +1,26 @@
 using API.Helpers;
 using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Features.Manga;
 
 public abstract class GetMangaListEndpoint
 {
-    public static async Task<Results<Ok<Entities.MangaMetadata[]>, InternalServerError>> Handle(MangaContext mangaContext, CancellationToken ct)
+    public static async Task<Results<Ok<Entities.MangaMetadata[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromQuery] bool? includeUnmonitored, CancellationToken ct)
     {
-        if (await mangaContext.MetadataSources.OrderBy(s => s.Priority).GroupBy(s => s.MangaId).Select(g => g.First()).ToListAsync(ct) is not { } metadataSources)
+        IQueryable<DbManga> query = includeUnmonitored switch
+        {
+            true => mangaContext.Mangas,
+            _ => mangaContext.Mangas.Where(m => m.Monitored == true)
+        };
+        if(await query.Include(m => m.MetadataSources).Select(m => m.MetadataSources!.OrderBy(s => s.Priority).FirstOrDefault()).ToListAsync(ct) is not { } metadataSources)
             return TypedResults.InternalServerError();
 
-        Entities.MangaMetadata[] result = metadataSources.Select(m => m.ToDTO()).ToArray();
+        metadataSources = metadataSources.Where(m => m is not null).ToList();
+
+        Entities.MangaMetadata[] result = metadataSources.Select(m => m!.ToDTO()).ToArray();
         return TypedResults.Ok(result);
     }
 }
