@@ -6,5 +6,5 @@ public sealed record Manga
     
     public required bool Monitored { get; init; }
     
-    public MangaMetadata? MetadataEntry { get; init; }
+    public Metadata? MetadataEntry { get; init; }
 }

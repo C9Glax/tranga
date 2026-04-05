@@ -22,7 +22,7 @@ internal static class MangaDTOHelper
         MetadataEntry = manga.MetadataSources?.FirstOrDefault(m => m.Chosen == true)?.MetadataSource?.ToDTO()
     };
     
-    public static MangaMetadata ToDTO(this DbMetadataSource metadata) => new()
+    public static Metadata ToDTO(this DbMetadataSource metadata) => new()
     {
         MetadataId = metadata.MetadataId,
         Series = metadata.Series,

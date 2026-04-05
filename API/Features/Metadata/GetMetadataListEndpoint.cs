@@ -7,7 +7,7 @@ namespace API.Features.Metadata;
 
 public class GetMetadataListEndpoint
 {
-    public static async Task<Results<Ok<MetadataManga[]>, InternalServerError>> Handle(MangaContext mangaContext, CancellationToken ct)
+    public static async Task<Results<Ok<MetadataMangaIds[]>, InternalServerError>> Handle(MangaContext mangaContext, CancellationToken ct)
     {
         if (await mangaContext.MangaMetadataSources
                 .GroupBy(s => s.MetadataSource)
@@ -21,7 +21,7 @@ public class GetMetadataListEndpoint
             return TypedResults.InternalServerError();
         }
 
-        MetadataManga[] result = metadata.Select(s => new MetadataManga ()
+        MetadataMangaIds[] result = metadata.Select(s => new MetadataMangaIds ()
         {
             MetadataId = s.Metadata.MetadataId,
             Series = s.Metadata.Series,

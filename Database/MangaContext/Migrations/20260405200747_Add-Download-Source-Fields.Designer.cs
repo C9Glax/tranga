@@ -3,6 +3,7 @@ using System;
 using Database.MangaContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.MangaContext.Migrations
 {
     [DbContext(typeof(MangaContext))]
-    partial class MangaContextModelSnapshot : ModelSnapshot
+    [Migration("20260405200747_Add-Download-Source-Fields")]
+    partial class AddDownloadSourceFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,50 +86,12 @@ namespace Database.MangaContext.Migrations
                     b.ToTable("ChapterDownloadSources");
                 });
 
-            modelBuilder.Entity("Database.MangaContext.DbDownloadSource", b =>
-                {
-                    b.Property<Guid>("DownloadId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CoverId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DownloadExtension")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Identifier")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Language")
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
-
-                    b.Property<string>("Series")
-                        .IsRequired()
-                        .HasMaxLength(1024)
-                        .HasColumnType("character varying(1024)");
-
-                    b.Property<string>("Summary")
-                        .HasMaxLength(4096)
-                        .HasColumnType("character varying(4096)");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("text");
-
-                    b.HasKey("DownloadId");
-
-                    b.HasIndex("CoverId")
-                        .IsUnique();
-
-                    b.ToTable("DownloadSources");
-                });
-
             modelBuilder.Entity("Database.MangaContext.DbFile", b =>
                 {
                     b.Property<Guid>("FileId")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("DbMangaDownloadSourceCoverId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("MimeType")
@@ -142,6 +107,9 @@ namespace Database.MangaContext.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("FileId");
+
+                    b.HasIndex("DbMangaDownloadSourceCoverId")
+                        .IsUnique();
 
                     b.HasIndex(new[] { "Path", "Name" }, "IX_File_Path_Name");
 
@@ -208,18 +176,36 @@ namespace Database.MangaContext.Migrations
                     b.Property<Guid>("MangaId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("DownloadSourceId")
+                    b.Property<Guid>("DownloadExtension")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("Matched")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("CoverId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Language")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 
-                    b.HasKey("MangaId", "DownloadSourceId");
+                    b.Property<string>("Series")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
 
-                    b.HasIndex("DownloadSourceId");
+                    b.Property<string>("Summary")
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("text");
+
+                    b.HasKey("MangaId", "DownloadExtension");
 
                     b.ToTable("MangaDownloadSources");
                 });
@@ -266,7 +252,7 @@ namespace Database.MangaContext.Migrations
                     b.Property<int?>("ChaptersNumber")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("CoverId")
+                    b.Property<Guid>("CoverId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Identifier")
@@ -299,9 +285,6 @@ namespace Database.MangaContext.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("MetadataId");
-
-                    b.HasIndex("CoverId")
-                        .IsUnique();
 
                     b.HasIndex(new[] { "MetadataExtension", "Identifier" }, "IX_Metadata_Extension_Identifier");
 
@@ -347,13 +330,19 @@ namespace Database.MangaContext.Migrations
                     b.Navigation("File");
                 });
 
-            modelBuilder.Entity("Database.MangaContext.DbDownloadSource", b =>
+            modelBuilder.Entity("Database.MangaContext.DbFile", b =>
                 {
-                    b.HasOne("Database.MangaContext.DbFile", "Cover")
-                        .WithOne()
-                        .HasForeignKey("Database.MangaContext.DbDownloadSource", "CoverId");
+                    b.HasOne("Database.MangaContext.DbMangaDownloadSource", null)
+                        .WithOne("Cover")
+                        .HasForeignKey("Database.MangaContext.DbFile", "DbMangaDownloadSourceCoverId")
+                        .HasPrincipalKey("Database.MangaContext.DbMangaDownloadSource", "CoverId");
 
-                    b.Navigation("Cover");
+                    b.HasOne("Database.MangaContext.DbMetadataSource", null)
+                        .WithOne("Cover")
+                        .HasForeignKey("Database.MangaContext.DbFile", "FileId")
+                        .HasPrincipalKey("Database.MangaContext.DbMetadataSource", "CoverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Database.MangaContext.DbMangaArtists", b =>
@@ -396,19 +385,11 @@ namespace Database.MangaContext.Migrations
 
             modelBuilder.Entity("Database.MangaContext.DbMangaDownloadSource", b =>
                 {
-                    b.HasOne("Database.MangaContext.DbDownloadSource", "DownloadSource")
-                        .WithMany("MangaDownloadSources")
-                        .HasForeignKey("DownloadSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Database.MangaContext.DbManga", "Manga")
                         .WithMany("DownloadSources")
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("DownloadSource");
 
                     b.Navigation("Manga");
                 });
@@ -451,23 +432,9 @@ namespace Database.MangaContext.Migrations
                     b.Navigation("MetadataSource");
                 });
 
-            modelBuilder.Entity("Database.MangaContext.DbMetadataSource", b =>
-                {
-                    b.HasOne("Database.MangaContext.DbFile", "Cover")
-                        .WithOne()
-                        .HasForeignKey("Database.MangaContext.DbMetadataSource", "CoverId");
-
-                    b.Navigation("Cover");
-                });
-
             modelBuilder.Entity("Database.MangaContext.DbChapter", b =>
                 {
                     b.Navigation("DownloadSources");
-                });
-
-            modelBuilder.Entity("Database.MangaContext.DbDownloadSource", b =>
-                {
-                    b.Navigation("MangaDownloadSources");
                 });
 
             modelBuilder.Entity("Database.MangaContext.DbManga", b =>
@@ -479,8 +446,15 @@ namespace Database.MangaContext.Migrations
                     b.Navigation("MetadataSources");
                 });
 
+            modelBuilder.Entity("Database.MangaContext.DbMangaDownloadSource", b =>
+                {
+                    b.Navigation("Cover");
+                });
+
             modelBuilder.Entity("Database.MangaContext.DbMetadataSource", b =>
                 {
+                    b.Navigation("Cover");
+
                     b.Navigation("MangaMetadataSources");
                 });
 #pragma warning restore 612, 618

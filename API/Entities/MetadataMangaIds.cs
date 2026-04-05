@@ -1,6 +1,6 @@
 namespace API.Entities;
 
-public sealed record MetadataManga : MangaMetadata
+public sealed record MetadataMangaIds : Metadata
 {
     public required Guid[] MangaIds { get; init; }
 }

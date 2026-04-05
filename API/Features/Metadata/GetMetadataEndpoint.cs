@@ -8,7 +8,7 @@ namespace API.Features.Metadata;
 
 public abstract class GetMetadataEndpoint
 {
-    public static async Task<Results<Ok<MetadataManga>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid metadataId, CancellationToken ct)
+    public static async Task<Results<Ok<MetadataMangaIds>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid metadataId, CancellationToken ct)
     {
         if (await mangaContext.MangaMetadataSources
                 .Where(s => s.MetadataSourceId == metadataId)
@@ -24,7 +24,7 @@ public abstract class GetMetadataEndpoint
             return TypedResults.NotFound();
         }
 
-        MetadataManga result = new  ()
+        MetadataMangaIds result = new  ()
         {
             MetadataId = queryResult.Metadata.MetadataId,
             Series = queryResult.Metadata.Series,

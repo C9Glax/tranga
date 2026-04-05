@@ -1,10 +1,10 @@
-import type { PatchMangasByMangaIdUseMetadataResponses } from '~/api/trangaApi';
+import type { PatchMangasByMangaIdMetadataResponses } from '~/api/trangaApi';
 
 export const patchMangaMetadataSource = async (metadataId: string, mangaId: string) => {
     const { $tranga } = useNuxtApp();
     const toast = useToast();
     try {
-        await $tranga<PatchMangasByMangaIdUseMetadataResponses>(`/mangas/${mangaId}/useMetadata`, {
+        await $tranga<PatchMangasByMangaIdMetadataResponses>(`/mangas/${mangaId}/metadata`, {
             method: 'patch',
             body: { metadataId: metadataId },
         });

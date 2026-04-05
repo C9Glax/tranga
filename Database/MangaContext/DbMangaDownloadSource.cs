@@ -2,19 +2,19 @@ namespace Database.MangaContext;
 
 public sealed record DbMangaDownloadSource
 {
-    public required Guid MangaId { get; init; }
+    public Guid MangaId { get; init; }
     
-    public required Guid DownloadExtension { get; init; }
+    public Guid DownloadSourceId { get; init; }
     
-    public required string Identifier { get; init; }
+    public required bool Matched { get; set; }
     
     public required int Priority { get; set; }
 
-    public string? Url { get; set; }
-
     #region Navigations
 
-    public DbManga? Manga { get; internal set; }
+    public required DbManga Manga { get; init; }
+    
+    public required DbDownloadSource DownloadSource { get; init; }
 
     #endregion
 }

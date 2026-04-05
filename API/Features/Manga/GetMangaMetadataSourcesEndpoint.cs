@@ -9,12 +9,12 @@ namespace API.Features.Manga;
 
 public abstract class GetMangaMetadataSourcesEndpoint
 {
-    public static async Task<Results<Ok<MangaMetadata[]>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, CancellationToken ct)
+    public static async Task<Results<Ok<Entities.Metadata[]>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, CancellationToken ct)
     {
         if (await mangaContext.MangaMetadataSources.Where(s => s.MangaId == mangaId).ToListAsync(ct) is not { } sources)
             return TypedResults.NotFound();
 
-        MangaMetadata[] result = sources.Select(s => s.ToDTO()).Select(d => d.MetadataEntry!).ToArray();
+        Entities.Metadata[] result = sources.Select(s => s.ToDTO()).Select(d => d.MetadataEntry!).ToArray();
         return TypedResults.Ok(result);
     }
 }

@@ -3,7 +3,7 @@ using Common.Datatypes;
 
 namespace API.Entities;
 
-public record MangaMetadata
+public record Metadata
 {
     public required Guid MetadataId { get; init; }
     

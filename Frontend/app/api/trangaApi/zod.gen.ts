@@ -6,6 +6,44 @@ export const zContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornogra
 
 export type ContentRatingZodType = z.infer<typeof zContentRating>;
 
+export const zDownloadLink = z.object({
+    mangaId: z.uuid(),
+    downloadExtensionId: z.uuid(),
+    identifier: z.string(),
+    matched: z.boolean(),
+    priority: z.union([
+        z
+            .int()
+            .check(
+                z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+            ),
+        z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+    ]),
+    series: z.string().check(z.minLength(0), z.maxLength(1024)),
+    summary: z.nullable(z.string().check(z.minLength(0), z.maxLength(4096))),
+    language: z.nullish(z.string().check(z.minLength(0), z.maxLength(8))),
+    url: z.nullable(z.string()),
+    coverId: z.nullable(z.uuid()),
+});
+
+export type DownloadLinkZodType = z.infer<typeof zDownloadLink>;
+
+export const zPatchMangaDownloadSourceMatchedRequest = z.object({
+    matched: z.boolean(),
+    priority: z.union([
+        z
+            .int()
+            .check(
+                z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+            ),
+        z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+    ]),
+});
+
+export type PatchMangaDownloadSourceMatchedRequestZodType = z.infer<typeof zPatchMangaDownloadSourceMatchedRequest>;
+
 export const zPatchMangaMetadataEntryRequest = z.object({ metadataId: z.uuid() });
 
 export type PatchMangaMetadataEntryRequestZodType = z.infer<typeof zPatchMangaMetadataEntryRequest>;
@@ -14,7 +52,7 @@ export const zReleaseStatus = z.enum(['Ongoing', 'Complete', 'Hiatus', 'Cancelle
 
 export type ReleaseStatusZodType = z.infer<typeof zReleaseStatus>;
 
-export const zMangaMetadata = z.object({
+export const zMetadata = z.object({
     metadataId: z.uuid(),
     metadataExtensionId: z.uuid(),
     identifier: z.string(),
@@ -52,13 +90,13 @@ export const zMangaMetadata = z.object({
     status: z.nullish(zReleaseStatus),
 });
 
-export type MangaMetadataZodType = z.infer<typeof zMangaMetadata>;
+export type MetadataZodType = z.infer<typeof zMetadata>;
 
-export const zManga = z.object({ mangaId: z.uuid(), monitored: z.boolean(), metadataEntry: z.nullish(zMangaMetadata) });
+export const zManga = z.object({ mangaId: z.uuid(), monitored: z.boolean(), metadataEntry: z.nullish(zMetadata) });
 
 export type MangaZodType = z.infer<typeof zManga>;
 
-export const zMetadataManga = z.object({
+export const zMetadataMangaIds = z.object({
     mangaIds: z.array(z.uuid()),
     metadataId: z.uuid(),
     metadataExtensionId: z.uuid(),
@@ -97,7 +135,7 @@ export const zMetadataManga = z.object({
     status: z.nullish(zReleaseStatus),
 });
 
-export type MetadataMangaZodType = z.infer<typeof zMetadataManga>;
+export type MetadataMangaIdsZodType = z.infer<typeof zMetadataMangaIds>;
 
 /**
  * The query to use when searching for a Manga

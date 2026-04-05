@@ -1,3 +1,4 @@
+using API.Features.DownloadSource;
 using API.Features.File;
 using API.Features.Manga;
 using API.Features.Metadata;
@@ -20,6 +21,10 @@ internal static class Endpoints
         builder.MapGroup("/files")
             .WithTags("Files")
             .MapFileEndpoints();
+        
+        builder.MapGroup("/downloadLinks")
+            .WithTags("Download")
+            .MapDownloadEndpoints();
     }
 
     private static void MapMangaEndpoints(this RouteGroupBuilder builder)
@@ -35,12 +40,21 @@ internal static class Endpoints
         
         builder.MapPost("/search", PostSearchMangaEndpoint.Handle)
             .WithTags("Search");
+        
+        builder.MapGet("{mangaId}/match", PostSearchMangaDownloadSourceEndpoint.Handle)
+            .WithTags("Search", "Download");
 
-        builder.MapPatch("{mangaId}/useMetadata", PatchMangaMetadataEntryEndpoint.Handle)
+        builder.MapPatch("{mangaId}/metadata", PatchMangaMetadataEntryEndpoint.Handle)
             .WithTags("Metadata");
         
         builder.MapGet("{mangaId}/metadata", GetMangaMetadataSourcesEndpoint.Handle)
             .WithTags("Info", "Metadata");
+        
+        builder.MapPatch("{mangaId}/downloadLink/{downloadId}", PatchMangaDownloadSourceMatchedEndpoint.Handle)
+            .WithTags("Download");
+        
+        builder.MapGet("{mangaId}/downloadLinks", GetMangaDownloadSourcesEndpoint.Handle)
+            .WithTags("Info", "Download");
     }
 
     private static void MapMetadataEndpoints(this RouteGroupBuilder builder)
@@ -53,5 +67,10 @@ internal static class Endpoints
     private static void MapFileEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet("{fileId}", GetFileEndpoint.Handle);
+    }
+
+    private static void MapDownloadEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet(string.Empty, GetDownloadSourceListEndpoint.Handle);
     }
 }

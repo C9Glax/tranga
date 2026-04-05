@@ -14,7 +14,7 @@ namespace API.Features.Search;
 public abstract class PostSearchMangaEndpoint
 {
 
-    public static async Task<Results<Ok<Entities.MangaMetadata[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
+    public static async Task<Results<Ok<Entities.Metadata[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]SearchQuery query, CancellationToken ct)
     {
         List<SearchResult> searchResults = MetadataExtensionsCollection.SearchAll(query, ct);
 
@@ -36,7 +36,7 @@ public abstract class PostSearchMangaEndpoint
             }else db.Add(existing);
         }
                 
-        Entities.MangaMetadata[] results = db.Select(e => e.ToDTO()).ToArray();
+        Entities.Metadata[] results = db.Select(e => e.ToDTO()).ToArray();
         return TypedResults.Ok(results);
     }
 
