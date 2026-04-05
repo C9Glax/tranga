@@ -16,7 +16,8 @@ public abstract class GetMetadataEndpoint
                 .Select(s => new
                 {
                     Metadata = s.Key,
-                    MangaIds = s.Select(ms => ms.MangaId)
+                    MangaIds = s.Select(ms => ms.MangaId),
+                    Chosen = s.Any(ms => ms.Chosen)
                 })
                 .FirstOrDefaultAsync(ct) is not { } queryResult)
         {
@@ -35,6 +36,7 @@ public abstract class GetMetadataEndpoint
             MetadataExtensionId = queryResult.Metadata.MetadataExtension,
             Identifier = queryResult.Metadata.Identifier,
             Url = queryResult.Metadata.Url,
+            Chosen = queryResult.Chosen,
             MangaIds = queryResult.MangaIds.ToArray()
         };
         return TypedResults.Ok(result);
