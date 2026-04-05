@@ -9,7 +9,7 @@
             :class="['relative overflow-clip', widthHeight]"
             :ui="{ container: 'p-0 sm:p-0' }"
             @click="useOverlay().closeAll()">
-            <p class="z-10 absolute text-xl mx-2 my-3 font-bold text-shadow-sm">{{ manga.title }}</p>
+            <p class="z-10 absolute text-xl mx-2 my-3 font-bold text-shadow-sm">{{ manga.series }}</p>
             <MangaCover :mangaId="manga.mangaId" class="z-0 absolute" />
         </UPageCard>
 
@@ -22,9 +22,9 @@
 
 <script setup lang="ts">
 import { MangaCover } from '#components';
-import type { MangaDto } from '~/api/trangaApi';
+import type { MangaMetadata } from '~/api/trangaApi';
 
 const widthHeight = 'w-60 h-90';
 
-defineProps<{ loading?: boolean; mangas?: MangaDto[] }>();
+defineProps<{ loading?: boolean; mangas?: MangaMetadata[] }>();
 </script>

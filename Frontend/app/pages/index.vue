@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { MangaList } from '#components';
-import type { GetMangaResponse } from '~/api/trangaApi';
+import type { GetMangasResponse } from '~/api/trangaApi';
 
 const includeUnmonitored = useState<boolean>(() => false);
 
@@ -21,7 +21,7 @@ const {
     data: mangaList,
     status,
     refresh,
-} = await useTranga<GetMangaResponse>('/manga', {
+} = await useTranga<GetMangasResponse>('/mangas', {
     query: { includeUnmonitored: includeUnmonitored },
     key: ApiKeys.MangaList(includeUnmonitored.value),
 });

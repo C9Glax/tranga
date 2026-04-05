@@ -2,96 +2,86 @@
 
 import * as z from 'zod/mini';
 
-/**
- * The Chapter DTO
- */
-export const zChapterDto = z.object({
-    chapterId: z.uuid(),
-    downloadLinkId: z.uuid(),
-    downloadExtensionId: z.uuid(),
-    identifier: z.string(),
-    volume: z.nullish(z.string()),
-    chapter: z.string(),
-    url: z.nullish(z.string()),
-    download: z.boolean(),
-    fileId: z.nullish(z.uuid()),
-});
-
-export type ChapterDtoZodType = z.infer<typeof zChapterDto>;
-
 export const zContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornographic']);
 
 export type ContentRatingZodType = z.infer<typeof zContentRating>;
 
-export const zDemographic = z.enum([
-    'Josei',
-    'Lolicon',
-    'Seinen',
-    'Shotacon',
-    'Shoujo',
-    'ShoujoAi',
-    'Shounen',
-    'ShounenAi',
-    'Yaoi',
-    'Yuri',
-]);
-
-export type DemographicZodType = z.infer<typeof zDemographic>;
-
-/**
- * A Download-Extension
- */
-export const zDownloadExtensionDto = z.object({ extensionIdentifier: z.uuid(), name: z.string(), url: z.string() });
-
-export type DownloadExtensionDtoZodType = z.infer<typeof zDownloadExtensionDto>;
-
-/**
- * DownloadExtension Link Entry
- */
-export const zDownloadLinkDto = z.object({
+export const zMangaMetadata = z.object({
+    metadataExtensionId: z.uuid(),
+    identifier: z.string(),
+    url: z.nullable(z.string()),
+    monitored: z.nullish(z.boolean()),
     mangaId: z.uuid(),
-    downloadLinkId: z.uuid(),
+    series: z.string().check(z.minLength(0), z.maxLength(1024)),
+    summary: z.nullable(z.string().check(z.minLength(0), z.maxLength(4096))),
+    year: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ])
+    ),
+    language: z.nullish(z.string().check(z.minLength(0), z.maxLength(8))),
+    chaptersNumber: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ])
+    ),
+    coverId: z.nullable(z.uuid()),
+    genres: z.optional(z.array(z.string())),
+    authors: z.optional(z.array(z.string())),
+    artists: z.optional(z.array(z.string())),
+});
+
+export type MangaMetadataZodType = z.infer<typeof zMangaMetadata>;
+
+export const zMatchResult = z.object({
     downloadExtensionId: z.uuid(),
-    coverFileId: z.nullish(z.uuid()),
-    title: z.nullish(z.string()),
-    description: z.nullish(z.string()),
-    url: z.nullish(z.string()),
-    matched: z.optional(z.boolean()),
-});
-
-export type DownloadLinkDtoZodType = z.infer<typeof zDownloadLinkDto>;
-
-/**
- * Additional information to include in the response
- */
-export const zIncludes = z.enum(['DownloadLinks', 'MetadataLinks']);
-
-export type IncludesZodType = z.infer<typeof zIncludes>;
-
-/**
- * A Search Result
- */
-export const zMangaSearchResultDto = z.object({
+    identifier: z.string(),
+    url: z.nullable(z.string()),
     mangaId: z.uuid(),
-    metadataId: z.uuid(),
-    coverFileId: z.nullish(z.uuid()),
-    title: z.string(),
-    description: z.nullable(z.string()),
-    url: z.nullish(z.string()),
+    series: z.string().check(z.minLength(0), z.maxLength(1024)),
+    summary: z.nullable(z.string().check(z.minLength(0), z.maxLength(4096))),
+    year: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ])
+    ),
+    language: z.nullish(z.string().check(z.minLength(0), z.maxLength(8))),
+    chaptersNumber: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ])
+    ),
+    coverId: z.nullable(z.uuid()),
+    genres: z.optional(z.array(z.string())),
+    authors: z.optional(z.array(z.string())),
+    artists: z.optional(z.array(z.string())),
 });
 
-export type MangaSearchResultDtoZodType = z.infer<typeof zMangaSearchResultDto>;
-
-/**
- * A Metadata-Extension
- */
-export const zMetadataExtensionDto = z.object({ extensionIdentifier: z.uuid(), name: z.string(), url: z.string() });
-
-export type MetadataExtensionDtoZodType = z.infer<typeof zMetadataExtensionDto>;
-
-export const zRating = z.enum(['SFW', 'NSFW']);
-
-export type RatingZodType = z.infer<typeof zRating>;
+export type MatchResultZodType = z.infer<typeof zMatchResult>;
 
 /**
  * The query to use when searching for a Manga
@@ -133,49 +123,3 @@ export const zSearchQuery = z.object({
 });
 
 export type SearchQueryZodType = z.infer<typeof zSearchQuery>;
-
-export const zStatus = z.enum(['Releasing', 'Finished', 'Hiatus', 'Cancelled', 'Pending']);
-
-export type StatusZodType = z.infer<typeof zStatus>;
-
-/**
- * MetadataExtension Link Entry
- */
-export const zMetadataLinkDto = z.object({
-    mangaId: z.uuid(),
-    metadataLinkId: z.uuid(),
-    metadataExtensionId: z.uuid(),
-    coverFileId: z.nullish(z.uuid()),
-    status: zStatus,
-    ageRating: z.nullish(zRating),
-    demographic: z.nullish(zDemographic),
-    url: z.nullish(z.string()),
-    description: z.nullish(z.string()),
-    year: z.nullish(
-        z.union([
-            z
-                .int()
-                .check(
-                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
-                ),
-            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
-        ])
-    ),
-    language: z.nullish(z.string()),
-});
-
-export type MetadataLinkDtoZodType = z.infer<typeof zMetadataLinkDto>;
-
-/**
- * Manga Info
- */
-export const zMangaDto = z.object({
-    mangaId: z.uuid(),
-    title: z.string(),
-    monitored: z.boolean(),
-    metadataLinks: z.nullish(z.array(zMetadataLinkDto)),
-    downloadLinks: z.nullish(z.array(zDownloadLinkDto)),
-});
-
-export type MangaDtoZodType = z.infer<typeof zMangaDto>;

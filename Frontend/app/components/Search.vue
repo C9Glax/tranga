@@ -15,25 +15,29 @@
                         <UIcon class="size-7" name="i-lucide-arrow-right" @click="search" />
                     </template>
                 </UInput>
-                <MangaMatchList v-if="searchResult || loading" :mangas="searchResult" :loading="loading" />
+                <MangaList v-if="searchResult || loading" :mangas="searchResult" :loading="loading" />
             </div>
         </template>
     </UModal>
 </template>
 
 <script setup lang="ts">
-import type { MangaSearchResultDto, PostMangaSearchResponse, PostMangaSearchErrors } from '~/api/trangaApi';
+import type { MangaMetadata, PostMangasSearchResponse } from '~/api/trangaApi';
 
 const searchTerm = ref<string>();
-const searchResult = ref<MangaSearchResultDto[]>();
+const searchResult = ref<MangaMetadata[]>();
 
 const loading = ref<boolean>(false);
+
+const toast = useToast();
 
 const search = async () => {
     try {
         loading.value = true;
-        const { data } = await useTranga<PostMangaSearchResponse>('/manga/search', { body: { title: searchTerm.value }, method: 'POST' });
+        const { data } = await useTranga<PostMangasSearchResponse>('/mangas/search', { body: { title: searchTerm.value }, method: 'POST' });
         searchResult.value = data.value;
+    } catch {
+        toast.add({ title: 'Failed to search manga!', color: 'error' });
     } finally {
         loading.value = false;
     }
