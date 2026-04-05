@@ -4,12 +4,13 @@ export type ClientOptions = { baseUrl: `${string}://${string}` | (string & {}) }
 
 export type ContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 
+export type Manga = { mangaId: string; monitored: boolean; metadataEntry?: null | MangaMetadata };
+
 export type MangaMetadata = {
+    metadataId: string;
     metadataExtensionId: string;
     identifier: string;
-    url: null | string;
-    monitored?: null | boolean;
-    mangaId: string;
+    chosen?: null | boolean;
     series: string;
     summary: null | string;
     year?: null | number | string;
@@ -19,13 +20,15 @@ export type MangaMetadata = {
     genres?: Array<string>;
     authors?: Array<string>;
     artists?: Array<string>;
+    url: null | string;
 };
 
-export type MatchResult = {
-    downloadExtensionId: string;
+export type MetadataManga = {
+    mangaIds: Array<string>;
+    metadataId: string;
+    metadataExtensionId: string;
     identifier: string;
-    url: null | string;
-    mangaId: string;
+    chosen?: null | boolean;
     series: string;
     summary: null | string;
     year?: null | number | string;
@@ -35,7 +38,10 @@ export type MatchResult = {
     genres?: Array<string>;
     authors?: Array<string>;
     artists?: Array<string>;
+    url: null | string;
 };
+
+export type PatchMangaMetadataEntryRequest = { metadataId: string };
 
 /**
  * The query to use when searching for a Manga
@@ -69,7 +75,7 @@ export type SearchQuery = {
     mangaUpdatesSeriesId?: null | number | string;
 };
 
-export type GetMangasData = { body?: never; path?: never; query?: { includeUnmonitored?: boolean }; url: '/mangas' };
+export type GetMangasData = { body?: never; path?: never; query?: never; url: '/mangas' };
 
 export type GetMangasErrors = {
     /**
@@ -82,7 +88,7 @@ export type GetMangasResponses = {
     /**
      * OK
      */
-    200: Array<MangaMetadata>;
+    200: Array<Manga>;
 };
 
 export type GetMangasResponse = GetMangasResponses[keyof GetMangasResponses];
@@ -100,7 +106,7 @@ export type GetMangasByMangaIdResponses = {
     /**
      * OK
      */
-    200: MangaMetadata;
+    200: Manga;
 };
 
 export type GetMangasByMangaIdResponse = GetMangasByMangaIdResponses[keyof GetMangasByMangaIdResponses];
@@ -145,20 +151,72 @@ export type PostMangasSearchResponses = {
 
 export type PostMangasSearchResponse = PostMangasSearchResponses[keyof PostMangasSearchResponses];
 
-export type PostMangasByMangaIdMatchData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/match' };
+export type PatchMangasByMangaIdUseMetadataData = {
+    body: PatchMangaMetadataEntryRequest;
+    path: { mangaId: string };
+    query?: never;
+    url: '/mangas/{mangaId}/useMetadata';
+};
 
-export type PostMangasByMangaIdMatchErrors = {
+export type PatchMangasByMangaIdUseMetadataErrors = {
     /**
      * Not Found
      */
     404: unknown;
 };
 
-export type PostMangasByMangaIdMatchResponses = {
+export type PatchMangasByMangaIdUseMetadataResponses = {
     /**
      * OK
      */
-    200: Array<MatchResult>;
+    200: unknown;
 };
 
-export type PostMangasByMangaIdMatchResponse = PostMangasByMangaIdMatchResponses[keyof PostMangasByMangaIdMatchResponses];
+export type GetMetadataData = { body?: never; path?: never; query?: never; url: '/metadata' };
+
+export type GetMetadataErrors = {
+    /**
+     * Internal Server Error
+     */
+    500: unknown;
+};
+
+export type GetMetadataResponses = {
+    /**
+     * OK
+     */
+    200: Array<MetadataManga>;
+};
+
+export type GetMetadataResponse = GetMetadataResponses[keyof GetMetadataResponses];
+
+export type GetMetadataByMetadataIdData = { body?: never; path: { metadataId: string }; query?: never; url: '/metadata/{metadataId}' };
+
+export type GetMetadataByMetadataIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type GetMetadataByMetadataIdResponses = {
+    /**
+     * OK
+     */
+    200: MetadataManga;
+};
+
+export type GetMetadataByMetadataIdResponse = GetMetadataByMetadataIdResponses[keyof GetMetadataByMetadataIdResponses];
+
+export type GetFilesByFileIdData = { body?: never; path: { fileId: string }; query?: never; url: '/files/{fileId}' };
+
+export type GetFilesByFileIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+    /**
+     * Internal Server Error
+     */
+    500: unknown;
+};

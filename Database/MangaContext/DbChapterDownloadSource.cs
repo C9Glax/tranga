@@ -1,6 +1,6 @@
 namespace Database.MangaContext;
 
-public sealed record DbChapterDownloadSources
+public sealed record DbChapterDownloadSource
 {
     public required Guid ChapterId { get; init; }
     

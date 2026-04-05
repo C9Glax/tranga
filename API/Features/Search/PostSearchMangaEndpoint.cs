@@ -22,8 +22,9 @@ public abstract class PostSearchMangaEndpoint
         
         foreach (SearchResult searchResult in searchResults)
         {
-
-            if (await mangaContext.MetadataSources.Where(s =>
+            if (await mangaContext.MetadataSources
+                    .Include(s => s.MangaMetadataSources)
+                    .Where(s =>
                         s.MetadataExtension == searchResult.MetadataExtensionIdentifier &&
                         s.Identifier == searchResult.Identifier || s.Series == searchResult.Series)
                     .FirstOrDefaultAsync(ct) is not { } existing)
@@ -43,25 +44,33 @@ public abstract class PostSearchMangaEndpoint
     {
         DbManga manga = new ()
         {
-            Monitored = false
+            Monitored = false,
+            MetadataSources = []
         };
-        await mangaContext.AddAsync(manga, ct);
         
         DbMetadataSource source = new()
         {
-            MangaId = manga.MangaId,
-            Priority = 0,
             MetadataExtension = searchResult.MetadataExtensionIdentifier,
             Identifier = searchResult.Identifier,
             Series = searchResult.Series,
             Summary = searchResult.Summary,
             Year = searchResult.Year,
-            Url = searchResult.Url
+            Url = searchResult.Url,
+            MangaMetadataSources = []
         };
         
         await SaveCover(mangaContext, searchResult, source, ct);
+
+        DbMangaMetadataSource mangaSource = new()
+        {
+            Manga = manga,
+            MetadataSource = source,
+            Chosen = false
+        };
+        source.MangaMetadataSources.Add(mangaSource);
+        manga.MetadataSources.Add(mangaSource);
         
-        await mangaContext.AddAsync(source, ct);
+        await mangaContext.AddAsync(mangaSource, ct);
 
         if (searchResult.Genres is { Length: > 0 } genres)
         {

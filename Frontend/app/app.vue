@@ -23,6 +23,7 @@
             </template>
         </UHeader>
         <NuxtLayout>
+            <UButton @click="$router.back()" icon="i-lucide-arrow-left" variant="soft" class="m-4">Back</UButton>
             <UContainer class="my-4">
                 <NuxtPage />
             </UContainer>

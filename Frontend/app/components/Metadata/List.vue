@@ -4,16 +4,16 @@
 
         <UPageCard
             v-if="!loading"
-            v-for="manga in mangas"
-            :to="`/manga/${manga.mangaId}`"
+            v-for="metadata in metadataList"
+            :to="`/metadata/${metadata.metadataId}`"
             :class="['relative overflow-clip', widthHeight]"
             :ui="{ container: 'p-0 sm:p-0' }"
             @click="useOverlay().closeAll()">
-            <p class="z-10 absolute text-xl mx-2 my-3 font-bold text-shadow-sm">{{ manga.metadataEntry?.series }}</p>
-            <MangaCover :file-id="manga.metadataEntry?.coverId" :manga-id="manga.mangaId" class="z-0 absolute" />
+            <p class="z-10 absolute text-xl mx-2 my-3 font-bold text-shadow-sm">{{ metadata?.series }}</p>
+            <MangaCover :file-id="metadata?.coverId" class="z-0 absolute" />
         </UPageCard>
 
-        <div v-if="(mangas?.length ?? 0) < 1 && !loading" class="w-max flex gap-2">
+        <div v-if="(metadataList?.length ?? 0) < 1 && !loading" class="w-max flex gap-2">
             <UIcon name="i-lucide-brackets" class="size-15" />
             <p class="text-6xl inline">No Items</p>
         </div>
@@ -22,9 +22,9 @@
 
 <script setup lang="ts">
 import { MangaCover } from '#components';
-import type { Manga } from '~/api/trangaApi';
+import type { MangaMetadata } from '~/api/trangaApi';
 
 const widthHeight = 'w-60 h-90';
 
-defineProps<{ loading?: boolean; mangas?: Manga[] }>();
+defineProps<{ loading?: boolean; metadataList?: MangaMetadata[] }>();
 </script>

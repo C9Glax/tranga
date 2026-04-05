@@ -4,17 +4,17 @@ namespace Database.MangaContext;
 
 public sealed record DbManga
 {
-    public Guid MangaId { get; internal set; }
+    public Guid MangaId { get; init; }
 
     public required bool Monitored { get; set; } = false;
 
     #region Navigations
     
-    public ICollection<DbChapter>? Chapters { get; internal set; }
+    public ICollection<DbChapter>? Chapters { get; init; }
+
+    public ICollection<DbMangaMetadataSource>? MetadataSources { get; init; }
     
-    public ICollection<DbMetadataSource>? MetadataSources { get; internal set; }
-    
-    public ICollection<DbMangaDownloadSources>? DownloadSources { get; internal set; }
+    public ICollection<DbMangaDownloadSource>? DownloadSources { get; init; }
 
     #endregion
 }

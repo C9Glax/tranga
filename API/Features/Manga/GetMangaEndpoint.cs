@@ -8,7 +8,7 @@ namespace API.Features.Manga;
 
 public class GetMangaEndpoint
 {
-    public static async Task<Results<Ok<Entities.MangaMetadata>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, CancellationToken ct)
+    public static async Task<Results<Ok<Entities.Manga>, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, CancellationToken ct)
     {
         if (await mangaContext.GetManga(mangaId, ct) is not { } manga)
             return TypedResults.NotFound();

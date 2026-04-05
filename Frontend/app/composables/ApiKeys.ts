@@ -1,4 +1,5 @@
 export default class ApiKeys {
-    static MangaList = (includeUnmonitored: boolean) => `MangaList/${includeUnmonitored}`;
+    static MangaList = 'MangaList';
     static Manga = (id: string) => `Mangas/${id}`;
+    static Metadata = (id: string) => `Metadata/${id}`;
 }

@@ -7,11 +7,10 @@ export const zContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornogra
 export type ContentRatingZodType = z.infer<typeof zContentRating>;
 
 export const zMangaMetadata = z.object({
+    metadataId: z.uuid(),
     metadataExtensionId: z.uuid(),
     identifier: z.string(),
-    url: z.nullable(z.string()),
-    monitored: z.nullish(z.boolean()),
-    mangaId: z.uuid(),
+    chosen: z.nullish(z.boolean()),
     series: z.string().check(z.minLength(0), z.maxLength(1024)),
     summary: z.nullable(z.string().check(z.minLength(0), z.maxLength(4096))),
     year: z.nullish(
@@ -41,15 +40,21 @@ export const zMangaMetadata = z.object({
     genres: z.optional(z.array(z.string())),
     authors: z.optional(z.array(z.string())),
     artists: z.optional(z.array(z.string())),
+    url: z.nullable(z.string()),
 });
 
 export type MangaMetadataZodType = z.infer<typeof zMangaMetadata>;
 
-export const zMatchResult = z.object({
-    downloadExtensionId: z.uuid(),
+export const zManga = z.object({ mangaId: z.uuid(), monitored: z.boolean(), metadataEntry: z.nullish(zMangaMetadata) });
+
+export type MangaZodType = z.infer<typeof zManga>;
+
+export const zMetadataManga = z.object({
+    mangaIds: z.array(z.uuid()),
+    metadataId: z.uuid(),
+    metadataExtensionId: z.uuid(),
     identifier: z.string(),
-    url: z.nullable(z.string()),
-    mangaId: z.uuid(),
+    chosen: z.nullish(z.boolean()),
     series: z.string().check(z.minLength(0), z.maxLength(1024)),
     summary: z.nullable(z.string().check(z.minLength(0), z.maxLength(4096))),
     year: z.nullish(
@@ -79,9 +84,14 @@ export const zMatchResult = z.object({
     genres: z.optional(z.array(z.string())),
     authors: z.optional(z.array(z.string())),
     artists: z.optional(z.array(z.string())),
+    url: z.nullable(z.string()),
 });
 
-export type MatchResultZodType = z.infer<typeof zMatchResult>;
+export type MetadataMangaZodType = z.infer<typeof zMetadataManga>;
+
+export const zPatchMangaMetadataEntryRequest = z.object({ metadataId: z.uuid() });
+
+export type PatchMangaMetadataEntryRequestZodType = z.infer<typeof zPatchMangaMetadataEntryRequest>;
 
 /**
  * The query to use when searching for a Manga

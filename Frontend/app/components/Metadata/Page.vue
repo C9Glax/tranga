@@ -3,15 +3,15 @@
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" reverse :ui="{ container: 'py-6 sm:py-8 lg:py-8' }">
             <template #title>
                 <p v-if="$props.title">{{ $props.title }}</p>
-                <p v-else-if="manga?.metadataEntry?.series">{{ manga?.metadataEntry?.series }}</p>
+                <p v-else-if="metadata?.series">{{ metadata?.series }}</p>
                 <USkeleton v-else class="h-lh" />
             </template>
 
             <template #description>
                 <p v-if="$props.title">{{ $props.title }}</p>
                 <UEditor
-                    v-else-if="manga?.metadataEntry"
-                    v-model="manga.metadataEntry.summary"
+                    v-else-if="metadata"
+                    v-model="metadata.summary"
                     content-type="markdown"
                     :editable="false"
                     :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
@@ -25,9 +25,9 @@
             <!-- Passes through the slots to -->
             <template v-for="(_, slotName) in $slots" #[slotName]="slotProps">
                 <slot v-if="slotName !== 'default'" :name="slotName as unknown" v-bind="slotProps" />
-                <MangaCover v-else :file-id="manga?.metadataEntry?.coverId" :mangaId="manga?.mangaId" noBlur />
+                <MangaCover v-else :file-id="metadata?.coverId" noBlur />
             </template>
-            <MangaCover :file-id="manga?.metadataEntry?.coverId" :mangaId="manga?.mangaId" noBlur />
+            <MangaCover :file-id="metadata?.coverId" noBlur />
         </UPageCTA>
 
         <UPageSection :ui="{ container: 'sm:py-8 lg:py-8' }">
@@ -40,11 +40,11 @@
 import { MangaCover, UPageCTA } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
-import type { Manga } from '~/api/trangaApi';
+import type { Manga, MangaMetadata } from '~/api/trangaApi';
 
 export interface MangaPageProps extends PageCTAProps {
-    manga?: Manga;
-    actions?: (manga?: Manga) => ButtonProps[] | undefined;
+    metadata?: MangaMetadata;
+    actions?: (metadata?: MangaMetadata) => ButtonProps[] | undefined;
 }
 
 const props = defineProps<MangaPageProps>();
@@ -52,7 +52,7 @@ const props = defineProps<MangaPageProps>();
 defineSlots<PageCTASlots>();
 
 const links = computed(() => {
-    if (props.actions) return props.actions(props.manga);
+    if (props.actions) return props.actions(props.metadata);
     else return undefined;
 });
 </script>

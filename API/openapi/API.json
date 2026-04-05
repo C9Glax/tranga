@@ -10,15 +10,6 @@
         "tags": [
           "Info"
         ],
-        "parameters": [
-          {
-            "name": "includeUnmonitored",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -27,7 +18,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/MangaMetadata"
+                    "$ref": "#/components/schemas/Manga"
                   }
                 }
               }
@@ -61,7 +52,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MangaMetadata"
+                  "$ref": "#/components/schemas/Manga"
                 }
               }
             }
@@ -136,14 +127,75 @@
         }
       }
     },
-    "/mangas/{mangaId}/match": {
-      "post": {
+    "/mangas/{mangaId}/useMetadata": {
+      "patch": {
         "tags": [
-          "Search"
+          "Metadata"
         ],
         "parameters": [
           {
             "name": "mangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchMangaMetadataEntryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/metadata": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataManga"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/metadata/{metadataId}": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "parameters": [
+          {
+            "name": "metadataId",
             "in": "path",
             "required": true,
             "schema": {
@@ -158,16 +210,39 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MatchResult"
-                  }
+                  "$ref": "#/components/schemas/MetadataManga"
                 }
               }
             }
           },
           "404": {
             "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/files/{fileId}": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -184,18 +259,48 @@
           null
         ]
       },
-      "MangaMetadata": {
+      "Manga": {
         "required": [
-          "metadataExtensionId",
-          "identifier",
-          "url",
           "mangaId",
-          "series",
-          "summary",
-          "coverId"
+          "monitored"
         ],
         "type": "object",
         "properties": {
+          "mangaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "monitored": {
+            "type": "boolean"
+          },
+          "metadataEntry": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/MangaMetadata"
+              }
+            ]
+          }
+        }
+      },
+      "MangaMetadata": {
+        "required": [
+          "metadataId",
+          "metadataExtensionId",
+          "identifier",
+          "series",
+          "summary",
+          "coverId",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "metadataId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "metadataExtensionId": {
             "type": "string",
             "format": "uuid"
@@ -203,21 +308,11 @@
           "identifier": {
             "type": "string"
           },
-          "url": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "monitored": {
+          "chosen": {
             "type": [
               "null",
               "boolean"
             ]
-          },
-          "mangaId": {
-            "type": "string",
-            "format": "uuid"
           },
           "series": {
             "maxLength": 1024,
@@ -282,37 +377,51 @@
             "items": {
               "type": "string"
             }
+          },
+          "url": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
-      "MatchResult": {
+      "MetadataManga": {
         "required": [
-          "downloadExtensionId",
+          "mangaIds",
+          "metadataId",
+          "metadataExtensionId",
           "identifier",
-          "url",
-          "mangaId",
           "series",
           "summary",
-          "coverId"
+          "coverId",
+          "url"
         ],
         "type": "object",
         "properties": {
-          "downloadExtensionId": {
+          "mangaIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "metadataId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "metadataExtensionId": {
             "type": "string",
             "format": "uuid"
           },
           "identifier": {
             "type": "string"
           },
-          "url": {
+          "chosen": {
             "type": [
               "null",
-              "string"
+              "boolean"
             ]
-          },
-          "mangaId": {
-            "type": "string",
-            "format": "uuid"
           },
           "series": {
             "maxLength": 1024,
@@ -377,6 +486,24 @@
             "items": {
               "type": "string"
             }
+          },
+          "url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "PatchMangaMetadataEntryRequest": {
+        "required": [
+          "metadataId"
+        ],
+        "type": "object",
+        "properties": {
+          "metadataId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
@@ -461,6 +588,12 @@
     },
     {
       "name": "Search"
+    },
+    {
+      "name": "Metadata"
+    },
+    {
+      "name": "Files"
     }
   ]
 }

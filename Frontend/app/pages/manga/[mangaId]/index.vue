@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMangasByMangaIdResponse, MangaMetadata } from '~/api/trangaApi';
+import type { GetMangasByMangaIdResponse, Manga } from '~/api/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
 const mangaId = useRoute().params.mangaId as string;
@@ -12,7 +12,5 @@ const { data: manga, status: statusManga } = await useTranga<GetMangasByMangaIdR
     key: ApiKeys.Manga(mangaId),
 });
 
-const actions = (manga?: MangaMetadata): ButtonProps[] | undefined => [
-    { label: 'Find Matches', to: `/mangas/${manga?.mangaId}/match`, variant: 'soft' },
-];
+const actions = (manga?: Manga): ButtonProps[] | undefined => [];
 </script>

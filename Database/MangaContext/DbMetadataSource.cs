@@ -6,10 +6,6 @@ public sealed record DbMetadataSource
 {
     public Guid MetadataId { get; internal set; }
     
-    public required Guid MangaId { get; init; }
-    
-    public required int Priority { get; set; }
-    
     public required Guid MetadataExtension { get; init; }
     
     public required string Identifier { get; init; }
@@ -32,8 +28,6 @@ public sealed record DbMetadataSource
     public string? Url { get; set; }
 
     #region Navigations
-
-    public DbManga? Manga { get; internal set; }
     
     public DbFile? Cover { get; set; }
     
@@ -42,6 +36,8 @@ public sealed record DbMetadataSource
     public ICollection<DbPerson>? Artists { get; set; }
     
     public ICollection<DbPerson>? Authors { get; set; }
+    
+    public ICollection<DbMangaMetadataSource>? MangaMetadataSources { get; init; }
 
     #endregion
 }

@@ -5,9 +5,26 @@ namespace API.Helpers;
 
 internal static class MangaDTOHelper
 {
+    public static Manga ToDTO(this DbMangaMetadataSource source) => new()
+    {
+        MangaId = source.MangaId,
+        Monitored = source.Manga.Monitored,
+        MetadataEntry = source.MetadataSource.ToDTO() with
+        {
+            Chosen = source.Chosen
+        }
+    };
+    
+    public static Manga ToDTO(this DbManga manga) => new()
+    {
+        MangaId = manga.MangaId,
+        Monitored = manga.Monitored,
+        MetadataEntry = manga.MetadataSources?.FirstOrDefault(m => m.Chosen == true)?.MetadataSource?.ToDTO()
+    };
+    
     public static MangaMetadata ToDTO(this DbMetadataSource metadata) => new()
     {
-        MangaId = metadata.MangaId,
+        MetadataId = metadata.MetadataId,
         Series = metadata.Series,
         Summary = metadata.Summary,
         Year = metadata.Year,
@@ -16,7 +33,6 @@ internal static class MangaDTOHelper
         CoverId = metadata.CoverId,
         MetadataExtensionId = metadata.MetadataExtension,
         Identifier = metadata.Identifier,
-        Url = metadata.Url,
-        Monitored = metadata.Manga?.Monitored
+        Url = metadata.Url
     };
 }

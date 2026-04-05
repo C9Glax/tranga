@@ -9,7 +9,6 @@ public abstract class TrangaDatabaseContext<T>(DbContextOptions<T> options) : Db
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
         try
         {
-            await Database.EnsureCreatedAsync(ct);
             await Database.MigrateAsync(ct);
         }
         catch (Exception)

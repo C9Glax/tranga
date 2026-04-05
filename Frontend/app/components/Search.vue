@@ -15,7 +15,7 @@
                         <UIcon class="size-7" name="i-lucide-arrow-right" @click="search" />
                     </template>
                 </UInput>
-                <MangaList v-if="searchResult || loading" :mangas="searchResult" :loading="loading" />
+                <MetadataList v-if="searchResult || loading" :metadata-list="searchResult" :loading="loading" />
             </div>
         </template>
     </UModal>
