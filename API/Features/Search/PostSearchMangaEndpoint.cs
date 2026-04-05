@@ -31,9 +31,9 @@ public abstract class PostSearchMangaEndpoint
                 DbMetadataSource metadataSource = await CreateMetadata(mangaContext, searchResult, ct);
                 db.Add(metadataSource);
                 
+                await mangaContext.SaveChangesAsync(ct);
             }else db.Add(existing);
         }
-        await mangaContext.SaveChangesAsync(ct);
                 
         Entities.MangaMetadata[] results = db.Select(e => e.ToDTO()).ToArray();
         return TypedResults.Ok(results);
