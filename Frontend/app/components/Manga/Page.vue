@@ -8,6 +8,7 @@
             :ui="{ container: 'py-6 sm:py-8 lg:py-8' }"
             class="w-full h-max">
             <template #title>
+                <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
                 <p v-if="$props.title">{{ $props.title }}</p>
                 <p v-else-if="manga?.metadataEntry?.series">{{ manga?.metadataEntry?.series }}</p>
                 <USkeleton v-else class="h-lh" />
@@ -35,9 +36,14 @@
                     v-else
                     :file-id="manga?.metadataEntry?.coverId"
                     :mangaId="manga?.mangaId"
-                    :noBlur="!manga?.metadataEntry?.nsfw" />
+                    :noBlur="!manga?.metadataEntry?.nsfw"
+                    class="aspect-6/9 max-h-sm max-w-sm" />
             </template>
-            <MangaCover :file-id="manga?.metadataEntry?.coverId" :mangaId="manga?.mangaId" :noBlur="!manga?.metadataEntry?.nsfw" />
+            <MangaCover
+                :file-id="manga?.metadataEntry?.coverId"
+                :mangaId="manga?.mangaId"
+                :noBlur="!manga?.metadataEntry?.nsfw"
+                class="aspect-6/9 max-h-sm max-w-sm" />
         </UPageCTA>
 
         <UPageSection :ui="{ container: 'sm:py-8 lg:py-8' }">

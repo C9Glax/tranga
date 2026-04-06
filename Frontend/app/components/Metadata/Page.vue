@@ -31,9 +31,9 @@
             <!-- Passes through the slots -->
             <template v-for="(_, slotName) in $slots" #[slotName]="slotProps">
                 <slot v-if="slotName !== 'default'" :name="slotName as unknown" v-bind="slotProps" />
-                <MangaCover v-else :file-id="metadata?.coverId" :noBlur="!metadata?.nsfw" />
+                <MangaCover v-else :file-id="metadata?.coverId" :noBlur="!metadata?.nsfw" class="aspect-6/9 max-h-sm max-w-sm" />
             </template>
-            <MangaCover :file-id="metadata?.coverId" :noBlur="!metadata?.nsfw" />
+            <MangaCover :file-id="metadata?.coverId" :noBlur="!metadata?.nsfw" class="aspect-6/9 max-h-sm max-w-sm" />
         </UPageCTA>
 
         <UPageSection :ui="{ container: 'sm:py-8 lg:py-8' }">
