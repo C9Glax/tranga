@@ -6,11 +6,11 @@
             v-if="!loading"
             v-for="manga in mangas"
             :to="`/manga/${manga.mangaId}`"
-            :class="['relative overflow-clip', widthHeight]"
+            class="relative overflow-clip"
             :ui="{ container: 'p-0 sm:p-0' }"
             @click="useOverlay().closeAll()">
-            <p class="z-10 absolute text-xl mx-2 my-3 font-bold text-shadow-sm">{{ manga.metadataEntry?.series }}</p>
-            <MangaCover :file-id="manga.metadataEntry?.coverId" :manga-id="manga.mangaId" class="z-0 absolute" />
+            <p class="z-1 absolute text-2xl mx-2 my-3 font-bold text-shadow-sm">{{ manga.metadataEntry?.series }}</p>
+            <MangaCover :file-id="manga.metadataEntry?.coverId" :manga-id="manga.mangaId" class="z-0 blur-xs" noBlur />
         </UPageCard>
 
         <div v-if="(mangas?.length ?? 0) < 1 && !loading" class="w-max flex gap-2">
@@ -23,8 +23,6 @@
 <script setup lang="ts">
 import { MangaCover } from '#components';
 import type { Manga } from '~/api/trangaApi';
-
-const widthHeight = 'w-60 h-90';
 
 defineProps<{ loading?: boolean; mangas?: Manga[] }>();
 </script>

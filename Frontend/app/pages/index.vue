@@ -1,7 +1,9 @@
 <template>
-    <UPage>
-        <MangaList :mangas="mangaList" :loading="status !== 'success'" />
-    </UPage>
+    <TrangaPage :page-title="{ title: 'Manga List', icon: { name: 'i-lucide-book' } }">
+        <UContainer>
+            <MangaList :mangas="mangaList" :loading="status !== 'success'" />
+        </UContainer>
+    </TrangaPage>
 </template>
 
 <script setup lang="ts">

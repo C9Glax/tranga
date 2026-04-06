@@ -1,7 +1,7 @@
 <template>
-    <UChip v-bind="{ ...$props, size: undefined }" :ui="{ base: `h-${sizeToNumber * 2} w-${sizeToNumber * 2}` }">
+    <UChip v-bind="{ ...$props, size: undefined }" :ui="{ base: `py-${sizeToNumber + sizeToPadding} px-${sizeToPadding}` }">
         <template #content>
-            <UIcon :name="icon" :class="`size-${sizeToNumber}`" />
+            <UIcon :name="icon" :class="`size-${sizeToNumber * 2}`" />
         </template>
         <slot></slot>
     </UChip>
@@ -14,25 +14,30 @@ const props = defineProps<ChipProps & { icon: string }>();
 const sizeToNumber = computed((): number => {
     switch (props.size) {
         case '3xs':
-            return 3;
+            return 0.5;
         case '2xs':
-            return 4;
+            return 1;
         case 'xs':
-            return 5;
+            return 2;
         case 'sm':
-            return 7;
+            return 3;
         case 'md':
-            return 9;
+            return 4;
         case 'lg':
-            return 11;
+            return 5;
         case 'xl':
-            return 13;
+            return 6;
         case '2xl':
-            return 15;
-        case '3xl':
-            return 18;
-        default:
             return 7;
+        case '3xl':
+            return 8;
+        default:
+            return 3;
     }
+});
+
+const sizeToPadding = computed(() => {
+    if (sizeToNumber.value < 5) return 1;
+    else return 2;
 });
 </script>

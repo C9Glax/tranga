@@ -19,14 +19,11 @@
                 </NuxtLink>
             </template>
             <template #right>
-                <UButton icon="i-lucide-book-search" @click="searchOverlay.open()">Search <UKbd value="ctrl+k" /></UButton>
+                <UButton icon="i-lucide-book-search" @click="searchOverlay.open()">Search <UKbd value="ctrl+s" /></UButton>
             </template>
         </UHeader>
         <NuxtLayout>
-            <UButton @click="$router.back()" icon="i-lucide-arrow-left" variant="soft" class="m-4">Back</UButton>
-            <UContainer class="my-4">
-                <NuxtPage />
-            </UContainer>
+            <NuxtPage />
         </NuxtLayout>
     </UApp>
 </template>
@@ -38,5 +35,5 @@ const overlay = useOverlay();
 
 const searchOverlay = overlay.create(LazySearch);
 
-defineShortcuts({ ctrl_k: () => searchOverlay.open() });
+defineShortcuts({ ctrl_s: () => searchOverlay.open() });
 </script>

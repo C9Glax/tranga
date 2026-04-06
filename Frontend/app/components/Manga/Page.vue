@@ -1,6 +1,12 @@
 <template>
-    <UPage>
-        <UPageCTA v-bind="$props" :links="links" orientation="horizontal" reverse :ui="{ container: 'py-6 sm:py-8 lg:py-8' }">
+    <TrangaPage :page-title="{ title: 'Manga', icon: { name: 'i-lucide-book', color: 'warning' } }">
+        <UPageCTA
+            v-bind="$props"
+            :links="links"
+            orientation="horizontal"
+            reverse
+            :ui="{ container: 'py-6 sm:py-8 lg:py-8' }"
+            class="w-full h-max">
             <template #title>
                 <p v-if="$props.title">{{ $props.title }}</p>
                 <p v-else-if="manga?.metadataEntry?.series">{{ manga?.metadataEntry?.series }}</p>
@@ -22,18 +28,22 @@
                 </div>
             </template>
 
-            <!-- Passes through the slots to -->
+            <!-- Passes through the slots -->
             <template v-for="(_, slotName) in $slots" #[slotName]="slotProps">
                 <slot v-if="slotName !== 'default'" :name="slotName as unknown" v-bind="slotProps" />
-                <MangaCover v-else :file-id="manga?.metadataEntry?.coverId" :mangaId="manga?.mangaId" noBlur />
+                <MangaCover
+                    v-else
+                    :file-id="manga?.metadataEntry?.coverId"
+                    :mangaId="manga?.mangaId"
+                    :noBlur="!manga?.metadataEntry?.nsfw" />
             </template>
-            <MangaCover :file-id="manga?.metadataEntry?.coverId" :mangaId="manga?.mangaId" noBlur />
+            <MangaCover :file-id="manga?.metadataEntry?.coverId" :mangaId="manga?.mangaId" :noBlur="!manga?.metadataEntry?.nsfw" />
         </UPageCTA>
 
         <UPageSection :ui="{ container: 'sm:py-8 lg:py-8' }">
             <slot name="default" />
         </UPageSection>
-    </UPage>
+    </TrangaPage>
 </template>
 
 <script setup lang="ts">
