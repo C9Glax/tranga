@@ -17,6 +17,7 @@
                         </template>
                     </UInput>
                     <UCheckboxGroup
+                        legend="Search on:"
                         v-model="selectedExtensions"
                         orientation="horizontal"
                         color="secondary"
