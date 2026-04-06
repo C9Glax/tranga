@@ -1,4 +1,4 @@
-namespace DownloadExtensions.Data;
+namespace Extensions.Data;
 
 public sealed record ChapterInfo(
     Guid ExtensionIdentifier,

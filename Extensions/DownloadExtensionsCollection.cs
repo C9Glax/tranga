@@ -1,12 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Common.Datatypes;
-using DownloadExtensions.Data;
-using DownloadExtensions.Extensions;
+using Extensions.Data;
+using Extensions.Extensions;
 
-namespace DownloadExtensions;
+namespace Extensions;
 
 public static class DownloadExtensionsCollection
 {
@@ -19,7 +15,7 @@ public static class DownloadExtensionsCollection
     
     public static List<MangaInfo> Search(SearchQuery searchQuery, IDownloadExtension[] extensions, CancellationToken ct)
     {
-        List<Task<List<MangaInfo>?>> tasks = extensions.Select(e => e.Search(searchQuery, ct)).ToList();
+        List<Task<List<MangaInfo>?>> tasks = extensions.Select(e => e.SearchDownload(searchQuery, ct)).ToList();
         
         Task.WaitAll(tasks, ct);
         

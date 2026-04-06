@@ -13,4 +13,5 @@ public struct EnvVars
     public static readonly int DBConnectionLifetime = int.Parse(Environment.GetEnvironmentVariable("DBConnectionLifetime") ?? "60");
     public static readonly int DBConnectionTimeout = int.Parse(Environment.GetEnvironmentVariable("DBConnectionTimeout") ?? "30");
     public static readonly int DBCommandTimeout = int.Parse(Environment.GetEnvironmentVariable("DBCommandTimeout") ?? "60");
+    public static readonly string SettingsFile = Environment.GetEnvironmentVariable("SETTINGS_FILE") ?? "settings.json";
 }

@@ -28,7 +28,6 @@
     <ItemGroup>
       <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
       <ProjectReference Include="..\Database\Database.csproj" />
-      <ProjectReference Include="..\MetadataExtensions\MetadataExtensions.csproj" />
     </ItemGroup>
 
 </Project>

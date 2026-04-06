@@ -1,4 +1,4 @@
-namespace MetadataExtensions.Tests;
+namespace Extensions.Tests;
 
 public sealed class MetadataExtensionCollectionTests
 {

@@ -29,6 +29,8 @@ public sealed record DbMetadataSource
     public Guid? CoverId { get; set; }
     
     public string? Url { get; set; }
+    
+    public bool? NSFW { get; set; }
 
     #region Navigations
     

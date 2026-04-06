@@ -1,7 +1,8 @@
 using Common.Datatypes;
-using MetadataExtensions.Extensions;
+using Extensions.Data;
+using Extensions.Extensions;
 
-namespace MetadataExtensions;
+namespace Extensions;
 
 public static class MetadataExtensionsCollection
 {
@@ -16,7 +17,7 @@ public static class MetadataExtensionsCollection
 
     public static List<SearchResult> Search(SearchQuery searchQuery, IMetadataExtension[] extensions, CancellationToken ct)
     {
-        List<Task<List<SearchResult>?>> tasks = extensions.Select(e => e.Search(searchQuery, ct)).ToList();
+        List<Task<List<SearchResult>?>> tasks = extensions.Select(e => e.SearchMetadata(searchQuery, ct)).ToList();
         
         Task.WaitAll(tasks, ct);
         

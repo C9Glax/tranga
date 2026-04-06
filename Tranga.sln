@@ -6,11 +6,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{FBD3D82E-38FC-415F-8047-8B3E7B0CDD79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadExtensions", "DownloadExtensions\DownloadExtensions.csproj", "{0B7C8AA9-85F9-42B0-B5DF-1DFC1B8C060D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{0B7C8AA9-85F9-42B0-B5DF-1DFC1B8C060D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadExtensions.Tests", "DownloadExtensions.Tests\DownloadExtensions.Tests.csproj", "{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataExtensions", "MetadataExtensions\MetadataExtensions.csproj", "{724012E4-13A4-46F3-A9B6-BF6DE68DE18C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Tests", "Extensions.Tests\Extensions.Tests.csproj", "{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Datatypes", "Common.Datatypes\Common.Datatypes.csproj", "{D345AD5E-804A-4856-A2C3-B24E9986C91A}"
 EndProject
@@ -21,8 +19,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Tests", "Database.Tests\Database.Tests.csproj", "{453E2C99-F313-47B1-BFDA-8DFA9267332C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Tests", "Application.Tests\Application.Tests.csproj", "{B4A94FAB-D911-43AC-A096-152A6003B7C1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataExtensions.Tests", "MetadataExtensions.Tests\MetadataExtensions.Tests.csproj", "{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers", "Common.Helpers\Common.Helpers.csproj", "{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}"
 EndProject
@@ -64,10 +60,6 @@ Global
 		{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81F505C6-5EFF-4B59-B3E4-EAF1CB68B633}.Release|Any CPU.Build.0 = Release|Any CPU
-		{724012E4-13A4-46F3-A9B6-BF6DE68DE18C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{724012E4-13A4-46F3-A9B6-BF6DE68DE18C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{724012E4-13A4-46F3-A9B6-BF6DE68DE18C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{724012E4-13A4-46F3-A9B6-BF6DE68DE18C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D345AD5E-804A-4856-A2C3-B24E9986C91A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D345AD5E-804A-4856-A2C3-B24E9986C91A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D345AD5E-804A-4856-A2C3-B24E9986C91A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -88,10 +80,6 @@ Global
 		{B4A94FAB-D911-43AC-A096-152A6003B7C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4A94FAB-D911-43AC-A096-152A6003B7C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4A94FAB-D911-43AC-A096-152A6003B7C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2449A8E7-66E8-403D-8C02-06AEEAC9A79F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}.Release|Any CPU.ActiveCfg = Release|Any CPU

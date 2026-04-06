@@ -1,8 +1,9 @@
 using Common.Datatypes;
 using Common.Helpers;
+using Extensions.Data;
 using NSwagClients.GeneratedClients.MangaUpdates;
 
-namespace MetadataExtensions.Extensions;
+namespace Extensions.Extensions;
 
 public sealed class MangaUpdates : IMetadataExtension
 {
@@ -19,7 +20,7 @@ public sealed class MangaUpdates : IMetadataExtension
 
     public string Name { get; init; } = "MangaUpdates";
 
-    public async Task<List<SearchResult>?> Search(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct)
+    public async Task<List<SearchResult>?> SearchMetadata(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct)
     {
         // If MangaUpdates ID is included, try getting the series directly first
         if (searchQuery.MangaUpdatesSeriesId is { } id)
@@ -84,6 +85,7 @@ public sealed class MangaUpdates : IMetadataExtension
                     Genres = listResult.Genres?.Select(g => g.Genre!).ToArray() ?? [],
                     Url = listResult.Url,
                     Cover = cover,
+                    NSFW = listResult.Genres?.Any(g => g.Genre?.ToLowerInvariant() == "adult")
                 });
         }
 

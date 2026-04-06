@@ -1,18 +1,18 @@
 using Common.Datatypes;
 using Common.Helpers;
-using DownloadExtensions.Data;
+using Extensions.Data;
 using Newtonsoft.Json.Linq;
 using NSwagClients.GeneratedClients.MangaDex;
 using Manga = NSwagClients.GeneratedClients.MangaDex.Manga;
 
-namespace DownloadExtensions.Extensions;
+namespace Extensions.Extensions;
 
-public sealed class MangaDex : IDownloadExtension
+public sealed class MangaDex : IDownloadExtension, IMetadataExtension
 {
     public Guid Identifier { get; init; } = Guid.Parse("019ce521-deaf-7739-9e14-eb6f4afc86e2");
 
     public string Name { get; init; } = "MangaDex";
-    
+
     public Language[] SupportedLanguages { get; init; } = ["en-us"!];
     
     // ReSharper disable once ValueParameterNotUsed
@@ -22,7 +22,7 @@ public sealed class MangaDex : IDownloadExtension
     private readonly MangaDexApiClient Client = new(new RequestClient());
 
     #region Search
-    public async Task<List<MangaInfo>?> Search(SearchQuery query, CancellationToken ct)
+    public async Task<List<MangaInfo>?> SearchDownload(SearchQuery query, CancellationToken ct)
     {
         MangaList list = await Client.GetSearchMangaAsync(
             includes: [Anonymous4.Cover_art],
@@ -59,9 +59,9 @@ public sealed class MangaDex : IDownloadExtension
     {
         if (manga.Id is not { } id)
             return null;
-        if (manga.Relationships?.FirstOrDefault(r => r.Type == "cover_art") is not { Attributes: JObject attributes })
+        if (manga.Relationships?.FirstOrDefault(r => r.Type == "cover_art") is not { Attributes: JObject attributes } || attributes.ToObject<CoverAttributes>() is not { } coverAttributes)
             return null;
-        if(attributes["fileName"]?.Value<string>() is not { } fileName)
+        if(coverAttributes.FileName is not { } fileName)
             return null;
         Uri requestUri = new($"https://uploads.mangadex.org/covers/{id}/{fileName}");
         if (await new RequestClient().GetAsync(requestUri, ct) is not { IsSuccessStatusCode: true } response)
@@ -138,6 +138,77 @@ public sealed class MangaDex : IDownloadExtension
 
         return images;
     }
+    #endregion
+
+    #region SearchMetadata
+
+    public async Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct)
+    {
+        Anonymous4[] includes = [
+            Anonymous4.Manga,
+            Anonymous4.Cover_art,
+            Anonymous4.Author,
+            Anonymous4.Artist,
+            Anonymous4.Tag
+        ];
+        if (searchQuery.MangaDexSeriesId is { } seriesId && await Client.GetMangaIdAsync(seriesId, includes, ct) is { Result: MangaResponseResult.Ok, Data: { } manga })
+        {
+            if(await ParseSearchResult(manga, ct) is { } parsed)
+                return [parsed];
+            else return null;
+        }
+
+        if (await Client.GetSearchMangaAsync(limit: 10, offset: 0, title: searchQuery.Title, includes: includes, cancellationToken: ct) is not { Result: "ok", Data: { } mangas })
+            return null;
+
+        List<SearchResult> results = [];
+        foreach (Manga m in mangas)
+        {
+            if(await ParseSearchResult(m, ct) is { } parsed)
+                results.Add(parsed);
+        }
+        return results;
+    }
+    
+    private async Task<SearchResult?> ParseSearchResult(Manga manga, CancellationToken ct)
+    {
+        if (manga.Id is not { } id)
+            return null;
+        if (manga.Attributes?.Title?.GetLocalizedString("en-us") is not { } seriesTitle)
+            return null;
+        if(await GetCover(manga, ct) is not { } cover)
+            return null;
+        string url = $"https://mangadex.org/title/{id}";
+        ReleaseStatus? status = manga.Attributes.Status switch
+        {
+            MangaAttributesStatus.Completed => ReleaseStatus.Complete,
+            MangaAttributesStatus.Ongoing => ReleaseStatus.Ongoing,
+            MangaAttributesStatus.Cancelled => ReleaseStatus.Cancelled,
+            MangaAttributesStatus.Hiatus => ReleaseStatus.Hiatus,
+            _ => null
+        };
+        string[]? authors = manga.Relationships?.Where(r => r is { Type: "author", Attributes: AuthorAttributes }).Select(r =>
+        {
+            AuthorAttributes? a = r.Attributes as AuthorAttributes;
+            return a?.Name!;
+        }).ToArray();
+        return new SearchResult()
+        {
+            MetadataExtensionIdentifier = this.Identifier,
+            Identifier = id.ToString(),
+            Series = seriesTitle,
+            Summary = manga.Attributes.Description?.GetLocalizedString("en-us"),
+            Cover = cover,
+            Year = manga.Attributes.Year,
+            Url = url,
+            Status = status,
+            Language = manga.Attributes.OriginalLanguage,
+            Genres = manga.Attributes.Tags?.Select(t => t.Attributes?.Name?.GetLocalizedString("en-us")).Where(t => t is not null).Select(t => t!).ToArray(),
+            Authors = authors,
+            NSFW = manga.Attributes.ContentRating != MangaAttributesContentRating.Safe
+        };
+    }
+
     #endregion
 }
 

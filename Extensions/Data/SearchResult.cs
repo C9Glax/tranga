@@ -1,6 +1,6 @@
 using Common.Datatypes;
 
-namespace MetadataExtensions;
+namespace Extensions.Data;
 
 public sealed record SearchResult
 {
@@ -28,4 +28,5 @@ public sealed record SearchResult
     
     public ReleaseStatus? Status { get; init; }
     
+    public bool? NSFW { get; init; }
 }

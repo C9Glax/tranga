@@ -1,4 +1,4 @@
-namespace DownloadExtensions.Data;
+namespace Extensions.Data;
 
 /// <summary>
 /// The Manga-Info returned by an Extension

@@ -9,8 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
-      <ProjectReference Include="..\DownloadExtensions\DownloadExtensions.csproj" />
-      <ProjectReference Include="..\MetadataExtensions\MetadataExtensions.csproj" />
+      <ProjectReference Include="..\Extensions\Extensions.csproj" />
       <ProjectReference Include="..\Settings\Settings.csproj" />
     </ItemGroup>
 

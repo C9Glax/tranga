@@ -1,29 +1,14 @@
 using Common.Datatypes;
-using DownloadExtensions.Data;
+using Extensions.Data;
 
-namespace DownloadExtensions;
+namespace Extensions;
 
-public interface IDownloadExtension
+public interface IDownloadExtension : IExtension
 {
-    /// <summary>
-    /// The unique Extension Identifier
-    /// </summary>
-    public Guid Identifier { get; init; }
-    
-    /// <summary>
-    /// The name of the Extension
-    /// </summary>
-    public string Name { get; init; }
-    
     /// <summary>
     /// The languages supported by the extension.
     /// </summary>
     public Language[] SupportedLanguages { get; init; }
-    
-    /// <summary>
-    /// The Url of the extension
-    /// </summary>
-    public string BaseUrl { get; init; }
     
     /// <summary>
     /// Returns the search results for a Manga.
@@ -31,7 +16,7 @@ public interface IDownloadExtension
     /// <param name="query">The manga to search for.</param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<List<MangaInfo>?> Search(SearchQuery query, CancellationToken ct);
+    public Task<List<MangaInfo>?> SearchDownload(SearchQuery query, CancellationToken ct);
 
     /// <summary>
     /// Returns the chapters of a Manga.
