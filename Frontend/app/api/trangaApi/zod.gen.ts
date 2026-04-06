@@ -8,6 +8,7 @@ export type ContentRatingZodType = z.infer<typeof zContentRating>;
 
 export const zDownloadLink = z.object({
     mangaId: z.uuid(),
+    downloadId: z.uuid(),
     downloadExtensionId: z.uuid(),
     identifier: z.string(),
     matched: z.boolean(),
@@ -174,6 +175,11 @@ export const zSearchQuery = z.object({
                 ),
         ])
     ),
+    mangaDexSeriesId: z.nullish(z.uuid()),
 });
 
 export type SearchQueryZodType = z.infer<typeof zSearchQuery>;
+
+export const zPostSearchMangaRequest = z.object({ searchQuery: zSearchQuery, metadataExtensionIds: z.nullable(z.array(z.uuid())) });
+
+export type PostSearchMangaRequestZodType = z.infer<typeof zPostSearchMangaRequest>;

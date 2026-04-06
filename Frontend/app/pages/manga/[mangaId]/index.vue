@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMangasByMangaIdMetadataResponse, GetMangasByMangaIdResponse, Manga, MangaMetadata } from '~/api/trangaApi';
+import type { GetMangasByMangaIdMetadataResponse, GetMangasByMangaIdResponse, Manga, Metadata } from '~/api/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { UserProps } from '@nuxt/ui/components/User.vue';
 import type { BadgeProps } from '@nuxt/ui/components/Badge.vue';
@@ -48,14 +48,14 @@ const { data: metadataSources, status: statusMetadata } = await useTranga<GetMan
 
 const actions = (manga?: Manga): ButtonProps[] | undefined => [];
 
-const author = (metadata: MangaMetadata): UserProps[] => [
+const author = (metadata: Metadata): UserProps[] => [
     {
         avatar: { src: MetadataExtensions.GetIcon(metadata.metadataExtensionId) },
         name: MetadataExtensions.GetName(metadata.metadataExtensionId),
     },
 ];
 
-const badge = (metadata: MangaMetadata): BadgeProps | undefined => {
+const badge = (metadata: Metadata): BadgeProps | undefined => {
     if (!metadata.status) return undefined;
     let color: 'error' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'neutral' | undefined = 'neutral';
     switch (metadata.status) {
@@ -75,7 +75,7 @@ const badge = (metadata: MangaMetadata): BadgeProps | undefined => {
     return { label: metadata.status, color: color };
 };
 
-const date = (metadata: MangaMetadata) => {
+const date = (metadata: Metadata) => {
     if (!metadata.year) return undefined;
     return new Date(`${metadata.year}`);
 };

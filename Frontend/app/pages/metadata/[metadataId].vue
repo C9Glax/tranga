@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMetadataByMetadataIdResponse, MangaMetadata, PatchMangasByMangaIdUseMetadataResponses } from '~/api/trangaApi';
+import type { GetMetadataByMetadataIdResponse, Metadata } from '~/api/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { patchMangaMetadataSource } from '~/utils/patchMangaMetadataSource';
 
@@ -13,7 +13,7 @@ const { data: metadata, status: statusMetadata } = await useTranga<GetMetadataBy
     key: ApiKeys.Metadata(metadataId),
 });
 
-const actions = (m?: MangaMetadata): ButtonProps[] | undefined => {
+const actions = (m?: Metadata): ButtonProps[] | undefined => {
     const items: ButtonProps[] = [];
 
     if (metadata.value && metadata.value.mangaIds.length == 1) {

@@ -101,7 +101,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SearchQuery"
+                "$ref": "#/components/schemas/PostSearchMangaRequest"
               }
             }
           },
@@ -806,6 +806,28 @@
           }
         }
       },
+      "PostSearchMangaRequest": {
+        "required": [
+          "searchQuery",
+          "metadataExtensionIds"
+        ],
+        "type": "object",
+        "properties": {
+          "searchQuery": {
+            "$ref": "#/components/schemas/SearchQuery"
+          },
+          "metadataExtensionIds": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
       "ReleaseStatus": {
         "enum": [
           "Ongoing",
@@ -884,6 +906,13 @@
             ],
             "description": "The MangaUpdates.com series id",
             "format": "int64"
+          },
+          "mangaDexSeriesId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           }
         },
         "description": "The query to use when searching for a Manga"

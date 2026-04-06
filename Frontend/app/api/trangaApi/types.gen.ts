@@ -6,6 +6,7 @@ export type ContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 
 export type DownloadLink = {
     mangaId: string;
+    downloadId: string;
     downloadExtensionId: string;
     identifier: string;
     matched: boolean;
@@ -60,6 +61,8 @@ export type PatchMangaDownloadSourceMatchedRequest = { matched: boolean; priorit
 
 export type PatchMangaMetadataEntryRequest = { metadataId: string };
 
+export type PostSearchMangaRequest = { searchQuery: SearchQuery; metadataExtensionIds: null | Array<string> };
+
 export type ReleaseStatus = 'Ongoing' | 'Complete' | 'Hiatus' | 'Cancelled';
 
 /**
@@ -92,6 +95,7 @@ export type SearchQuery = {
      * The MangaUpdates.com series id
      */
     mangaUpdatesSeriesId?: null | number | string;
+    mangaDexSeriesId?: null | string;
 };
 
 export type GetMangasData = { body?: never; path?: never; query?: never; url: '/mangas' };
@@ -152,7 +156,7 @@ export type GetMangasByMangaIdCoverResponses = {
 
 export type GetMangasByMangaIdCoverResponse = GetMangasByMangaIdCoverResponses[keyof GetMangasByMangaIdCoverResponses];
 
-export type PostMangasSearchData = { body: SearchQuery; path?: never; query?: never; url: '/mangas/search' };
+export type PostMangasSearchData = { body: PostSearchMangaRequest; path?: never; query?: never; url: '/mangas/search' };
 
 export type PostMangasSearchErrors = {
     /**
@@ -252,28 +256,29 @@ export type PatchMangasByMangaIdDownloadLinkByDownloadIdResponses = {
     200: unknown;
 };
 
-export type GetMangasByMangaIdDownloadLinkData = {
+export type GetMangasByMangaIdDownloadLinksData = {
     body?: never;
     path: { mangaId: string };
     query?: never;
-    url: '/mangas/{mangaId}/downloadLink';
+    url: '/mangas/{mangaId}/downloadLinks';
 };
 
-export type GetMangasByMangaIdDownloadLinkErrors = {
+export type GetMangasByMangaIdDownloadLinksErrors = {
     /**
      * Not Found
      */
     404: unknown;
 };
 
-export type GetMangasByMangaIdDownloadLinkResponses = {
+export type GetMangasByMangaIdDownloadLinksResponses = {
     /**
      * OK
      */
     200: Array<DownloadLink>;
 };
 
-export type GetMangasByMangaIdDownloadLinkResponse = GetMangasByMangaIdDownloadLinkResponses[keyof GetMangasByMangaIdDownloadLinkResponses];
+export type GetMangasByMangaIdDownloadLinksResponse =
+    GetMangasByMangaIdDownloadLinksResponses[keyof GetMangasByMangaIdDownloadLinksResponses];
 
 export type GetMetadataData = { body?: never; path?: never; query?: never; url: '/metadata' };
 
@@ -324,20 +329,20 @@ export type GetFilesByFileIdErrors = {
     500: unknown;
 };
 
-export type GetDownloadLinkData = { body?: never; path?: never; query?: never; url: '/downloadLink' };
+export type GetDownloadLinksData = { body?: never; path?: never; query?: never; url: '/downloadLinks' };
 
-export type GetDownloadLinkErrors = {
+export type GetDownloadLinksErrors = {
     /**
      * Internal Server Error
      */
     500: unknown;
 };
 
-export type GetDownloadLinkResponses = {
+export type GetDownloadLinksResponses = {
     /**
      * OK
      */
     200: Array<DownloadLink>;
 };
 
-export type GetDownloadLinkResponse = GetDownloadLinkResponses[keyof GetDownloadLinkResponses];
+export type GetDownloadLinksResponse = GetDownloadLinksResponses[keyof GetDownloadLinksResponses];

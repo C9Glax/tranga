@@ -8,7 +8,7 @@ export default defineNuxtConfig({
 
     compatibilityDate: '2025-01-15',
 
-    eslint: { config: { stylistic: { commaDangle: 'never', braceStyle: '1tbs' } } },
+    eslint: { config: { stylistic: { commaDangle: 'never', braceStyle: '1tbs', indent: 4 } } },
 
     app: { head: { title: 'Tranga', htmlAttrs: { lang: 'en' }, link: [{ rel: 'icon', type: 'image/png', href: '/blahaj.png' }] } },
 

@@ -22,10 +22,10 @@
 </template>
 
 <script setup lang="ts">
-import type { MangaMetadata, PostMangasSearchResponse } from '~/api/trangaApi';
+import type { Metadata, PostMangasSearchResponse } from '~/api/trangaApi';
 
 const searchTerm = ref<string>();
-const searchResult = ref<MangaMetadata[]>();
+const searchResult = ref<Metadata[]>();
 
 const loading = ref<boolean>(false);
 

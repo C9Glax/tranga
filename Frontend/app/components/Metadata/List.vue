@@ -22,9 +22,9 @@
 
 <script setup lang="ts">
 import { MangaCover } from '#components';
-import type { MangaMetadata } from '~/api/trangaApi';
+import type { Metadata } from '~/api/trangaApi';
 
 const widthHeight = 'w-60 h-90';
 
-defineProps<{ loading?: boolean; metadataList?: MangaMetadata[] }>();
+defineProps<{ loading?: boolean; metadataList?: Metadata[] }>();
 </script>
