@@ -59,6 +59,8 @@ internal static class Endpoints
 
     private static void MapMetadataEndpoints(this RouteGroupBuilder builder)
     {
+        builder.MapGet("/extensions", GetMetadataExtensionsEndpoint.Handle);
+        
         builder.MapGet(string.Empty, GetMetadataListEndpoint.Handle);
 
         builder.MapGet("{metadataId}", GetMetadataEndpoint.Handle);
@@ -71,6 +73,8 @@ internal static class Endpoints
 
     private static void MapDownloadEndpoints(this RouteGroupBuilder builder)
     {
+        builder.MapGet("/extensions", GetDownloadExtensionsEndpoint.Handle);
+        
         builder.MapGet(string.Empty, GetDownloadSourceListEndpoint.Handle);
     }
 }

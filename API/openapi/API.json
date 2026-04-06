@@ -320,6 +320,25 @@
         }
       }
     },
+    "/metadata/extensions": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetadataExtensionsList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/metadata": {
       "get": {
         "tags": [
@@ -404,6 +423,25 @@
         }
       }
     },
+    "/downloadLinks/extensions": {
+      "get": {
+        "tags": [
+          "Download"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadExtensionsList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/downloadLinks": {
       "get": {
         "tags": [
@@ -440,6 +478,17 @@
           "Pornographic",
           null
         ]
+      },
+      "DownloadExtensionsList": {
+        "type": "object",
+        "properties": {
+          "extensions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IDownloadExtension"
+            }
+          }
+        }
       },
       "DownloadLink": {
         "required": [
@@ -515,6 +564,48 @@
               "string"
             ],
             "format": "uuid"
+          }
+        }
+      },
+      "IDownloadExtension": {
+        "type": "object",
+        "properties": {
+          "downloadExtensionsId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "iconUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "IMetadataExtension": {
+        "type": "object",
+        "properties": {
+          "metadataExtensionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "iconUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -652,6 +743,17 @@
                 "$ref": "#/components/schemas/ReleaseStatus"
               }
             ]
+          }
+        }
+      },
+      "MetadataExtensionsList": {
+        "type": "object",
+        "properties": {
+          "extensions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IMetadataExtension"
+            }
           }
         }
       },

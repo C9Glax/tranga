@@ -56,7 +56,8 @@ public sealed class MangaUpdates : IMetadataExtension
             Search = searchQuery.Title,
             Stype = SeriesSearchRequestV1Stype.Title,
             Page = 1,
-            Perpage = 10
+            Perpage = 10,
+            Orderby = SeriesSearchRequestV1Orderby.Score
         }, ct);
         
         if (list.Results is null)
@@ -69,17 +70,17 @@ public sealed class MangaUpdates : IMetadataExtension
                 continue;
             if (listResult.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
                 continue;
-            if(listResult.Series_id is null)
+            if(listResult.Series_id is not { } seriesID)
                 continue;
             if(listResult.Title is null)
                 continue;
             ret.Add(new SearchResult()
                 {
                     MetadataExtensionIdentifier = this.Identifier,
-                    Identifier = listResult.Series_id.ToString()!,
+                    Identifier = seriesID.ToString(),
                     Series = listResult.Title,
                     Summary = listResult.Description,
-                    Year = listResult.Year is null ? -1 : int.Parse(listResult.Year),
+                    Year = listResult.Year is { } yearStr && int.TryParse(yearStr, out int year) ? year : null,
                     Genres = listResult.Genres?.Select(g => g.Genre!).ToArray() ?? [],
                     Url = listResult.Url,
                     Cover = cover,
