@@ -168,6 +168,10 @@ export type PostMangasSearchData = { body: PostSearchMangaRequest; path?: never;
 
 export type PostMangasSearchErrors = {
     /**
+     * Bad Request
+     */
+    400: unknown;
+    /**
      * Internal Server Error
      */
     500: unknown;
