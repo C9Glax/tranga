@@ -3,4 +3,6 @@ export default class ApiKeys {
     static Manga = (id: string) => `Mangas/${id}`;
     static Metadata = (id: string) => `Metadata/${id}`;
     static MangaMetadata = (id: string) => `Mangas/${id}/Metadata`;
+    static DownloadExtensions = 'DownloadExtensions';
+    static MetadataExtensions = 'MetadataExtensions';
 }

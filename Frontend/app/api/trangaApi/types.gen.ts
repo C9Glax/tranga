@@ -4,6 +4,8 @@ export type ClientOptions = { baseUrl: `${string}://${string}` | (string & {}) }
 
 export type ContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 
+export type DownloadExtensionsList = { extensions?: Array<IDownloadExtension> };
+
 export type DownloadLink = {
     mangaId: string;
     downloadId: string;
@@ -17,6 +19,10 @@ export type DownloadLink = {
     url: null | string;
     coverId: null | string;
 };
+
+export type IDownloadExtension = { downloadExtensionsId?: string; name?: null | string; iconUrl?: null | string };
+
+export type IMetadataExtension = { metadataExtensionId?: string; name?: null | string; iconUrl?: null | string };
 
 export type Manga = { mangaId: string; monitored: boolean; metadataEntry?: null | Metadata };
 
@@ -37,6 +43,8 @@ export type Metadata = {
     url: null | string;
     status?: null | ReleaseStatus;
 };
+
+export type MetadataExtensionsList = { extensions?: Array<IMetadataExtension> };
 
 export type MetadataMangaIds = {
     mangaIds: Array<string>;
@@ -280,6 +288,17 @@ export type GetMangasByMangaIdDownloadLinksResponses = {
 export type GetMangasByMangaIdDownloadLinksResponse =
     GetMangasByMangaIdDownloadLinksResponses[keyof GetMangasByMangaIdDownloadLinksResponses];
 
+export type GetMetadataExtensionsData = { body?: never; path?: never; query?: never; url: '/metadata/extensions' };
+
+export type GetMetadataExtensionsResponses = {
+    /**
+     * OK
+     */
+    200: MetadataExtensionsList;
+};
+
+export type GetMetadataExtensionsResponse = GetMetadataExtensionsResponses[keyof GetMetadataExtensionsResponses];
+
 export type GetMetadataData = { body?: never; path?: never; query?: never; url: '/metadata' };
 
 export type GetMetadataErrors = {
@@ -328,6 +347,17 @@ export type GetFilesByFileIdErrors = {
      */
     500: unknown;
 };
+
+export type GetDownloadLinksExtensionsData = { body?: never; path?: never; query?: never; url: '/downloadLinks/extensions' };
+
+export type GetDownloadLinksExtensionsResponses = {
+    /**
+     * OK
+     */
+    200: DownloadExtensionsList;
+};
+
+export type GetDownloadLinksExtensionsResponse = GetDownloadLinksExtensionsResponses[keyof GetDownloadLinksExtensionsResponses];
 
 export type GetDownloadLinksData = { body?: never; path?: never; query?: never; url: '/downloadLinks' };
 

@@ -30,6 +30,30 @@ export const zDownloadLink = z.object({
 
 export type DownloadLinkZodType = z.infer<typeof zDownloadLink>;
 
+export const zIDownloadExtension = z.object({
+    downloadExtensionsId: z.optional(z.uuid()),
+    name: z.nullish(z.string()),
+    iconUrl: z.nullish(z.string()),
+});
+
+export type IDownloadExtensionZodType = z.infer<typeof zIDownloadExtension>;
+
+export const zDownloadExtensionsList = z.object({ extensions: z.optional(z.array(zIDownloadExtension)) });
+
+export type DownloadExtensionsListZodType = z.infer<typeof zDownloadExtensionsList>;
+
+export const zIMetadataExtension = z.object({
+    metadataExtensionId: z.optional(z.uuid()),
+    name: z.nullish(z.string()),
+    iconUrl: z.nullish(z.string()),
+});
+
+export type IMetadataExtensionZodType = z.infer<typeof zIMetadataExtension>;
+
+export const zMetadataExtensionsList = z.object({ extensions: z.optional(z.array(zIMetadataExtension)) });
+
+export type MetadataExtensionsListZodType = z.infer<typeof zMetadataExtensionsList>;
+
 export const zPatchMangaDownloadSourceMatchedRequest = z.object({
     matched: z.boolean(),
     priority: z.union([
