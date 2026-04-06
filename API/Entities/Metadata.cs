@@ -37,4 +37,6 @@ public record Metadata
     public required string? Url { get; init; }
     
     public ReleaseStatus? Status { get; init; }
+    
+    public required bool? NSFW { get; init; }
 }

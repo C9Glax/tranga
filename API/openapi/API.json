@@ -504,7 +504,8 @@
           "series",
           "summary",
           "url",
-          "coverId"
+          "coverId",
+          "nsfw"
         ],
         "type": "object",
         "properties": {
@@ -567,6 +568,12 @@
               "string"
             ],
             "format": "uuid"
+          },
+          "nsfw": {
+            "type": [
+              "null",
+              "boolean"
+            ]
           }
         }
       },
@@ -646,7 +653,8 @@
           "series",
           "summary",
           "coverId",
-          "url"
+          "url",
+          "nsfw"
         ],
         "type": "object",
         "properties": {
@@ -746,6 +754,12 @@
                 "$ref": "#/components/schemas/ReleaseStatus"
               }
             ]
+          },
+          "nsfw": {
+            "type": [
+              "null",
+              "boolean"
+            ]
           }
         }
       },
@@ -769,7 +783,8 @@
           "series",
           "summary",
           "coverId",
-          "url"
+          "url",
+          "nsfw"
         ],
         "type": "object",
         "properties": {
@@ -875,6 +890,12 @@
               {
                 "$ref": "#/components/schemas/ReleaseStatus"
               }
+            ]
+          },
+          "nsfw": {
+            "type": [
+              "null",
+              "boolean"
             ]
           }
         }

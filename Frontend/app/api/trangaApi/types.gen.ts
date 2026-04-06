@@ -18,6 +18,7 @@ export type DownloadLink = {
     language?: null | string;
     url: null | string;
     coverId: null | string;
+    nsfw: null | boolean;
 };
 
 export type IDownloadExtension = { downloadExtensionsId?: string; name?: null | string; iconUrl?: null | string };
@@ -42,6 +43,7 @@ export type Metadata = {
     artists?: Array<string>;
     url: null | string;
     status?: null | ReleaseStatus;
+    nsfw: null | boolean;
 };
 
 export type MetadataExtensionsList = { extensions?: Array<IMetadataExtension> };
@@ -63,6 +65,7 @@ export type MetadataMangaIds = {
     artists?: Array<string>;
     url: null | string;
     status?: null | ReleaseStatus;
+    nsfw: null | boolean;
 };
 
 export type PatchMangaDownloadSourceMatchedRequest = { matched: boolean; priority: number | string };

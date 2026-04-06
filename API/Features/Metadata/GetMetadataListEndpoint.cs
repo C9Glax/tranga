@@ -33,7 +33,8 @@ public class GetMetadataListEndpoint
             MetadataExtensionId = s.Metadata.MetadataExtension,
             Identifier = s.Metadata.Identifier,
             Url = s.Metadata.Url,
-            MangaIds = s.MangaIds.ToArray()
+            MangaIds = s.MangaIds.ToArray(),
+            NSFW = s.Metadata.NSFW
         }).ToArray();
         return TypedResults.Ok(result);
     }

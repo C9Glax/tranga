@@ -26,6 +26,7 @@ export const zDownloadLink = z.object({
     language: z.nullish(z.string().check(z.minLength(0), z.maxLength(8))),
     url: z.nullable(z.string()),
     coverId: z.nullable(z.uuid()),
+    nsfw: z.nullable(z.boolean()),
 });
 
 export type DownloadLinkZodType = z.infer<typeof zDownloadLink>;
@@ -113,6 +114,7 @@ export const zMetadata = z.object({
     artists: z.optional(z.array(z.string())),
     url: z.nullable(z.string()),
     status: z.nullish(zReleaseStatus),
+    nsfw: z.nullable(z.boolean()),
 });
 
 export type MetadataZodType = z.infer<typeof zMetadata>;
@@ -158,6 +160,7 @@ export const zMetadataMangaIds = z.object({
     artists: z.optional(z.array(z.string())),
     url: z.nullable(z.string()),
     status: z.nullish(zReleaseStatus),
+    nsfw: z.nullable(z.boolean()),
 });
 
 export type MetadataMangaIdsZodType = z.infer<typeof zMetadataMangaIds>;

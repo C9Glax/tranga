@@ -28,4 +28,6 @@ public sealed record DownloadLink
     public required string? Url { get; init; }
     
     public required Guid? CoverId { get; set; }
+    
+    public required bool? NSFW { get; init; }
 }

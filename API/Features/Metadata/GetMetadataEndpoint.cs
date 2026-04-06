@@ -37,7 +37,8 @@ public abstract class GetMetadataEndpoint
             Identifier = queryResult.Metadata.Identifier,
             Url = queryResult.Metadata.Url,
             Chosen = queryResult.Chosen,
-            MangaIds = queryResult.MangaIds.ToArray()
+            MangaIds = queryResult.MangaIds.ToArray(),
+            NSFW = queryResult.Metadata.NSFW
         };
         return TypedResults.Ok(result);
     }

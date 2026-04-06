@@ -17,6 +17,7 @@ public static class DownloadLinkDTOHelper
         Summary = source.DownloadSource.Summary,
         Language = source.DownloadSource.Language,
         Url = source.DownloadSource.Url,
-        CoverId = source.DownloadSource.CoverId ?? source.DownloadSource.Cover?.FileId
+        CoverId = source.DownloadSource.CoverId ?? source.DownloadSource.Cover?.FileId,
+        NSFW = source.DownloadSource.NSFW
     };
 }

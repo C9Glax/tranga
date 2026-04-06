@@ -34,6 +34,7 @@ internal static class MangaDTOHelper
         MetadataExtensionId = metadata.MetadataExtension,
         Identifier = metadata.Identifier,
         Status = metadata.Status,
-        Url = metadata.Url
+        Url = metadata.Url,
+        NSFW = metadata.NSFW
     };
 }
