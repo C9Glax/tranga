@@ -24,52 +24,30 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
     #region Search
     public async Task<List<MangaInfo>?> SearchDownload(SearchQuery query, CancellationToken ct)
     {
-        MangaList list = await Client.GetSearchMangaAsync(
-            includes: [Anonymous4.Cover_art],
-            title: query.Title,
-            availableTranslatedLanguage: query.Language is null ? null : [query.Language],
-            year: query.Year,
-            cancellationToken: ct
-        );
-
-        if (list.Data is null)
+        if (await GetManga(query, ct) is not { } mangas)
             return null;
-        
-        return await ParseSearchResult(list.Data.ToArray(), query.Language, ct);
-    }
 
-    private async Task<List<MangaInfo>> ParseSearchResult(Manga[] mangas, Language? language, CancellationToken ct)
-    {
-        List<MangaInfo> result = new();
-        foreach (Manga manga in mangas)
+        List<MangaInfo> results = [];
+        foreach (Manga m in mangas)
         {
-            if(manga.Id is not { } id)
-                continue;
-            if(manga.Attributes?.Title?.GetLocalizedString(language) is not { } title)
-                continue;
-            if(await GetCover(manga, ct) is not { } cover)
-                continue;
-            string url = $"https://mangadex.org/title/{id}";
-            result.Add(new MangaInfo(this.Identifier, title, url, id.ToString(), cover, manga.Attributes.Description?.GetLocalizedString(language)));
+            if(await ParseMangaInfo(m, query.Language, ct) is { } parsed&& (Settings.Settings.AllowNSFW || parsed.NSFW != true))
+                results.Add(parsed);
         }
-        return result;
+        return results;
     }
 
-    private async Task<MemoryStream?> GetCover(Manga manga, CancellationToken ct)
+    private async Task<MangaInfo?> ParseMangaInfo(Manga manga, Language? language, CancellationToken ct)
     {
-        if (manga.Id is not { } id)
+        if(manga.Id is not { } id)
             return null;
-        if (manga.Relationships?.FirstOrDefault(r => r.Type == "cover_art") is not { Attributes: JObject attributes } || attributes.ToObject<CoverAttributes>() is not { } coverAttributes)
+        if(GetLocalizedString(manga.Attributes?.Title, language) is not { } title)
             return null;
-        if(coverAttributes.FileName is not { } fileName)
+        if(await GetCover(manga, ct) is not { } cover)
             return null;
-        Uri requestUri = new($"https://uploads.mangadex.org/covers/{id}/{fileName}");
-        if (await new RequestClient().GetAsync(requestUri, ct) is not { IsSuccessStatusCode: true } response)
-            return null;
-        MemoryStream memoryStream = new ();
-        Stream data = await response.Content.ReadAsStreamAsync(ct);
-        await data.CopyToAsync(memoryStream, ct);
-        return memoryStream;
+        string url = $"https://mangadex.org/title/{id}";
+        return new MangaInfo(this.Identifier, title, url, id.ToString(), cover,
+            GetLocalizedString(manga.Attributes?.Description, language),
+            manga.Attributes?.ContentRating is { } rating && rating != MangaAttributesContentRating.Safe);
     }
     #endregion
 
@@ -144,42 +122,29 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
 
     public async Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct)
     {
-        Anonymous4[] includes = [
-            Anonymous4.Manga,
-            Anonymous4.Cover_art,
-            Anonymous4.Author,
-            Anonymous4.Artist,
-            Anonymous4.Tag
-        ];
-        if (searchQuery.MangaDexSeriesId is { } seriesId && await Client.GetMangaIdAsync(seriesId, includes, ct) is { Result: MangaResponseResult.Ok, Data: { } manga })
-        {
-            if(await ParseSearchResult(manga, ct) is { } parsed)
-                return [parsed];
-            else return null;
-        }
-
-        if (await Client.GetSearchMangaAsync(limit: 10, offset: 0, title: searchQuery.Title, includes: includes, cancellationToken: ct) is not { Result: "ok", Data: { } mangas })
+        if (await GetManga(searchQuery, ct) is not { } mangas)
             return null;
 
         List<SearchResult> results = [];
         foreach (Manga m in mangas)
         {
-            if(await ParseSearchResult(m, ct) is { } parsed)
+            if(await ParseSearchResult(m, searchQuery.Language, ct) is { } parsed&& (Settings.Settings.AllowNSFW || parsed.NSFW != true))
                 results.Add(parsed);
         }
         return results;
     }
+
     
-    private async Task<SearchResult?> ParseSearchResult(Manga manga, CancellationToken ct)
+    private async Task<SearchResult?> ParseSearchResult(Manga manga, Language? language, CancellationToken ct)
     {
         if (manga.Id is not { } id)
             return null;
-        if (manga.Attributes?.Title?.GetLocalizedString("en-us") is not { } seriesTitle)
+        if (GetLocalizedString(manga.Attributes?.Title, language) is not { } seriesTitle)
             return null;
         if(await GetCover(manga, ct) is not { } cover)
             return null;
         string url = $"https://mangadex.org/title/{id}";
-        ReleaseStatus? status = manga.Attributes.Status switch
+        ReleaseStatus? status = manga.Attributes?.Status switch
         {
             MangaAttributesStatus.Completed => ReleaseStatus.Complete,
             MangaAttributesStatus.Ongoing => ReleaseStatus.Ongoing,
@@ -197,25 +162,61 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
             MetadataExtensionIdentifier = this.Identifier,
             Identifier = id.ToString(),
             Series = seriesTitle,
-            Summary = manga.Attributes.Description?.GetLocalizedString("en-us"),
+            Summary = GetLocalizedString(manga.Attributes?.Description, language),
             Cover = cover,
-            Year = manga.Attributes.Year,
+            Year = manga.Attributes?.Year,
             Url = url,
             Status = status,
-            Language = manga.Attributes.OriginalLanguage,
-            Genres = manga.Attributes.Tags?.Select(t => t.Attributes?.Name?.GetLocalizedString("en-us")).Where(t => t is not null).Select(t => t!).ToArray(),
+            Language = manga.Attributes?.OriginalLanguage,
+            Genres = manga.Attributes?.Tags?.Select(t => GetLocalizedString(t.Attributes?.Name, language)).Where(t => t is not null).Select(t => t!).ToArray(),
             Authors = authors,
-            NSFW = manga.Attributes.ContentRating != MangaAttributesContentRating.Safe
+            NSFW = manga.Attributes?.ContentRating is { } rating && rating != MangaAttributesContentRating.Safe
         };
     }
-
     #endregion
-}
 
-internal static class Helper
-{
-    public static string? GetLocalizedString(this LocalizedString str, Language? language)
+    private async Task<Manga[]?> GetManga(SearchQuery searchQuery, CancellationToken ct)
     {
+        Anonymous4[] includes = [
+            Anonymous4.Manga,
+            Anonymous4.Cover_art,
+            Anonymous4.Author,
+            Anonymous4.Artist,
+            Anonymous4.Tag
+        ];
+        if (searchQuery.MangaDexSeriesId is { } seriesId && await Client.GetMangaIdAsync(seriesId, includes, ct) is { Result: MangaResponseResult.Ok, Data: { } manga })
+        {
+            return [manga];
+        }
+
+        if (await Client.GetSearchMangaAsync(limit: 10, offset: 0, title: searchQuery.Title, includes: includes, cancellationToken: ct) is not { Result: "ok", Data: { } mangas })
+            return null;
+
+        return mangas.ToArray();
+    }
+
+    private async Task<MemoryStream?> GetCover(Manga manga, CancellationToken ct)
+    {
+        if (manga.Id is not { } id)
+            return null;
+        if (manga.Relationships?.FirstOrDefault(r => r.Type == "cover_art") is not { Attributes: JObject attributes } || attributes.ToObject<CoverAttributes>() is not { } coverAttributes)
+            return null;
+        if(coverAttributes.FileName is not { } fileName)
+            return null;
+        Uri requestUri = new($"https://uploads.mangadex.org/covers/{id}/{fileName}");
+        if (await new RequestClient().GetAsync(requestUri, ct) is not { IsSuccessStatusCode: true } response)
+            return null;
+        MemoryStream memoryStream = new ();
+        Stream data = await response.Content.ReadAsStreamAsync(ct);
+        await data.CopyToAsync(memoryStream, ct);
+        return memoryStream;
+    }
+
+
+    private string? GetLocalizedString(LocalizedString? str, Language? language)
+    {
+        if (str is null)
+            return null;
         if (language is not null && str.TryGetValue(language.Name, out string? lang))
             return lang;
         if (str.FirstOrDefault(kv => kv.Key.Equals("en-us", StringComparison.InvariantCultureIgnoreCase)) is

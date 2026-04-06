@@ -33,22 +33,21 @@ public sealed class MangaUpdates : IMetadataExtension
             if(series.Title is null)
                 return null;
             ReleaseStatus? status = series.Status.ParseStatus();
-            return
-            [
-                new SearchResult()
-                {
-                    MetadataExtensionIdentifier = this.Identifier,
-                    Identifier = series.Series_id.ToString()!,
-                    Series = series.Title,
-                    Summary = series.Description,
-                    Year = series.Year is null ? -1 : int.Parse(series.Year),
-                    Authors = series.Authors?.Select(a => a.Name).ToArray() ?? [],
-                    Genres = series.Genres?.Select(g => g.Genre!).ToArray() ?? [],
-                    Url = series.Url,
-                    Cover = cover,
-                    Status = status
-                }
-            ];
+            SearchResult sr = new ()
+            {
+                MetadataExtensionIdentifier = this.Identifier,
+                Identifier = series.Series_id.ToString()!,
+                Series = series.Title,
+                Summary = series.Description,
+                Year = series.Year is null ? -1 : int.Parse(series.Year),
+                Authors = series.Authors?.Select(a => a.Name).ToArray() ?? [],
+                Genres = series.Genres?.Select(g => g.Genre!).ToArray() ?? [],
+                Url = series.Url,
+                Cover = cover,
+                Status = status,
+                NSFW = series.Genres?.Any(g => g.Genre?.ToLowerInvariant() == "adult")
+            };
+            return (Settings.Settings.AllowNSFW || sr.NSFW != true) ? [sr] : null;
         }
         
         // Search
@@ -75,18 +74,20 @@ public sealed class MangaUpdates : IMetadataExtension
                 continue;
             if(listResult.Title is null)
                 continue;
-            ret.Add(new SearchResult()
-                {
-                    MetadataExtensionIdentifier = this.Identifier,
-                    Identifier = seriesID.ToString(),
-                    Series = listResult.Title,
-                    Summary = listResult.Description,
-                    Year = listResult.Year is { } yearStr && int.TryParse(yearStr, out int year) ? year : null,
-                    Genres = listResult.Genres?.Select(g => g.Genre!).ToArray() ?? [],
-                    Url = listResult.Url,
-                    Cover = cover,
-                    NSFW = listResult.Genres?.Any(g => g.Genre?.ToLowerInvariant() == "adult")
-                });
+            SearchResult sr = new()
+            {
+                MetadataExtensionIdentifier = this.Identifier,
+                Identifier = seriesID.ToString(),
+                Series = listResult.Title,
+                Summary = listResult.Description,
+                Year = listResult.Year is { } yearStr && int.TryParse(yearStr, out int year) ? year : null,
+                Genres = listResult.Genres?.Select(g => g.Genre!).ToArray() ?? [],
+                Url = listResult.Url,
+                Cover = cover,
+                NSFW = listResult.Genres?.Any(g => g.Genre?.ToLowerInvariant() == "adult")
+            };
+            if(Settings.Settings.AllowNSFW || sr.NSFW != true)
+                ret.Add(sr);
         }
 
         return ret;

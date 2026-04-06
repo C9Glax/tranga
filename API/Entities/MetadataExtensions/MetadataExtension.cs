@@ -10,7 +10,7 @@ public interface IMetadataExtension
 
 public sealed record MangaDex : IMetadataExtension
 {
-    public Guid MetadataExtensionId => Guid.Parse("019d6340-9787-79fc-82cb-4dae3383e8af");
+    public Guid MetadataExtensionId => Guid.Parse("019ce521-deaf-7739-9e14-eb6f4afc86e2");
     public string Name => "MangaDex";
     public string IconUrl => "https://mangadex.org/img/brand/mangadex-logo.svg";
 };

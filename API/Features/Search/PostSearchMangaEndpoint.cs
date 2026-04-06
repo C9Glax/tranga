@@ -15,8 +15,11 @@ namespace API.Features.Search;
 public abstract class PostSearchMangaEndpoint
 {
 
-    public static async Task<Results<Ok<Entities.Metadata[]>, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]PostSearchMangaRequest req, CancellationToken ct)
+    public static async Task<Results<Ok<Entities.Metadata[]>, BadRequest, InternalServerError>> Handle(MangaContext mangaContext, [FromBody]PostSearchMangaRequest req, CancellationToken ct)
     {
+        if (req.SearchQuery is { MangaDexSeriesId: null, MangaUpdatesSeriesId: null, Title: null })
+            return TypedResults.BadRequest();
+        
         IMetadataExtension[] extensions = req.MetadataExtensionIds is { Length: > 0 }
             ? MetadataExtensionsCollection.Extensions.Where(e => req.MetadataExtensionIds.Contains(e.Identifier))
                 .ToArray()
@@ -65,7 +68,8 @@ public abstract class PostSearchMangaEndpoint
             Year = searchResult.Year,
             Url = searchResult.Url,
             Status = searchResult.Status,
-            MangaMetadataSources = []
+            MangaMetadataSources = [],
+            NSFW = searchResult.NSFW
         };
         
         await SaveCover(mangaContext, searchResult, source, ct);

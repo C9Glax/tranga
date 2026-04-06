@@ -38,6 +38,7 @@ public abstract class PostSearchMangaDownloadSourceEndpoint
                     Series = mangaInfo.Title,
                     Summary = mangaInfo.Description,
                     Url = mangaInfo.Url,
+                    NSFW = mangaInfo.NSFW
                 };
 
                 DbMangaDownloadSource mangaDownloadSource = new()

@@ -15,5 +15,6 @@ public record MangaInfo(
     string Url,
     string Identifier,
     MemoryStream Cover,
-    string? Description = null
+    string? Description = null,
+    bool? NSFW = null
 );

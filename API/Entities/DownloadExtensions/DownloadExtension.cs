@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace API.Entities.DownloadExtensions;
 
 public interface IDownloadExtension

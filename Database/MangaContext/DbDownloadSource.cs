@@ -22,6 +22,8 @@ public sealed record DbDownloadSource
     public string? Url { get; set; }
     
     public Guid? CoverId { get; set; }
+    
+    public bool? NSFW { get; set; }
 
     #region Navigations
     
