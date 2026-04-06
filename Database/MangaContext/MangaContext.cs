@@ -146,7 +146,8 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
         modelBuilder.Entity<DbMetadataSource>()
             .HasOne<DbFile>(m => m.Cover)
             .WithOne()
-            .HasForeignKey<DbMetadataSource>(m => m.CoverId);
+            .HasForeignKey<DbMetadataSource>(m => m.CoverId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     private void CreateDownloadSourceModel(ModelBuilder modelBuilder)
@@ -157,7 +158,8 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
         modelBuilder.Entity<DbDownloadSource>()
             .HasOne<DbFile>(m => m.Cover)
             .WithOne()
-            .HasForeignKey<DbDownloadSource>(m => m.CoverId);
+            .HasForeignKey<DbDownloadSource>(m => m.CoverId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
     
     private void CreateMangaDownloadSourceModel(ModelBuilder modelBuilder)
