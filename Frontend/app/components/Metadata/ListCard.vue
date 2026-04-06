@@ -11,9 +11,13 @@
             class="w-full h-full"
             :ui="{ header: 'aspect-[13/9]', image: 'object-center', description: 'h-30 text-ellipsis overflow-hidden' }">
             <template #authors>
-                <UAvatar
-                    :src="metadataExtensions?.find((e) => e.metadataExtensionId == metadata.metadataExtensionId)?.iconUrl ?? undefined"
-                    :text="
+                <UUser
+                    :avatar="{
+                        src:
+                            metadataExtensions?.find((e) => e.metadataExtensionId == metadata.metadataExtensionId)?.iconUrl ??
+                            '/blahaj.png',
+                    }"
+                    :name="
                         metadataExtensions?.find((e) => e.metadataExtensionId == metadata.metadataExtensionId)?.name ??
                         metadata.metadataExtensionId
                     " />
