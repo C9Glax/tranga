@@ -49,6 +49,7 @@ const searchQuery = ref<{ title?: string }>({});
 const search = async () => {
     try {
         loading.value = true;
+        searchResult.value = undefined;
         const { data } = await useTranga<PostMangasSearchResponse>('/mangas/search', {
             body: { searchQuery: searchQuery, metadataExtensionIds: selectedExtensions.value },
             method: 'POST',
