@@ -15,9 +15,11 @@ public static class DownloadExtensionsCollection
         new MangaDex()
     ];
 
-    public static List<MangaInfo> SearchAll(SearchQuery query, CancellationToken ct)
+    public static List<MangaInfo> SearchAll(SearchQuery query, CancellationToken ct) => Search(query, Extensions, ct);
+    
+    public static List<MangaInfo> Search(SearchQuery searchQuery, IDownloadExtension[] extensions, CancellationToken ct)
     {
-        List<Task<List<MangaInfo>?>> tasks = Extensions.Select(e => e.Search(query, ct)).ToList();
+        List<Task<List<MangaInfo>?>> tasks = extensions.Select(e => e.Search(searchQuery, ct)).ToList();
         
         Task.WaitAll(tasks, ct);
         

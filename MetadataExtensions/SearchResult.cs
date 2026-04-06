@@ -24,6 +24,8 @@ public sealed record SearchResult
     
     public string? Url { get; init; }
     
+    public Language? Language { get; init; }
+    
     public ReleaseStatus? Status { get; init; }
     
 }

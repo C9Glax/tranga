@@ -19,5 +19,6 @@ public sealed record SearchQuery(
     string? Author = null,
     string? Artist = null,
     string? Language = null,
-    long? MangaUpdatesSeriesId = null
+    long? MangaUpdatesSeriesId = null,
+    Guid? MangaDexSeriesId = null
     );

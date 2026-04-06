@@ -4,7 +4,7 @@ using NSwagClients.GeneratedClients.MangaUpdates;
 
 namespace MetadataExtensions.Extensions;
 
-public class MangaUpdates : IMetadataExtension
+public sealed class MangaUpdates : IMetadataExtension
 {
     // ReSharper disable once InconsistentNaming
     private readonly MangaUpdatesApiClient Client = new (new RequestClient());
