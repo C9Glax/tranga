@@ -31,8 +31,10 @@
                         metadataExtensions?.find((e) => e.metadataExtensionId == metadata.metadataExtensionId)?.name ??
                         metadata.metadataExtensionId
                     "
+                    :description="metadata.identifier"
                     :to="metadata.url ?? undefined"
-                    target="_blank" />
+                    target="_blank"
+                    :ui="{ description: 'truncate h-lh max-w-24' }" />
                 <UButton v-for="prop in actions" v-bind="prop" />
             </template>
         </UBlogPost>
