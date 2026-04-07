@@ -27,12 +27,15 @@
 <script setup lang="ts">
 import type { NavigationMenuItem, NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
 import type { IconProps } from '@nuxt/ui/components/Icon.vue';
+import { LazySearch } from '#components';
 
 export interface TrangaPageProps {
     navigationProps?: NavigationMenuProps;
     pageTitle?: { title: string; icon: IconProps & { color?: string } };
     showSearch?: boolean;
 }
+
+const searchOverlay = useOverlay().create(LazySearch);
 
 const props = defineProps<TrangaPageProps>();
 
@@ -55,6 +58,7 @@ const defaultItems: NavigationMenuItem[] = [
         ui: { linkLeadingIcon: 'text-secondary', linkLabel: 'text-secondary' },
     },
     { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
+    { label: 'Search', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
     { label: 'Metadata List', to: '/metadata', icon: 'i-lucide-info', type: 'link' },
 ];
 
