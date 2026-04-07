@@ -13,7 +13,12 @@
                 {{ manga.metadataEntry?.series }}
                 <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
             </p>
-            <MangaCover :file-id="manga.metadataEntry?.coverId" :manga-id="manga.mangaId" class="z-0 blur-xs" noBlur />
+            <MangaCover
+                :file-id="manga.metadataEntry?.coverId"
+                :manga-id="manga.mangaId"
+                noBlur
+                class="z-0"
+                :class="manga.metadataEntry?.nsfw ? 'blur-md' : 'blur-xs'" />
         </UPageCard>
 
         <div v-if="(mangas?.length ?? 0) < 1 && !loading" class="w-max flex gap-2">
