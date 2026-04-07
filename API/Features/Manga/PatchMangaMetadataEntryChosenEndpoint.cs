@@ -25,7 +25,7 @@ public abstract class PatchMangaMetadataEntryChosenEndpoint
                 s => s.MangaId == mangaId && s.MetadataId == metadataId, ct) is not { } entry)
             return TypedResults.NotFound();
 
-        await mangaContext.MangaMetadataEntries.ExecuteUpdateAsync(s => s.SetProperty(p => p.Chosen, false), cancellationToken: ct);
+        await mangaContext.MangaMetadataEntries.Where(e => e.MangaId == mangaId).ExecuteUpdateAsync(s => s.SetProperty(p => p.Chosen, false), cancellationToken: ct);
 
         entry.Chosen = true;
         await mangaContext.SaveChangesAsync(ct);
