@@ -6,6 +6,7 @@ export default class ApiKeys {
     static Metadata = (id: string) => `Metadata/${id}`;
     static MetadataManga = (id: string) => `Metadata/${id}/Manga`;
     static MetadataRelatedMangas = (id: string) => `Metadata/${id}/RelatedMangas`;
+    static MangaDownloadLinks = (id: string) => `Mangas/${id}/DownloadLinks`;
     static DownloadExtensions = 'DownloadExtensions';
     static MetadataExtensions = 'MetadataExtensions';
 }
