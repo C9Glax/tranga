@@ -58,7 +58,7 @@ public abstract class PostSearchMangaDownloadLinksEndpoint
                     DownloadLink = downloadLink,
                     Manga = source.Manga,
                     Matched = false,
-                    Priority = int.MaxValue
+                    Priority = 0
                 };
 
                 await mangaContext.AddAsync(mangaDownloadLinks, ct);
