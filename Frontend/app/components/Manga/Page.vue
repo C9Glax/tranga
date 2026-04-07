@@ -5,6 +5,7 @@
                 <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
                 <p v-if="$props.title">{{ $props.title }}</p>
                 <p v-else-if="manga?.metadataEntry?.series">{{ manga?.metadataEntry?.series }}</p>
+                <p v-if="manga?.metadataEntry?.year" class="text-dimmed text-sm">{{ manga.metadataEntry?.year }}</p>
                 <USkeleton v-else class="h-lh" />
             </template>
 

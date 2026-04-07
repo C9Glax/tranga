@@ -4,7 +4,8 @@
             <template #title>
                 <UBadge v-if="metadata?.nsfw" label="NSFW" color="error" variant="solid" />
                 <p v-if="$props.title">{{ $props.title }}</p>
-                <p v-else-if="metadata?.series">{{ metadata?.series }}</p>
+                <p v-else-if="metadata?.series">{{ metadata.series }}</p>
+                <p v-if="metadata?.year" class="text-dimmed text-sm">{{ metadata.year }}</p>
                 <USkeleton v-else class="h-lh" />
             </template>
 
