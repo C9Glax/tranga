@@ -1,5 +1,5 @@
 <template>
-    <MetadataPage :metadata="metadata" :actions="actions" :loading="statusMetadata !== 'success'"> </MetadataPage>
+    <MetadataPage :metadata="metadata" :actions="actions" :loading="statusMetadata !== 'success'" />
 </template>
 
 <script setup lang="ts">
@@ -8,6 +8,7 @@ import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { patchMangaMetadataSource } from '~/utils/patchMangaMetadataSource';
 
 const metadataId = useRoute().params.metadataId as string;
+const mangaId = useRoute().query.mangaId as string | undefined;
 
 const { data: metadata, status: statusMetadata } = await useTranga<GetMetadataByMetadataIdResponse>(() => `/metadata/${metadataId}`, {
     key: ApiKeys.Metadata(metadataId),
@@ -16,10 +17,11 @@ const { data: metadata, status: statusMetadata } = await useTranga<GetMetadataBy
 const actions = (m?: Metadata): ButtonProps[] | undefined => {
     const items: ButtonProps[] = [];
 
-    if (metadata.value && metadata.value.mangaIds.length == 1) {
+    if (metadata.value && mangaId && metadata.value.mangaIds.find((id) => id === mangaId)) {
+        items.push({ label: 'Go to Manga', icon: 'i-lucide-book', to: `/manga/${mangaId}`, variant: 'soft' });
         items.push({
             label: metadata.value.chosen ? 'Is Source' : 'Use as Source for Manga',
-            onClick: async () => await patchMangaMetadataSource(metadataId, metadata.value!.mangaIds[0]!),
+            onClick: async () => await patchMangaMetadataSource(metadataId, mangaId),
             disabled: metadata.value?.chosen ?? false,
             variant: metadata.value.chosen ? 'outline' : 'solid',
         });

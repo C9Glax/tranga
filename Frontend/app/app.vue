@@ -22,7 +22,13 @@
                 <div class="flex flex-row gap-2">
                     <UColorModeSelect
                         variant="ghost"
-                        :ui="{ base: 'ps-4 pe-4', leading: 'ps-1.5 pe-1.5', value: 'hidden', trailingIcon: 'hidden', trailing: 'hidden' }" />
+                        :ui="{
+                            base: 'ps-4 pe-4',
+                            leading: 'ps-1.5 pe-1.5',
+                            value: 'hidden',
+                            trailingIcon: 'hidden',
+                            trailing: 'hidden',
+                        }" />
                     <UButton icon="i-lucide-book-search" @click="searchOverlay.open()">Search <UKbd value="ctrl+s" /></UButton>
                 </div>
             </template>

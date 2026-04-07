@@ -3,6 +3,7 @@
         <UDashboardGroup class="mt-(--ui-header-height)">
             <UDashboardSidebar v-model:collapsed="collapsed" :collapsible="true" :resizable="true">
                 <slot name="sidebar">
+                    <UInput v-if="showSearch" v-model="searchModel" placeholder="Search..." icon="i-lucide-search" />
                     <slot name="pageTitle">
                         <div v-if="pageTitle" class="flex flex-row gap-2 align-middle my-2">
                             <UIcon
@@ -16,7 +17,7 @@
                 </slot>
             </UDashboardSidebar>
 
-            <div class="p-16 w-full overflow-y-auto">
+            <div class="px-16 py-4 w-full overflow-y-auto">
                 <slot />
             </div>
         </UDashboardGroup>
@@ -30,6 +31,7 @@ import type { IconProps } from '@nuxt/ui/components/Icon.vue';
 export interface TrangaPageProps {
     navigationProps?: NavigationMenuProps;
     pageTitle?: { title: string; icon: IconProps & { color?: string } };
+    showSearch?: boolean;
 }
 
 const props = defineProps<TrangaPageProps>();
@@ -45,7 +47,6 @@ const nItems = computed((): NavigationMenuItem[][] => {
 });
 
 const defaultItems: NavigationMenuItem[] = [
-    { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link', ui: { linkLeadingIcon: 'text-primary', linkLabel: 'text-primary' } },
     {
         label: 'Back',
         onSelect: () => useRouter().back(),
@@ -53,5 +54,9 @@ const defaultItems: NavigationMenuItem[] = [
         type: 'link',
         ui: { linkLeadingIcon: 'text-secondary', linkLabel: 'text-secondary' },
     },
+    { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
+    { label: 'Metadata List', to: '/metadata', icon: 'i-lucide-info', type: 'link' },
 ];
+
+const searchModel = defineModel<string>('search');
 </script>
