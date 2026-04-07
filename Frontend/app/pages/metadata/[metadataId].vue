@@ -31,7 +31,8 @@ const { data: relatedMangaIds } = await useTranga<GetMetadataByMetadataIdMangaRe
 const actions = (m?: Metadata): ButtonProps[] | undefined => {
     const items: ButtonProps[] = [];
 
-    if (mangaId && relatedMangaIds.value?.find((m) => m === mangaId)) {
+    if (mangaId && relatedMangaIds.value?.find((m) => m === mangaId) && !manga.value) {
+        items.push({ label: 'Go to Manga', icon: 'i-lucide-book', to: `/manga/${mangaId}`, target: '_blank', variant: 'soft' });
         items.push({
             label: 'Use as Source for Manga',
             onClick: async () => await patchMangaMetadataSource(metadataId, mangaId),
