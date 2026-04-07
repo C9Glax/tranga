@@ -1,9 +1,14 @@
 <template>
-    <MetadataPage :metadata="metadata" :actions="actions" :loading="statusMetadata !== 'success'" />
+    <MetadataPage :metadata="metadata" :actions="actions" :loading="statusMetadata !== 'success'"> </MetadataPage>
 </template>
 
 <script setup lang="ts">
-import type { GetMetadataByMetadataIdResponse, Metadata } from '~/api/trangaApi';
+import type {
+    GetMetadataByMetadataIdMangaRelatedResponse,
+    GetMetadataByMetadataIdMangaResponse,
+    GetMetadataByMetadataIdResponse,
+    Metadata,
+} from '~/api/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { patchMangaMetadataSource } from '~/utils/patchMangaMetadataSource';
 
@@ -14,16 +19,32 @@ const { data: metadata, status: statusMetadata } = await useTranga<GetMetadataBy
     key: ApiKeys.Metadata(metadataId),
 });
 
+const { data: manga } = await useTranga<GetMetadataByMetadataIdMangaResponse>(() => `/metadata/${metadataId}/manga`, {
+    key: ApiKeys.MetadataManga(metadataId),
+});
+
+const { data: relatedMangaIds } = await useTranga<GetMetadataByMetadataIdMangaRelatedResponse>(
+    () => `/metadata/${metadataId}/manga/related`,
+    { key: ApiKeys.MetadataRelatedMangas(metadataId) }
+);
+
 const actions = (m?: Metadata): ButtonProps[] | undefined => {
     const items: ButtonProps[] = [];
 
-    if (metadata.value && mangaId && metadata.value.mangaIds.find((id) => id === mangaId)) {
-        items.push({ label: 'Go to Manga', icon: 'i-lucide-book', to: `/manga/${mangaId}`, variant: 'soft' });
+    if (mangaId && relatedMangaIds.value?.find((m) => m === mangaId)) {
         items.push({
-            label: metadata.value.chosen ? 'Is Source' : 'Use as Source for Manga',
+            label: 'Use as Source for Manga',
             onClick: async () => await patchMangaMetadataSource(metadataId, mangaId),
-            disabled: metadata.value?.chosen ?? false,
-            variant: metadata.value.chosen ? 'outline' : 'solid',
+            variant: 'solid',
+        });
+    } else if (manga.value) {
+        items.push({ label: 'Go to Manga', icon: 'i-lucide-book', to: `/manga/${manga.value.mangaId}`, variant: 'soft' });
+        items.push({ label: 'Is Source', disabled: true, variant: 'outline' });
+    } else if (relatedMangaIds.value?.length === 1) {
+        items.push({
+            label: 'Use as Source for Manga',
+            onClick: async () => await patchMangaMetadataSource(metadataId, relatedMangaIds.value![0]!),
+            variant: 'solid',
         });
     }
 

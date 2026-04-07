@@ -9,7 +9,7 @@ public sealed record DbGenre
 
     #region Navigations
 
-    public ICollection<DbMetadataSource>? MetadataSources { get; init; }
+    public ICollection<DbMetadata>? MetadataEntries { get; init; }
 
     #endregion
 }

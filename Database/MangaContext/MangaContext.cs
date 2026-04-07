@@ -8,36 +8,36 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
     
     public DbSet<DbGenre> Genres { get; init; }
     
-    public DbSet<DbPerson> MangaAuthors { get; init; }
+    public DbSet<DbPerson> Authors { get; init; }
     
-    public DbSet<DbPerson> MangaArtists { get; init; }
+    public DbSet<DbPerson> Artists { get; init; }
     
     public DbSet<DbChapter> Chapters { get; init; }
     
     public DbSet<DbFile> Files { get; init; }
     
-    public DbSet<DbMetadataSource> MetadataSources { get; init; }
+    public DbSet<DbMetadata> MetadataEntries { get; init; }
     
-    public DbSet<DbMangaMetadataSource> MangaMetadataSources { get; init; }
+    public DbSet<DbMangaMetadataEntries> MangaMetadataEntries { get; init; }
     
-    public DbSet<DbDownloadSource> DownloadSources { get; init; }
+    public DbSet<DbDownloadLink> DownloadLinks { get; init; }
     
-    public DbSet<DbMangaDownloadSource> MangaDownloadSources { get; init; }
+    public DbSet<DbMangaDownloadLinks> MangaDownloadLinks { get; init; }
     
-    public DbSet<DbChapterDownloadSource> ChapterDownloadSources { get; init; }
+    public DbSet<DbChapterDownloadLink> ChapterDownloadLinks { get; init; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         CreateMangaModel(modelBuilder);
-        CreateMangaMetadataSourceModel(modelBuilder);
+        CreateMangaMetadataModel(modelBuilder);
         CreateGenresModel(modelBuilder);
         CreatePersonModel(modelBuilder);
         CreateChapterModel(modelBuilder);
         CreateFileModel(modelBuilder);
         CreateMetadataModel(modelBuilder);
-        CreateDownloadSourceModel(modelBuilder);
-        CreateMangaDownloadSourceModel(modelBuilder);
-        CreateChapterDownloadModel(modelBuilder);
+        CreateDownloadLinkModel(modelBuilder);
+        CreateMangaDownloadLinkModel(modelBuilder);
+        CreateChapterDownloadLinkModel(modelBuilder);
     }
 
     private void CreateMangaModel(ModelBuilder modelBuilder)
@@ -51,27 +51,27 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
             .HasForeignKey(c => c.MangaId);
     }
 
-    private void CreateMangaMetadataSourceModel(ModelBuilder modelBuilder)
+    private void CreateMangaMetadataModel(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<DbMangaMetadataSource>()
-            .HasKey(m => new { m.MangaId, m.MetadataSourceId });
+        modelBuilder.Entity<DbMangaMetadataEntries>()
+            .HasKey(m => new { m.MangaId, MetadataSourceId = m.MetadataId });
         
         modelBuilder.Entity<DbManga>()
-            .HasMany<DbMangaMetadataSource>(m => m.MetadataSources)
+            .HasMany<DbMangaMetadataEntries>(m => m.MetadataEntries)
             .WithOne(s => s.Manga)
             .HasForeignKey(s => s.MangaId);
         
-        modelBuilder.Entity<DbMetadataSource>()
-            .HasMany<DbMangaMetadataSource>(s => s.MangaMetadataSources)
-            .WithOne(s => s.MetadataSource)
-            .HasForeignKey(s => s.MetadataSourceId);
+        modelBuilder.Entity<DbMetadata>()
+            .HasMany<DbMangaMetadataEntries>(s => s.MangaMetadataEntries)
+            .WithOne(s => s.Metadata)
+            .HasForeignKey(s => s.MetadataId);
 
-        modelBuilder.Entity<DbMangaMetadataSource>()
+        modelBuilder.Entity<DbMangaMetadataEntries>()
             .Navigation(s => s.Manga)
             .AutoInclude(true);
         
-        modelBuilder.Entity<DbMangaMetadataSource>()
-            .Navigation(s => s.MetadataSource)
+        modelBuilder.Entity<DbMangaMetadataEntries>()
+            .Navigation(s => s.Metadata)
             .AutoInclude(true);
     }
 
@@ -81,7 +81,7 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
             .HasKey(c => c.ChapterId);
         
         modelBuilder.Entity<DbChapter>()
-            .HasMany<DbChapterDownloadSource>(c => c.DownloadSources)
+            .HasMany<DbChapterDownloadLink>(c => c.DownloadLinks)
             .WithOne(s => s.Chapter)
             .HasForeignKey(s => s.ChapterId);
     }
@@ -92,13 +92,13 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
             .HasKey(g => g.Genre);
 
         modelBuilder.Entity<DbMangaGenres>()
-            .HasKey(e => new { e.MetadataSourceId, e.GenreId });
+            .HasKey(e => new { MetadataSourceId = e.MetadataId, e.GenreId });
         
         modelBuilder.Entity<DbGenre>()
-            .HasMany<DbMetadataSource>(g => g.MetadataSources)
+            .HasMany<DbMetadata>(g => g.MetadataEntries)
             .WithMany(s => s.Genres)
             .UsingEntity<DbMangaGenres>(
-                r => r.HasOne<DbMetadataSource>(e => e.MetadataSource).WithMany().HasForeignKey(e => e.MetadataSourceId),
+                r => r.HasOne<DbMetadata>(e => e.Metadata).WithMany().HasForeignKey(e => e.MetadataId),
                 l => l.HasOne<DbGenre>(e => e.Genre).WithMany().HasForeignKey(e => e.GenreId)
             );
     }
@@ -110,18 +110,18 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
         
         
         modelBuilder.Entity<DbPerson>()
-            .HasMany<DbMetadataSource>()
+            .HasMany<DbMetadata>()
             .WithMany(s => s.Authors)
             .UsingEntity<DbMangaAuthors>(
-                r => r.HasOne<DbMetadataSource>(e => e.MetadataSource).WithMany().HasForeignKey(e => e.MetadataSourceId),
+                r => r.HasOne<DbMetadata>(e => e.Metadata).WithMany().HasForeignKey(e => e.MetadataId),
                 l => l.HasOne<DbPerson>(e => e.Author).WithMany().HasForeignKey(e => e.AuthorId)
             );
         
         modelBuilder.Entity<DbPerson>()
-            .HasMany<DbMetadataSource>()
+            .HasMany<DbMetadata>()
             .WithMany(s => s.Artists)
             .UsingEntity<DbMangaArtists>(
-                r => r.HasOne<DbMetadataSource>(e => e.MetadataSource).WithMany().HasForeignKey(e => e.MetadataSourceId),
+                r => r.HasOne<DbMetadata>(e => e.Metadata).WithMany().HasForeignKey(e => e.MetadataId),
                 l => l.HasOne<DbPerson>(e => e.Artist).WithMany().HasForeignKey(e => e.ArtistId)
             );
     }
@@ -137,63 +137,63 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaDataba
 
     private void CreateMetadataModel(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<DbMetadataSource>()
+        modelBuilder.Entity<DbMetadata>()
             .HasKey(s => s.MetadataId);
 
-        modelBuilder.Entity<DbMetadataSource>()
+        modelBuilder.Entity<DbMetadata>()
             .HasIndex(s => new { s.MetadataExtension, s.Identifier }, "IX_Metadata_Extension_Identifier");
 
-        modelBuilder.Entity<DbMetadataSource>()
+        modelBuilder.Entity<DbMetadata>()
             .HasOne<DbFile>(m => m.Cover)
             .WithOne()
-            .HasForeignKey<DbMetadataSource>(m => m.CoverId)
+            .HasForeignKey<DbMetadata>(m => m.CoverId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 
-    private void CreateDownloadSourceModel(ModelBuilder modelBuilder)
+    private void CreateDownloadLinkModel(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<DbDownloadSource>()
-            .HasKey(s => s.DownloadId);
+        modelBuilder.Entity<DbDownloadLink>()
+            .HasKey(s => s.DownloadLinkId);
         
-        modelBuilder.Entity<DbDownloadSource>()
+        modelBuilder.Entity<DbDownloadLink>()
             .HasOne<DbFile>(m => m.Cover)
             .WithOne()
-            .HasForeignKey<DbDownloadSource>(m => m.CoverId)
+            .HasForeignKey<DbDownloadLink>(m => m.CoverId)
             .OnDelete(DeleteBehavior.Cascade);
     }
     
-    private void CreateMangaDownloadSourceModel(ModelBuilder modelBuilder)
+    private void CreateMangaDownloadLinkModel(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<DbMangaDownloadSource>()
-            .HasKey(m => new { m.MangaId, m.DownloadSourceId });
+        modelBuilder.Entity<DbMangaDownloadLinks>()
+            .HasKey(m => new { m.MangaId, DownloadSourceId = m.DownloadLinkId });
         
         modelBuilder.Entity<DbManga>()
-            .HasMany<DbMangaDownloadSource>(m => m.DownloadSources)
+            .HasMany<DbMangaDownloadLinks>(m => m.DownloadLinks)
             .WithOne(s => s.Manga)
             .HasForeignKey(s => s.MangaId);
         
-        modelBuilder.Entity<DbDownloadSource>()
-            .HasMany<DbMangaDownloadSource>(s => s.MangaDownloadSources)
-            .WithOne(s => s.DownloadSource)
-            .HasForeignKey(s => s.DownloadSourceId);
+        modelBuilder.Entity<DbDownloadLink>()
+            .HasMany<DbMangaDownloadLinks>(s => s.MangaMatches)
+            .WithOne(s => s.DownloadLink)
+            .HasForeignKey(s => s.DownloadLinkId);
 
-        modelBuilder.Entity<DbMangaDownloadSource>()
+        modelBuilder.Entity<DbMangaDownloadLinks>()
             .Navigation(s => s.Manga)
             .AutoInclude(true);
         
-        modelBuilder.Entity<DbMangaDownloadSource>()
-            .Navigation(s => s.DownloadSource)
+        modelBuilder.Entity<DbMangaDownloadLinks>()
+            .Navigation(s => s.DownloadLink)
             .AutoInclude(true);
     }
 
-    private void CreateChapterDownloadModel(ModelBuilder modelBuilder)
+    private void CreateChapterDownloadLinkModel(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<DbChapterDownloadSource>()
+        modelBuilder.Entity<DbChapterDownloadLink>()
             .HasKey(s => new { s.ChapterId, s.DownloadExtension });
 
-        modelBuilder.Entity<DbChapterDownloadSource>()
+        modelBuilder.Entity<DbChapterDownloadLink>()
             .HasOne<DbFile>(s => s.File)
             .WithOne()
-            .HasForeignKey<DbChapterDownloadSource>(s => s.FileId);
+            .HasForeignKey<DbChapterDownloadLink>(s => s.FileId);
     }
 }

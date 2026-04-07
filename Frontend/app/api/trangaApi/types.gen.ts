@@ -7,6 +7,24 @@ export type ContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 export type DownloadExtensionsList = { extensions?: Array<IDownloadExtension> };
 
 export type DownloadLink = {
+    downloadId: string;
+    downloadExtensionId: string;
+    identifier: string;
+    series: string;
+    summary: null | string;
+    language?: null | string;
+    url: null | string;
+    coverId: null | string;
+    nsfw: null | boolean;
+};
+
+export type IDownloadExtension = { downloadExtensionsId?: string; name?: null | string; iconUrl?: null | string };
+
+export type IMetadataExtension = { metadataExtensionId?: string; name?: null | string; iconUrl?: null | string };
+
+export type Manga = { mangaId: string; monitored: boolean; metadataEntry?: null | Metadata; downloadLinks?: null | Array<DownloadLink> };
+
+export type MangaDownloadLink = {
     mangaId: string;
     downloadId: string;
     downloadExtensionId: string;
@@ -20,12 +38,6 @@ export type DownloadLink = {
     coverId: null | string;
     nsfw: null | boolean;
 };
-
-export type IDownloadExtension = { downloadExtensionsId?: string; name?: null | string; iconUrl?: null | string };
-
-export type IMetadataExtension = { metadataExtensionId?: string; name?: null | string; iconUrl?: null | string };
-
-export type Manga = { mangaId: string; monitored: boolean; metadataEntry?: null | Metadata };
 
 export type Metadata = {
     metadataId: string;
@@ -48,31 +60,33 @@ export type Metadata = {
 
 export type MetadataExtensionsList = { extensions?: Array<IMetadataExtension> };
 
-export type MetadataMangaIds = {
-    mangaIds: Array<string>;
-    metadataId: string;
-    metadataExtensionId: string;
-    identifier: string;
-    chosen?: null | boolean;
-    series: string;
-    summary: null | string;
-    year?: null | number | string;
-    language?: null | string;
-    chaptersNumber?: null | number | string;
-    coverId: null | string;
-    genres?: Array<string>;
-    authors?: Array<string>;
-    artists?: Array<string>;
-    url: null | string;
-    status?: null | ReleaseStatus;
-    nsfw: null | boolean;
+/**
+ * Used in PatchMangaDownloadLinkEndpoint
+ */
+export type PatchMangaDownloadLinkRequest = {
+    /**
+     * Use Download-Link for Downloads
+     */
+    matched: boolean;
+    /**
+     * Priority with which to Download Chapters from this Source
+     */
+    priority: number | string;
 };
 
-export type PatchMangaDownloadSourceMatchedRequest = { matched: boolean; priority: number | string };
-
-export type PatchMangaMetadataEntryRequest = { metadataId: string };
-
-export type PostSearchMangaRequest = { searchQuery: SearchQuery; metadataExtensionIds: null | Array<string> };
+/**
+ * Used in PostSearchMangaEndpoint
+ */
+export type PostSearchMangaRequest = {
+    /**
+     * Search Query
+     */
+    searchQuery: SearchQuery;
+    /**
+     * IDs of Metadata Extensions to Search on
+     */
+    metadataExtensionIds: null | Array<string>;
+};
 
 export type ReleaseStatus = 'Ongoing' | 'Complete' | 'Hiatus' | 'Cancelled';
 
@@ -120,36 +134,56 @@ export type GetMangasErrors = {
 
 export type GetMangasResponses = {
     /**
-     * OK
+     * List of all Manga
      */
     200: Array<Manga>;
 };
 
 export type GetMangasResponse = GetMangasResponses[keyof GetMangasResponses];
 
-export type GetMangasByMangaIdData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}' };
+export type GetMangasByMangaIdData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Manga
+         */
+        mangaId: string;
+    };
+    query?: never;
+    url: '/mangas/{mangaId}';
+};
 
 export type GetMangasByMangaIdErrors = {
     /**
-     * Not Found
+     * Manga with requested ID does not exist or no Metadata-Entry has been chosen for Manga
      */
     404: unknown;
 };
 
 export type GetMangasByMangaIdResponses = {
     /**
-     * OK
+     * Manga with ID and Metadata
      */
     200: Manga;
 };
 
 export type GetMangasByMangaIdResponse = GetMangasByMangaIdResponses[keyof GetMangasByMangaIdResponses];
 
-export type GetMangasByMangaIdCoverData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/cover' };
+export type GetMangasByMangaIdCoverData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Manga
+         */
+        mangaId: string;
+    };
+    query?: never;
+    url: '/mangas/{mangaId}/cover';
+};
 
 export type GetMangasByMangaIdCoverErrors = {
     /**
-     * Not Found
+     * Manga with requested ID does not exist
      */
     404: unknown;
     /**
@@ -160,12 +194,158 @@ export type GetMangasByMangaIdCoverErrors = {
 
 export type GetMangasByMangaIdCoverResponses = {
     /**
-     * No Content
+     * Cover does not exist
      */
     204: void;
 };
 
 export type GetMangasByMangaIdCoverResponse = GetMangasByMangaIdCoverResponses[keyof GetMangasByMangaIdCoverResponses];
+
+export type GetMangasByMangaIdMetadataData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Manga
+         */
+        mangaId: string;
+    };
+    query?: never;
+    url: '/mangas/{mangaId}/metadata';
+};
+
+export type GetMangasByMangaIdMetadataErrors = {
+    /**
+     * Manga with requested ID does not exist or no Metadata-Entry has been chosen for Manga
+     */
+    404: unknown;
+};
+
+export type GetMangasByMangaIdMetadataResponses = {
+    /**
+     * Metadata of Manga
+     */
+    200: Metadata;
+};
+
+export type GetMangasByMangaIdMetadataResponse = GetMangasByMangaIdMetadataResponses[keyof GetMangasByMangaIdMetadataResponses];
+
+export type GetMangasByMangaIdMetadataRelatedData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Manga
+         */
+        mangaId: string;
+    };
+    query?: never;
+    url: '/mangas/{mangaId}/metadata/related';
+};
+
+export type GetMangasByMangaIdMetadataRelatedErrors = {
+    /**
+     * Manga with requested ID does not exist
+     */
+    404: unknown;
+};
+
+export type GetMangasByMangaIdMetadataRelatedResponses = {
+    /**
+     * Metadata-Entries of Manga
+     */
+    200: Array<Metadata>;
+};
+
+export type GetMangasByMangaIdMetadataRelatedResponse =
+    GetMangasByMangaIdMetadataRelatedResponses[keyof GetMangasByMangaIdMetadataRelatedResponses];
+
+export type PatchMangasByMangaIdMetadataByMetadataIdData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Manga
+         */
+        mangaId: string;
+        /**
+         * ID of Metadata-Entry
+         */
+        metadataId: string;
+    };
+    query?: never;
+    url: '/mangas/{mangaId}/metadata/{metadataId}';
+};
+
+export type PatchMangasByMangaIdMetadataByMetadataIdErrors = {
+    /**
+     * Manga or Metadata with requested ID does not exist
+     */
+    404: unknown;
+};
+
+export type PatchMangasByMangaIdMetadataByMetadataIdResponses = {
+    /**
+     * Metadata-Entry has been chosen
+     */
+    200: unknown;
+};
+
+export type GetMangasByMangaIdDownloadLinksData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Manga
+         */
+        mangaId: string;
+    };
+    query?: never;
+    url: '/mangas/{mangaId}/downloadLinks';
+};
+
+export type GetMangasByMangaIdDownloadLinksErrors = {
+    /**
+     * Manga with requested ID does not exist
+     */
+    404: unknown;
+};
+
+export type GetMangasByMangaIdDownloadLinksResponses = {
+    /**
+     * List of Download-Links used for Manga
+     */
+    200: Array<MangaDownloadLink>;
+};
+
+export type GetMangasByMangaIdDownloadLinksResponse =
+    GetMangasByMangaIdDownloadLinksResponses[keyof GetMangasByMangaIdDownloadLinksResponses];
+
+export type PatchMangasByMangaIdDownloadLinksByDownloadIdData = {
+    body: PatchMangaDownloadLinkRequest;
+    path: {
+        /**
+         * ID of Manga
+         */
+        mangaId: string;
+        /**
+         * ID of Download-Link
+         */
+        downloadId: string;
+    };
+    query?: never;
+    url: '/mangas/{mangaId}/downloadLinks/{downloadId}';
+};
+
+export type PatchMangasByMangaIdDownloadLinksByDownloadIdErrors = {
+    /**
+     * Manga or Download-Link with requested ID does not exist
+     */
+    404: unknown;
+};
+
+export type PatchMangasByMangaIdDownloadLinksByDownloadIdResponses = {
+    /**
+     * Download-Link priority has been changed
+     */
+    200: unknown;
+};
 
 export type PostMangasSearchData = { body: PostSearchMangaRequest; path?: never; query?: never; url: '/mangas/search' };
 
@@ -182,18 +362,28 @@ export type PostMangasSearchErrors = {
 
 export type PostMangasSearchResponses = {
     /**
-     * OK
+     * Search result
      */
     200: Array<Metadata>;
 };
 
 export type PostMangasSearchResponse = PostMangasSearchResponses[keyof PostMangasSearchResponses];
 
-export type GetMangasByMangaIdMatchData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/match' };
+export type PostMangasSearchByMangaIdDownloadLinksData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Manga to Search
+         */
+        mangaId: string;
+    };
+    query?: never;
+    url: '/mangas/search/{mangaId}/downloadLinks';
+};
 
-export type GetMangasByMangaIdMatchErrors = {
+export type PostMangasSearchByMangaIdDownloadLinksErrors = {
     /**
-     * Not Found
+     * Manga with ID does not exist
      */
     404: unknown;
     /**
@@ -202,104 +392,21 @@ export type GetMangasByMangaIdMatchErrors = {
     500: unknown;
 };
 
-export type GetMangasByMangaIdMatchResponses = {
+export type PostMangasSearchByMangaIdDownloadLinksResponses = {
     /**
-     * OK
+     * Search result
      */
-    200: Array<DownloadLink>;
+    200: Array<MangaDownloadLink>;
 };
 
-export type GetMangasByMangaIdMatchResponse = GetMangasByMangaIdMatchResponses[keyof GetMangasByMangaIdMatchResponses];
-
-export type GetMangasByMangaIdMetadataData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/metadata' };
-
-export type GetMangasByMangaIdMetadataErrors = {
-    /**
-     * Not Found
-     */
-    404: unknown;
-};
-
-export type GetMangasByMangaIdMetadataResponses = {
-    /**
-     * OK
-     */
-    200: Array<Metadata>;
-};
-
-export type GetMangasByMangaIdMetadataResponse = GetMangasByMangaIdMetadataResponses[keyof GetMangasByMangaIdMetadataResponses];
-
-export type PatchMangasByMangaIdMetadataData = {
-    body: PatchMangaMetadataEntryRequest;
-    path: { mangaId: string };
-    query?: never;
-    url: '/mangas/{mangaId}/metadata';
-};
-
-export type PatchMangasByMangaIdMetadataErrors = {
-    /**
-     * Not Found
-     */
-    404: unknown;
-};
-
-export type PatchMangasByMangaIdMetadataResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type PatchMangasByMangaIdDownloadLinkByDownloadIdData = {
-    body: PatchMangaDownloadSourceMatchedRequest;
-    path: { mangaId: string; downloadId: string };
-    query?: never;
-    url: '/mangas/{mangaId}/downloadLink/{downloadId}';
-};
-
-export type PatchMangasByMangaIdDownloadLinkByDownloadIdErrors = {
-    /**
-     * Not Found
-     */
-    404: unknown;
-};
-
-export type PatchMangasByMangaIdDownloadLinkByDownloadIdResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type GetMangasByMangaIdDownloadLinksData = {
-    body?: never;
-    path: { mangaId: string };
-    query?: never;
-    url: '/mangas/{mangaId}/downloadLinks';
-};
-
-export type GetMangasByMangaIdDownloadLinksErrors = {
-    /**
-     * Not Found
-     */
-    404: unknown;
-};
-
-export type GetMangasByMangaIdDownloadLinksResponses = {
-    /**
-     * OK
-     */
-    200: Array<DownloadLink>;
-};
-
-export type GetMangasByMangaIdDownloadLinksResponse =
-    GetMangasByMangaIdDownloadLinksResponses[keyof GetMangasByMangaIdDownloadLinksResponses];
+export type PostMangasSearchByMangaIdDownloadLinksResponse =
+    PostMangasSearchByMangaIdDownloadLinksResponses[keyof PostMangasSearchByMangaIdDownloadLinksResponses];
 
 export type GetMetadataExtensionsData = { body?: never; path?: never; query?: never; url: '/metadata/extensions' };
 
 export type GetMetadataExtensionsResponses = {
     /**
-     * OK
+     * A List of Metadata-Extensions
      */
     200: MetadataExtensionsList;
 };
@@ -317,14 +424,24 @@ export type GetMetadataErrors = {
 
 export type GetMetadataResponses = {
     /**
-     * OK
+     * A list of all Metadata-Entries
      */
-    200: Array<MetadataMangaIds>;
+    200: Array<Metadata>;
 };
 
 export type GetMetadataResponse = GetMetadataResponses[keyof GetMetadataResponses];
 
-export type GetMetadataByMetadataIdData = { body?: never; path: { metadataId: string }; query?: never; url: '/metadata/{metadataId}' };
+export type GetMetadataByMetadataIdData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Metadata-Entry
+         */
+        metadataId: string;
+    };
+    query?: never;
+    url: '/metadata/{metadataId}';
+};
 
 export type GetMetadataByMetadataIdErrors = {
     /**
@@ -335,31 +452,75 @@ export type GetMetadataByMetadataIdErrors = {
 
 export type GetMetadataByMetadataIdResponses = {
     /**
-     * OK
+     * The Metadata-Entry
      */
-    200: MetadataMangaIds;
+    200: Metadata;
 };
 
 export type GetMetadataByMetadataIdResponse = GetMetadataByMetadataIdResponses[keyof GetMetadataByMetadataIdResponses];
 
-export type GetFilesByFileIdData = { body?: never; path: { fileId: string }; query?: never; url: '/files/{fileId}' };
+export type GetMetadataByMetadataIdMangaData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the Metadata-Entry
+         */
+        metadataId: string;
+    };
+    query?: never;
+    url: '/metadata/{metadataId}/manga';
+};
 
-export type GetFilesByFileIdErrors = {
+export type GetMetadataByMetadataIdMangaErrors = {
     /**
-     * Not Found
+     * Metadata-Entry with ID not found
      */
     404: unknown;
-    /**
-     * Internal Server Error
-     */
-    500: unknown;
 };
+
+export type GetMetadataByMetadataIdMangaResponses = {
+    /**
+     * Manga
+     */
+    200: Manga;
+};
+
+export type GetMetadataByMetadataIdMangaResponse = GetMetadataByMetadataIdMangaResponses[keyof GetMetadataByMetadataIdMangaResponses];
+
+export type GetMetadataByMetadataIdMangaRelatedData = {
+    body?: never;
+    path: {
+        /**
+         * ID of the Metadata-Entry
+         */
+        metadataId: string;
+    };
+    query?: never;
+    url: '/metadata/{metadataId}/manga/related';
+};
+
+export type GetMetadataByMetadataIdMangaRelatedErrors = {
+    /**
+     * Metadata-Entry with ID not found
+     */
+    404: unknown;
+};
+
+export type GetMetadataByMetadataIdMangaRelatedResponses = {
+    /**
+     * Manga-IDs
+     */
+    200: Array<string>;
+};
+
+export type GetMetadataByMetadataIdMangaRelatedResponse =
+    GetMetadataByMetadataIdMangaRelatedResponses[keyof GetMetadataByMetadataIdMangaRelatedResponses];
 
 export type GetDownloadLinksExtensionsData = { body?: never; path?: never; query?: never; url: '/downloadLinks/extensions' };
 
 export type GetDownloadLinksExtensionsResponses = {
     /**
-     * OK
+     * A List of Download-Extensions
      */
     200: DownloadExtensionsList;
 };
@@ -377,9 +538,60 @@ export type GetDownloadLinksErrors = {
 
 export type GetDownloadLinksResponses = {
     /**
-     * OK
+     * List of all Download-Links
      */
-    200: Array<DownloadLink>;
+    200: Array<MangaDownloadLink>;
 };
 
 export type GetDownloadLinksResponse = GetDownloadLinksResponses[keyof GetDownloadLinksResponses];
+
+export type GetDownloadLinksByDownloadIdData = {
+    body?: never;
+    path: {
+        /**
+         * ID of Download-Link
+         */
+        downloadId: string;
+    };
+    query?: never;
+    url: '/downloadLinks/{downloadId}';
+};
+
+export type GetDownloadLinksByDownloadIdErrors = {
+    /**
+     * Download-Link with ID does not exist
+     */
+    404: unknown;
+};
+
+export type GetDownloadLinksByDownloadIdResponses = {
+    /**
+     * Download-Link
+     */
+    200: DownloadLink;
+};
+
+export type GetDownloadLinksByDownloadIdResponse = GetDownloadLinksByDownloadIdResponses[keyof GetDownloadLinksByDownloadIdResponses];
+
+export type GetFilesByFileIdData = {
+    body?: never;
+    path: {
+        /**
+         * ID of File
+         */
+        fileId: string;
+    };
+    query?: never;
+    url: '/files/{fileId}';
+};
+
+export type GetFilesByFileIdErrors = {
+    /**
+     * File with ID does not exist
+     */
+    404: unknown;
+    /**
+     * Internal Server Error
+     */
+    500: unknown;
+};

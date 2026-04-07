@@ -55,6 +55,7 @@ const search = async () => {
             body: { searchQuery: searchQuery, metadataExtensionIds: selectedExtensions.value },
             method: 'POST',
         });
+        await refreshNuxtData([ApiKeys.MetadataList, ApiKeys.MangaList]);
         searchResult.value = data.value;
     } catch {
         toast.add({ title: 'Failed to search manga!', color: 'error' });

@@ -12,9 +12,9 @@ public sealed record DbManga
     
     public ICollection<DbChapter>? Chapters { get; init; }
 
-    public ICollection<DbMangaMetadataSource>? MetadataSources { get; init; }
+    public ICollection<DbMangaMetadataEntries>? MetadataEntries { get; init; }
     
-    public ICollection<DbMangaDownloadSource>? DownloadSources { get; init; }
+    public ICollection<DbMangaDownloadLinks>? DownloadLinks { get; init; }
 
     #endregion
 }

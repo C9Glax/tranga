@@ -5,9 +5,9 @@ namespace API.Helpers;
 
 public static class SearchQueryHelper
 {
-    public static SearchQuery ToSearchQuery(this DbMangaMetadataSource source) => new()
+    public static SearchQuery ToSearchQuery(this DbMangaMetadataEntries source) => new()
     {
-        Title = source.MetadataSource.Series
+        Title = source.Metadata.Series
         //TODO Add more fields
     };
 }

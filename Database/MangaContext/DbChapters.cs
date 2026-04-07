@@ -23,7 +23,7 @@ public sealed record DbChapter
     
     public DbManga? Manga { get; internal set; }
     
-    public ICollection<DbChapterDownloadSource>? DownloadSources { get; internal set; }
+    public ICollection<DbChapterDownloadLink>? DownloadLinks { get; internal set; }
 
     #endregion
 }

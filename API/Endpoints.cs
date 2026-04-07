@@ -1,8 +1,8 @@
-using API.Features.DownloadSource;
+using API.Features.DownloadLinks;
 using API.Features.File;
 using API.Features.Manga;
+using API.Features.Manga.Search;
 using API.Features.Metadata;
-using API.Features.Search;
 
 namespace API;
 
@@ -18,63 +18,76 @@ internal static class Endpoints
             .WithTags("Metadata")
             .MapMetadataEndpoints();
         
-        builder.MapGroup("/files")
-            .WithTags("Files")
-            .MapFileEndpoints();
-        
         builder.MapGroup("/downloadLinks")
             .WithTags("Download")
             .MapDownloadEndpoints();
+        
+        builder.MapGroup("/files")
+            .WithTags("Files")
+            .MapFileEndpoints();
     }
 
     private static void MapMangaEndpoints(this RouteGroupBuilder builder)
     {
-        builder.MapGet(string.Empty, GetMangaListEndpoint.Handle)
-            .WithTags("Info");
+        builder.MapGet(string.Empty, GetMangaListEndpoint.Handle);
 
-        builder.MapGet("{mangaId}", GetMangaEndpoint.Handle)
-            .WithTags("Info");
-        
-        builder.MapGet("{mangaId}/cover", GetMangaCoverEndpoint.Handle)
-            .WithTags("Info");
-        
-        builder.MapPost("/search", PostSearchMangaEndpoint.Handle)
-            .WithTags("Search");
-        
-        builder.MapGet("{mangaId}/match", PostSearchMangaDownloadSourceEndpoint.Handle)
-            .WithTags("Search", "Download");
+        builder.MapGet("{mangaId}", GetMangaEndpoint.Handle);
 
-        builder.MapPatch("{mangaId}/metadata", PatchMangaMetadataEntryEndpoint.Handle)
+        builder.MapGet("{mangaId}/cover", GetMangaCoverEndpoint.Handle);
+        
+        builder.MapGroup("/search").WithTags("Search").MapMangaSearchEndpoints();
+        
+        builder.MapGet("{mangaId}/metadata", GetMangaMetadataEndpoint.Handle)
             .WithTags("Metadata");
         
-        builder.MapGet("{mangaId}/metadata", GetMangaMetadataSourcesEndpoint.Handle)
-            .WithTags("Info", "Metadata");
+        builder.MapGet("{mangaId}/metadata/related", GetMangaMetadataEntriesEndpoint.Handle)
+            .WithTags("Metadata");
+
+        builder.MapPatch("{mangaId}/metadata/{metadataId}", PatchMangaMetadataEntryChosenEndpoint.Handle)
+            .WithTags("Metadata");
         
-        builder.MapPatch("{mangaId}/downloadLink/{downloadId}", PatchMangaDownloadSourceMatchedEndpoint.Handle)
+        builder.MapGet("{mangaId}/downloadLinks", GetMangaDownloadLinksEndpoint.Handle)
             .WithTags("Download");
         
-        builder.MapGet("{mangaId}/downloadLinks", GetMangaDownloadSourcesEndpoint.Handle)
-            .WithTags("Info", "Download");
+        builder.MapPatch("{mangaId}/downloadLinks/{downloadId}", PatchMangaDownloadLinkEndpoint.Handle)
+            .WithTags("Download");
+    }
+
+    private static void MapMangaSearchEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapPost(string.Empty, PostSearchMangaEndpoint.Handle)
+            .WithTags("Metadata");
+        
+        builder.MapPost("{mangaId}/downloadLinks", PostSearchMangaDownloadLinksEndpoint.Handle)
+            .WithTags("Download");
     }
 
     private static void MapMetadataEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet("/extensions", GetMetadataExtensionsEndpoint.Handle);
         
-        builder.MapGet(string.Empty, GetMetadataListEndpoint.Handle);
+        builder.MapGet(string.Empty, GetMetadataEntriesEndpoint.Handle);
 
-        builder.MapGet("{metadataId}", GetMetadataEndpoint.Handle);
-    }
+        builder.MapGet("{metadataId}", GetMetadataEntryEndpoint.Handle);
 
-    private static void MapFileEndpoints(this RouteGroupBuilder builder)
-    {
-        builder.MapGet("{fileId}", GetFileEndpoint.Handle);
+        builder.MapGet("{metadataId}/manga", GetMetadataMangaEndpoint.Handle)
+            .WithTags("Manga");
+        
+        builder.MapGet("{metadataId}/manga/related", GetMetadataRelatedMangaIdsEndpoint.Handle)
+            .WithTags("Manga");
     }
 
     private static void MapDownloadEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet("/extensions", GetDownloadExtensionsEndpoint.Handle);
         
-        builder.MapGet(string.Empty, GetDownloadSourceListEndpoint.Handle);
+        builder.MapGet(string.Empty, GetDownloadLinksEndpoint.Handle);
+        
+        builder.MapGet("{downloadId}", GetDownloadLinkEndpoint.Handle);
+    }
+
+    private static void MapFileEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet("{fileId}", GetFileEndpoint.Handle);
     }
 }
