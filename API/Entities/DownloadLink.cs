@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Entities;
 
-public sealed record DownloadLink
+public record DownloadLink
 {
     public required Guid DownloadId { get; init; }
     
