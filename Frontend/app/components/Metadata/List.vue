@@ -5,7 +5,8 @@
             :key="metadata.metadataExtensionId"
             :metadata="metadata"
             :actions="actions ? actions(metadata) : undefined"
-            :manga-id="mangaId" />
+            :manga-id="mangaId"
+            :target="target" />
     </TrangaList>
 </template>
 
@@ -13,5 +14,11 @@
 import type { Metadata } from '~/api/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
-defineProps<{ loading?: boolean; metadataList?: Metadata[]; actions?: (metadata: Metadata) => ButtonProps[]; mangaId?: string }>();
+defineProps<{
+    loading?: boolean;
+    metadataList?: Metadata[];
+    actions?: (metadata: Metadata) => ButtonProps[];
+    mangaId?: string;
+    target?: '_blank' | '_parent' | '_self' | '_top';
+}>();
 </script>

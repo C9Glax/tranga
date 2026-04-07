@@ -26,7 +26,7 @@
                         value-key="metadataExtensionId" />
                 </div>
                 <UContainer class="overflow-y-auto pt-4 pb-1">
-                    <MetadataList v-if="searchResult || loading" :metadata-list="searchResult" :loading="loading" />
+                    <MetadataList v-if="searchResult || loading" :metadata-list="searchResult" :loading="loading" target="_blank" />
                 </UContainer>
             </div>
         </template>

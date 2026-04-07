@@ -42,9 +42,6 @@ export type IMetadataExtensionZodType = z.infer<typeof zIMetadataExtension>;
 
 export const zMangaDownloadLink = z.object({
     mangaId: z.uuid(),
-    downloadId: z.uuid(),
-    downloadExtensionId: z.uuid(),
-    identifier: z.string(),
     matched: z.boolean(),
     priority: z.union([
         z
@@ -55,9 +52,12 @@ export const zMangaDownloadLink = z.object({
             ),
         z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
     ]),
+    language: z.nullish(z.string().check(z.minLength(0), z.maxLength(8))),
+    downloadId: z.uuid(),
+    downloadExtensionId: z.uuid(),
+    identifier: z.string(),
     series: z.string().check(z.minLength(0), z.maxLength(1024)),
     summary: z.nullable(z.string().check(z.minLength(0), z.maxLength(4096))),
-    language: z.nullish(z.string().check(z.minLength(0), z.maxLength(8))),
     url: z.nullable(z.string()),
     coverId: z.nullable(z.uuid()),
     nsfw: z.nullable(z.boolean()),

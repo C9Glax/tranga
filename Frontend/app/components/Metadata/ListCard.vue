@@ -5,6 +5,7 @@
             :description="metadata.summary ?? undefined"
             :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/files/${metadata.coverId}`, loading: 'lazy' }"
             :to="mangaId ? `/metadata/${metadata.metadataId}?mangaId=${mangaId}` : `/metadata/${metadata.metadataId}`"
+            :target="target"
             external
             class="w-full h-full"
             :ui="{
@@ -43,7 +44,12 @@ import useMetadataExtensions from '~/composables/MetadataExtension';
 import type { Metadata, ReleaseStatus } from '~/api/trangaApi';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
-const props = defineProps<{ metadata: Metadata; actions?: ButtonProps[]; mangaId?: string }>();
+const props = defineProps<{
+    metadata: Metadata;
+    actions?: ButtonProps[];
+    mangaId?: string;
+    target?: '_blank' | '_parent' | '_self' | '_top';
+}>();
 
 const { metadataExtensions } = await useMetadataExtensions();
 

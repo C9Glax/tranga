@@ -26,14 +26,14 @@ export type Manga = { mangaId: string; monitored: boolean; metadataEntry?: null 
 
 export type MangaDownloadLink = {
     mangaId: string;
+    matched: boolean;
+    priority: number | string;
+    language?: null | string;
     downloadId: string;
     downloadExtensionId: string;
     identifier: string;
-    matched: boolean;
-    priority: number | string;
     series: string;
     summary: null | string;
-    language?: null | string;
     url: null | string;
     coverId: null | string;
     nsfw: null | boolean;
