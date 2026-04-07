@@ -29,7 +29,9 @@
                     :name="
                         metadataExtensions?.find((e) => e.metadataExtensionId == metadata.metadataExtensionId)?.name ??
                         metadata.metadataExtensionId
-                    " />
+                    "
+                    :to="metadata.url ?? undefined"
+                    target="_blank" />
                 <UButton v-for="prop in actions" v-bind="prop" />
             </template>
         </UBlogPost>

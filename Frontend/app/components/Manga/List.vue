@@ -9,7 +9,10 @@
             class="relative overflow-clip"
             :ui="{ container: 'p-0 sm:p-0' }"
             @click="useOverlay().closeAll()">
-            <p class="z-1 absolute text-2xl mx-2 my-3 font-bold text-shadow-sm">{{ manga.metadataEntry?.series }}</p>
+            <p class="z-1 absolute text-2xl mx-2 my-3 font-bold text-shadow-sm">
+                {{ manga.metadataEntry?.series }}
+                <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
+            </p>
             <MangaCover :file-id="manga.metadataEntry?.coverId" :manga-id="manga.mangaId" class="z-0 blur-xs" noBlur />
         </UPageCard>
 

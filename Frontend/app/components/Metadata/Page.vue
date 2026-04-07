@@ -1,26 +1,31 @@
 <template>
     <TrangaPage :page-title="{ title: 'Metadata', icon: { name: 'i-lucide-info', color: 'info' } }">
-        <UPageCTA
-            v-bind="$props"
-            :links="links"
-            orientation="horizontal"
-            reverse
-            :ui="{ container: 'py-6 sm:py-8 lg:py-8' }"
-            class="w-full h-max">
+        <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
             <template #title>
+                <UBadge v-if="metadata?.nsfw" label="NSFW" color="error" variant="solid" />
                 <p v-if="$props.title">{{ $props.title }}</p>
                 <p v-else-if="metadata?.series">{{ metadata?.series }}</p>
                 <USkeleton v-else class="h-lh" />
             </template>
 
             <template #description>
-                <p v-if="$props.title">{{ $props.title }}</p>
-                <UEditor
-                    v-else-if="metadata"
-                    v-model="metadata.summary"
-                    content-type="markdown"
-                    :editable="false"
-                    :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
+                <p v-if="$props.description">{{ $props.description }}</p>
+                <div v-else-if="metadata" class="flex flex-col gap-4">
+                    <UUser
+                        :avatar="{
+                            src:
+                                metadataExtensions?.find((e) => e.metadataExtensionId == metadata!.metadataExtensionId)?.iconUrl ??
+                                '/blahaj.png',
+                        }"
+                        :name="
+                            metadataExtensions?.find((e) => e.metadataExtensionId == metadata!.metadataExtensionId)?.name ??
+                            metadata.metadataExtensionId
+                        "
+                        :description="metadata.identifier"
+                        :to="metadata.url ?? undefined"
+                        target="_blank" />
+                    <UEditor v-model="metadata.summary" content-type="markdown" :editable="false" :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
+                </div>
                 <div v-else class="flex flex-col gap-1">
                     <USkeleton class="h-lh mr-6" />
                     <USkeleton class="h-lh" />
@@ -47,6 +52,7 @@ import { MangaCover, UPageCTA } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
 import type { Metadata } from '~/api/trangaApi';
+import useMetadataExtensions from '~/composables/MetadataExtension';
 
 export interface MangaPageProps extends PageCTAProps {
     metadata?: Metadata;
@@ -54,6 +60,8 @@ export interface MangaPageProps extends PageCTAProps {
 }
 
 const props = defineProps<MangaPageProps>();
+
+const { metadataExtensions } = await useMetadataExtensions();
 
 defineSlots<PageCTASlots>();
 
