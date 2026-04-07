@@ -1,5 +1,16 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Manga', icon: { name: 'i-lucide-book', color: 'warning' } }">
+    <TrangaPage
+        :page-title="{ title: 'Manga', icon: { name: 'i-lucide-book', color: 'warning' } }"
+        :navigation-props="{
+            items: [
+                {
+                    label: 'To Metadata-Entry',
+                    to: `/metadata/${manga?.metadataEntry?.metadataId}?mangaId=${manga?.mangaId}`,
+                    icon: 'i-lucide-info',
+                },
+                { label: 'Related Mentadata-Entries', to: `/manga/${manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
+            ],
+        }">
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
             <template #title>
                 <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />

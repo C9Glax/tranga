@@ -42,11 +42,11 @@ const props = defineProps<TrangaPageProps>();
 const collapsed = ref(false);
 
 const nItems = computed((): NavigationMenuItem[][] => {
-    const items: NavigationMenuItem[] = defaultItems;
+    const items: NavigationMenuItem[][] = [defaultItems];
 
     if (props.navigationProps?.items) items.push([...props.navigationProps.items]);
 
-    return [items];
+    return items;
 });
 
 const defaultItems: NavigationMenuItem[] = [

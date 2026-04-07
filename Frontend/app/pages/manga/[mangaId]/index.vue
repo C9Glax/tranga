@@ -20,20 +20,6 @@ const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangas
 );
 
 const actions = (manga?: Manga): ButtonProps[] | undefined => [
-    { label: 'More Download-Links', to: `/manga/${manga?.mangaId}/downloadLinks`, icon: 'i-lucide-download', variant: 'solid' },
-    {
-        label: 'To Metadata-Entry',
-        to: `/metadata/${manga?.metadataEntry?.metadataId}?mangaId=${manga?.mangaId}`,
-        icon: 'i-lucide-info',
-        color: 'info',
-        variant: 'soft',
-    },
-    {
-        label: 'Related Mentadata-Entries',
-        to: `/manga/${manga?.mangaId}/metadataEntries`,
-        icon: 'i-lucide-info',
-        color: 'info',
-        variant: 'outline',
-    },
+    { label: 'More Download-Links', to: `/manga/${manga?.mangaId}/downloadLinks`, icon: 'i-lucide-download', variant: 'outline' },
 ];
 </script>

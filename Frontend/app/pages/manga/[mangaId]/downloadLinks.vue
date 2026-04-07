@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage>
+    <TrangaPage :navigation-props="{ items: [{ label: 'To Manga', icon: 'i-lucide-book', to: `/manga/${mangaId}` }] }">
         <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }" title="Search Result">
             <DownloadLinkList :download-links="downloadLinks" :loading="statusDownloadLinks !== 'success'" />
         </UPageSection>
