@@ -12,17 +12,12 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
-        <PackageReference Include="Tingle.PeriodicTasks.AspNetCore" Version="2.0.0" />
-        <PackageReference Include="Tingle.PeriodicTasks.EventBus" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Services.Manga\Services.Manga.csproj" />
       <ProjectReference Include="..\Database\Database.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Tasks\" />
+      <ProjectReference Include="..\Services.Tasks\Services.Tasks.csproj" />
     </ItemGroup>
 
     <ItemGroup>

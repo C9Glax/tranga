@@ -8,10 +8,10 @@ namespace Services.Manga.Features.Metadata;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public class GetMetadataEntriesEndpoint
+public abstract class GetMetadataEntriesEndpoint
 {
     /// <summary>
-    /// All Metadata-Entries
+    /// List of all Metadata-Entries
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="ct"></param>

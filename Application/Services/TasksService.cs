@@ -1,18 +1,18 @@
-using Services.Manga;
+using Services.Tasks;
 
 namespace Application.Services;
 
-public sealed class ApiService : IHostedService
+public sealed class TasksService : IHostedService
 {
-    private readonly API _api = new ([]);
+    private readonly Service _service = new ([]);
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _api.Run();
+        await _service.Run();
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await _api.DisposeAsync();
+        await _service.DisposeAsync();
     }
 }

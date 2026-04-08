@@ -9,7 +9,7 @@ namespace Services.Manga.Features.DownloadLinks;
 public abstract class GetDownloadExtensionsEndpoint
 {
     /// <summary>
-    /// List of Download-Extensions available for Search
+    /// Get Download-Extensions
     /// </summary>
     /// <returns>A List of Download-Extensions</returns>
     /// <response code="200">A List of Download-Extensions</response>

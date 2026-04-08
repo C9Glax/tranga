@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Database.MangaContext;
 
 public sealed record DbManga

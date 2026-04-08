@@ -12,7 +12,7 @@ namespace Services.Manga.Features.DownloadLinks;
 public abstract class GetDownloadLinksEndpoint
 {
     /// <summary>
-    /// All Download-Links
+    /// List of all Download-Links
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="ct"></param>

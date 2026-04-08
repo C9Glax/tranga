@@ -9,7 +9,7 @@ namespace Services.Manga.Features.Metadata;
 public abstract class GetMetadataExtensionsEndpoint
 {
     /// <summary>
-    /// List of Metadata-Extensions available for Search
+    /// Get Metadata-Extensions
     /// </summary>
     /// <returns>A List of Metadata-Extensions</returns>
     /// <response code="200">A List of Metadata-Extensions</response>

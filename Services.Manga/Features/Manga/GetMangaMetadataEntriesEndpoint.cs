@@ -12,7 +12,7 @@ namespace Services.Manga.Features.Manga;
 public abstract class GetMangaMetadataEntriesEndpoint
 {
     /// <summary>
-    /// Metadata-Entries related to Manga (by Search)
+    /// Metadata-Entries related to Manga
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="mangaId">ID of Manga</param>

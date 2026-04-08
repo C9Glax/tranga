@@ -11,7 +11,7 @@ namespace Services.Manga.Features.Manga;
 public abstract class PatchMangaDownloadLinkEndpoint
 {
     /// <summary>
-    /// Set Download Link Priority for Downloads
+    /// Set Priority for Download-Link
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="mangaId">ID of Manga</param>

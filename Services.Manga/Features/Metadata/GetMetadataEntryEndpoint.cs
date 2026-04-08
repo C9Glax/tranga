@@ -12,7 +12,7 @@ namespace Services.Manga.Features.Metadata;
 public abstract class GetMetadataEntryEndpoint
 {
     /// <summary>
-    /// Metadata-Entry with ID
+    /// Get Metadata-Entry
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="metadataId">ID of Metadata-Entry</param>

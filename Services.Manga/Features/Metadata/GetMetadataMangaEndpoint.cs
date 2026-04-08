@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Services.Manga.Features.Metadata;
 
 /// <summary>
-/// <inheritdoc cref="Handle" path="summary/" />
+/// <inheritdoc cref="Handle" />
 /// </summary>
 public abstract class GetMetadataMangaEndpoint
 {
     /// <summary>
-    /// Manga the Metadata-Entry is linked to (by Search)
+    /// Mangas the Metadata-Entry is linked to
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="metadataId">ID of the Metadata-Entry</param>

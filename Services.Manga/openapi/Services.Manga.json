@@ -13,7 +13,7 @@
         "summary": "List of all Manga",
         "responses": {
           "200": {
-            "description": "List of all Manga",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -36,12 +36,11 @@
         "tags": [
           "Manga"
         ],
-        "summary": "Manga with ID",
+        "summary": "Get Manga",
         "parameters": [
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga",
             "required": true,
             "schema": {
               "type": "string",
@@ -51,7 +50,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Manga with ID and Metadata",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -61,7 +60,7 @@
             }
           },
           "404": {
-            "description": "Manga with requested ID does not exist or no Metadata-Entry has been chosen for Manga"
+            "description": "Not Found"
           }
         }
       }
@@ -76,7 +75,6 @@
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga",
             "required": true,
             "schema": {
               "type": "string",
@@ -86,10 +84,10 @@
         ],
         "responses": {
           "204": {
-            "description": "Cover does not exist"
+            "description": "No Content"
           },
           "404": {
-            "description": "Manga with requested ID does not exist"
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -107,7 +105,6 @@
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga",
             "required": true,
             "schema": {
               "type": "string",
@@ -117,7 +114,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Metadata of Manga",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -127,7 +124,7 @@
             }
           },
           "404": {
-            "description": "Manga with requested ID does not exist or no Metadata-Entry has been chosen for Manga"
+            "description": "Not Found"
           }
         }
       }
@@ -137,12 +134,11 @@
         "tags": [
           "Metadata"
         ],
-        "summary": "Metadata-Entries related to Manga (by Search)",
+        "summary": "Metadata-Entries related to Manga",
         "parameters": [
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga",
             "required": true,
             "schema": {
               "type": "string",
@@ -152,7 +148,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Metadata-Entries of Manga",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -165,7 +161,7 @@
             }
           },
           "404": {
-            "description": "Manga with requested ID does not exist"
+            "description": "Not Found"
           }
         }
       }
@@ -175,12 +171,11 @@
         "tags": [
           "Metadata"
         ],
-        "summary": "Set a Metadata-Entry as chosen Source of Truth for Manga",
+        "summary": "Sets a Metadata-Entry as chosen \"Source of Truth\" for Manga",
         "parameters": [
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga",
             "required": true,
             "schema": {
               "type": "string",
@@ -190,7 +185,6 @@
           {
             "name": "metadataId",
             "in": "path",
-            "description": "ID of Metadata-Entry",
             "required": true,
             "schema": {
               "type": "string",
@@ -200,10 +194,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Metadata-Entry has been chosen"
+            "description": "OK"
           },
           "404": {
-            "description": "Manga or Metadata with requested ID does not exist"
+            "description": "Not Found"
           }
         }
       }
@@ -218,7 +212,6 @@
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga",
             "required": true,
             "schema": {
               "type": "string",
@@ -228,7 +221,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List of Download-Links used for Manga",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -241,7 +234,7 @@
             }
           },
           "404": {
-            "description": "Manga with requested ID does not exist"
+            "description": "Not Found"
           }
         }
       }
@@ -251,12 +244,11 @@
         "tags": [
           "Download"
         ],
-        "summary": "Set Download Link Priority for Downloads",
+        "summary": "Set Priority for Download-Link",
         "parameters": [
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga",
             "required": true,
             "schema": {
               "type": "string",
@@ -266,7 +258,6 @@
           {
             "name": "downloadId",
             "in": "path",
-            "description": "ID of Download-Link",
             "required": true,
             "schema": {
               "type": "string",
@@ -275,7 +266,6 @@
           }
         ],
         "requestBody": {
-          "description": "",
           "content": {
             "application/json": {
               "schema": {
@@ -287,10 +277,10 @@
         },
         "responses": {
           "200": {
-            "description": "Download-Link priority has been changed"
+            "description": "OK"
           },
           "404": {
-            "description": "Manga or Download-Link with requested ID does not exist"
+            "description": "Not Found"
           }
         }
       }
@@ -302,7 +292,6 @@
         ],
         "summary": "Search Manga on Metadata-Extensions",
         "requestBody": {
-          "description": "",
           "content": {
             "application/json": {
               "schema": {
@@ -314,7 +303,7 @@
         },
         "responses": {
           "200": {
-            "description": "Search result",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -345,7 +334,6 @@
           {
             "name": "mangaId",
             "in": "path",
-            "description": "ID of Manga to Search",
             "required": true,
             "schema": {
               "type": "string",
@@ -355,7 +343,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Search result",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -368,7 +356,7 @@
             }
           },
           "404": {
-            "description": "Manga with ID does not exist"
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -381,10 +369,10 @@
         "tags": [
           "Metadata"
         ],
-        "summary": "List of Metadata-Extensions available for Search",
+        "summary": "Get Metadata-Extensions",
         "responses": {
           "200": {
-            "description": "A List of Metadata-Extensions",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -401,10 +389,10 @@
         "tags": [
           "Metadata"
         ],
-        "summary": "All Metadata-Entries",
+        "summary": "List of all Metadata-Entries",
         "responses": {
           "200": {
-            "description": "A list of all Metadata-Entries",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -427,12 +415,11 @@
         "tags": [
           "Metadata"
         ],
-        "summary": "Metadata-Entry with ID",
+        "summary": "Get Metadata-Entry",
         "parameters": [
           {
             "name": "metadataId",
             "in": "path",
-            "description": "ID of Metadata-Entry",
             "required": true,
             "schema": {
               "type": "string",
@@ -442,7 +429,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The Metadata-Entry",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -462,12 +449,11 @@
         "tags": [
           "Manga"
         ],
-        "summary": "Manga the Metadata-Entry is linked to (by Search)",
+        "summary": "Mangas the Metadata-Entry is linked to",
         "parameters": [
           {
             "name": "metadataId",
             "in": "path",
-            "description": "ID of the Metadata-Entry",
             "required": true,
             "schema": {
               "type": "string",
@@ -477,7 +463,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Manga",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -487,7 +473,7 @@
             }
           },
           "404": {
-            "description": "Metadata-Entry with ID not found"
+            "description": "Not Found"
           }
         }
       }
@@ -497,12 +483,11 @@
         "tags": [
           "Manga"
         ],
-        "summary": "IDs of Manga the Metadata-Entry is related to (by Search)",
+        "summary": "IDs of Manga the Metadata-Entry is related to",
         "parameters": [
           {
             "name": "metadataId",
             "in": "path",
-            "description": "ID of the Metadata-Entry",
             "required": true,
             "schema": {
               "type": "string",
@@ -512,7 +497,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Manga-IDs",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -526,7 +511,7 @@
             }
           },
           "404": {
-            "description": "Metadata-Entry with ID not found"
+            "description": "Not Found"
           }
         }
       }
@@ -536,10 +521,10 @@
         "tags": [
           "Download"
         ],
-        "summary": "List of Download-Extensions available for Search",
+        "summary": "Get Download-Extensions",
         "responses": {
           "200": {
-            "description": "A List of Download-Extensions",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -556,10 +541,10 @@
         "tags": [
           "Download"
         ],
-        "summary": "All Download-Links",
+        "summary": "List of all Download-Links",
         "responses": {
           "200": {
-            "description": "List of all Download-Links",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -582,12 +567,11 @@
         "tags": [
           "Download"
         ],
-        "summary": "Download-Link with ID",
+        "summary": "Get Download-Link",
         "parameters": [
           {
             "name": "downloadId",
             "in": "path",
-            "description": "ID of Download-Link",
             "required": true,
             "schema": {
               "type": "string",
@@ -597,7 +581,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Download-Link",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -607,7 +591,7 @@
             }
           },
           "404": {
-            "description": "Download-Link with ID does not exist"
+            "description": "Not Found"
           }
         }
       }
@@ -622,7 +606,6 @@
           {
             "name": "fileId",
             "in": "path",
-            "description": "ID of File",
             "required": true,
             "schema": {
               "type": "string",
@@ -632,7 +615,7 @@
         ],
         "responses": {
           "404": {
-            "description": "File with ID does not exist"
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1027,8 +1010,7 @@
         "type": "object",
         "properties": {
           "matched": {
-            "type": "boolean",
-            "description": "Use Download-Link for Downloads"
+            "type": "boolean"
           },
           "priority": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -1036,11 +1018,9 @@
               "integer",
               "string"
             ],
-            "description": "Priority with which to Download Chapters from this Source",
             "format": "int32"
           }
-        },
-        "description": "Used in PatchMangaDownloadLinkEndpoint"
+        }
       },
       "PostSearchMangaRequest": {
         "required": [
@@ -1050,7 +1030,6 @@
         "type": "object",
         "properties": {
           "searchQuery": {
-            "description": "Search Query",
             "$ref": "#/components/schemas/SearchQuery"
           },
           "metadataExtensionIds": {
@@ -1061,11 +1040,9 @@
             "items": {
               "type": "string",
               "format": "uuid"
-            },
-            "description": "IDs of Metadata Extensions to Search on"
+            }
           }
-        },
-        "description": "Used in PostSearchMangaEndpoint"
+        }
       },
       "ReleaseStatus": {
         "enum": [
@@ -1083,8 +1060,7 @@
             "type": [
               "null",
               "string"
-            ],
-            "description": "The title of the Manga."
+            ]
           },
           "tags": {
             "type": [
@@ -1112,29 +1088,25 @@
               "integer",
               "string"
             ],
-            "description": "The release-year of the Manga",
             "format": "int32"
           },
           "author": {
             "type": [
               "null",
               "string"
-            ],
-            "description": "An author of the Manga"
+            ]
           },
           "artist": {
             "type": [
               "null",
               "string"
-            ],
-            "description": "An artist of the Manga"
+            ]
           },
           "language": {
             "type": [
               "null",
               "string"
-            ],
-            "description": "The ISO language-code of a translation"
+            ]
           },
           "mangaUpdatesSeriesId": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -1143,7 +1115,6 @@
               "integer",
               "string"
             ],
-            "description": "The MangaUpdates.com series id",
             "format": "int64"
           },
           "mangaDexSeriesId": {
@@ -1153,8 +1124,7 @@
             ],
             "format": "uuid"
           }
-        },
-        "description": "The query to use when searching for a Manga"
+        }
       }
     }
   },

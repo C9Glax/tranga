@@ -11,7 +11,7 @@ namespace Services.Manga.Features.Manga;
 public abstract class PatchMangaMetadataEntryChosenEndpoint
 {
     /// <summary>
-    /// Set a Metadata-Entry as chosen Source of Truth for Manga
+    /// Sets a Metadata-Entry as chosen "Source of Truth" for Manga
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="mangaId">ID of Manga</param>

@@ -13,7 +13,7 @@ namespace Services.Manga.Features.DownloadLinks;
 public abstract class GetDownloadLinkEndpoint
 {
     /// <summary>
-    /// Download-Link with ID
+    /// Get Download-Link
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="downloadId">ID of Download-Link</param>

@@ -12,7 +12,7 @@ namespace Services.Manga.Features.Manga;
 public abstract class GetMangaEndpoint
 {
     /// <summary>
-    /// Manga with ID
+    /// Get Manga
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="mangaId">ID of Manga</param>
