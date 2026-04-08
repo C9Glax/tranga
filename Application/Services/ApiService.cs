@@ -1,8 +1,10 @@
+using Services.Manga;
+
 namespace Application.Services;
 
 public sealed class ApiService : IHostedService
 {
-    private readonly API.API _api = new ([]);
+    private readonly API _api = new ([]);
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {

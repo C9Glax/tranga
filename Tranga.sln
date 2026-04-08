@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{CD8A1EF1-D133-435C-8E1D-871A9D756AB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Manga", "Services.Manga\Services.Manga.csproj", "{CD8A1EF1-D133-435C-8E1D-871A9D756AB2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{D0DF4A2C-A06F-4522-B2CD-9905582E2017}"
 EndProject
@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Datatypes", "Common.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Datatypes.Tests", "Common.Datatypes.Tests\Common.Datatypes.Tests.csproj", "{7BA389EE-ED72-434D-9511-B4A816C4F9D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Tests", "API.Tests\API.Tests.csproj", "{D7123A3F-7469-4A9B-B9EE-9CC0D862ED92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Manga.Tests", "Services.Manga.Tests\Services.Manga.Tests.csproj", "{D7123A3F-7469-4A9B-B9EE-9CC0D862ED92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Tests", "Database.Tests\Database.Tests.csproj", "{453E2C99-F313-47B1-BFDA-8DFA9267332C}"
 EndProject

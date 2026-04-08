@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 
@@ -6,14 +6,13 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Application/Application.csproj", "Application/"]
-COPY ["API/API.csproj", "API/"]
-COPY ["Common.Datatypes/Common.Datatypes.csproj", "Common.Datatypes/"]
-COPY ["Database/Database.csproj", "Database/"]
-COPY ["DownloadExtensions/DownloadExtensions.csproj", "DownloadExtensions/"]
-COPY ["Common.Helpers/Common.Helpers.csproj", "Common.Helpers/"]
 COPY ["Settings/Settings.csproj", "Settings/"]
 COPY ["NSwagClients/NSwagClients.csproj", "NSwagClients/"]
-COPY ["MetadataExtensions/MetadataExtensions.csproj", "MetadataExtensions/"]
+COPY ["Common.Helpers/Common.Helpers.csproj", "Common.Helpers/"]
+COPY ["Common.Datatypes/Common.Datatypes.csproj", "Common.Datatypes/"]
+COPY ["Services.Manga/Services.Manga.csproj", "Services.Manga/"]
+COPY ["Database/Database.csproj", "Database/"]
+COPY ["Extensions/Extensions.csproj", "Extensions/"]
 RUN dotnet restore "Application/Application.csproj"
 COPY . .
 WORKDIR "/src/Application"
