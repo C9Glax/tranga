@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Services.Tasks.Tasks;
+using Services.Tasks.TaskTypes;
 
 namespace Services.Tasks.Database;
 
@@ -15,4 +16,7 @@ public static class Helpers
     
     internal static IQueryable<T> FilterTasks<T>(this IQueryable<DbTask> tasks, Guid taskId) where T : DbTask =>
         tasks.OfType<T>().Where(t => t.TaskId == taskId);
+    
+    internal static IQueryable<T> FilterTasks<T>(this IQueryable<DbTask> tasks) where T : DbTask =>
+        tasks.OfType<T>();
 }

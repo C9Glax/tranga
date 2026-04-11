@@ -2,10 +2,18 @@ using Scalar.AspNetCore;
 
 namespace Common.Services;
 
-public abstract class Service(string[] args) : IAsyncDisposable
+public abstract class Service : IAsyncDisposable
 {
-    protected WebApplicationBuilder Builder = WebApplication.CreateBuilder(args).SetupWebApplicationBuilder();
+    protected WebApplicationBuilder Builder { get; init; }
     protected WebApplication App { get; set; }
+
+    public Service(string[] args)
+    {
+        Builder = WebApplication.CreateBuilder(args).SetupWebApplicationBuilder();
+        
+        Builder.Logging.ClearProviders();
+        Builder.Logging.AddConsole();
+    }
 
     protected void SetupWebApplication<TEndpointsBuilder>() where TEndpointsBuilder : IEndpointsBuilder, new()
     {
@@ -27,6 +35,7 @@ public abstract class Service(string[] args) : IAsyncDisposable
     
     public async Task Run(CancellationToken? ct = null)
     {
+        App.Logger.LogInformation("Starting {this}", this);
         await App.RunAsync(ct ?? CancellationToken.None);
     }
 

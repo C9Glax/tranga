@@ -1,5 +1,6 @@
 using Database;
 using Microsoft.EntityFrameworkCore;
+using Services.Tasks.TaskTypes;
 
 namespace Services.Tasks.Database;
 
@@ -10,11 +11,11 @@ internal class Context(DbContextOptions<Context> options) : TrangaDatabaseContex
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DbTask>()
-            .HasKey(t => t.TaskTypeId);
+            .HasKey(t => t.TaskId);
 
         modelBuilder.Entity<DbTask>()
-            .HasDiscriminator(t => t.TaskTypeId.GetTaskType())
+            .HasDiscriminator(t => t.TaskType)
             .HasValue<DbPeriodicTask>(TaskType.PeriodicTask)
-            .HasValue<RunOnceTask>(TaskType.RunOnceTask);
+            .HasValue<DbRunOnceTask>(TaskType.RunOnceTask);
     }
 }
