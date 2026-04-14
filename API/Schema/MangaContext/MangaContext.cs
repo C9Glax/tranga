@@ -22,7 +22,7 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
         modelBuilder.Entity<MangaConnector>()
             .HasDiscriminator(c => c.Name)
             .HasValue<Global>("Global")
-            .HasValue<AsuraComic>("AsuraComic")
+            .HasValue<AsuraScans>("AsuraScans")
             .HasValue<MangaDex>("MangaDex")
             .HasValue<Mangaworld>("Mangaworld")
             .HasValue<WeebCentral>("WeebCentral");
