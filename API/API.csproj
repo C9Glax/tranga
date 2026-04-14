@@ -22,7 +22,7 @@
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
         <PackageReference Include="JikanDotNet" Version="2.10.1" />
         <PackageReference Include="LinkDotNet.BuildInformation" Version="2.1.2" />
-        <PackageReference Include="log4net" Version="3.2.0" />
+        <PackageReference Include="log4net" Version="3.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
