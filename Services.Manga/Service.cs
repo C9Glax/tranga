@@ -1,5 +1,5 @@
-using Database;
-using Database.MangaContext;
+using Common.Database;
+using Services.Manga.Database;
 using Services.Manga.Features;
 
 namespace Services.Manga;

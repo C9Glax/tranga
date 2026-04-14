@@ -1,5 +1,5 @@
 using Common.Datatypes;
-using Database.MangaContext;
+using Services.Manga.Database;
 
 namespace Services.Manga.Helpers;
 

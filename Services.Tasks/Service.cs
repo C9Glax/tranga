@@ -1,6 +1,6 @@
-using Database;
-using Database.MangaContext;
+using Common.Database;
 using Microsoft.EntityFrameworkCore;
+using Services.Manga.Database;
 using Services.Tasks.Database;
 using Services.Tasks.Features;
 using Services.Tasks.Tasks;
@@ -14,7 +14,7 @@ public sealed class Service : Common.Services.Service
 {
     public Service(string[] args) : base(args)
     {
-        Builder.Services.AddDbContext<Context>(opts =>
+        Builder.Services.AddDbContext<TasksContext>(opts =>
             opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
         
         Builder.Services.AddDbContext<MangaContext>(opts =>
@@ -32,12 +32,13 @@ public sealed class Service : Common.Services.Service
         using MangaContext mangaContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
         Task.WaitAll(mangaContext.ApplyMigrations());
         
-        using Context context = App.Services.CreateScope().ServiceProvider.GetRequiredService<Context>();
-        Task.WaitAll(context.ApplyMigrations());
-        CreateDefaultTasks(context).Wait();
+        using TasksContext tasksContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<TasksContext>();
+        Task.WaitAll(tasksContext.ApplyMigrations());
+        
+        CreateDefaultTasks(tasksContext).Wait();
     }
 
-    private async Task CreateDefaultTasks(Context context)
+    private async Task CreateDefaultTasks(TasksContext tasksContext)
     {
         App.Logger.LogDebug("Adding default tasks...");
         TaskBase[] defaultTasks =
@@ -46,10 +47,10 @@ public sealed class Service : Common.Services.Service
         ];
         try
         {
-            List<Guid> existingTaskTypeIds = await context.Tasks.Select(t => t.TaskTypeId).ToListAsync();
+            List<Guid> existingTaskTypeIds = await tasksContext.Tasks.Select(t => t.TaskTypeId).ToListAsync();
             IEnumerable<DbTask> newTasks = defaultTasks.Where(t => !existingTaskTypeIds.Contains(t.TaskTypeId)).Select(t => t.CreateDbTaskFromTask());
-            await context.Tasks.AddRangeAsync(newTasks);
-            await context.SaveChangesAsync();
+            await tasksContext.Tasks.AddRangeAsync(newTasks);
+            await tasksContext.SaveChangesAsync();
         }
         catch (Exception)
         {

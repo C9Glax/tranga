@@ -1,8 +1,8 @@
-using Database.Helpers;
-using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Services.Manga.Database;
+using Services.Manga.Database.Helpers;
 
 namespace Services.Manga.Features.File;
 

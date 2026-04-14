@@ -13,6 +13,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Aspire.Npgsql" Version="13.2.2" />
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.2.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
           <PrivateAssets>all</PrivateAssets>
@@ -27,7 +29,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Common.Services\Common.Services.csproj" />
-      <ProjectReference Include="..\Database\Database.csproj" />
+      <ProjectReference Include="..\Common.Database\Common.Database.csproj" />
+      <ProjectReference Include="..\Services.Manga\Services.Manga.csproj" />
+      <ProjectReference Include="..\Tranga.ServiceDefaults\Tranga.ServiceDefaults.csproj" />
     </ItemGroup>
 
     <ItemGroup>

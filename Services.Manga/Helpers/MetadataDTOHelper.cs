@@ -1,4 +1,4 @@
-using Database.MangaContext;
+using Services.Manga.Database;
 using Services.Manga.Entities;
 
 namespace Services.Manga.Helpers;

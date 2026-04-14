@@ -1,7 +1,7 @@
 using Services.Manga.Helpers;
-using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Services.Manga.Database;
 
 namespace Services.Manga.Features.Metadata;
 

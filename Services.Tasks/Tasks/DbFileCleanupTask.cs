@@ -1,5 +1,5 @@
-using Database.MangaContext;
 using Microsoft.EntityFrameworkCore;
+using Services.Manga.Database;
 using Services.Tasks.TaskTypes;
 
 namespace Services.Tasks.Tasks;

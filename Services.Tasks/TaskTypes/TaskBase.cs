@@ -10,7 +10,7 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId)
 
     internal readonly TaskType TaskType = t;
     
-    protected Context? Context { get; private set; }
+    protected TasksContext? Context { get; private set; }
 
     internal abstract Task ExecuteAsync(IServiceScope scope, CancellationToken stoppingToken);
 
@@ -22,7 +22,7 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId)
 
     private protected void RefreshContext(IServiceScope scope)
     {
-        Context = scope.ServiceProvider.GetRequiredService<Context>();
+        Context = scope.ServiceProvider.GetRequiredService<TasksContext>();
     }
 }
 

@@ -1,7 +1,7 @@
 using Services.Manga.Helpers;
-using Database.MangaContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Services.Manga.Database;
 using Services.Manga.Entities;
 
 namespace Services.Manga.Features.DownloadLinks;
