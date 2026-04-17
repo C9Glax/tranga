@@ -13,6 +13,8 @@ public abstract class Service : IAsyncDisposable
         
         Builder.Logging.ClearProviders();
         Builder.Logging.AddConsole();
+
+        Builder.AddServiceDefaults();
     }
 
     protected void SetupWebApplication<TEndpointsBuilder>(string endpointsPrefix = "/") where TEndpointsBuilder : EndpointsBuilder, new()
@@ -25,6 +27,8 @@ public abstract class Service : IAsyncDisposable
             .SetIsOriginAllowed(_ => true) // allow any origin
             .AllowCredentials()); // allow credentials
 
+        App.MapDefaultEndpoints();
+        
         new TEndpointsBuilder().AddEndpoints(App, endpointsPrefix);
         
         App.UseHttpsRedirection();

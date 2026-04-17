@@ -23,8 +23,10 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Projects.Ser
     .WithReference(db)
     .WithEnvironment(context =>
     {
-        context.EnvironmentVariables["POSTGRES_HOST"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
-        context.EnvironmentVariables["POSTGRES_PORT"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["POSTGRES_HOST"] =
+            postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
+        context.EnvironmentVariables["POSTGRES_PORT"] =
+            postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
         context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
         context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
@@ -63,10 +65,8 @@ builder.AddYarp("gateway")
         // Add catch-all route for frontend service
         yarp.AddRoute(frontend).WithMatchMethods("GET");
 
-        yarp.AddRoute("/mangas/{**catch-all}", mangaService)
-            .WithMatchMethods("GET", "POST", "PATCH", "OPTIONS");
-        yarp.AddRoute("/tasks/{**catch-all}", tasksService)
-            .WithMatchMethods("GET", "POST", "PATCH", "OPTIONS");
+        yarp.AddRoute("/mangas/{**catch-all}", mangaService);
+        yarp.AddRoute("/tasks/{**catch-all}", tasksService);
     })
     .WithHostPort(8080);
 
