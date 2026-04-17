@@ -183,3 +183,16 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 });
 
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
+
+export const zServicesTasksTaskType = z.enum(['PeriodicTask', 'RunOnceTask']);
+
+export type ServicesTasksTaskTypeZodType = z.infer<typeof zServicesTasksTaskType>;
+
+export const zServicesTasksTask = z.object({
+    taskId: z.uuid(),
+    taskTypeId: z.uuid(),
+    taskTypeName: z.string(),
+    taskType: zServicesTasksTaskType,
+});
+
+export type ServicesTasksTaskZodType = z.infer<typeof zServicesTasksTask>;

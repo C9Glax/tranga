@@ -4,7 +4,7 @@ using Services.Tasks.TaskTypes;
 
 namespace Services.Tasks.Database;
 
-internal class TasksContext(DbContextOptions<TasksContext> options) : TrangaDatabaseContext<TasksContext>(options)
+public class TasksContext(DbContextOptions<TasksContext> options) : TrangaDatabaseContext<TasksContext>(options)
 {
     internal DbSet<DbTask> Tasks { get; init; }
 

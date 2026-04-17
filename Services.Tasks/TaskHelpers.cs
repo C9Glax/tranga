@@ -4,12 +4,13 @@ using Services.Tasks.TaskTypes;
 
 namespace Services.Tasks;
 
-public static class Helpers
+public static class TaskHelpers
 {
     public static Type GetTaskType(this DbTask dbTask) => TasksCollection.Tasks.FirstOrDefault(t => t.TaskTypeId == dbTask.TaskTypeId)?.GetType()  ?? throw new Exception($"Can't find Task Type {dbTask.TaskTypeId}!");
 
-    internal static TimeSpan? GetTaskTimeout(this DbPeriodicTask task) =>
-        TasksCollection.Tasks.OfType<PeriodicTask>().FirstOrDefault(t => t.TaskTypeId == task.TaskTypeId)?.Interval;
+    internal static TimeSpan GetTaskTimeout(this DbPeriodicTask task) =>
+        TasksCollection.Tasks.OfType<PeriodicTask>().FirstOrDefault(t => t.TaskTypeId == task.TaskTypeId)?.Interval 
+        ?? TimeSpan.Zero;
     
     internal static TaskBase CreateTaskFromDbTask(this DbTask dbTask) => (Activator.CreateInstance(dbTask.GetTaskType()) as TaskBase)!;
 

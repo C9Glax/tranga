@@ -83,6 +83,10 @@ export type ServicesMangaSearchQuery = {
     mangaDexSeriesId?: null | string;
 };
 
+export type ServicesTasksTask = { taskId: string; taskTypeId: string; taskTypeName: string; taskType: ServicesTasksTaskType };
+
+export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';
+
 export type GetMangasData = { body?: never; path?: never; query?: never; url: '/mangas' };
 
 export type GetMangasErrors = {
@@ -464,4 +468,56 @@ export type GetMangasFilesByFileIdErrors = {
      * Internal Server Error
      */
     500: unknown;
+};
+
+export type GetTasksData = { body?: never; path?: never; query?: never; url: '/tasks' };
+
+export type GetTasksErrors = {
+    /**
+     * Internal Server Error
+     */
+    500: unknown;
+};
+
+export type GetTasksResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesTasksTask>;
+};
+
+export type GetTasksResponse = GetTasksResponses[keyof GetTasksResponses];
+
+export type GetTasksByTaskIdData = { body?: never; path: { taskId: string }; query?: never; url: '/tasks/{taskId}' };
+
+export type GetTasksByTaskIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type GetTasksByTaskIdResponses = {
+    /**
+     * OK
+     */
+    200: ServicesTasksTask;
+};
+
+export type GetTasksByTaskIdResponse = GetTasksByTaskIdResponses[keyof GetTasksByTaskIdResponses];
+
+export type GetTasksByTaskIdStatusData = { body?: never; path: { taskId: string }; query?: never; url: '/tasks/{taskId}/status' };
+
+export type GetTasksByTaskIdStatusErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type GetTasksByTaskIdStatusResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
 };
