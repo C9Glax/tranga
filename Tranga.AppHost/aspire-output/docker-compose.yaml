@@ -1,0 +1,126 @@
+services:
+  tranga-pg:
+    image: "docker.io/library/postgres:17.6"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "${POSTGRESUSER}"
+      POSTGRES_PASSWORD: "${POSTGRESPASSWORD}"
+    expose:
+      - "5432"
+    networks:
+      - "tranga"
+  services-manga:
+    image: "${SERVICES_MANGA_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${SERVICES_MANGA_PORT}"
+      ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
+      TRANGA_HOST: "tranga-pg"
+      TRANGA_PORT: "5432"
+      TRANGA_USERNAME: "${POSTGRESUSER}"
+      TRANGA_PASSWORD: "${POSTGRESPASSWORD}"
+      TRANGA_URI: "postgresql://${POSTGRESUSER}:${POSTGRESPASSWORD}@tranga-pg:5432/tranga"
+      TRANGA_JDBCCONNECTIONSTRING: "jdbc:postgresql://tranga-pg:5432/tranga"
+      TRANGA_DATABASENAME: "tranga"
+      POSTGRES_HOST: "tranga-pg"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: "${POSTGRESUSER}"
+      POSTGRES_PASSWORD: "${POSTGRESPASSWORD}"
+      POSTGRES_DATABASE: "tranga"
+    expose:
+      - "${SERVICES_MANGA_PORT}"
+    volumes:
+      - type: "bind"
+        target: "/app/Covers"
+        source: "Covers"
+    depends_on:
+      tranga-pg:
+        condition: "service_started"
+    networks:
+      - "tranga"
+  services-tasks:
+    image: "${SERVICES_TASKS_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${SERVICES_TASKS_PORT}"
+      ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
+      TRANGA_HOST: "tranga-pg"
+      TRANGA_PORT: "5432"
+      TRANGA_USERNAME: "${POSTGRESUSER}"
+      TRANGA_PASSWORD: "${POSTGRESPASSWORD}"
+      TRANGA_URI: "postgresql://${POSTGRESUSER}:${POSTGRESPASSWORD}@tranga-pg:5432/tranga"
+      TRANGA_JDBCCONNECTIONSTRING: "jdbc:postgresql://tranga-pg:5432/tranga"
+      TRANGA_DATABASENAME: "tranga"
+      POSTGRES_HOST: "tranga-pg"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: "${POSTGRESUSER}"
+      POSTGRES_PASSWORD: "${POSTGRESPASSWORD}"
+      POSTGRES_DATABASE: "tranga"
+    expose:
+      - "${SERVICES_TASKS_PORT}"
+    depends_on:
+      tranga-pg:
+        condition: "service_started"
+    networks:
+      - "tranga"
+  frontend:
+    image: "${FRONTEND_IMAGE}"
+    environment:
+      NODE_ENV: "production"
+      NUXT_PUBLIC_API_BASE_URL: "localhost:5000"
+      PORT: "3000"
+      SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
+      services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
+      SERVICES_MANGA_HTTPS: "https://services-manga:${SERVICES_MANGA_PORT}"
+      SERVICES_TASKS_HTTP: "http://services-tasks:${SERVICES_TASKS_PORT}"
+      services__services-tasks__http__0: "http://services-tasks:${SERVICES_TASKS_PORT}"
+      SERVICES_TASKS_HTTPS: "https://services-tasks:${SERVICES_TASKS_PORT}"
+    expose:
+      - "3000"
+    depends_on:
+      services-manga:
+        condition: "service_started"
+      services-tasks:
+        condition: "service_started"
+    networks:
+      - "tranga"
+  gateway:
+    image: "mcr.microsoft.com/dotnet/nightly/yarp:2.3-preview"
+    command:
+      - "/app/yarp.dll"
+    entrypoint:
+      - "dotnet"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      FRONTEND_HTTP: "http://frontend:3000"
+      REVERSEPROXY__ROUTES__route0__MATCH__METHODS__0: "GET"
+      REVERSEPROXY__ROUTES__route0__MATCH__PATH: "/{**catchall}"
+      REVERSEPROXY__ROUTES__route0__CLUSTERID: "cluster_frontend"
+      REVERSEPROXY__ROUTES__route1__MATCH__PATH: "/mangas/{**catch-all}"
+      REVERSEPROXY__ROUTES__route1__CLUSTERID: "cluster_services-manga"
+      REVERSEPROXY__ROUTES__route2__MATCH__PATH: "/tasks/{**catch-all}"
+      REVERSEPROXY__ROUTES__route2__CLUSTERID: "cluster_services-tasks"
+      REVERSEPROXY__CLUSTERS__cluster_frontend__DESTINATIONS__destination1__ADDRESS: "http://frontend"
+      REVERSEPROXY__CLUSTERS__cluster_services-manga__DESTINATIONS__destination1__ADDRESS: "https+http://services-manga"
+      REVERSEPROXY__CLUSTERS__cluster_services-tasks__DESTINATIONS__destination1__ADDRESS: "https+http://services-tasks"
+      services__frontend__http__0: "http://frontend:3000"
+      SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
+      services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
+      SERVICES_MANGA_HTTPS: "https://services-manga:${SERVICES_MANGA_PORT}"
+      SERVICES_TASKS_HTTP: "http://services-tasks:${SERVICES_TASKS_PORT}"
+      services__services-tasks__http__0: "http://services-tasks:${SERVICES_TASKS_PORT}"
+      SERVICES_TASKS_HTTPS: "https://services-tasks:${SERVICES_TASKS_PORT}"
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
+    networks:
+      - "tranga"
+networks:
+  aspire:
+    driver: "bridge"
+  tranga:
+    driver: "bridge"

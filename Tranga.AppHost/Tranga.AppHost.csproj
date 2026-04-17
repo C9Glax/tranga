@@ -6,15 +6,16 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <UserSecretsId>97245800-2418-4c6b-87df-f9a9d6dce4ca</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Services.Manga\Services.Manga.csproj" />
       <ProjectReference Include="..\Services.Tasks\Services.Tasks.csproj" />
-      <ProjectReference Include="..\Settings\Settings.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Aspire.Hosting.Docker" Version="13.2.2" />
       <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.2.2" />
       <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.2.2" />
       <PackageReference Include="Aspire.Hosting.Yarp" Version="13.2.2" />

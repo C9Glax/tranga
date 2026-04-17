@@ -15,4 +15,5 @@ public static class Settings
     {
         // TODO
     }
+    
 }

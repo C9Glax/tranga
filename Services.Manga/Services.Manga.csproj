@@ -8,6 +8,10 @@
     </PropertyGroup>
     
     <PropertyGroup>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    </PropertyGroup>
+    
+    <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)\openapi</OpenApiDocumentsDirectory>
     </PropertyGroup>

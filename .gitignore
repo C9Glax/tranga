@@ -26,3 +26,5 @@ Tranga/Properties/launchSettings.json
 cover.jpg
 cover.png
 **/Covers
+
+.env.Production

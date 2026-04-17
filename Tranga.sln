@@ -24,8 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSwagClients", "NSwagClient
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39ADCF67-C411-4DC3-8E4D-675B731D007A}"
 	ProjectSection(SolutionItems) = preProject
-		compose-local.yaml = compose-local.yaml
-		compose-api-local.yaml = compose-api-local.yaml
+		compose.yaml = compose.yaml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "Settings\Settings.csproj", "{EC208DB8-709C-44B8-8C92-B783F128FC91}"
