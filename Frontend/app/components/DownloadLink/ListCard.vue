@@ -3,7 +3,7 @@
         <UBlogPost
             :title="downloadLink.series"
             :description="downloadLink.summary ?? undefined"
-            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/files/${downloadLink.coverId}`, loading: 'lazy' }"
+            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/mangas/files/${downloadLink.coverId}`, loading: 'lazy' }"
             external
             class="w-full h-full"
             :ui="{
@@ -44,19 +44,22 @@
 
 <script setup lang="ts">
 import useDownloadExtensions from '~/composables/DownloadExtension';
-import type { DownloadLink, MangaDownloadLink, PatchMangaDownloadLinkRequest } from '~/api/trangaApi';
+import type { ServicesMangaMangaDownloadLink, ServicesMangaPatchMangaDownloadLinkRequest } from '~/api/tranga';
 import { patchMangaDownloadLink } from '~/utils/patchMangaDownloadLink';
 
-const props = defineProps<{ downloadLink: MangaDownloadLink | DownloadLink }>();
+const props = defineProps<{ downloadLink: ServicesMangaMangaDownloadLink }>();
 
-const mDl = computed(() => props.downloadLink as MangaDownloadLink | undefined);
+const mDl = computed(() => props.downloadLink as ServicesMangaMangaDownloadLink | undefined);
 
 const { downloadExtensions } = await useDownloadExtensions();
 
 const updateMatch = async (matched?: boolean, priority?: number) => {
     if (!mDl.value) return;
     if (matched === undefined && priority === undefined) return;
-    const data: PatchMangaDownloadLinkRequest = { matched: matched ?? mDl.value.matched, priority: priority ?? mDl.value.priority };
+    const data: ServicesMangaPatchMangaDownloadLinkRequest = {
+        matched: matched ?? mDl.value.matched,
+        priority: priority ?? mDl.value.priority,
+    };
     await patchMangaDownloadLink(props.downloadLink.downloadId, mDl.value.mangaId, data);
     await navigateTo(`/manga/${mDl.value.mangaId}`);
 };

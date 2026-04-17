@@ -7,19 +7,11 @@ using Services.Manga.Features.Metadata;
 
 namespace Services.Manga.Features;
 
-internal class Endpoints : IEndpointsBuilder
+internal class Endpoints : EndpointsBuilder
 {
-    public void AddEndpoints(WebApplication app)
+    protected override void AddEndpoints(RouteGroupBuilder builder)
     {
-        EndpointHelpers.AddEndpoints(app.MapGroup("/"));
-    }
-}
-
-internal static class EndpointHelpers
-{
-    internal static void AddEndpoints(RouteGroupBuilder builder)
-    {
-        builder.MapGroup("/mangas")
+        builder.MapGroup(string.Empty)
             .WithTags("Manga")
             .MapMangaEndpoints();
         
@@ -35,8 +27,11 @@ internal static class EndpointHelpers
             .WithTags("Files")
             .MapFileEndpoints();
     }
+}
 
-    private static void MapMangaEndpoints(this RouteGroupBuilder builder)
+internal static class EndpointHelpers
+{
+    internal static void MapMangaEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet(string.Empty, GetMangaListEndpoint.Handle)
             .WithSummary("List of all Manga");
@@ -81,7 +76,7 @@ internal static class EndpointHelpers
             .WithTags("Download");
     }
 
-    private static void MapMetadataEndpoints(this RouteGroupBuilder builder)
+    internal static void MapMetadataEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet("/extensions", GetMetadataExtensionsEndpoint.Handle)
             .WithSummary("Get Metadata-Extensions");
@@ -101,7 +96,7 @@ internal static class EndpointHelpers
             .WithTags("Manga");
     }
 
-    private static void MapDownloadEndpoints(this RouteGroupBuilder builder)
+    internal static void MapDownloadEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet("/extensions", GetDownloadExtensionsEndpoint.Handle)
             .WithSummary("Get Download-Extensions");
@@ -113,7 +108,7 @@ internal static class EndpointHelpers
             .WithSummary("Get Download-Link");
     }
 
-    private static void MapFileEndpoints(this RouteGroupBuilder builder)
+    internal static void MapFileEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet("{fileId}", GetFileEndpoint.Handle)
             .WithSummary("Get File");

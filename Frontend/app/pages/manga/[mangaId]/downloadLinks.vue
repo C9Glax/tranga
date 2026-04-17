@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PostMangasSearchByMangaIdDownloadLinksResponse } from '~/api/trangaApi';
+import type { PostMangasSearchByMangaIdDownloadLinksResponse } from '~/api/tranga';
 
 const mangaId = useRoute().params.mangaId as string;
 

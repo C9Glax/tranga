@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DownloadLink } from '~/api/trangaApi';
+import type { ServicesMangaMangaDownloadLink } from '~/api/tranga';
 
-defineProps<{ loading?: boolean; downloadLinks?: DownloadLink[] }>();
+defineProps<{ loading?: boolean; downloadLinks?: ServicesMangaMangaDownloadLink[] }>();
 </script>

@@ -34,17 +34,19 @@
 </template>
 
 <script setup lang="ts">
-import type { IMetadataExtension, Metadata, PostMangasSearchResponse } from '~/api/trangaApi';
+import type { ServicesMangaIMetadataExtension, ServicesMangaMetadata, PostMangasSearchResponse } from '~/api/tranga';
 import useMetadataExtensions from '~/composables/MetadataExtension';
 
-const searchResult = ref<Metadata[]>();
+const searchResult = ref<ServicesMangaMetadata[]>();
 
 const loading = ref<boolean>(false);
 
 const toast = useToast();
 const { metadataExtensions } = await useMetadataExtensions();
 
-const selectedExtensions = ref<string[]>(metadataExtensions.value?.map((e: IMetadataExtension) => e.metadataExtensionId as string) ?? []);
+const selectedExtensions = ref<string[]>(
+    metadataExtensions.value?.map((e: ServicesMangaIMetadataExtension) => e.metadataExtensionId as string) ?? []
+);
 const searchQuery = ref<{ title?: string }>({});
 
 const search = async () => {

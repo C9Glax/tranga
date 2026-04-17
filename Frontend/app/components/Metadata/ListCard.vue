@@ -3,7 +3,7 @@
         <UBlogPost
             :title="metadata.series"
             :description="metadata.summary ?? undefined"
-            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/files/${metadata.coverId}`, loading: 'lazy' }"
+            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/mangas/files/${metadata.coverId}`, loading: 'lazy' }"
             :to="mangaId ? `/metadata/${metadata.metadataId}?mangaId=${mangaId}` : `/metadata/${metadata.metadataId}`"
             :target="target"
             external
@@ -43,11 +43,11 @@
 
 <script setup lang="ts">
 import useMetadataExtensions from '~/composables/MetadataExtension';
-import type { Metadata, ReleaseStatus } from '~/api/trangaApi';
+import type { ServicesMangaMetadata, ServicesMangaReleaseStatus } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
 const props = defineProps<{
-    metadata: Metadata;
+    metadata: ServicesMangaMetadata;
     actions?: ButtonProps[];
     mangaId?: string;
     target?: '_blank' | '_parent' | '_self' | '_top';
@@ -55,7 +55,7 @@ const props = defineProps<{
 
 const { metadataExtensions } = await useMetadataExtensions();
 
-const badgeColor = (status: ReleaseStatus) => {
+const badgeColor = (status: ServicesMangaReleaseStatus) => {
     switch (status) {
         case 'Ongoing':
             return 'primary';

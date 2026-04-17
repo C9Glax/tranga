@@ -1,7 +1,7 @@
-import type { GetMetadataExtensionsResponse } from '~/api/trangaApi';
+import type { GetMangasMetadataExtensionsResponse } from '~/api/tranga';
 
 export default async function useMetadataExtensions() {
-    const { data: extensions } = await useTranga<GetMetadataExtensionsResponse>('/metadata/extensions', {
+    const { data: extensions } = await useTranga<GetMangasMetadataExtensionsResponse>('/mangas/metadata/extensions', {
         key: ApiKeys.MetadataExtensions,
     });
 

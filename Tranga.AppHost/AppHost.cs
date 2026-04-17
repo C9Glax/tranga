@@ -1,3 +1,5 @@
+using Aspire.Hosting.JavaScript;
+using Aspire.Hosting.Yarp;
 using Tranga.AppHost;
 
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
@@ -47,5 +49,25 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Projects.Ser
         context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
     });
+
+IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("frontend", "../Frontend")
+    .WithHttpEndpoint(port: 3000, env: "PORT")
+    .WithReference(mangaService)
+    .WithReference(tasksService)
+    .WaitFor(mangaService)
+    .WaitFor(tasksService);
+
+builder.AddYarp("gateway")
+    .WithConfiguration(yarp =>
+    {
+        // Add catch-all route for frontend service
+        yarp.AddRoute(frontend).WithMatchMethods("GET");
+
+        yarp.AddRoute("/mangas/{**catch-all}", mangaService)
+            .WithMatchMethods("GET", "POST", "PATCH", "OPTIONS");
+        yarp.AddRoute("/tasks/{**catch-all}", tasksService)
+            .WithMatchMethods("GET", "POST", "PATCH", "OPTIONS");
+    })
+    .WithHostPort(8080);
 
 builder.Build().Run();

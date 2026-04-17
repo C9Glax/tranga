@@ -8,7 +8,7 @@
                     to: `/metadata/${manga?.metadataEntry?.metadataId}?mangaId=${manga?.mangaId}`,
                     icon: 'i-lucide-info',
                 },
-                { label: 'Related Mentadata-Entries', to: `/manga/${manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
+                { label: 'Related Metadata-Entries', to: `/manga/${manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
             ],
         }">
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
@@ -62,11 +62,11 @@
 import { MangaCover, UPageCTA } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
-import type { Manga } from '~/api/trangaApi';
+import type { ServicesMangaManga } from '~/api/tranga';
 
 export interface MangaPageProps extends PageCTAProps {
-    manga?: Manga;
-    actions?: (manga?: Manga) => ButtonProps[] | undefined;
+    manga?: ServicesMangaManga;
+    actions?: (manga?: ServicesMangaManga) => ButtonProps[] | undefined;
 }
 
 const props = defineProps<MangaPageProps>();

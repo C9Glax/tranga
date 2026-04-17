@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMangasByMangaIdMetadataRelatedResponse } from '~/api/trangaApi';
+import type { GetMangasByMangaIdMetadataRelatedResponse } from '~/api/tranga';
 
 const mangaId = useRoute().params.mangaId as string;
 

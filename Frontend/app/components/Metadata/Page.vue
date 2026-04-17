@@ -52,12 +52,12 @@
 import { MangaCover, UPageCTA } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
-import type { Metadata } from '~/api/trangaApi';
+import type { ServicesMangaMetadata } from '~/api/tranga';
 import useMetadataExtensions from '~/composables/MetadataExtension';
 
 export interface MangaPageProps extends PageCTAProps {
-    metadata?: Metadata;
-    actions?: (metadata?: Metadata) => ButtonProps[] | undefined;
+    metadata?: ServicesMangaMetadata;
+    actions?: (metadata?: ServicesMangaMetadata) => ButtonProps[] | undefined;
 }
 
 const props = defineProps<MangaPageProps>();

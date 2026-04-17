@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { MangaCover } from '#components';
-import type { Manga } from '~/api/trangaApi';
+import type { ServicesMangaManga } from '~/api/tranga';
 
-defineProps<{ loading?: boolean; mangas?: Manga[] }>();
+defineProps<{ loading?: boolean; mangas?: ServicesMangaManga[] }>();
 </script>

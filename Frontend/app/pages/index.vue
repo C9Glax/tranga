@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { MangaList } from '#components';
-import type { GetMangasResponse } from '~/api/trangaApi';
+import type { GetMangasResponse } from '~/api/tranga';
 
 const search = ref<string>();
 

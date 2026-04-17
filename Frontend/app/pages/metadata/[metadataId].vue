@@ -4,31 +4,32 @@
 
 <script setup lang="ts">
 import type {
-    GetMetadataByMetadataIdMangaRelatedResponse,
-    GetMetadataByMetadataIdMangaResponse,
-    GetMetadataByMetadataIdResponse,
-    Metadata,
-} from '~/api/trangaApi';
+    GetMangasMetadataByMetadataIdMangaRelatedResponse,
+    GetMangasMetadataByMetadataIdMangaResponse,
+    GetMangasMetadataByMetadataIdResponse,
+    ServicesMangaMetadata,
+} from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { patchMangaMetadataSource } from '~/utils/patchMangaMetadataSource';
 
 const metadataId = useRoute().params.metadataId as string;
 const mangaId = useRoute().query.mangaId as string | undefined;
 
-const { data: metadata, status: statusMetadata } = await useTranga<GetMetadataByMetadataIdResponse>(() => `/metadata/${metadataId}`, {
-    key: ApiKeys.Metadata(metadataId),
-});
+const { data: metadata, status: statusMetadata } = await useTranga<GetMangasMetadataByMetadataIdResponse>(
+    () => `/mangas/metadata/${metadataId}`,
+    { key: ApiKeys.Metadata(metadataId) }
+);
 
-const { data: manga } = await useTranga<GetMetadataByMetadataIdMangaResponse>(() => `/metadata/${metadataId}/manga`, {
+const { data: manga } = await useTranga<GetMangasMetadataByMetadataIdMangaResponse>(() => `/mangas/metadata/${metadataId}/manga`, {
     key: ApiKeys.MetadataManga(metadataId),
 });
 
-const { data: relatedMangaIds } = await useTranga<GetMetadataByMetadataIdMangaRelatedResponse>(
-    () => `/metadata/${metadataId}/manga/related`,
+const { data: relatedMangaIds } = await useTranga<GetMangasMetadataByMetadataIdMangaRelatedResponse>(
+    () => `/mangas/metadata/${metadataId}/manga/related`,
     { key: ApiKeys.MetadataRelatedMangas(metadataId) }
 );
 
-const actions = (m?: Metadata): ButtonProps[] | undefined => {
+const actions = (m?: ServicesMangaMetadata): ButtonProps[] | undefined => {
     const items: ButtonProps[] = [];
 
     if (mangaId && relatedMangaIds.value?.find((m) => m === mangaId) && !manga.value) {

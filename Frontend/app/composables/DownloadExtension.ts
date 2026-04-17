@@ -1,7 +1,7 @@
-import type { GetDownloadLinksExtensionsResponse } from '~/api/trangaApi';
+import type { GetMangasDownloadLinksExtensionsResponse } from '~/api/tranga';
 
 export default async function useDownloadExtensions() {
-    const { data: extensions } = await useTranga<GetDownloadLinksExtensionsResponse>('/downloadLinks/extensions', {
+    const { data: extensions } = await useTranga<GetMangasDownloadLinksExtensionsResponse>('/mangas/downloadLinks/extensions', {
         key: ApiKeys.DownloadExtensions,
     });
 

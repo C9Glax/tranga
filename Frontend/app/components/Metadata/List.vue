@@ -11,13 +11,13 @@
 </template>
 
 <script setup lang="ts">
-import type { Metadata } from '~/api/trangaApi';
+import type { ServicesMangaMetadata } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
 defineProps<{
     loading?: boolean;
-    metadataList?: Metadata[];
-    actions?: (metadata: Metadata) => ButtonProps[];
+    metadataList?: ServicesMangaMetadata[];
+    actions?: (metadata: ServicesMangaMetadata) => ButtonProps[];
     mangaId?: string;
     target?: '_blank' | '_parent' | '_self' | '_top';
 }>();

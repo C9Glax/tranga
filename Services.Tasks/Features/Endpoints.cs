@@ -2,17 +2,9 @@ using Common.Services;
 
 namespace Services.Tasks.Features;
 
-internal class Endpoints : IEndpointsBuilder
+internal class Endpoints : EndpointsBuilder
 {
-    public void AddEndpoints(WebApplication app)
-    {
-        EndpointHelpers.AddEndpoints(app.MapGroup("/"));
-    }
-}
-
-internal static class EndpointHelpers
-{
-    internal static void AddEndpoints(RouteGroupBuilder builder)
+    protected override void AddEndpoints(RouteGroupBuilder builder)
     {
         
     }

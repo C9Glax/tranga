@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMangasByMangaIdDownloadLinksResponse, GetMangasByMangaIdResponse, Manga } from '~/api/trangaApi';
+import type { GetMangasByMangaIdDownloadLinksResponse, GetMangasByMangaIdResponse, ServicesMangaManga } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 
 const mangaId = useRoute().params.mangaId as string;
@@ -19,7 +19,7 @@ const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangas
     { key: ApiKeys.MangaDownloadLinks(mangaId) }
 );
 
-const actions = (manga?: Manga): ButtonProps[] | undefined => [
+const actions = (manga?: ServicesMangaManga): ButtonProps[] | undefined => [
     { label: 'More Download-Links', to: `/manga/${manga?.mangaId}/downloadLinks`, icon: 'i-lucide-download', variant: 'outline' },
 ];
 </script>

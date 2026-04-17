@@ -27,7 +27,7 @@ public sealed class Service : Common.Services.Service
 
         Builder.Services.AddScoped<PeriodicTaskScheduler>();
         
-        SetupWebApplication<Endpoints>();
+        SetupWebApplication<Endpoints>("/tasks");
         
         using MangaContext mangaContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
         Task.WaitAll(mangaContext.ApplyMigrations());

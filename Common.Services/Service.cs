@@ -15,7 +15,7 @@ public abstract class Service : IAsyncDisposable
         Builder.Logging.AddConsole();
     }
 
-    protected void SetupWebApplication<TEndpointsBuilder>() where TEndpointsBuilder : IEndpointsBuilder, new()
+    protected void SetupWebApplication<TEndpointsBuilder>(string endpointsPrefix = "/") where TEndpointsBuilder : EndpointsBuilder, new()
     {
         App = Builder.Build();
 
@@ -25,7 +25,7 @@ public abstract class Service : IAsyncDisposable
             .SetIsOriginAllowed(_ => true) // allow any origin
             .AllowCredentials()); // allow credentials
 
-        new TEndpointsBuilder().AddEndpoints(App);
+        new TEndpointsBuilder().AddEndpoints(App, endpointsPrefix);
         
         App.UseHttpsRedirection();
         

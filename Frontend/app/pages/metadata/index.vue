@@ -6,11 +6,11 @@
     </TrangaPage>
 </template>
 <script setup lang="ts">
-import type { GetMetadataResponse } from '~/api/trangaApi';
+import type { GetMangasMetadataResponse } from '~/api/tranga';
 
 const search = ref<string>();
 
-const { data, status } = useTranga<GetMetadataResponse>('/metadata', { key: ApiKeys.MetadataList });
+const { data, status } = useTranga<GetMangasMetadataResponse>('/mangas/metadata', { key: ApiKeys.MetadataList });
 
 const metadataList = computed(() =>
     search.value ? data.value?.filter((m) => m.series.toLocaleLowerCase().includes(search.value!.toLocaleLowerCase())) : data.value

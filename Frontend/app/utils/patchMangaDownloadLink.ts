@@ -1,6 +1,6 @@
-import type { PatchMangaDownloadLinkRequest, PatchMangasByMangaIdDownloadLinksByDownloadIdResponses } from '~/api/trangaApi';
+import type { ServicesMangaPatchMangaDownloadLinkRequest, PatchMangasByMangaIdDownloadLinksByDownloadIdResponses } from '~/api/tranga';
 
-export const patchMangaDownloadLink = async (downloadLinkId: string, mangaId: string, body: PatchMangaDownloadLinkRequest) => {
+export const patchMangaDownloadLink = async (downloadLinkId: string, mangaId: string, body: ServicesMangaPatchMangaDownloadLinkRequest) => {
     const { $tranga } = useNuxtApp();
     const toast = useToast();
     try {

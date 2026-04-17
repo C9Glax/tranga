@@ -364,7 +364,7 @@
         }
       }
     },
-    "/metadata/extensions": {
+    "/mangas/metadata/extensions": {
       "get": {
         "tags": [
           "Metadata"
@@ -384,7 +384,7 @@
         }
       }
     },
-    "/metadata": {
+    "/mangas/metadata": {
       "get": {
         "tags": [
           "Metadata"
@@ -410,7 +410,7 @@
         }
       }
     },
-    "/metadata/{metadataId}": {
+    "/mangas/metadata/{metadataId}": {
       "get": {
         "tags": [
           "Metadata"
@@ -444,7 +444,7 @@
         }
       }
     },
-    "/metadata/{metadataId}/manga": {
+    "/mangas/metadata/{metadataId}/manga": {
       "get": {
         "tags": [
           "Manga"
@@ -478,7 +478,7 @@
         }
       }
     },
-    "/metadata/{metadataId}/manga/related": {
+    "/mangas/metadata/{metadataId}/manga/related": {
       "get": {
         "tags": [
           "Manga"
@@ -516,7 +516,7 @@
         }
       }
     },
-    "/downloadLinks/extensions": {
+    "/mangas/downloadLinks/extensions": {
       "get": {
         "tags": [
           "Download"
@@ -536,7 +536,7 @@
         }
       }
     },
-    "/downloadLinks": {
+    "/mangas/downloadLinks": {
       "get": {
         "tags": [
           "Download"
@@ -562,7 +562,7 @@
         }
       }
     },
-    "/downloadLinks/{downloadId}": {
+    "/mangas/downloadLinks/{downloadId}": {
       "get": {
         "tags": [
           "Download"
@@ -596,7 +596,7 @@
         }
       }
     },
-    "/files/{fileId}": {
+    "/mangas/files/{fileId}": {
       "get": {
         "tags": [
           "Files"

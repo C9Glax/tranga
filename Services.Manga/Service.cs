@@ -11,7 +11,7 @@ public sealed class Service : Common.Services.Service
         Builder.Services.AddDbContext<MangaContext>(opts =>
             opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
 
-        SetupWebApplication<Endpoints>();
+        SetupWebApplication<Endpoints>("/mangas");
 
         using MangaContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
         Task.WaitAll(context.ApplyMigrations());

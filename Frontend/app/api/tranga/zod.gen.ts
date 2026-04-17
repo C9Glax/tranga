@@ -2,11 +2,11 @@
 
 import * as z from 'zod/mini';
 
-export const zContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornographic']);
+export const zServicesMangaContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornographic']);
 
-export type ContentRatingZodType = z.infer<typeof zContentRating>;
+export type ServicesMangaContentRatingZodType = z.infer<typeof zServicesMangaContentRating>;
 
-export const zDownloadLink = z.object({
+export const zServicesMangaDownloadLink = z.object({
     downloadId: z.uuid(),
     downloadExtensionId: z.uuid(),
     identifier: z.string(),
@@ -18,29 +18,29 @@ export const zDownloadLink = z.object({
     nsfw: z.nullable(z.boolean()),
 });
 
-export type DownloadLinkZodType = z.infer<typeof zDownloadLink>;
+export type ServicesMangaDownloadLinkZodType = z.infer<typeof zServicesMangaDownloadLink>;
 
-export const zIDownloadExtension = z.object({
+export const zServicesMangaIDownloadExtension = z.object({
     downloadExtensionsId: z.optional(z.uuid()),
     name: z.nullish(z.string()),
     iconUrl: z.nullish(z.string()),
 });
 
-export type IDownloadExtensionZodType = z.infer<typeof zIDownloadExtension>;
+export type ServicesMangaIDownloadExtensionZodType = z.infer<typeof zServicesMangaIDownloadExtension>;
 
-export const zDownloadExtensionsList = z.object({ extensions: z.optional(z.array(zIDownloadExtension)) });
+export const zServicesMangaDownloadExtensionsList = z.object({ extensions: z.optional(z.array(zServicesMangaIDownloadExtension)) });
 
-export type DownloadExtensionsListZodType = z.infer<typeof zDownloadExtensionsList>;
+export type ServicesMangaDownloadExtensionsListZodType = z.infer<typeof zServicesMangaDownloadExtensionsList>;
 
-export const zIMetadataExtension = z.object({
+export const zServicesMangaIMetadataExtension = z.object({
     metadataExtensionId: z.optional(z.uuid()),
     name: z.nullish(z.string()),
     iconUrl: z.nullish(z.string()),
 });
 
-export type IMetadataExtensionZodType = z.infer<typeof zIMetadataExtension>;
+export type ServicesMangaIMetadataExtensionZodType = z.infer<typeof zServicesMangaIMetadataExtension>;
 
-export const zMangaDownloadLink = z.object({
+export const zServicesMangaMangaDownloadLink = z.object({
     mangaId: z.uuid(),
     matched: z.boolean(),
     priority: z.union([
@@ -63,16 +63,13 @@ export const zMangaDownloadLink = z.object({
     nsfw: z.nullable(z.boolean()),
 });
 
-export type MangaDownloadLinkZodType = z.infer<typeof zMangaDownloadLink>;
+export type ServicesMangaMangaDownloadLinkZodType = z.infer<typeof zServicesMangaMangaDownloadLink>;
 
-export const zMetadataExtensionsList = z.object({ extensions: z.optional(z.array(zIMetadataExtension)) });
+export const zServicesMangaMetadataExtensionsList = z.object({ extensions: z.optional(z.array(zServicesMangaIMetadataExtension)) });
 
-export type MetadataExtensionsListZodType = z.infer<typeof zMetadataExtensionsList>;
+export type ServicesMangaMetadataExtensionsListZodType = z.infer<typeof zServicesMangaMetadataExtensionsList>;
 
-/**
- * Used in PatchMangaDownloadLinkEndpoint
- */
-export const zPatchMangaDownloadLinkRequest = z.object({
+export const zServicesMangaPatchMangaDownloadLinkRequest = z.object({
     matched: z.boolean(),
     priority: z.union([
         z
@@ -85,13 +82,13 @@ export const zPatchMangaDownloadLinkRequest = z.object({
     ]),
 });
 
-export type PatchMangaDownloadLinkRequestZodType = z.infer<typeof zPatchMangaDownloadLinkRequest>;
+export type ServicesMangaPatchMangaDownloadLinkRequestZodType = z.infer<typeof zServicesMangaPatchMangaDownloadLinkRequest>;
 
-export const zReleaseStatus = z.enum(['Ongoing', 'Complete', 'Hiatus', 'Cancelled']);
+export const zServicesMangaReleaseStatus = z.enum(['Ongoing', 'Complete', 'Hiatus', 'Cancelled']);
 
-export type ReleaseStatusZodType = z.infer<typeof zReleaseStatus>;
+export type ServicesMangaReleaseStatusZodType = z.infer<typeof zServicesMangaReleaseStatus>;
 
-export const zMetadata = z.object({
+export const zServicesMangaMetadata = z.object({
     metadataId: z.uuid(),
     metadataExtensionId: z.uuid(),
     identifier: z.string(),
@@ -126,28 +123,25 @@ export const zMetadata = z.object({
     authors: z.optional(z.array(z.string())),
     artists: z.optional(z.array(z.string())),
     url: z.nullable(z.string()),
-    status: z.nullish(zReleaseStatus),
+    status: z.nullish(zServicesMangaReleaseStatus),
     nsfw: z.nullable(z.boolean()),
 });
 
-export type MetadataZodType = z.infer<typeof zMetadata>;
+export type ServicesMangaMetadataZodType = z.infer<typeof zServicesMangaMetadata>;
 
-export const zManga = z.object({
+export const zServicesMangaManga = z.object({
     mangaId: z.uuid(),
     monitored: z.boolean(),
-    metadataEntry: z.nullish(zMetadata),
-    downloadLinks: z.nullish(z.array(zDownloadLink)),
+    metadataEntry: z.nullish(zServicesMangaMetadata),
+    downloadLinks: z.nullish(z.array(zServicesMangaDownloadLink)),
 });
 
-export type MangaZodType = z.infer<typeof zManga>;
+export type ServicesMangaMangaZodType = z.infer<typeof zServicesMangaManga>;
 
-/**
- * The query to use when searching for a Manga
- */
-export const zSearchQuery = z.object({
+export const zServicesMangaSearchQuery = z.object({
     title: z.nullish(z.string()),
     tags: z.nullish(z.array(z.string())),
-    contentRating: z.nullish(zContentRating),
+    contentRating: z.nullish(zServicesMangaContentRating),
     year: z.nullish(
         z.union([
             z
@@ -181,11 +175,11 @@ export const zSearchQuery = z.object({
     mangaDexSeriesId: z.nullish(z.uuid()),
 });
 
-export type SearchQueryZodType = z.infer<typeof zSearchQuery>;
+export type ServicesMangaSearchQueryZodType = z.infer<typeof zServicesMangaSearchQuery>;
 
-/**
- * Used in PostSearchMangaEndpoint
- */
-export const zPostSearchMangaRequest = z.object({ searchQuery: zSearchQuery, metadataExtensionIds: z.nullable(z.array(z.uuid())) });
+export const zServicesMangaPostSearchMangaRequest = z.object({
+    searchQuery: zServicesMangaSearchQuery,
+    metadataExtensionIds: z.nullable(z.array(z.uuid())),
+});
 
-export type PostSearchMangaRequestZodType = z.infer<typeof zPostSearchMangaRequest>;
+export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;

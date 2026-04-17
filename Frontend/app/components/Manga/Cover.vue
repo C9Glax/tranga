@@ -1,7 +1,7 @@
 <template>
     <img
         v-if="fileId"
-        :src="`http://${useRuntimeConfig().public.api.baseUrl}/files/${fileId}`"
+        :src="`http://${useRuntimeConfig().public.api.baseUrl}/mangas/files/${fileId}`"
         class="max-h-full w-full aspect-6/9 object-cover object-center"
         :class="!noBlur && 'blur-md'" />
     <img
