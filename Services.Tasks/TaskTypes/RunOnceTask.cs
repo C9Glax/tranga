@@ -1,17 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Services.Tasks.Database;
+using Services.Tasks.WorkerLogic;
 
 namespace Services.Tasks.TaskTypes;
 
-internal abstract class RunOnceTask(Guid taskId, Guid taskTypeId): TaskBase(TaskType.RunOnceTask, taskTypeId)
+internal abstract class RunOnceTask(Guid taskTypeId) : TaskBase(TaskType.RunOnceTask, taskTypeId)
 {
-    internal sealed override async Task ExecuteAsync(IServiceScope scope, CancellationToken stoppingToken)
+    internal bool HasRun { get; set; }
+    
+    internal override async Task ExecuteAsync(IServiceScope scope, CancellationToken stoppingToken)
     {
-        RefreshContext(scope);
-        await RunAsync(stoppingToken);
-        await Context!.Tasks.FilterTasks<DbRunOnceTask>(taskId)
-            .ExecuteUpdateAsync(s => s.SetProperty(t => t.HasRun, true), stoppingToken);
+        await base.ExecuteAsync(scope, stoppingToken);
+        TasksCollection.RunOnceTasks.TryRemove(TaskId, out _);
     }
-
-    private protected abstract Task RunAsync(CancellationToken stoppingToken);
 }

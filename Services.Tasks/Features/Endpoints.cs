@@ -1,5 +1,4 @@
 using Common.Services;
-using Services.Tasks.Features.Status;
 using Services.Tasks.Features.Tasks;
 
 namespace Services.Tasks.Features;
@@ -25,8 +24,5 @@ internal static class EndpointHelpers
         
         builder.MapGet("{taskId}", GetTaskEndpoint.Handle)
             .WithSummary("Get Task");
-
-        builder.MapGet("{taskId}/status", GetTaskStatusEndpoint.Handle)
-            .WithSummary("Get status of a Task");
     }
 }

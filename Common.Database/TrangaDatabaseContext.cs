@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Settings;
 
 namespace Common.Database;
 
@@ -9,7 +10,10 @@ public abstract class TrangaDatabaseContext<T>(DbContextOptions<T> options) : Db
         CancellationToken ct = cancellationToken ?? CancellationToken.None;
         try
         {
-            await Database.MigrateAsync(ct);
+            if (!Constants.OpenApiDocumentationRun)
+            {
+                await Database.MigrateAsync(ct);
+            }
         }
         catch (Exception)
         {

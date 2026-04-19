@@ -5,7 +5,7 @@ namespace Services.Tasks.WorkerLogic;
 internal sealed class TaskWorker(TaskQueue queue, IServiceProvider serviceProvider, ILogger<TaskWorker> logger) : BackgroundService
 {
     private Guid WorkerId = Guid.CreateVersion7();
-    
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("{WorkerId} running.", WorkerId);
@@ -13,8 +13,11 @@ internal sealed class TaskWorker(TaskQueue queue, IServiceProvider serviceProvid
         {
             try
             {
-                if(await queue.GetNextTask(stoppingToken) is { } workItem)
+                if (await queue.GetNextTask(stoppingToken) is { } workItem)
+                {
+                    logger.LogInformation("{workItem} running.", workItem);
                     await workItem.ExecuteAsync(serviceProvider.CreateScope(), stoppingToken);
+                }
                 else Thread.Sleep(Constants.WorkerPickupWorkTimeout);
             }
             catch (OperationCanceledException)

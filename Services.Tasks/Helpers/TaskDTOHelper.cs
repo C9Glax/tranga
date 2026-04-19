@@ -1,34 +1,31 @@
-using Services.Tasks.Database;
 using Services.Tasks.TaskTypes;
-using PeriodicTask = Services.Tasks.Entities.PeriodicTask;
-using RunOnceTask = Services.Tasks.Entities.RunOnceTask;
 
 namespace Services.Tasks.Helpers;
 
 internal static class TaskDTOHelper
 {
-    public static Entities.Task ToDTO(this DbTask task) => task.TaskType switch
+    public static Entities.Task ToDTO(this TaskBase task) => task.TaskType switch
     {
-        TaskType.PeriodicTask => (task as DbPeriodicTask)!.ToDTO(),
-        TaskType.RunOnceTask => (task as DbRunOnceTask)!.ToDTO(),
+        TaskType.PeriodicTask => (task as PeriodicTask)!.ToDTO(),
+        TaskType.RunOnceTask => (task as RunOnceTask)!.ToDTO(),
         _ => throw new NotImplementedException()
     };
 
-    public static PeriodicTask ToDTO(this DbPeriodicTask task) => new()
+    public static Entities.PeriodicTask ToDTO(this PeriodicTask task) => new()
     {
         TaskId = task.TaskId,
         TaskType = task.TaskType,
-        TaskTypeName = task.GetTaskType().Name,
+        TaskTypeName = task.GetType().Name,
         TaskTypeId = task.TaskTypeId,
         LastRun = task.LastRun,
-        Interval = task.GetTaskTimeout()
+        Interval = task.Interval
     };
     
-    public static RunOnceTask ToDTO(this DbRunOnceTask task) => new()
+    public static Entities.RunOnceTask ToDTO(this RunOnceTask task) => new()
     {
         TaskId = task.TaskId,
         TaskType = task.TaskType,
-        TaskTypeName = task.GetTaskType().Name,
+        TaskTypeName = task.GetType().Name,
         TaskTypeId = task.TaskTypeId,
         HasRun = task.HasRun
     };

@@ -1,7 +1,5 @@
 using Common.Database;
-using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
-using Services.Tasks.Database;
 using Services.Tasks.Features;
 using Services.Tasks.Tasks;
 using Services.Tasks.TaskTypes;
@@ -14,43 +12,40 @@ public sealed class Service : Common.Services.Service
 {
     public Service(string[] args) : base(args)
     {
-        Builder.Services.AddDbContext<TasksContext>(opts =>
-            opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
-        
         Builder.Services.AddDbContext<MangaContext>(opts =>
             opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
+        
+        if (!Constants.OpenApiDocumentationRun)
+        {
+            Builder.Services.AddSingleton<TaskQueue>();
 
-        Builder.Services.AddSingleton<TaskQueue>();
+            for (int i = 0; i < EnvVars.WorkersCount; i++)
+                Builder.Services.AddHostedService<TaskWorker>();
 
-        for (int i = 0; i < EnvVars.WorkersCount; i++)
-            Builder.Services.AddScoped<TaskWorker>();
-
-        Builder.Services.AddScoped<PeriodicTaskScheduler>();
+            Builder.Services.AddHostedService<PeriodicTaskScheduler>();
+        }
         
         SetupWebApplication<Endpoints>("/tasks");
-        
-        using MangaContext mangaContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
-        Task.WaitAll(mangaContext.ApplyMigrations());
-        
-        using TasksContext tasksContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<TasksContext>();
-        Task.WaitAll(tasksContext.ApplyMigrations());
-        
-        CreateDefaultTasks(tasksContext).Wait();
+
+        if (!Constants.OpenApiDocumentationRun)
+        {
+            using MangaContext mangaContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
+            Task.WaitAll(mangaContext.ApplyMigrations());
+
+            CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
+        }
     }
 
-    private async Task CreateDefaultTasks(TasksContext tasksContext)
+    private async Task CreateDefaultTasks(TaskQueue taskQueue, CancellationToken ct)
     {
         App.Logger.LogDebug("Adding default tasks...");
-        TaskBase[] defaultTasks =
-        [
-            new DbFileCleanupTask(Guid.CreateVersion7())
-        ];
+        TasksCollection.PeriodicTasks.Add(new DbFileCleanupTask());
         try
         {
-            List<Guid> existingTaskTypeIds = await tasksContext.Tasks.Select(t => t.TaskTypeId).ToListAsync();
-            IEnumerable<DbTask> newTasks = defaultTasks.Where(t => !existingTaskTypeIds.Contains(t.TaskTypeId)).Select(t => t.CreateDbTaskFromTask());
-            await tasksContext.Tasks.AddRangeAsync(newTasks);
-            await tasksContext.SaveChangesAsync();
+            foreach (TaskBase task in TasksCollection.GetKnownTasks())
+            {
+                await taskQueue.AddTaskToQueue(task, ct);
+            }
         }
         catch (Exception)
         {

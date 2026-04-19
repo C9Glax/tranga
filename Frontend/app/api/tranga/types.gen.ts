@@ -472,13 +472,6 @@ export type GetMangasFilesByFileIdErrors = {
 
 export type GetTasksData = { body?: never; path?: never; query?: never; url: '/tasks' };
 
-export type GetTasksErrors = {
-    /**
-     * Internal Server Error
-     */
-    500: unknown;
-};
-
 export type GetTasksResponses = {
     /**
      * OK
@@ -505,19 +498,3 @@ export type GetTasksByTaskIdResponses = {
 };
 
 export type GetTasksByTaskIdResponse = GetTasksByTaskIdResponses[keyof GetTasksByTaskIdResponses];
-
-export type GetTasksByTaskIdStatusData = { body?: never; path: { taskId: string }; query?: never; url: '/tasks/{taskId}/status' };
-
-export type GetTasksByTaskIdStatusErrors = {
-    /**
-     * Not Found
-     */
-    404: unknown;
-};
-
-export type GetTasksByTaskIdStatusResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};

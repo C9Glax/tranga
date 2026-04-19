@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
+
 namespace Settings;
 
 public struct EnvVars
@@ -15,5 +16,5 @@ public struct EnvVars
     public static readonly int DBConnectionTimeout = Environment.GetEnvironmentVariable("DBConnectionTimeout") is { } var ? int.Parse(var) : 30;
     public static readonly int DBCommandTimeout = Environment.GetEnvironmentVariable("DBCommandTimeout") is { } var ? int.Parse(var) : 60;
     public static readonly string SettingsFile = Environment.GetEnvironmentVariable("SETTINGS_FILE") ?? "settings.json";
-    public static readonly int WorkersCount = Environment.GetEnvironmentVariable("WORKERS_COUNT") is { } var ? int.Parse(var) : Environment.ProcessorCount / 2;
+    public static readonly int WorkersCount = Math.Max(Environment.GetEnvironmentVariable("WORKERS_COUNT") is { } var ? int.Parse(var) : Environment.ProcessorCount / 2, 1);
 }

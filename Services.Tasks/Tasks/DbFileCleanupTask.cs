@@ -4,7 +4,7 @@ using Services.Tasks.TaskTypes;
 
 namespace Services.Tasks.Tasks;
 
-internal sealed class DbFileCleanupTask(Guid taskId) : PeriodicTask(taskId, Guid.Parse("ded1e7d1-ec8e-4795-910a-80bdd0d797d5"))
+internal sealed class DbFileCleanupTask() : PeriodicTask(Guid.Parse("ded1e7d1-ec8e-4795-910a-80bdd0d797d5"))
 {
     internal override TimeSpan Interval { get; init; } = TimeSpan.FromHours(1);
 
@@ -15,7 +15,7 @@ internal sealed class DbFileCleanupTask(Guid taskId) : PeriodicTask(taskId, Guid
     /// </summary>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    private protected override async Task RunAsync(CancellationToken stoppingToken)
+    private protected override async Task RunAsync(IServiceScope scope, CancellationToken stoppingToken)
     {
         await _ctx.Files.Where(f =>
             _ctx.ChapterDownloadLinks.Select(c => c.FileId).Union(_ctx.MetadataEntries.Select(m => m.CoverId))

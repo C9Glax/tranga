@@ -24,9 +24,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -58,33 +55,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/tasks/{taskId}/status": {
-      "get": {
-        "tags": [
-          "Tasks"
-        ],
-        "summary": "Get status of a Task",
-        "parameters": [
-          {
-            "name": "taskId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
           "404": {
             "description": "Not Found"
