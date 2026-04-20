@@ -17,7 +17,7 @@ internal sealed class PeriodicMangaChapterFetcherTask() : PeriodicTask(Guid.Pars
     private protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         logger.LogDebug("Getting monitored Mangas...");
-        if (await _ctx.Mangas.Where(m => m.Monitored).ToListAsync(stoppingToken) is not { } list)
+        if (await _ctx.Mangas.Where(m => m.Monitored).Select(m => m.MangaId).ToListAsync(stoppingToken) is not { } list)
             return;
         logger.LogDebug("Got {list.Count} Mangas.", list.Count);
 

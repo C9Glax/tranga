@@ -1,5 +1,6 @@
 using Extensions;
 using Extensions.Data;
+using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Helpers;
 using Services.Tasks.TaskTypes;
@@ -9,16 +10,20 @@ namespace Services.Tasks.Tasks;
 /// <summary>
 /// Downloads a <see cref="DbChapter"/> using the <see cref="DbChapterDownloadLink"/> with the highest Priority.
 /// </summary>
-/// <param name="chapter"></param>
-internal sealed class DownloadChapterTask(DbChapter chapter) : RunOnceTask(Guid.Parse("87d2b155-5723-4483-a2f9-c15292a14f44"))
+internal sealed class DownloadChapterTask(Guid chapterId) : RunOnceTask(Guid.Parse("87d2b155-5723-4483-a2f9-c15292a14f44"))
 {
-    internal Guid ChapterId { get; init; } = chapter.ChapterId;
+    internal Guid ChapterId { get; init; } = chapterId;
     
     private MangaContext _ctx = null!;
     
     private protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
-        await _ctx.Entry(chapter).Collection(c => c.DownloadLinks!).LoadAsync(stoppingToken);
+        if (await _ctx.Chapters.Include(c => c.DownloadLinks)
+                .SingleOrDefaultAsync(c => c.ChapterId == ChapterId, stoppingToken)
+            is not { } chapter)
+        {
+            return;
+        }
         if (chapter.DownloadLinks!.FirstOrDefault(d => d.FileId != null) is { } file)
         {
             logger.LogDebug("Chapter is already downloaded. File {file.FileId}", file.FileId);
@@ -40,5 +45,5 @@ internal sealed class DownloadChapterTask(DbChapter chapter) : RunOnceTask(Guid.
         _ctx = scope.ServiceProvider.GetRequiredService<MangaContext>();
     }
     
-    public override string ToString() => $"{base.ToString()} - Manga {chapter.MangaId} - Chapter {ChapterId} {chapter.Volume} {chapter.Number}";
+    public override string ToString() => $"{base.ToString()} - Chapter {ChapterId}";
 }

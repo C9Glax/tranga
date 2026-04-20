@@ -9,17 +9,18 @@ namespace Services.Tasks.Tasks;
 /// <summary>
 /// Retrieves the <see cref="DbChapterDownloadLink"/> from the <see cref="IDownloadExtension"/> with the highest Priority for the <see cref="DbManga"/>
 /// </summary>
-/// <param name="manga"></param>
-internal sealed class GetMangaChaptersTask(DbManga manga) : RunOnceTask(Guid.Parse("571a5bad-d955-4bf0-b75d-d1dcf54f8e69"))
+/// <param name="mangaId">ID of the manga</param>
+internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(Guid.Parse("571a5bad-d955-4bf0-b75d-d1dcf54f8e69"))
 {
-    internal Guid MangaId { get; init; } = manga.MangaId;
+    internal Guid MangaId { get; init; } = mangaId;
     
     private MangaContext _ctx = null!;
     
     private protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
-        await _ctx.Entry(manga).ReloadAsync(stoppingToken);
-        if (manga.DownloadLinks?.Where(d => d.Matched).MinBy(d => d.Priority)?.DownloadLink is not { } link)
+        if (await _ctx.Mangas.Include(m => m.DownloadLinks).SingleOrDefaultAsync(m => m.MangaId == MangaId, stoppingToken) is not { } manga)
+            return;
+        if (manga.DownloadLinks!.Where(d => d.Matched).MinBy(d => d.Priority)?.DownloadLink is not { } link)
             return;
         logger.LogDebug("Got {link.DownloadExtension} {link.Identifier}.", link.DownloadExtension, link.Identifier);
         if (DownloadExtensionsCollection.GetExtension(link.DownloadExtension) is not { } extension)

@@ -19,8 +19,9 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
         // List of Chapters that already have a DownloadChapterTask
         IEnumerable<Guid> chapterIds = TasksCollection.RunOnceTasks.Values.OfType<DownloadChapterTask>().Select(t => t.ChapterId);
         
-        List<DbChapter> chaptersWithoutFiles = await _ctx.Chapters.Include(c => c.DownloadLinks)
+        List<Guid> chaptersWithoutFiles = await _ctx.Chapters.Include(c => c.DownloadLinks)
             .Where(c => !chapterIds.Contains(c.ChapterId) && c.DownloadLinks!.All(d => d.FileId == null))
+            .Select(c => c.ChapterId)
             .ToListAsync(stoppingToken);
 
         foreach (DownloadChapterTask task in chaptersWithoutFiles.Select(c => new DownloadChapterTask(c)))
