@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers.DTOs;
 
-public sealed record MangaConnector(string Name, bool Enabled, string IconUrl, string[] SupportedLanguages) : Identifiable(Name)
+public sealed record MangaConnector(string Name, bool Enabled, string IconUrl, string[] SupportedLanguages, bool NSFW) : Identifiable(Name)
 {
     /// <summary>
     /// Whether Connector is used for Searches and Downloads
@@ -25,4 +25,11 @@ public sealed record MangaConnector(string Name, bool Enabled, string IconUrl, s
     [Required]
     [Description("Url of the Website Icon")]
     public string IconUrl { get; init; } = IconUrl;
+	
+	/// <summary>
+    /// Whether Connector contains NSFW content
+    /// </summary>
+    [Required]
+    [Description("Whether Connector contains NSFW content")]
+    public bool NSFW { get; init; } = NSFW;
 }
