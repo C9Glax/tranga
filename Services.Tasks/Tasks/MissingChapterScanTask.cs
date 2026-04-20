@@ -18,16 +18,27 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
     {
         // List of Chapters that already have a DownloadChapterTask
         IEnumerable<Guid> chapterIds = TasksCollection.RunOnceTasks.Values.OfType<DownloadChapterTask>().Select(t => t.ChapterId);
-        
-        List<Guid> chaptersWithoutFiles = await _ctx.Chapters.Include(c => c.DownloadLinks)
+
+        var chaptersWithoutFiles = await _ctx.Chapters.Include(c => c.DownloadLinks)
             .Where(c => !chapterIds.Contains(c.ChapterId) && c.DownloadLinks!.All(d => d.FileId == null))
-            .Select(c => c.ChapterId)
+            .OrderBy(c => c.Number)
+            .Select(c => new { MangaId = c.MangaId, ChapterId = c.ChapterId })
+            .GroupBy(c => c.MangaId)
             .ToListAsync(stoppingToken);
 
-        foreach (DownloadChapterTask task in chaptersWithoutFiles.Select(c => new DownloadChapterTask(c)))
+        int priority = 0;
+        foreach (var manga in chaptersWithoutFiles)
         {
-            logger.LogDebug("Adding {nameof(DownloadChapterTask)} for Chapter {task.ChapterId}", nameof(DownloadChapterTask), task.ChapterId);
-            TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task);
+            priority++;
+            DownloadChapterTask[] tasks = manga.Select(t => new DownloadChapterTask(t.ChapterId)
+            {
+                Priority = priority
+            }).ToArray();
+            foreach (DownloadChapterTask task in tasks)
+            {
+                logger.LogDebug("Adding {nameof(DownloadChapterTask)} for Chapter {task.ChapterId}", nameof(DownloadChapterTask), task.ChapterId);
+                TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task);
+            }
         }
     }
 

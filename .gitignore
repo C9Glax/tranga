@@ -23,8 +23,7 @@ riderModule.iml
 Tranga/Properties/launchSettings.json
 *.DotSettings.user
 
-cover.jpg
-cover.png
-**/Covers
+Covers/
+Mangas/
 
 .env.Production
