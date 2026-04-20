@@ -16,7 +16,7 @@ public sealed record DbChapterDownloadLink
 
     #region Navigations
 
-    public DbChapter? Chapter { get; internal set; }
+    public DbChapter? Chapter { get; set; }
     
     public DbFile? File { get; internal set; }
 

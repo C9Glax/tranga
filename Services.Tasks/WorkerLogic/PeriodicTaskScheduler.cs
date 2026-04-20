@@ -3,19 +3,26 @@ using Settings;
 
 namespace Services.Tasks.WorkerLogic;
 
-internal sealed class PeriodicTaskScheduler(TaskQueue taskQueue, ILogger<TaskWorker> logger) : BackgroundService
+/// <summary>
+/// Adds <see cref="PeriodicTask"/> to <see cref="TaskQueue"/> once the <see cref="PeriodicTask"/> is scheduled to run next.
+/// </summary>
+internal sealed class PeriodicTaskScheduler(TaskQueue taskQueue, ILogger<PeriodicTaskScheduler> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("PeriodicTaskScheduler running.");
         while (!stoppingToken.IsCancellationRequested)
         {
-            List<PeriodicTask> dueTasks = TasksCollection.PeriodicTasks.Where(t => t.LastRun + t.Interval < DateTimeOffset.UtcNow).ToList();
+            logger.LogTrace("Getting due tasks...");
+            List<TaskBase> dueTasks = TasksCollection.PeriodicTasks
+                .Where(t => t.LastRun + t.Interval < DateTimeOffset.UtcNow)
+                .Concat<TaskBase>(TasksCollection.RunOnceTasks.Values)
+                .ToList();
 
-            foreach (PeriodicTask dbPeriodicTask in dueTasks)
+            foreach (TaskBase task in dueTasks)
             {
-                await taskQueue.AddTaskToQueue(dbPeriodicTask, stoppingToken);
-                logger.LogInformation("Added Task {TaskId} to queue.", dbPeriodicTask.TaskId);
+                await taskQueue.AddTaskToQueue(task, stoppingToken);
+                logger.LogInformation("Added Task {task} to queue.", task);
             }
             
             Thread.Sleep(Constants.SchedulerCreateWorkTimeout);

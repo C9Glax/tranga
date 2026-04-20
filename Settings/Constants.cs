@@ -4,8 +4,8 @@ namespace Settings;
 
 public struct Constants
 {
-    public static string CoverDirectory = "Covers";
-    public static TimeSpan WorkerPickupWorkTimeout = TimeSpan.FromSeconds(1);
-    public static TimeSpan SchedulerCreateWorkTimeout = TimeSpan.FromMinutes(1);
+    public const string CoverDirectory = "Covers";
+    public static readonly TimeSpan WorkerPickupWorkTimeout = TimeSpan.FromSeconds(1);
+    public static readonly TimeSpan SchedulerCreateWorkTimeout = TimeSpan.FromSeconds(5);
     public static readonly bool OpenApiDocumentationRun = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
 }

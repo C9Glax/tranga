@@ -1,5 +1,10 @@
 namespace Services.Tasks.TaskTypes;
 
+/// <summary>
+/// A Task
+/// </summary>
+/// <param name="t"><inheritdoc cref="Services.Tasks.TaskTypes.TaskType"/></param>
+/// <param name="taskTypeId">A <b>unique</b> (across all <see cref="TaskBase"/>) that identifies what type of Task this is.</param>
 internal abstract class TaskBase(TaskType t, Guid taskTypeId)
 {
     public Guid TaskId { get; init; } = Guid.CreateVersion7();
@@ -10,13 +15,13 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId)
 
     internal readonly TaskType TaskType = t;
 
-    internal virtual Task ExecuteAsync(IServiceScope scope, CancellationToken stoppingToken)
+    internal virtual Task ExecuteAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         RefreshScope(scope);
-        return RunAsync(scope, stoppingToken);
+        return RunAsync(scope, logger, stoppingToken);
     }
 
-    private protected abstract Task RunAsync(IServiceScope scope, CancellationToken stoppingToken);
+    private protected abstract Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken);
 
     /// <summary>
     /// Get all required Services from the scope.<br />
@@ -24,11 +29,20 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId)
     /// </summary>
     private protected abstract void RefreshScope(IServiceScope scope);
 
-    public override string ToString() => $"{base.ToString()} - Priority {Priority} - TaskType {TaskTypeId}";
+    public override string ToString() => $"{base.ToString()} - {TaskType} {TaskTypeId} - Priority {Priority}";
 }
 
+/// <summary>
+/// The type of the Task
+/// </summary>
 public enum TaskType : byte
 {
+    /// <summary>
+    /// <inheritdoc cref="Services.Tasks.TaskTypes.PeriodicTask"/>
+    /// </summary>
     PeriodicTask = 0,
+    /// <summary>
+    /// <inheritdoc cref="Services.Tasks.TaskTypes.RunOnceTask"/>
+    /// </summary>
     RunOnceTask = 1
 }

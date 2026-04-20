@@ -40,6 +40,8 @@ public sealed class Service : Common.Services.Service
     {
         App.Logger.LogDebug("Adding default tasks...");
         TasksCollection.PeriodicTasks.Add(new DbFileCleanupTask());
+        TasksCollection.PeriodicTasks.Add(new MissingChapterScanTask());
+        TasksCollection.PeriodicTasks.Add(new PeriodicMangaChapterFetcherTask());
         try
         {
             foreach (TaskBase task in TasksCollection.GetKnownTasks())
