@@ -10,9 +10,9 @@ namespace Services.Tasks.Tasks;
 /// Retrieves the <see cref="DbChapterDownloadLink"/> from the <see cref="IDownloadExtension"/> with the highest Priority for the <see cref="DbManga"/>
 /// </summary>
 /// <param name="mangaId">ID of the manga</param>
-internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(Guid.Parse("571a5bad-d955-4bf0-b75d-d1dcf54f8e69"))
+internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(Guid.Parse("571a5bad-d955-4bf0-b75d-d1dcf54f8e69")), IMangaTask
 {
-    internal Guid MangaId { get; init; } = mangaId;
+    public Guid MangaId { get; init; } = mangaId;
     
     private MangaContext _ctx = null!;
     

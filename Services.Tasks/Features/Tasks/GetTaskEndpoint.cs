@@ -9,7 +9,7 @@ namespace Services.Tasks.Features.Tasks;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class GetTaskEndpoint
+internal abstract class GetTaskEndpoint
 {
     /// <summary>
     /// Get Task

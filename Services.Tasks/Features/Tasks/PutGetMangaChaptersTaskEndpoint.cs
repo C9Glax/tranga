@@ -11,7 +11,7 @@ namespace Services.Tasks.Features.Tasks;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class PutGetMangaChaptersTaskEndpoint
+internal abstract class PutGetMangaChaptersTaskEndpoint
 {
     /// <summary>
     /// Create a <see cref="GetMangaChaptersTask"/> for Manga with the requested ID.
@@ -23,7 +23,7 @@ public abstract class PutGetMangaChaptersTaskEndpoint
     /// <response code="200">Created Task</response>
     /// <response code="404">Manga with requested ID does not exist</response>
     /// <response code="500">Failed to add Task</response>
-    public static async Task<Results<Ok<Entities.RunOnceTask>, NotFound, InternalServerError>> Handle(MangaContext mangaContext, [FromRoute] Guid mangaId, CancellationToken ct)
+    public static async Task<Results<Ok<Entities.MangaTask>, NotFound, InternalServerError>> Handle(MangaContext mangaContext, [FromRoute] Guid mangaId, CancellationToken ct)
     {
         if (!await mangaContext.Mangas.AnyAsync(m => m.MangaId == mangaId, ct))
             return TypedResults.NotFound();

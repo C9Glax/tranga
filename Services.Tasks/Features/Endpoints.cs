@@ -1,5 +1,6 @@
 using Common.Services;
 using Services.Tasks.Features.Tasks;
+using Services.Tasks.Features.Tasks.Manga;
 
 namespace Services.Tasks.Features;
 
@@ -25,11 +26,19 @@ internal static class EndpointHelpers
             .WithSummary("Get Task");
         
         builder.MapGroup("/create").CreateTaskEndpoints();
+        
+        builder.MapGroup("/manga").RelatedToMangaEndpoints();
     }
     
     private static void CreateTaskEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapPut("getMangaChapters/{mangaId}", PutGetMangaChaptersTaskEndpoint.Handle)
             .WithSummary("Create a Task to get the Chapters of the Manga with requested ID.");
+    }
+
+    private static void RelatedToMangaEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet("{mangaId}", GetMangaTasksEndpoint.Handle)
+            .WithSummary("Get Tasks related to a Manga.");
     }
 }

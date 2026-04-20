@@ -30,7 +30,7 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
         foreach (var manga in chaptersWithoutFiles)
         {
             priority++;
-            DownloadChapterTask[] tasks = manga.Select(t => new DownloadChapterTask(t.ChapterId)
+            DownloadChapterTask[] tasks = manga.Select(t => new DownloadChapterTask(t.MangaId, t.ChapterId)
             {
                 Priority = priority
             }).ToArray();

@@ -14,9 +14,11 @@ namespace Services.Tasks.Tasks;
 /// <summary>
 /// Downloads a <see cref="DbChapter"/> using the <see cref="DbChapterDownloadLink"/> with the highest Priority.
 /// </summary>
-internal sealed class DownloadChapterTask(Guid chapterId) : RunOnceTask(Guid.Parse("87d2b155-5723-4483-a2f9-c15292a14f44"))
+internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnceTask(Guid.Parse("87d2b155-5723-4483-a2f9-c15292a14f44")), IChapterTask
 {
-    internal Guid ChapterId { get; init; } = chapterId;
+    public Guid MangaId { get; init; } = mangaId;
+    
+    public Guid ChapterId { get; init; } = chapterId;
     
     private MangaContext _ctx = null!;
     

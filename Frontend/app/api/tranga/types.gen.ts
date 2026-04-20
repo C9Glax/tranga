@@ -83,9 +83,15 @@ export type ServicesMangaSearchQuery = {
     mangaDexSeriesId?: null | string;
 };
 
-export type ServicesTasksRunOnceTask = { taskId: string; taskTypeId: string; taskTypeName: string; taskType: ServicesTasksTaskType };
+export type ServicesTasksMangaTask = {
+    mangaId: string;
+    taskId: string;
+    taskTypeId: string;
+    taskTypeName: string;
+    taskType: ServicesTasksTaskType;
+};
 
-export type ServicesTasksTask = { taskId: string; taskTypeId: string; taskTypeName: string; taskType: ServicesTasksTaskType };
+export type ServicesTasksTask = { taskId?: string; taskTypeId?: string; taskTypeName?: string; taskType?: ServicesTasksTaskType };
 
 export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';
 
@@ -523,8 +529,19 @@ export type PutTasksCreateGetMangaChaptersByMangaIdResponses = {
     /**
      * OK
      */
-    200: ServicesTasksRunOnceTask;
+    200: ServicesTasksMangaTask;
 };
 
 export type PutTasksCreateGetMangaChaptersByMangaIdResponse =
     PutTasksCreateGetMangaChaptersByMangaIdResponses[keyof PutTasksCreateGetMangaChaptersByMangaIdResponses];
+
+export type PutTasksMangaByMangaIdData = { body?: never; path: { mangaId: string }; query?: never; url: '/tasks/manga/{mangaId}' };
+
+export type PutTasksMangaByMangaIdResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesTasksMangaTask>;
+};
+
+export type PutTasksMangaByMangaIdResponse = PutTasksMangaByMangaIdResponses[keyof PutTasksMangaByMangaIdResponses];

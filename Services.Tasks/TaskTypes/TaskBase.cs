@@ -5,15 +5,15 @@ namespace Services.Tasks.TaskTypes;
 /// </summary>
 /// <param name="t"><inheritdoc cref="Services.Tasks.TaskTypes.TaskType"/></param>
 /// <param name="taskTypeId">A <b>unique</b> (across all <see cref="TaskBase"/>) that identifies what type of Task this is.</param>
-internal abstract class TaskBase(TaskType t, Guid taskTypeId)
+internal abstract class TaskBase(TaskType t, Guid taskTypeId) : ITask
 {
     public Guid TaskId { get; init; } = Guid.CreateVersion7();
     
     public int Priority { get; set; } = 0;
     
     public Guid TaskTypeId { get; init; } = taskTypeId;
-
-    internal readonly TaskType TaskType = t;
+    
+    public TaskType TaskType { get; init; } = t;
 
     internal virtual Task ExecuteAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {

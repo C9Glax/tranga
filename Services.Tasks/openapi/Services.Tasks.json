@@ -85,7 +85,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RunOnceTask"
+                  "$ref": "#/components/schemas/MangaTask"
                 }
               }
             }
@@ -98,12 +98,47 @@
           }
         }
       }
+    },
+    "/tasks/manga/{mangaId}": {
+      "put": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Get Tasks related to a Manga.",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MangaTask"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
-      "RunOnceTask": {
+      "MangaTask": {
         "required": [
+          "mangaId",
           "taskId",
           "taskTypeId",
           "taskTypeName",
@@ -111,6 +146,10 @@
         ],
         "type": "object",
         "properties": {
+          "mangaId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "taskId": {
             "type": "string",
             "format": "uuid"
@@ -128,12 +167,6 @@
         }
       },
       "Task": {
-        "required": [
-          "taskId",
-          "taskTypeId",
-          "taskTypeName",
-          "taskType"
-        ],
         "type": "object",
         "properties": {
           "taskId": {
