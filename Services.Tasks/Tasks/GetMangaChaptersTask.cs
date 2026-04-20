@@ -30,10 +30,11 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(Guid.Pars
             return;
         logger.LogDebug("Got {chapters.Count} chapters...", chapters.Count);
 
-        IEnumerable<DbChapter> newChapters = chapters.Select(c => c.ToChapter(manga).CreateAndAddChapterDownloadLink(c));
+        DbChapter[] newChapters = chapters.Select(c => c.ToChapter(manga).CreateAndAddChapterDownloadLink(c)).ToArray();
+        DbChapterDownloadLink[] dlLinks = newChapters.SelectMany(c => c.DownloadLinks!).ToArray();
         // Filter DownloadLinks that already exist
         string[] existingDownloadLinks = await _ctx.ChapterDownloadLinks
-            .Where(dbDl => newChapters.SelectMany(c => c.DownloadLinks!).Any(dl =>
+            .Where(dbDl => dlLinks.Any(dl =>
                 dbDl.DownloadExtension == dl.DownloadExtension && dbDl.Identifier == dl.Identifier))
             .Select(dbDl => dbDl.Identifier).ToArrayAsync(stoppingToken);
         DbChapter[] dbChapters = newChapters.Where(c => !c.DownloadLinks!.Any(dl => existingDownloadLinks.Contains(dl.Identifier))).ToArray();
