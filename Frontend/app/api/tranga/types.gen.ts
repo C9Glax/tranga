@@ -83,6 +83,14 @@ export type ServicesMangaSearchQuery = {
     mangaDexSeriesId?: null | string;
 };
 
+export type ServicesTasksRunOnceTask = {
+    hasRun: boolean;
+    taskId: string;
+    taskTypeId: string;
+    taskTypeName: string;
+    taskType: ServicesTasksTaskType;
+};
+
 export type ServicesTasksTask = { taskId: string; taskTypeId: string; taskTypeName: string; taskType: ServicesTasksTaskType };
 
 export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';
@@ -498,3 +506,31 @@ export type GetTasksByTaskIdResponses = {
 };
 
 export type GetTasksByTaskIdResponse = GetTasksByTaskIdResponses[keyof GetTasksByTaskIdResponses];
+
+export type PutTasksCreateGetMangaChaptersByMangaIdData = {
+    body?: never;
+    path: { mangaId: string };
+    query?: never;
+    url: '/tasks/create/getMangaChapters/{mangaId}';
+};
+
+export type PutTasksCreateGetMangaChaptersByMangaIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+    /**
+     * Internal Server Error
+     */
+    500: unknown;
+};
+
+export type PutTasksCreateGetMangaChaptersByMangaIdResponses = {
+    /**
+     * OK
+     */
+    200: ServicesTasksRunOnceTask;
+};
+
+export type PutTasksCreateGetMangaChaptersByMangaIdResponse =
+    PutTasksCreateGetMangaChaptersByMangaIdResponses[keyof PutTasksCreateGetMangaChaptersByMangaIdResponses];

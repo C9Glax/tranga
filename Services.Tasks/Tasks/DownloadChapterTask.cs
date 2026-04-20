@@ -38,6 +38,7 @@ internal sealed class DownloadChapterTask(Guid chapterId) : RunOnceTask(Guid.Par
         List<ChapterImage>? images = await extension.GetChapterImages(link.ToChapterInfo(), stoppingToken);
         
         // TODO DbFile and saving
+        await _ctx.SaveChangesAsync(stoppingToken);
     }
 
     private protected override void RefreshScope(IServiceScope scope)

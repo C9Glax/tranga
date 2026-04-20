@@ -79,6 +79,10 @@ export type {
     PostMangasSearchErrors,
     PostMangasSearchResponse,
     PostMangasSearchResponses,
+    PutTasksCreateGetMangaChaptersByMangaIdData,
+    PutTasksCreateGetMangaChaptersByMangaIdErrors,
+    PutTasksCreateGetMangaChaptersByMangaIdResponse,
+    PutTasksCreateGetMangaChaptersByMangaIdResponses,
     ServicesMangaContentRating,
     ServicesMangaDownloadExtensionsList,
     ServicesMangaDownloadLink,
@@ -92,6 +96,7 @@ export type {
     ServicesMangaPostSearchMangaRequest,
     ServicesMangaReleaseStatus,
     ServicesMangaSearchQuery,
+    ServicesTasksRunOnceTask,
     ServicesTasksTask,
     ServicesTasksTaskType,
 } from './types.gen';

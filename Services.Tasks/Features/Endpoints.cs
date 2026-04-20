@@ -10,7 +10,6 @@ internal class Endpoints : EndpointsBuilder
         builder.MapGroup(string.Empty)
             .WithTags("Tasks")
             .MapTaskEndpoints();
-
     }
 }
 
@@ -24,5 +23,13 @@ internal static class EndpointHelpers
         
         builder.MapGet("{taskId}", GetTaskEndpoint.Handle)
             .WithSummary("Get Task");
+        
+        builder.MapGroup("/create").CreateTaskEndpoints();
+    }
+    
+    private static void CreateTaskEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapPut("getMangaChapters/{mangaId}", PutGetMangaChaptersTaskEndpoint.Handle)
+            .WithSummary("Create a Task to get the Chapters of the Manga with requested ID.");
     }
 }

@@ -37,6 +37,25 @@ IResourceBuilder<PostgresServerResource> postgres = builder
     });
 IResourceBuilder<PostgresDatabaseResource> db = postgres.AddDatabase(EnvVars.DBName);
 
+IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tasks>("services-tasks")
+    .WaitFor(db)
+    .WithReference(db)
+    .WithHttpEndpoint(name: "internalComms")
+    .WithEnvironment(context =>
+    {
+        context.EnvironmentVariables["POSTGRES_HOST"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
+        context.EnvironmentVariables["POSTGRES_PORT"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
+        context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
+        context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
+    })
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Name = "services-tasks";
+        service.Networks = ["tranga"];
+    })
+    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+
 IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Manga>("services-manga")
     .WaitFor(db)
     .WithReference(db)
@@ -47,6 +66,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
         context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
+        context.EnvironmentVariables["SERVICES_TASKS_BASE_URL"] = tasksService.GetEndpoint("internalComms").Url;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -59,26 +79,6 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
             Target = "/app/Covers",
             Type = "bind"
         });
-    })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
-
-IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tasks>("services-tasks")
-    .WaitFor(db)
-    .WithReference(db)
-    .WithEnvironment(context =>
-    {
-        context.EnvironmentVariables["POSTGRES_HOST"] =
-            postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
-        context.EnvironmentVariables["POSTGRES_PORT"] =
-            postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
-        context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
-        context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
-        context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
-    })
-    .PublishAsDockerComposeService((resource, service) =>
-    {
-        service.Name = "services-tasks";
-        service.Networks = ["tranga"];
     })
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 

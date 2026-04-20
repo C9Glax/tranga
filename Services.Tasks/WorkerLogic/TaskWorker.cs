@@ -30,7 +30,7 @@ internal sealed class TaskWorker(TaskQueue queue, IServiceProvider serviceProvid
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "{WorkerId} ran into an exception:", WorkerId);
+                logger.LogError(ex, "Worker {WorkerId} ran into an exception executing:", WorkerId);
             }
         }
     }
