@@ -9,7 +9,7 @@ namespace Services.Manga.Features.DownloadLinks;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class GetDownloadLinksEndpoint
+internal abstract class GetDownloadLinksEndpoint
 {
     /// <summary>
     /// List of all Download-Links

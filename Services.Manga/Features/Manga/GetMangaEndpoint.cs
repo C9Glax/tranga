@@ -9,7 +9,7 @@ namespace Services.Manga.Features.Manga;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class GetMangaEndpoint
+internal abstract class GetMangaEndpoint
 {
     /// <summary>
     /// Get Manga

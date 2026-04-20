@@ -9,7 +9,7 @@ namespace Services.Manga.Features.File;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class GetFileEndpoint
+internal abstract class GetFileEndpoint
 {
     /// <summary>
     /// Get File

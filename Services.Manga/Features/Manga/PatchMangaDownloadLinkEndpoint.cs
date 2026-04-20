@@ -8,7 +8,7 @@ namespace Services.Manga.Features.Manga;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class PatchMangaDownloadLinkEndpoint
+internal abstract class PatchMangaDownloadLinkEndpoint
 {
     /// <summary>
     /// Set Priority for Download-Link

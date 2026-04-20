@@ -6,7 +6,7 @@ namespace Services.Manga.Features.Metadata;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class GetMetadataExtensionsEndpoint
+internal abstract class GetMetadataExtensionsEndpoint
 {
     /// <summary>
     /// Get Metadata-Extensions

@@ -9,7 +9,7 @@ namespace Services.Manga.Features.Metadata;
 /// <summary>
 /// <inheritdoc cref="Handle" />
 /// </summary>
-public abstract class GetMetadataMangaEndpoint
+internal abstract class GetMetadataMangaEndpoint
 {
     /// <summary>
     /// Mangas the Metadata-Entry is linked to

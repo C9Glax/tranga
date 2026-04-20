@@ -15,7 +15,7 @@ namespace Services.Manga.Features.Manga.Search;
 /// <summary>
 /// <inheritdoc cref="Handle"/>
 /// </summary>
-public abstract class PostSearchMangaDownloadLinksEndpoint
+internal abstract class PostSearchMangaDownloadLinksEndpoint
 {
     /// <summary>
     /// Search Manga on Download-Extensions
