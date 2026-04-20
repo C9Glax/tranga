@@ -5,18 +5,24 @@ namespace Services.Tasks.WorkerLogic;
 
 internal sealed class TaskQueue
 {
+    private readonly HashSet<Guid> _tasksInQueue = [];
+    
     private readonly Channel<TaskBase> _queue = Channel.CreateUnboundedPrioritized(new UnboundedPrioritizedChannelOptions<TaskBase>()
     {
         Comparer = new TaskBaseComparer() 
     });
 
-    internal ValueTask AddTaskToQueue(TaskBase task, CancellationToken ct) => _queue.Writer.WriteAsync(task, ct);
+    internal ValueTask AddTaskToQueue(TaskBase task, CancellationToken ct) => !_tasksInQueue.Add(task.TaskId) ? ValueTask.CompletedTask : _queue.Writer.WriteAsync(task, ct); 
 
     internal async Task<TaskBase?> GetNextTask(CancellationToken ct)
     {
         if (_queue.Reader.Count < 1) return null;
-        return await _queue.Reader.ReadAsync(ct);
+        TaskBase value = await _queue.Reader.ReadAsync(ct);
+        _tasksInQueue.Remove(value.TaskId);
+        return value;
     }
+
+    internal bool ContainsTask(Guid taskId) => _tasksInQueue.Contains(taskId);
     
     private class TaskBaseComparer : IComparer<TaskBase>
     {

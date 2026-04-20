@@ -27,6 +27,5 @@ internal static class TaskDTOHelper
         TaskType = task.TaskType,
         TaskTypeName = task.GetType().Name,
         TaskTypeId = task.TaskTypeId,
-        HasRun = task.HasRun
     };
 }

@@ -83,13 +83,7 @@ export type ServicesMangaSearchQuery = {
     mangaDexSeriesId?: null | string;
 };
 
-export type ServicesTasksRunOnceTask = {
-    hasRun: boolean;
-    taskId: string;
-    taskTypeId: string;
-    taskTypeName: string;
-    taskType: ServicesTasksTaskType;
-};
+export type ServicesTasksRunOnceTask = { taskId: string; taskTypeId: string; taskTypeName: string; taskType: ServicesTasksTaskType };
 
 export type ServicesTasksTask = { taskId: string; taskTypeId: string; taskTypeName: string; taskType: ServicesTasksTaskType };
 

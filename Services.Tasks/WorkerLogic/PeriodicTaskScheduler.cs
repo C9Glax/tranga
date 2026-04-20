@@ -21,6 +21,8 @@ internal sealed class PeriodicTaskScheduler(TaskQueue taskQueue, ILogger<Periodi
 
             foreach (TaskBase task in dueTasks)
             {
+                if(taskQueue.ContainsTask(task.TaskId))
+                    continue;
                 await taskQueue.AddTaskToQueue(task, stoppingToken);
                 logger.LogInformation("Added Task {task} to queue.", task);
             }

@@ -189,7 +189,6 @@ export const zServicesTasksTaskType = z.enum(['PeriodicTask', 'RunOnceTask']);
 export type ServicesTasksTaskTypeZodType = z.infer<typeof zServicesTasksTaskType>;
 
 export const zServicesTasksRunOnceTask = z.object({
-    hasRun: z.boolean(),
     taskId: z.uuid(),
     taskTypeId: z.uuid(),
     taskTypeName: z.string(),

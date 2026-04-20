@@ -104,7 +104,6 @@
     "schemas": {
       "RunOnceTask": {
         "required": [
-          "hasRun",
           "taskId",
           "taskTypeId",
           "taskTypeName",
@@ -112,9 +111,6 @@
         ],
         "type": "object",
         "properties": {
-          "hasRun": {
-            "type": "boolean"
-          },
           "taskId": {
             "type": "string",
             "format": "uuid"
