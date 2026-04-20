@@ -79,6 +79,13 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
             Target = "/app/Covers",
             Type = "bind"
         });
+        service.Volumes.Add(new Volume()
+        {
+            Name = "Mangas",
+            Source = "Mangas",
+            Target = "/app/Mangas",
+            Type = "bind"
+        });
     })
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 

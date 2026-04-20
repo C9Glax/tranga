@@ -1,9 +1,13 @@
+using System.IO.Compression;
 using Extensions;
 using Extensions.Data;
 using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
+using Services.Manga.Database.Helpers;
 using Services.Manga.Helpers;
+using Services.Tasks.Helpers;
 using Services.Tasks.TaskTypes;
+using Settings;
 
 namespace Services.Tasks.Tasks;
 
@@ -35,9 +39,33 @@ internal sealed class DownloadChapterTask(Guid chapterId) : RunOnceTask(Guid.Par
         if (DownloadExtensionsCollection.GetExtension(link.DownloadExtension) is not { } extension)
             return;
 
-        List<ChapterImage>? images = await extension.GetChapterImages(link.ToChapterInfo(), stoppingToken);
+        if (await extension.GetChapterImages(link.ToChapterInfo(), stoppingToken) is not { } images)
+        {
+            logger.LogError("Could not get images!");
+            return;
+        }
+
+        // Create archive
+        using MemoryStream archiveStream = new();
+        await using ZipArchive archive = new (archiveStream, ZipArchiveMode.Create, false);
+        foreach (ChapterImage image in images)
+        {
+            ZipArchiveEntry entry = archive.CreateEntry(image.order.ToString());
+            await using Stream entryStream = await entry.OpenAsync(stoppingToken);
+            image.image.Position = 0;
+            await image.image.CopyToAsync(entryStream, stoppingToken);
+        }
+        // Create dbFile entry for File
+        DbFile dbFile = new()
+        {
+            Path = Constants.MangaDirectory,
+            Name = chapter.CreateFileName(),
+            MimeType = "application/zip"
+        };
+        //Save file
+        await dbFile.SaveFile(archiveStream, stoppingToken);
+        await _ctx.AddAsync(dbFile, stoppingToken);
         
-        // TODO DbFile and saving
         await _ctx.SaveChangesAsync(stoppingToken);
     }
 

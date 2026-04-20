@@ -4,6 +4,7 @@ namespace Settings;
 
 public struct Constants
 {
+    public const string MangaDirectory = "Mangas";
     public const string CoverDirectory = "Covers";
     public static readonly TimeSpan WorkerPickupWorkTimeout = TimeSpan.FromSeconds(1);
     public static readonly TimeSpan SchedulerCreateWorkTimeout = TimeSpan.FromSeconds(5);
