@@ -4,6 +4,6 @@ namespace Services.Tasks.Helpers;
 
 internal static class TasksCollectionHelper
 {
-    internal static IEnumerable<IMangaTask> RelatedToManga(this IEnumerable<TaskBase> collection, Guid mangaId) =>
+    internal static IEnumerable<IMangaTask> FilterManga(this IEnumerable<TaskBase> collection, Guid mangaId) =>
         collection.OfType<IMangaTask>().Where(t => t.MangaId == mangaId);
 }

@@ -5,7 +5,7 @@
                 <slot name="sidebar">
                     <UInput v-if="showSearch" v-model="searchModel" placeholder="Search..." icon="i-lucide-search" />
                     <slot name="pageTitle">
-                        <div v-if="pageTitle" class="flex flex-row gap-2 align-middle my-2">
+                        <div v-if="pageTitle" class="flex flex-col align-middle my-2">
                             <UIcon
                                 v-bind="pageTitle.icon"
                                 class="size-10"
@@ -60,6 +60,8 @@ const defaultItems: NavigationMenuItem[] = [
     { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
     { label: 'Search', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
     { label: 'Metadata List', to: '/metadata', icon: 'i-lucide-info', type: 'link' },
+    { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
+    { label: 'Active Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
 ];
 
 const searchModel = defineModel<string>('search');

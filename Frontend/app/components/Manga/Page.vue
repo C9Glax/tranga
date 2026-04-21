@@ -9,6 +9,8 @@
                     icon: 'i-lucide-info',
                 },
                 { label: 'Related Metadata-Entries', to: `/manga/${manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
+                { label: 'Manga Tasks', to: `/manga/${manga?.mangaId}/tasks`, icon: 'i-lucide-biceps-flexed' },
+                { label: 'Manga Download Tasks', to: `/manga/${manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
             ],
         }">
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">

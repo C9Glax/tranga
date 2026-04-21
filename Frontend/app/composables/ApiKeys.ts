@@ -9,4 +9,8 @@ export default class ApiKeys {
     static MangaDownloadLinks = (id: string) => `Mangas/${id}/DownloadLinks`;
     static DownloadExtensions = 'DownloadExtensions';
     static MetadataExtensions = 'MetadataExtensions';
+    static MangaTasks = (id: string) => `Mangas/${id}/tasks`;
+    static MangaDownloadTasks = (id: string) => `Mangas/${id}/tasks/downloads`;
+    static DownloadTasks = 'tasks/downloads';
+    static Tasks = 'tasks';
 }

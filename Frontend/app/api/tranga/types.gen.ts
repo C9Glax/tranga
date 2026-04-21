@@ -83,6 +83,15 @@ export type ServicesMangaSearchQuery = {
     mangaDexSeriesId?: null | string;
 };
 
+export type ServicesTasksChapterTask = {
+    chapterId: string;
+    mangaId: string;
+    taskId: string;
+    taskTypeId: string;
+    taskTypeName: string;
+    taskType: ServicesTasksTaskType;
+};
+
 export type ServicesTasksMangaTask = {
     mangaId: string;
     taskId: string;
@@ -91,7 +100,7 @@ export type ServicesTasksMangaTask = {
     taskType: ServicesTasksTaskType;
 };
 
-export type ServicesTasksTask = { taskId?: string; taskTypeId?: string; taskTypeName?: string; taskType?: ServicesTasksTaskType };
+export type ServicesTasksTask = { taskId: string; taskTypeId: string; taskTypeName: string; taskType: ServicesTasksTaskType };
 
 export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';
 
@@ -535,13 +544,41 @@ export type PutTasksCreateGetMangaChaptersByMangaIdResponses = {
 export type PutTasksCreateGetMangaChaptersByMangaIdResponse =
     PutTasksCreateGetMangaChaptersByMangaIdResponses[keyof PutTasksCreateGetMangaChaptersByMangaIdResponses];
 
-export type PutTasksMangaByMangaIdData = { body?: never; path: { mangaId: string }; query?: never; url: '/tasks/manga/{mangaId}' };
+export type GetTasksMangaByMangaIdData = { body?: never; path: { mangaId: string }; query?: never; url: '/tasks/manga/{mangaId}' };
 
-export type PutTasksMangaByMangaIdResponses = {
+export type GetTasksMangaByMangaIdResponses = {
     /**
      * OK
      */
     200: Array<ServicesTasksMangaTask>;
 };
 
-export type PutTasksMangaByMangaIdResponse = PutTasksMangaByMangaIdResponses[keyof PutTasksMangaByMangaIdResponses];
+export type GetTasksMangaByMangaIdResponse = GetTasksMangaByMangaIdResponses[keyof GetTasksMangaByMangaIdResponses];
+
+export type GetTasksMangaByMangaIdDownloadsData = {
+    body?: never;
+    path: { mangaId: string };
+    query?: never;
+    url: '/tasks/manga/{mangaId}/downloads';
+};
+
+export type GetTasksMangaByMangaIdDownloadsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesTasksChapterTask>;
+};
+
+export type GetTasksMangaByMangaIdDownloadsResponse =
+    GetTasksMangaByMangaIdDownloadsResponses[keyof GetTasksMangaByMangaIdDownloadsResponses];
+
+export type GetTasksMangaDownloadsData = { body?: never; path?: never; query?: never; url: '/tasks/manga/downloads' };
+
+export type GetTasksMangaDownloadsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesTasksChapterTask>;
+};
+
+export type GetTasksMangaDownloadsResponse = GetTasksMangaDownloadsResponses[keyof GetTasksMangaDownloadsResponses];

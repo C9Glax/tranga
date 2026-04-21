@@ -188,6 +188,17 @@ export const zServicesTasksTaskType = z.enum(['PeriodicTask', 'RunOnceTask']);
 
 export type ServicesTasksTaskTypeZodType = z.infer<typeof zServicesTasksTaskType>;
 
+export const zServicesTasksChapterTask = z.object({
+    chapterId: z.uuid(),
+    mangaId: z.uuid(),
+    taskId: z.uuid(),
+    taskTypeId: z.uuid(),
+    taskTypeName: z.string(),
+    taskType: zServicesTasksTaskType,
+});
+
+export type ServicesTasksChapterTaskZodType = z.infer<typeof zServicesTasksChapterTask>;
+
 export const zServicesTasksMangaTask = z.object({
     mangaId: z.uuid(),
     taskId: z.uuid(),
@@ -199,10 +210,10 @@ export const zServicesTasksMangaTask = z.object({
 export type ServicesTasksMangaTaskZodType = z.infer<typeof zServicesTasksMangaTask>;
 
 export const zServicesTasksTask = z.object({
-    taskId: z.optional(z.uuid()),
-    taskTypeId: z.optional(z.uuid()),
-    taskTypeName: z.optional(z.string()),
-    taskType: z.optional(zServicesTasksTaskType),
+    taskId: z.uuid(),
+    taskTypeId: z.uuid(),
+    taskTypeName: z.string(),
+    taskType: zServicesTasksTaskType,
 });
 
 export type ServicesTasksTaskZodType = z.infer<typeof zServicesTasksTask>;
