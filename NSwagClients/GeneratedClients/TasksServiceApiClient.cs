@@ -80,7 +80,7 @@ namespace NSwagClients.GeneratedClients.TasksService
         /// </summary>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> TasksAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> TasksAllAsync(bool? includeFinished = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -95,6 +95,12 @@ namespace NSwagClients.GeneratedClients.TasksService
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
                     // Operation Path: "tasks"
                     urlBuilder_.Append("tasks");
+                    urlBuilder_.Append('?');
+                    if (includeFinished != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("includeFinished")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(includeFinished, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -329,7 +335,7 @@ namespace NSwagClients.GeneratedClients.TasksService
         /// </summary>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> MangaAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> MangaAsync(System.Guid mangaId, bool? includeFinished = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (mangaId == null)
                 throw new System.ArgumentNullException("mangaId");
@@ -348,6 +354,12 @@ namespace NSwagClients.GeneratedClients.TasksService
                     // Operation Path: "tasks/manga/{mangaId}"
                     urlBuilder_.Append("tasks/manga/");
                     urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(mangaId, System.Globalization.CultureInfo.InvariantCulture)));
+                    urlBuilder_.Append('?');
+                    if (includeFinished != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("includeFinished")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(includeFinished, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -407,7 +419,7 @@ namespace NSwagClients.GeneratedClients.TasksService
         /// </summary>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> DownloadsAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> DownloadsAsync(System.Guid mangaId, bool? includeFinished = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (mangaId == null)
                 throw new System.ArgumentNullException("mangaId");
@@ -427,6 +439,12 @@ namespace NSwagClients.GeneratedClients.TasksService
                     urlBuilder_.Append("tasks/manga/");
                     urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(mangaId, System.Globalization.CultureInfo.InvariantCulture)));
                     urlBuilder_.Append("/downloads");
+                    urlBuilder_.Append('?');
+                    if (includeFinished != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("includeFinished")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(includeFinished, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -481,9 +499,12 @@ namespace NSwagClients.GeneratedClients.TasksService
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get all Download Tasks.
+        /// </summary>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> Downloads2Async(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> Downloads2Async(bool? includeFinished = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -498,6 +519,12 @@ namespace NSwagClients.GeneratedClients.TasksService
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
                     // Operation Path: "tasks/manga/downloads"
                     urlBuilder_.Append("tasks/manga/downloads");
+                    urlBuilder_.Append('?');
+                    if (includeFinished != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("includeFinished")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(includeFinished, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 

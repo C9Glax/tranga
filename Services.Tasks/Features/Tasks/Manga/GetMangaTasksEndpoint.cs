@@ -15,11 +15,12 @@ internal abstract class GetMangaTasksEndpoint
     /// <summary>
     /// Get Tasks related to a Manga
     /// </summary>
+    /// <param name="includeFinished">Include Tasks that have already finished</param>
     /// <returns>List of all Tasks</returns>
     /// <response code="200">List of all Tasks</response>
-    public static Ok<Task[]> Handle([FromRoute]Guid mangaId)
+    public static Ok<Task[]> Handle([FromRoute]Guid mangaId, [FromQuery(Name = "includeFinished")]bool? includeFinished = false)
     {
-        IEnumerable<IMangaTask> knownTasks = TasksCollection.GetKnownTasks().FilterManga(mangaId);
+        IEnumerable<IMangaTask> knownTasks = TasksCollection.GetKnownTasks().FilterManga(mangaId).Where(t => t is not RunOnceTask r || (!r.HasRun || includeFinished == true));
 
         Task[] result = knownTasks.Select(t => t.ToDto()).ToArray();
         return TypedResults.Ok(result);

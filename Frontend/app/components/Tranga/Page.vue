@@ -61,7 +61,7 @@ const defaultItems: NavigationMenuItem[] = [
     { label: 'Search', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
     { label: 'Metadata List', to: '/metadata', icon: 'i-lucide-info', type: 'link' },
     { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
-    { label: 'Active Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
+    { label: 'Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
 ];
 
 const searchModel = defineModel<string>('search');

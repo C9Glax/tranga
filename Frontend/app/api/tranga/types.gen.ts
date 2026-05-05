@@ -479,7 +479,7 @@ export type GetMangasFilesByFileIdErrors = {
     500: unknown;
 };
 
-export type GetTasksData = { body?: never; path?: never; query?: never; url: '/tasks' };
+export type GetTasksData = { body?: never; path?: never; query?: { includeFinished?: boolean }; url: '/tasks' };
 
 export type GetTasksResponses = {
     /**
@@ -536,7 +536,12 @@ export type PutTasksCreateGetMangaChaptersByMangaIdResponses = {
 export type PutTasksCreateGetMangaChaptersByMangaIdResponse =
     PutTasksCreateGetMangaChaptersByMangaIdResponses[keyof PutTasksCreateGetMangaChaptersByMangaIdResponses];
 
-export type GetTasksMangaByMangaIdData = { body?: never; path: { mangaId: string }; query?: never; url: '/tasks/manga/{mangaId}' };
+export type GetTasksMangaByMangaIdData = {
+    body?: never;
+    path: { mangaId: string };
+    query?: { includeFinished?: boolean };
+    url: '/tasks/manga/{mangaId}';
+};
 
 export type GetTasksMangaByMangaIdResponses = {
     /**
@@ -550,7 +555,7 @@ export type GetTasksMangaByMangaIdResponse = GetTasksMangaByMangaIdResponses[key
 export type GetTasksMangaByMangaIdDownloadsData = {
     body?: never;
     path: { mangaId: string };
-    query?: never;
+    query?: { includeFinished?: boolean };
     url: '/tasks/manga/{mangaId}/downloads';
 };
 
@@ -564,7 +569,12 @@ export type GetTasksMangaByMangaIdDownloadsResponses = {
 export type GetTasksMangaByMangaIdDownloadsResponse =
     GetTasksMangaByMangaIdDownloadsResponses[keyof GetTasksMangaByMangaIdDownloadsResponses];
 
-export type GetTasksMangaDownloadsData = { body?: never; path?: never; query?: never; url: '/tasks/manga/downloads' };
+export type GetTasksMangaDownloadsData = {
+    body?: never;
+    path?: never;
+    query?: { includeFinished?: boolean };
+    url: '/tasks/manga/downloads';
+};
 
 export type GetTasksMangaDownloadsResponses = {
     /**

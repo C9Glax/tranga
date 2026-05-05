@@ -44,6 +44,7 @@ internal static class EndpointHelpers
         builder.MapGet("{mangaId}/downloads", GetMangaDownloadTasksEndpoint.Handle)
             .WithSummary("Get the Download Tasks related to a Manga");
 
-        builder.MapGet("/downloads", GetAllDownloadTasksEndpoint.Handle);
+        builder.MapGet("/downloads", GetAllDownloadTasksEndpoint.Handle)
+            .WithSummary("Get all Download Tasks.");
     }
 }

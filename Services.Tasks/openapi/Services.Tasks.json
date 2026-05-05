@@ -11,6 +11,16 @@
           "Tasks"
         ],
         "summary": "Get all Tasks",
+        "parameters": [
+          {
+            "name": "includeFinished",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -114,6 +124,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "includeFinished",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
           }
         ],
         "responses": {
@@ -148,6 +166,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "includeFinished",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
           }
         ],
         "responses": {
@@ -171,6 +197,17 @@
       "get": {
         "tags": [
           "Tasks"
+        ],
+        "summary": "Get all Download Tasks.",
+        "parameters": [
+          {
+            "name": "includeFinished",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
         ],
         "responses": {
           "200": {

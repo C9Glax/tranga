@@ -1,14 +1,14 @@
 <template>
     <UPageList class="gap-4">
-        <TasksCard v-if="tasks" v-for="task in sorted" :key="task.taskId" :task="task" />
-        <USkeleton v-else class="h-48" />
+        <USkeleton v-if="loading && !tasks" class="h-48" />
+        <TasksCard v-else v-for="task in sorted" :key="task.taskId" :task="task" />
     </UPageList>
 </template>
 
 <script setup lang="ts">
 import type { ServicesTasksTask } from '~/api/tranga';
 
-const props = defineProps<{ tasks?: ServicesTasksTask[] }>();
+const props = defineProps<{ tasks?: ServicesTasksTask[]; loading?: boolean }>();
 
 const sorted = computed((): ServicesTasksTask[] =>
     (props.tasks ?? []).sort((t1, t2) => {

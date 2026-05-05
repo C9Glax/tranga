@@ -16,7 +16,7 @@ internal sealed class PeriodicTaskScheduler(TaskQueue taskQueue, ILogger<Periodi
             logger.LogTrace("Getting due tasks...");
             List<TaskBase> dueTasks = TasksCollection.PeriodicTasks
                 .Where(t => t.LastRun + t.Interval < DateTimeOffset.UtcNow)
-                .Concat<TaskBase>(TasksCollection.RunOnceTasks.Values.Where(t => t.LastRun is null))
+                .Concat<TaskBase>(TasksCollection.RunOnceTasks.Values.Where(t => !t.HasRun))
                 .ToList();
 
             foreach (TaskBase task in dueTasks)

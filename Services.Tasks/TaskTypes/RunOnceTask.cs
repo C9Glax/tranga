@@ -6,9 +6,12 @@ namespace Services.Tasks.TaskTypes;
 /// <param name="taskTypeId"><inheritdoc cref="TaskBase" path="tagpath[@name='taskTypeId']"/></param>
 internal abstract class RunOnceTask(Guid taskTypeId) : TaskBase(TaskType.RunOnceTask, taskTypeId)
 {
+    internal bool HasRun { get; set; }
+    
     internal override async Task ExecuteAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         await base.ExecuteAsync(scope, logger, stoppingToken);
+        HasRun = true;
         logger.LogDebug("Task finished.");
     }
 }
