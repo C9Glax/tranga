@@ -15,7 +15,7 @@
                 <UIcon name="i-lucide-plus" />
                 <TrangaTime v-if="task.lastRun" v-model="task.lastRun" prefix="Last Run" />
                 <UIcon name="i-lucide-arrow-right" />
-                <TrangaTime v-if="nextRun" v-model="nextRun" prefix="Next Run" />
+                <TrangaTime v-if="nextRun" v-model="nextRun" prefix="Next Run" relative />
             </div>
         </div>
 
