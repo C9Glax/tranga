@@ -19,4 +19,10 @@ const { data, refresh } = await useTranga<GetTasksMangaByMangaIdResponse>(() => 
 });
 
 defineShortcuts({ meta_r: () => refresh() });
+
+let interval: number;
+onMounted(() => {
+    interval = setInterval(() => refresh(), 5000);
+});
+onUnmounted(() => clearInterval(interval));
 </script>

@@ -20,10 +20,10 @@
         </div>
 
         <template #footer>
-            <div class="h-lh">
-                <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Manga" />
-                <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Chapter" />
-            </div>
+            <UFieldGroup>
+                <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Manga" variant="soft" />
+                <UButton v-if="task.chapterId" :to="`/manga/${task.mangaId}`" label="Chapter" variant="soft" color="secondary" />
+            </UFieldGroup>
         </template>
     </UCard>
 </template>
