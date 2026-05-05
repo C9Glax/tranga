@@ -8,8 +8,15 @@
 
 <script setup lang="ts">
 import type { GetTasksResponse } from '~/api/tranga';
+import { setInterval } from '#imports';
 
-const { data, refresh } = await useTranga<GetTasksResponse>(() => `/tasks`, { key: ApiKeys.Tasks, lazy: true });
+const { data, refresh } = await useTranga<GetTasksResponse>(() => `/tasks`, { lazy: true });
 
 defineShortcuts({ meta_r: () => refresh() });
+
+let interval: number;
+onMounted(() => {
+    interval = setInterval(() => refresh(), 5000);
+});
+onUnmounted(() => clearInterval(interval));
 </script>
