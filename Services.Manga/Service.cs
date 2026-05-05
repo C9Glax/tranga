@@ -14,7 +14,7 @@ public sealed class Service : Common.Services.Service
             opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
 
         Builder.Configuration.GetSection("Services.Tasks").GetValue<string>("baseUrl");
-        Builder.Services.AddSingleton<MyTasksServiceApiClient>();
+        Builder.Services.AddSingleton<MyTasksServiceApiClient>();  //crutch until service bus is implemented
 
         SetupWebApplication<Endpoints>("/mangas");
 
