@@ -1,18 +1,5 @@
 <template>
-    <TrangaPage
-        :page-title="{ title: 'Manga', icon: { name: 'i-lucide-book', color: 'warning' } }"
-        :navigation-props="{
-            items: [
-                {
-                    label: 'To Metadata-Entry',
-                    to: `/metadata/${manga?.metadataEntry?.metadataId}?mangaId=${manga?.mangaId}`,
-                    icon: 'i-lucide-info',
-                },
-                { label: 'Related Metadata-Entries', to: `/manga/${manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
-                { label: 'Manga Tasks', to: `/manga/${manga?.mangaId}/tasks`, icon: 'i-lucide-biceps-flexed' },
-                { label: 'Manga Download Tasks', to: `/manga/${manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
-            ],
-        }">
+    <TrangaPage :page-title="{ title: 'Manga', icon: { name: 'i-lucide-book', color: 'warning' } }" :navigation-props="navigation">
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
             <template #title>
                 <div class="flex flex-row gap-2 items-baseline">
@@ -76,6 +63,7 @@ import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
 import type { ServicesMangaManga } from '~/api/tranga';
 import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
+import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
 
 export interface MangaPageProps extends PageCTAProps {
     manga?: ServicesMangaManga;
@@ -89,5 +77,17 @@ defineSlots<PageCTASlots>();
 const links = computed(() => {
     if (props.actions) return props.actions(props.manga);
     else return undefined;
+});
+
+const navigation = computed((): NavigationMenuProps => {
+    return {
+        items: [
+            { label: 'Manga', type: 'label' },
+            { label: 'Manga', to: `/manga/${props.manga?.mangaId}`, icon: 'i-lucide-book' },
+            { label: 'Metadata-Entries', to: `/manga/${props.manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
+            { label: 'Manga Tasks', to: `/manga/${props.manga?.mangaId}/tasks`, icon: 'i-lucide-biceps-flexed' },
+            { label: 'Manga Downloads', to: `/manga/${props.manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
+        ],
+    };
 });
 </script>

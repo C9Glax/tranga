@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage v-model:search="search" :page-title="{ title: 'Manga List', icon: { name: 'i-lucide-book' } }" showSearch>
+    <TrangaPage v-model:search="search" :page-title="{ title: 'Manga List', icon: { name: 'i-lucide-book' } }" searchEnabled>
         <UContainer>
             <MangaList :mangas="mangaList" :loading="status !== 'success'" />
         </UContainer>

@@ -3,7 +3,6 @@
         <UDashboardGroup class="mt-(--ui-header-height)">
             <UDashboardSidebar v-model:collapsed="collapsed" :collapsible="true" :resizable="true">
                 <slot name="sidebar">
-                    <UInput v-if="showSearch" v-model="searchModel" placeholder="Search..." icon="i-lucide-search" />
                     <slot name="pageTitle">
                         <div v-if="pageTitle" class="flex flex-col align-middle my-2">
                             <UIcon
@@ -13,6 +12,11 @@
                             <p class="text-3xl mt-1" :class="collapsed && 'hidden'">{{ pageTitle.title }}</p>
                         </div>
                     </slot>
+                    <UInput
+                        v-model="searchModel"
+                        :disabled="!searchEnabled"
+                        placeholder="Search..."
+                        :icon="`i-lucide-search${searchEnabled ? '' : '-slash'}`" />
                     <UNavigationMenu :items="nItems" orientation="vertical" />
                 </slot>
             </UDashboardSidebar>
@@ -32,7 +36,7 @@ import { LazySearch } from '#components';
 export interface TrangaPageProps {
     navigationProps?: NavigationMenuProps;
     pageTitle?: { title: string; icon: IconProps & { color?: string } };
-    showSearch?: boolean;
+    searchEnabled?: boolean;
 }
 
 const searchOverlay = useOverlay().create(LazySearch);
@@ -50,6 +54,7 @@ const nItems = computed((): NavigationMenuItem[][] => {
 });
 
 const defaultItems: NavigationMenuItem[] = [
+    { label: 'Tranga', type: 'label' },
     {
         label: 'Back',
         onSelect: () => useRouter().back(),
@@ -58,7 +63,7 @@ const defaultItems: NavigationMenuItem[] = [
         ui: { linkLeadingIcon: 'text-secondary', linkLabel: 'text-secondary' },
     },
     { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
-    { label: 'Search', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
+    { label: 'Search Manga', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
     { label: 'Metadata List', to: '/metadata', icon: 'i-lucide-info', type: 'link' },
     { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
     { label: 'Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },

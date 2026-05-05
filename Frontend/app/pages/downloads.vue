@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Active Downloads', icon: { name: 'i-lucide-cloud-download' } }">
+    <TrangaPage :page-title="{ title: 'Downloads', icon: { name: 'i-lucide-cloud-download' } }">
         <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8 mb-8' }">
             <USwitch v-model="includeFinished" label="Include finished downloads" />
         </UPageSection>

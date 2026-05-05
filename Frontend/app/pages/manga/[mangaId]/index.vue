@@ -21,5 +21,11 @@ const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangas
 
 const actions = (manga?: ServicesMangaManga): ButtonProps[] | undefined => [
     { label: 'More Download-Links', to: `/manga/${manga?.mangaId}/downloadLinks`, icon: 'i-lucide-download', variant: 'outline' },
+    {
+        label: 'To Metadata-Entry',
+        to: `/metadata/${manga?.metadataEntry?.metadataId}?mangaId=${manga?.mangaId}`,
+        icon: 'i-lucide-info',
+        variant: 'outline',
+    },
 ];
 </script>

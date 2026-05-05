@@ -1,5 +1,8 @@
 <template>
-    <TrangaPage v-model:search="search" :page-title="{ title: 'Metadata List', icon: { name: 'i-lucide-info', color: 'info' } }" showSearch>
+    <TrangaPage
+        v-model:search="search"
+        :page-title="{ title: 'Metadata List', icon: { name: 'i-lucide-info', color: 'info' } }"
+        searchEnabled>
         <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
             <MetadataList :metadata-list="metadataList" :loading="status !== 'success'" />
         </UPageSection>
