@@ -1,5 +1,5 @@
 <template>
-    <UTooltip v-if="date" :text="date">
+    <UTooltip v-if="date" :text="date.toString()">
         <TrangaDoubleBadge :first-badge-props="{ label: prefix }" :second-badge-props="{ label: date.toLocaleString() }" />
     </UTooltip>
 </template>
