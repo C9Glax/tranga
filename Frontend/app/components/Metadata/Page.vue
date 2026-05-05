@@ -2,11 +2,21 @@
     <TrangaPage :page-title="{ title: 'Metadata', icon: { name: 'i-lucide-info', color: 'info' } }">
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
             <template #title>
-                <UBadge v-if="metadata?.nsfw" label="NSFW" color="error" variant="solid" />
-                <p v-if="$props.title">{{ $props.title }}</p>
-                <p v-else-if="metadata?.series">{{ metadata.series }}</p>
-                <p v-if="metadata?.year" class="text-dimmed text-sm">{{ metadata.year }}</p>
-                <USkeleton v-else class="h-lh" />
+                <div class="flex flex-row gap-2 items-baseline">
+                    <p v-if="$props.title">{{ $props.title }}</p>
+                    <p v-else-if="metadata?.series">{{ metadata.series }}</p>
+                    <p v-if="metadata?.year" class="text-dimmed text-sm">{{ metadata.year }}</p>
+                    <USkeleton v-else class="h-lh w-14" />
+                </div>
+                <div class="flex flex-row gap-4 items-center mt-1">
+                    <UBadge
+                        v-if="metadata?.status"
+                        :label.camel="metadata.status"
+                        :color="releaseStatusBadgeColor(metadata.status)"
+                        variant="outline" />
+                    <USkeleton v-else class="h-lh w-14" />
+                    <UBadge v-if="metadata?.nsfw" label="NSFW" color="error" variant="solid" />
+                </div>
             </template>
 
             <template #description>
@@ -54,6 +64,7 @@ import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
 import type { ServicesMangaMetadata } from '~/api/tranga';
 import useMetadataExtensions from '~/composables/MetadataExtension';
+import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
 
 export interface MangaPageProps extends PageCTAProps {
     metadata?: ServicesMangaMetadata;

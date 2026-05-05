@@ -15,11 +15,21 @@
         }">
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
             <template #title>
-                <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
-                <p v-if="$props.title">{{ $props.title }}</p>
-                <p v-else-if="manga?.metadataEntry?.series">{{ manga?.metadataEntry?.series }}</p>
-                <p v-if="manga?.metadataEntry?.year" class="text-dimmed text-sm">{{ manga.metadataEntry?.year }}</p>
-                <USkeleton v-else class="h-lh" />
+                <div class="flex flex-row gap-2 items-baseline">
+                    <p v-if="$props.title">{{ $props.title }}</p>
+                    <p v-else-if="manga?.metadataEntry?.series">{{ manga?.metadataEntry?.series }}</p>
+                    <p v-if="manga?.metadataEntry?.year" class="text-dimmed text-sm">{{ manga.metadataEntry?.year }}</p>
+                    <USkeleton v-else class="h-lh w-14" />
+                </div>
+                <div class="flex flex-row gap-4 items-center mt-1">
+                    <UBadge
+                        v-if="manga?.metadataEntry?.status"
+                        :label.camel="manga.metadataEntry.status"
+                        :color="releaseStatusBadgeColor(manga.metadataEntry.status)"
+                        variant="outline" />
+                    <USkeleton v-else class="h-lh w-14" />
+                    <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
+                </div>
             </template>
 
             <template #description>
@@ -65,6 +75,7 @@ import { MangaCover, UPageCTA } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { PageCTAProps, PageCTASlots } from '@nuxt/ui/components/PageCTA.vue';
 import type { ServicesMangaManga } from '~/api/tranga';
+import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
 
 export interface MangaPageProps extends PageCTAProps {
     manga?: ServicesMangaManga;

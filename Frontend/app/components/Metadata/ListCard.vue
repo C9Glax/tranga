@@ -14,7 +14,7 @@
                 description: 'h-30 text-ellipsis overflow-hidden',
             }">
             <template #badge>
-                <UBadge v-if="metadata.status" :label.camel="metadata.status" :color="badgeColor(metadata.status)" />
+                <UBadge v-if="metadata.status" :label.camel="metadata.status" :color="releaseStatusBadgeColor(metadata.status)" />
                 <UBadge v-if="metadata.nsfw" label="NSFW" color="error" variant="solid" />
             </template>
             <template #date>
@@ -43,8 +43,9 @@
 
 <script setup lang="ts">
 import useMetadataExtensions from '~/composables/MetadataExtension';
-import type { ServicesMangaMetadata, ServicesMangaReleaseStatus } from '~/api/tranga';
+import type { ServicesMangaMetadata } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
+import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
 
 const props = defineProps<{
     metadata: ServicesMangaMetadata;
@@ -54,19 +55,4 @@ const props = defineProps<{
 }>();
 
 const { metadataExtensions } = await useMetadataExtensions();
-
-const badgeColor = (status: ServicesMangaReleaseStatus) => {
-    switch (status) {
-        case 'Ongoing':
-            return 'primary';
-        case 'Hiatus':
-            return 'warning';
-        case 'Complete':
-            return 'secondary';
-        case 'Cancelled':
-            return 'error';
-        default:
-            return 'neutral';
-    }
-};
 </script>
