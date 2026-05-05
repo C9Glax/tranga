@@ -7,11 +7,9 @@
 </template>
 
 <script setup lang="ts">
-import type { GetTasksMangaByMangaIdResponse, GetTasksResponse } from '~/api/tranga';
+import type { GetTasksResponse } from '~/api/tranga';
 
-const mangaId = useRoute().params.mangaId as string;
-
-const { data, refresh } = await useTranga<GetTasksResponse>(() => `/tasks/manga/`, { key: ApiKeys.Tasks, lazy: true });
+const { data, refresh } = await useTranga<GetTasksResponse>(() => `/tasks`, { key: ApiKeys.Tasks, lazy: true });
 
 defineShortcuts({ meta_r: () => refresh() });
 </script>

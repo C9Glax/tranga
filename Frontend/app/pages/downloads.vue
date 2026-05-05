@@ -9,8 +9,6 @@
 <script setup lang="ts">
 import type { GetTasksMangaDownloadsResponse } from '~/api/tranga';
 
-const mangaId = useRoute().params.mangaId as string;
-
 const { data, refresh } = await useTranga<GetTasksMangaDownloadsResponse>(() => `/tasks/manga/downloads`, {
     key: ApiKeys.DownloadTasks,
     lazy: true,
