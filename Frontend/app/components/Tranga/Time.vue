@@ -1,20 +1,17 @@
 <template>
     <UTooltip v-if="date" :text="time">
-        <UFieldGroup>
-            <UBadge v-if="prefix">{{ prefix }}</UBadge>
-            <UBadge v-bind="$props" :label="date.toLocaleString()" variant="outline" />
-        </UFieldGroup>
+        <TrangaDoubleBadge :first-badge-props="{ label: prefix }" :second-badge-props="{ label: date.toLocaleString() }" />
     </UTooltip>
 </template>
 
 <script setup lang="ts">
-import type { BadgeProps } from '@nuxt/ui';
+import type { TrangaDoubleBadgeProps } from '~/components/Tranga/DoubleBadge.vue';
 
 const time = defineModel<string | null | undefined>();
 
 defineProps<TrangaTimeProps>();
 
-export interface TrangaTimeProps extends /** @vue-ignore */ BadgeProps {
+export interface TrangaTimeProps extends TrangaDoubleBadgeProps {
     prefix?: string;
 }
 
