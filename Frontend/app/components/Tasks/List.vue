@@ -1,5 +1,5 @@
 <template>
-    <UPageList>
+    <UPageList class="gap-4">
         <TasksCard v-for="task in tasks" :key="task.taskId" :task="task" />
     </UPageList>
 </template>

@@ -1,26 +1,26 @@
 <template>
     <UCard>
-        <template #header>
+        <div class="flex flex-col gap-4">
             <UTooltip :text="`${task.taskType} ${task.taskTypeId}`">
                 <UUser
                     :name="splitCamelCase(task.taskTypeName)"
                     :description="task.taskId"
                     :avatar="{ icon: task.taskType === 'PeriodicTask' ? 'i-lucide-repeat' : 'i-lucide-line-dot-right-horizontal' }" />
             </UTooltip>
-        </template>
-        <div class="flex gap-2 items-center">
-            <TrangaDoubleBadge
-                v-if="task.interval"
-                :first-badge-props="{ label: 'Interval' }"
-                :second-badge-props="{ label: task.interval }" />
-            <UIcon name="i-lucide-plus" />
-            <TrangaTime v-if="task.lastRun" v-model="task.lastRun" prefix="Last Run" />
-            <UIcon name="i-lucide-arrow-right" />
-            <TrangaTime v-if="nextRun" v-model="nextRun" prefix="Next Run" />
+            <div class="flex gap-2 items-center">
+                <TrangaDoubleBadge
+                    v-if="task.interval"
+                    :first-badge-props="{ label: 'Interval' }"
+                    :second-badge-props="{ label: task.interval }" />
+                <UIcon name="i-lucide-plus" />
+                <TrangaTime v-if="task.lastRun" v-model="task.lastRun" prefix="Last Run" />
+                <UIcon name="i-lucide-arrow-right" />
+                <TrangaTime v-if="nextRun" v-model="nextRun" prefix="Next Run" />
+            </div>
         </div>
 
         <template #footer>
-            <div>
+            <div class="h-lh">
                 <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Manga" />
                 <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Chapter" />
             </div>
