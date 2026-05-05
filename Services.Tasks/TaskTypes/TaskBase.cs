@@ -15,9 +15,13 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId) : ITask
     
     public TaskType TaskType { get; init; } = t;
 
+    public DateTimeOffset? LastRun { get; set; } = null;
+
     internal virtual Task ExecuteAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
+        LastRun = DateTimeOffset.UtcNow;
         RefreshScope(scope);
+        logger.LogDebug("Task running.");
         return RunAsync(scope, logger, stoppingToken);
     }
 

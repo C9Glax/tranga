@@ -25,6 +25,11 @@ public sealed record Task
     public required TaskType TaskType { get; init; }
     
     /// <summary>
+    /// Last run of Task (null if task has never run)
+    /// </summary>
+    public required DateTimeOffset? LastRun { get; init; }
+    
+    /// <summary>
     /// Id of Manga (if <see cref="IMangaTask"/>)
     /// </summary>
     public Guid? MangaId { get; init; }
@@ -38,9 +43,4 @@ public sealed record Task
     /// Interval of Task (if <see cref="PeriodicTask"/>)
     /// </summary>
     public TimeSpan? Interval { get; init; }
-    
-    /// <summary>
-    /// Last run of Task (if <see cref="PeriodicTask"/>)
-    /// </summary>
-    public DateTimeOffset? LastRun { get; init; }
 }

@@ -193,10 +193,10 @@ export const zServicesTasksTask = z.object({
     taskTypeId: z.uuid(),
     taskTypeName: z.string(),
     taskType: zServicesTasksTaskType,
+    lastRun: z.nullable(z.iso.datetime()),
     mangaId: z.nullish(z.uuid()),
     chapterId: z.nullish(z.uuid()),
     interval: z.nullish(z.string().check(z.regex(/^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$/))),
-    lastRun: z.nullish(z.iso.datetime()),
 });
 
 export type ServicesTasksTaskZodType = z.infer<typeof zServicesTasksTask>;

@@ -12,6 +12,7 @@ internal static class TaskDTOHelper
             TaskTypeId = task.TaskTypeId,
             TaskTypeName = task.GetType().Name,
             TaskType = default,
+            LastRun = task.LastRun
         };
 
         if (task is PeriodicTask p)
@@ -20,7 +21,6 @@ internal static class TaskDTOHelper
             {
                 TaskType = TaskType.PeriodicTask,
                 Interval = p.Interval,
-                LastRun = p.LastRun
             };
         }else if (task is RunOnceTask r)
         {

@@ -197,7 +197,8 @@
           "taskId",
           "taskTypeId",
           "taskTypeName",
-          "taskType"
+          "taskType",
+          "lastRun"
         ],
         "type": "object",
         "properties": {
@@ -214,6 +215,13 @@
           },
           "taskType": {
             "$ref": "#/components/schemas/TaskType"
+          },
+          "lastRun": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           },
           "mangaId": {
             "type": [
@@ -235,13 +243,6 @@
               "null",
               "string"
             ]
-          },
-          "lastRun": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "format": "date-time"
           }
         }
       },

@@ -7,4 +7,6 @@ internal interface ITask
     public Guid TaskTypeId { get; init; }
 
     public TaskType TaskType { internal get; init; }
+    
+    public DateTimeOffset? LastRun { get; set; }
 }

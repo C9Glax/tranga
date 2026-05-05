@@ -88,10 +88,10 @@ export type ServicesTasksTask = {
     taskTypeId: string;
     taskTypeName: string;
     taskType: ServicesTasksTaskType;
+    lastRun: null | string;
     mangaId?: null | string;
     chapterId?: null | string;
     interval?: null | string;
-    lastRun?: null | string;
 };
 
 export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';

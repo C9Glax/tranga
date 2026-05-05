@@ -702,6 +702,9 @@ namespace NSwagClients.GeneratedClients.TasksService
         [Newtonsoft.Json.JsonProperty("taskType", Required = Newtonsoft.Json.Required.Always)]
         public required TaskType TaskType { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("lastRun", Required = Newtonsoft.Json.Required.AllowNull)]
+        public required System.DateTimeOffset? LastRun { get; set; }
+
         [Newtonsoft.Json.JsonProperty("mangaId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? MangaId { get; set; }
 
@@ -711,9 +714,6 @@ namespace NSwagClients.GeneratedClients.TasksService
         [Newtonsoft.Json.JsonProperty("interval", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.RegularExpression(@"^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$")]
         public string? Interval { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("lastRun", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? LastRun { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
