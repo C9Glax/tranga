@@ -105,8 +105,6 @@ export type {
     ServicesMangaPostSearchMangaRequest,
     ServicesMangaReleaseStatus,
     ServicesMangaSearchQuery,
-    ServicesTasksChapterTask,
-    ServicesTasksMangaTask,
     ServicesTasksTask,
     ServicesTasksTaskType,
 } from './types.gen';

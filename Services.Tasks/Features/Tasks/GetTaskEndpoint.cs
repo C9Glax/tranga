@@ -23,6 +23,6 @@ internal abstract class GetTaskEndpoint
         if (TasksCollection.GetTask(taskId) is not { } task)
             return TypedResults.NotFound();
 
-        return TypedResults.Ok(task.ToDTO());
+        return TypedResults.Ok(task.ToDto());
     }
 }

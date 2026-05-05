@@ -34,7 +34,9 @@
                     <UFieldGroup v-if="mDl">
                         <UButton v-if="!mDl.matched" variant="soft" label="Match" @click="updateMatch(true)" />
                         <UButton v-if="mDl.matched" variant="outline" label="Unmatch" @click="updateMatch(false)" />
-                        <UInputNumber :default-value="mDl.priority as number" @update:model-value="(v) => updateMatch(undefined, v)" />
+                        <UInputNumber
+                            :default-value="mDl.priority as number"
+                            @update:model-value="(v: number | undefined) => updateMatch(undefined, v)" />
                     </UFieldGroup>
                 </div>
             </template>

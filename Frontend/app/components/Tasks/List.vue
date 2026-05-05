@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ServicesTasksChapterTask, ServicesTasksMangaTask, ServicesTasksTask } from '~/api/tranga';
+import type { ServicesTasksTask } from '~/api/tranga';
 
-defineProps<{ tasks?: (ServicesTasksTask | ServicesTasksMangaTask | ServicesTasksChapterTask)[] }>();
+defineProps<{ tasks: ServicesTasksTask[] }>();
 </script>

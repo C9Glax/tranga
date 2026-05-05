@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Tasks.Helpers;
 using Services.Tasks.Tasks;
 using Services.Tasks.WorkerLogic;
+using Task = Services.Tasks.Entities.Task;
 
 namespace Services.Tasks.Features.Tasks.Manga;
 
@@ -16,12 +17,12 @@ internal abstract class GetMangaDownloadTasksEndpoint
     /// </summary>
     /// <returns>List of all Tasks</returns>
     /// <response code="200">List of all Tasks</response>
-    public static Ok<Entities.ChapterTask[]> Handle([FromRoute]Guid mangaId)
+    public static Ok<Task[]> Handle([FromRoute]Guid mangaId)
     {
         IEnumerable<DownloadChapterTask> knownTasks =
             TasksCollection.GetKnownTasks().FilterManga(mangaId).OfType<DownloadChapterTask>();
 
-        Entities.ChapterTask[] result = knownTasks.Select(t => t.ToDTO()).ToArray();
+        Task[] result = knownTasks.Select(t => t.ToDto()).ToArray();
         return TypedResults.Ok(result);
     }
 }

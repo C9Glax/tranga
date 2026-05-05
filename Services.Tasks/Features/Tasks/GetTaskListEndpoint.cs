@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Services.Tasks.Helpers;
 using Services.Tasks.TaskTypes;
 using Services.Tasks.WorkerLogic;
+using Task = Services.Tasks.Entities.Task;
 
 namespace Services.Tasks.Features.Tasks;
 
@@ -15,11 +16,11 @@ internal abstract class GetTaskListEndpoint
     /// </summary>
     /// <returns>List of all Tasks</returns>
     /// <response code="200">List of all Tasks</response>
-    public static Ok<Entities.Task[]> Handle()
+    public static Ok<Task[]> Handle()
     {
         IEnumerable<TaskBase> knownTasks = TasksCollection.GetKnownTasks();
 
-        Entities.Task[] result = knownTasks.Select(t => t.ToDTO()).ToArray();
+        Task[] result = knownTasks.Select(t => t.ToDto()).ToArray();
         return TypedResults.Ok(result);
     }
 }

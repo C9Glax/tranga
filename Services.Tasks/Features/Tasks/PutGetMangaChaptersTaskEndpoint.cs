@@ -5,6 +5,7 @@ using Services.Manga.Database;
 using Services.Tasks.Helpers;
 using Services.Tasks.Tasks;
 using Services.Tasks.WorkerLogic;
+using Task = Services.Tasks.Entities.Task;
 
 namespace Services.Tasks.Features.Tasks;
 
@@ -23,7 +24,7 @@ internal abstract class PutGetMangaChaptersTaskEndpoint
     /// <response code="200">Created Task</response>
     /// <response code="404">Manga with requested ID does not exist</response>
     /// <response code="500">Failed to add Task</response>
-    public static async Task<Results<Ok<Entities.MangaTask>, NotFound, InternalServerError>> Handle(MangaContext mangaContext, [FromRoute] Guid mangaId, CancellationToken ct)
+    public static async Task<Results<Ok<Task>, NotFound, InternalServerError>> Handle(MangaContext mangaContext, [FromRoute] Guid mangaId, CancellationToken ct)
     {
         if (!await mangaContext.Mangas.AnyAsync(m => m.MangaId == mangaId, ct))
             return TypedResults.NotFound();
@@ -32,6 +33,6 @@ internal abstract class PutGetMangaChaptersTaskEndpoint
         if (!TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task))
             return TypedResults.InternalServerError();
 
-        return TypedResults.Ok(task.ToDTO());
+        return TypedResults.Ok(task.ToDto());
     }
 }

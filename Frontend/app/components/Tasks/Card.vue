@@ -1,19 +1,20 @@
 <template>
     <UPageCard>
-        <template #body>
+        <template #header>
             {{ task.taskTypeName }}
         </template>
         <template #footer>
             <div>
                 <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Manga" />
-                <UButton v-if="task.chapterId" :to="`/manga/${task.mangaId}`" label="Chapter" />
+                <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Chapter" />
             </div>
+            {{ task }}
         </template>
     </UPageCard>
 </template>
 
 <script setup lang="ts">
-import type { ServicesTasksChapterTask, ServicesTasksMangaTask, ServicesTasksTask } from '~/api/tranga';
+import type { ServicesTasksTask } from '~/api/tranga';
 
-defineProps<{ task: ServicesTasksTask | ServicesTasksMangaTask | ServicesTasksChapterTask }>();
+defineProps<{ task: ServicesTasksTask }>();
 </script>

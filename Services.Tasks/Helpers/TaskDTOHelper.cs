@@ -1,85 +1,51 @@
-using Services.Tasks.Entities;
 using Services.Tasks.TaskTypes;
-using PeriodicTask = Services.Tasks.Entities.PeriodicTask;
 
 namespace Services.Tasks.Helpers;
 
 internal static class TaskDTOHelper
 {
-    public static Entities.Task ToDTO(this TaskTypes.ITask task)
+    public static Entities.Task ToDto(this ITask task)
     {
-        if (task is IMangaTask t) return t.ToDTO();
-        return task.TaskType switch
+        Entities.Task t = new ()
         {
-            TaskType.PeriodicTask => new PeriodicTask()
-            {
-                TaskId = task.TaskId,
-                TaskType = task.TaskType,
-                TaskTypeName = task.GetType().Name,
-                TaskTypeId = task.TaskTypeId,
-                LastRun = (task as TaskTypes.PeriodicTask)!.LastRun,
-                Interval = (task as TaskTypes.PeriodicTask)!.Interval
-            },
-            TaskType.RunOnceTask => new Entities.RunOnceTask()
-            {
-                TaskId = task.TaskId,
-                TaskType = task.TaskType,
-                TaskTypeName = task.GetType().Name,
-                TaskTypeId = task.TaskTypeId,
-            },
-            _ => throw new NotImplementedException()
+            TaskId = task.TaskId,
+            TaskTypeId = task.TaskTypeId,
+            TaskTypeName = task.GetType().Name,
+            TaskType = default,
         };
-    }
 
-    public static MangaTask ToDTO(this IMangaTask task)
-    {
-        if (task is IChapterTask c) return c.ToDTO();
-        return task.TaskType switch
+        if (task is PeriodicTask p)
         {
-            TaskType.PeriodicTask => new MangaPeriodicTask()
+            t = t with
             {
-                TaskId = task.TaskId,
-                TaskType = task.TaskType,
-                TaskTypeName = task.GetType().Name,
-                TaskTypeId = task.TaskTypeId,
-                LastRun = (task as TaskTypes.PeriodicTask)!.LastRun,
-                Interval = (task as TaskTypes.PeriodicTask)!.Interval,
-                MangaId = task.MangaId,
-            },
-            TaskType.RunOnceTask => new MangaRunOnceTask()
+                TaskType = TaskType.PeriodicTask,
+                Interval = p.Interval,
+                LastRun = p.LastRun
+            };
+        }else if (task is RunOnceTask r)
+        {
+            t = t with
             {
-                TaskId = task.TaskId,
-                TaskType = task.TaskType,
-                TaskTypeName = task.GetType().Name,
-                TaskTypeId = task.TaskTypeId,
-                MangaId = task.MangaId,
-            },
-            _ => throw new NotImplementedException()
-        };
+                TaskType = TaskType.RunOnceTask,
+            };
+        }
+        else throw new NotImplementedException();
+
+        if (task is IChapterTask c)
+        {
+            t = t with
+            {
+                ChapterId = c.ChapterId,
+                MangaId = c.MangaId
+            };
+        }else if (task is IMangaTask m)
+        {
+            t = t with
+            {
+                MangaId = m.MangaId
+            };
+        }
+
+        return t;
     }
-    
-    public static ChapterTask ToDTO(this IChapterTask task) => task.TaskType switch
-    {
-        TaskType.PeriodicTask => new ChapterPeriodicTask()
-        {
-            TaskId = task.TaskId,
-            TaskType = task.TaskType,
-            TaskTypeName = task.GetType().Name,
-            TaskTypeId = task.TaskTypeId,
-            LastRun = (task as TaskTypes.PeriodicTask)!.LastRun,
-            Interval = (task as TaskTypes.PeriodicTask)!.Interval,
-            MangaId = task.MangaId,
-            ChapterId = task.ChapterId,
-        },
-        TaskType.RunOnceTask => new ChapterRunOnceTask()
-        {
-            TaskId = task.TaskId,
-            TaskType = task.TaskType,
-            TaskTypeName = task.GetType().Name,
-            TaskTypeId = task.TaskTypeId,
-            MangaId = task.MangaId,
-            ChapterId = task.ChapterId,
-        },
-        _ => throw new NotImplementedException()
-    };
 }

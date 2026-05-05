@@ -238,7 +238,7 @@ namespace NSwagClients.GeneratedClients.TasksService
         /// </summary>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<MangaTask> GetMangaChaptersAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<Task> GetMangaChaptersAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (mangaId == null)
                 throw new System.ArgumentNullException("mangaId");
@@ -284,7 +284,7 @@ namespace NSwagClients.GeneratedClients.TasksService
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<MangaTask>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<Task>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new TasksServiceApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -329,7 +329,7 @@ namespace NSwagClients.GeneratedClients.TasksService
         /// </summary>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<MangaTask>> MangaAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> MangaAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (mangaId == null)
                 throw new System.ArgumentNullException("mangaId");
@@ -374,7 +374,7 @@ namespace NSwagClients.GeneratedClients.TasksService
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<MangaTask>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Task>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new TasksServiceApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -407,7 +407,7 @@ namespace NSwagClients.GeneratedClients.TasksService
         /// </summary>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ChapterTask>> DownloadsAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> DownloadsAsync(System.Guid mangaId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (mangaId == null)
                 throw new System.ArgumentNullException("mangaId");
@@ -453,7 +453,7 @@ namespace NSwagClients.GeneratedClients.TasksService
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<ChapterTask>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Task>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new TasksServiceApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -483,7 +483,7 @@ namespace NSwagClients.GeneratedClients.TasksService
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="TasksServiceApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ChapterTask>> Downloads2Async(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Task>> Downloads2Async(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -524,7 +524,7 @@ namespace NSwagClients.GeneratedClients.TasksService
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<ChapterTask>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Task>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new TasksServiceApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -684,78 +684,6 @@ namespace NSwagClients.GeneratedClients.TasksService
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.0.0 (NJsonSchema v11.6.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class ChapterTask
-    {
-
-        [Newtonsoft.Json.JsonProperty("chapterId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required System.Guid ChapterId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("mangaId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required System.Guid MangaId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required System.Guid TaskId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskTypeId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required System.Guid TaskTypeId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskTypeName", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required string TaskTypeName { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskType", Required = Newtonsoft.Json.Required.Always)]
-        public required TaskType TaskType { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
-
-        [Newtonsoft.Json.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.0.0 (NJsonSchema v11.6.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class MangaTask
-    {
-
-        [Newtonsoft.Json.JsonProperty("mangaId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required System.Guid MangaId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required System.Guid TaskId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskTypeId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required System.Guid TaskTypeId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskTypeName", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public required string TaskTypeName { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("taskType", Required = Newtonsoft.Json.Required.Always)]
-        public required TaskType TaskType { get; set; }
-
-        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
-
-        [Newtonsoft.Json.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.7.0.0 (NJsonSchema v11.6.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Task
     {
 
@@ -773,6 +701,19 @@ namespace NSwagClients.GeneratedClients.TasksService
 
         [Newtonsoft.Json.JsonProperty("taskType", Required = Newtonsoft.Json.Required.Always)]
         public required TaskType TaskType { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("mangaId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? MangaId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("chapterId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? ChapterId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("interval", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.RegularExpression(@"^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$")]
+        public string? Interval { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("lastRun", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? LastRun { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
