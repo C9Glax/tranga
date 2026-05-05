@@ -8,8 +8,8 @@
                 <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Manga" />
                 <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Chapter" />
             </div>
-            {{ task }}
         </template>
+        <TrangaTime v-if="task.lastRun" v-model="task.lastRun" prefix="Last Run" variant="outline" />
     </UPageCard>
 </template>
 
