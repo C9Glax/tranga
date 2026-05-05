@@ -1,7 +1,7 @@
 <template>
     <UFieldGroup>
-        <UBadge v-if="firstBadgeProps" v-bind="firstBadgeProps" />
-        <UBadge v-bind="{ variant: 'outline', ...secondBadgeProps }" />
+        <UBadge v-if="firstBadgeProps" v-bind="{ ...$props, ...firstBadgeProps }" />
+        <UBadge v-bind="{ ...$props, variant: 'outline', ...secondBadgeProps }" />
     </UFieldGroup>
 </template>
 
@@ -10,7 +10,7 @@ import type { BadgeProps } from '@nuxt/ui';
 
 defineProps<TrangaDoubleBadgeProps>();
 
-export interface TrangaDoubleBadgeProps {
+export interface TrangaDoubleBadgeProps extends BadgeProps {
     firstBadgeProps?: BadgeProps;
     secondBadgeProps?: BadgeProps;
 }

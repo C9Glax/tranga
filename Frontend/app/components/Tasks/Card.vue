@@ -9,6 +9,7 @@
                 <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Chapter" />
             </div>
         </template>
+        <TrangaDoubleBadge v-if="task.interval" :first-badge-props="{ label: 'Interval' }" :second-badge-props="{ label: task.interval }" />
         <TrangaTime v-if="task.lastRun" v-model="task.lastRun" prefix="Last Run" variant="outline" />
     </UPageCard>
 </template>
