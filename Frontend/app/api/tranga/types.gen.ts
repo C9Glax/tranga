@@ -2,6 +2,15 @@
 
 export type ClientOptions = { baseUrl: `${string}://${string}` | (string & {}) };
 
+export type ServicesMangaChapter = {
+    chapterId: string;
+    mangaId: string;
+    title: null | string;
+    volume: null | string;
+    number: string;
+    releaseDate: null | string;
+};
+
 export type ServicesMangaContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 
 export type ServicesMangaDownloadExtensionsList = { extensions?: Array<ServicesMangaIDownloadExtension> };
@@ -311,6 +320,40 @@ export type PostMangasSearchByMangaIdDownloadLinksResponses = {
 
 export type PostMangasSearchByMangaIdDownloadLinksResponse =
     PostMangasSearchByMangaIdDownloadLinksResponses[keyof PostMangasSearchByMangaIdDownloadLinksResponses];
+
+export type GetMangasChaptersData = { body: Array<string>; path?: never; query?: never; url: '/mangas/chapters' };
+
+export type GetMangasChaptersResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesMangaChapter>;
+};
+
+export type GetMangasChaptersResponse = GetMangasChaptersResponses[keyof GetMangasChaptersResponses];
+
+export type GetMangasChaptersByChapterIdData = {
+    body?: never;
+    path: { chapterId: string };
+    query?: never;
+    url: '/mangas/chapters/{chapterId}';
+};
+
+export type GetMangasChaptersByChapterIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type GetMangasChaptersByChapterIdResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaChapter;
+};
+
+export type GetMangasChaptersByChapterIdResponse = GetMangasChaptersByChapterIdResponses[keyof GetMangasChaptersByChapterIdResponses];
 
 export type GetMangasMetadataExtensionsData = { body?: never; path?: never; query?: never; url: '/mangas/metadata/extensions' };
 

@@ -1,4 +1,5 @@
 using Common.Services;
+using Services.Manga.Features.Chapters;
 using Services.Manga.Features.DownloadLinks;
 using Services.Manga.Features.File;
 using Services.Manga.Features.Manga;
@@ -15,16 +16,20 @@ internal class Endpoints : EndpointsBuilder
             .WithTags("Manga")
             .MapMangaEndpoints();
         
+        builder.MapGroup("/chapters")
+            .WithTags("Manga", "Chapter")
+            .MapChapterEndpoints();
+        
         builder.MapGroup("/metadata")
-            .WithTags("Metadata")
+            .WithTags("Manga", "Metadata")
             .MapMetadataEndpoints();
         
         builder.MapGroup("/downloadLinks")
-            .WithTags("Download")
+            .WithTags("Manga", "Download")
             .MapDownloadEndpoints();
         
         builder.MapGroup("/files")
-            .WithTags("Files")
+            .WithTags("Manga", "Files")
             .MapFileEndpoints();
     }
 }
@@ -63,6 +68,15 @@ internal static class EndpointHelpers
         builder.MapPatch("{mangaId}/downloadLinks/{downloadId}", PatchMangaDownloadLinkEndpoint.Handle)
             .WithSummary("Set Priority for Download-Link")
             .WithTags("Download");
+    }
+
+    internal static void MapChapterEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet(string.Empty, GetChaptersEndpoint.Handle)
+            .WithSummary("Get Chapters");
+
+        builder.MapGet("{chapterId}", GetChapterEndpoint.Handle)
+            .WithSummary("Get Chapter");
     }
 
     private static void MapMangaSearchEndpoints(this RouteGroupBuilder builder)

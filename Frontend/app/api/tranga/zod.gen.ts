@@ -2,6 +2,17 @@
 
 import * as z from 'zod/mini';
 
+export const zServicesMangaChapter = z.object({
+    chapterId: z.uuid(),
+    mangaId: z.uuid(),
+    title: z.nullable(z.string().check(z.minLength(0), z.maxLength(2048))),
+    volume: z.nullable(z.string().check(z.minLength(0), z.maxLength(16))),
+    number: z.string().check(z.minLength(0), z.maxLength(16)),
+    releaseDate: z.nullable(z.iso.datetime()),
+});
+
+export type ServicesMangaChapterZodType = z.infer<typeof zServicesMangaChapter>;
+
 export const zServicesMangaContentRating = z.enum(['Safe', 'Suggestive', 'Erotica', 'Pornographic']);
 
 export type ServicesMangaContentRatingZodType = z.infer<typeof zServicesMangaContentRating>;

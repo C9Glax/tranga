@@ -364,9 +364,83 @@
         }
       }
     },
+    "/mangas/chapters": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Chapter"
+        ],
+        "summary": "Get Chapters",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Chapter"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mangas/chapters/{chapterId}": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Chapter"
+        ],
+        "summary": "Get Chapter",
+        "parameters": [
+          {
+            "name": "chapterId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chapter"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/mangas/metadata/extensions": {
       "get": {
         "tags": [
+          "Manga",
           "Metadata"
         ],
         "summary": "Get Metadata-Extensions",
@@ -387,6 +461,7 @@
     "/mangas/metadata": {
       "get": {
         "tags": [
+          "Manga",
           "Metadata"
         ],
         "summary": "List of all Metadata-Entries",
@@ -413,6 +488,7 @@
     "/mangas/metadata/{metadataId}": {
       "get": {
         "tags": [
+          "Manga",
           "Metadata"
         ],
         "summary": "Get Metadata-Entry",
@@ -519,6 +595,7 @@
     "/mangas/downloadLinks/extensions": {
       "get": {
         "tags": [
+          "Manga",
           "Download"
         ],
         "summary": "Get Download-Extensions",
@@ -539,6 +616,7 @@
     "/mangas/downloadLinks": {
       "get": {
         "tags": [
+          "Manga",
           "Download"
         ],
         "summary": "List of all Download-Links",
@@ -565,6 +643,7 @@
     "/mangas/downloadLinks/{downloadId}": {
       "get": {
         "tags": [
+          "Manga",
           "Download"
         ],
         "summary": "Get Download-Link",
@@ -599,6 +678,7 @@
     "/mangas/files/{fileId}": {
       "get": {
         "tags": [
+          "Manga",
           "Files"
         ],
         "summary": "Get File",
@@ -626,6 +706,55 @@
   },
   "components": {
     "schemas": {
+      "Chapter": {
+        "required": [
+          "chapterId",
+          "mangaId",
+          "title",
+          "volume",
+          "number",
+          "releaseDate"
+        ],
+        "type": "object",
+        "properties": {
+          "chapterId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mangaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "maxLength": 2048,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "volume": {
+            "maxLength": 16,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "number": {
+            "maxLength": 16,
+            "minLength": 0,
+            "type": "string"
+          },
+          "releaseDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "ContentRating": {
         "enum": [
           "Safe",
@@ -1137,6 +1266,9 @@
     },
     {
       "name": "Download"
+    },
+    {
+      "name": "Chapter"
     },
     {
       "name": "Files"
