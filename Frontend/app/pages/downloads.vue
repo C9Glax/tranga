@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GetTasksMangaDownloadsResponse } from '~/api/tranga';
+import type { GetTasksMangaDownloadsResponse, GetMangasChaptersResponse } from '~/api/tranga';
 
 const includeFinished = useState<boolean>(() => false);
 const { data, refresh, status } = await useTranga<GetTasksMangaDownloadsResponse>(

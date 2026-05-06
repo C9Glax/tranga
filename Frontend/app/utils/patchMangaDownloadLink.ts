@@ -1,4 +1,5 @@
 import type { ServicesMangaPatchMangaDownloadLinkRequest, PatchMangasByMangaIdDownloadLinksByDownloadIdResponses } from '~/api/tranga';
+import { ApiKeys } from '~/composables/ApiKeys';
 
 export const patchMangaDownloadLink = async (downloadLinkId: string, mangaId: string, body: ServicesMangaPatchMangaDownloadLinkRequest) => {
     const { $tranga } = useNuxtApp();
@@ -8,7 +9,7 @@ export const patchMangaDownloadLink = async (downloadLinkId: string, mangaId: st
             method: 'patch',
             body: body,
         });
-        await refreshNuxtData([ApiKeys.Manga(mangaId), ApiKeys.MangaDownloadLinks(mangaId)]);
+        await refreshNuxtData([ApiKeys.Manga.Manga(mangaId), ApiKeys.Manga.DownloadLinks(mangaId)]);
         toast.add({ title: body.matched ? 'Set as Source!' : 'Removed as Source', color: 'success' });
     } catch {
         toast.add({

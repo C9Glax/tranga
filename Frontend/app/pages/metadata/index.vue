@@ -10,10 +10,11 @@
 </template>
 <script setup lang="ts">
 import type { GetMangasMetadataResponse } from '~/api/tranga';
+import { ApiKeys } from '~/composables/ApiKeys';
 
 const search = ref<string>();
 
-const { data, status } = useTranga<GetMangasMetadataResponse>('/mangas/metadata', { key: ApiKeys.MetadataList });
+const { data, status } = useTranga<GetMangasMetadataResponse>('/mangas/metadata', { key: ApiKeys.MetadataExtensions });
 
 const metadataList = computed(() =>
     search.value ? data.value?.filter((m) => m.series.toLocaleLowerCase().includes(search.value!.toLocaleLowerCase())) : data.value

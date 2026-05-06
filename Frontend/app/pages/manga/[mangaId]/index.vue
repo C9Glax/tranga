@@ -7,16 +7,17 @@
 <script setup lang="ts">
 import type { GetMangasByMangaIdDownloadLinksResponse, GetMangasByMangaIdResponse, ServicesMangaManga } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
+import { ApiKeys } from '~/composables/ApiKeys';
 
 const mangaId = useRoute().params.mangaId as string;
 
 const { data: manga, status: statusManga } = await useTranga<GetMangasByMangaIdResponse>(() => `/mangas/${mangaId}`, {
-    key: ApiKeys.Manga(mangaId),
+    key: ApiKeys.Manga.Manga(mangaId),
 });
 
 const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangasByMangaIdDownloadLinksResponse>(
     () => `/mangas/${mangaId}/downloadLinks`,
-    { key: ApiKeys.MangaDownloadLinks(mangaId) }
+    { key: ApiKeys.Manga.DownloadLinks(mangaId) }
 );
 
 const actions = (manga?: ServicesMangaManga): ButtonProps[] | undefined => [

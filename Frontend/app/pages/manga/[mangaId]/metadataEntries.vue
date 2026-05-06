@@ -9,12 +9,13 @@
 <script setup lang="ts">
 import type { GetMangasByMangaIdMetadataRelatedResponse } from '~/api/tranga';
 import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
+import { ApiKeys } from '~/composables/ApiKeys';
 
 const mangaId = useRoute().params.mangaId as string;
 
 const { data: metadataSources, status: statusMetadata } = await useTranga<GetMangasByMangaIdMetadataRelatedResponse>(
     () => `/mangas/${mangaId}/metadata/related`,
-    { key: ApiKeys.MangaMetadataEntries(mangaId) }
+    { key: ApiKeys.Manga.Metadata.RelatedManga(mangaId) }
 );
 
 const navigation = computed((): NavigationMenuProps => {

@@ -1,4 +1,5 @@
 <template>
+    <!-- MetadataListCard -->
     <TrangaChip icon="i-lucide-info" color="info" size="sm">
         <UBlogPost
             :title="metadata.series"
@@ -35,7 +36,9 @@
                     :to="metadata.url ?? undefined"
                     target="_blank"
                     :ui="{ description: 'truncate h-lh max-w-24' }" />
-                <UButton v-for="prop in actions" v-bind="prop" />
+                <slot name="actions">
+                    <UButton v-for="prop in actions" v-bind="prop" />
+                </slot>
             </template>
         </UBlogPost>
     </TrangaChip>

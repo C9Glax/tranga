@@ -36,6 +36,7 @@
 <script setup lang="ts">
 import type { ServicesMangaIMetadataExtension, ServicesMangaMetadata, PostMangasSearchResponse } from '~/api/tranga';
 import useMetadataExtensions from '~/composables/MetadataExtension';
+import { ApiKeys } from '~/composables/ApiKeys';
 
 const searchResult = ref<ServicesMangaMetadata[]>();
 
@@ -57,7 +58,7 @@ const search = async () => {
             body: { searchQuery: searchQuery, metadataExtensionIds: selectedExtensions.value },
             method: 'POST',
         });
-        await refreshNuxtData([ApiKeys.MetadataList, ApiKeys.MangaList]);
+        await refreshNuxtData([ApiKeys.Manga.Metadata.List, ApiKeys.Manga.List]);
         searchResult.value = data.value;
     } catch {
         toast.add({ title: 'Failed to search manga!', color: 'error' });

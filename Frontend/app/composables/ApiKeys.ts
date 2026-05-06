@@ -1,12 +1,30 @@
-export default class ApiKeys {
-    static MangaList = 'MangaList';
-    static Manga = (id: string) => `Mangas/${id}`;
-    static MangaMetadataEntries = (id: string) => `Mangas/${id}/MetadataEntries`;
-    static MetadataList = 'MetadataList';
-    static Metadata = (id: string) => `Metadata/${id}`;
-    static MetadataManga = (id: string) => `Metadata/${id}/Manga`;
-    static MetadataRelatedMangas = (id: string) => `Metadata/${id}/RelatedMangas`;
-    static MangaDownloadLinks = (id: string) => `Mangas/${id}/DownloadLinks`;
-    static DownloadExtensions = 'DownloadExtensions';
-    static MetadataExtensions = 'MetadataExtensions';
+export namespace ApiKeys {
+    export const DownloadExtensions = 'DownloadExtensions';
+    export const MetadataExtensions = 'MetadataExtensions';
+
+    export namespace Manga {
+        export const Manga = (id: string) => `Manga/${id}`;
+
+        export const List = 'Manga/List';
+
+        export const DownloadLinks = (id: string) => `Manga/${id}/DownloadLinks`;
+
+        export const RelatedMetadata = (id: string) => `Manga/${id}/Metadata/Related`;
+
+        export namespace Metadata {
+            export const Entry = (id: string) => `Manga/Metadata/${id}`;
+
+            export const Manga = (id: string) => `Manga/Metadata/${id}/Manga`;
+
+            export const List = 'MetadataList';
+
+            export const RelatedManga = (id: string) => `Manga/Metadata/${id}/RelatedManga`;
+        }
+
+        export namespace Chapters {
+            export const Chapter = (id: string) => `Chapter/${id}`;
+        }
+    }
+
+    export namespace Tasks {}
 }

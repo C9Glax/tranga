@@ -11,22 +11,24 @@ import type {
 } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { patchMangaMetadataSource } from '~/utils/patchMangaMetadataSource';
+import { ApiKeys } from '~/composables/ApiKeys';
+import Manga = ApiKeys.Manga;
 
 const metadataId = useRoute().params.metadataId as string;
 const mangaId = useRoute().query.mangaId as string | undefined;
 
 const { data: metadata, status: statusMetadata } = await useTranga<GetMangasMetadataByMetadataIdResponse>(
     () => `/mangas/metadata/${metadataId}`,
-    { key: ApiKeys.Metadata(metadataId) }
+    { key: Manga.Metadata.Entry(metadataId) }
 );
 
 const { data: manga } = await useTranga<GetMangasMetadataByMetadataIdMangaResponse>(() => `/mangas/metadata/${metadataId}/manga`, {
-    key: ApiKeys.MetadataManga(metadataId),
+    key: Manga.Metadata.Manga(metadataId),
 });
 
 const { data: relatedMangaIds } = await useTranga<GetMangasMetadataByMetadataIdMangaRelatedResponse>(
     () => `/mangas/metadata/${metadataId}/manga/related`,
-    { key: ApiKeys.MetadataRelatedMangas(metadataId) }
+    { key: Manga.Metadata.RelatedManga(metadataId) }
 );
 
 const actions = (m?: ServicesMangaMetadata): ButtonProps[] | undefined => {
