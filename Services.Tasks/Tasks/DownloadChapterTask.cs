@@ -52,7 +52,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
         await using ZipArchive archive = new (archiveStream, ZipArchiveMode.Create, true);
         foreach (ChapterImage image in images)
         {
-            ZipArchiveEntry entry = archive.CreateEntry(image.order.ToString(), CompressionLevel.SmallestSize);
+            ZipArchiveEntry entry = archive.CreateEntry($"{image.order}.jpg", CompressionLevel.SmallestSize);
             await using Stream entryStream = await entry.OpenAsync(stoppingToken);
             image.image.Position = 0;
             await image.image.CopyToAsync(entryStream, stoppingToken);
