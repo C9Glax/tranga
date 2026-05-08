@@ -12,7 +12,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
       <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\NSwagClients\NSwagClients.csproj" />
     </ItemGroup>

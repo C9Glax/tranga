@@ -1,5 +1,6 @@
 using Common;
 using Common.Datatypes;
+using Common.Helpers;
 using Extensions.Data;
 using NSwagClients.GeneratedClients.MangaUpdates;
 
@@ -20,7 +21,7 @@ public sealed class MangaUpdates : IMetadataExtension
 
     public string Name { get; init; } = "MangaUpdates";
 
-    public async Task<List<SearchResult>?> SearchMetadata(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct)
+    public async Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct)
     {
         // If MangaUpdates ID is included, try getting the series directly first
         if (searchQuery.MangaUpdatesSeriesId is { } id)

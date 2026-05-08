@@ -1,3 +1,4 @@
+using Common.Datatypes;
 using Extensions.Data;
 
 namespace Extensions;
@@ -10,5 +11,5 @@ public interface IMetadataExtension : IExtension
      /// <param name="searchQuery">Query to use for searching Manga</param>
      /// <param name="ct">The Cancellation Token for the Task</param>
      /// <returns>A Task representing the long running operation.</returns>
-     public Task<List<SearchResult>?> SearchMetadata(Common.Datatypes.SearchQuery searchQuery, CancellationToken ct);
+     public Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct);
 }

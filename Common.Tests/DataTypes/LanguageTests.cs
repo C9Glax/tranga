@@ -1,4 +1,6 @@
-namespace Common.Datatypes.Tests;
+using Common.Datatypes;
+
+namespace Common.Tests.DataTypes;
 
 public class LanguageTests
 {

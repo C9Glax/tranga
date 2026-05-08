@@ -1,4 +1,4 @@
-namespace Common;
+namespace Common.Helpers;
 
 public static class UriHelper
 {

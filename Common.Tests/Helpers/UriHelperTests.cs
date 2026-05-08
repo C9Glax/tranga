@@ -1,4 +1,6 @@
-namespace Common.Tests;
+using Common.Helpers;
+
+namespace Common.Tests.Helpers;
 
 public class UriHelperTests
 {

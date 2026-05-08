@@ -1,7 +1,8 @@
 using System.Net;
 using System.Threading.RateLimiting;
+using Common.Helpers;
 
-namespace Common.Tests;
+namespace Common.Tests.Helpers;
 
 public sealed class RequestClientTests : TestContext
 {

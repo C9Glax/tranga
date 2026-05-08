@@ -32,7 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
       <ProjectReference Include="..\Common.Services\Common.Services.csproj" />
       <ProjectReference Include="..\Common.Database\Common.Database.csproj" />
       <ProjectReference Include="..\Tranga.ServiceDefaults\Tranga.ServiceDefaults.csproj" />

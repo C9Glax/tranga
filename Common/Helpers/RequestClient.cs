@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.RateLimiting;
 
-namespace Common;
+namespace Common.Helpers;
 
 public sealed class RequestClient : HttpClient
 {

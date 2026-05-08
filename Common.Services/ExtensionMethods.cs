@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Common.Services;
 
-public static class Helpers
+public static class ExtensionMethods
 {
     public static WebApplicationBuilder SetupWebApplicationBuilder(this WebApplicationBuilder builder)
     {
