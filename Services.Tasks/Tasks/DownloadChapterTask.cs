@@ -49,10 +49,10 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
 
         // Create archive
         using MemoryStream archiveStream = new();
-        await using ZipArchive archive = new (archiveStream, ZipArchiveMode.Create, false);
+        await using ZipArchive archive = new (archiveStream, ZipArchiveMode.Create, true);
         foreach (ChapterImage image in images)
         {
-            ZipArchiveEntry entry = archive.CreateEntry(image.order.ToString());
+            ZipArchiveEntry entry = archive.CreateEntry(image.order.ToString(), CompressionLevel.SmallestSize);
             await using Stream entryStream = await entry.OpenAsync(stoppingToken);
             image.image.Position = 0;
             await image.image.CopyToAsync(entryStream, stoppingToken);
@@ -65,6 +65,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
             MimeType = "application/zip"
         };
         //Save file
+        await archive.DisposeAsync(); // For some reason you need to dispose the archive to write headers
         await dbFile.SaveFile(archiveStream, stoppingToken);
         await _ctx.AddAsync(dbFile, stoppingToken);
         
