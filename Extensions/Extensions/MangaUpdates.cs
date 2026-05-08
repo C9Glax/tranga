@@ -1,4 +1,4 @@
-using Common;
+using System.Threading.RateLimiting;
 using Common.Datatypes;
 using Common.Helpers;
 using Extensions.Data;
@@ -8,14 +8,24 @@ namespace Extensions.Extensions;
 
 public sealed class MangaUpdates : IMetadataExtension
 {
+    private static readonly RequestClient MangaUpdatesRequestClient = new(new SlidingWindowRateLimiter(
+        new SlidingWindowRateLimiterOptions()
+        {
+            AutoReplenishment = true,
+            Window = TimeSpan.FromSeconds(1),
+            SegmentsPerWindow = 1,
+            PermitLimit = 5,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+        }));
     // ReSharper disable once InconsistentNaming
-    private readonly MangaUpdatesApiClient Client = new (new RequestClient());
+    private readonly MangaUpdatesApiClient Client = new (MangaUpdatesRequestClient);
 
     public Guid Identifier { get; init; } = Guid.Parse("019cf2cb-3aac-7c9c-9580-7091471b6788");
 
     public string BaseUrl
     {
         get => Client.BaseUrl;
+        // ReSharper disable once ValueParameterNotUsed
         init => Client.BaseUrl = "https://api.mangaupdates.com/";
     }
 
@@ -64,27 +74,30 @@ public sealed class MangaUpdates : IMetadataExtension
         if (list.Results is null)
             return null;
 
-        List<SearchResult> ret = new();
-        foreach (SeriesModelSearchV1? listResult in list.Results.Select(r => r.Record))
+        List<(SeriesModelSearchV1 listResult, Task<MemoryStream?> getCoverTask)> tasks = list.Results.Select(r => r.Record)
+            .Where(r => r is
+            {
+                Image: { Url: { Original: not null } },
+                Series_id: not null,
+                Title: not null
+            })
+            .Select(r => new ValueTuple<SeriesModelSearchV1, Task<MemoryStream?>>(r!, GetCover(r!.Image!.Url!.Original!, ct)))
+            .ToList();
+        await Task.WhenAll(tasks.Select(t => t.getCoverTask));
+
+        List<SearchResult> ret = [];
+        foreach ((SeriesModelSearchV1 listResult, Task<MemoryStream?> getCoverTask) in tasks.Where(t => t.getCoverTask is { IsCompletedSuccessfully: true, Result: { } }))
         {
-            if(listResult is null)
-                continue;
-            if (listResult.Image?.Url?.Original is not { } coverUrl || await GetCover(coverUrl, ct) is not { Length: > 0 } cover)
-                continue;
-            if(listResult.Series_id is not { } seriesID)
-                continue;
-            if(listResult.Title is null)
-                continue;
             SearchResult sr = new()
             {
                 MetadataExtensionIdentifier = this.Identifier,
-                Identifier = seriesID.ToString(),
-                Series = listResult.Title,
+                Identifier = listResult.Series_id!.ToString()!,
+                Series = listResult.Title!,
                 Summary = listResult.Description,
                 Year = listResult.Year is { } yearStr && int.TryParse(yearStr, out int year) ? year : null,
                 Genres = listResult.Genres?.Select(g => g.Genre!).ToArray() ?? [],
                 Url = listResult.Url,
-                Cover = cover,
+                Cover = getCoverTask.Result!,
                 NSFW = listResult.Genres?.Any(g => g.Genre?.ToLowerInvariant() == "adult")
             };
             if(Settings.Settings.AllowNSFW || sr.NSFW != true)
@@ -98,7 +111,7 @@ public sealed class MangaUpdates : IMetadataExtension
     {
         try
         {
-            Stream data = await new RequestClient().GetStreamAsync(url, ct);
+            Stream data = await MangaUpdatesRequestClient.GetStreamAsync(url, ct);
             MemoryStream ms = new ();
             await data.CopyToAsync(ms, ct);
             return ms;
