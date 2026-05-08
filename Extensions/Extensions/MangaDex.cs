@@ -128,7 +128,7 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
 
     #region Images
 
-    public async Task<List<ChapterImage>?> GetChapterImages(ChapterInfo chapterInfo, CancellationToken ct)
+    public async Task<List<ChapterImage>?> FetchChapterImages(ChapterInfo chapterInfo, CancellationToken ct)
     {
         Response11 r = await Client.GetAtHomeServerChapterIdAsync(Guid.Parse(chapterInfo.Identifier),
             cancellationToken: ct);
@@ -148,10 +148,10 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
 
         foreach ((int index, Task<HttpResponseMessage> request) in requests)
         {
-            MemoryStream memoryStream = new();
+            TrangaImage image = new();
             Stream data = await request.Result.Content.ReadAsStreamAsync(ct);
-            await data.CopyToAsync(memoryStream, ct);
-            images.Add(new ChapterImage(this.Identifier, chapterInfo.Identifier, index, memoryStream));
+            await data.CopyToAsync(image, ct);
+            images.Add(new ChapterImage(this.Identifier, chapterInfo.Identifier, index, image));
         }
 
         return images;
@@ -247,7 +247,7 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         return mangas.ToArray();
     }
 
-    private async Task<MemoryStream?> GetCover(Manga manga, CancellationToken ct)
+    private async Task<TrangaImage?> GetCover(Manga manga, CancellationToken ct)
     {
         if (manga.Id is not { } id)
             return null;
@@ -259,10 +259,10 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         Uri requestUri = new($"https://uploads.mangadex.org/covers/{id}/{fileName}");
         if (await MangaDexRequestClient.GetAsync(requestUri, ct) is not { IsSuccessStatusCode: true } response)
             return null;
-        MemoryStream memoryStream = new();
+        TrangaImage image = new();
         Stream data = await response.Content.ReadAsStreamAsync(ct);
-        await data.CopyToAsync(memoryStream, ct);
-        return memoryStream;
+        await data.CopyToAsync(image, ct);
+        return image;
     }
 
 

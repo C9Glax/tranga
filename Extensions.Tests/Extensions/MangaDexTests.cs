@@ -1,4 +1,5 @@
 using Common.Datatypes;
+using Common.Helpers;
 using Extensions.Data;
 using Extensions.Extensions;
 
@@ -34,7 +35,7 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
             "Official \"Test\" Manga",
             "https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192",
             "f9c33607-9180-4ba6-b85c-e4b5faee7192",
-            new MemoryStream()
+            new TrangaImage()
         );
         List<ChapterInfo>? chapters = await _extension.GetChapters(mangaInfo, ct);
         Assert.NotNull(chapters);
@@ -54,7 +55,7 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
             "https://mangadex.org/chapter/249f2aa4-38a9-428f-8632-9a4aecc013ad",
             "249f2aa4-38a9-428f-8632-9a4aecc013ad"
         );
-        List<ChapterImage>? images = await _extension.GetChapterImages(mangaInfo, ct);
+        List<ChapterImage>? images = await _extension.FetchChapterImages(mangaInfo, ct);
         Assert.NotNull(images);
         Assert.Single(images);
         Assert.Equal("249f2aa4-38a9-428f-8632-9a4aecc013ad", images.First().chapterIdentifier);

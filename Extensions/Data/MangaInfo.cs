@@ -1,3 +1,5 @@
+using Common.Helpers;
+
 namespace Extensions.Data;
 
 /// <summary>
@@ -14,7 +16,7 @@ public record MangaInfo(
     string Title,
     string Url,
     string Identifier,
-    MemoryStream Cover,
+    TrangaImage Cover,
     string? Description = null,
     bool? NSFW = null
 );

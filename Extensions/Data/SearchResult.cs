@@ -1,4 +1,5 @@
 using Common.Datatypes;
+using Common.Helpers;
 
 namespace Extensions.Data;
 
@@ -8,7 +9,7 @@ public sealed record SearchResult
     
     public required string Identifier { get; init; }
     
-    public required MemoryStream Cover { get; init; }
+    public required TrangaImage Cover { get; init; }
     
     public required string Series { get; init; }
     

@@ -1,4 +1,5 @@
 using Common.Datatypes;
+using Common.Helpers;
 using Extensions.Data;
 
 namespace Extensions;
@@ -32,5 +33,24 @@ public interface IDownloadExtension : IExtension
     /// <param name="chapterInfo"></param>
     /// <param name="ct">Cancellation-token for the operation.</param>
     /// <returns>A Task representing the operation. null indicates a failure.</returns>
-    public Task<List<ChapterImage>?> GetChapterImages(ChapterInfo chapterInfo, CancellationToken ct);
+    protected Task<List<ChapterImage>?> FetchChapterImages(ChapterInfo chapterInfo, CancellationToken ct);
+    
+    /// <summary>
+    /// Returns the images of a chapter.
+    /// </summary>
+    /// <param name="chapterInfo"></param>
+    /// <param name="ct">Cancellation-token for the operation.</param>
+    /// <returns>A Task representing the operation. null indicates a failure.</returns>
+    public async Task<List<ChapterImage>?> GetChapterImages(ChapterInfo chapterInfo, CancellationToken ct)
+    {
+        if (await this.FetchChapterImages(chapterInfo, ct) is not { } images)
+            return null;
+
+        List<Task> tasks = images.Select(i => i.image.Process(ct)).ToList();
+        await Task.WhenAll(tasks);
+        if (tasks.Any(t => t is { IsCompletedSuccessfully: false }))
+            return null;
+
+        return images;
+    }
 }

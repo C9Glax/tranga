@@ -75,19 +75,19 @@ public sealed class MangaUpdates : IMetadataExtension
         if (list.Results is null)
             return null;
 
-        List<(SeriesModelSearchV1 listResult, Task<MemoryStream?> getCoverTask)> tasks = list.Results.Select(r => r.Record)
+        List<(SeriesModelSearchV1 listResult, Task<TrangaImage?> getCoverTask)> tasks = list.Results.Select(r => r.Record)
             .Where(r => r is
             {
                 Image: { Url: { Original: not null } },
                 Series_id: not null,
                 Title: not null
             })
-            .Select(r => new ValueTuple<SeriesModelSearchV1, Task<MemoryStream?>>(r!, GetCover(r!.Image!.Url!.Original!, ct)))
+            .Select(r => new ValueTuple<SeriesModelSearchV1, Task<TrangaImage?>>(r!, GetCover(r!.Image!.Url!.Original!, ct)))
             .ToList();
         await Task.WhenAll(tasks.Select(t => t.getCoverTask));
 
         List<SearchResult> ret = [];
-        foreach ((SeriesModelSearchV1 listResult, Task<MemoryStream?> getCoverTask) in tasks.Where(t => t.getCoverTask is { IsCompletedSuccessfully: true, Result: { } }))
+        foreach ((SeriesModelSearchV1 listResult, Task<TrangaImage?> getCoverTask) in tasks.Where(t => t.getCoverTask is { IsCompletedSuccessfully: true, Result: { } }))
         {
             SearchResult sr = new()
             {
@@ -108,14 +108,14 @@ public sealed class MangaUpdates : IMetadataExtension
         return ret;
     }
 
-    private async Task<MemoryStream?> GetCover(string url, CancellationToken ct)
+    private async Task<TrangaImage?> GetCover(string url, CancellationToken ct)
     {
         try
         {
             Stream data = await MangaUpdatesRequestClient.GetStreamAsync(url, ct);
-            MemoryStream ms = new ();
-            await data.CopyToAsync(ms, ct);
-            return ms;
+            TrangaImage image = new ();
+            await data.CopyToAsync(image, ct);
+            return image;
         }
         catch (Exception)
         {
