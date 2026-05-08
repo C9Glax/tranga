@@ -7,11 +7,17 @@
                     :description="task.taskId"
                     :avatar="{ icon: task.taskType === 'PeriodicTask' ? 'i-lucide-repeat' : 'i-lucide-line-dot-right-horizontal' }" />
             </UTooltip>
-            <MetadataListCard v-if="manga" :metadata="manga.metadataEntry" :manga-id="manga.mangaId" class="max-h-1/4">
+            <MetadataListCard v-if="manga?.metadataEntry" :metadata="manga.metadataEntry" :manga-id="manga.mangaId" class="max-h-1/4">
                 <template #actions>
-                    <div v-if="chapter" class="flex gap-2">
-                        <TrangaDoubleBadge v-if="chapter.title" prefix="Title" :second-badge-props="{ label: chapter.title }" />
-                        <TrangaDoubleBadge v-if="chapter.volume" prefix="Volume" :second-badge-props="{ label: chapter.volume }" />
+                    <div v-if="chapter" class="flex gap-4">
+                        <TrangaDoubleBadge
+                            v-if="chapter.title"
+                            :first-badge-props="{ label: 'Title' }"
+                            :second-badge-props="{ label: chapter.title }" />
+                        <TrangaDoubleBadge
+                            v-if="chapter.volume"
+                            :first-badge-props="{ label: 'Volume' }"
+                            :second-badge-props="{ label: chapter.volume }" />
                         <TrangaDoubleBadge :first-badge-props="{ label: 'Chapter' }" :second-badge-props="{ label: chapter.number }" />
                         <TrangaTime prefix="Release Date" :modelValue="chapter.releaseDate" />
                         <TrangaTime :modelValue="chapter.releaseDate" relative />
@@ -22,7 +28,7 @@
 
         <template #footer>
             <div class="flex justify-between">
-                <div class="flex gap-2 items-center">
+                <div v-if="task.lastRun" class="flex gap-2 items-center">
                     <TrangaTime v-model="task.lastRun" prefix="Last Run" />
                     <UIcon v-if="task.interval" name="i-lucide-plus" />
                     <TrangaDoubleBadge
@@ -32,6 +38,7 @@
                     <UIcon v-if="nextRun" name="i-lucide-arrow-right" />
                     <TrangaTime v-if="nextRun" v-model="nextRun" prefix="Next Run" relative />
                 </div>
+                <UBadge v-else color="secondary" label="Running" />
                 <UFieldGroup>
                     <UButton v-if="task.mangaId" :to="`/manga/${task.mangaId}`" label="Manga" variant="soft" />
                     <UButton v-if="task.chapterId" :to="`/manga/${task.mangaId}`" label="Chapter" variant="soft" color="secondary" />
