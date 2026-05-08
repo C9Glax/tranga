@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Extensions\Extensions.csproj" />
-      <ProjectReference Include="..\Settings\Settings.csproj" />
     </ItemGroup>
 
     <ItemGroup>

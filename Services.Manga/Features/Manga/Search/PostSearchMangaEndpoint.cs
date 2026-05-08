@@ -2,6 +2,7 @@ using Common;
 using Services.Manga.Helpers;
 using Common.Datatypes;
 using Common.Helpers;
+using Common.Settings;
 using Extensions;
 using Extensions.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Database.Helpers;
-using Settings;
 
 namespace Services.Manga.Features.Manga.Search;
 

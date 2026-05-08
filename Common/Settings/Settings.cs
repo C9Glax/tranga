@@ -1,4 +1,4 @@
-namespace Settings;
+namespace Common.Settings;
 
 public static class Settings
 {

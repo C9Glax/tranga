@@ -1,6 +1,7 @@
 using System.Threading.RateLimiting;
 using Common.Datatypes;
 using Common.Helpers;
+using Common.Settings;
 using Extensions.Data;
 using NSwagClients.GeneratedClients.MangaUpdates;
 
@@ -58,7 +59,7 @@ public sealed class MangaUpdates : IMetadataExtension
                 Status = status,
                 NSFW = series.Genres?.Any(g => g.Genre?.ToLowerInvariant() == "adult")
             };
-            return (Settings.Settings.AllowNSFW || sr.NSFW != true) ? [sr] : null;
+            return (Settings.AllowNSFW || sr.NSFW != true) ? [sr] : null;
         }
         
         // Search
@@ -100,7 +101,7 @@ public sealed class MangaUpdates : IMetadataExtension
                 Cover = getCoverTask.Result!,
                 NSFW = listResult.Genres?.Any(g => g.Genre?.ToLowerInvariant() == "adult")
             };
-            if(Settings.Settings.AllowNSFW || sr.NSFW != true)
+            if(Settings.AllowNSFW || sr.NSFW != true)
                 ret.Add(sr);
         }
 

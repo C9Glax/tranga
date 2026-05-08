@@ -1,5 +1,6 @@
 using Common;
 using Common.Helpers;
+using Common.Settings;
 using Services.Manga.Helpers;
 using Extensions;
 using Extensions.Data;
@@ -9,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Database.Helpers;
 using Services.Manga.Entities;
-using Settings;
 
 namespace Services.Manga.Features.Manga.Search;
 

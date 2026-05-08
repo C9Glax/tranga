@@ -1,6 +1,7 @@
 using System.Threading.RateLimiting;
 using Common.Datatypes;
 using Common.Helpers;
+using Common.Settings;
 using Extensions.Data;
 using Newtonsoft.Json.Linq;
 using NSwagClients.GeneratedClients.MangaDex;
@@ -50,7 +51,7 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         foreach (Task<MangaInfo?> task in tasks)
         {
             if (task is { IsCompletedSuccessfully: true, Result: { } parsed } &&
-                (Settings.Settings.AllowNSFW || parsed.NSFW != true))
+                (Settings.AllowNSFW || parsed.NSFW != true))
                 results.Add(parsed);
         }
 
@@ -167,7 +168,7 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         foreach (Task<SearchResult?> task in tasks)
         {
             if (task is { IsCompletedSuccessfully: true, Result: { } parsed } &&
-                (Settings.Settings.AllowNSFW || parsed.NSFW != true))
+                (Settings.AllowNSFW || parsed.NSFW != true))
                 results.Add(parsed);
         }
 

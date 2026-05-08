@@ -1,5 +1,5 @@
+using Common.Settings;
 using Services.Tasks.TaskTypes;
-using Settings;
 
 namespace Services.Tasks.WorkerLogic;
 

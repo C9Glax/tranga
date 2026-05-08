@@ -1,5 +1,5 @@
+using Common.Settings;
 using Microsoft.EntityFrameworkCore;
-using Settings;
 
 namespace Common.Database;
 

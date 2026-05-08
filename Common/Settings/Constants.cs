@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Settings;
+namespace Common.Settings;
 
 public struct Constants
 {

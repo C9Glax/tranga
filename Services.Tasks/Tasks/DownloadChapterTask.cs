@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using Common.Settings;
 using Extensions;
 using Extensions.Data;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,6 @@ using Services.Manga.Database.Helpers;
 using Services.Manga.Helpers;
 using Services.Tasks.Helpers;
 using Services.Tasks.TaskTypes;
-using Settings;
 
 namespace Services.Tasks.Tasks;
 

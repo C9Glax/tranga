@@ -1,6 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 
-namespace Settings;
+namespace Common.Settings;
 
 public struct EnvVars
 {

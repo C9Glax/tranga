@@ -1,10 +1,10 @@
 using Common.Database;
+using Common.Settings;
 using Services.Manga.Database;
 using Services.Tasks.Features;
 using Services.Tasks.Tasks;
 using Services.Tasks.TaskTypes;
 using Services.Tasks.WorkerLogic;
-using Settings;
 
 namespace Services.Tasks;
 

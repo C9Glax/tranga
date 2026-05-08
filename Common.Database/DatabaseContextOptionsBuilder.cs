@@ -1,6 +1,6 @@
+using Common.Settings;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Settings;
 
 namespace Common.Database;
 
