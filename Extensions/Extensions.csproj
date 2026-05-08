@@ -13,7 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Common.Datatypes\Common.Datatypes.csproj" />
-      <ProjectReference Include="..\Common.Helpers\Common.Helpers.csproj" />
+      <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\NSwagClients\NSwagClients.csproj" />
     </ItemGroup>
 

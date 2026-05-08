@@ -1,4 +1,4 @@
-namespace Common.Helpers.Tests;
+namespace Common.Tests;
 
 public sealed class ImageHelperTests
 {

@@ -1,6 +1,6 @@
 using SixLabors.ImageSharp;
 
-namespace Common.Helpers;
+namespace Common;
 
 public static class ImageHelper
 {

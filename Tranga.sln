@@ -16,9 +16,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Manga.Tests", "Ser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Database.Tests", "Common.Database.Tests\Common.Database.Tests.csproj", "{453E2C99-F313-47B1-BFDA-8DFA9267332C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers", "Common.Helpers\Common.Helpers.csproj", "{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{FAF6C5AA-D5D9-4C97-995B-710E9C47D453}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers.Tests", "Common.Helpers.Tests\Common.Helpers.Tests.csproj", "{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "Common.Tests\Common.Tests.csproj", "{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSwagClients", "NSwagClients\NSwagClients.csproj", "{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}"
 EndProject
