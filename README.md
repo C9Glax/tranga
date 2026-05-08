@@ -33,6 +33,11 @@
 
 [Environment Variables](EnvVars.md)
 
+### Volumes/Bindings
+
+- `/app/Mangas` Download directory
+- `/app/Covers` Cover directory
+
 ## Built With
 
 **💙 [Blåhaj](https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/) 🦈**
