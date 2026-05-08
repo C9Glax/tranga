@@ -84,8 +84,13 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         List<Chapter> chapters = [];
         do
         {
-            ChapterList list = await Client.GetChapterAsync(manga: Guid.Parse(mangaInfo.Identifier), offset: offset,
-                limit: limit, cancellationToken: ct);
+            ChapterList list = await Client.GetChapterAsync(
+                manga: Guid.Parse(mangaInfo.Identifier),
+                offset: offset,
+                limit: limit,
+                // https://api.mangadex.org/docs/3-enumerations/#language-codes--localization
+                translatedLanguage: [Settings.DownloadLanguage.TwoLetterISOLanguageName],
+                cancellationToken: ct);
 
             if (list.Data is null)
                 return null;
