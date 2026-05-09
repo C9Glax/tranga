@@ -13,6 +13,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+        <PackageReference Include="Xunit.Combinatorial" Version="2.0.24" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,6 +27,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Common.Tests\Common.Tests.csproj" />
+      <ProjectReference Include="..\Services.Manga\Services.Manga.csproj" />
+      <ProjectReference Include="..\Services.Tasks\Services.Tasks.csproj" />
     </ItemGroup>
 
 </Project>
