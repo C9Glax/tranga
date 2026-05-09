@@ -4,7 +4,7 @@ using Common.Helpers;
 
 namespace Common.Tests.Helpers;
 
-public sealed class RequestClientTests : TestContext
+public sealed class RequestClientTrangaTests : TrangaTest
 {
     [Fact]
     public async Task SuccessfulRequest()

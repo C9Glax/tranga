@@ -4,7 +4,7 @@ using Extensions.Extensions;
 
 namespace Extensions.Tests.Extensions;
 
-public sealed class MangaUpdatesTests : ExtensionTests<MangaUpdates>
+public sealed class MangaUpdatesTrangaTests : ExtensionTrangaTests<MangaUpdates>
 {
     [Fact]
     public async Task SearchReturnsManga()
