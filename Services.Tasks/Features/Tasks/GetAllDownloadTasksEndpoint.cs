@@ -21,6 +21,8 @@ internal abstract class GetAllDownloadTasksEndpoint
     public static Ok<Task[]> Handle([FromQuery(Name = "includeFinished")]bool? includeFinished = false)
     {
         IEnumerable<DownloadChapterTask> knownTasks = TasksCollection.GetKnownTasks().OfType<DownloadChapterTask>().Where(t => !t.HasRun || includeFinished == true);
+        
+        // TODO Pagination
 
         Task[] result = knownTasks.Select(t => t.ToDto()).ToArray();
         return TypedResults.Ok(result);

@@ -25,6 +25,8 @@ internal abstract class GetMangaListEndpoint
         {
             return TypedResults.InternalServerError();
         }
+        
+        // TODO Pagination
 
         Entities.Manga[] result = metadataSources.Select(m => m.ToDTO()).ToArray();
         return TypedResults.Ok(result);

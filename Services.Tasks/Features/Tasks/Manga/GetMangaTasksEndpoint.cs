@@ -21,6 +21,8 @@ internal abstract class GetMangaTasksEndpoint
     public static Ok<Task[]> Handle([FromRoute]Guid mangaId, [FromQuery(Name = "includeFinished")]bool? includeFinished = false)
     {
         IEnumerable<IMangaTask> knownTasks = TasksCollection.GetKnownTasks().FilterManga(mangaId).Where(t => t is not RunOnceTask r || (!r.HasRun || includeFinished == true));
+        
+        // TODO Pagination
 
         Task[] result = knownTasks.Select(t => t.ToDto()).ToArray();
         return TypedResults.Ok(result);

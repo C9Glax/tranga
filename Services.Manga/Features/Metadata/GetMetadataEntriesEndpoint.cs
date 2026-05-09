@@ -22,7 +22,7 @@ internal abstract class GetMetadataEntriesEndpoint
         if (await mangaContext.MetadataEntries.ToListAsync(ct) is not { } list)
             return TypedResults.InternalServerError();
         
-        //TODO Pagination
+        // TODO Pagination
 
         Entities.Metadata[] result = list.Select(e => e.ToDTO()).ToArray();
         return TypedResults.Ok(result);

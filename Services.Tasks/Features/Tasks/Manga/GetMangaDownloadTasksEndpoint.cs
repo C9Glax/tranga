@@ -23,6 +23,8 @@ internal abstract class GetMangaDownloadTasksEndpoint
     {
         IEnumerable<DownloadChapterTask> knownTasks =
             TasksCollection.GetKnownTasks().FilterManga(mangaId).OfType<DownloadChapterTask>().Where(t => !t.HasRun || includeFinished == true);
+        
+        // TODO Pagination
 
         Task[] result = knownTasks.Select(t => t.ToDto()).ToArray();
         return TypedResults.Ok(result);

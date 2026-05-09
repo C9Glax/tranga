@@ -21,6 +21,8 @@ internal abstract class GetTaskListEndpoint
     public static Ok<Task[]> Handle([FromQuery(Name = "includeFinished")]bool? includeFinished = false)
     {
         IEnumerable<TaskBase> knownTasks = TasksCollection.GetKnownTasks().Where(t => t is not RunOnceTask r || (!r.HasRun || includeFinished == true));
+        
+        // TODO Pagination
 
         Task[] result = knownTasks.Select(t => t.ToDto()).ToArray();
         return TypedResults.Ok(result);
