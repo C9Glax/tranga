@@ -25,13 +25,22 @@ internal abstract class PatchMangaDownloadLinkEndpoint
     {
         if (await mangaContext.MangaDownloadLinks.FirstOrDefaultAsync(s => s.DownloadLinkId == downloadId && s.MangaId == mangaId, ct) is not { } entry)
             return TypedResults.NotFound();
-        
-        //TODO Priority
+
+        // Avoid links with same priority by shifting priorities
+        if (await mangaContext.MangaDownloadLinks.AnyAsync(link => link.DownloadLinkId != entry.DownloadLinkId && link.Priority == req.Priority, ct))
+        {
+            // Shift all priorities by one
+            await mangaContext.MangaDownloadLinks.Where(link => link.Priority >= req.Priority)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.Priority, l => l.Priority + 1), ct);
+        }
         
         entry.Matched = req.Matched;
+        
         await mangaContext.SaveChangesAsync(ct);
 
-        await tasksService.GetMangaChaptersAsync(mangaId, ct);
+        // Fetch chapters if we started matching
+        if(entry.Matched)
+            await tasksService.GetMangaChaptersAsync(mangaId, ct);
 
         return TypedResults.Ok();
     }
