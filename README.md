@@ -29,16 +29,25 @@
 
 </div>
 
+## Features
+
+- [x] Monitor providers for new chapters and download new ones
+- [x] Enrich Manga and chapters with Metadata from third-party websites
+
+#### TODO LIST
+
+- [ ] Notifications (`Services.Notifications`)
+- [ ] Flaresolverr ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
+- [ ] Unified webpage scraper ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
+- [ ] Accounts (Authorization) (`Services.Users`)
+- [ ] Existing chapter mapping (`Services.Manga`)
+- [ ] Library-support (`Services.Libraries`, `Extensions`) (_Komga_)
+
 ## Getting started
 
 - [docker-compose.yaml](docker-compose.yaml) You probably do not want to modify this. Use the `.env` file for configuration.
 - [.env](.env)
   - [Environment Variables](EnvVars.md)
-
-### Volumes/Bindings
-
-- `/app/Mangas` Download directory
-- `/app/Covers` Cover directory
 
 ## Built With
 
