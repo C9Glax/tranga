@@ -1,4 +1,4 @@
-name: Build and publish frontend Image
+name: Build and publish Manga-Service Image
 on:
 
   # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
@@ -21,9 +21,9 @@ jobs:
       - name: Build and publish a Docker image for ${{ github.repository }}
         uses: macbre/push-to-ghcr@master
         with:
-          image_name: ${{ github.repository }}-frontend  # it will be lowercased internally
-          dockerfile: ./Frontend/Dockerfile
-          context: ./Frontend
+          image_name: ${{ github.repository }}-services_manga  # it will be lowercased internally
+          dockerfile: ./Services.Manga/Dockerfile
+          context: ./Services.Manga
           platforms: linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/arm64,linux/arm/v6,linux/arm/v7
           github_token: ${{ secrets.GITHUB_TOKEN }}
           image_tag: external-connectors

@@ -1,0 +1,31 @@
+name: Manga Service Unit Tests
+
+on:
+  push:
+    branches:
+      - external-connectors
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: 'external-connectors'
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+      - name: Restore dependencies
+        run: dotnet restore ./Extensions.Tests/Extensions.Tests.csproj
+      - name: Build the solution
+        run: dotnet build ./Extensions.Tests/Extensions.Tests.csproj --configuration Release --no-restore
+      - name: Run unit tests with report
+        run: dotnet test ./Extensions.Tests/Extensions.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=TestResults.trx"
+      - name: Upload test results
+        uses: actions/upload-artifact@v7
+        with:
+          name: TestResults
+          path: ./Tests/TestResults/TestResults.trx
