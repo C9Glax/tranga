@@ -1,4 +1,4 @@
-name: Manga Service Unit Tests
+name: Common Unit Tests
 
 on:
   push:

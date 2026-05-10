@@ -1,4 +1,4 @@
-name: Manga Service Unit Tests
+name: Tasks Service Unit Tests
 
 on:
   push:
