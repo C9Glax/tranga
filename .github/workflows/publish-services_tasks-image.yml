@@ -24,7 +24,7 @@ jobs:
           image_name: ${{ github.repository }}-services_tasks  # it will be lowercased internally
           dockerfile: ./Services.Tasks/Dockerfile
           context: ./Services.Tasks
-          platforms: linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/arm64,linux/arm/v6,linux/arm/v7
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           github_token: ${{ secrets.GITHUB_TOKEN }}
           image_tag: external-connectors
           # optionally push to the Docker Hub (docker.io)
