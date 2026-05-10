@@ -14,7 +14,7 @@ const time = defineModel<string | Date | null | undefined>();
 
 defineProps<TrangaTimeProps>();
 
-export interface TrangaTimeProps extends TrangaDoubleBadgeProps {
+export interface TrangaTimeProps extends /* @vue-ignore */ TrangaDoubleBadgeProps {
     prefix?: string;
     relative?: boolean;
 }

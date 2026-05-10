@@ -24,7 +24,6 @@ jobs:
         with:
           image_name: ${{ github.repository }}-services_manga  # it will be lowercased internally
           dockerfile: ./Services.Manga/Dockerfile
-          context: ./Services.Manga
           platforms: linux/amd64
           github_token: ${{ secrets.GITHUB_TOKEN }}
           image_tag: external-connectors

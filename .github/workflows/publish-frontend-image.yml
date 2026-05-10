@@ -24,7 +24,6 @@ jobs:
         with:
           image_name: ${{ github.repository }}-frontend  # it will be lowercased internally
           dockerfile: ./Frontend/Dockerfile
-          context: ./Frontend
           platforms: linux/amd64
           github_token: ${{ secrets.GITHUB_TOKEN }}
           image_tag: external-connectors
