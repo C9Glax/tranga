@@ -1,1 +1,3 @@
-export default defineAppConfig({ ui: { colors: { primary: 'green', neutral: 'slate' }, selectMenu: { slots: { content: 'min-w-fit' } } } });
+export default defineAppConfig({
+    ui: { colors: { primary: 'pink', neutral: 'stone', secondary: 'blue' }, selectMenu: { slots: { content: 'min-w-fit' } } },
+});

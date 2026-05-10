@@ -20,6 +20,7 @@
             </template>
             <template #right>
                 <div class="flex flex-row gap-2">
+                    <UButton to="https://github.com/C9Glax/tranga" external icon="i-lucide-github" variant="ghost" color="neutral" />
                     <UColorModeSelect
                         variant="ghost"
                         :ui="{
