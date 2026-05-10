@@ -49,6 +49,14 @@
 - [.env](.env)
   - [Environment Variables](EnvVars.md)
 
+## Screenshots
+
+<img src="Screenshots/startpage.png" width="512" alt="start page"/>
+<img src="Screenshots/search.png" width="512" alt="search dialog"/>
+<img src="Screenshots/tasks.png" width="512" alt="tasks page"/>
+<img src="Screenshots/manga.png" width="512" alt="manga page"/>
+<img src="Screenshots/manga-light.png" width="512" alt="light mode manga page"/>
+
 ## Built With
 
 **💙 [Blåhaj](https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/) 🦈**
