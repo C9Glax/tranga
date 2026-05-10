@@ -53,12 +53,21 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
         context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
+        context.EnvironmentVariables["RABBITMQ_HOST"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "services-tasks";
         service.Networks = ["tranga"];
+        service.Image = "ghcr.io/c9glax/tranga-services_tasks:external-connectors";
+        service.Volumes.Add(new Volume()
+        {
+            Name = "Mangas",
+            Source = "Mangas",
+            Target = "/app/Mangas",
+            Type = "bind"
+        });
     })
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 
@@ -74,24 +83,19 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
         context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
+        context.EnvironmentVariables["RABBITMQ_HOST"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "services-manga";
         service.Networks = ["tranga"];
+        service.Image = "ghcr.io/c9glax/tranga-services_manga:external-connectors";
         service.Volumes.Add(new Volume()
         {
             Name = "Covers",
             Source = "Covers",
             Target = "/app/Covers",
-            Type = "bind"
-        });
-        service.Volumes.Add(new Volume()
-        {
-            Name = "Mangas",
-            Source = "Mangas",
-            Target = "/app/Mangas",
             Type = "bind"
         });
     })
@@ -111,6 +115,7 @@ IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("fro
     {
         service.Name = "frontend";
         service.Networks = ["tranga"];
+        service.Image = "ghcr.io/c9glax/tranga-frontend:external-connectors";
     });
 
 builder.AddYarp("gateway")
