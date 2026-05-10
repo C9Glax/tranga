@@ -38,7 +38,7 @@ internal abstract class PostSearchMangaEndpoint
         
         List<SearchResult> searchResults = MetadataExtensionsCollection.Search(req.SearchQuery, extensions, ct);
 
-        List<DbMetadata> db = [];
+        List<DbMetadata> metadataList = [];
         
         foreach (SearchResult searchResult in searchResults)
         {
@@ -50,13 +50,13 @@ internal abstract class PostSearchMangaEndpoint
                     .FirstOrDefaultAsync(ct) is not { } existing)
             {
                 DbMetadata metadata = await CreateMetadata(mangaContext, searchResult, ct);
-                db.Add(metadata);
+                metadataList.Add(metadata);
                 
                 await mangaContext.SaveChangesAsync(ct);
-            }else db.Add(existing);
+            }else metadataList.Add(existing); // TODO merge with new data
         }
                 
-        Entities.Metadata[] results = db.Distinct().Select(e => e.ToDTO()).ToArray();
+        Entities.Metadata[] results = metadataList.Distinct().Select(e => e.ToDTO()).ToArray();
         return TypedResults.Ok(results);
     }
 

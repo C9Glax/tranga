@@ -13,5 +13,7 @@ internal abstract class RunOnceTask(Guid taskTypeId) : TaskBase(TaskType.RunOnce
         await base.ExecuteAsync(scope, logger, stoppingToken);
         HasRun = true;
         logger.LogDebug("Task finished.");
+        
+        // TODO Publish a "TaskFinishedEvent"
     }
 }

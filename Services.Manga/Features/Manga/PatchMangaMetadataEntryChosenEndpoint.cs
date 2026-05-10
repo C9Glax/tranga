@@ -29,6 +29,8 @@ internal abstract class PatchMangaMetadataEntryChosenEndpoint
 
         entry.Chosen = true;
         await mangaContext.SaveChangesAsync(ct);
+        
+        // TODO publish a "MangaUpdatedEvent"
 
         return TypedResults.Ok();
     }

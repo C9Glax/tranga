@@ -12,5 +12,7 @@ internal abstract class PeriodicTask(Guid taskTypeId) : TaskBase(TaskType.Period
     {
         await base.ExecuteAsync(scope, logger, stoppingToken);
         logger.LogDebug("Task finished.");
+        
+        // TODO Publish a "TaskFinishedEvent"
     }
 }

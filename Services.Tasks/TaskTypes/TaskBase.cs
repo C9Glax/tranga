@@ -22,6 +22,9 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId) : ITask
         LastRun = DateTimeOffset.UtcNow;
         RefreshScope(scope);
         logger.LogDebug("Task running.");
+        
+        // TODO Publish a "TaskRunningEvent"
+        
         return RunAsync(scope, logger, stoppingToken);
     }
 

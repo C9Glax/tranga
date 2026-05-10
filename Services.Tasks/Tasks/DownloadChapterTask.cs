@@ -70,6 +70,8 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
         await _ctx.AddAsync(dbFile, stoppingToken);
         
         await _ctx.SaveChangesAsync(stoppingToken);
+        
+        // TODO Publish a "ChapterDownloadedEvent"
     }
 
     private protected override void RefreshScope(IServiceScope scope)
