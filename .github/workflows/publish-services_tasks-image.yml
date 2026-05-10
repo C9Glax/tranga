@@ -15,7 +15,8 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v6
 
       # https://github.com/marketplace/actions/push-to-ghcr
       - name: Build and publish a Docker image for ${{ github.repository }}
@@ -24,7 +25,7 @@ jobs:
           image_name: ${{ github.repository }}-services_tasks  # it will be lowercased internally
           dockerfile: ./Services.Tasks/Dockerfile
           context: ./Services.Tasks
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64
           github_token: ${{ secrets.GITHUB_TOKEN }}
           image_tag: external-connectors
           # optionally push to the Docker Hub (docker.io)
