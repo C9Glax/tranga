@@ -9,13 +9,9 @@ on:
   push:
     branches:
       - external-connectors
-    paths-ignore:
-      - "Extensions/**"
-      - "Extensions.Tests/**"
-      - "Services.Manga/**"
-      - "Services.Manga.Tests/**"
-      - "Services.Tasks/**"
-      - "Services.Tasks.Tests/**"
+    paths:
+      - "Frontend/**"
+      - ".github/workflows/publish-frontend-image.yml"
 
 jobs:
   docker_publish:

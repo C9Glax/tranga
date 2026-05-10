@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - external-connectors
-    paths-ignore:
-      - "Frontend/**"
-      - "Services.Manga/**"
-      - "Services.Manga.Tests/**"
-      - "Services.Tasks/**"
-      - "Services.Tasks.Tests/**"
+    paths:
+      - "Common/**"
+      - "Extensions/**"
+      - "Extensions.Tests/**"
+      - "NSwagClients/**"
+      - ".github/workflows/unit_tests-extensions.yml"
 
 jobs:
   build:

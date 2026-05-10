@@ -9,12 +9,14 @@ on:
   push:
     branches:
       - external-connectors
-    paths-ignore:
+    paths:
+      - "Common/**"
+      - "Common.Database/**"
       - "Extensions/**"
-      - "Extensions.Tests/**"
-      - "Frontend/**"
-      - "Services.Manga/**"
-      - "Services.Manga.Tests/**"
+      - "NSwagClients"
+      - "Services.Tasks/**"
+      - "Services.Tasks.Tests/**"
+      - ".github/workflows/publish-services_tasks-image.yml"
 
 jobs:
   docker_publish:

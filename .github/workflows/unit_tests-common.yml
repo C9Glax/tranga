@@ -4,14 +4,10 @@ on:
   push:
     branches:
       - external-connectors
-    paths-ignore:
-      - "Extensions/**"
-      - "Extensions.Tests/**"
-      - "Frontend/**"
-      - "Services.Manga/**"
-      - "Services.Manga.Tests/**"
-      - "Services.Tasks/**"
-      - "Services.Tasks.Tests/**"
+    paths:
+      - "Common/**"
+      - "Common.Tests/**"
+      - ".github/workflows/unit_tests-common.yml"
 
 jobs:
   build:
