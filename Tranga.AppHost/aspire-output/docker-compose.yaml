@@ -18,7 +18,7 @@ services:
     expose:
       - "5672"
     networks:
-      - "aspire"
+      - "tranga"
   services-tasks:
     image: "ghcr.io/c9glax/tranga-services_tasks:external-connectors"
     environment:
@@ -46,6 +46,8 @@ services:
       POSTGRES_DATABASE: "tranga"
       RABBITMQ_HOST: "messaging"
       RABBITMQ_PORT: "5672"
+      RABBITMQ_USER: "tranga"
+      RABBITMQ_PASSWORD: "tranga"
     expose:
       - "${SERVICES_TASKS_PORT}"
     volumes:
@@ -86,6 +88,8 @@ services:
       POSTGRES_DATABASE: "tranga"
       RABBITMQ_HOST: "messaging"
       RABBITMQ_PORT: "5672"
+      RABBITMQ_USER: "tranga"
+      RABBITMQ_PASSWORD: "tranga"
     expose:
       - "${SERVICES_MANGA_PORT}"
     volumes:

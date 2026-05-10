@@ -38,7 +38,7 @@ IResourceBuilder<PostgresServerResource> postgres = builder
 IResourceBuilder<PostgresDatabaseResource> db = postgres.AddDatabase(EnvVars.DBName);
 
 IResourceBuilder<ParameterResource> rabbitUser = builder.AddParameter("RabbitMqUser");
-IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("RabbitMqPassword");
+IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("RabbitMqPassword", secret: true);
 IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword)
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -60,6 +60,8 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
         context.EnvironmentVariables["RABBITMQ_HOST"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -90,6 +92,8 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
         context.EnvironmentVariables["RABBITMQ_HOST"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {

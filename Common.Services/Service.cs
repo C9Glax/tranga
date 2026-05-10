@@ -15,11 +15,17 @@ public abstract class Service : IAsyncDisposable
 
         if (!Constants.OpenApiDocumentationRun)
         {
-            string host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
+            string host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ??
+                          throw new Exception("Missing required EnvVar 'RABBITMQ_HOST'");
             int port = Environment.GetEnvironmentVariable("RABBITMQ_PORT") is { } val
                 ? int.Parse(val)
                 : throw new Exception("Missing required EnvVar 'RABBITMQ_PORT'");
-            Builder.Services.AddRabbitMq(host, port, "tranga", "tranga");
+            string user = Environment.GetEnvironmentVariable("RABBITMQ_USER") ??
+                          throw new Exception("Missing required EnvVar 'RABBITMQ_USER'");
+            string pass = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD") ??
+                          throw new Exception("Missing required EnvVar 'RABBITMQ_PASSWORD'");
+
+            Builder.Services.AddRabbitMq(host, port, user, pass);
         }
         
         Builder.Logging.ClearProviders();
