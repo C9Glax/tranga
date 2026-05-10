@@ -75,6 +75,12 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
             Target = "/app/Mangas",
             Type = "bind"
         });
+        service.DependsOn = new()
+        {
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "messaging", new ServiceDependency(){ Condition = "service_started" } }
+        };
+        service.Restart = "on-failure:3";
     })
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 
@@ -107,6 +113,12 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
             Target = "/app/Covers",
             Type = "bind"
         });
+        service.DependsOn = new()
+        {
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "messaging", new ServiceDependency(){ Condition = "service_started" } }
+        };
+        service.Restart = "on-failure:3";
     })
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 
@@ -125,6 +137,11 @@ IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("fro
         service.Name = "frontend";
         service.Networks = ["tranga"];
         service.Image = "ghcr.io/c9glax/tranga-frontend:external-connectors";
+        service.DependsOn = new()
+        {
+            { "services-manga", new ServiceDependency(){ Condition = "service_started" } },
+            { "services-tasks", new ServiceDependency(){ Condition = "service_started" } }
+        };
     });
 
 builder.AddYarp("gateway")
@@ -142,6 +159,10 @@ builder.AddYarp("gateway")
         service.Name = "gateway";
         service.Networks = ["tranga"];
         service.Ports = [$"{port}:{port}"];
+        service.DependsOn = new()
+        {
+            { "frontend", new ServiceDependency(){ Condition = "service_started" } }
+        };
     });
 
 builder.Build().Run();

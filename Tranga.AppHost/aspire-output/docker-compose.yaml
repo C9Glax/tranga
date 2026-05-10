@@ -55,12 +55,13 @@ services:
         target: "/app/Mangas"
         source: "Mangas"
     depends_on:
-      messaging:
-        condition: "service_started"
       tranga-pg:
+        condition: "service_started"
+      messaging:
         condition: "service_started"
     networks:
       - "tranga"
+    restart: "on-failure:3"
   services-manga:
     image: "ghcr.io/c9glax/tranga-services_manga:external-connectors"
     environment:
@@ -97,12 +98,13 @@ services:
         target: "/app/Covers"
         source: "Covers"
     depends_on:
-      messaging:
-        condition: "service_started"
       tranga-pg:
+        condition: "service_started"
+      messaging:
         condition: "service_started"
     networks:
       - "tranga"
+    restart: "on-failure:3"
   frontend:
     image: "ghcr.io/c9glax/tranga-frontend:external-connectors"
     environment:
@@ -154,6 +156,9 @@ services:
       - "5000:5000"
     expose:
       - "5000"
+    depends_on:
+      frontend:
+        condition: "service_started"
     networks:
       - "tranga"
 networks:
