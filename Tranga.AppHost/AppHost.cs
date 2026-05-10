@@ -39,7 +39,12 @@ IResourceBuilder<PostgresDatabaseResource> db = postgres.AddDatabase(EnvVars.DBN
 
 IResourceBuilder<ParameterResource> rabbitUser = builder.AddParameter("RabbitMqUser");
 IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("RabbitMqPassword");
-IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword);
+IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword)
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Name = "messaging";
+        service.Networks = ["tranga"];
+    });
 
 IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tasks>("services-tasks")
     .WaitFor(rabbitmq)
