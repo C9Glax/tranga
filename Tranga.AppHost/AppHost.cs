@@ -71,7 +71,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         service.Volumes.Add(new Volume()
         {
             Name = "Mangas",
-            Source = "Mangas",
+            Source = EnvVars.MangaDirectory,
             Target = "/app/Mangas",
             Type = "bind"
         });
@@ -109,7 +109,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         service.Volumes.Add(new Volume()
         {
             Name = "Covers",
-            Source = "Covers",
+            Source = EnvVars.CoverDirectory,
             Target = "/app/Covers",
             Type = "bind"
         });

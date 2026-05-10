@@ -1,9 +1,11 @@
 # Tranga Environment Variables
 
-| ENV              | default | behaviour                            |
-|------------------|---------|--------------------------------------|
-| AllowNSFW        | false   | Allow NSFW content in search results |
-| DownloadLanguage | "en"    | Language for downloaded chapters     | 
+| ENV              | default    | behaviour                                |
+|------------------|------------|------------------------------------------|
+| AllowNSFW        | `false`    | Allow NSFW content in search results     |
+| DownloadLanguage | `"en"`     | Language for downloaded chapters         | 
+| MangaDirectory   | `"Manga"`  | Path to directory to save Manga to       | 
+| CoverDirectory   | `"Covers"` | Path to temp-directory to save Covers to | 
 
 ## Debug
 
@@ -11,7 +13,7 @@
 
 | ENV             | default                | behaviour                 |
 |-----------------|------------------------|---------------------------|
-| SETTINGS_FILE   | "settings.json"        | Location of settings file |
+| SETTINGS_FILE   | `"settings.json"`      | Location of settings file |
 | WORKERS_COUNT   | `{ProcessorCount / 2}` |                           |
 
 ### Database

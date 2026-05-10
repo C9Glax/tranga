@@ -31,7 +31,9 @@
 
 ## Getting started
 
-[Environment Variables](EnvVars.md)
+- [docker-compose.yaml](docker-compose.yaml) You probably do not want to modify this. Use the `.env` file for configuration.
+- [.env](.env)
+  - [Environment Variables](EnvVars.md)
 
 ### Volumes/Bindings
 

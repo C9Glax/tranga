@@ -53,7 +53,7 @@ services:
     volumes:
       - type: "bind"
         target: "/app/Mangas"
-        source: "Mangas"
+        source: "${MangaDirectory}"
     depends_on:
       tranga-pg:
         condition: "service_started"
@@ -96,7 +96,7 @@ services:
     volumes:
       - type: "bind"
         target: "/app/Covers"
-        source: "Covers"
+        source: "${CoverDirectory}"
     depends_on:
       tranga-pg:
         condition: "service_started"
