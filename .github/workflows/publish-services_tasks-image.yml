@@ -12,6 +12,7 @@ on:
     paths:
       - "Common/**"
       - "Common.Database/**"
+      - "Common.Services/**"
       - "Extensions/**"
       - "NSwagClients"
       - "Services.Tasks/**"
