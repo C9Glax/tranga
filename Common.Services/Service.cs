@@ -1,3 +1,5 @@
+using Common.Services.Events;
+using Common.Settings;
 using Scalar.AspNetCore;
 
 namespace Common.Services;
@@ -10,6 +12,14 @@ public abstract class Service : IAsyncDisposable
     public Service(string[] args)
     {
         Builder = WebApplication.CreateBuilder(args).SetupWebApplicationBuilder();
+
+        if (!Constants.OpenApiDocumentationRun)
+        {
+            int port = Environment.GetEnvironmentVariable("RABBITMQ_PORT") is { } val
+                ? int.Parse(val)
+                : throw new Exception("Missing required EnvVar 'RABBITMQ_PORT'");
+            Builder.Services.AddRabbitMq("localhost", port, "tranga", "tranga");
+        }
         
         Builder.Logging.ClearProviders();
         Builder.Logging.AddConsole();

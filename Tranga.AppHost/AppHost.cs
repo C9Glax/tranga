@@ -37,10 +37,15 @@ IResourceBuilder<PostgresServerResource> postgres = builder
     });
 IResourceBuilder<PostgresDatabaseResource> db = postgres.AddDatabase(EnvVars.DBName);
 
+IResourceBuilder<ParameterResource> rabbitUser = builder.AddParameter("RabbitMqUser");
+IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("RabbitMqPassword");
+IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword);
+
 IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tasks>("services-tasks")
+    .WaitFor(rabbitmq)
     .WaitFor(db)
     .WithReference(db)
-    .WithHttpEndpoint(name: "internalComms")
+    .WithReference(rabbitmq)
     .WithEnvironment(context =>
     {
         context.EnvironmentVariables["POSTGRES_HOST"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
@@ -48,6 +53,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
         context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
+        context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -57,8 +63,10 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 
 IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Manga>("services-manga")
+    .WaitFor(rabbitmq)
     .WaitFor(db)
     .WithReference(db)
+    .WithReference(rabbitmq)
     .WithEnvironment(context =>
     {
         context.EnvironmentVariables["POSTGRES_HOST"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
@@ -66,7 +74,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
         context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
         context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
-        context.EnvironmentVariables["SERVICES_TASKS_BASE_URL"] = tasksService.GetEndpoint("internalComms").Url;
+        context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
     })
     .PublishAsDockerComposeService((resource, service) =>
     {

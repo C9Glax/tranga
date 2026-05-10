@@ -1,19 +1,27 @@
 using Common.Database;
+using Common.Services.Events;
 using Common.Settings;
+using RabbitMQ.Client;
 using Services.Manga.Database;
+using Services.Tasks.Events;
 using Services.Tasks.Features;
 using Services.Tasks.Tasks;
 using Services.Tasks.TaskTypes;
 using Services.Tasks.WorkerLogic;
+using Constants = Common.Settings.Constants;
 
 namespace Services.Tasks;
 
 public sealed class Service : Common.Services.Service
 {
+    private readonly List<IEventHandler> _eventHandlers = [];
+    
     public Service(string[] args) : base(args)
     {
         Builder.Services.AddDbContext<MangaContext>(opts =>
             opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
+        
+        Builder.Services.AddScoped<EventPublisher>();
         
         if (!Constants.OpenApiDocumentationRun)
         {
@@ -26,6 +34,9 @@ public sealed class Service : Common.Services.Service
         }
         
         SetupWebApplication<Endpoints>("/tasks");
+        
+        if (!Constants.OpenApiDocumentationRun)
+            AddTrangaEventHandlers(App);
 
         if (!Constants.OpenApiDocumentationRun)
         {
@@ -34,6 +45,12 @@ public sealed class Service : Common.Services.Service
 
             CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
         }
+    }
+
+    private  void AddTrangaEventHandlers(WebApplication app)
+    {
+        IChannel channel = app.Services.GetRequiredService<IChannel>();
+        _eventHandlers.Add(new DownloadLinkModifiedHandler(channel, app.Services));
     }
 
     private async Task CreateDefaultTasks(TaskQueue taskQueue, CancellationToken ct)

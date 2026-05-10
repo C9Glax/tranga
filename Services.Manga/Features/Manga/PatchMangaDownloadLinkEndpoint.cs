@@ -1,7 +1,10 @@
+using Common.Services.Events;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using Services.Manga.Database;
+using Services.Manga.Events;
 
 namespace Services.Manga.Features.Manga;
 
@@ -21,7 +24,7 @@ internal abstract class PatchMangaDownloadLinkEndpoint
     /// <param name="ct"></param>
     /// <response code="200">Download-Link priority has been changed</response>
     /// <response code="404">Manga or Download-Link with requested ID does not exist</response>
-    public static async Task<Results<Ok, NotFound>> Handle( [FromServices]MangaContext mangaContext, [FromServices]Service.MyTasksServiceApiClient tasksService, [FromRoute]Guid mangaId, [FromRoute]Guid downloadId, [FromBody]PatchMangaDownloadLinkRequest req, CancellationToken ct)
+    public static async Task<Results<Ok, NotFound>> Handle( [FromServices]MangaContext mangaContext, [FromServices]EventPublisher eventPublisher, [FromRoute]Guid mangaId, [FromRoute]Guid downloadId, [FromBody]PatchMangaDownloadLinkRequest req, CancellationToken ct)
     {
         if (await mangaContext.MangaDownloadLinks.FirstOrDefaultAsync(s => s.DownloadLinkId == downloadId && s.MangaId == mangaId, ct) is not { } entry)
             return TypedResults.NotFound();
@@ -33,14 +36,15 @@ internal abstract class PatchMangaDownloadLinkEndpoint
             await mangaContext.MangaDownloadLinks.Where(link => link.Priority >= req.Priority)
                 .ExecuteUpdateAsync(s => s.SetProperty(p => p.Priority, l => l.Priority + 1), ct);
         }
-        
+
+        entry.Priority = req.Priority;
         entry.Matched = req.Matched;
         
         await mangaContext.SaveChangesAsync(ct);
 
         // Fetch chapters if we started matching
-        if(entry.Matched)
-            await tasksService.GetMangaChaptersAsync(mangaId, ct);
+        if (entry.Matched)
+            await eventPublisher.PublishAsync(new DownloadLinkModifiedEvent(entry.DownloadLinkId), ct);
 
         return TypedResults.Ok();
     }
