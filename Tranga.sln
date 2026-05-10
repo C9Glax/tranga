@@ -18,7 +18,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSwagClients", "NSwagClient
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39ADCF67-C411-4DC3-8E4D-675B731D007A}"
 	ProjectSection(SolutionItems) = preProject
-		compose.yaml = compose.yaml
+		EnvVars.md = EnvVars.md
+		README.md = README.md
+		CONTRIBUTING.md = CONTRIBUTING.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Tasks", "Services.Tasks\Services.Tasks.csproj", "{7D9A69CB-0759-49C6-8818-F9AF2F50CDFC}"

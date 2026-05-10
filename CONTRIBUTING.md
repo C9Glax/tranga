@@ -2,7 +2,24 @@
 
 If you want to contribute, please feel free to fork and create a Pull-Request!
 
-## General rules (Codestyle)
+## General Concepts
+
+### Extensions
+
+An _Extension_ is an interface to an external service. It can provide metadata, download manga or both.
+
+### Searching Manga
+
+Searching uses [Extensions](#extensions) that provide metadata. This should allow for higher-quality metadata,
+as Scanlation sites often struggle with accuracy, depth and updated information.
+
+### Services
+
+The **Manga**-service should handle persistent information.
+
+The **Tasks**-service handles automated tasks, for example updating metadata and fetching chapters.
+
+## Codestyle
 
 - Use explicit types for your variables. This improves readability.
     - **DO**
@@ -14,24 +31,24 @@ If you want to contribute, please feel free to fork and create a Pull-Request!
       var xyz = Object.GetSomething(); //What is xyz? An Array? A string? An object?
       ```
       
-## Database Schema
+### Tests
 
-![schema.svg](Database/schema.svg)
+Wherever possible add unit-tests (we are using xunit) for your code.
+Each project has a corresponding `<name>.Tests` project.
 
-## Adding a `DownloadExtension` (formerly "connector")
 
-1. If you have the OpenApi-definition use `NSwagClients.Generator` (see _`NSwagClients/Program.cs`_) to generate client code.
-2. Extend an `IDownloadExtension` in `DownloadExtensions/Extensions` (for an example see 
-_`DownloadExtensions/Extensions/MangaDex.cs`_).
-3. Add Tests by extending `IDownloadExtensionsTests` in _`DownloadExtensions.Tests/Extensions`_ (for an example see 
-_`DownloadExtensions.Tests/Extensions/MangaDexTests.cs`_).
-4. Add the `IDownloadExtension` to `DownloadExtensionsCollection` (_`DownloadExtensions/DownloadExtensionsCollection.cs`_).
+## Adding an _Extension_
 
-## Adding an `MetadataExtension`
+1. If you have the OpenApi-definition use `NSwagClients.Generator`
+   (see [NSwagClients/Program.cs](NSwagClients/Program.cs)) to generate client code.
+2. Create an _Extension_ class, extending [IDownloadExtension](Extensions/IDownloadExtension.cs) and/or 
+   [IMetadataExtension](Extensions/IMetadataExtension.cs). Each _Extension_ need to have a unique `Identifier`.
 
-1. If you have the OpenApi-definition use `NSwagClients.Generator` (see _`NSwagClients/Program.cs`_) to generate client code.
-2. Extend an `IMetadataExtension` in `MetadataExtensions/Extensions` (for an example see
-   _`MetadataExtensions/Extensions/MangaUpdates.cs`_).
-3. Add Tests by extending `IMetadataExtensionsTests` in _`MetadataExtensions.Tests/Extensions`_ (for an example see
-   _`MetadataExtensions.Tests/Metadata/MangaUpdatesTests.cs`_).
-4. Add the `IMetadataExtension` to `MetadataExtensionsCollection` (_`MetadataExtensions/MetadataExtensionsCollection.cs`_).
+   Respective examples: [Extensions/Extensions/MangaDex.cs](Extensions/Extensions/MangaDex.cs) (download and metadata) and
+   [Extensions/Extensions/MangaUpdates.cs](Extensions/Extensions/MangaUpdates.cs) (just metadata)
+3. Depending on the Extension:
+   - Add `IDownloadExtension`s to [Extensions/DownloadExtensionsCollection.cs](Extensions/DownloadExtensionsCollection.cs)
+   - Add `IMetadataExtension`s to [Extensions/MetadataExtensionsCollection.cs](Extensions/MetadataExtensionsCollection.cs)
+4. **Add Tests** in [Extensions.Tests/Extensions](Extensions.Tests/Extensions):
+   - For `IDownloadExtension`s extend [Extensions.Tests/ExtensionTests.cs](Extensions.Tests/DownloadExtensionTests.cs).
+   - For `IMetadataExtension`s extend [Extensions.Tests/ExtensionTests.cs](Extensions.Tests/ExtensionTests.cs).

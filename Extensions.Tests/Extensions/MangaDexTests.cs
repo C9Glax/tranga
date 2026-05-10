@@ -5,7 +5,7 @@ using Extensions.Extensions;
 
 namespace Extensions.Tests.Extensions;
 
-public sealed class MangaDexTrangaTests : DownloadExtensionTrangaTests<MangaDex>
+public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
 {
     [Fact]
     public async Task MetadataSearchReturnsManga()

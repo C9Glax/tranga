@@ -1,7 +1,7 @@
 ﻿namespace Extensions.Tests;
 
 // ReSharper disable once InconsistentNaming
-public abstract class ExtensionTrangaTests<T> : Common.Tests.TrangaTest where T : IExtension, new()
+public abstract class ExtensionTests<T> : Common.Tests.TrangaTest where T : IExtension, new()
 {
     // ReSharper disable once InconsistentNaming
     protected readonly T _extension = new T();
