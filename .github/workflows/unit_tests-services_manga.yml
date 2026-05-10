@@ -4,7 +4,12 @@ on:
   push:
     branches:
       - external-connectors
-  workflow_dispatch:
+    paths-ignore:
+      - "Extensions/**"
+      - "Extensions.Tests/**"
+      - "Frontend/**"
+      - "Services.Tasks/**"
+      - "Services.Tasks.Tests/**"
 
 jobs:
   build:

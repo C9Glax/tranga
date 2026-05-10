@@ -9,6 +9,13 @@ on:
   push:
     branches:
       - external-connectors
+    paths-ignore:
+      - "Extensions/**"
+      - "Extensions.Tests/**"
+      - "Services.Manga/**"
+      - "Services.Manga.Tests/**"
+      - "Services.Tasks/**"
+      - "Services.Tasks.Tests/**"
 
 jobs:
   docker_publish:
