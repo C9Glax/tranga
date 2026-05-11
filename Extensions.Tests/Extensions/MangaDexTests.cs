@@ -30,14 +30,14 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
     {
         // https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga
         // https://mangadex.org/chapter/249f2aa4-38a9-428f-8632-9a4aecc013ad
-        MangaInfo mangaInfo = new (
+        MangaInfo chapterInfo = new (
             _extension.Identifier,
             "Official \"Test\" Manga",
             "https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192",
             "f9c33607-9180-4ba6-b85c-e4b5faee7192",
             new TrangaImage()
         );
-        List<ChapterInfo>? chapters = await _extension.GetChapters(mangaInfo, ct);
+        List<ChapterInfo>? chapters = await _extension.GetChapters(chapterInfo, ct);
         Assert.NotNull(chapters);
         Assert.NotEmpty(chapters);
         Assert.True(chapters.Count > 100); // multiple pages
