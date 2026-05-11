@@ -33,11 +33,11 @@
 
 - [x] Monitor providers for new chapters and download new ones
 - [x] Enrich Manga and chapters with Metadata from third-party websites
+- [x] Flaresolverr support ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
 
 #### TODO LIST
 
 - [ ] Notifications (`Services.Notifications`)
-- [ ] Flaresolverr ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
 - [ ] Unified webpage scraper ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
 - [ ] Accounts (Authorization) (`Services.Users`)
 - [ ] Existing chapter mapping (`Services.Manga`)
@@ -65,12 +65,14 @@
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
   - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
-- [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
+- [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
+  - [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - [GitInfo](https://github.com/devlooped/GitInfo)
 - [xUnit](https://xunit.net/index.html?tabs=cs)
 - [XmlSchemaClassGenerator](https://github.com/mganss/XmlSchemaClassGenerator)
 - [NSwag](https://github.com/RicoSuter/NSwag)
+- [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
 - [Nuxt](https://nuxt.com/)
   - [Nuxt UI](https://ui.nuxt.com/)
 - [TailwindCSS](https://tailwindcss.com/)
