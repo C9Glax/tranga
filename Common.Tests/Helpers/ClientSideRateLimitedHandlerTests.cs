@@ -3,12 +3,11 @@ using Common.Helpers;
 
 namespace Common.Tests.Helpers;
 
-public sealed class ClientSideRateLimitedHandlerTests : RequestClientTests
+public sealed class ClientSideRateLimitedHandlerTests(TestServerFixture serverFixture): RequestClientTests(serverFixture)
 {
     [Fact]
     public async Task RateLimitApplies()
     { 
-        using TestServer server = new();
         RequestClient client = new(new SlidingWindowRateLimiter(new SlidingWindowRateLimiterOptions()
         {
             AutoReplenishment = true,
@@ -21,7 +20,7 @@ public sealed class ClientSideRateLimitedHandlerTests : RequestClientTests
         DateTime start = DateTime.Now;
         foreach (int _ in new int[120])
         {
-            HttpRequestMessage request = new(HttpMethod.Get, $"{TestServer.BaseUrl}?{DateTime.Now}");
+            HttpRequestMessage request = new(HttpMethod.Get, $"{TestServerFixture.BaseUrl}?{DateTime.Now}");
             requests.Add(client.SendAsync(request, ct));
         }
 
