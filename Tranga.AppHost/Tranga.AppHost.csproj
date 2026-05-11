@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Services.Manga\Services.Manga.csproj" />
+      <ProjectReference Include="..\Services.Notifications\Services.Notifications.csproj" />
       <ProjectReference Include="..\Services.Tasks\Services.Tasks.csproj" />
     </ItemGroup>
 

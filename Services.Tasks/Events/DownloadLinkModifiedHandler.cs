@@ -4,15 +4,16 @@ using Services.Manga.Database;
 using Services.Manga.Events;
 using Services.Tasks.Tasks;
 using Services.Tasks.WorkerLogic;
+using Common.Services.Events;
 
 namespace Services.Tasks.Events;
 
-internal sealed class DownloadLinkModifiedHandler(IChannel channel, IServiceProvider serviceProvider) : Common.Services.Events.TrangaEventHandler<DownloadLinkModifiedEvent>(channel)
+internal sealed class DownloadLinkModifiedHandler(IChannel channel, IServiceProvider serviceProvider) : TrangaEventHandler<DownloadLinkModifiedEvent>(channel)
 {
-    protected override async Task<bool> HandleMessage(DownloadLinkModifiedEvent message)
+    protected override async Task<bool> HandleMessage(DownloadLinkModifiedEvent notificationEvent)
     {
         MangaContext mangaContext = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
-        if (await mangaContext.MangaDownloadLinks.SingleOrDefaultAsync(link => link.DownloadLinkId == message.DownloadLinkId) is not { } mangaDownloadLink)
+        if (await mangaContext.MangaDownloadLinks.SingleOrDefaultAsync(link => link.DownloadLinkId == notificationEvent.DownloadLinkId) is not { } mangaDownloadLink)
             return false;
         
         GetMangaChaptersTask task = new (mangaDownloadLink.MangaId);

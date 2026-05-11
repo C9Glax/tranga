@@ -43,7 +43,7 @@ public abstract class Service : IAsyncDisposable
             .AllowAnyHeader()
             .SetIsOriginAllowed(_ => true) // allow any origin
             .AllowCredentials()); // allow credentials
-
+        
         App.MapDefaultEndpoints();
         
         new TEndpointsBuilder().AddEndpoints(App, endpointsPrefix);

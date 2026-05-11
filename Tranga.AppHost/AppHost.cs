@@ -122,6 +122,37 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
     })
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 
+IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Services_Notifications>("services-notifications")
+    .WaitFor(rabbitmq)
+    .WaitFor(db)
+    .WithReference(db)
+    .WithReference(rabbitmq)
+    .WithEnvironment(context =>
+    {
+        context.EnvironmentVariables["POSTGRES_HOST"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
+        context.EnvironmentVariables["POSTGRES_PORT"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
+        context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
+        context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
+        context.EnvironmentVariables["RABBITMQ_HOST"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
+        context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+    })
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Name = "services-notifications";
+        service.Networks = ["tranga"];
+        service.Image = "ghcr.io/c9glax/tranga-services_notificationss:external-connectors";
+        service.DependsOn = new()
+        {
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "messaging", new ServiceDependency(){ Condition = "service_started" } }
+        };
+        service.Restart = "on-failure:3";
+    })
+    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+
 IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("frontend", "../Frontend")
     .WithEnvironment(context =>
     {
@@ -152,6 +183,7 @@ builder.AddYarp("gateway")
 
         yarp.AddRoute("/mangas/{**catch-all}", mangaService);
         yarp.AddRoute("/tasks/{**catch-all}", tasksService);
+        yarp.AddRoute("/notifications/{**catch-all}", notificationsService);
     })
     .WithHostPort(port)
     .PublishAsDockerComposeService((resource, service) =>

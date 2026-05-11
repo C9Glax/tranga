@@ -8,7 +8,7 @@ using Services.Manga.Features.Metadata;
 
 namespace Services.Manga.Features;
 
-internal class Endpoints : EndpointsBuilder
+internal sealed class Endpoints : EndpointsBuilder
 {
     protected override void AddEndpoints(RouteGroupBuilder builder)
     {

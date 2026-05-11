@@ -16,4 +16,8 @@
       <ProjectReference Include="..\NSwagClients\NSwagClients.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Naprise" Version="0.1.1" />
+    </ItemGroup>
+
 </Project>

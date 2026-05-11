@@ -33,11 +33,17 @@
 
 - [x] Monitor providers for new chapters and download new ones
 - [x] Enrich Manga and chapters with Metadata from third-party websites
-- [x] Flaresolverr support ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
+- [x] Flaresolverr support
+- [x] Notifications
+  - Using [Naprise](https://github.com/Genteure/naprise)
+    - Gotify
+    - Telegram
+    - Discord
+    - Ntfy.sh
+    - ...
 
 #### TODO LIST
 
-- [ ] Notifications (`Services.Notifications`)
 - [ ] Unified webpage scraper ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
 - [ ] Accounts (Authorization) (`Services.Users`)
 - [ ] Existing chapter mapping (`Services.Manga`)
@@ -67,6 +73,7 @@
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
   - [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
+- [Naprise](https://github.com/Genteure/naprise)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - [GitInfo](https://github.com/devlooped/GitInfo)
 - [xUnit](https://xunit.net/index.html?tabs=cs)

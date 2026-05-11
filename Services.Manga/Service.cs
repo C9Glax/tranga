@@ -1,5 +1,7 @@
 using Common.Database;
 using Common.Services.Events;
+using Common.Settings;
+using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Features;
 using Task = System.Threading.Tasks.Task;
@@ -10,15 +12,17 @@ public sealed class Service : Common.Services.Service
 {
     public Service(string[] args) : base(args)
     {
-        Builder.Services.AddDbContext<MangaContext>(opts =>
-            opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
+        Builder.Services.AddDbContext<MangaContext>();
 
         Builder.Services.AddScoped<EventPublisher>();
 
         SetupWebApplication<Endpoints>("/mangas");
 
-        using MangaContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
-        Task.WaitAll(context.ApplyMigrations());
+        if (!Constants.OpenApiDocumentationRun)
+        {
+            using MangaContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
+            context.Database.MigrateAsync(CancellationToken.None).Wait();
+        }
     }
 
     public static void Main(string[] args)

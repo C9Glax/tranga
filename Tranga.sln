@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranga.AppHost", "Tranga.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranga.ServiceDefaults", "Tranga.ServiceDefaults\Tranga.ServiceDefaults.csproj", "{5379E60E-51C4-4042-A8F4-3EFDF9C8ACAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Notifications", "Services.Notifications\Services.Notifications.csproj", "{C539F21F-404B-4D90-BDA1-86B4384ED865}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,5 +93,9 @@ Global
 		{5379E60E-51C4-4042-A8F4-3EFDF9C8ACAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5379E60E-51C4-4042-A8F4-3EFDF9C8ACAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5379E60E-51C4-4042-A8F4-3EFDF9C8ACAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C539F21F-404B-4D90-BDA1-86B4384ED865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C539F21F-404B-4D90-BDA1-86B4384ED865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C539F21F-404B-4D90-BDA1-86B4384ED865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C539F21F-404B-4D90-BDA1-86B4384ED865}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

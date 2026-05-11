@@ -49,5 +49,5 @@ public abstract class TrangaEventHandler<T> : IEventHandler where T : TrangaEven
 
     // Abstract method for handling a message.
     // Must be implemented in derived consumers (e.g., PaymentConsumer, InventoryConsumer).
-    protected abstract Task<bool> HandleMessage(T message);
+    protected abstract Task<bool> HandleMessage(T notificationEvent);
 }

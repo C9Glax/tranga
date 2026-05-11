@@ -1,6 +1,7 @@
 using Common.Database;
 using Common.Services.Events;
 using Common.Settings;
+using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
 using Services.Tasks.Events;
@@ -18,8 +19,7 @@ public sealed class Service : Common.Services.Service
     
     public Service(string[] args) : base(args)
     {
-        Builder.Services.AddDbContext<MangaContext>(opts =>
-            opts.Configure(DatabaseContextOptionsBuilder.DbType.Postgresql));
+        Builder.Services.AddDbContext<MangaContext>();
         
         Builder.Services.AddScoped<EventPublisher>();
         
@@ -40,8 +40,8 @@ public sealed class Service : Common.Services.Service
 
         if (!Constants.OpenApiDocumentationRun)
         {
-            using MangaContext mangaContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
-            Task.WaitAll(mangaContext.ApplyMigrations());
+            using MangaContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
+            context.Database.MigrateAsync(CancellationToken.None).Wait();
 
             CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
         }

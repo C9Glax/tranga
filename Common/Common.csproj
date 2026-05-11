@@ -12,4 +12,8 @@
       <PackageReference Include="System.Threading.RateLimiting" Version="10.0.7" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Database\" />
+    </ItemGroup>
+
 </Project>
