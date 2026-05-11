@@ -11,6 +11,7 @@ namespace Common.Datatypes;
 /// <param name="Artist">An artist of the Manga</param>
 /// <param name="Language">The ISO language-code of a translation</param>
 /// <param name="MangaUpdatesSeriesId">The MangaUpdates.com series id</param>
+/// <param name="MangaDexSeriesId">The Mangadex.or series id</param>
 public sealed record SearchQuery(
     string? Title = null,
     string[]? Tags = null,
