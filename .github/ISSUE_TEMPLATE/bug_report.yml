@@ -18,7 +18,7 @@ body:
 - type: textarea
   attributes:
     label: Tranga version
-    description: The output of `docker logs tranga-api` should start with `INFO  Startup - LOGO` and `--10/06/2025 13:59:16 for AnyCpu`, paste the output here to check what build you are running
+    description: The version of Tranga you are running
     render: console
 - type: textarea
   attributes: 
