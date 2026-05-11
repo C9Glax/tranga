@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranga.ServiceDefaults", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Notifications", "Services.Notifications\Services.Notifications.csproj", "{C539F21F-404B-4D90-BDA1-86B4384ED865}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Notifications.Tests", "Services.Notifications.Tests\Services.Notifications.Tests.csproj", "{950EC424-7113-45E6-9AEB-92C76464ED4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,5 +99,9 @@ Global
 		{C539F21F-404B-4D90-BDA1-86B4384ED865}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C539F21F-404B-4D90-BDA1-86B4384ED865}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C539F21F-404B-4D90-BDA1-86B4384ED865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{950EC424-7113-45E6-9AEB-92C76464ED4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{950EC424-7113-45E6-9AEB-92C76464ED4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{950EC424-7113-45E6-9AEB-92C76464ED4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{950EC424-7113-45E6-9AEB-92C76464ED4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
