@@ -1,5 +1,9 @@
 export default {
-    input: ['../Services.Manga/openapi/Services.Manga.json', '../Services.Tasks/openapi/Services.Tasks.json'],
+    input: [
+        '../Services.Manga/openapi/Services.Manga.json',
+        '../Services.Tasks/openapi/Services.Tasks.json',
+        '../Services.Notifications/openapi/Services.Notifications.json',
+    ],
     output: { path: `app/api/tranga`, postProcess: ['eslint', 'prettier'] },
     plugins: [
         { name: '@hey-api/typescript' },

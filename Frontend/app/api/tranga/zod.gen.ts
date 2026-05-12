@@ -211,3 +211,71 @@ export const zServicesTasksTask = z.object({
 });
 
 export type ServicesTasksTaskZodType = z.infer<typeof zServicesTasksTask>;
+
+export const zServicesNotificationsNotificationExtensionType = z.enum(['Naprise', 'Discord', 'Gotify', 'NtfySh', 'Telegram']);
+
+export type ServicesNotificationsNotificationExtensionTypeZodType = z.infer<typeof zServicesNotificationsNotificationExtensionType>;
+
+export const zServicesNotificationsNotificationExtension = z.object({
+    id: z.uuid(),
+    name: z.string(),
+    type: zServicesNotificationsNotificationExtensionType,
+});
+
+export type ServicesNotificationsNotificationExtensionZodType = z.infer<typeof zServicesNotificationsNotificationExtension>;
+
+export const zServicesNotificationsPutExtensionRequest = z.object({ name: z.optional(z.string()) });
+
+export type ServicesNotificationsPutExtensionRequestZodType = z.infer<typeof zServicesNotificationsPutExtensionRequest>;
+
+export const zServicesNotificationsPutExtensionRequestDiscord = z.object({
+    webhookId: z.string(),
+    webhookToken: z.string(),
+    name: z.string(),
+});
+
+export type ServicesNotificationsPutExtensionRequestDiscordZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestDiscord>;
+
+export const zServicesNotificationsPutExtensionRequestGotify = z.object({
+    host: z.string(),
+    port: z.union([
+        z
+            .int()
+            .check(
+                z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+            ),
+        z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+    ]),
+    appToken: z.string(),
+    name: z.string(),
+});
+
+export type ServicesNotificationsPutExtensionRequestGotifyZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestGotify>;
+
+export const zServicesNotificationsPutExtensionRequestNaprise = z.object({ name: z.string() });
+
+export type ServicesNotificationsPutExtensionRequestNapriseZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestNaprise>;
+
+export const zServicesNotificationsPutExtensionRequestNtfySh = z.object({
+    host: z.string(),
+    port: z.union([
+        z
+            .int()
+            .check(
+                z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+            ),
+        z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+    ]),
+    topic: z.string(),
+    user: z.nullish(z.string()),
+    password: z.nullish(z.string()),
+    name: z.string(),
+});
+
+export type ServicesNotificationsPutExtensionRequestNtfyShZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestNtfySh>;
+
+export const zServicesNotificationsPutExtensionRequestTelegram = z.object({ token: z.string(), chatId: z.string(), name: z.string() });
+
+export type ServicesNotificationsPutExtensionRequestTelegramZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestTelegram>;

@@ -105,6 +105,29 @@ export type ServicesTasksTask = {
 
 export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';
 
+export type ServicesNotificationsNotificationExtension = { id: string; name: string; type: ServicesNotificationsNotificationExtensionType };
+
+export type ServicesNotificationsNotificationExtensionType = 'Naprise' | 'Discord' | 'Gotify' | 'NtfySh' | 'Telegram';
+
+export type ServicesNotificationsPutExtensionRequest = { name?: string };
+
+export type ServicesNotificationsPutExtensionRequestDiscord = { webhookId: string; webhookToken: string; name: string };
+
+export type ServicesNotificationsPutExtensionRequestGotify = { host: string; port: number | string; appToken: string; name: string };
+
+export type ServicesNotificationsPutExtensionRequestNaprise = { name: string };
+
+export type ServicesNotificationsPutExtensionRequestNtfySh = {
+    host: string;
+    port: number | string;
+    topic: string;
+    user?: null | string;
+    password?: null | string;
+    name: string;
+};
+
+export type ServicesNotificationsPutExtensionRequestTelegram = { token: string; chatId: string; name: string };
+
 export type GetMangasData = { body?: never; path?: never; query?: never; url: '/mangas' };
 
 export type GetMangasErrors = {
@@ -627,3 +650,157 @@ export type GetTasksMangaDownloadsResponses = {
 };
 
 export type GetTasksMangaDownloadsResponse = GetTasksMangaDownloadsResponses[keyof GetTasksMangaDownloadsResponses];
+
+export type GetNotificationsExtensionsData = { body?: never; path?: never; query?: never; url: '/notifications/extensions' };
+
+export type GetNotificationsExtensionsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesNotificationsNotificationExtension>;
+};
+
+export type GetNotificationsExtensionsResponse = GetNotificationsExtensionsResponses[keyof GetNotificationsExtensionsResponses];
+
+export type PutNotificationsExtensionsData = {
+    body: ServicesNotificationsPutExtensionRequest;
+    path?: never;
+    query?: never;
+    url: '/notifications/extensions';
+};
+
+export type PutNotificationsExtensionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+};
+
+export type PutNotificationsExtensionsResponses = {
+    /**
+     * OK
+     */
+    200: ServicesNotificationsNotificationExtension;
+};
+
+export type PutNotificationsExtensionsResponse = PutNotificationsExtensionsResponses[keyof PutNotificationsExtensionsResponses];
+
+export type PutNotificationsExtensionsNapriseData = {
+    body: ServicesNotificationsPutExtensionRequestNaprise;
+    path?: never;
+    query?: never;
+    url: '/notifications/extensions/naprise';
+};
+
+export type PutNotificationsExtensionsNapriseErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+};
+
+export type PutNotificationsExtensionsNapriseResponses = {
+    /**
+     * OK
+     */
+    200: ServicesNotificationsNotificationExtension;
+};
+
+export type PutNotificationsExtensionsNapriseResponse =
+    PutNotificationsExtensionsNapriseResponses[keyof PutNotificationsExtensionsNapriseResponses];
+
+export type PutNotificationsExtensionsDiscordData = {
+    body: ServicesNotificationsPutExtensionRequestDiscord;
+    path?: never;
+    query?: never;
+    url: '/notifications/extensions/discord';
+};
+
+export type PutNotificationsExtensionsDiscordErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+};
+
+export type PutNotificationsExtensionsDiscordResponses = {
+    /**
+     * OK
+     */
+    200: ServicesNotificationsNotificationExtension;
+};
+
+export type PutNotificationsExtensionsDiscordResponse =
+    PutNotificationsExtensionsDiscordResponses[keyof PutNotificationsExtensionsDiscordResponses];
+
+export type PutNotificationsExtensionsGotifyData = {
+    body: ServicesNotificationsPutExtensionRequestGotify;
+    path?: never;
+    query?: never;
+    url: '/notifications/extensions/gotify';
+};
+
+export type PutNotificationsExtensionsGotifyErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+};
+
+export type PutNotificationsExtensionsGotifyResponses = {
+    /**
+     * OK
+     */
+    200: ServicesNotificationsNotificationExtension;
+};
+
+export type PutNotificationsExtensionsGotifyResponse =
+    PutNotificationsExtensionsGotifyResponses[keyof PutNotificationsExtensionsGotifyResponses];
+
+export type PutNotificationsExtensionsNtfyshData = {
+    body: ServicesNotificationsPutExtensionRequestNtfySh;
+    path?: never;
+    query?: never;
+    url: '/notifications/extensions/ntfysh';
+};
+
+export type PutNotificationsExtensionsNtfyshErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+};
+
+export type PutNotificationsExtensionsNtfyshResponses = {
+    /**
+     * OK
+     */
+    200: ServicesNotificationsNotificationExtension;
+};
+
+export type PutNotificationsExtensionsNtfyshResponse =
+    PutNotificationsExtensionsNtfyshResponses[keyof PutNotificationsExtensionsNtfyshResponses];
+
+export type PutNotificationsExtensionsTelegramData = {
+    body: ServicesNotificationsPutExtensionRequestTelegram;
+    path?: never;
+    query?: never;
+    url: '/notifications/extensions/telegram';
+};
+
+export type PutNotificationsExtensionsTelegramErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+};
+
+export type PutNotificationsExtensionsTelegramResponses = {
+    /**
+     * OK
+     */
+    200: ServicesNotificationsNotificationExtension;
+};
+
+export type PutNotificationsExtensionsTelegramResponse =
+    PutNotificationsExtensionsTelegramResponses[keyof PutNotificationsExtensionsTelegramResponses];
