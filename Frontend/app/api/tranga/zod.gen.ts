@@ -253,9 +253,11 @@ export const zServicesNotificationsPutExtensionRequestGotify = z.object({
 
 export type ServicesNotificationsPutExtensionRequestGotifyZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestGotify>;
 
-export const zServicesNotificationsPutExtensionRequestNaprise = z.object({ name: z.string() });
+export const zServicesNotificationsPutExtensionRequestNapriseServiceUrl = z.object({ serviceUrl: z.string(), name: z.string() });
 
-export type ServicesNotificationsPutExtensionRequestNapriseZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestNaprise>;
+export type ServicesNotificationsPutExtensionRequestNapriseServiceUrlZodType = z.infer<
+    typeof zServicesNotificationsPutExtensionRequestNapriseServiceUrl
+>;
 
 export const zServicesNotificationsPutExtensionRequestNtfySh = z.object({
     host: z.string(),

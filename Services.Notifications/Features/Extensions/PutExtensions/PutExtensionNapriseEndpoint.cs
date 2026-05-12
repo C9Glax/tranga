@@ -19,7 +19,7 @@ public abstract class PutExtensionNapriseEndpoint
     /// <returns>The created extension</returns>
     /// <response code="200">The created extension</response>
     /// <response code="400">Extension could not be created</response>
-    public static async Task<Results<Ok<NotificationExtension>, BadRequest>> Handle(NotificationsContext ctx, [FromBody]PutExtensionRequestNaprise req, CancellationToken ct)
+    public static async Task<Results<Ok<NotificationExtension>, BadRequest>> Handle(NotificationsContext ctx, [FromBody]PutExtensionRequestNapriseServiceUrl req, CancellationToken ct)
     {
         DbNotificationExtension extension = new DbNapriseExtension(req.Name, req.ServiceUrl);
 
@@ -35,6 +35,11 @@ public abstract class PutExtensionNapriseEndpoint
             Type = extension.Type
         };
         return TypedResults.Ok(result);
+    }
+
+    public record PutExtensionRequestNapriseServiceUrl(string Name, NotificationExtensionType NotificationExtensionType, string ServiceUrl) : PutExtensionRequestNaprise(Name, NotificationExtensionType, ServiceUrl)
+    {
+        public new string ServiceUrl { get; init; } = ServiceUrl;
     }
     
     public record PutExtensionRequestNaprise(string Name, NotificationExtensionType NotificationExtensionType, string ServiceUrl) : PutExtensionEndpoint.PutExtensionRequest(Name, NotificationExtensionType)

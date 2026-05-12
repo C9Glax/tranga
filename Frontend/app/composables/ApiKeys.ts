@@ -27,4 +27,8 @@ export namespace ApiKeys {
     }
 
     export namespace Tasks {}
+
+    export namespace Notifications {
+        export const Extensions = 'Notifications/Extensions';
+    }
 }

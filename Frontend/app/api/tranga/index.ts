@@ -145,7 +145,7 @@ export type {
     ServicesNotificationsPutExtensionRequest,
     ServicesNotificationsPutExtensionRequestDiscord,
     ServicesNotificationsPutExtensionRequestGotify,
-    ServicesNotificationsPutExtensionRequestNaprise,
+    ServicesNotificationsPutExtensionRequestNapriseServiceUrl,
     ServicesNotificationsPutExtensionRequestNtfySh,
     ServicesNotificationsPutExtensionRequestTelegram,
     ServicesTasksTask,

@@ -69,7 +69,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PutExtensionRequestNaprise"
+                "$ref": "#/components/schemas/PutExtensionRequestNapriseServiceUrl"
               }
             }
           },
@@ -311,12 +311,16 @@
           }
         }
       },
-      "PutExtensionRequestNaprise": {
+      "PutExtensionRequestNapriseServiceUrl": {
         "required": [
+          "serviceUrl",
           "name"
         ],
         "type": "object",
         "properties": {
+          "serviceUrl": {
+            "type": "string"
+          },
           "name": {
             "type": "string"
           }

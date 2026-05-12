@@ -115,7 +115,7 @@ export type ServicesNotificationsPutExtensionRequestDiscord = { webhookId: strin
 
 export type ServicesNotificationsPutExtensionRequestGotify = { host: string; port: number | string; appToken: string; name: string };
 
-export type ServicesNotificationsPutExtensionRequestNaprise = { name: string };
+export type ServicesNotificationsPutExtensionRequestNapriseServiceUrl = { serviceUrl: string; name: string };
 
 export type ServicesNotificationsPutExtensionRequestNtfySh = {
     host: string;
@@ -686,7 +686,7 @@ export type PutNotificationsExtensionsResponses = {
 export type PutNotificationsExtensionsResponse = PutNotificationsExtensionsResponses[keyof PutNotificationsExtensionsResponses];
 
 export type PutNotificationsExtensionsNapriseData = {
-    body: ServicesNotificationsPutExtensionRequestNaprise;
+    body: ServicesNotificationsPutExtensionRequestNapriseServiceUrl;
     path?: never;
     query?: never;
     url: '/notifications/extensions/naprise';
