@@ -38,5 +38,8 @@ internal static class EndpointHelpers
         
         builder.MapPut("/telegram", PutExtensionTelegramEndpoint.Handle)
             .WithSummary("Add a Telegram notification extension.");
+        
+        builder.MapDelete("{extensionId}", DeleteExtensionEndpoint.Handle)
+            .WithSummary("Remove a notification extension.");
     }
 }

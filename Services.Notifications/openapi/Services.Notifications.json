@@ -223,6 +223,33 @@
           }
         }
       }
+    },
+    "/notifications/extensions/{extensionId}": {
+      "delete": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Remove a notification extension.",
+        "parameters": [
+          {
+            "name": "extensionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
     }
   },
   "components": {

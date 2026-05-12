@@ -2,6 +2,9 @@
 
 export type {
     ClientOptions,
+    DeleteNotificationsExtensionsByExtensionIdData,
+    DeleteNotificationsExtensionsByExtensionIdErrors,
+    DeleteNotificationsExtensionsByExtensionIdResponses,
     GetMangasByMangaIdCoverData,
     GetMangasByMangaIdCoverErrors,
     GetMangasByMangaIdCoverResponse,

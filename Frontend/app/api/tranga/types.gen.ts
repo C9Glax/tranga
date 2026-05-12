@@ -804,3 +804,24 @@ export type PutNotificationsExtensionsTelegramResponses = {
 
 export type PutNotificationsExtensionsTelegramResponse =
     PutNotificationsExtensionsTelegramResponses[keyof PutNotificationsExtensionsTelegramResponses];
+
+export type DeleteNotificationsExtensionsByExtensionIdData = {
+    body?: never;
+    path: { extensionId: string };
+    query?: never;
+    url: '/notifications/extensions/{extensionId}';
+};
+
+export type DeleteNotificationsExtensionsByExtensionIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type DeleteNotificationsExtensionsByExtensionIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
