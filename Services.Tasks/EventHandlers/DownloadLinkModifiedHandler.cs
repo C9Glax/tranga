@@ -1,12 +1,12 @@
+using Common.Services.Events;
+using Common.Services.Events.Events;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
-using Services.Manga.Events;
 using Services.Tasks.Tasks;
 using Services.Tasks.WorkerLogic;
-using Common.Services.Events;
 
-namespace Services.Tasks.Events;
+namespace Services.Tasks.EventHandlers;
 
 internal sealed class DownloadLinkModifiedHandler(IChannel channel, IServiceProvider serviceProvider) : TrangaEventHandler<DownloadLinkModifiedEvent>(channel)
 {

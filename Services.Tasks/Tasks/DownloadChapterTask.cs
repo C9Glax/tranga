@@ -1,10 +1,13 @@
 using System.IO.Compression;
+using Common.Services.Events;
+using Common.Services.Events.Events;
 using Common.Settings;
 using Extensions;
 using Extensions.Data;
 using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Database.Helpers;
+using Services.Manga.Entities;
 using Services.Manga.Helpers;
 using Services.Tasks.Helpers;
 using Services.Tasks.TaskTypes;
@@ -70,8 +73,9 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
         await _ctx.AddAsync(dbFile, stoppingToken);
         
         await _ctx.SaveChangesAsync(stoppingToken);
-        
-        // TODO Publish a "ChapterDownloadedEvent"
+
+        await scope.ServiceProvider.GetRequiredService<EventPublisher>().PublishAsync(
+            new ChapterDownloadedEvent(string.Empty, chapter.Number, chapter.Title, chapter.Volume), stoppingToken); // TODO Series name
     }
 
     private protected override void RefreshScope(IServiceScope scope)

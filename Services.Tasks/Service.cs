@@ -4,7 +4,7 @@ using Common.Settings;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
-using Services.Tasks.Events;
+using Services.Tasks.EventHandlers;
 using Services.Tasks.Features;
 using Services.Tasks.Tasks;
 using Services.Tasks.TaskTypes;

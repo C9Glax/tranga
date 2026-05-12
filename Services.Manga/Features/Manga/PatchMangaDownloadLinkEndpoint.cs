@@ -1,10 +1,10 @@
 using Common.Services.Events;
+using Common.Services.Events.Events;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
-using Services.Manga.Events;
 
 namespace Services.Manga.Features.Manga;
 
