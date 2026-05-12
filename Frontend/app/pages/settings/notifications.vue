@@ -209,11 +209,12 @@ const createExtension = async () => {
             });
             break;
     }
-    if (!result?.['200']) {
+    if (!result) {
         toast.add({ title: 'Failed adding extension!', color: 'error' });
         return;
     }
 
+    await refreshNuxtData(ApiKeys.Notifications.Extensions);
     toast.add({ title: 'Added extension.', color: 'success' });
     state.value = {};
     open.value = false;
