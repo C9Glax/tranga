@@ -3,7 +3,7 @@
         <UBlogPost
             :title="downloadLink.series"
             :description="downloadLink.summary ?? undefined"
-            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/mangas/files/${downloadLink.coverId}`, loading: 'lazy' }"
+            :image="{ src: `${$apiBaseUrl}/mangas/files/${downloadLink.coverId}`, loading: 'lazy' }"
             external
             class="w-full h-full"
             :ui="{

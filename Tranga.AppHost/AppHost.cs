@@ -2,6 +2,7 @@ using Aspire.Hosting.Docker.Resources.ComposeNodes;
 using Aspire.Hosting.Docker.Resources.ServiceNodes;
 using Aspire.Hosting.JavaScript;
 using Aspire.Hosting.Yarp;
+using Aspire.Hosting.Yarp.Transforms;
 using Projects;
 using EnvVars = Tranga.AppHost.EnvVars;
 
@@ -181,9 +182,9 @@ builder.AddYarp("gateway")
         // Add catch-all route for frontend service
         yarp.AddRoute(frontend).WithMatchMethods("GET");
 
-        yarp.AddRoute("/mangas/{**catch-all}", mangaService);
-        yarp.AddRoute("/tasks/{**catch-all}", tasksService);
-        yarp.AddRoute("/notifications/{**catch-all}", notificationsService);
+        yarp.AddRoute("/api/mangas/{**catch-all}", mangaService).WithTransformPathRemovePrefix("/api");
+        yarp.AddRoute("/api/tasks/{**catch-all}", tasksService).WithTransformPathRemovePrefix("/api");
+        yarp.AddRoute("/api/notifications/{**catch-all}", notificationsService).WithTransformPathRemovePrefix("/api");
     })
     .WithHostPort(port)
     .PublishAsDockerComposeService((resource, service) =>

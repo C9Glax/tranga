@@ -1,5 +1,9 @@
-export default defineNuxtPlugin((nuxtApp) => {
-    const tranga = $fetch.create({ baseURL: `http://${nuxtApp.$config.public.api.baseUrl}` });
+export default defineNuxtPlugin({
+    name: 'tranga-api',
+    dependsOn: ['apiBaseUrl'],
+    async setup(nuxtApp) {
+        const tranga = $fetch.create({ baseURL: nuxtApp.$apiBaseUrl });
 
-    return { provide: { tranga } };
+        return { provide: { tranga } };
+    },
 });

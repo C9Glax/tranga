@@ -4,7 +4,7 @@
         <UBlogPost
             :title="metadata.series"
             :description="metadata.summary ?? undefined"
-            :image="{ src: `http://${useRuntimeConfig().public.api.baseUrl}/mangas/files/${metadata.coverId}`, loading: 'lazy' }"
+            :image="{ src: `${$apiBaseUrl}/mangas/files/${metadata.coverId}`, loading: 'lazy' }"
             :to="mangaId ? `/metadata/${metadata.metadataId}?mangaId=${mangaId}` : `/metadata/${metadata.metadataId}`"
             :target="target"
             external
