@@ -13,7 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Common\Common.csproj" />
-      <ProjectReference Include="..\NSwagClients\NSwagClients.csproj" />
+      <ProjectReference Include="..\GeneratedExtensionClients\GeneratedExtensionClients.csproj" />
     </ItemGroup>
 
     <ItemGroup>

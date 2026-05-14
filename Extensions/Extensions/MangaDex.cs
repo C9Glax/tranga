@@ -4,8 +4,8 @@ using Common.Helpers;
 using Common.Settings;
 using Extensions.Data;
 using Newtonsoft.Json.Linq;
-using NSwagClients.GeneratedClients.MangaDex;
-using Manga = NSwagClients.GeneratedClients.MangaDex.Manga;
+using GeneratedExtensionClients.GeneratedClients.MangaDex;
+using Manga = GeneratedExtensionClients.GeneratedClients.MangaDex.Manga;
 
 namespace Extensions.Extensions;
 

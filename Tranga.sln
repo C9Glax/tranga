@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "Common.Tests\Common.Tests.csproj", "{6EC5D4FB-3AF9-458A-A30B-D4243C39B90E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSwagClients", "NSwagClients\NSwagClients.csproj", "{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneratedExtensionClients", "GeneratedExtensionClients\GeneratedExtensionClients.csproj", "{ADDF841A-0F6D-45D2-B889-EAF77DA2C467}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39ADCF67-C411-4DC3-8E4D-675B731D007A}"
 	ProjectSection(SolutionItems) = preProject

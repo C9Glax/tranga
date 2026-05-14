@@ -3,7 +3,7 @@ using Common.Datatypes;
 using Common.Helpers;
 using Common.Settings;
 using Extensions.Data;
-using NSwagClients.GeneratedClients.MangaUpdates;
+using GeneratedExtensionClients.GeneratedClients.MangaUpdates;
 
 namespace Extensions.Extensions;
 
