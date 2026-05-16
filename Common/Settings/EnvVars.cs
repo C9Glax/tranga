@@ -18,4 +18,5 @@ public struct EnvVars
     public static readonly string SettingsFile = Environment.GetEnvironmentVariable("SETTINGS_FILE") ?? "settings.json";
     public static readonly int WorkersCount = Math.Max(Environment.GetEnvironmentVariable("WORKERS_COUNT") is { } var ? int.Parse(var) : Environment.ProcessorCount / 2, 1);
     public static readonly string? FlareSolverrUrl = Environment.GetEnvironmentVariable("FLARESOLVERR_URL");
+    public static readonly string? KomgaApiKey = Environment.GetEnvironmentVariable("KOMGA_API_KEY");
 }

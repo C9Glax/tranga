@@ -3,27 +3,27 @@ using Extensions.Data;
 
 namespace Extensions;
 
-public interface ILibraryExtension<TSeries, TBook> : IExtension where TSeries : ISeries where TBook : IBook
+public interface ILibraryExtension<TSeries, TBook, in TIdentifier> : IExtension where TSeries : ISeries<TIdentifier> where TBook : IBook<TIdentifier> where TIdentifier : IIdentifier
 {
-    public Task<TSeries[]> GetSeriesList();
+    public Task<TSeries[]> GetSeriesList(CancellationToken ct);
 
-    public Task AddSeries(TSeries series);
+    public Task AddSeries(TSeries series, CancellationToken ct);
     
-    public Task<TSeries> GetSeries();
+    public Task<TSeries> GetSeries(TIdentifier id, CancellationToken ct);
 
-    public Task UpdateSeries(TSeries series);
+    public Task UpdateSeries(TSeries series, CancellationToken ct);
 
-    public Task UpdatePoster(Guid seriesId, TrangaImage poster);
+    public Task UpdatePoster(TIdentifier seriesId, TrangaImage poster, CancellationToken ct);
 
-    public Task DeleteSeries(Guid seriesId);
+    public Task DeleteSeries(TIdentifier seriesId, CancellationToken ct);
 
-    public Task AddBook(Guid seriesId, TBook book);
+    public Task AddBook(TIdentifier seriesId, TBook book, CancellationToken ct);
 
-    public Task<TBook[]> GetBooks(Guid seriesId);
+    public Task<TBook[]> GetBooks(TIdentifier seriesId, CancellationToken ct);
 
-    public Task UpdateBook(Guid bookId, TBook book);
+    public Task UpdateBook(TIdentifier bookId, TBook book, CancellationToken ct);
     
-    public Task UpdateBookCover(Guid bookId, TrangaImage cover);
+    public Task UpdateBookCover(TIdentifier bookId, TrangaImage cover, CancellationToken ct);
 
-    public Task DeleteBook(Guid bookId);
+    public Task DeleteBook(TIdentifier bookId, CancellationToken ct);
 }

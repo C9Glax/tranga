@@ -1,6 +1,8 @@
 namespace Extensions.Data;
 
-public interface IBook
+public interface IBook<TSeriesIdentifier> where TSeriesIdentifier : IIdentifier
 {
-    public Guid BookId { get; init; }
+    public TSeriesIdentifier Id { get; init; }
+    
+    public string Title { get; init; }
 }
