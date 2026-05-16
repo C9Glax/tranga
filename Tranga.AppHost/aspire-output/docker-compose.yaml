@@ -106,7 +106,7 @@ services:
       - "tranga"
     restart: "on-failure:3"
   services-notifications:
-    image: "ghcr.io/c9glax/tranga-services_notificationss:external-connectors"
+    image: "ghcr.io/c9glax/tranga-services_notifications:external-connectors"
     environment:
       OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
@@ -136,6 +136,45 @@ services:
       RABBITMQ_PASSWORD: "tranga"
     expose:
       - "${SERVICES_NOTIFICATIONS_PORT}"
+    depends_on:
+      tranga-pg:
+        condition: "service_started"
+      messaging:
+        condition: "service_started"
+    networks:
+      - "tranga"
+    restart: "on-failure:3"
+  services-libraries:
+    image: "ghcr.io/c9glax/tranga-services_libraries:external-connectors"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${SERVICES_LIBRARIES_PORT}"
+      ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
+      TRANGA_HOST: "tranga-pg"
+      TRANGA_PORT: "5432"
+      TRANGA_USERNAME: "${POSTGRESUSER}"
+      TRANGA_PASSWORD: "${POSTGRESPASSWORD}"
+      TRANGA_URI: "postgresql://${POSTGRESUSER}:${POSTGRESPASSWORD}@tranga-pg:5432/tranga"
+      TRANGA_JDBCCONNECTIONSTRING: "jdbc:postgresql://tranga-pg:5432/tranga"
+      TRANGA_DATABASENAME: "tranga"
+      ConnectionStrings__messaging: "amqp://${RABBITMQUSER}:${RABBITMQPASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "${RABBITMQUSER}"
+      MESSAGING_PASSWORD: "${RABBITMQPASSWORD}"
+      MESSAGING_URI: "amqp://${RABBITMQUSER}:${RABBITMQPASSWORD}@messaging:5672"
+      POSTGRES_HOST: "tranga-pg"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: "${POSTGRESUSER}"
+      POSTGRES_PASSWORD: "${POSTGRESPASSWORD}"
+      POSTGRES_DATABASE: "tranga"
+      RABBITMQ_HOST: "messaging"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USER: "tranga"
+      RABBITMQ_PASSWORD: "tranga"
+    expose:
+      - "${SERVICES_LIBRARIES_PORT}"
     depends_on:
       tranga-pg:
         condition: "service_started"
@@ -177,16 +216,23 @@ services:
       REVERSEPROXY__ROUTES__route0__MATCH__METHODS__0: "GET"
       REVERSEPROXY__ROUTES__route0__MATCH__PATH: "/{**catchall}"
       REVERSEPROXY__ROUTES__route0__CLUSTERID: "cluster_frontend"
-      REVERSEPROXY__ROUTES__route1__MATCH__PATH: "/mangas/{**catch-all}"
+      REVERSEPROXY__ROUTES__route1__MATCH__PATH: "/api/mangas/{**catch-all}"
       REVERSEPROXY__ROUTES__route1__CLUSTERID: "cluster_services-manga"
-      REVERSEPROXY__ROUTES__route2__MATCH__PATH: "/tasks/{**catch-all}"
+      REVERSEPROXY__ROUTES__route1__TRANSFORMS__0__PathRemovePrefix: "/api"
+      REVERSEPROXY__ROUTES__route2__MATCH__PATH: "/api/tasks/{**catch-all}"
       REVERSEPROXY__ROUTES__route2__CLUSTERID: "cluster_services-tasks"
-      REVERSEPROXY__ROUTES__route3__MATCH__PATH: "/notifications/{**catch-all}"
+      REVERSEPROXY__ROUTES__route2__TRANSFORMS__0__PathRemovePrefix: "/api"
+      REVERSEPROXY__ROUTES__route3__MATCH__PATH: "/api/notifications/{**catch-all}"
       REVERSEPROXY__ROUTES__route3__CLUSTERID: "cluster_services-notifications"
+      REVERSEPROXY__ROUTES__route3__TRANSFORMS__0__PathRemovePrefix: "/api"
+      REVERSEPROXY__ROUTES__route4__MATCH__PATH: "/api/libraries/{**catch-all}"
+      REVERSEPROXY__ROUTES__route4__CLUSTERID: "cluster_services-libraries"
+      REVERSEPROXY__ROUTES__route4__TRANSFORMS__0__PathRemovePrefix: "/api"
       REVERSEPROXY__CLUSTERS__cluster_frontend__DESTINATIONS__destination1__ADDRESS: "http://frontend"
       REVERSEPROXY__CLUSTERS__cluster_services-manga__DESTINATIONS__destination1__ADDRESS: "https+http://services-manga"
       REVERSEPROXY__CLUSTERS__cluster_services-tasks__DESTINATIONS__destination1__ADDRESS: "https+http://services-tasks"
       REVERSEPROXY__CLUSTERS__cluster_services-notifications__DESTINATIONS__destination1__ADDRESS: "https+http://services-notifications"
+      REVERSEPROXY__CLUSTERS__cluster_services-libraries__DESTINATIONS__destination1__ADDRESS: "https+http://services-libraries"
       services__frontend__http__0: "http://frontend:3000"
       SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
       services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
@@ -197,6 +243,9 @@ services:
       SERVICES_NOTIFICATIONS_HTTP: "http://services-notifications:${SERVICES_NOTIFICATIONS_PORT}"
       services__services-notifications__http__0: "http://services-notifications:${SERVICES_NOTIFICATIONS_PORT}"
       SERVICES_NOTIFICATIONS_HTTPS: "https://services-notifications:${SERVICES_NOTIFICATIONS_PORT}"
+      SERVICES_LIBRARIES_HTTP: "http://services-libraries:${SERVICES_LIBRARIES_PORT}"
+      services__services-libraries__http__0: "http://services-libraries:${SERVICES_LIBRARIES_PORT}"
+      SERVICES_LIBRARIES_HTTPS: "https://services-libraries:${SERVICES_LIBRARIES_PORT}"
     ports:
       - "5000:5000"
     expose:
