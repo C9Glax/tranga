@@ -14,10 +14,10 @@ on:
       - "Common.Database/**"
       - "Common.Services/**"
       - "Extensions/**"
-      - "NSwagClients"
+      - "GeneratedExtensionClient/**"
       - "Services.Notifications/**"
       - "Services.Notifications.Tests/**"
-      - ".github/workflows/unit_tests-services_notifications.yml"
+      - ".github/workflows/publish-services_notifications-image.yml"
 
 jobs:
   docker_publish:

@@ -1,4 +1,4 @@
-name: Notifications Service Unit Tests
+name: Libraries Service Unit Tests
 
 on:
   push:
@@ -10,9 +10,9 @@ on:
       - "Common.Services/**"
       - "Extensions/**"
       - "GeneratedExtensionClient/**"
-      - "Services.Notifications/**"
-      - "Services.Notifications.Tests/**"
-      - ".github/workflows/unit_tests-services_notifications.yml"
+      - "Services.Libraries/**"
+      - "Services.Libraries.Tests/**"
+      - ".github/workflows/unit_tests-services_libraries.yml"
 
 jobs:
   build:
@@ -25,11 +25,11 @@ jobs:
         with:
           dotnet-version: '10.x'
       - name: Restore dependencies
-        run: dotnet restore ./Services.Notifications.Tests/Services.Notifications.Tests.csproj
+        run: dotnet restore ./Services.Libraries.Tests/Services.Libraries.Tests.csproj
       - name: Build the solution
-        run: dotnet build ./Services.Notifications.Tests/Services.Notifications.Tests.csproj --configuration Release --no-restore
+        run: dotnet build ./Services.Libraries.Tests/Services.Libraries.Tests.csproj --configuration Release --no-restore
       - name: Run unit tests with report
-        run: dotnet test ./Services.Notifications.Tests/Services.Notifications.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=TestResults.trx"
+        run: dotnet test ./Services.Libraries.Tests/Services.Libraries.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=TestResults.trx"
       - name: Upload test results
         uses: actions/upload-artifact@v7
         with:

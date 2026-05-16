@@ -8,7 +8,7 @@ on:
       - "Common/**"
       - "Extensions/**"
       - "Extensions.Tests/**"
-      - "NSwagClients/**"
+      - "GeneratedExtensionClient/**"
       - ".github/workflows/unit_tests-extensions.yml"
 
 jobs:

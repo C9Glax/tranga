@@ -9,7 +9,7 @@ on:
       - "Common.Database/**"
       - "Common.Services/**"
       - "Extensions/**"
-      - "NSwagClients"
+      - "GeneratedExtensionClient/**"
       - "Services.Manga/**"
       - "Services.Manga.Tests/**"
       - ".github/workflows/unit_tests-services_manga.yml"

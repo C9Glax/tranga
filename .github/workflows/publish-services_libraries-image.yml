@@ -1,4 +1,4 @@
-name: Build and publish Manga-Service Image
+name: Build and publish Libraries-Service Image
 on:
 
   # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
@@ -15,9 +15,9 @@ on:
       - "Common.Services/**"
       - "Extensions/**"
       - "GeneratedExtensionClient/**"
-      - "Services.Manga/**"
-      - "Services.Manga.Tests/**"
-      - ".github/workflows/publish-services_manga-image.yml"
+      - "Services.Libraries/**"
+      - "Services.Libraries.Tests/**"
+      - ".github/workflows/publish-services_libraries-image.yml"
 
 jobs:
   docker_publish:
@@ -33,8 +33,8 @@ jobs:
       - name: Build and publish a Docker image for ${{ github.repository }}
         uses: macbre/push-to-ghcr@master
         with:
-          image_name: ${{ github.repository }}-services_manga  # it will be lowercased internally
-          dockerfile: ./Services.Manga/Dockerfile
+          image_name: ${{ github.repository }}-services_libraries  # it will be lowercased internally
+          dockerfile: ./Services.Libraries/Dockerfile
           platforms: linux/amd64
           github_token: ${{ secrets.GITHUB_TOKEN }}
           image_tag: external-connectors

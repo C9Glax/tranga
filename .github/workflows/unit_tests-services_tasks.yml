@@ -9,7 +9,7 @@ on:
       - "Common.Database/**"
       - "Common.Services/**"
       - "Extensions/**"
-      - "NSwagClients"
+      - "GeneratedExtensionClient/**"
       - "Services.Tasks/**"
       - "Services.Tasks.Tests/**"
       - ".github/workflows/unit_tests-services_tasks.yml"
