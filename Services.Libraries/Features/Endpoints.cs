@@ -18,5 +18,8 @@ internal static class EndpointHelpers
     {
         builder.MapGet(string.Empty, GetLibrariesEndpoint.Handle)
             .WithSummary("List of all configured library extensions");
+        
+        builder.MapPut("/komga", AddKomgaEndpoint.Handle)
+            .WithSummary("Add komga library extension");
     }
 }

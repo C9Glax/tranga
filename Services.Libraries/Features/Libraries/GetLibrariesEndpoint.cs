@@ -21,7 +21,7 @@ public abstract class GetLibrariesEndpoint
     public static async Task<Ok<Library[]>> Handle(LibrariesContext ctx, CancellationToken ct)
     {
         List<DbLibrary> dbLibraries = await ctx.Libraries.ToListAsync(ct);
-        Library[] result = dbLibraries.Select(l => new Library(l.Id, l.BaseUrl)).ToArray();
+        Library[] result = dbLibraries.Select(l => new Library(l.LibraryType, l.Id, l.BaseUrl)).ToArray();
         return TypedResults.Ok(result);
     }
 }

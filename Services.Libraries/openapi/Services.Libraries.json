@@ -27,17 +27,63 @@
           }
         }
       }
+    },
+    "/libraries/komga": {
+      "put": {
+        "tags": [
+          "Libraries"
+        ],
+        "summary": "Add komga library extension",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddKomgaLibraryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AddKomgaLibraryRequest": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "apiKey": {
+            "type": "string"
+          }
+        }
+      },
       "Library": {
         "required": [
+          "libraryType",
           "id",
           "baseUrl"
         ],
         "type": "object",
         "properties": {
+          "libraryType": {
+            "$ref": "#/components/schemas/LibraryType"
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -46,6 +92,11 @@
             "type": "string"
           }
         }
+      },
+      "LibraryType": {
+        "enum": [
+          "Komga"
+        ]
       }
     }
   },
