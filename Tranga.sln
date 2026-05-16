@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Notifications.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Libraries", "Services.Libraries\Services.Libraries.csproj", "{C829FC65-86D5-462C-B2C3-88CE48DFA83E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Libraries.Tests", "Services.Libraries.Tests\Services.Libraries.Tests.csproj", "{A44CE248-DEE1-4023-80BA-01C138F68ADC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,5 +111,9 @@ Global
 		{C829FC65-86D5-462C-B2C3-88CE48DFA83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C829FC65-86D5-462C-B2C3-88CE48DFA83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C829FC65-86D5-462C-B2C3-88CE48DFA83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A44CE248-DEE1-4023-80BA-01C138F68ADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A44CE248-DEE1-4023-80BA-01C138F68ADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A44CE248-DEE1-4023-80BA-01C138F68ADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A44CE248-DEE1-4023-80BA-01C138F68ADC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
