@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Services.Libraries\Services.Libraries.csproj" />
       <ProjectReference Include="..\Services.Manga\Services.Manga.csproj" />
       <ProjectReference Include="..\Services.Notifications\Services.Notifications.csproj" />
       <ProjectReference Include="..\Services.Tasks\Services.Tasks.csproj" />
