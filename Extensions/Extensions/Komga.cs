@@ -7,11 +7,8 @@ using Komga.Client.Model;
 
 namespace Extensions.Extensions;
 
-public sealed class Komga(Guid id, string name, string baseUrl) : ILibraryExtension<KomgaSeries, KomgaBook, KomgaIdentifier>
+public sealed class Komga(string baseUrl) : ILibraryExtension<KomgaSeries, KomgaBook, KomgaIdentifier>
 {
-    public Guid Identifier { get; init; } = id;
-    public string Name { get; init; } = name;
-    public string BaseUrl { get; init; } = baseUrl;
 
     private static readonly HttpClientHandler Handler = new ()
     {
@@ -27,8 +24,6 @@ public sealed class Komga(Guid id, string name, string baseUrl) : ILibraryExtens
             }
         }
     };
-
-    private readonly LibrariesApi _libraries = new(KomgaRequestClient, baseUrl, Handler);
 
     private readonly SeriesApi _series = new(KomgaRequestClient, baseUrl, Handler);
 

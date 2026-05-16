@@ -65,6 +65,9 @@
       "AddKomgaLibraryRequest": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string"
+          },
           "baseUrl": {
             "type": "string"
           },

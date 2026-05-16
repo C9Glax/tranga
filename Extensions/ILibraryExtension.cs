@@ -3,7 +3,7 @@ using Extensions.Data;
 
 namespace Extensions;
 
-public interface ILibraryExtension<TSeries, TBook, in TIdentifier> : IExtension where TSeries : ISeries<TIdentifier> where TBook : IBook<TIdentifier> where TIdentifier : IIdentifier
+public interface ILibraryExtension<TSeries, TBook, in TIdentifier> where TSeries : ISeries<TIdentifier> where TBook : IBook<TIdentifier> where TIdentifier : IIdentifier
 {
     public Task<TSeries[]> GetSeriesList(CancellationToken ct);
 

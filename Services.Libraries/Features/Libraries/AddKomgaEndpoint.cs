@@ -19,7 +19,7 @@ public abstract class AddKomgaEndpoint
     /// <response code="200">Komga extension added</response>
     public static async Task<Ok<Guid>> Handle(LibrariesContext ctx, [FromBody]AddKomgaLibraryRequest req, CancellationToken ct)
     {
-        DbLibrary dbLibrary = new (LibraryType.Komga, req.BaseUrl, req.ApiKey);
+        DbLibrary dbLibrary = new (LibraryType.Komga, req.Name, req.BaseUrl, req.ApiKey);
         await ctx.Libraries.AddAsync(dbLibrary, ct);
         await ctx.SaveChangesAsync(ct);
         return TypedResults.Ok(dbLibrary.Id);
@@ -27,6 +27,7 @@ public abstract class AddKomgaEndpoint
 
     public sealed record AddKomgaLibraryRequest
     {
+        public string Name { get; init; }
         public string BaseUrl { get; init; }
         public string ApiKey { get; init; }
     }
