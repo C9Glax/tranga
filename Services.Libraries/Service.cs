@@ -1,8 +1,8 @@
 using Common.Services.Events;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
+using Services.Libraries.Database;
 using Services.Libraries.Features;
-using Services.Notifications.Database;
 using Constants = Common.Settings.Constants;
 
 namespace Services.Libraries;
