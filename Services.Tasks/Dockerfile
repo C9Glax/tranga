@@ -13,7 +13,7 @@ COPY ["Tranga.ServiceDefaults/Tranga.ServiceDefaults.csproj", "Tranga.ServiceDef
 COPY ["Common/Common.csproj", "Common/"]
 COPY ["Common.Database/Common.Database.csproj", "Common.Database/"]
 COPY ["Extensions/Extensions.csproj", "Extensions/"]
-COPY ["NSwagClients/NSwagClients.csproj", "NSwagClients/"]
+COPY ["GeneratedExtensionClients/GeneratedExtensionClients.csproj", "GeneratedExtensionClients/"]
 COPY ["Services.Manga/Services.Manga.csproj", "Services.Manga/"]
 RUN dotnet restore "Services.Tasks/Services.Tasks.csproj"
 COPY . .

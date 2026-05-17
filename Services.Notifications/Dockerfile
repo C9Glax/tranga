@@ -12,7 +12,7 @@ COPY ["Common.Services/Common.Services.csproj", "Common.Services/"]
 COPY ["Tranga.ServiceDefaults/Tranga.ServiceDefaults.csproj", "Tranga.ServiceDefaults/"]
 COPY ["Common/Common.csproj", "Common/"]
 COPY ["Extensions/Extensions.csproj", "Extensions/"]
-COPY ["NSwagClients/NSwagClients.csproj", "NSwagClients/"]
+COPY ["GeneratedExtensionClients/GeneratedExtensionClients.csproj", "GeneratedExtensionClients/"]
 COPY ["Common.Database/Common.Database.csproj", "Common.Database/"]
 RUN dotnet restore "Services.Notifications/Services.Notifications.csproj"
 COPY . .
