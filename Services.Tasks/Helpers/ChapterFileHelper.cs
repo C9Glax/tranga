@@ -28,7 +28,7 @@ public static partial class ChapterFileHelper
         string optionalFormattersApplied = ApplyOptionalFormatters(scheme, chapter, ["V", "C", "T"]);
         string chapterName = ReplaceParameters(optionalFormattersApplied, chapter, ["V", "C", "T"]);
 
-        return $"{chapterName}.cbz".SafeString();
+        return $"{chapterName}.cbz".SafeFilesystemString();
     }
 
     private static string ApplyOptionalFormatters(string scheme, DbChapter chapter, params string[] parameters)
@@ -56,7 +56,12 @@ public static partial class ChapterFileHelper
         _ => throw new ArgumentOutOfRangeException(nameof(parameter), parameter, null)
     };
 
-    private static string SafeString(this string str) => SafeCharacters().Replace(str, string.Empty);
+    /// <summary>
+    /// Removes "illegal" characters
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static string SafeFilesystemString(this string str) => SafeCharacters().Replace(str, string.Empty);
     [GeneratedRegex(@"[^0-9a-zA-Z-._\ ]")]
     private static partial Regex SafeCharacters();
 }

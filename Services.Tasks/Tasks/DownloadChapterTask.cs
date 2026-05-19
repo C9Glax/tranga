@@ -60,15 +60,26 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
             image.image.Position = 0;
             await image.image.CopyToAsync(entryStream, stoppingToken);
         }
+        
+        // Get Manga directory Path
+        if(await _ctx.GetManga(MangaId, stoppingToken) is not { Metadata: { Series: { } directoryName } })
+        {
+            logger.LogError("Could not Manga (directoryName)!");
+            return;
+        }
+        string directoryPath = Path.Join(Constants.MangaDirectory, directoryName.SafeFilesystemString());
+        
         // Create dbFile entry for File
         DbFile dbFile = new()
         {
-            Path = Constants.MangaDirectory,
+            Path = directoryPath,
             Name = chapter.CreateFileName(),
             MimeType = "application/zip"
         };
-        //Save file
-        await archive.DisposeAsync(); // For some reason you need to dispose the archive to write headers
+        // Save file
+        // ReSharper disable once DisposeOnUsingVariable
+        // For some reason you need to dispose the archive to write headers
+        await archive.DisposeAsync();
         await dbFile.SaveFile(archiveStream, stoppingToken);
         await _ctx.AddAsync(dbFile, stoppingToken);
         
