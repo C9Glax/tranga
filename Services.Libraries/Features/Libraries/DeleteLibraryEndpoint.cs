@@ -19,7 +19,7 @@ public abstract class DeleteLibraryEndpoint
     /// <response code="404">Extension with ID does not exist</response>
     public static async Task<Results<Ok, NotFound>> Handle(LibrariesContext ctx, [FromRoute]Guid libraryId, CancellationToken ct)
     {
-        int deleted = await ctx.Libraries.Where(l => l.Id == libraryId).ExecuteDeleteAsync(ct);
+        int deleted = await ctx.LibraryServices.Where(l => l.LibraryServiceId == libraryId).ExecuteDeleteAsync(ct);
         if (deleted < 1)
             return TypedResults.NotFound();
         return TypedResults.Ok();

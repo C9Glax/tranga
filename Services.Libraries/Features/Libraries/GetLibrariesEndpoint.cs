@@ -20,8 +20,8 @@ public abstract class GetLibrariesEndpoint
     /// <response code="200">List of all configured library extensions</response>
     public static async Task<Ok<Library[]>> Handle(LibrariesContext ctx, CancellationToken ct)
     {
-        List<DbLibrary> dbLibraries = await ctx.Libraries.ToListAsync(ct);
-        Library[] result = dbLibraries.Select(l => new Library(l.LibraryType, l.Id, l.BaseUrl)).ToArray();
+        List<DbLibraryService> dbLibraries = await ctx.LibraryServices.ToListAsync(ct);
+        Library[] result = dbLibraries.Select(l => new Library(l.LibraryServiceType, l.LibraryServiceId, l.BaseUrl)).ToArray();
         return TypedResults.Ok(result);
     }
 }

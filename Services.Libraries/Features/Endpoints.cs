@@ -1,6 +1,5 @@
 using Common.Services;
 using Services.Libraries.Features.Libraries;
-using Services.Libraries.Features.ServiceDirectoryMappings;
 
 namespace Services.Libraries.Features;
 
@@ -10,9 +9,6 @@ public sealed class Endpoints : EndpointsBuilder
     {
         builder.MapGroup(string.Empty)
             .WithTags("Libraries").ConfigureLibrariesEndpoints();
-
-        builder.MapGroup("/directoryMappings")
-            .WithTags("Libraries", "Files").ConfigureMappingEndpoints();
     }
 }
 
@@ -28,18 +24,5 @@ internal static class EndpointHelpers
         
         builder.MapDelete("{libraryId}", DeleteLibraryEndpoint.Handle)
             .WithSummary("Remove a library extension");
-    }
-    
-    
-    internal static void ConfigureMappingEndpoints(this RouteGroupBuilder builder)
-    {
-        builder.MapPut("{libraryId}", AddServiceDirectoryMapping.Handle)
-            .WithSummary("Add a directory mapping for a library");
-        
-        builder.MapGet("{libraryId}", GetServiceDirectoryMappings.Handle)
-            .WithSummary("List of all mappings for a library extension");
-        
-        builder.MapDelete("{mappingId}", DeleteServiceDirectoryMapping.Handle)
-            .WithSummary("Remove a mapping");
     }
 }

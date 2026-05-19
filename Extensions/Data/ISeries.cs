@@ -1,6 +1,6 @@
 namespace Extensions.Data;
 
-public interface ISeries<TSeriesIdentifier> where TSeriesIdentifier : IIdentifier
+public interface ISeries<TSeriesIdentifier> where TSeriesIdentifier : IIdentifier<TSeriesIdentifier>
 {
     public TSeriesIdentifier Id { get; init; }
     

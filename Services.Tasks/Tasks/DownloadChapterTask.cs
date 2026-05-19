@@ -89,7 +89,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         await _ctx.SaveChangesAsync(stoppingToken);
 
         await scope.ServiceProvider.GetRequiredService<EventPublisher>().PublishAsync(
-            new ChapterDownloadedEvent(dbFile.FullPath, seriesName, chapter.Number, chapter.Title, chapter.Volume),
+            new ChapterDownloadedEvent(dbFile.FullPath, MangaId, seriesName, chapter.Number, chapter.Title, chapter.Volume),
             stoppingToken);
     }
 

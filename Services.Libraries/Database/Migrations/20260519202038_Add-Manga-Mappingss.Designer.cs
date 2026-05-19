@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Services.Libraries.Database;
@@ -11,9 +12,11 @@ using Services.Libraries.Database;
 namespace Services.Libraries.Database.Migrations
 {
     [DbContext(typeof(LibrariesContext))]
-    partial class LibrariesContextModelSnapshot : ModelSnapshot
+    [Migration("20260519202038_Add-Manga-Mappingss")]
+    partial class AddMangaMappingss
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

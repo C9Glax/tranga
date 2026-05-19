@@ -2,6 +2,7 @@ using Common.Services.Events;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Libraries.Database;
+using Services.Libraries.EventHandlers;
 using Services.Libraries.Features;
 using Constants = Common.Settings.Constants;
 
@@ -29,10 +30,10 @@ public sealed class Service : Common.Services.Service
         }
     }
 
-    private  void AddTrangaEventHandlers(WebApplication app)
+    private void AddTrangaEventHandlers(WebApplication app)
     {
         IChannel channel = app.Services.GetRequiredService<IChannel>();
-        
+        _eventHandlers.Add(new ChapterDownloadedHandler(channel, app.Services));
     }
 
     public static void Main(string[] args)

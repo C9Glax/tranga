@@ -1,6 +1,9 @@
+using Extensions.Data;
+using Extensions.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Services.Libraries.Database;
+using Services.Libraries.Helpers;
 
 namespace Services.Libraries.Features.Libraries;
 
@@ -17,18 +20,24 @@ public abstract class AddKomgaEndpoint
     /// <param name="ct"></param>
     /// <returns>200 OK if Komga extension added</returns>
     /// <response code="200">Komga extension added</response>
-    public static async Task<Ok<Guid>> Handle(LibrariesContext ctx, [FromBody]AddKomgaLibraryRequest req, CancellationToken ct)
+    public static async Task<Results<Ok<Guid>, BadRequest>> Handle(LibrariesContext ctx, [FromBody]AddKomgaLibraryRequest req, CancellationToken ct)
     {
-        DbLibrary dbLibrary = new (LibraryType.Komga, req.Name, req.BaseUrl, req.ApiKey);
-        await ctx.Libraries.AddAsync(dbLibrary, ct);
+        DbLibraryService dbLibraryService = new (LibraryServiceType.Komga, req.Name, req.BaseUrl, req.ApiKey);
+        if (dbLibraryService.ToExtension() is not { } extension)
+            return TypedResults.BadRequest();
+        dbLibraryService.TrangaLibraryId = await extension.CreateTrangaLibrary(ct, req.libraryRootPath);
+        
+        await ctx.LibraryServices.AddAsync(dbLibraryService, ct);
         await ctx.SaveChangesAsync(ct);
-        return TypedResults.Ok(dbLibrary.Id);
+        return TypedResults.Ok(dbLibraryService.LibraryServiceId);
     }
 
     public sealed record AddKomgaLibraryRequest
     {
-        public string Name { get; init; }
-        public string BaseUrl { get; init; }
-        public string ApiKey { get; init; }
+        public required string Name { get; init; }
+        public required string BaseUrl { get; init; }
+        public required string ApiKey { get; init; }
+        
+        public string? libraryRootPath { get; init; }
     }
 }
