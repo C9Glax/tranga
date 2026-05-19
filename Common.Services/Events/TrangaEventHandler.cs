@@ -17,8 +17,8 @@ public abstract class TrangaEventHandler<T> : IEventHandler where T : TrangaEven
     protected TrangaEventHandler([FromServices]IChannel channel)
     {
         this._channel = channel;
-        channel.QueueDeclareAsync(typeof(T).Name);
-        channel.QueueBindAsync(typeof(T).Name, "tranga", typeof(T).Name);
+        channel.QueueDeclareAsync(queue: typeof(T).Name, durable: false, exclusive: false, autoDelete: true);
+        channel.QueueBindAsync(queue: typeof(T).Name, exchange: "tranga", routingKey: typeof(T).Name);
         _consumer = new(channel);
 
         _consumer.ReceivedAsync += ConsumerOnReceivedAsync;
