@@ -85,6 +85,110 @@
           }
         }
       }
+    },
+    "/libraries/directoryMappings/{libraryId}": {
+      "put": {
+        "tags": [
+          "Libraries",
+          "Files"
+        ],
+        "summary": "Add a directory mapping for a library",
+        "parameters": [
+          {
+            "name": "libraryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddServiceDirectoryMappingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Libraries",
+          "Files"
+        ],
+        "summary": "List of all mappings for a library extension",
+        "parameters": [
+          {
+            "name": "libraryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServiceDirectoryMapping"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libraries/directoryMappings/{mappingId}": {
+      "delete": {
+        "tags": [
+          "Libraries",
+          "Files"
+        ],
+        "summary": "Remove a mapping",
+        "parameters": [
+          {
+            "name": "mappingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -99,6 +203,21 @@
             "type": "string"
           },
           "apiKey": {
+            "type": "string"
+          }
+        }
+      },
+      "AddServiceDirectoryMappingRequest": {
+        "required": [
+          "trangaPath",
+          "servicePath"
+        ],
+        "type": "object",
+        "properties": {
+          "trangaPath": {
+            "type": "string"
+          },
+          "servicePath": {
             "type": "string"
           }
         }
@@ -127,12 +246,40 @@
         "enum": [
           "Komga"
         ]
+      },
+      "ServiceDirectoryMapping": {
+        "required": [
+          "mappingId",
+          "libraryId",
+          "trangaPath",
+          "servicePath"
+        ],
+        "type": "object",
+        "properties": {
+          "mappingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "trangaPath": {
+            "type": "string"
+          },
+          "servicePath": {
+            "type": "string"
+          }
+        }
       }
     }
   },
   "tags": [
     {
       "name": "Libraries"
+    },
+    {
+      "name": "Files"
     }
   ]
 }
