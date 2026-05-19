@@ -58,6 +58,33 @@
           }
         }
       }
+    },
+    "/libraries/{libraryId}": {
+      "delete": {
+        "tags": [
+          "Libraries"
+        ],
+        "summary": "Remove a library extension",
+        "parameters": [
+          {
+            "name": "libraryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
     }
   },
   "components": {

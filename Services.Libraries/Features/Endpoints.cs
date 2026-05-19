@@ -21,5 +21,8 @@ internal static class EndpointHelpers
         
         builder.MapPut("/komga", AddKomgaEndpoint.Handle)
             .WithSummary("Add komga library extension");
+        
+        builder.MapDelete("{libraryId}", DeleteLibraryEndpoint.Handle)
+            .WithSummary("Remove a library extension");
     }
 }
