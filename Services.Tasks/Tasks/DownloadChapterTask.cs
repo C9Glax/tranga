@@ -62,12 +62,12 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
         }
         
         // Get Manga directory Path
-        if(await _ctx.GetManga(MangaId, stoppingToken) is not { Metadata: { Series: { } directoryName } })
+        if(await _ctx.GetManga(MangaId, stoppingToken) is not { Metadata: { Series: { } seriesName } })
         {
             logger.LogError("Could not Manga (directoryName)!");
             return;
         }
-        string directoryPath = Path.Join(Constants.MangaDirectory, directoryName.SafeFilesystemString());
+        string directoryPath = Path.Join(Constants.MangaDirectory, seriesName.SafeFilesystemString());
         
         // Create dbFile entry for File
         DbFile dbFile = new()
@@ -86,7 +86,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId) : RunOnc
         await _ctx.SaveChangesAsync(stoppingToken);
 
         await scope.ServiceProvider.GetRequiredService<EventPublisher>().PublishAsync(
-            new ChapterDownloadedEvent(string.Empty, chapter.Number, chapter.Title, chapter.Volume), stoppingToken); // TODO Series name
+            new ChapterDownloadedEvent(seriesName, chapter.Number, chapter.Title, chapter.Volume), stoppingToken);
     }
 
     private protected override void RefreshScope(IServiceScope scope)
