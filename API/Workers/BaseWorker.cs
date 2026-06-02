@@ -25,6 +25,10 @@ public abstract class BaseWorker : Identifiable
     internal IEnumerable<BaseWorker> MissingDependencies => DependsOn.Where(d => d.State < WorkerExecutionState.Completed);
     public bool AllDependenciesFulfilled => DependsOn.All(d => d.State >= WorkerExecutionState.Completed);
     internal WorkerExecutionState State { get; private set; }
+    public float Progress { get; internal set; }
+    public int CurrentStep { get; internal set; }
+    public int TotalSteps { get; internal set; }
+    public string? ProgressDescription { get; internal set; }
     private CancellationTokenSource _cancellationTokenSource = new ();
     protected CancellationToken CancellationToken => _cancellationTokenSource.Token;
     protected ILog Log { get; init; }

@@ -1,10 +1,12 @@
 using System.Reflection;
 using API;
+using API.Hubs;
 using API.Schema.ActionsContext;
 using API.Schema.ActionsContext.Actions;
 using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.NotificationsContext;
+using API.Workers;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
@@ -39,11 +41,15 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .AllowAnyOrigin()
+                .SetIsOriginAllowed(_ => true)
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowCredentials();
         });
 });
+
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<DownloadProgressReporter>();
 
 log.Debug("Adding API-Explorer-helpers...");
 builder.Services.AddApiVersioning(option =>
@@ -129,6 +135,9 @@ log.Debug("Mapping Controllers...");
 app.MapControllers()
     .WithApiVersionSet(apiVersionSet)
     .MapToApiVersion(2);
+
+log.Debug("Mapping SignalR Hubs...");
+app.MapHub<DownloadProgressHub>("/hubs/download-progress");
 
 log.Debug("Adding Swagger...");
 app.UseSwagger(opts =>
