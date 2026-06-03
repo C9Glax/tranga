@@ -12,7 +12,7 @@ public class Global : MangaConnector
     {
         Log.Debug("Searching Manga on all enabled connectors:");
         //Get all enabled Connectors
-        MangaConnector[] enabledConnectors = Tranga.MangaConnectors.Where(c => c.Enabled && c.Name != "Global").ToArray();
+        MangaConnector[] enabledConnectors = Tranga.MangaConnectors.Where(c => c.Enabled && c.Name != "Global" && (Tranga.Settings.ShowNsfw || !c.NSFW)).ToArray();
         Log.Debug(string.Join(", ", enabledConnectors.Select(c => c.Name)));
         
         //Create Task for each MangaConnector to search simultaneously
