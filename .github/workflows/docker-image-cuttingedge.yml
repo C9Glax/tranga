@@ -13,7 +13,7 @@ jobs:
 
     steps:      
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # https://github.com/docker/setup-qemu-action#usage
       - name: Set up QEMU
