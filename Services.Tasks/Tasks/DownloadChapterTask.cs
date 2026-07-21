@@ -25,7 +25,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
 
     private MangaContext _ctx = null!;
 
-    private protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
+    protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         if (await _ctx.Chapters.Include(c => c.DownloadLinks)
                 .SingleOrDefaultAsync(c => c.ChapterId == ChapterId, stoppingToken)
@@ -93,7 +93,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
             stoppingToken);
     }
 
-    private protected override void RefreshScope(IServiceScope scope)
+    protected override void RefreshScope(IServiceScope scope)
     {
         _ctx = scope.ServiceProvider.GetRequiredService<MangaContext>();
     }

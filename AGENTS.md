@@ -35,3 +35,4 @@
 - Environment-variable names are documented in `EnvVars.md` and implemented in `Common/Settings/EnvVars.cs` plus `Tranga.AppHost/EnvVars.cs`; keep them aligned when adding config.
 - Prefer changing shared behavior in `Common.*` or `Tranga.ServiceDefaults` instead of duplicating bootstrapping logic inside services.
 - Avoid editing `bin/`, `obj/`, and generated client output unless the task is specifically about build artifacts or code generation.
+- When creating tests, create a corresponding `*Tests.cs` file in the matching test project (for example, `GetTaskEndpoint.cs` -> `GetTaskEndpointTests.cs`) and use xUnit v3 conventions.

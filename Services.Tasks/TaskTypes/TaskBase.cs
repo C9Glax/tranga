@@ -28,13 +28,13 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId) : ITask
         return RunAsync(scope, logger, stoppingToken);
     }
 
-    private protected abstract Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken);
+    protected abstract Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken);
 
     /// <summary>
     /// Get all required Services from the scope.<br />
     /// RefreshScope is called automatically when the Task starts
     /// </summary>
-    private protected abstract void RefreshScope(IServiceScope scope);
+    protected abstract void RefreshScope(IServiceScope scope);
 
     public override string ToString() => $"{base.ToString()} - {TaskType} {TaskTypeId} - Priority {Priority}";
 }

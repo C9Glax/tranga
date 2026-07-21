@@ -20,7 +20,7 @@ internal sealed class DbFileCleanupTask() : PeriodicTask(Guid.Parse("ded1e7d1-ec
     /// <param name="logger"></param>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    private protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
+    protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         int amount = await _ctx.Files.Where(f =>
             _ctx.ChapterDownloadLinks.Select(c => c.FileId).Union(_ctx.MetadataEntries.Select(m => m.CoverId))
@@ -30,7 +30,7 @@ internal sealed class DbFileCleanupTask() : PeriodicTask(Guid.Parse("ded1e7d1-ec
         logger.LogDebug("Removed {amount} {nameof(DbFile)}", amount, nameof(DbFile));
     }
 
-    private protected override void RefreshScope(IServiceScope scope)
+    protected override void RefreshScope(IServiceScope scope)
     {
         _ctx = scope.ServiceProvider.GetRequiredService<MangaContext>();
     }

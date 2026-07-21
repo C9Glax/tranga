@@ -14,7 +14,7 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
 
     private MangaContext _ctx = null!;
     
-    private protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
+    protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         // List of Chapters that already have a DownloadChapterTask
         IEnumerable<Guid> chapterIds = TasksCollection.RunOnceTasks.Values.OfType<DownloadChapterTask>().Select(t => t.ChapterId);
@@ -42,7 +42,7 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
         }
     }
 
-    private protected override void RefreshScope(IServiceScope scope)
+    protected override void RefreshScope(IServiceScope scope)
     {
         _ctx = scope.ServiceProvider.GetRequiredService<MangaContext>();
     }
