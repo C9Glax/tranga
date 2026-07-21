@@ -9,7 +9,7 @@
     <ItemGroup>
       <PackageReference Include="FlareSolverrSharp" Version="3.0.7" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-      <PackageReference Include="System.Threading.RateLimiting" Version="10.0.7" />
+      <PackageReference Include="System.Threading.RateLimiting" Version="10.0.10" />
     </ItemGroup>
 
 </Project>

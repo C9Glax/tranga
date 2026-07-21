@@ -15,8 +15,8 @@
 
     <ItemGroup>
       <PackageReference Include="Aspire.RabbitMQ.Client" Version="13.2.2" />
-      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
-      <PackageReference Include="Scalar.AspNetCore" Version="2.14.11" />
+      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+      <PackageReference Include="Scalar.AspNetCore" Version="2.16.16" />
     </ItemGroup>
 
     <ItemGroup>
