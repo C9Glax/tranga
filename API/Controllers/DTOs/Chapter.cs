@@ -6,7 +6,7 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// <see cref="API.Schema.MangaContext.Chapter"/> DTO
 /// </summary>
-public sealed record Chapter(string Key, string MangaId, int? Volume, string ChapterNumber, string? Title, IEnumerable<MangaConnectorId<Chapter>> MangaConnectorIds, bool Downloaded, string? FileName) : Identifiable(Key)
+public sealed record Chapter(string Key, string MangaId, int? Volume, string ChapterNumber, string? Title, IEnumerable<MangaConnectorId<Chapter>> MangaConnectorIds, bool Downloaded, string? FileName, bool? IsOfficial) : Identifiable(Key)
 {
     /// <summary>
     /// Identifier of the Manga this Chapter belongs to
@@ -42,6 +42,13 @@ public sealed record Chapter(string Key, string MangaId, int? Volume, string Cha
     [Required]
     [Description("Whether Chapter is Downloaded (on disk)")]
     public bool Downloaded { get; init; } = Downloaded;
+	
+	/// <summary>
+    /// Whether Chapter is official
+    /// </summary>
+    [Required]
+    [Description("Whether Chapter is official")]
+    public bool? IsOfficial { get; init; } = IsOfficial;
     
     /// <summary>
     /// Ids of the Manga on MangaConnectors

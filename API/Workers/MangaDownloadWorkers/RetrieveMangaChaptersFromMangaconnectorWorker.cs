@@ -55,6 +55,36 @@ public class RetrieveMangaChaptersFromMangaconnectorWorker(MangaConnectorId<Mang
         (Chapter chapter, MangaConnectorId<Chapter> chapterId)[] allChapters =
             mangaConnector.GetChapters(mangaConnectorId, language).DistinctBy(c => c.Item1.Key).ToArray();
         Log.DebugFormat("Got {0} chapters from connector.", allChapters.Length);
+		
+		// If existing not official chapter is now official, mark as not downloaded
+		Dictionary<string, Chapter> existingByKey = manga.Chapters.ToDictionary(c => c.Key);
+		foreach ((Chapter incomingChapter, _) in allChapters)
+		{
+			if (!existingByKey.TryGetValue(incomingChapter.Key, out Chapter? existing))
+				continue;
+
+			if (existing.IsOfficial == false && incomingChapter.IsOfficial == true)
+			{
+				Log.Info($"Chapter {existing.ChapterNumber} upgraded to OFFICIAL");
+				existing.IsOfficial = true;
+
+				// Force re-download
+				existing.Downloaded = false;
+				existing.FileName = null;
+			}
+			
+			if (existing.IsOfficial == null && incomingChapter.IsOfficial == true)
+			{
+				Log.Info($"Chapter {existing.ChapterNumber} changed from NULL to OFFICIAL; not redownloading at this time.");
+				existing.IsOfficial = true;
+			}
+			
+			if (existing.IsOfficial == null && incomingChapter.IsOfficial == false)
+			{
+				Log.Info($"Chapter {existing.ChapterNumber} changed from NULL to FALSE; not redownloading at this time.");
+				existing.IsOfficial = false;
+			}
+		}
         
         // Filter for new Chapters
         List<(Chapter chapter, MangaConnectorId<Chapter> chapterId)> newChapters = allChapters.Where<(Chapter chapter, MangaConnectorId<Chapter> chapterId)>(ch =>
