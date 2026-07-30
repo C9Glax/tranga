@@ -213,42 +213,60 @@ public class WeebCentral : MangaConnector
             string href = node.GetAttributeValue("href", "").Trim();
 			string text = node.SelectSingleNode(".//span[@class='']").InnerText.Trim();
 
-			// Get volume/season number - if applicable
-			int? volumeNumber = null;
-			Match volMatch = Regex.Match(text, @"^(?:volume|vol\.?|season|s\.?)\s*([\d]+)", RegexOptions.IgnoreCase);
-			if (volMatch.Success)
-			{
-				if (int.TryParse(volMatch.Groups[1].Value, out int parsedVolume))
-					volumeNumber = parsedVolume;
-				else
-					Log.Warn($"Failed to parse volume number: {volMatch.Groups[1].Value}");
-			}
-			
-            // Get chapter number - supports decimals
             string chapterNumber;
+            int? volumeNumber = null;
+            string? chapterTitle = null;
+
+            // Get volume number and last number as fallback chapter number:
+            // Group 1: volume numbers after 'S' or 'Vol.'
+            // Group 2: the last number with dot seperation like 1.1 or 1.12.4
+            // Only use lines that have a number and at least one other character.
+            // This is needed because the text also contains additional garbage text.
+            // If the detection breaks, maybe only allowing lines with the chapter number at the very end helps.
+            Regex titleRegex = new Regex(@"[^\r\n]*?(?:(?:s|vol)\.? ?(\d)+[ ][^\r\n]*?)?(?<=[^\d\s\.][^\r\n]*) (\d+(?:[\.]\d+)*)[^\d\r\n]*$", RegexOptions.IgnoreCase|RegexOptions.Multiline);
+            // Selection is the whole line the title was found in.
+            // Group 1 is volume/season integer, if detected.
+            // Group 2 is the chapter number / the last number in the title with the format: \d+(\.\d+)*
+            Match match = titleRegex.Match(text);
+
+            // Get chapter number by prefix - supports decimals
 			Match chMatch = Regex.Match(text, @"(?:chapter|ch\.?)\s*([\d]+(?:\.\d+)?)", RegexOptions.IgnoreCase);
-			if (chMatch.Success)
-				chapterNumber = chMatch.Groups[1].Value;
-			else
-			{
-				// If "chapter" or "ch" is not found, take the last number in the string
-				MatchCollection numberMatches = Regex.Matches(text, @"\d+(\.\d+)?");
-				if (numberMatches.Count > 0)
-				{
-					chapterNumber = numberMatches.Last().Value;
+            if (chMatch.Success)
+                chapterNumber = chMatch.Groups[1].Value;
+            else
+            {
+			    if (match.Success)
+                {
+                    // If "chapter" or "ch" is not found, take the last number in the string
+                    chapterNumber = match.Groups[2].Value;
 					Log.Warn($"Unknown chapter format detected. Using last number in string: {chapterNumber}");
-				}
-				else
-				{
-					// For everything else, log and continue
-					Log.Warn($"Unknown chapter format ignored: {text}");
-					continue;
-				}
-			}
+                }
+                else
+                {
+                    // For everything else, log and continue
+                    Log.Warn($"Unknown chapter format ignored: {text}");
+                    continue;
+                }
+            }
 
-            string? title = null;
+            // Set the volumeNumber to Group 1 of titleRegex if it has a result
+            if (match.Groups[1].Success)
+            {
+                int detectedVolumeNumber;
+                if (int.TryParse(match.Groups[1].Value, out detectedVolumeNumber))
+                {
+                    volumeNumber = detectedVolumeNumber;
+                }
+                else
+                {
+                    Log.Warn($"Failed to parse volume number: {match.Groups[1].Value}");
+                }   
+            }
 
-            Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, title);
+            // Use the whole line as title but remove whitespace
+            chapterTitle = match.Value.Trim();
+
+            Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, chapterTitle);
 			string chapterIdOnSite = new Uri(href).Segments.Last();
 			string canonicalChapterUrl = $"https://weebcentral.com/chapters/{chapterIdOnSite}";
             MangaConnectorId<Chapter> mcId = new(ch, this, chapterIdOnSite, canonicalChapterUrl);
