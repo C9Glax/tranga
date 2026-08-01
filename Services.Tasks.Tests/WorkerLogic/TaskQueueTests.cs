@@ -40,7 +40,7 @@ public class TaskQueueTests
         TaskBase? second = await queue.GetNextTask(CancellationToken.None);
         TaskBase? third = await queue.GetNextTask(CancellationToken.None);
         TaskBase? fourth = await queue.GetNextTask(CancellationToken.None);
-        IEnumerable<TaskBase> samePriorityTasks = [samePriorityFirst, samePrioritySecond];
+        TaskBase[] samePriorityTasks = [samePriorityFirst, samePrioritySecond];
 
         Assert.Same(lowPriority, first);
         Assert.Contains(second, samePriorityTasks);
@@ -74,7 +74,32 @@ public class TaskQueueTests
         Assert.Same(task, next);
         Assert.Null(after);
     }
+
+    [Fact]
+    public async Task Enqueue_IsSafeUnderConcurrentAccess()
+    {
+        // Arrange
+        TaskQueue queue = new();
+        var tasks = Enumerable.Range(0, 100)
+            .Select(i => TestTask.Create<TestRunOnceTask>(priority: i % 10))
+            .ToList();
+
+        // Act
+        var enqueueTasks = tasks.Select(task => queue.AddTaskToQueue(task, CancellationToken.None).AsTask()).ToList();
+        await Task.WhenAll(enqueueTasks);
+
+        // Assert - All tasks should be in the queue
+        foreach (var task in tasks)
+        {
+            Assert.True(queue.ContainsTask(task.TaskId));
+        }
+
+        // Dequeue all tasks and verify count
+        var dequeuedCount = 0;
+        while (await queue.GetNextTask(CancellationToken.None) is not null)
+        {
+            dequeuedCount++;
+        }
+        Assert.Equal(tasks.Count, dequeuedCount);
+    }
 }
-
-
-

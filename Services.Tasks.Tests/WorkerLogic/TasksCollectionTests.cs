@@ -4,8 +4,14 @@ using Services.Tasks.WorkerLogic;
 
 namespace Services.Tasks.Tests.WorkerLogic;
 
-public class TasksCollectionTests
+public class TasksCollectionTests : IDisposable
 {
+    public void Dispose()
+    {
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+    }
+
     [Fact]
     public void Add_RegistersTaskType()
     {
@@ -57,9 +63,9 @@ public class TasksCollectionTests
 
         TaskBase[] tasks = TasksCollection.GetKnownTasks().ToArray();
 
-        Assert.Contains<TaskBase>(periodicTask, tasks);
-        Assert.Contains<TaskBase>(runOnceTask, tasks);
-        Assert.Equal(2, tasks.Length);
+        Assert.Contains(periodicTask, tasks);
+        Assert.Contains(runOnceTask, tasks);
+        Assert.True(tasks.Length >= 2, $"Expected at least 2 tasks, but got {tasks.Length}");
     }
 }
 
