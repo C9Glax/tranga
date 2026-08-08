@@ -1,6 +1,6 @@
 services:
   tranga-pg:
-    image: "docker.io/library/postgres:17.6"
+    image: "docker.io/library/postgres:18.3"
     environment:
       POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
@@ -11,7 +11,7 @@ services:
     networks:
       - "tranga"
   messaging:
-    image: "docker.io/library/rabbitmq:4.2"
+    image: "docker.io/library/rabbitmq:4.3"
     environment:
       RABBITMQ_DEFAULT_USER: "${RABBITMQUSER}"
       RABBITMQ_DEFAULT_PASS: "${RABBITMQPASSWORD}"
