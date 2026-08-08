@@ -8,7 +8,8 @@ public static class DownloadExtensionsCollection
 {
     public static readonly IDownloadExtension[] Extensions =
     [
-        new MangaDex()
+        new MangaDex(),
+        new WeebCentral()
     ];
 
     public static IDownloadExtension? GetExtension(Guid extensionId) => Extensions.FirstOrDefault(e => e.Identifier == extensionId);
