@@ -1,7 +1,7 @@
 <template>
     <UTooltip v-if="date" :text="date.toString()">
         <TrangaDoubleBadge
-            :first-badge-props="{ label: prefix }"
+            :first-badge-props="prefix ? { label: prefix } : undefined"
             :second-badge-props="{ label: relative ? getRelativeTime(date) : date.toLocaleString() }" />
     </UTooltip>
 </template>

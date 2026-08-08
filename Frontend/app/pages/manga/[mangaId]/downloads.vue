@@ -1,9 +1,9 @@
 <template>
-    <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Manga Downloads', icon: { name: 'i-lucide-cloud-download' } }">
-        <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8 mb-8' }">
+    <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Manga Downloads', icon: { name: 'i-lucide-cloud-download' } }" rimless>
+        <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8 mb-8' }">
             <USwitch v-model="includeFinished" label="Include finished downloads" />
         </UPageSection>
-        <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
+        <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
             <TasksList :tasks="data" />
         </UPageSection>
     </TrangaPage>
@@ -35,7 +35,7 @@ const navigation = computed((): NavigationMenuProps => {
             { label: 'Manga', type: 'label' },
             { label: 'Manga', to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
             { label: 'Metadata-Entries', to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
-            { label: 'Manga Tasks', to: `/manga/${mangaId}/tasks`, icon: 'i-lucide-biceps-flexed' },
+            { label: 'Manga Tasks', to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },
             { label: 'Manga Download Tasks', to: `/manga/${mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
         ],
     };

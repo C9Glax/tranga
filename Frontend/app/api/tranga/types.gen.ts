@@ -98,12 +98,26 @@ export type ServicesTasksTask = {
     taskTypeName: string;
     taskType: ServicesTasksTaskType;
     lastRun: null | string;
+    status: ServicesTasksTaskState;
     mangaId?: null | string;
     chapterId?: null | string;
     interval?: null | string;
 };
 
+export type ServicesTasksTaskState = 'Pending' | 'Blocked' | 'Queued' | 'Running' | 'Completed' | 'Failed';
+
 export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';
+
+export type ServicesTasksWorker = {
+    workerId: string;
+    status: ServicesTasksWorkerStatus;
+    currentTaskId?: null | string;
+    currentTaskTypeId?: null | string;
+    startedAt: string;
+    lastHeartbeat: string;
+};
+
+export type ServicesTasksWorkerStatus = 'Idle' | 'Busy' | 'Retiring';
 
 export type ServicesNotificationsNotificationExtension = { id: string; name: string; type: ServicesNotificationsNotificationExtensionType };
 
@@ -555,6 +569,17 @@ export type GetTasksResponses = {
 };
 
 export type GetTasksResponse = GetTasksResponses[keyof GetTasksResponses];
+
+export type GetTasksWorkersData = { body?: never; path?: never; query?: never; url: '/tasks/workers' };
+
+export type GetTasksWorkersResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesTasksWorker>;
+};
+
+export type GetTasksWorkersResponse = GetTasksWorkersResponses[keyof GetTasksWorkersResponses];
 
 export type GetTasksByTaskIdData = { body?: never; path: { taskId: string }; query?: never; url: '/tasks/{taskId}' };
 

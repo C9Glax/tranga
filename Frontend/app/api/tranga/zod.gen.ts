@@ -195,6 +195,10 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
 
+export const zServicesTasksTaskState = z.enum(['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed']);
+
+export type ServicesTasksTaskStateZodType = z.infer<typeof zServicesTasksTaskState>;
+
 export const zServicesTasksTaskType = z.enum(['PeriodicTask', 'RunOnceTask']);
 
 export type ServicesTasksTaskTypeZodType = z.infer<typeof zServicesTasksTaskType>;
@@ -205,12 +209,28 @@ export const zServicesTasksTask = z.object({
     taskTypeName: z.string(),
     taskType: zServicesTasksTaskType,
     lastRun: z.nullable(z.iso.datetime()),
+    status: zServicesTasksTaskState,
     mangaId: z.nullish(z.uuid()),
     chapterId: z.nullish(z.uuid()),
     interval: z.nullish(z.string().check(z.regex(/^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$/))),
 });
 
 export type ServicesTasksTaskZodType = z.infer<typeof zServicesTasksTask>;
+
+export const zServicesTasksWorkerStatus = z.enum(['Idle', 'Busy', 'Retiring']);
+
+export type ServicesTasksWorkerStatusZodType = z.infer<typeof zServicesTasksWorkerStatus>;
+
+export const zServicesTasksWorker = z.object({
+    workerId: z.uuid(),
+    status: zServicesTasksWorkerStatus,
+    currentTaskId: z.nullish(z.uuid()),
+    currentTaskTypeId: z.nullish(z.uuid()),
+    startedAt: z.iso.datetime(),
+    lastHeartbeat: z.iso.datetime(),
+});
+
+export type ServicesTasksWorkerZodType = z.infer<typeof zServicesTasksWorker>;
 
 export const zServicesNotificationsNotificationExtensionType = z.enum(['Naprise', 'Discord', 'Gotify', 'NtfySh', 'Telegram']);
 

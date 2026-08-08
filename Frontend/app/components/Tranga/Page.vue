@@ -21,7 +21,7 @@
                 </slot>
             </UDashboardSidebar>
 
-            <div class="px-16 py-4 w-full overflow-y-auto">
+            <div class="py-4 w-full overflow-y-auto" :class="!rimless && 'px-16'">
                 <slot />
             </div>
         </UDashboardGroup>
@@ -37,6 +37,7 @@ export interface TrangaPageProps {
     navigationProps?: NavigationMenuProps;
     pageTitle?: { title: string; icon: IconProps & { color?: string } };
     searchEnabled?: boolean;
+    rimless?: boolean;
 }
 
 const searchOverlay = useOverlay().create(LazySearch);

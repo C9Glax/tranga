@@ -87,6 +87,9 @@ export type {
     GetTasksMangaDownloadsResponses,
     GetTasksResponse,
     GetTasksResponses,
+    GetTasksWorkersData,
+    GetTasksWorkersResponse,
+    GetTasksWorkersResponses,
     PatchMangasByMangaIdDownloadLinksByDownloadIdData,
     PatchMangasByMangaIdDownloadLinksByDownloadIdErrors,
     PatchMangasByMangaIdDownloadLinksByDownloadIdResponses,
@@ -152,5 +155,8 @@ export type {
     ServicesNotificationsPutExtensionRequestNtfySh,
     ServicesNotificationsPutExtensionRequestTelegram,
     ServicesTasksTask,
+    ServicesTasksTaskState,
     ServicesTasksTaskType,
+    ServicesTasksWorker,
+    ServicesTasksWorkerStatus,
 } from './types.gen';

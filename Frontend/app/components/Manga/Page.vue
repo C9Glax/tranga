@@ -85,7 +85,7 @@ const navigation = computed((): NavigationMenuProps => {
             { label: 'Manga', type: 'label' },
             { label: 'Manga', to: `/manga/${props.manga?.mangaId}`, icon: 'i-lucide-book' },
             { label: 'Metadata-Entries', to: `/manga/${props.manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
-            { label: 'Manga Tasks', to: `/manga/${props.manga?.mangaId}/tasks`, icon: 'i-lucide-biceps-flexed' },
+            { label: 'Manga Tasks', to: `/tasks?manga=${props.manga?.mangaId}`, icon: 'i-lucide-biceps-flexed' },
             { label: 'Manga Downloads', to: `/manga/${props.manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
         ],
     };
