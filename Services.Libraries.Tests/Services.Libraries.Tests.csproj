@@ -25,4 +25,10 @@
         <Using Include="Xunit" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Common.Tests\Common.Tests.csproj" />
+      <ProjectReference Include="..\Extensions\Extensions.csproj" />
+      <ProjectReference Include="..\Services.Libraries\Services.Libraries.csproj" />
+    </ItemGroup>
+
 </Project>

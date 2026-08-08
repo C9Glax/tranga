@@ -9,6 +9,7 @@ public sealed record DbLibraryService(LibraryServiceType LibraryServiceType, str
     public string Name { get; init; } = Name;
     public string BaseUrl { get; init; } = BaseUrl;
     public string ApiKey { get; init; } = ApiKey;
+    public string? Username { get; init; }
     public string TrangaLibraryId { get; internal set; }
 }
 

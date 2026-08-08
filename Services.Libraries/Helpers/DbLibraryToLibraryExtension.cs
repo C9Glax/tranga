@@ -6,6 +6,6 @@ internal static class DbLibraryToLibraryExtension
 {
     public static Extensions.Extensions.Komga? ToExtension(this DbLibraryService libraryService)
     {
-        return libraryService.LibraryServiceType != LibraryServiceType.Komga ? null : new Extensions.Extensions.Komga(libraryService.BaseUrl);
+        return libraryService.LibraryServiceType != LibraryServiceType.Komga ? null : new Extensions.Extensions.Komga(libraryService.BaseUrl, libraryService.ApiKey);
     }
 }
