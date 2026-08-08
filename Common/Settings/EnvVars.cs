@@ -19,5 +19,4 @@ public struct EnvVars
     public static readonly int WorkersMin = Math.Max(Environment.GetEnvironmentVariable("WORKERS_MIN") is { } workersMin ? int.Parse(workersMin) : 1, 1);
     public static readonly int WorkersMax = Math.Max(Environment.GetEnvironmentVariable("WORKERS_MAX") is { } workersMax ? int.Parse(workersMax) : Math.Max(Environment.ProcessorCount / 2, 1), WorkersMin);
     public static readonly string? FlareSolverrUrl = Environment.GetEnvironmentVariable("FLARESOLVERR_URL");
-    public static readonly string? KomgaApiKey = Environment.GetEnvironmentVariable("KOMGA_API_KEY");
 }

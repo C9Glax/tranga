@@ -1,5 +1,5 @@
+using System.Text;
 using Common.Helpers;
-using Common.Settings;
 using Extensions.Data;
 using Komga.Client.Api;
 using Komga.Client.Client;
@@ -7,18 +7,27 @@ using Komga.Client.Model;
 
 namespace Extensions.Extensions;
 
-public sealed class Komga(string baseUrl) : ILibraryExtension<KomgaSeries, KomgaBook, StringIdentifier>
+public sealed class Komga : ILibraryExtension<KomgaSeries, KomgaBook, StringIdentifier>
 {
-    private static readonly HttpClientHandler Handler = new() { UseCookies = true, };
+    private readonly HttpClientHandler _handler = new() { UseCookies = true, };
 
-    private static readonly RequestClient KomgaRequestClient = new()
+    private readonly RequestClient _komgaRequestClient;
+
+    private readonly LibrariesApi _librariesApi;
+    private readonly SeriesApi _series;
+    private readonly SeriesPosterApi _seriesPoster;
+
+    public Komga(string baseUrl, string apiKey)
     {
-        DefaultRequestHeaders = { { "X-API-Key", EnvVars.KomgaApiKey } }
-    };
+        _komgaRequestClient = new RequestClient
+        {
+            DefaultRequestHeaders = { { "X-API-Key", apiKey } }
+        };
 
-    private readonly LibrariesApi _librariesApi = new(KomgaRequestClient, baseUrl, Handler);
-    private readonly SeriesApi _series = new(KomgaRequestClient, baseUrl, Handler);
-    private readonly SeriesPosterApi _seriesPoster = new(KomgaRequestClient, baseUrl, Handler);
+        _librariesApi = new LibrariesApi(_komgaRequestClient, baseUrl, _handler);
+        _series = new SeriesApi(_komgaRequestClient, baseUrl, _handler);
+        _seriesPoster = new SeriesPosterApi(_komgaRequestClient, baseUrl, _handler);
+    }
 
     public async Task<StringIdentifier> CreateTrangaLibrary(CancellationToken ct, string? rootDir = null)
     {
@@ -47,6 +56,27 @@ public sealed class Komga(string baseUrl) : ILibraryExtension<KomgaSeries, Komga
 
     public Task ScanLibrary(StringIdentifier libraryId, CancellationToken ct) =>
         _librariesApi.LibraryScanAsync(libraryId, cancellationToken: ct);
+
+    /// <summary>
+    /// Mints a new, revocable Komga API key for the given user via a one-time Basic-Auth call.
+    /// The password is never stored; only the resulting key is meant to be persisted by the caller.
+    /// </summary>
+    public static async Task<string> MintApiKey(string baseUrl, string username, string password, CancellationToken ct)
+    {
+        HttpClientHandler handler = new() { UseCookies = true, };
+
+        RequestClient requestClient = new()
+        {
+            DefaultRequestHeaders =
+            {
+                { "Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}")) }
+            }
+        };
+
+        APIKeysApi apiKeysApi = new(requestClient, baseUrl, handler);
+        ApiKeyDto result = await apiKeysApi.CreateApiKeyForCurrentUserAsync(new ApiKeyRequestDto(comment: "Tranga"), ct);
+        return result.Key;
+    }
 }
 
 public sealed record KomgaSeries(StringIdentifier Id, string Name, string Summary) : ISeries<StringIdentifier>;
