@@ -21,7 +21,10 @@ internal static class EndpointHelpers
     {
         builder.MapGet(string.Empty, GetTaskListEndpoint.Handle)
             .WithSummary("Get all Tasks");
-        
+
+        builder.MapGet("/workers", GetWorkerListEndpoint.Handle)
+            .WithSummary("Get all active Workers");
+
         builder.MapGet("{taskId}", GetTaskEndpoint.Handle)
             .WithSummary("Get Task");
         

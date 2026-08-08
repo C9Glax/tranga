@@ -24,7 +24,10 @@ internal sealed class PeriodicMangaChapterFetcherTask() : PeriodicTask(Guid.Pars
         IEnumerable<GetMangaChaptersTask> newTasks = list.Select(m => new GetMangaChaptersTask(m));
         foreach (GetMangaChaptersTask task in newTasks)
         {
-            if (TasksCollection.RunOnceTasks.Values.OfType<GetMangaChaptersTask>().All(t => t.MangaId != task.MangaId))
+            // A completed/failed GetMangaChaptersTask must not block ever re-fetching this Manga again.
+            if (TasksCollection.RunOnceTasks.Values.OfType<GetMangaChaptersTask>()
+                .Where(t => t.MangaId == task.MangaId)
+                .All(t => t.Status is TaskState.Completed or TaskState.Failed))
             {
                 logger.LogDebug("Adding {nameof(GetMangaChaptersTask)} for Manga {task.MangaId}", nameof(GetMangaChaptersTask), task.MangaId);
                 TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task);

@@ -1,9 +1,8 @@
-using Common.Database;
 using Common.Services.Events;
-using Common.Settings;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
+using Services.Tasks.Database;
 using Services.Tasks.EventHandlers;
 using Services.Tasks.Features;
 using Services.Tasks.Tasks;
@@ -20,28 +19,31 @@ public sealed class Service : Common.Services.Service
     public Service(string[] args) : base(args)
     {
         Builder.Services.AddDbContext<MangaContext>();
-        
+        Builder.Services.AddDbContext<TasksContext>();
+
         Builder.Services.AddScoped<EventPublisher>();
-        
+
         if (!Constants.OpenApiDocumentationRun)
         {
             Builder.Services.AddSingleton<TaskQueue>();
 
-            for (int i = 0; i < EnvVars.WorkersCount; i++)
-                Builder.Services.AddHostedService<TaskWorker>();
+            Builder.Services.AddHostedService<WorkerPool>();
 
             Builder.Services.AddHostedService<PeriodicTaskScheduler>();
         }
-        
+
         SetupWebApplication<Endpoints>("/tasks");
-        
+
         if (!Constants.OpenApiDocumentationRun)
             AddTrangaEventHandlers(App);
 
         if (!Constants.OpenApiDocumentationRun)
         {
-            using MangaContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
-            context.Database.MigrateAsync(CancellationToken.None).Wait();
+            using MangaContext mangaContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
+            mangaContext.Database.MigrateAsync(CancellationToken.None).Wait();
+
+            using TasksContext tasksContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<TasksContext>();
+            tasksContext.Database.MigrateAsync(CancellationToken.None).Wait();
 
             CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
         }

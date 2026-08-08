@@ -21,8 +21,16 @@ internal sealed class PeriodicTaskScheduler(TaskQueue taskQueue, ILogger<Periodi
 
             foreach (TaskBase task in dueTasks)
             {
-                if(taskQueue.ContainsTask(task.TaskId))
+                if (taskQueue.ContainsTask(task.TaskId) || task.Status == TaskState.Running)
                     continue;
+
+                if (TaskDependencyResolver.IsBlocked(task))
+                {
+                    task.Status = TaskState.Blocked;
+                    logger.LogTrace("Task {task} is blocked on a dependency.", task);
+                    continue;
+                }
+
                 await taskQueue.AddTaskToQueue(task, stoppingToken);
                 logger.LogInformation("Added Task {task} to queue.", task);
             }

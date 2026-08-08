@@ -43,7 +43,7 @@ internal class TestPeriodicTask : PeriodicTask
     {
         Priority = priority;
     }
-    
+
     protected override Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         return Task.CompletedTask;
@@ -51,8 +51,40 @@ internal class TestPeriodicTask : PeriodicTask
 
     protected override void RefreshScope(IServiceScope scope)
     {
-        
+
     }
 
     internal override TimeSpan Interval { get; init; }
+}
+
+/// <summary>
+/// A <see cref="RunOnceTask"/> that implements <see cref="IMangaTask"/> with a settable <see cref="MangaId"/> and
+/// <see cref="DependsOnTaskTypeIds"/>, for exercising <see cref="Services.Tasks.WorkerLogic.TaskDependencyResolver"/>.
+/// </summary>
+internal sealed class TestMangaRunOnceTask(Guid mangaId, Guid? taskTypeId = null, IReadOnlyCollection<Guid>? dependsOn = null)
+    : RunOnceTask(taskTypeId ?? Guid.CreateVersion7()), IMangaTask
+{
+    public Guid MangaId { get; init; } = mangaId;
+
+    internal override IReadOnlyCollection<Guid> DependsOnTaskTypeIds { get; } = dependsOn ?? [];
+
+    protected override Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken) => Task.CompletedTask;
+
+    protected override void RefreshScope(IServiceScope scope)
+    {
+    }
+}
+
+/// <summary>
+/// A <see cref="RunOnceTask"/> whose <see cref="RunAsync"/> always throws - used to verify failure handling
+/// (e.g. <see cref="HasRun"/> still being set, <see cref="TaskBase.Status"/> becoming <see cref="TaskState.Failed"/>).
+/// </summary>
+internal sealed class ThrowingTestRunOnceTask(Guid? taskTypeId = null) : RunOnceTask(taskTypeId ?? Guid.CreateVersion7())
+{
+    protected override Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken) =>
+        throw new InvalidOperationException("boom");
+
+    protected override void RefreshScope(IServiceScope scope)
+    {
+    }
 }

@@ -38,6 +38,39 @@ public class TaskBaseTests
         Assert.True(task.LastRun >= before);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_SetsStatusCompleted_OnSuccess()
+    {
+        TestTask task = new();
+        Assert.Equal(TaskState.Pending, task.Status);
+
+        await task.ExecuteAsync(new TestServiceScope(new TestScopedService("value")), NoOpLogger.Instance, CancellationToken.None);
+
+        Assert.Equal(TaskState.Completed, task.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_SetsStatusFailed_WhenRunAsyncThrows()
+    {
+        ThrowingRunAsyncTestTask task = new();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            task.ExecuteAsync(new TestServiceScope(new TestScopedService("value")), NoOpLogger.Instance, CancellationToken.None));
+
+        Assert.Equal(TaskState.Failed, task.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_SetsStatusFailed_WhenRefreshScopeThrows()
+    {
+        ThrowingRefreshScopeTestTask task = new();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            task.ExecuteAsync(new TestServiceScope(new TestScopedService("value")), NoOpLogger.Instance, CancellationToken.None));
+
+        Assert.Equal(TaskState.Failed, task.Status);
+    }
+
     private sealed class TestTask() : TaskBase(TaskType.RunOnceTask, Guid.NewGuid())
     {
         public List<IServiceScope> RefreshedScopes { get; } = [];
@@ -65,6 +98,24 @@ public class TaskBaseTests
         {
             RefreshedScopes.Add(scope);
         }
+    }
+
+    private sealed class ThrowingRunAsyncTestTask() : TaskBase(TaskType.RunOnceTask, Guid.NewGuid())
+    {
+        protected override Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken) =>
+            throw new InvalidOperationException("boom");
+
+        protected override void RefreshScope(IServiceScope scope)
+        {
+        }
+    }
+
+    private sealed class ThrowingRefreshScopeTestTask() : TaskBase(TaskType.RunOnceTask, Guid.NewGuid())
+    {
+        protected override Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken) =>
+            Task.CompletedTask;
+
+        protected override void RefreshScope(IServiceScope scope) => throw new InvalidOperationException("boom");
     }
 
     private sealed class TestServiceScope(TestScopedService scopedService) : IServiceScope, IServiceProvider

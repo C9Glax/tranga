@@ -9,11 +9,8 @@ namespace Common.Tests.Settings;
 public class EnvVarsTests
 {
     [Fact]
-    public void WorkersCountCalculatesCorrectly()
+    public void WorkersMinDefaultsToOne()
     {
-        int expected = Math.Max(Environment.ProcessorCount / 2, 1);
-
-        Assert.Equal(expected, EnvVars.WorkersCount);
-        Assert.True(EnvVars.WorkersCount >= 1);
+        Assert.Equal(1, EnvVars.WorkersMin);
     }
 }

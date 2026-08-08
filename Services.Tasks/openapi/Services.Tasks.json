@@ -38,6 +38,29 @@
         }
       }
     },
+    "/tasks/workers": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Get all active Workers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Worker"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tasks/{taskId}": {
       "get": {
         "tags": [
@@ -235,7 +258,8 @@
           "taskTypeId",
           "taskTypeName",
           "taskType",
-          "lastRun"
+          "lastRun",
+          "status"
         ],
         "type": "object",
         "properties": {
@@ -260,6 +284,9 @@
             ],
             "format": "date-time"
           },
+          "status": {
+            "$ref": "#/components/schemas/TaskState"
+          },
           "mangaId": {
             "type": [
               "null",
@@ -283,10 +310,67 @@
           }
         }
       },
+      "TaskState": {
+        "enum": [
+          "Pending",
+          "Blocked",
+          "Queued",
+          "Running",
+          "Completed",
+          "Failed"
+        ]
+      },
       "TaskType": {
         "enum": [
           "PeriodicTask",
           "RunOnceTask"
+        ]
+      },
+      "Worker": {
+        "required": [
+          "workerId",
+          "status",
+          "startedAt",
+          "lastHeartbeat"
+        ],
+        "type": "object",
+        "properties": {
+          "workerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/WorkerStatus"
+          },
+          "currentTaskId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "currentTaskTypeId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastHeartbeat": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "WorkerStatus": {
+        "enum": [
+          "Idle",
+          "Busy",
+          "Retiring"
         ]
       }
     }

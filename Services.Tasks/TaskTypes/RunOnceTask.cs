@@ -10,10 +10,16 @@ internal abstract class RunOnceTask(Guid taskTypeId) : TaskBase(TaskType.RunOnce
     
     internal override async Task ExecuteAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
-        await base.ExecuteAsync(scope, logger, stoppingToken);
-        HasRun = true;
-        logger.LogDebug("Task finished.");
-        
-        // TODO Publish a "TaskFinishedEvent"
+        try
+        {
+            await base.ExecuteAsync(scope, logger, stoppingToken);
+        }
+        finally
+        {
+            HasRun = true;
+            logger.LogDebug("Task finished.");
+
+            // TODO Publish a "TaskFinishedEvent"
+        }
     }
 }

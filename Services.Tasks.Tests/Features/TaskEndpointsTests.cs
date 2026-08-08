@@ -1,10 +1,13 @@
+using Common.Tests;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Services.Tasks.Database;
 using Services.Tasks.Features.Tasks;
 using Services.Tasks.Helpers;
 using Services.Tasks.Tasks;
 using Services.Tasks.Tests.Helpers;
 using Services.Tasks.WorkerLogic;
 using Task = Services.Tasks.Entities.Task;
+using Worker = Services.Tasks.Entities.Worker;
 
 namespace Services.Tasks.Tests.Features;
 
@@ -179,6 +182,37 @@ public class TaskEndpointsConsistencyTests : IDisposable
         Assert.Equal(task.TaskTypeId, dto.TaskTypeId);
         Assert.Equal(mangaId, dto.MangaId);
         Assert.Null(dto.ChapterId);
+    }
+}
+
+public class GetWorkerListEndpointTests : TrangaTest
+{
+    [Fact]
+    public async System.Threading.Tasks.Task GetWorkerList_ReturnsEmptyWhenNoneExist()
+    {
+        using TasksContext ctx = TasksContextFactory.Create();
+
+        Ok<Worker[]> result = await GetWorkerListEndpoint.Handle(ctx, ct);
+
+        Assert.NotNull(result.Value);
+        Assert.Empty(result.Value);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetWorkerList_ReturnsAllWorkers()
+    {
+        using TasksContext ctx = TasksContextFactory.Create();
+        DbWorker worker = new() { Status = WorkerStatus.Busy, CurrentTaskId = Guid.CreateVersion7() };
+        await ctx.Workers.AddAsync(worker, ct);
+        await ctx.SaveChangesAsync(ct);
+
+        Ok<Worker[]> result = await GetWorkerListEndpoint.Handle(ctx, ct);
+
+        Assert.NotNull(result.Value);
+        Worker dto = Assert.Single(result.Value);
+        Assert.Equal(worker.WorkerId, dto.WorkerId);
+        Assert.Equal(worker.Status, dto.Status);
+        Assert.Equal(worker.CurrentTaskId, dto.CurrentTaskId);
     }
 }
 

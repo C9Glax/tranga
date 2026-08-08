@@ -10,9 +10,15 @@ internal abstract class PeriodicTask(Guid taskTypeId) : TaskBase(TaskType.Period
     
     internal override async Task ExecuteAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
-        await base.ExecuteAsync(scope, logger, stoppingToken);
-        logger.LogDebug("Task finished.");
-        
-        // TODO Publish a "TaskFinishedEvent"
+        try
+        {
+            await base.ExecuteAsync(scope, logger, stoppingToken);
+        }
+        finally
+        {
+            logger.LogDebug("Task finished.");
+
+            // TODO Publish a "TaskFinishedEvent"
+        }
     }
 }

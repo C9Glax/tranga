@@ -12,7 +12,8 @@ internal static class TaskDTOHelper
             TaskTypeId = task.TaskTypeId,
             TaskTypeName = task.GetType().Name,
             TaskType = default,
-            LastRun = task.LastRun
+            LastRun = task.LastRun,
+            Status = task.Status
         };
 
         if (task is PeriodicTask p)

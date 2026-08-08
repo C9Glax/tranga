@@ -28,7 +28,12 @@ public sealed record Task
     /// Last run of Task (null if task has never run)
     /// </summary>
     public required DateTimeOffset? LastRun { get; init; }
-    
+
+    /// <summary>
+    /// Current lifecycle state of the Task
+    /// </summary>
+    public required TaskState Status { get; init; }
+
     /// <summary>
     /// Id of Manga (if <see cref="IMangaTask"/>)
     /// </summary>

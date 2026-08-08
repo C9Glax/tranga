@@ -12,7 +12,12 @@ internal sealed class TaskQueue
         Comparer = new TaskBaseComparer() 
     });
 
-    internal ValueTask AddTaskToQueue(TaskBase task, CancellationToken ct) => !_tasksInQueue.Add(task.TaskId) ? ValueTask.CompletedTask : _queue.Writer.WriteAsync(task, ct); 
+    internal ValueTask AddTaskToQueue(TaskBase task, CancellationToken ct)
+    {
+        if (!_tasksInQueue.Add(task.TaskId)) return ValueTask.CompletedTask;
+        task.Status = TaskState.Queued;
+        return _queue.Writer.WriteAsync(task, ct);
+    }
 
     internal async Task<TaskBase?> GetNextTask(CancellationToken ct)
     {
@@ -23,6 +28,11 @@ internal sealed class TaskQueue
     }
 
     internal bool ContainsTask(Guid taskId) => _tasksInQueue.Contains(taskId);
+
+    /// <summary>
+    /// Number of Tasks currently waiting in the ready queue for a worker to pick up.
+    /// </summary>
+    internal int ReadyCount => _queue.Reader.Count;
     
     private class TaskBaseComparer : IComparer<TaskBase>
     {

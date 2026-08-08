@@ -17,8 +17,17 @@ namespace Services.Tasks.Tasks;
 /// Downloads a <see cref="DbChapter"/> using the <see cref="DbChapterDownloadLink"/> with the highest Priority.
 /// </summary>
 internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
-    : RunOnceTask(Guid.Parse("87d2b155-5723-4483-a2f9-c15292a14f44")), IChapterTask
+    : RunOnceTask(DownloadChapterTask.TaskTypeIdValue), IChapterTask
 {
+    internal static readonly Guid TaskTypeIdValue = Guid.Parse("87d2b155-5723-4483-a2f9-c15292a14f44");
+
+    /// <summary>
+    /// A <see cref="DownloadChapterTask"/> reads the <see cref="DbChapterDownloadLink"/>s a
+    /// <see cref="GetMangaChaptersTask"/> creates, so it must wait for any in-flight fetch for the same Manga to
+    /// finish first (see <see cref="Services.Tasks.WorkerLogic.TaskDependencyResolver"/>).
+    /// </summary>
+    internal override IReadOnlyCollection<Guid> DependsOnTaskTypeIds { get; } = [GetMangaChaptersTask.TaskTypeIdValue];
+
     public Guid MangaId { get; init; } = mangaId;
 
     public Guid ChapterId { get; init; } = chapterId;

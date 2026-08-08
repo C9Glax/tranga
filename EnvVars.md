@@ -12,10 +12,11 @@
 
 **Change these only if you know what you are doing**
 
-| ENV             | default                | behaviour                 |
-|-----------------|------------------------|---------------------------|
-| SETTINGS_FILE   | `"settings.json"`      | Location of settings file |
-| WORKERS_COUNT   | `{ProcessorCount / 2}` |                           |
+| ENV             | default                | behaviour                                                |
+|-----------------|------------------------|----------------------------------------------------------|
+| SETTINGS_FILE   | `"settings.json"`      | Location of settings file                                |
+| WORKERS_MIN     | `1`                    | Minimum number of Task workers kept running at all times |
+| WORKERS_MAX     | `{ProcessorCount / 2}` | Maximum number of Task workers the pool may scale up to  |
 
 ### Database
 

@@ -23,6 +23,33 @@ public class TaskQueueTests
     }
 
     [Fact]
+    public async Task Enqueue_SetsTaskStatusToQueued()
+    {
+        TaskQueue queue = new();
+        TestRunOnceTask task = TestTask.Create<TestRunOnceTask>(priority: 5);
+
+        Assert.Equal(TaskState.Pending, task.Status);
+
+        await queue.AddTaskToQueue(task, CancellationToken.None);
+
+        Assert.Equal(TaskState.Queued, task.Status);
+    }
+
+    [Fact]
+    public async Task ReadyCount_ReflectsQueueDepth()
+    {
+        TaskQueue queue = new();
+        Assert.Equal(0, queue.ReadyCount);
+
+        await queue.AddTaskToQueue(TestTask.Create<TestRunOnceTask>(priority: 1), CancellationToken.None);
+        await queue.AddTaskToQueue(TestTask.Create<TestRunOnceTask>(priority: 2), CancellationToken.None);
+        Assert.Equal(2, queue.ReadyCount);
+
+        await queue.GetNextTask(CancellationToken.None);
+        Assert.Equal(1, queue.ReadyCount);
+    }
+
+    [Fact]
     public async Task Dequeue_ReturnsHighestPriorityTaskFirst()
     {
         TaskQueue queue = new();
