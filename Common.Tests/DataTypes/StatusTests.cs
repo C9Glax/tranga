@@ -1,0 +1,42 @@
+using Common.Datatypes;
+
+namespace Common.Tests.DataTypes;
+
+public class StatusTests
+{
+    [Theory]
+    [InlineData("ongoing", ReleaseStatus.Ongoing)]
+    [InlineData("releasing", ReleaseStatus.Ongoing)]
+    [InlineData("complete", ReleaseStatus.Complete)]
+    [InlineData("completed", ReleaseStatus.Complete)]
+    [InlineData("hiatus", ReleaseStatus.Hiatus)]
+    public void ParseStatusParsesValidStatusStrings(string status, ReleaseStatus expected)
+    {
+        Assert.Equal(expected, status.ParseStatus());
+    }
+
+    [Theory]
+    [InlineData("ONGOING", ReleaseStatus.Ongoing)]
+    [InlineData("Complete", ReleaseStatus.Complete)]
+    [InlineData("HiAtUs", ReleaseStatus.Hiatus)]
+    public void ParseStatusIsCaseInsensitive(string status, ReleaseStatus expected)
+    {
+        Assert.Equal(expected, status.ParseStatus());
+    }
+
+    [Fact]
+    public void ParseStatusReturnsNullForNullInput()
+    {
+        string? status = null;
+        Assert.Null(status.ParseStatus());
+    }
+
+    [Theory]
+    [InlineData("unknown-status")]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void ParseStatusReturnsNullForUnknownOrEmptyInput(string status)
+    {
+        Assert.Null(status.ParseStatus());
+    }
+}
