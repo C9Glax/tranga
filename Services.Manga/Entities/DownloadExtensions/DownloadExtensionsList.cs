@@ -4,6 +4,8 @@ public sealed record DownloadExtensionsList
 {
     public IDownloadExtension[] Extensions { get; init; } =
     [
-        new MangaDex()
+        new MangaDex(),
+        new WeebCentral(),
+        new AsuraScans()
     ];
 }
