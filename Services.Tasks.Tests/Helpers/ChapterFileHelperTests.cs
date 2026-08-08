@@ -37,6 +37,38 @@ public class ChapterFileHelperTests
         Assert.Equal(".cbz", filename);
     }
     
+    [Fact]
+    public void OptionalParametersDoNotSwallowFollowingTokens()
+    {
+        DbChapter chapter = new ()
+        {
+            MangaId = Guid.Empty,
+            Volume = null,
+            Number = "2",
+            Title = null
+        };
+        Settings.ChapterNamingScheme = "?V(Vol. %V )Ch. %C?T( - %T)";
+
+        string filename = chapter.CreateFileName();
+        Assert.Equal("Ch. 2.cbz", filename);
+    }
+
+    [Fact]
+    public void OptionalParametersIncludedWhenPresent()
+    {
+        DbChapter chapter = new ()
+        {
+            MangaId = Guid.Empty,
+            Volume = "1",
+            Number = "2",
+            Title = "Title"
+        };
+        Settings.ChapterNamingScheme = "?V(Vol. %V )Ch. %C?T( - %T)";
+
+        string filename = chapter.CreateFileName();
+        Assert.Equal("Vol. 1 Ch. 2 - Title.cbz", filename);
+    }
+
     [Theory]
     [CombinatorialData]
     public void UnsafeCharactersFiltered([CombinatorialValues('#', '$', '%', '&', '*', '<', '>', ':', '"', '/', '\\', '|', '?')]char character)

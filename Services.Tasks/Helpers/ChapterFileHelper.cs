@@ -46,7 +46,7 @@ public static partial class ChapterFileHelper
         return scheme;
     }
 
-    private static Regex OptionalFormatting(string parameter) => new($@"\?{parameter}\((.*)\)");
+    private static Regex OptionalFormatting(string parameter) => new($@"\?{parameter}\((.*?)\)");
 
     private static string? ParameterValue(string parameter, DbChapter chapter) => parameter switch
     {
