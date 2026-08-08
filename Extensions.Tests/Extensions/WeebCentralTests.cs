@@ -43,13 +43,13 @@ public sealed class WeebCentralTests : DownloadExtensionTests<WeebCentral>
     {
         ChapterInfo chapterInfo = new(
             _extension.Identifier,
-            "235",
-            "https://weebcentral.com/chapters/01JP5ZTDW79G1DDKCXNR3W25Y4",
-            "01JP5ZTDW79G1DDKCXNR3W25Y4"
+            "8.5",
+            "https://weebcentral.com/chapters/01KB7YS3E5X7E58XDG1985CSAP",
+            "01KB7YS3E5X7E58XDG1985CSAP"
         );
         List<ChapterImage>? images = await _extension.FetchChapterImages(chapterInfo, ct);
         Assert.NotNull(images);
         Assert.NotEmpty(images);
-        Assert.All(images, i => Assert.Equal("01JP5ZTDW79G1DDKCXNR3W25Y4", i.chapterIdentifier));
+        Assert.All(images, i => Assert.Equal("01KB7YS3E5X7E58XDG1985CSAP", i.chapterIdentifier));
     }
 }

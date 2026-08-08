@@ -6,11 +6,15 @@ namespace Extensions;
 
 public static class DownloadExtensionsCollection
 {
-    public static readonly IDownloadExtension[] Extensions =
-    [
-        new MangaDex(),
-        new WeebCentral()
-    ];
+    public static readonly IDownloadExtension[] Extensions = BuildExtensions();
+
+    private static IDownloadExtension[] BuildExtensions()
+    {
+        List<IDownloadExtension> extensions = [new MangaDex()];
+        if (WeebCentral.IsAvailable)
+            extensions.Add(new WeebCentral());
+        return [.. extensions];
+    }
 
     public static IDownloadExtension? GetExtension(Guid extensionId) => Extensions.FirstOrDefault(e => e.Identifier == extensionId);
 

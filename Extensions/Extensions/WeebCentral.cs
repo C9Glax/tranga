@@ -5,6 +5,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Common.Datatypes;
 using Common.Helpers;
+using Common.Settings;
 using Extensions.Data;
 
 namespace Extensions.Extensions;
@@ -22,8 +23,12 @@ public sealed partial class WeebCentral : IDownloadExtension
 
     public string BaseUrl { get; init; } = "https://weebcentral.com";
 
-    // The site's Cloudflare WAF rejects the shared "Tranga/2.1" product token with 403;
-    // a browser-like User-Agent is required. Scoped to this extension's own RequestClient instance.
+    // The site sits behind Cloudflare, which RequestClient solves via FlareSolverr's
+    // ClearanceHandler when EnvVars.FlareSolverrUrl is configured (see IsAvailable). Without
+    // FlareSolverr there is no real way to pass the challenge; the browser-like User-Agent below
+    // is only a best-effort fallback so this extension's own tests can still run standalone.
+    public static bool IsAvailable => EnvVars.FlareSolverrUrl is not null;
+
     private static readonly RequestClient RequestClient = CreateRequestClient();
 
     private static RequestClient CreateRequestClient()
@@ -37,6 +42,9 @@ public sealed partial class WeebCentral : IDownloadExtension
                 PermitLimit = 1,
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst
             }));
+        if (IsAvailable)
+            return client;
+
         client.DefaultRequestHeaders.UserAgent.Clear();
         client.DefaultRequestHeaders.UserAgent.ParseAdd(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36");
