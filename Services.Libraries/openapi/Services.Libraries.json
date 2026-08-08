@@ -57,7 +57,47 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libraries/komga/test-connection": {
+      "post": {
+        "tags": [
+          "Libraries"
+        ],
+        "summary": "Validate Komga credentials without persisting anything",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestKomgaConnectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -87,6 +127,85 @@
             "description": "Not Found"
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "Libraries"
+        ],
+        "summary": "Rename a library extension and/or rotate its credentials",
+        "parameters": [
+          {
+            "name": "libraryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchLibraryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/libraries/mappings/{mangaId}": {
+      "get": {
+        "tags": [
+          "Libraries"
+        ],
+        "summary": "Get the library-extension links for a Manga",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryMangaLink"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -95,8 +214,7 @@
       "AddKomgaLibraryRequest": {
         "required": [
           "name",
-          "baseUrl",
-          "apiKey"
+          "baseUrl"
         ],
         "type": "object",
         "properties": {
@@ -107,7 +225,22 @@
             "type": "string"
           },
           "apiKey": {
-            "type": "string"
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "username": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "password": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "libraryRootPath": {
             "type": [
@@ -137,10 +270,84 @@
           }
         }
       },
+      "LibraryMangaLink": {
+        "required": [
+          "libraryServiceId",
+          "seriesUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "libraryServiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seriesUrl": {
+            "type": "string"
+          }
+        }
+      },
       "LibraryServiceType": {
         "enum": [
           "Komga"
         ]
+      },
+      "PatchLibraryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "apiKey": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "username": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "password": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "TestKomgaConnectionRequest": {
+        "required": [
+          "baseUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "apiKey": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "username": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "password": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
       }
     }
   },

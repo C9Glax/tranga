@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Services.Libraries.Database;
 
-public sealed class LibrariesContext : TrangaDbContext<LibrariesContext>
+public sealed class LibrariesContext(DbContextOptions<LibrariesContext> options) : TrangaDbContext<LibrariesContext>(options)
 {
     internal DbSet<DbLibraryService> LibraryServices { get; init; }
     

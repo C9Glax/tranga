@@ -21,8 +21,17 @@ internal static class EndpointHelpers
         
         builder.MapPut("/komga", AddKomgaEndpoint.Handle)
             .WithSummary("Add komga library extension");
-        
+
+        builder.MapPost("/komga/test-connection", TestKomgaConnectionEndpoint.Handle)
+            .WithSummary("Validate Komga credentials without persisting anything");
+
         builder.MapDelete("{libraryId}", DeleteLibraryEndpoint.Handle)
             .WithSummary("Remove a library extension");
+
+        builder.MapPatch("{libraryId}", PatchLibraryEndpoint.Handle)
+            .WithSummary("Rename a library extension and/or rotate its credentials");
+
+        builder.MapGet("/mappings/{mangaId}", GetLibraryMangaLinkEndpoint.Handle)
+            .WithSummary("Get the library-extension links for a Manga");
     }
 }
