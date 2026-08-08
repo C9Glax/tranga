@@ -8,19 +8,19 @@ namespace Common.Helpers;
 
 public sealed class RequestClient : HttpClient
 {
-    private static readonly HttpMessageHandler CloudflareHandler = EnvVars.FlareSolverrUrl is null
+    private static HttpMessageHandler CreateCloudflareHandler() => EnvVars.FlareSolverrUrl is null
         ? new HttpClientHandler()
         : new ClearanceHandler(EnvVars.FlareSolverrUrl)
         {
             MaxTimeout = 60000,
         };
-    
-    public RequestClient(RateLimiter limiter) : base(new ClientSideRateLimitedHandler(limiter, CloudflareHandler))
+
+    public RequestClient(RateLimiter limiter) : base(new ClientSideRateLimitedHandler(limiter, CreateCloudflareHandler()))
     {
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Tranga", "2.1")));
     }
-    
-    public RequestClient() : base(CloudflareHandler)
+
+    public RequestClient() : base(CreateCloudflareHandler())
     {
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Tranga", "2.1")));
     }
