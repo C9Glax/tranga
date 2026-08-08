@@ -1,5 +1,8 @@
 <template>
-    <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Manga Downloads', icon: { name: 'i-lucide-cloud-download' } }" rimless>
+    <TrangaPage
+        :navigation-props="navigation"
+        :page-title="{ title: 'Manga Downloads', icon: { name: 'i-lucide-cloud-download' } }"
+        rimless>
         <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8 mb-8' }">
             <USwitch v-model="includeFinished" label="Include finished downloads" />
         </UPageSection>
