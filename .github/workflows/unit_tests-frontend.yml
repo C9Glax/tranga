@@ -1,0 +1,39 @@
+name: Frontend Checks
+
+on:
+  push:
+    branches:
+      - external-connectors
+    paths:
+      - "Frontend/**"
+      - "Services.Manga/openapi/**"
+      - "Services.Tasks/openapi/**"
+      - "Services.Notifications/openapi/**"
+      - ".github/workflows/unit_tests-frontend.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: Frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./Frontend
+      - name: Regenerate OpenAPI client and check for drift
+        run: |
+          npm run openapi-ts
+          git diff --exit-code -- app/api/tranga
+        working-directory: ./Frontend
+      - name: Check formatting
+        run: npx prettier . --check
+        working-directory: ./Frontend
+      - name: Check types
+        run: npm run typecheck
+        working-directory: ./Frontend
