@@ -89,11 +89,11 @@
 
 ## Star History
 
-<a href="https://star-history.com/#c9glax/tranga&Date">
+<a href="https://www.star-history.com/?type=date&repos=c9glax%2Ftranga">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=c9glax/tranga&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=c9glax/tranga&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=c9glax/tranga&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=c9glax/tranga&type=date&theme=dark&legend=top-left&sealed_token=VbMkUY1g0Rt0cT5bw0BVpVuK-HuG5UfMb-tt-AWbnWEZ71V1dCCM4hO8SBJuw7jfkpRXM4URm4Djm-jPoJ29CJjW-y8xDQZu1FtqIdgxbnbcEmIfAsFpGwUBbGwayoz7S7EwYaIjk7OoMz5z_Gd_ITaxUuESPxvjlAuZ5chRI5wtJB9vi7Lo6a7clWeP" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=c9glax/tranga&type=date&legend=top-left&sealed_token=VbMkUY1g0Rt0cT5bw0BVpVuK-HuG5UfMb-tt-AWbnWEZ71V1dCCM4hO8SBJuw7jfkpRXM4URm4Djm-jPoJ29CJjW-y8xDQZu1FtqIdgxbnbcEmIfAsFpGwUBbGwayoz7S7EwYaIjk7OoMz5z_Gd_ITaxUuESPxvjlAuZ5chRI5wtJB9vi7Lo6a7clWeP" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=c9glax/tranga&type=date&legend=top-left&sealed_token=VbMkUY1g0Rt0cT5bw0BVpVuK-HuG5UfMb-tt-AWbnWEZ71V1dCCM4hO8SBJuw7jfkpRXM4URm4Djm-jPoJ29CJjW-y8xDQZu1FtqIdgxbnbcEmIfAsFpGwUBbGwayoz7S7EwYaIjk7OoMz5z_Gd_ITaxUuESPxvjlAuZ5chRI5wtJB9vi7Lo6a7clWeP" />
  </picture>
 </a>
 
