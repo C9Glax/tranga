@@ -39,7 +39,7 @@ public static class ImageHelper
         using Image image = await Image.LoadAsync(memoryStream, ct);
         memoryStream.Position = 0;
         MemoryStream ret = new();
-        await image.SaveAsJpegAsync(memoryStream, ct);
+        await image.SaveAsJpegAsync(ret, ct);
         ret.Position = 0;
         return ret;
     }
