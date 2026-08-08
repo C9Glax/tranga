@@ -52,7 +52,7 @@ public class MangaLifecycleIntegrationTests : TrangaTest
         Assert.Equal(2, related.Length);
 
         // Choose candidate A.
-        Assert.IsType<Ok>((await PatchMangaMetadataEntryChosenEndpoint.Handle(context, manga.MangaId, candidateA.MetadataId, ct)).Result);
+        Assert.IsType<Ok>((await PatchMangaMetadataEntryChosenEndpoint.Handle(context, CreateEventPublisher(), manga.MangaId, candidateA.MetadataId, ct)).Result);
 
         MangaDto manga1 = Assert.IsType<Ok<MangaDto>>((await GetMangaEndpoint.Handle(context, manga.MangaId, ct)).Result).Value!;
         Assert.Equal("Candidate A", manga1.MetadataEntry!.Series);
@@ -72,7 +72,7 @@ public class MangaLifecycleIntegrationTests : TrangaTest
         Assert.Equal(link.DownloadLinkId, matchedLinks[0].DownloadId);
 
         // Switch the "source of truth" to candidate B - candidate A is unset, GetManga/GetMangaMetadata follow.
-        Assert.IsType<Ok>((await PatchMangaMetadataEntryChosenEndpoint.Handle(context, manga.MangaId, candidateB.MetadataId, ct)).Result);
+        Assert.IsType<Ok>((await PatchMangaMetadataEntryChosenEndpoint.Handle(context, CreateEventPublisher(), manga.MangaId, candidateB.MetadataId, ct)).Result);
 
         MangaDto manga2 = Assert.IsType<Ok<MangaDto>>((await GetMangaEndpoint.Handle(context, manga.MangaId, ct)).Result).Value!;
         Assert.Equal("Candidate B", manga2.MetadataEntry!.Series);

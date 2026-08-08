@@ -1,3 +1,5 @@
+using Common.Services.Events;
+using Common.Services.Events.Events;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +16,13 @@ internal abstract class PatchMangaMetadataEntryChosenEndpoint
     /// Sets a Metadata-Entry as chosen "Source of Truth" for Manga
     /// </summary>
     /// <param name="mangaContext"></param>
+    /// <param name="eventPublisher"></param>
     /// <param name="mangaId">ID of Manga</param>
     /// <param name="metadataId">ID of Metadata-Entry</param>
     /// <param name="ct"></param>
     /// <response code="200">Metadata-Entry has been chosen</response>
     /// <response code="404">Manga or Metadata with requested ID does not exist</response>
-    public static async Task<Results<Ok, NotFound>> Handle(MangaContext mangaContext, [FromRoute]Guid mangaId, [FromRoute]Guid metadataId, CancellationToken ct)
+    public static async Task<Results<Ok, NotFound>> Handle(MangaContext mangaContext, [FromServices]EventPublisher eventPublisher, [FromRoute]Guid mangaId, [FromRoute]Guid metadataId, CancellationToken ct)
     {
         if (await mangaContext.MangaMetadataEntries.FirstOrDefaultAsync(
                 s => s.MangaId == mangaId && s.MetadataId == metadataId, ct) is not { } entry)
@@ -29,8 +32,8 @@ internal abstract class PatchMangaMetadataEntryChosenEndpoint
 
         entry.Chosen = true;
         await mangaContext.SaveChangesAsync(ct);
-        
-        // TODO publish a "MangaUpdatedEvent"
+
+        await eventPublisher.PublishAsync(new MangaUpdatedEvent(mangaId), ct);
 
         return TypedResults.Ok();
     }

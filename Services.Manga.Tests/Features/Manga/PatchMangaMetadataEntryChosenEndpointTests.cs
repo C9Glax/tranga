@@ -1,6 +1,11 @@
+using System.Text;
+using Common.Services.Events;
+using Common.Services.Events.Events;
 using Common.Tests;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using RabbitMQ.Client;
 using Services.Manga.Database;
 using Services.Manga.Features.Manga;
 using Services.Manga.Tests.Helpers;
@@ -9,6 +14,13 @@ namespace Services.Manga.Tests.Features.Manga;
 
 public class PatchMangaMetadataEntryChosenEndpointTests : TrangaTest
 {
+    private static EventPublisher CreateEventPublisher(bool channelOpen = false)
+    {
+        Mock<IChannel> mockChannel = new();
+        mockChannel.Setup(c => c.IsOpen).Returns(channelOpen);
+        return new EventPublisher(mockChannel.Object);
+    }
+
     [Fact]
     public async Task PatchMangaMetadata_SetsChosenEntryAndUnsetsPreviousOne()
     {
@@ -21,7 +33,7 @@ public class PatchMangaMetadataEntryChosenEndpointTests : TrangaTest
         await context.AddRangeAsync([manga, previouslyChosen, toChoose, previousEntry, newEntry], ct);
         await context.SaveChangesAsync(ct);
 
-        Results<Ok, NotFound> result = await PatchMangaMetadataEntryChosenEndpoint.Handle(context, manga.MangaId, toChoose.MetadataId, ct);
+        Results<Ok, NotFound> result = await PatchMangaMetadataEntryChosenEndpoint.Handle(context, CreateEventPublisher(channelOpen: true), manga.MangaId, toChoose.MetadataId, ct);
 
         Assert.IsType<Ok>(result.Result);
 
@@ -34,12 +46,36 @@ public class PatchMangaMetadataEntryChosenEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task PatchMangaMetadata_PublishesMangaUpdatedEventWithCorrectMangaId()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        (DbManga manga, DbMetadata metadata, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
+
+        Mock<IChannel> mockChannel = new();
+        mockChannel.Setup(c => c.IsOpen).Returns(true);
+        EventPublisher eventPublisher = new(mockChannel.Object);
+
+        Results<Ok, NotFound> result = await PatchMangaMetadataEntryChosenEndpoint.Handle(context, eventPublisher, manga.MangaId, metadata.MetadataId, ct);
+
+        Assert.IsType<Ok>(result.Result);
+
+        // BasicPublishAsync<TProperties> is a constrained generic method (TProperties : IReadOnlyBasicProperties)
+        // closed over an internal RabbitMQ.Client type at the call site, so it can't be targeted by a
+        // strongly-typed Setup/Verify expression. Inspect the recorded invocation instead.
+        IInvocation publishInvocation = Assert.Single(mockChannel.Invocations, i => i.Method.Name == nameof(IChannel.BasicPublishAsync));
+        Assert.Equal("tranga", publishInvocation.Arguments[0]);
+        Assert.Equal(nameof(MangaUpdatedEvent), publishInvocation.Arguments[1]);
+        ReadOnlyMemory<byte> body = (ReadOnlyMemory<byte>)publishInvocation.Arguments[4]!;
+        Assert.Contains(manga.MangaId.ToString(), Encoding.UTF8.GetString(body.ToArray()));
+    }
+
+    [Fact]
     public async Task PatchMangaMetadata_Returns404ForUnknownManga()
     {
         await using MangaContext context = MangaContextFactory.Create();
         (_, DbMetadata metadata, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
 
-        Results<Ok, NotFound> result = await PatchMangaMetadataEntryChosenEndpoint.Handle(context, Guid.NewGuid(), metadata.MetadataId, ct);
+        Results<Ok, NotFound> result = await PatchMangaMetadataEntryChosenEndpoint.Handle(context, CreateEventPublisher(), Guid.NewGuid(), metadata.MetadataId, ct);
 
         Assert.IsType<NotFound>(result.Result);
     }
@@ -50,7 +86,7 @@ public class PatchMangaMetadataEntryChosenEndpointTests : TrangaTest
         await using MangaContext context = MangaContextFactory.Create();
         (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
 
-        Results<Ok, NotFound> result = await PatchMangaMetadataEntryChosenEndpoint.Handle(context, manga.MangaId, Guid.NewGuid(), ct);
+        Results<Ok, NotFound> result = await PatchMangaMetadataEntryChosenEndpoint.Handle(context, CreateEventPublisher(), manga.MangaId, Guid.NewGuid(), ct);
 
         Assert.IsType<NotFound>(result.Result);
     }
