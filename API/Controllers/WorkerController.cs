@@ -21,8 +21,7 @@ public class WorkerController : ControllerBase
     [ProducesResponseType<List<Worker>>(Status200OK, "application/json")]
     public Ok<List<Worker>> GetWorkers()
     {
-        IEnumerable<Worker> result = Tranga.GetKnownWorkers().Select(w =>
-            new Worker(w.Key, w.AllDependencies.Select(d => d.Key), w.MissingDependencies.Select(d => d.Key), w.AllDependenciesFulfilled, w.State));
+        IEnumerable<Worker> result = Tranga.GetKnownWorkers().Select(ToDto);
         return TypedResults.Ok(result.ToList());
     }
 
@@ -35,8 +34,7 @@ public class WorkerController : ControllerBase
     [ProducesResponseType<List<Worker>>(Status200OK, "application/json")]
     public Ok<List<Worker>> GetWorkersInState(WorkerExecutionState State)
     {
-        IEnumerable<Worker> result = Tranga.GetKnownWorkers().Where(worker => worker.State == State).Select(w =>
-            new Worker(w.Key, w.AllDependencies.Select(d => d.Key), w.MissingDependencies.Select(d => d.Key), w.AllDependenciesFulfilled, w.State));
+        IEnumerable<Worker> result = Tranga.GetKnownWorkers().Where(worker => worker.State == State).Select(ToDto);
         return TypedResults.Ok(result.ToList());
     }
 
@@ -54,9 +52,7 @@ public class WorkerController : ControllerBase
         if(Tranga.GetKnownWorkers().FirstOrDefault(w => w.Key == WorkerId) is not { } w)
             return TypedResults.NotFound(nameof(WorkerId));
         
-        Worker result = new (w.Key, w.AllDependencies.Select(d => d.Key), w.MissingDependencies.Select(d => d.Key), w.AllDependenciesFulfilled, w.State);
-        
-        return TypedResults.Ok(result);
+        return TypedResults.Ok(ToDto(w));
     }
 
     /// <summary>
@@ -81,4 +77,16 @@ public class WorkerController : ControllerBase
         Tranga.StopWorker(worker);
         return TypedResults.Ok();
     }
+
+    private static Worker ToDto(BaseWorker w) => new(
+        w.Key,
+        w.AllDependencies.Select(d => d.Key),
+        w.MissingDependencies.Select(d => d.Key),
+        w.AllDependenciesFulfilled,
+        w.State,
+        w.Progress > 0 ? w.Progress : null,
+        w.TotalSteps > 0 ? w.CurrentStep : null,
+        w.TotalSteps > 0 ? w.TotalSteps : null,
+        w.ProgressDescription
+    );
 }

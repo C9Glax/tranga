@@ -1,10 +1,12 @@
 using System.Reflection;
 using API;
+using API.Hubs;
 using API.Schema.ActionsContext;
 using API.Schema.ActionsContext.Actions;
 using API.Schema.LibraryContext;
 using API.Schema.MangaContext;
 using API.Schema.NotificationsContext;
+using API.Workers;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
@@ -56,6 +58,9 @@ builder.Services.AddCors(options =>
             }
         });
 });
+
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<DownloadProgressReporter>();
 
 log.Debug("Adding API-Explorer-helpers...");
 builder.Services.AddApiVersioning(option =>
@@ -140,18 +145,21 @@ app.MapControllers()
     .WithApiVersionSet(apiVersionSet)
     .MapToApiVersion(2);
 
+log.Debug("Mapping SignalR Hubs...");
+app.MapHub<DownloadProgressHub>("/hubs/download-progress");
+
 if (swaggerEnabled)
 {
-    log.Debug("Adding Swagger...");
-    app.UseSwagger(opts =>
-    {
-        opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
-        opts.RouteTemplate = "swagger/{documentName}/swagger.json";
-    });
-    app.UseSwaggerUI(opts =>
-    {
-        opts.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
-    });
+      log.Debug("Adding Swagger...");
+      app.UseSwagger(opts =>
+      {
+          opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+          opts.RouteTemplate = "swagger/{documentName}/swagger.json";
+      });
+      app.UseSwaggerUI(opts =>
+      {
+          opts.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+      });
 }
 
 app.UseHttpsRedirection();

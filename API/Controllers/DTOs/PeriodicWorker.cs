@@ -7,8 +7,8 @@ namespace API.Controllers.DTOs;
 /// <summary>
 /// <see cref="IPeriodic"/> DTO (<seealso cref="Worker"/> <seealso cref="BaseWorker"/>)
 /// </summary>
-public sealed record PeriodicWorker(string Key, IEnumerable<string> Dependencies, IEnumerable<string> MissingDependencies, bool DependenciesFulfilled, WorkerExecutionState State, DateTime LastExecution, TimeSpan Interval, DateTime NextExecution)
-    : Worker(Key, Dependencies, MissingDependencies, DependenciesFulfilled, State)
+public sealed record PeriodicWorker(string Key, IEnumerable<string> Dependencies, IEnumerable<string> MissingDependencies, bool DependenciesFulfilled, WorkerExecutionState State, float? Progress, int? CurrentStep, int? TotalSteps, string? ProgressDescription, DateTime LastExecution, TimeSpan Interval, DateTime NextExecution)
+    : Worker(Key, Dependencies, MissingDependencies, DependenciesFulfilled, State, Progress, CurrentStep, TotalSteps, ProgressDescription)
 {
     /// <summary>
     /// Timestamp when Worker executed last.

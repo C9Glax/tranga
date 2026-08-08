@@ -281,9 +281,7 @@ public class WeebCentral : MangaConnector
 
 	private async Task<string[]> GetChapterImageUrlsAsync(MangaConnectorId<Chapter> chapterId, string? referrer)
 	{
-		await using ChromiumDownloadClient chromium = new ChromiumDownloadClient();
-		
-		HttpResponseMessage response = await chromium.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer);
+		HttpResponseMessage response = await downloadClient.MakeRequest(chapterId.WebsiteUrl!, RequestType.Default, referrer);
 
 		if ((int)response.StatusCode < 200 || (int)response.StatusCode >= 300)
 		{
