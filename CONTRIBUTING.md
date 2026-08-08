@@ -63,6 +63,8 @@ Tranga is using a **code-first** EF-Core approach. If you modify the database(co
 | POSTGRES_DB       | `postgres`       |
 | POSTGRES_USER     | `postgres`       |
 | POSTGRES_PASSWORD | `postgres`       |
+| TRANGA_CORS__ALLOWED_ORIGIN | unset (allow any origin) |
+| TRANGA_SWAGGER__ENABLED | `true` |
 
 ### A broad overview of where is what:
 

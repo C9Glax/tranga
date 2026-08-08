@@ -32,16 +32,28 @@ log.Info("Logger Configured.");
 
 log.Info("Starting up");
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+string? allowedCorsOrigin = RuntimeConfiguration.GetAllowedCorsOrigin(builder.Configuration);
+bool swaggerEnabled = RuntimeConfiguration.IsSwaggerEnabled(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
+            if (allowedCorsOrigin is null)
+            {
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }
+            else
+            {
+                policy
+                    .WithOrigins(allowedCorsOrigin)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }
         });
 });
 
@@ -116,8 +128,6 @@ builder.WebHost.UseUrls($"http://*:{TrangaSettings.Port}");
 log.Info("Starting app...");
 WebApplication app = builder.Build();
 
-app.UseCors("AllowAll");
-
 ApiVersionSet apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(2))
     .ReportApiVersions()
@@ -130,16 +140,19 @@ app.MapControllers()
     .WithApiVersionSet(apiVersionSet)
     .MapToApiVersion(2);
 
-log.Debug("Adding Swagger...");
-app.UseSwagger(opts =>
+if (swaggerEnabled)
 {
-    opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
-    opts.RouteTemplate = "swagger/{documentName}/swagger.json";
-});
-app.UseSwaggerUI(opts =>
-{
-    opts.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
-});
+    log.Debug("Adding Swagger...");
+    app.UseSwagger(opts =>
+    {
+        opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+        opts.RouteTemplate = "swagger/{documentName}/swagger.json";
+    });
+    app.UseSwaggerUI(opts =>
+    {
+        opts.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+    });
+}
 
 app.UseHttpsRedirection();
 
