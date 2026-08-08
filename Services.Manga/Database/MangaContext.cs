@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Services.Manga.Database;
 
-public sealed class MangaContext : TrangaDbContext<MangaContext>
+public sealed class MangaContext(DbContextOptions<MangaContext> options) : TrangaDbContext<MangaContext>(options)
 {
     public DbSet<DbManga> Mangas { get; init; }
     
