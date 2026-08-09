@@ -1,5 +1,5 @@
 <template>
-    <MetadataPage :metadata="metadata" :actions="actions" :loading="statusMetadata !== 'success'"> </MetadataPage>
+    <MetadataPage :metadata="metadata" :actions="actions" :loading="statusMetadata !== 'success'" />
 </template>
 
 <script setup lang="ts">
@@ -19,7 +19,7 @@ const mangaId = useRoute().query.mangaId as string | undefined;
 
 const { data: metadata, status: statusMetadata } = await useTranga<GetMangasMetadataByMetadataIdResponse>(
     () => `/mangas/metadata/${metadataId}`,
-    { key: Manga.Metadata.Entry(metadataId) }
+    { key: Manga.Metadata.Entry(metadataId) },
 );
 
 const { data: manga } = await useTranga<GetMangasMetadataByMetadataIdMangaResponse>(() => `/mangas/metadata/${metadataId}/manga`, {
@@ -28,7 +28,7 @@ const { data: manga } = await useTranga<GetMangasMetadataByMetadataIdMangaRespon
 
 const { data: relatedMangaIds } = await useTranga<GetMangasMetadataByMetadataIdMangaRelatedResponse>(
     () => `/mangas/metadata/${metadataId}/manga/related`,
-    { key: Manga.Metadata.RelatedManga(metadataId) }
+    { key: Manga.Metadata.RelatedManga(metadataId) },
 );
 
 const actions = (m?: ServicesMangaMetadata): ButtonProps[] | undefined => {

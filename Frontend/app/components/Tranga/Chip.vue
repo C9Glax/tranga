@@ -3,9 +3,10 @@
         <template #content>
             <UIcon :name="icon" :class="`size-${sizeToNumber * 2}`" />
         </template>
-        <slot></slot>
+        <slot />
     </UChip>
 </template>
+
 <script setup lang="ts">
 import type { ChipProps } from '@nuxt/ui/components/Chip.vue';
 

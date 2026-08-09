@@ -5,7 +5,7 @@
                 <span class="font-medium">{{ library.libraryServiceType }}</span>
                 <span class="text-sm text-muted">{{ library.baseUrl }}</span>
             </div>
-            <UButton label="Delete" color="error" @click="removeLibrary" loading-auto />
+            <UButton label="Delete" color="error" loading-auto @click="removeLibrary" />
         </div>
     </UCard>
 </template>

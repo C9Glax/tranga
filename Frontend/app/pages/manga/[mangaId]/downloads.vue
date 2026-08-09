@@ -21,7 +21,7 @@ const mangaId = useRoute().params.mangaId as string;
 const includeFinished = useState<boolean>(() => false);
 const { data, refresh } = await useTranga<GetTasksMangaByMangaIdDownloadsResponse>(
     () => `/tasks/manga/${mangaId}/downloads?includeFinished=${includeFinished.value}`,
-    { lazy: true, watch: [includeFinished] }
+    { lazy: true, watch: [includeFinished] },
 );
 
 defineShortcuts({ meta_r: () => refresh() });

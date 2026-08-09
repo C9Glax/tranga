@@ -59,7 +59,7 @@ export const zServicesMangaMangaDownloadLink = z.object({
             .int()
             .check(
                 z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
             ),
         z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
     ]),
@@ -87,7 +87,7 @@ export const zServicesMangaPatchMangaDownloadLinkRequest = z.object({
             .int()
             .check(
                 z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
             ),
         z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
     ]),
@@ -112,10 +112,10 @@ export const zServicesMangaMetadata = z.object({
                 .int()
                 .check(
                     z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
                 ),
             z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
-        ])
+        ]),
     ),
     language: z.nullish(z.string().check(z.minLength(0), z.maxLength(8))),
     chaptersNumber: z.nullish(
@@ -124,10 +124,10 @@ export const zServicesMangaMetadata = z.object({
                 .int()
                 .check(
                     z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
                 ),
             z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
-        ])
+        ]),
     ),
     coverId: z.nullable(z.uuid()),
     genres: z.optional(z.array(z.string())),
@@ -159,10 +159,10 @@ export const zServicesMangaSearchQuery = z.object({
                 .int()
                 .check(
                     z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
                 ),
             z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
-        ])
+        ]),
     ),
     author: z.nullish(z.string()),
     artist: z.nullish(z.string()),
@@ -173,15 +173,15 @@ export const zServicesMangaSearchQuery = z.object({
                 .bigint()
                 .check(
                     z.minimum(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }),
-                    z.maximum(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })
+                    z.maximum(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
                 ),
             z.coerce
                 .bigint()
                 .check(
                     z.minimum(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }),
-                    z.maximum(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })
+                    z.maximum(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
                 ),
-        ])
+        ]),
     ),
     mangaDexSeriesId: z.nullish(z.uuid()),
 });
@@ -313,7 +313,7 @@ export const zServicesNotificationsPutExtensionRequestGotify = z.object({
             .int()
             .check(
                 z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
             ),
         z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
     ]),
@@ -336,7 +336,7 @@ export const zServicesNotificationsPutExtensionRequestNtfySh = z.object({
             .int()
             .check(
                 z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
             ),
         z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
     ]),

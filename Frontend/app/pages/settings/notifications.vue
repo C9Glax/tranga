@@ -7,8 +7,8 @@
                     color="neutral"
                     variant="subtle"
                     trailing-icon="i-lucide-chevron-down"
-                    @click="open = !open"
-                    block />
+                    block
+                    @click="open = !open" />
 
                 <template #content>
                     <UCard class="m-0.5 mt-2">
@@ -32,7 +32,7 @@
                                         </UFormField>
                                         <div class="flex flex-row gap-2">
                                             <UFormField label="Host" name="host" class="grow">
-                                                <UInput v-model="state.host" class="w-full" @update:modelValue="autoPort" />
+                                                <UInput v-model="state.host" class="w-full" @update:model-value="autoPort" />
                                             </UFormField>
                                             <UFormField label="Port" name="port">
                                                 <UInput v-model="state.port" class="w-full" type="number" />
@@ -65,7 +65,7 @@
                                         </UFormField>
                                         <div class="flex flex-row gap-2">
                                             <UFormField label="Host" name="host" class="grow">
-                                                <UInput v-model="state.host" class="w-full" @update:modelValue="autoPort" />
+                                                <UInput v-model="state.host" class="w-full" @update:model-value="autoPort" />
                                             </UFormField>
                                             <UFormField label="Port" name="port">
                                                 <UInput v-model="state.port" class="w-full" type="number" />
@@ -102,15 +102,15 @@
                             <div class="flex flex-row gap-4 justify-end">
                                 <UButton
                                     label="Cancel"
+                                    color="secondary"
+                                    variant="soft"
                                     @click="
                                         () => {
                                             state = {};
                                             open = false;
                                         }
-                                    "
-                                    color="secondary"
-                                    variant="soft" />
-                                <UButton label="Add" @click="createExtension" loading-auto icon="i-lucide-plus" />
+                                    " />
+                                <UButton label="Add" loading-auto icon="i-lucide-plus" @click="createExtension" />
                             </div>
                         </div>
                     </UCard>
