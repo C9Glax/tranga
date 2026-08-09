@@ -295,6 +295,64 @@ public class GetTaskEndpointTests : TrangaTest
     }
 }
 
+public class GetTaskLogsEndpointTests : TrangaTest, IDisposable
+{
+    public void Dispose()
+    {
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+    }
+
+    [Fact]
+    public void GetTaskLogs_Returns404ForUnknownId()
+    {
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+
+        Results<Ok<Services.Tasks.Entities.TaskLogEntry[]>, NotFound> result = GetTaskLogsEndpoint.Handle(Guid.NewGuid());
+
+        Assert.IsType<NotFound>(result.Result);
+    }
+
+    [Fact]
+    public void GetTaskLogs_ReturnsEntriesInChronologicalOrder()
+    {
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+
+        TestRunOnceTask task = TestTask.Create<TestRunOnceTask>();
+        task.AppendLog(Microsoft.Extensions.Logging.LogLevel.Information, "first");
+        task.AppendLog(Microsoft.Extensions.Logging.LogLevel.Warning, "second");
+        task.AppendLog(Microsoft.Extensions.Logging.LogLevel.Error, "third");
+        TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task);
+
+        Results<Ok<Services.Tasks.Entities.TaskLogEntry[]>, NotFound> result = GetTaskLogsEndpoint.Handle(task.TaskId);
+
+        Ok<Services.Tasks.Entities.TaskLogEntry[]> ok = Assert.IsType<Ok<Services.Tasks.Entities.TaskLogEntry[]>>(result.Result);
+        Assert.NotNull(ok.Value);
+        Assert.Equal(["first", "second", "third"], ok.Value.Select(e => e.Message));
+        Assert.Equal(["Information", "Warning", "Error"], ok.Value.Select(e => e.Level));
+    }
+
+    [Fact]
+    public void GetTaskLogs_SupportsSkipAndLimit()
+    {
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+
+        TestRunOnceTask task = TestTask.Create<TestRunOnceTask>();
+        for (int i = 0; i < 5; i++)
+            task.AppendLog(Microsoft.Extensions.Logging.LogLevel.Information, $"entry {i}");
+        TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task);
+
+        Results<Ok<Services.Tasks.Entities.TaskLogEntry[]>, NotFound> result = GetTaskLogsEndpoint.Handle(task.TaskId, skip: 2, limit: 2);
+
+        Ok<Services.Tasks.Entities.TaskLogEntry[]> ok = Assert.IsType<Ok<Services.Tasks.Entities.TaskLogEntry[]>>(result.Result);
+        Assert.NotNull(ok.Value);
+        Assert.Equal(["entry 2", "entry 3"], ok.Value.Select(e => e.Message));
+    }
+}
+
 public class TaskEndpointsConsistencyTests : TrangaTest, IDisposable
 {
     public void Dispose()

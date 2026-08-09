@@ -30,7 +30,8 @@ internal sealed class TaskWorker(Guid workerId, TaskQueue queue, IServiceProvide
                 {
                     state.OnTaskPickedUp(workItem);
                     logger.LogInformation("{workItem} running.", workItem);
-                    await workItem.ExecuteAsync(serviceProvider.CreateScope(), logger, stoppingToken);
+                    ILogger taskLogger = new TaskCapturingLogger(logger, workItem);
+                    await workItem.ExecuteAsync(serviceProvider.CreateScope(), taskLogger, stoppingToken);
                     state.OnTaskFinished();
                 }
                 else

@@ -17,7 +17,7 @@ public class TaskWorkerTests
 
         IServiceProvider services = new ServiceCollection().BuildServiceProvider();
         WorkerRuntimeState state = new(Guid.CreateVersion7());
-        TaskWorker worker = new(Guid.CreateVersion7(), queue, services, state, NoOpLogger.Instance);
+        TaskWorker worker = new(Guid.CreateVersion7(), queue, services, state, AlwaysEnabledNoOpLogger.Instance);
 
         using CancellationTokenSource cts = new();
         Task runLoop = worker.RunAsync(cts.Token);
@@ -26,6 +26,7 @@ public class TaskWorkerTests
 
         Assert.Equal(TaskState.Completed, task.Status);
         Assert.Equal(WorkerStatus.Idle, state.Status);
+        Assert.NotEmpty(task.LogEntries);
 
         cts.Cancel();
         await runLoop;
