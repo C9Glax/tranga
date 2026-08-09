@@ -1,16 +1,26 @@
 <template>
     <TrangaPage :page-title="{ title: 'Manga', icon: { name: 'i-lucide-book', color: 'warning' } }" :navigation-props="navigation">
-        <div class="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 py-6 sm:py-8">
-            <div class="flex-1 min-w-0">
+        <div class="flex flex-col-reverse md:flex-row gap-6 py-6 sm:py-8">
+            <div class="flex-1 min-w-0 md:pe-6">
                 <slot name="default" />
             </div>
 
-            <aside class="lg:w-72 xl:w-80 lg:shrink-0 flex flex-col gap-4 lg:sticky lg:top-4 lg:self-start">
+            <UDashboardResizeHandle
+                class="hidden md:block w-px shrink-0 transition-colors"
+                :class="isDragging ? 'bg-primary' : 'bg-border hover:bg-primary'"
+                @mousedown="onMouseDown"
+                @touchstart="onTouchStart"
+                @dblclick="onDoubleClick" />
+
+            <aside
+                ref="el"
+                class="flex flex-col gap-4 w-full md:w-(--sidebar-width) md:shrink-0 md:sticky md:top-4 md:self-start md:ps-6"
+                :style="{ '--sidebar-width': `${size}px` }">
                 <MangaCover
                     :file-id="manga?.metadataEntry?.coverId"
                     :mangaId="manga?.mangaId"
                     :noBlur="!manga?.metadataEntry?.nsfw"
-                    class="aspect-6/9 w-full max-w-2xs mx-auto lg:mx-0" />
+                    class="aspect-6/9 w-full max-w-2xs mx-auto md:mx-0" />
 
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-row gap-2 items-baseline flex-wrap">
@@ -62,6 +72,15 @@ export interface MangaPageProps {
 }
 
 const props = defineProps<MangaPageProps>();
+
+const { el, size, isDragging, onMouseDown, onTouchStart, onDoubleClick } = useResizable('manga-page-sidebar-width', {
+    side: 'right',
+    unit: 'px',
+    defaultSize: 320,
+    minSize: 240,
+    maxSize: 520,
+    collapsible: false,
+});
 
 const navigation = computed((): NavigationMenuProps => {
     const actionItems: NavigationMenuItem[] = (props.actions?.(props.manga) ?? []).map(
