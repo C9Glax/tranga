@@ -19,6 +19,16 @@ services:
       - "5672"
     networks:
       - "tranga"
+    healthcheck:
+      test:
+        - "CMD"
+        - "rabbitmq-diagnostics"
+        - "-q"
+        - "check_port_connectivity"
+      interval: "5s"
+      timeout: "5s"
+      retries: 12
+      start_period: "10s"
   services-tasks:
     image: "ghcr.io/c9glax/tranga-services_tasks:external-connectors"
     environment:
@@ -58,7 +68,7 @@ services:
       tranga-pg:
         condition: "service_started"
       messaging:
-        condition: "service_started"
+        condition: "service_healthy"
     networks:
       - "tranga"
     restart: "on-failure:3"
@@ -101,7 +111,7 @@ services:
       tranga-pg:
         condition: "service_started"
       messaging:
-        condition: "service_started"
+        condition: "service_healthy"
     networks:
       - "tranga"
     restart: "on-failure:3"
@@ -140,7 +150,7 @@ services:
       tranga-pg:
         condition: "service_started"
       messaging:
-        condition: "service_started"
+        condition: "service_healthy"
     networks:
       - "tranga"
     restart: "on-failure:3"
@@ -179,7 +189,7 @@ services:
       tranga-pg:
         condition: "service_started"
       messaging:
-        condition: "service_started"
+        condition: "service_healthy"
     networks:
       - "tranga"
     restart: "on-failure:3"

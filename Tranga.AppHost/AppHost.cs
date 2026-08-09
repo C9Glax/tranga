@@ -49,6 +49,14 @@ IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messagi
     {
         service.Name = "messaging";
         service.Networks = ["tranga"];
+        service.Healthcheck = new Healthcheck
+        {
+            Test = ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"],
+            Interval = "5s",
+            Timeout = "5s",
+            Retries = 12,
+            StartPeriod = "10s"
+        };
     });
 
 IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tasks>("services-tasks")
@@ -83,7 +91,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_started" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
     })
@@ -121,7 +129,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_started" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
     })
@@ -152,7 +160,7 @@ IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Serv
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_started" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
     })
@@ -183,7 +191,7 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_started" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
     })
