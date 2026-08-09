@@ -11,7 +11,7 @@ using SixLabors.ImageSharp.Processing;
 namespace API.MangaConnectors;
 
 [PrimaryKey("Name")]
-public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl)
+public abstract class MangaConnector(string name, string[] supportedLanguages, string[] baseUris, string iconUrl, bool nsfw = false)
 {
     [NotMapped] internal IDownloadClient downloadClient { get; init; } = null!;
     [NotMapped] protected ILog Log { get; init; } = LogManager.GetLogger(name);
@@ -20,6 +20,7 @@ public abstract class MangaConnector(string name, string[] supportedLanguages, s
     [StringLength(2048)] public string IconUrl { get; init; } = iconUrl;
     [StringLength(256)] public string[] BaseUris { get; init; } = baseUris;
     public bool Enabled { get; internal set; } = true;
+    public bool NSFW { get; internal set; } = nsfw;
     
     public abstract (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName);
 

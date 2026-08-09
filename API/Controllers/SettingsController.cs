@@ -242,4 +242,28 @@ public class SettingsController() : ControllerBase
             Tranga.Settings.SetRefreshLibraryWhileDownloadingEveryMinutes(value);
         return TypedResults.Ok();
     }
+	
+	/// <summary>
+	/// Get state of NSFW content visibility
+	/// </summary>
+	/// <response code="200">True if NSFW content is allowed</response>
+	[HttpGet("ShowNSFW")]
+	[ProducesResponseType<bool>(Status200OK, "text/plain")]
+	public Ok<bool> GetShowNsfw()
+	{
+		return TypedResults.Ok(Tranga.Settings.ShowNsfw);
+	}
+	
+	/// <summary>
+	/// Enable/Disable NSFW content visibility
+	/// </summary>
+	/// <param name="enabled">true to allow NSFW</param>
+	/// <response code="200"></response>
+	[HttpPatch("ShowNSFW/{enabled}")]
+	[ProducesResponseType(Status200OK)]
+	public Ok SetShowNsfw(bool enabled)
+	{
+		Tranga.Settings.SetShowNsfw(enabled);
+		return TypedResults.Ok();
+	}
 }

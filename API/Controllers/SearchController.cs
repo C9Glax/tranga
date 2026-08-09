@@ -21,6 +21,7 @@ public class SearchController(MangaContext context) : ControllerBase
     /// <param name="MangaConnectorName"><see cref="MangaConnector"/>.Name</param>
     /// <param name="Query">searchTerm</param>
     /// <response code="200"><see cref="MinimalManga"/> exert of <see cref="Schema.MangaContext.Manga"/></response>
+	/// <response code="403">NSFW connector is forbidden by settings</response>
     /// <response code="404"><see cref="MangaConnector"/> with Name not found</response>
     /// <response code="412"><see cref="MangaConnector"/> with Name is disabled</response>
     [HttpGet("{MangaConnectorName}/{Query}")]
@@ -33,6 +34,10 @@ public class SearchController(MangaContext context) : ControllerBase
             return TypedResults.NotFound(nameof(MangaConnectorName));
         if (!connector.Enabled)
             return TypedResults.StatusCode(Status412PreconditionFailed);
+		bool showNsfw = Tranga.Settings.ShowNsfw;
+		if (!showNsfw && connector.NSFW)
+			return TypedResults.StatusCode(Status403Forbidden);
+
         
         (Manga manga, Schema.MangaContext.MangaConnectorId<Manga> id)[] mangas = connector.SearchManga(Query);
 
