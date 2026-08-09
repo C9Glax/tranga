@@ -627,7 +627,19 @@ export type GetMangasFilesByFileIdErrors = {
     500: unknown;
 };
 
-export type GetTasksData = { body?: never; path?: never; query?: { includeFinished?: boolean }; url: '/tasks' };
+export type GetTasksData = {
+    body?: never;
+    path?: never;
+    query?: {
+        includeFinished?: boolean;
+        mangaId?: string;
+        taskTypeName?: Array<string>;
+        status?: Array<ServicesTasksTaskState>;
+        skip?: number | string;
+        limit?: number | string;
+    };
+    url: '/tasks';
+};
 
 export type GetTasksResponses = {
     /**

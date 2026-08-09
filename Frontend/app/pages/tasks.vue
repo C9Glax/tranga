@@ -46,13 +46,14 @@
             </div>
         </UPageSection>
         <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
-            <TasksList :tasks="filteredTasks" :loading="status !== 'success'" />
+            <TasksList ref="listRef" :tasks="tasks" :loading="status !== 'success' && tasks.length === 0" />
         </UPageSection>
     </TrangaPage>
 </template>
 
 <script setup lang="ts">
-import type { GetTasksResponse, GetMangasResponse, ServicesTasksTaskState } from '~/api/tranga';
+import { useInfiniteScroll } from '@vueuse/core';
+import type { GetTasksResponse, GetMangasResponse, ServicesTasksTask, ServicesTasksTaskState } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
 
 const route = useRoute();
@@ -85,7 +86,52 @@ const stateFilter = computed<ServicesTasksTaskState[]>({
 
 const clearFilters = () => setQueries({ manga: undefined, type: undefined, state: undefined });
 
-const { data, refresh, status } = await useTranga<GetTasksResponse>(() => `/tasks?includeFinished=true`, { lazy: true });
+// The full set of concrete Task subtypes (Services.Tasks/Tasks/*.cs) - static rather than derived from
+// loaded data, since only a page of tasks is loaded at a time under infinite scroll.
+const TASK_TYPE_NAMES = [
+    'DownloadChapterTask',
+    'GetMangaChaptersTask',
+    'MissingChapterScanTask',
+    'PeriodicMangaChapterFetcherTask',
+    'DbFileCleanupTask',
+];
+const typeOptions = TASK_TYPE_NAMES.map((n) => ({ label: taskTypeLabel(n), value: n })).sort((a, b) => a.label.localeCompare(b.label));
+
+const stateOptions: { label: string; description: string; value: ServicesTasksTaskState }[] = (
+    ['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed'] as ServicesTasksTaskState[]
+).map((s) => ({ label: s, description: taskStateDescription(s), value: s }));
+
+const LIMIT = 25;
+const skip = ref(0);
+const tasks = ref<ServicesTasksTask[]>([]);
+const hasMore = ref(true);
+
+function buildQuery(overrides: { skip?: number; limit?: number } = {}) {
+    const params = new URLSearchParams({
+        includeFinished: 'true',
+        skip: String(overrides.skip ?? skip.value),
+        limit: String(overrides.limit ?? LIMIT),
+    });
+    if (mangaFilter.value) params.set('mangaId', mangaFilter.value);
+    for (const t of typeFilter.value) params.append('taskTypeName', t);
+    for (const s of stateFilter.value) params.append('status', s);
+    return params;
+}
+
+const { data, status } = await useTranga<GetTasksResponse>(() => `/tasks?${buildQuery()}`, { lazy: true });
+
+watch(data, (batch) => {
+    const items = batch ?? [];
+    tasks.value = skip.value === 0 ? items : [...tasks.value, ...items];
+    hasMore.value = items.length >= LIMIT;
+});
+
+// Reset back to the first batch whenever a filter changes.
+watch([mangaFilter, typeFilter, stateFilter], () => {
+    skip.value = 0;
+    tasks.value = [];
+    hasMore.value = true;
+});
 
 const { data: mangas, status: mangaStatus } = await useTranga<GetMangasResponse>('/mangas', { key: ApiKeys.Manga.List, lazy: true });
 
@@ -95,29 +141,30 @@ const mangaOptions = computed(() =>
         .sort((a, b) => a.label.localeCompare(b.label))
 );
 
-const typeOptions = computed(() => {
-    const names = new Set((data.value ?? []).map((t) => t.taskTypeName));
-    return [...names].map((n) => ({ label: taskTypeLabel(n), value: n })).sort((a, b) => a.label.localeCompare(b.label));
+const listRef = useTemplateRef('listRef');
+onMounted(() => {
+    useInfiniteScroll(
+        () => listRef.value?.tableRef?.$el,
+        () => {
+            skip.value += LIMIT;
+        },
+        { distance: 200, canLoadMore: () => status.value !== 'pending' && hasMore.value }
+    );
 });
 
-const stateOptions: { label: string; description: string; value: ServicesTasksTaskState }[] = (
-    ['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed'] as ServicesTasksTaskState[]
-).map((s) => ({ label: s, description: taskStateDescription(s), value: s }));
+// Refresh the already-loaded rows in place, without disturbing scroll position or the "load more" cursor.
+async function refreshLoaded() {
+    if (tasks.value.length === 0) return;
+    const { $tranga } = useNuxtApp();
+    const refreshed = await $tranga<GetTasksResponse>(`/tasks?${buildQuery({ skip: 0, limit: tasks.value.length })}`);
+    tasks.value = refreshed ?? [];
+}
 
-const filteredTasks = computed(() =>
-    (data.value ?? []).filter((t) => {
-        if (mangaFilter.value && ('manga' in t ? t.manga.mangaId : undefined) !== mangaFilter.value) return false;
-        if (typeFilter.value.length && !typeFilter.value.includes(t.taskTypeName)) return false;
-        if (stateFilter.value.length && !stateFilter.value.includes(t.status)) return false;
-        return true;
-    })
-);
-
-defineShortcuts({ meta_r: () => refresh() });
+defineShortcuts({ meta_r: () => refreshLoaded() });
 
 let interval: number;
 onMounted(() => {
-    interval = setInterval(() => refresh(), 5000);
+    interval = setInterval(() => refreshLoaded(), 5000);
 });
 onUnmounted(() => clearInterval(interval));
 </script>

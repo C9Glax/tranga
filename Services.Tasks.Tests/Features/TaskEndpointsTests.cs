@@ -143,6 +143,114 @@ public class GetTaskListEndpointTests : TrangaTest, IDisposable
         Assert.Equal(manga.MangaId, mangaTask.Manga.MangaId);
         Assert.IsNotType<Services.Tasks.Entities.ChapterTask>(dto);
     }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetTaskList_OrdersByTaskIdDescending_AndSupportsSkipAndLimit()
+    {
+        // Arrange
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+
+        // TaskId is a Guid.CreateVersion7() (millisecond timestamp precision) - a small delay between
+        // creations guarantees each TaskId sorts strictly after the previous one.
+        TestRunOnceTask first = TestTask.Create<TestRunOnceTask>();
+        TasksCollection.RunOnceTasks.TryAdd(first.TaskId, first);
+        await System.Threading.Tasks.Task.Delay(5, ct);
+        TestRunOnceTask second = TestTask.Create<TestRunOnceTask>();
+        TasksCollection.RunOnceTasks.TryAdd(second.TaskId, second);
+        await System.Threading.Tasks.Task.Delay(5, ct);
+        TestRunOnceTask third = TestTask.Create<TestRunOnceTask>();
+        TasksCollection.RunOnceTasks.TryAdd(third.TaskId, third);
+
+        using MangaContext mangaContext = MangaContextFactory.Create();
+
+        // Act
+        Ok<Task[]> firstPage = await GetTaskListEndpoint.Handle(mangaContext: mangaContext, ct: ct, skip: 0, limit: 2);
+        Ok<Task[]> secondPage = await GetTaskListEndpoint.Handle(mangaContext: mangaContext, ct: ct, skip: 2, limit: 2);
+
+        // Assert
+        Assert.NotNull(firstPage.Value);
+        Assert.Equal(2, firstPage.Value.Length);
+        Assert.Equal(third.TaskId, firstPage.Value[0].TaskId);
+        Assert.Equal(second.TaskId, firstPage.Value[1].TaskId);
+
+        Assert.NotNull(secondPage.Value);
+        Task remaining = Assert.Single(secondPage.Value);
+        Assert.Equal(first.TaskId, remaining.TaskId);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetTaskList_FiltersByMangaId()
+    {
+        // Arrange
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+
+        Guid targetMangaId = Guid.CreateVersion7();
+        TestMangaRunOnceTask matching = new(targetMangaId);
+        TestMangaRunOnceTask other = new(Guid.CreateVersion7());
+        TasksCollection.RunOnceTasks.TryAdd(matching.TaskId, matching);
+        TasksCollection.RunOnceTasks.TryAdd(other.TaskId, other);
+
+        using MangaContext mangaContext = MangaContextFactory.Create();
+
+        // Act
+        Ok<Task[]> result = await GetTaskListEndpoint.Handle(mangaContext: mangaContext, ct: ct, mangaId: targetMangaId);
+
+        // Assert
+        Assert.NotNull(result.Value);
+        Task dto = Assert.Single(result.Value);
+        Assert.Equal(matching.TaskId, dto.TaskId);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetTaskList_FiltersByTaskTypeName()
+    {
+        // Arrange
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+
+        GetMangaChaptersTask matching = new(Guid.NewGuid());
+        TestRunOnceTask other = TestTask.Create<TestRunOnceTask>();
+        TasksCollection.RunOnceTasks.TryAdd(matching.TaskId, matching);
+        TasksCollection.RunOnceTasks.TryAdd(other.TaskId, other);
+
+        using MangaContext mangaContext = MangaContextFactory.Create();
+
+        // Act
+        Ok<Task[]> result = await GetTaskListEndpoint.Handle(mangaContext: mangaContext, ct: ct, taskTypeName: [nameof(GetMangaChaptersTask)]);
+
+        // Assert
+        Assert.NotNull(result.Value);
+        Task dto = Assert.Single(result.Value);
+        Assert.Equal(matching.TaskId, dto.TaskId);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetTaskList_FiltersByStatus()
+    {
+        // Arrange
+        TasksCollection.PeriodicTasks.Clear();
+        TasksCollection.RunOnceTasks.Clear();
+
+        TestRunOnceTask running = TestTask.Create<TestRunOnceTask>();
+        running.Status = Services.Tasks.TaskTypes.TaskState.Running;
+        TestRunOnceTask pending = TestTask.Create<TestRunOnceTask>();
+        pending.Status = Services.Tasks.TaskTypes.TaskState.Pending;
+        TasksCollection.RunOnceTasks.TryAdd(running.TaskId, running);
+        TasksCollection.RunOnceTasks.TryAdd(pending.TaskId, pending);
+
+        using MangaContext mangaContext = MangaContextFactory.Create();
+
+        // Act
+        Ok<Task[]> result = await GetTaskListEndpoint.Handle(
+            mangaContext: mangaContext, ct: ct, status: [Services.Tasks.TaskTypes.TaskState.Running]);
+
+        // Assert
+        Assert.NotNull(result.Value);
+        Task dto = Assert.Single(result.Value);
+        Assert.Equal(running.TaskId, dto.TaskId);
+    }
 }
 
 public class GetTaskEndpointTests : TrangaTest

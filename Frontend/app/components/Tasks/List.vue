@@ -1,5 +1,5 @@
 <template>
-    <UTable :data="sorted" :columns="columns" :loading="loading && !tasks" class="w-full">
+    <UTable ref="tableRef" :data="sorted" :columns="columns" :loading="loading && !tasks" sticky class="w-full h-[70vh]">
         <template #type-cell="{ row }">
             <UTooltip :text="`${row.original.taskType} · ${row.original.taskTypeId}`">
                 <UBadge
@@ -56,16 +56,11 @@ const nextRun = (task: ServicesTasksTask): Date | undefined => {
     return next;
 };
 
-const sorted = computed((): ServicesTasksTask[] =>
-    [...(props.tasks ?? [])].sort((t1, t2) => {
-        const t1Next = nextRun(t1);
-        const t2Next = nextRun(t2);
-        if (t1Next && t2Next) return t1Next < t2Next ? -1 : 1;
-        else if (t1Next) return -1;
-        else if (t2Next) return 1;
-        else return 0;
-    })
-);
+// Order is set server-side (newest TaskId first) so that batches stay stable for infinite scroll.
+const sorted = computed((): ServicesTasksTask[] => props.tasks ?? []);
+
+const tableRef = useTemplateRef('tableRef');
+defineExpose({ tableRef });
 
 const columns: TableColumn<ServicesTasksTask>[] = [
     { accessorKey: 'type', header: 'Type' },
