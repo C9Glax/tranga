@@ -3,6 +3,7 @@ export default {
         '../Services.Manga/openapi/Services.Manga.json',
         '../Services.Tasks/openapi/Services.Tasks.json',
         '../Services.Notifications/openapi/Services.Notifications.json',
+        '../Services.Libraries/openapi/Services.Libraries.json',
     ],
     output: { path: `app/api/tranga`, postProcess: ['eslint', 'prettier'] },
     plugins: [

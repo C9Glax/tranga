@@ -142,6 +142,35 @@ export type ServicesNotificationsPutExtensionRequestNtfySh = {
 
 export type ServicesNotificationsPutExtensionRequestTelegram = { token: string; chatId: string; name: string };
 
+export type ServicesLibrariesAddKomgaLibraryRequest = {
+    name: string;
+    baseUrl: string;
+    apiKey?: null | string;
+    username?: null | string;
+    password?: null | string;
+    libraryRootPath?: null | string;
+};
+
+export type ServicesLibrariesLibrary = { libraryServiceType: ServicesLibrariesLibraryServiceType; id: string; baseUrl: string };
+
+export type ServicesLibrariesLibraryMangaLink = { libraryServiceId: string; seriesUrl: string };
+
+export type ServicesLibrariesLibraryServiceType = 'Komga';
+
+export type ServicesLibrariesPatchLibraryRequest = {
+    name?: null | string;
+    apiKey?: null | string;
+    username?: null | string;
+    password?: null | string;
+};
+
+export type ServicesLibrariesTestKomgaConnectionRequest = {
+    baseUrl: string;
+    apiKey?: null | string;
+    username?: null | string;
+    password?: null | string;
+};
+
 export type GetMangasData = { body?: never; path?: never; query?: never; url: '/mangas' };
 
 export type GetMangasErrors = {
@@ -850,3 +879,116 @@ export type DeleteNotificationsExtensionsByExtensionIdResponses = {
      */
     200: unknown;
 };
+
+export type GetLibrariesData = { body?: never; path?: never; query?: never; url: '/libraries' };
+
+export type GetLibrariesResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesLibrariesLibrary>;
+};
+
+export type GetLibrariesResponse = GetLibrariesResponses[keyof GetLibrariesResponses];
+
+export type PutLibrariesKomgaData = { body: ServicesLibrariesAddKomgaLibraryRequest; path?: never; query?: never; url: '/libraries/komga' };
+
+export type PutLibrariesKomgaErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+};
+
+export type PutLibrariesKomgaError = PutLibrariesKomgaErrors[keyof PutLibrariesKomgaErrors];
+
+export type PutLibrariesKomgaResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type PutLibrariesKomgaResponse = PutLibrariesKomgaResponses[keyof PutLibrariesKomgaResponses];
+
+export type PostLibrariesKomgaTestConnectionData = {
+    body: ServicesLibrariesTestKomgaConnectionRequest;
+    path?: never;
+    query?: never;
+    url: '/libraries/komga/test-connection';
+};
+
+export type PostLibrariesKomgaTestConnectionErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+};
+
+export type PostLibrariesKomgaTestConnectionError = PostLibrariesKomgaTestConnectionErrors[keyof PostLibrariesKomgaTestConnectionErrors];
+
+export type PostLibrariesKomgaTestConnectionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type DeleteLibrariesByLibraryIdData = { body?: never; path: { libraryId: string }; query?: never; url: '/libraries/{libraryId}' };
+
+export type DeleteLibrariesByLibraryIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type DeleteLibrariesByLibraryIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PatchLibrariesByLibraryIdData = {
+    body: ServicesLibrariesPatchLibraryRequest;
+    path: { libraryId: string };
+    query?: never;
+    url: '/libraries/{libraryId}';
+};
+
+export type PatchLibrariesByLibraryIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type PatchLibrariesByLibraryIdError = PatchLibrariesByLibraryIdErrors[keyof PatchLibrariesByLibraryIdErrors];
+
+export type PatchLibrariesByLibraryIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetLibrariesMappingsByMangaIdData = {
+    body?: never;
+    path: { mangaId: string };
+    query?: never;
+    url: '/libraries/mappings/{mangaId}';
+};
+
+export type GetLibrariesMappingsByMangaIdResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesLibrariesLibraryMangaLink>;
+};
+
+export type GetLibrariesMappingsByMangaIdResponse = GetLibrariesMappingsByMangaIdResponses[keyof GetLibrariesMappingsByMangaIdResponses];

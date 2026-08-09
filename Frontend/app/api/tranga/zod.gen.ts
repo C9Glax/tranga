@@ -301,3 +301,48 @@ export type ServicesNotificationsPutExtensionRequestNtfyShZodType = z.infer<type
 export const zServicesNotificationsPutExtensionRequestTelegram = z.object({ token: z.string(), chatId: z.string(), name: z.string() });
 
 export type ServicesNotificationsPutExtensionRequestTelegramZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestTelegram>;
+
+export const zServicesLibrariesAddKomgaLibraryRequest = z.object({
+    name: z.string(),
+    baseUrl: z.string(),
+    apiKey: z.nullish(z.string()),
+    username: z.nullish(z.string()),
+    password: z.nullish(z.string()),
+    libraryRootPath: z.nullish(z.string()),
+});
+
+export type ServicesLibrariesAddKomgaLibraryRequestZodType = z.infer<typeof zServicesLibrariesAddKomgaLibraryRequest>;
+
+export const zServicesLibrariesLibraryMangaLink = z.object({ libraryServiceId: z.uuid(), seriesUrl: z.string() });
+
+export type ServicesLibrariesLibraryMangaLinkZodType = z.infer<typeof zServicesLibrariesLibraryMangaLink>;
+
+export const zServicesLibrariesLibraryServiceType = z.enum(['Komga']);
+
+export type ServicesLibrariesLibraryServiceTypeZodType = z.infer<typeof zServicesLibrariesLibraryServiceType>;
+
+export const zServicesLibrariesLibrary = z.object({
+    libraryServiceType: zServicesLibrariesLibraryServiceType,
+    id: z.uuid(),
+    baseUrl: z.string(),
+});
+
+export type ServicesLibrariesLibraryZodType = z.infer<typeof zServicesLibrariesLibrary>;
+
+export const zServicesLibrariesPatchLibraryRequest = z.object({
+    name: z.nullish(z.string()),
+    apiKey: z.nullish(z.string()),
+    username: z.nullish(z.string()),
+    password: z.nullish(z.string()),
+});
+
+export type ServicesLibrariesPatchLibraryRequestZodType = z.infer<typeof zServicesLibrariesPatchLibraryRequest>;
+
+export const zServicesLibrariesTestKomgaConnectionRequest = z.object({
+    baseUrl: z.string(),
+    apiKey: z.nullish(z.string()),
+    username: z.nullish(z.string()),
+    password: z.nullish(z.string()),
+});
+
+export type ServicesLibrariesTestKomgaConnectionRequestZodType = z.infer<typeof zServicesLibrariesTestKomgaConnectionRequest>;
