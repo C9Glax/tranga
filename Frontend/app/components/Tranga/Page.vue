@@ -67,6 +67,7 @@ const defaultItems: NavigationMenuItem[] = [
     { label: 'Search Manga', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
     { label: 'Metadata List', to: '/metadata', icon: 'i-lucide-info', type: 'link' },
     { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
+    { label: 'Workers', to: `/workers`, icon: 'i-lucide-cpu' },
     { label: 'Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
 ];
 
