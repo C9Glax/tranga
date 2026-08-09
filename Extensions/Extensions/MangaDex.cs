@@ -166,7 +166,7 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         if (await GetManga(searchQuery, ct) is not { } mangas)
             return null;
 
-        List<Task<SearchResult?>> tasks = mangas.Select(m => ParseSearchResult(m, searchQuery.Language, ct)).ToList();
+        List<Task<SearchResult?>> tasks = mangas.Select(m => ParseSearchResult(m, searchQuery.Language ?? Settings.DownloadLanguage, ct)).ToList();
         await Task.WhenAll(tasks);
 
         List<SearchResult> results = [];
