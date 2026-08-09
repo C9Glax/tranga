@@ -190,10 +190,6 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 
 IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("frontend", "../Frontend")
-    .WithEnvironment(context =>
-    {
-        context.EnvironmentVariables["NUXT_PUBLIC_API_BASE_URL"] = $"localhost:{port}";
-    })
     .WithHttpEndpoint(port: 3000, env: "PORT")
     .WithReference(mangaService)
     .WithReference(tasksService)

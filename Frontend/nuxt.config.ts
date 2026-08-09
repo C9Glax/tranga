@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
     compatibilityDate: '2025-01-15',
 
-    vite: { server: { allowedHosts: ['host.docker.internal'] } },
+    vite: { server: { allowedHosts: ['host.docker.internal', 'aspire.dev.internal'] } },
 
     eslint: { config: { stylistic: { semi: true, arrowParens: true, braceStyle: '1tbs', indent: 4, commaDangle: 'always-multiline' } } },
 });

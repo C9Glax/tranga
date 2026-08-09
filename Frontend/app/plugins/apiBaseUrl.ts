@@ -1,7 +1,8 @@
 export default defineNuxtPlugin({
     name: 'apiBaseUrl',
     async setup(nuxtApp) {
-        const apiBaseUrl = `http://${nuxtApp.$config.public.api.baseUrl}/api`;
+        const configuredBaseUrl = nuxtApp.$config.public.api.baseUrl;
+        const apiBaseUrl = configuredBaseUrl ? `http://${configuredBaseUrl}/api` : '/api';
         return { provide: { apiBaseUrl } };
     },
 });
