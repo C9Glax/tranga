@@ -1,5 +1,7 @@
 using Common.Datatypes;
+using Common.Helpers;
 using Common.Tests;
+using Extensions.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Services.Manga.Database;
 using Services.Manga.Features.Manga.Search;
@@ -34,5 +36,74 @@ public class PostSearchMangaEndpointTests : TrangaTest
 
         MetadataDto[] results = Assert.IsType<Ok<MetadataDto[]>>(result.Result).Value!;
         Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task MergeMetadata_UpdatesFieldsFromNewSearchResult()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        DbFile cover = new() { FileId = Guid.NewGuid(), Path = "/covers", Name = "cover.jpg", MimeType = "image/jpeg" };
+        DbMetadata existing = TestDataBuilder.NewMetadata(coverId: cover.FileId);
+        existing.Summary = "Old Summary";
+        existing.Year = 2000;
+        await context.AddAsync(cover, ct);
+        await context.AddAsync(existing, ct);
+        await context.SaveChangesAsync(ct);
+
+        SearchResult searchResult = new()
+        {
+            MetadataExtensionIdentifier = existing.MetadataExtension,
+            Identifier = existing.Identifier,
+            Cover = new TrangaImage(),
+            Series = "Updated Series",
+            Summary = "New Summary",
+            Year = 2024,
+            Url = "https://example.com/manga",
+            Status = ReleaseStatus.Ongoing,
+            NSFW = true,
+            Genres = ["Action"],
+            Artists = ["Some Artist"],
+            Authors = ["Some Author"]
+        };
+
+        await PostSearchMangaEndpoint.MergeMetadata(context, searchResult, existing, ct);
+        await context.SaveChangesAsync(ct);
+
+        Assert.Equal("Updated Series", existing.Series);
+        Assert.Equal("New Summary", existing.Summary);
+        Assert.Equal(2024, existing.Year);
+        Assert.Equal("https://example.com/manga", existing.Url);
+        Assert.Equal(ReleaseStatus.Ongoing, existing.Status);
+        Assert.True(existing.NSFW);
+        Assert.Contains(existing.Genres!, g => g.Genre == "Action");
+        Assert.Contains(existing.Artists!, a => a.Name == "Some Artist");
+        Assert.Contains(existing.Authors!, a => a.Name == "Some Author");
+    }
+
+    [Fact]
+    public async Task MergeMetadata_KeepsExistingValuesWhenNewResultHasNoData()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        DbFile cover = new() { FileId = Guid.NewGuid(), Path = "/covers", Name = "cover.jpg", MimeType = "image/jpeg" };
+        DbMetadata existing = TestDataBuilder.NewMetadata(coverId: cover.FileId);
+        existing.Summary = "Old Summary";
+        existing.Year = 2000;
+        await context.AddAsync(cover, ct);
+        await context.AddAsync(existing, ct);
+        await context.SaveChangesAsync(ct);
+
+        SearchResult searchResult = new()
+        {
+            MetadataExtensionIdentifier = existing.MetadataExtension,
+            Identifier = existing.Identifier,
+            Cover = new TrangaImage(),
+            Series = existing.Series
+        };
+
+        await PostSearchMangaEndpoint.MergeMetadata(context, searchResult, existing, ct);
+        await context.SaveChangesAsync(ct);
+
+        Assert.Equal("Old Summary", existing.Summary);
+        Assert.Equal(2000, existing.Year);
     }
 }

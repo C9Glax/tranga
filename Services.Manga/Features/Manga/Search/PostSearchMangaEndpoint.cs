@@ -44,6 +44,9 @@ internal abstract class PostSearchMangaEndpoint
         {
             if (await mangaContext.MetadataEntries
                     .Include(s => s.MangaMetadataEntries)
+                    .Include(s => s.Genres)
+                    .Include(s => s.Artists)
+                    .Include(s => s.Authors)
                     .Where(s =>
                         s.MetadataExtension == searchResult.MetadataExtensionIdentifier &&
                         s.Identifier == searchResult.Identifier || s.Series == searchResult.Series)
@@ -51,9 +54,16 @@ internal abstract class PostSearchMangaEndpoint
             {
                 DbMetadata metadata = await CreateMetadata(mangaContext, searchResult, ct);
                 metadataList.Add(metadata);
-                
+
                 await mangaContext.SaveChangesAsync(ct);
-            }else metadataList.Add(existing); // TODO merge with new data
+            }
+            else
+            {
+                await MergeMetadata(mangaContext, searchResult, existing, ct);
+                metadataList.Add(existing);
+
+                await mangaContext.SaveChangesAsync(ct);
+            }
         }
                 
         Entities.Metadata[] results = metadataList.Distinct().Select(e => e.ToDTO()).ToArray();
@@ -123,6 +133,57 @@ internal abstract class PostSearchMangaEndpoint
         }
 
         return source;
+    }
+
+    /// <summary>
+    /// Refreshes an already-known <see cref="DbMetadata"/> entry with freshly-fetched search data,
+    /// filling in missing fields and merging Genres/Artists/Authors rather than discarding the existing record.
+    /// </summary>
+    internal static async Task MergeMetadata(MangaContext mangaContext, SearchResult searchResult, DbMetadata existing, CancellationToken ct)
+    {
+        existing.Series = searchResult.Series;
+
+        if (searchResult.Summary is { } summary)
+            existing.Summary = summary;
+
+        if (searchResult.Year is { } year)
+            existing.Year = year;
+
+        if (searchResult.Url is { } url)
+            existing.Url = url;
+
+        if (searchResult.Status is { } status)
+            existing.Status = status;
+
+        if (searchResult.NSFW is { } nsfw)
+            existing.NSFW = nsfw;
+
+        if (existing.CoverId is null)
+            await SaveCover(mangaContext, searchResult, existing, ct);
+
+        if (searchResult.Genres is { Length: > 0 } genres)
+        {
+            List<DbGenre> genreEntities = await mangaContext.Genres.Where(dbGenre => genres.Any(g => dbGenre.Genre == g))
+                .ToListAsync(ct);
+            genreEntities = genreEntities.UnionBy(genres.Select(g => new DbGenre() { Genre = g }), g => g.Genre).ToList();
+            existing.Genres = (existing.Genres ?? []).UnionBy(genreEntities, g => g.Genre).ToArray();
+        }
+
+        if (searchResult.Artists is { Length: > 0 } artists)
+        {
+            List<DbPerson> artistEntities = await mangaContext.Artists.Where(dbPerson => artists.Any(a => dbPerson.Name == a))
+                .ToListAsync(ct);
+            artistEntities = artistEntities.UnionBy(artists.Select(a => new DbPerson() { Name = a }), p => p.Name).ToList();
+            existing.Artists = (existing.Artists ?? []).UnionBy(artistEntities, p => p.Name).ToArray();
+        }
+
+        if (searchResult.Authors is { Length: > 0 } authors)
+        {
+            List<DbPerson> authorEntities = await mangaContext.Authors.Where(dbPerson => authors.Any(a => dbPerson.Name == a))
+                .ToListAsync(ct);
+            authorEntities = authorEntities.UnionBy(authors.Select(a => new DbPerson() { Name = a }), p => p.Name).ToList();
+            existing.Authors = (existing.Authors ?? []).UnionBy(authorEntities, p => p.Name).ToArray();
+        }
     }
 
     private static async Task SaveCover(MangaContext mangaContext, SearchResult searchResult, DbMetadata metadata, CancellationToken ct)

@@ -24,7 +24,7 @@ public sealed record DbMetadata
     
     public int? ChaptersNumber { get; set; }
     
-    public ReleaseStatus? Status { get; init; }
+    public ReleaseStatus? Status { get; set; }
     
     public Guid? CoverId { get; set; }
     
