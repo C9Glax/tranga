@@ -47,7 +47,7 @@ const props = defineProps<TrangaPageProps>();
 const collapsed = ref(false);
 
 const nItems = computed((): NavigationMenuItem[][] => {
-    const items: NavigationMenuItem[][] = [defaultItems];
+    const items: NavigationMenuItem[][] = [defaultItems.value];
 
     if (props.navigationProps?.items) items.push([...props.navigationProps.items]);
 
@@ -55,22 +55,29 @@ const nItems = computed((): NavigationMenuItem[][] => {
 });
 
 const router = useRouter();
+const route = useRoute();
 
-const defaultItems: NavigationMenuItem[] = [
-    { label: 'Tranga', type: 'label' },
-    {
-        label: 'Back',
-        onSelect: () => router.back(),
-        icon: 'i-lucide-arrow-left',
-        type: 'link',
-        ui: { linkLeadingIcon: 'text-secondary', linkLabel: 'text-secondary' },
-    },
-    { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
-    { label: 'Search Manga', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
-    { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
-    { label: 'Workers', to: `/workers`, icon: 'i-lucide-cpu' },
-    { label: 'Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
-];
+const defaultItems = computed((): NavigationMenuItem[] => {
+    void route.fullPath;
+    const canGoBack = import.meta.client && !!window.history.state?.back;
+
+    return [
+        { label: 'Tranga', type: 'label' },
+        {
+            label: 'Back',
+            onSelect: () => router.back(),
+            icon: 'i-lucide-arrow-left',
+            type: 'link',
+            disabled: !canGoBack,
+            ui: { linkLeadingIcon: 'text-secondary', linkLabel: 'text-secondary' },
+        },
+        { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
+        { label: 'Search Manga', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
+        { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
+        { label: 'Workers', to: `/workers`, icon: 'i-lucide-cpu' },
+        { label: 'Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
+    ];
+});
 
 const searchModel = defineModel<string>('search');
 </script>
