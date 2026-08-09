@@ -4,8 +4,7 @@
 |------------------|------------|----------------------------------------------------------------------------------------------------------------------------------|
 | AllowNSFW        | `false`    | Allow NSFW content in search results                                                                                             |
 | DownloadLanguage | `"en"`     | Language for downloaded chapters                                                                                                 | 
-| MangaDirectory   | `"Manga"`  | Path to directory to save Manga to                                                                                               | 
-| CoverDirectory   | `"Covers"` | Path to temp-directory to save Covers to                                                                                         |
+| MangaDirectory   | `"Manga"`  | Host path to bind-mount for downloaded Manga (docker-compose only; Covers are stored in a managed Docker volume)                | 
 | FLARESOLVERR_URL | null       | When set, a [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) instance will handler requests that Cloudflare rejected |
 
 ## Debug
