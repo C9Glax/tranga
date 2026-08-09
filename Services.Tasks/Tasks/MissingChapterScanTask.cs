@@ -14,6 +14,12 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
 
     private MangaContext _ctx = null!;
     
+    /// <summary>
+    /// Number of Priority values reserved per Manga, so that chapters of one Manga can be ordered by
+    /// <see cref="ParseChapterNumber"/> amongst themselves without overlapping into the next Manga's range.
+    /// </summary>
+    private const int MangaPriorityStep = 100_000;
+
     protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
         // List of Chapters that already have a non-terminal DownloadChapterTask (a completed/failed one should not block a retry)
@@ -23,19 +29,20 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
 
         var chaptersWithoutFiles = await _ctx.Chapters.Include(c => c.DownloadLinks)
             .Where(c => !chapterIds.Contains(c.ChapterId) && c.DownloadLinks!.All(d => d.FileId == null))
-            .OrderBy(c => c.Number)
-            .Select(c => new { MangaId = c.MangaId, ChapterId = c.ChapterId })
+            .Select(c => new { MangaId = c.MangaId, ChapterId = c.ChapterId, Number = c.Number })
             .GroupBy(c => c.MangaId)
             .ToListAsync(stoppingToken);
 
-        int priority = 0;
+        int mangaIndex = 0;
         foreach (var manga in chaptersWithoutFiles)
         {
-            priority++;
-            DownloadChapterTask[] tasks = manga.Select(t => new DownloadChapterTask(t.MangaId, t.ChapterId)
-            {
-                Priority = priority
-            }).ToArray();
+            mangaIndex++;
+            DownloadChapterTask[] tasks = manga
+                .OrderBy(t => ParseChapterNumber(t.Number))
+                .Select((t, chapterIndex) => new DownloadChapterTask(t.MangaId, t.ChapterId)
+                {
+                    Priority = mangaIndex * MangaPriorityStep + chapterIndex
+                }).ToArray();
             foreach (DownloadChapterTask task in tasks)
             {
                 logger.LogDebug("Adding {nameof(DownloadChapterTask)} for Chapter {task.ChapterId}", nameof(DownloadChapterTask), task.ChapterId);
@@ -43,6 +50,13 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
             }
         }
     }
+
+    /// <summary>
+    /// Parses <see cref="DbChapter.Number"/> (e.g. "10", "10.5") into a numeric value for ordering.
+    /// Chapter numbers that cannot be parsed sort last.
+    /// </summary>
+    private static double ParseChapterNumber(string number) =>
+        double.TryParse(number, out double parsed) ? parsed : double.MaxValue;
 
     protected override void RefreshScope(IServiceScope scope)
     {
