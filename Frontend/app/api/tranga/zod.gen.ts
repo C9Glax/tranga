@@ -195,6 +195,20 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
 
+export const zServicesTasksChapterSummary = z.object({
+    chapterId: z.uuid(),
+    mangaId: z.uuid(),
+    title: z.nullish(z.string()),
+    volume: z.nullish(z.string()),
+    number: z.string(),
+});
+
+export type ServicesTasksChapterSummaryZodType = z.infer<typeof zServicesTasksChapterSummary>;
+
+export const zServicesTasksMangaSummary = z.object({ mangaId: z.uuid(), series: z.nullish(z.string()) });
+
+export type ServicesTasksMangaSummaryZodType = z.infer<typeof zServicesTasksMangaSummary>;
+
 export const zServicesTasksTaskState = z.enum(['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed']);
 
 export type ServicesTasksTaskStateZodType = z.infer<typeof zServicesTasksTaskState>;
@@ -203,17 +217,53 @@ export const zServicesTasksTaskType = z.enum(['PeriodicTask', 'RunOnceTask']);
 
 export type ServicesTasksTaskTypeZodType = z.infer<typeof zServicesTasksTaskType>;
 
-export const zServicesTasksTask = z.object({
+export const zServicesTasksTaskChapterTask = z.object({
+    kind: z.optional(z.enum(['chapterTask'])),
+    chapter: zServicesTasksChapterSummary,
+    manga: zServicesTasksMangaSummary,
     taskId: z.uuid(),
     taskTypeId: z.uuid(),
     taskTypeName: z.string(),
     taskType: zServicesTasksTaskType,
     lastRun: z.nullable(z.iso.datetime()),
     status: zServicesTasksTaskState,
-    mangaId: z.nullish(z.uuid()),
-    chapterId: z.nullish(z.uuid()),
     interval: z.nullish(z.string().check(z.regex(/^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$/))),
 });
+
+export type ServicesTasksTaskChapterTaskZodType = z.infer<typeof zServicesTasksTaskChapterTask>;
+
+export const zServicesTasksTaskMangaTask = z.object({
+    kind: z.optional(z.enum(['mangaTask'])),
+    manga: zServicesTasksMangaSummary,
+    taskId: z.uuid(),
+    taskTypeId: z.uuid(),
+    taskTypeName: z.string(),
+    taskType: zServicesTasksTaskType,
+    lastRun: z.nullable(z.iso.datetime()),
+    status: zServicesTasksTaskState,
+    interval: z.nullish(z.string().check(z.regex(/^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$/))),
+});
+
+export type ServicesTasksTaskMangaTaskZodType = z.infer<typeof zServicesTasksTaskMangaTask>;
+
+export const zServicesTasksTaskTask = z.object({
+    kind: z.optional(z.enum(['task'])),
+    taskId: z.uuid(),
+    taskTypeId: z.uuid(),
+    taskTypeName: z.string(),
+    taskType: zServicesTasksTaskType,
+    lastRun: z.nullable(z.iso.datetime()),
+    status: zServicesTasksTaskState,
+    interval: z.nullish(z.string().check(z.regex(/^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$/))),
+});
+
+export type ServicesTasksTaskTaskZodType = z.infer<typeof zServicesTasksTaskTask>;
+
+export const zServicesTasksTask = z.union([
+    z.intersection(z.object({ kind: z.optional(z.literal('Services_Tasks_TaskTask')) }), zServicesTasksTaskTask),
+    z.intersection(z.object({ kind: z.optional(z.literal('Services_Tasks_TaskMangaTask')) }), zServicesTasksTaskMangaTask),
+    z.intersection(z.object({ kind: z.optional(z.literal('Services_Tasks_TaskChapterTask')) }), zServicesTasksTaskChapterTask),
+]);
 
 export type ServicesTasksTaskZodType = z.infer<typeof zServicesTasksTask>;
 

@@ -252,8 +252,86 @@
   },
   "components": {
     "schemas": {
+      "ChapterSummary": {
+        "required": [
+          "chapterId",
+          "mangaId",
+          "number"
+        ],
+        "type": "object",
+        "properties": {
+          "chapterId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mangaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "volume": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "number": {
+            "type": "string"
+          }
+        }
+      },
+      "MangaSummary": {
+        "required": [
+          "mangaId"
+        ],
+        "type": "object",
+        "properties": {
+          "mangaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "series": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "Task": {
         "required": [
+          "kind"
+        ],
+        "type": "object",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TaskTask"
+          },
+          {
+            "$ref": "#/components/schemas/TaskMangaTask"
+          },
+          {
+            "$ref": "#/components/schemas/TaskChapterTask"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {
+            "task": "#/components/schemas/TaskTask",
+            "mangaTask": "#/components/schemas/TaskMangaTask",
+            "chapterTask": "#/components/schemas/TaskChapterTask"
+          }
+        }
+      },
+      "TaskChapterTask": {
+        "required": [
+          "chapter",
+          "manga",
           "taskId",
           "taskTypeId",
           "taskTypeName",
@@ -261,8 +339,19 @@
           "lastRun",
           "status"
         ],
-        "type": "object",
         "properties": {
+          "kind": {
+            "enum": [
+              "chapterTask"
+            ],
+            "type": "string"
+          },
+          "chapter": {
+            "$ref": "#/components/schemas/ChapterSummary"
+          },
+          "manga": {
+            "$ref": "#/components/schemas/MangaSummary"
+          },
           "taskId": {
             "type": "string",
             "format": "uuid"
@@ -287,19 +376,58 @@
           "status": {
             "$ref": "#/components/schemas/TaskState"
           },
-          "mangaId": {
+          "interval": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
             "type": [
               "null",
               "string"
+            ]
+          }
+        }
+      },
+      "TaskMangaTask": {
+        "required": [
+          "manga",
+          "taskId",
+          "taskTypeId",
+          "taskTypeName",
+          "taskType",
+          "lastRun",
+          "status"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "mangaTask"
             ],
+            "type": "string"
+          },
+          "manga": {
+            "$ref": "#/components/schemas/MangaSummary"
+          },
+          "taskId": {
+            "type": "string",
             "format": "uuid"
           },
-          "chapterId": {
+          "taskTypeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "taskTypeName": {
+            "type": "string"
+          },
+          "taskType": {
+            "$ref": "#/components/schemas/TaskType"
+          },
+          "lastRun": {
             "type": [
               "null",
               "string"
             ],
-            "format": "uuid"
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskState"
           },
           "interval": {
             "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
@@ -319,6 +447,55 @@
           "Completed",
           "Failed"
         ]
+      },
+      "TaskTask": {
+        "required": [
+          "taskId",
+          "taskTypeId",
+          "taskTypeName",
+          "taskType",
+          "lastRun",
+          "status"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "task"
+            ],
+            "type": "string"
+          },
+          "taskId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "taskTypeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "taskTypeName": {
+            "type": "string"
+          },
+          "taskType": {
+            "$ref": "#/components/schemas/TaskType"
+          },
+          "lastRun": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskState"
+          },
+          "interval": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
       },
       "TaskType": {
         "enum": [

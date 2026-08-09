@@ -106,7 +106,7 @@ const stateOptions: { label: string; description: string; value: ServicesTasksTa
 
 const filteredTasks = computed(() =>
     (data.value ?? []).filter((t) => {
-        if (mangaFilter.value && t.mangaId !== mangaFilter.value) return false;
+        if (mangaFilter.value && ('manga' in t ? t.manga.mangaId : undefined) !== mangaFilter.value) return false;
         if (typeFilter.value.length && !typeFilter.value.includes(t.taskTypeName)) return false;
         if (stateFilter.value.length && !stateFilter.value.includes(t.status)) return false;
         return true;

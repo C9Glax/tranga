@@ -1,23 +1,17 @@
 <template>
-    <USkeleton v-if="status === 'pending'" class="h-6 w-32" />
     <UButton
-        v-else-if="manga?.metadataEntry"
-        :to="`/manga/${mangaId}`"
+        v-if="manga.series"
+        :to="`/manga/${manga.mangaId}`"
         variant="soft"
         color="primary"
         icon="i-lucide-book"
         truncate
-        :label="manga.metadataEntry.series" />
-    <UButton v-else :to="`/manga/${mangaId}`" variant="soft" color="neutral" icon="i-lucide-book" :label="mangaId" truncate />
+        :label="manga.series" />
+    <UButton v-else :to="`/manga/${manga.mangaId}`" variant="soft" color="neutral" icon="i-lucide-book" :label="manga.mangaId" truncate />
 </template>
 
 <script setup lang="ts">
-import type { GetMangasByMangaIdResponse } from '~/api/tranga';
-import { ApiKeys } from '~/composables/ApiKeys';
+import type { ServicesTasksMangaSummary } from '~/api/tranga';
 
-const props = defineProps<{ mangaId: string }>();
-
-const { data: manga, status } = await useTranga<GetMangasByMangaIdResponse>(() => `/mangas/${props.mangaId}`, {
-    key: ApiKeys.Manga.Manga(props.mangaId),
-});
+defineProps<{ manga: ServicesTasksMangaSummary }>();
 </script>

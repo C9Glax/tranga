@@ -17,11 +17,11 @@
         </template>
 
         <template #manga-cell="{ row }">
-            <TasksMangaCell v-if="row.original.mangaId" :manga-id="row.original.mangaId" />
+            <TasksMangaCell v-if="'manga' in row.original" :manga="row.original.manga" />
         </template>
 
         <template #chapter-cell="{ row }">
-            <TasksChapterCell v-if="row.original.chapterId" :chapter-id="row.original.chapterId" />
+            <TasksChapterCell v-if="'chapter' in row.original" :chapter="row.original.chapter" />
         </template>
 
         <template #lastRun-cell="{ row }">

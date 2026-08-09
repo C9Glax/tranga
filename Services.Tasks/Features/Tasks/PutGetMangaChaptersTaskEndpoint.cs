@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Tasks.Helpers;
 using Services.Tasks.Tasks;
+using Services.Tasks.TaskTypes;
 using Services.Tasks.WorkerLogic;
 using Task = Services.Tasks.Entities.Task;
 
@@ -33,6 +34,7 @@ internal abstract class PutGetMangaChaptersTaskEndpoint
         if (!TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task))
             return TypedResults.InternalServerError();
 
-        return TypedResults.Ok(task.ToDto());
+        Task dto = (await new ITask[] { task }.ToDtosAsync(mangaContext, ct)).Single();
+        return TypedResults.Ok(dto);
     }
 }

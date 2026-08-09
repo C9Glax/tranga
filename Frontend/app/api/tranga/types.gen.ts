@@ -92,19 +92,58 @@ export type ServicesMangaSearchQuery = {
     mangaDexSeriesId?: null | string;
 };
 
-export type ServicesTasksTask = {
+export type ServicesTasksChapterSummary = {
+    chapterId: string;
+    mangaId: string;
+    title?: null | string;
+    volume?: null | string;
+    number: string;
+};
+
+export type ServicesTasksMangaSummary = { mangaId: string; series?: null | string };
+
+export type ServicesTasksTask =
+    | ({ kind?: 'Services_Tasks_TaskTask' } & ServicesTasksTaskTask)
+    | ({ kind?: 'Services_Tasks_TaskMangaTask' } & ServicesTasksTaskMangaTask)
+    | ({ kind?: 'Services_Tasks_TaskChapterTask' } & ServicesTasksTaskChapterTask);
+
+export type ServicesTasksTaskChapterTask = {
+    kind?: 'chapterTask';
+    chapter: ServicesTasksChapterSummary;
+    manga: ServicesTasksMangaSummary;
     taskId: string;
     taskTypeId: string;
     taskTypeName: string;
     taskType: ServicesTasksTaskType;
     lastRun: null | string;
     status: ServicesTasksTaskState;
-    mangaId?: null | string;
-    chapterId?: null | string;
+    interval?: null | string;
+};
+
+export type ServicesTasksTaskMangaTask = {
+    kind?: 'mangaTask';
+    manga: ServicesTasksMangaSummary;
+    taskId: string;
+    taskTypeId: string;
+    taskTypeName: string;
+    taskType: ServicesTasksTaskType;
+    lastRun: null | string;
+    status: ServicesTasksTaskState;
     interval?: null | string;
 };
 
 export type ServicesTasksTaskState = 'Pending' | 'Blocked' | 'Queued' | 'Running' | 'Completed' | 'Failed';
+
+export type ServicesTasksTaskTask = {
+    kind?: 'task';
+    taskId: string;
+    taskTypeId: string;
+    taskTypeName: string;
+    taskType: ServicesTasksTaskType;
+    lastRun: null | string;
+    status: ServicesTasksTaskState;
+    interval?: null | string;
+};
 
 export type ServicesTasksTaskType = 'PeriodicTask' | 'RunOnceTask';
 
