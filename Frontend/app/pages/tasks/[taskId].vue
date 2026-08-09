@@ -18,6 +18,15 @@
                     <TrangaTime v-if="task.lastRun" prefix="Last run" :model-value="task.lastRun" relative />
                 </template>
                 <USkeleton v-else class="h-lh w-64" />
+
+                <UButton
+                    class="ml-auto"
+                    icon="i-lucide-download"
+                    label="Export CSV"
+                    variant="outline"
+                    color="neutral"
+                    :disabled="!logs?.length"
+                    @click="exportLogsCsv" />
             </div>
         </UPageSection>
         <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
@@ -44,6 +53,15 @@ const {
 } = await useTranga<GetTasksByTaskIdLogsResponse>(() => `/tasks/${taskId}/logs?limit=500`, { key: ApiKeys.Tasks.Logs(taskId), lazy: true });
 
 const refresh = () => Promise.all([refreshTask(), refreshLogs()]);
+
+function exportLogsCsv() {
+    if (!logs.value?.length) return;
+    downloadCsv(
+        `task-${taskId}-logs.csv`,
+        ['Timestamp', 'Level', 'Message'],
+        logs.value.map((entry) => [entry.timestamp, entry.level, entry.message]),
+    );
+}
 
 defineShortcuts({ meta_r: () => refresh() });
 
