@@ -8,7 +8,7 @@ export default defineNuxtConfig({
 
     css: ['~/assets/css/main.css'],
 
-    runtimeConfig: { public: { api: { baseUrl: 'localhost:5000' } } },
+    runtimeConfig: { public: { api: { baseUrl: '' } } },
 
     compatibilityDate: '2025-01-15',
 
