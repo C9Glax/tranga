@@ -133,4 +133,26 @@ public sealed class KomgaTests : Common.Tests.TrangaTest
 
         await Assert.ThrowsAnyAsync<Exception>(() => KomgaExtension.MintApiKey(server.BaseUrl, "someuser", "wrongpassword", ct));
     }
+
+    [Fact]
+    public async Task MintApiKeyDoesNotDoubleSlashPathWhenBaseUrlHasTrailingSlash()
+    {
+        const string responseBody = """
+        {
+            "comment": "Tranga",
+            "createdDate": "2024-01-01T00:00:00Z",
+            "id": "some-id",
+            "key": "minted-api-key-value",
+            "lastModifiedDate": "2024-01-01T00:00:00Z",
+            "userId": "user-id"
+        }
+        """;
+        using RecordingHttpServer server = new(HttpStatusCode.OK, responseBody);
+
+        // RecordingHttpServer.BaseUrl always has a trailing slash.
+        await KomgaExtension.MintApiKey(server.BaseUrl, "someuser", "somepassword", ct);
+
+        Assert.NotNull(server.LastRequest);
+        Assert.DoesNotContain("//", server.LastRequest!.Url!.AbsolutePath);
+    }
 }
