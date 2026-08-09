@@ -21,3 +21,10 @@ public sealed record MangaUpdates : IMetadataExtension
     public string Name => "MangaUpdates";
     public string IconUrl => "https://www.mangaupdates.com/images/manga-updates.svg";
 }
+
+public sealed record MangaPlus : IMetadataExtension
+{
+    public Guid MetadataExtensionId => Guid.Parse("0bc30bc2-dbcf-47ce-a890-c8428a7e031b");
+    public string Name => "MangaPlus";
+    public string IconUrl => "https://mangaplus.shueisha.co.jp/apple-touch-icon.png";
+}

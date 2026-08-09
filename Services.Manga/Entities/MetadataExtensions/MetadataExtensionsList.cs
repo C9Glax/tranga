@@ -5,6 +5,7 @@ public sealed record MetadataExtensionsList
     public IMetadataExtension[] Extensions { get; init; } =
     [
         new MangaDex(),
-        new MangaUpdates()
+        new MangaUpdates(),
+        new MangaPlus()
     ];
 }

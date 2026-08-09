@@ -14,5 +14,6 @@ public class GetDownloadExtensionsEndpointTests
         Assert.NotNull(result.Value);
         Assert.NotEmpty(result.Value.Extensions);
         Assert.Contains(result.Value.Extensions, e => e.Name == "MangaDex");
+        Assert.Contains(result.Value.Extensions, e => e.Name == "MangaPlus");
     }
 }

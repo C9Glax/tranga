@@ -6,6 +6,7 @@ public sealed record DownloadExtensionsList
     [
         new MangaDex(),
         new WeebCentral(),
-        new AsuraScans()
+        new AsuraScans(),
+        new MangaPlus()
     ];
 }
