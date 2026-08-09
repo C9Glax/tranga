@@ -1,7 +1,12 @@
 <template>
     <UCard>
-        {{ extension }}
-        <UButton label="Delete" color="error" loading-auto @click="removeExtension" />
+        <div class="flex flex-row items-center justify-between gap-4">
+            <div class="flex flex-col">
+                <span class="font-medium">{{ extension.name }}</span>
+                <span class="text-sm text-muted">{{ extension.type }}</span>
+            </div>
+            <UButton label="Delete" color="error" loading-auto @click="removeExtension" />
+        </div>
     </UCard>
 </template>
 
