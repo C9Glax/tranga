@@ -65,7 +65,7 @@ const currentTaskChapter = (worker: ServicesTasksWorker) => {
 const statusOrder: Record<ServicesTasksWorker['status'], number> = { Busy: 0, Retiring: 1, Idle: 2 };
 
 const sorted = computed((): ServicesTasksWorker[] =>
-    [...(props.workers ?? [])].sort((w1, w2) => statusOrder[w1.status] - statusOrder[w2.status])
+    [...(props.workers ?? [])].sort((w1, w2) => statusOrder[w1.status] - statusOrder[w2.status]),
 );
 
 const columns: TableColumn<ServicesTasksWorker>[] = [

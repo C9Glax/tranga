@@ -138,7 +138,7 @@ const { data: mangas, status: mangaStatus } = await useTranga<GetMangasResponse>
 const mangaOptions = computed(() =>
     (mangas.value ?? [])
         .map((m) => ({ label: m.metadataEntry?.series ?? m.mangaId, value: m.mangaId }))
-        .sort((a, b) => a.label.localeCompare(b.label))
+        .sort((a, b) => a.label.localeCompare(b.label)),
 );
 
 const listRef = useTemplateRef('listRef');
@@ -148,7 +148,7 @@ onMounted(() => {
         () => {
             skip.value += LIMIT;
         },
-        { distance: 200, canLoadMore: () => status.value !== 'pending' && hasMore.value }
+        { distance: 200, canLoadMore: () => status.value !== 'pending' && hasMore.value },
     );
 });
 

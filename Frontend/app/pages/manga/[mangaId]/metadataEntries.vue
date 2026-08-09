@@ -15,7 +15,7 @@ const mangaId = useRoute().params.mangaId as string;
 
 const { data: metadataSources, status: statusMetadata } = await useTranga<GetMangasByMangaIdMetadataRelatedResponse>(
     () => `/mangas/${mangaId}/metadata/related`,
-    { key: ApiKeys.Manga.Metadata.RelatedManga(mangaId) }
+    { key: ApiKeys.Manga.Metadata.RelatedManga(mangaId) },
 );
 
 const navigation = computed((): NavigationMenuProps => {

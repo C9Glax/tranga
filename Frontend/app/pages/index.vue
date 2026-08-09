@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage v-model:search="search" :page-title="{ title: 'Manga List', icon: { name: 'i-lucide-book' } }" searchEnabled>
+    <TrangaPage v-model:search="search" :page-title="{ title: 'Manga List', icon: { name: 'i-lucide-book' } }" search-enabled>
         <UContainer>
             <MangaList :mangas="mangaList" :loading="status !== 'success'" />
         </UContainer>
@@ -18,7 +18,7 @@ const { data, status, refresh } = await useTranga<GetMangasResponse>('/mangas', 
 const mangaList = computed(() =>
     search.value
         ? data.value?.filter((m) => m.metadataEntry?.series.toLocaleLowerCase().includes(search.value!.toLocaleLowerCase()))
-        : data.value
+        : data.value,
 );
 
 defineShortcuts({ shift_r: () => refresh() });

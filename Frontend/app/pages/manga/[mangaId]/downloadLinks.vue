@@ -14,7 +14,7 @@ const mangaId = useRoute().params.mangaId as string;
 
 const { data: downloadLinks, status: statusDownloadLinks } = useTranga<PostMangasSearchByMangaIdDownloadLinksResponse>(
     () => `/mangas/search/${mangaId}/downloadLinks`,
-    { method: 'POST' }
+    { method: 'POST' },
 );
 
 const navigation = computed((): NavigationMenuProps => {

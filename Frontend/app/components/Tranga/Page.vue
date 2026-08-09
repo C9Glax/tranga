@@ -9,7 +9,9 @@
                                 v-bind="pageTitle.icon"
                                 class="size-10"
                                 :class="pageTitle.icon.color && `text-${pageTitle.icon.color}`" />
-                            <p class="text-3xl mt-1" :class="collapsed && 'hidden'">{{ pageTitle.title }}</p>
+                            <p class="text-3xl mt-1" :class="collapsed && 'hidden'">
+                                {{ pageTitle.title }}
+                            </p>
                         </div>
                     </slot>
                     <UInput

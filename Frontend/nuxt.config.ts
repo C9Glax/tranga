@@ -4,15 +4,15 @@ export default defineNuxtConfig({
 
     devtools: { enabled: true },
 
-    css: ['~/assets/css/main.css'],
-
-    compatibilityDate: '2025-01-15',
-
-    eslint: { config: { stylistic: { commaDangle: 'never', braceStyle: '1tbs', indent: 4 } } },
-
     app: { head: { title: 'Tranga', htmlAttrs: { lang: 'en' }, link: [{ rel: 'icon', type: 'image/png', href: '/blahaj.png' }] } },
+
+    css: ['~/assets/css/main.css'],
 
     runtimeConfig: { public: { api: { baseUrl: 'localhost:5000' } } },
 
+    compatibilityDate: '2025-01-15',
+
     vite: { server: { allowedHosts: ['host.docker.internal'] } },
+
+    eslint: { config: { stylistic: { semi: true, arrowParens: true, braceStyle: '1tbs', indent: 4, commaDangle: 'always-multiline' } } },
 });
