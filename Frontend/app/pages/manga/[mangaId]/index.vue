@@ -1,6 +1,11 @@
 <template>
     <MangaPage :manga="manga" :actions="actions" :loading="statusManga !== 'success'">
-        <DownloadLinkList :download-links="downloadLinks" :loading="statusDownloadLinks !== 'success'" />
+        <DownloadLinkList
+            :download-links="downloadLinks"
+            :loading="statusDownloadLinks !== 'success'"
+            empty-title="No Download Links"
+            empty-description="This manga doesn't have any download links yet."
+            :empty-actions="[moreDownloadLinksAction]" />
     </MangaPage>
 </template>
 
@@ -29,8 +34,15 @@ const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdRespons
     key: ApiKeys.Libraries.Mapping(mangaId),
 });
 
-const actions = (manga?: ServicesMangaManga): ButtonProps[] | undefined => [
-    { label: 'More Download-Links', to: `/manga/${manga?.mangaId}/downloadLinks`, icon: 'i-lucide-download', variant: 'outline' },
+const moreDownloadLinksAction = computed<ButtonProps>(() => ({
+    label: 'More Download-Links',
+    to: `/manga/${mangaId}/downloadLinks`,
+    icon: 'i-lucide-download',
+    variant: 'outline',
+}));
+
+const actions = (_manga?: ServicesMangaManga): ButtonProps[] | undefined => [
+    moreDownloadLinksAction.value,
     ...(libraryMappings.value ?? []).map(
         (mapping): ButtonProps => ({
             label: 'View in Komga',
