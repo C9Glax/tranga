@@ -2,7 +2,8 @@
     <UTable ref="tableRef" :data="sorted" :columns="columns" :loading="loading && !tasks" sticky class="w-full h-[70vh]">
         <template #type-cell="{ row }">
             <UTooltip :text="`${row.original.taskType} · ${row.original.taskTypeId}`">
-                <UBadge
+                <UButton
+                    :to="`/tasks/${row.original.taskId}`"
                     :icon="row.original.taskType === 'PeriodicTask' ? 'i-lucide-repeat' : 'i-lucide-line-dot-right-horizontal'"
                     :label="taskTypeLabel(row.original.taskTypeName)"
                     variant="subtle"
