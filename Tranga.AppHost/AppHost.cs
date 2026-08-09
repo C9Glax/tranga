@@ -22,6 +22,10 @@ builder.AddDockerComposeEnvironment("env")
             Name = "tranga",
             Driver = "bridge"
         });
+        conf.AddVolume(new Volume()
+        {
+            Name = "Covers"
+        });
     });
 
 IResourceBuilder<ParameterResource> postgresUser = builder.AddParameter("PostgresUser");
@@ -72,7 +76,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         service.Volumes.Add(new Volume()
         {
             Name = "Mangas",
-            Source = EnvVars.MangaDirectory,
+            Source = "${MangaDirectory}",
             Target = "/app/Mangas",
             Type = "bind"
         });
@@ -110,9 +114,9 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         service.Volumes.Add(new Volume()
         {
             Name = "Covers",
-            Source = EnvVars.CoverDirectory,
+            Source = "Covers",
             Target = "/app/Covers",
-            Type = "bind"
+            Type = "volume"
         });
         service.DependsOn = new()
         {
