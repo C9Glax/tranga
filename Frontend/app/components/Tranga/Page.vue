@@ -54,18 +54,19 @@ const nItems = computed((): NavigationMenuItem[][] => {
     return items;
 });
 
+const router = useRouter();
+
 const defaultItems: NavigationMenuItem[] = [
     { label: 'Tranga', type: 'label' },
     {
         label: 'Back',
-        onSelect: () => useRouter().back(),
+        onSelect: () => router.back(),
         icon: 'i-lucide-arrow-left',
         type: 'link',
         ui: { linkLeadingIcon: 'text-secondary', linkLabel: 'text-secondary' },
     },
     { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
     { label: 'Search Manga', onSelect: () => searchOverlay.open(), icon: 'i-lucide-search' },
-    { label: 'Metadata List', to: '/metadata', icon: 'i-lucide-info', type: 'link' },
     { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
     { label: 'Workers', to: `/workers`, icon: 'i-lucide-cpu' },
     { label: 'Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
