@@ -38,6 +38,16 @@ export type ServicesMangaManga = {
     downloadLinks?: null | Array<ServicesMangaDownloadLink>;
 };
 
+export type ServicesMangaMangaChapter = {
+    isDownloaded: boolean;
+    chapterId: string;
+    mangaId: string;
+    title: null | string;
+    volume: null | string;
+    number: string;
+    releaseDate: null | string;
+};
+
 export type ServicesMangaMangaDownloadLink = {
     mangaId: string;
     matched: boolean;
@@ -330,6 +340,17 @@ export type PatchMangasByMangaIdMetadataByMetadataIdResponses = {
      */
     200: unknown;
 };
+
+export type GetMangasByMangaIdChaptersData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/chapters' };
+
+export type GetMangasByMangaIdChaptersResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesMangaMangaChapter>;
+};
+
+export type GetMangasByMangaIdChaptersResponse = GetMangasByMangaIdChaptersResponses[keyof GetMangasByMangaIdChaptersResponses];
 
 export type GetMangasByMangaIdDownloadLinksData = {
     body?: never;

@@ -100,6 +100,7 @@ const navigation = computed((): NavigationMenuProps => {
             { label: 'Metadata-Entries', to: `/manga/${props.manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
             { label: 'Manga Tasks', to: `/tasks?manga=${props.manga?.mangaId}`, icon: 'i-lucide-biceps-flexed' },
             { label: 'Manga Downloads', to: `/manga/${props.manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
+            { label: 'Chapters', to: `/manga/${props.manga?.mangaId}/chapters`, icon: 'i-lucide-list-checks' },
             ...(actionItems.length ? [{ label: 'Actions', type: 'label' } as NavigationMenuItem, ...actionItems] : []),
         ],
     };
