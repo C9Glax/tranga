@@ -14,7 +14,11 @@
             <div v-if="row.original.currentTaskId" class="flex gap-1 items-center flex-wrap">
                 <UTooltip :text="row.original.currentTaskId">
                     <UBadge
-                        :icon="currentTask(row.original)?.taskType === 'PeriodicTask' ? 'i-lucide-repeat' : 'i-lucide-line-dot-right-horizontal'"
+                        :icon="
+                            currentTask(row.original)?.taskType === 'PeriodicTask'
+                                ? 'i-lucide-repeat'
+                                : 'i-lucide-line-dot-right-horizontal'
+                        "
                         :label="currentTask(row.original) ? taskTypeLabel(currentTask(row.original)!.taskTypeName) : 'Unknown task'"
                         variant="subtle"
                         color="neutral" />

@@ -9,7 +9,11 @@
 <script setup lang="ts">
 import type { GetTasksWorkersResponse, GetTasksResponse } from '~/api/tranga';
 
-const { data: workers, refresh: refreshWorkers, status: workersStatus } = await useTranga<GetTasksWorkersResponse>('/tasks/workers', { lazy: true });
+const {
+    data: workers,
+    refresh: refreshWorkers,
+    status: workersStatus,
+} = await useTranga<GetTasksWorkersResponse>('/tasks/workers', { lazy: true });
 
 const { data: tasks, refresh: refreshTasks } = await useTranga<GetTasksResponse>(() => `/tasks?includeFinished=true`, { lazy: true });
 
