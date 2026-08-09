@@ -31,6 +31,9 @@ internal static class EndpointHelpers
         builder.MapPatch("{libraryId}", PatchLibraryEndpoint.Handle)
             .WithSummary("Rename a library extension and/or rotate its credentials");
 
+        builder.MapPost("{libraryId}/link", LinkLibraryMangaEndpoint.Handle)
+            .WithSummary("Manually link unmapped Manga to the library's series by name");
+
         builder.MapGet("/mappings/{mangaId}", GetLibraryMangaLinkEndpoint.Handle)
             .WithSummary("Get the library-extension links for a Manga");
     }

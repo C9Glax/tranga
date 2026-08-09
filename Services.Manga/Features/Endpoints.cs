@@ -60,7 +60,10 @@ internal static class EndpointHelpers
         builder.MapPatch("{mangaId}/metadata/{metadataId}", PatchMangaMetadataEntryChosenEndpoint.Handle)
             .WithSummary("Sets a Metadata-Entry as chosen \"Source of Truth\" for Manga")
             .WithTags("Metadata");
-        
+
+        builder.MapPost("{mangaId}/sync", PostMangaSyncEndpoint.Handle)
+            .WithSummary("Manually trigger a metadata sync to any linked library extensions (e.g. Komga)");
+
         builder.MapGet("{mangaId}/chapters", GetMangaChaptersEndpoint.Handle)
             .WithSummary("Chapters of Manga")
             .WithTags("Chapter");

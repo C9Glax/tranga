@@ -343,6 +343,22 @@ export type PatchMangasByMangaIdMetadataByMetadataIdResponses = {
     200: unknown;
 };
 
+export type PostMangasByMangaIdSyncData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/sync' };
+
+export type PostMangasByMangaIdSyncErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type PostMangasByMangaIdSyncResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type GetMangasByMangaIdChaptersData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/chapters' };
 
 export type GetMangasByMangaIdChaptersResponses = {
@@ -1073,6 +1089,35 @@ export type PatchLibrariesByLibraryIdResponses = {
      */
     200: unknown;
 };
+
+export type PostLibrariesByLibraryIdLinkData = {
+    body?: never;
+    path: { libraryId: string };
+    query?: never;
+    url: '/libraries/{libraryId}/link';
+};
+
+export type PostLibrariesByLibraryIdLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type PostLibrariesByLibraryIdLinkError = PostLibrariesByLibraryIdLinkErrors[keyof PostLibrariesByLibraryIdLinkErrors];
+
+export type PostLibrariesByLibraryIdLinkResponses = {
+    /**
+     * OK
+     */
+    200: number | string;
+};
+
+export type PostLibrariesByLibraryIdLinkResponse = PostLibrariesByLibraryIdLinkResponses[keyof PostLibrariesByLibraryIdLinkResponses];
 
 export type GetLibrariesMappingsByMangaIdData = {
     body?: never;

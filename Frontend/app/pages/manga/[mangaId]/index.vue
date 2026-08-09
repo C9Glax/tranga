@@ -10,14 +10,10 @@
 </template>
 
 <script setup lang="ts">
-import type {
-    GetLibrariesMappingsByMangaIdResponse,
-    GetMangasByMangaIdDownloadLinksResponse,
-    GetMangasByMangaIdResponse,
-    ServicesMangaManga,
-} from '~/api/tranga';
+import type { GetMangasByMangaIdDownloadLinksResponse, GetMangasByMangaIdResponse, ServicesMangaManga } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
+import { syncMangaToKomga } from '~/utils/syncMangaToKomga';
 
 const mangaId = useRoute().params.mangaId as string;
 
@@ -30,10 +26,6 @@ const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangas
     { key: ApiKeys.Manga.DownloadLinks(mangaId) },
 );
 
-const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${mangaId}`, {
-    key: ApiKeys.Libraries.Mapping(mangaId),
-});
-
 const moreDownloadLinksAction = computed<ButtonProps>(() => ({
     label: 'More Download-Links',
     to: `/manga/${mangaId}/downloadLinks`,
@@ -41,16 +33,12 @@ const moreDownloadLinksAction = computed<ButtonProps>(() => ({
     variant: 'outline',
 }));
 
-const actions = (_manga?: ServicesMangaManga): ButtonProps[] | undefined => [
-    moreDownloadLinksAction.value,
-    ...(libraryMappings.value ?? []).map(
-        (mapping): ButtonProps => ({
-            label: 'View in Komga',
-            to: mapping.seriesUrl,
-            icon: 'i-lucide-external-link',
-            variant: 'outline',
-            target: '_blank',
-        }),
-    ),
-];
+const syncToKomgaAction = computed<ButtonProps>(() => ({
+    label: 'Sync to Komga',
+    icon: 'i-lucide-refresh-cw',
+    variant: 'outline',
+    onClick: () => syncMangaToKomga(mangaId),
+}));
+
+const actions = (_manga?: ServicesMangaManga): ButtonProps[] | undefined => [moreDownloadLinksAction.value, syncToKomgaAction.value];
 </script>
