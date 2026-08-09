@@ -94,6 +94,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         await archive.DisposeAsync();
         await dbFile.SaveFile(archiveStream, stoppingToken);
         await _ctx.AddAsync(dbFile, stoppingToken);
+        link.FileId = dbFile.FileId;
 
         await _ctx.SaveChangesAsync(stoppingToken);
 
