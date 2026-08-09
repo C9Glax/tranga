@@ -24,6 +24,7 @@
     "devDependencies": {
         "@hey-api/openapi-ts": "0.94.5",
         "@nuxt/eslint": "^1.15.2",
+        "@vue/eslint-config-prettier": "^10.2.0",
         "eslint": "^10.0.3",
         "prettier": "^3.8.1",
         "typescript": "^5.9.3",

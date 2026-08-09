@@ -1,7 +1,7 @@
 <template>
     <UCard>
         {{ extension }}
-        <UButton label="Delete" color="error" @click="removeExtension" loading-auto />
+        <UButton label="Delete" color="error" loading-auto @click="removeExtension" />
     </UCard>
 </template>
 
@@ -26,7 +26,7 @@ const removeExtension = async () => {
                 refreshNuxtData(ApiKeys.Notifications.Extensions);
                 toast.add({ title: 'Removed extension.', color: 'success' });
             },
-        }
+        },
     );
 };
 </script>

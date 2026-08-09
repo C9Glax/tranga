@@ -18,16 +18,22 @@
                 :style="{ '--sidebar-width': `${size}px` }">
                 <MangaCover
                     :file-id="manga?.metadataEntry?.coverId"
-                    :mangaId="manga?.mangaId"
-                    :noBlur="!manga?.metadataEntry?.nsfw"
+                    :manga-id="manga?.mangaId"
+                    :no-blur="!manga?.metadataEntry?.nsfw"
                     class="aspect-6/9 w-full max-w-2xs mx-auto md:mx-0" />
 
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-row gap-2 items-baseline flex-wrap">
-                        <p v-if="$props.title" class="text-lg font-semibold">{{ $props.title }}</p>
-                        <p v-else-if="manga?.metadataEntry?.series" class="text-lg font-semibold">{{ manga?.metadataEntry?.series }}</p>
+                        <p v-if="$props.title" class="text-lg font-semibold">
+                            {{ $props.title }}
+                        </p>
+                        <p v-else-if="manga?.metadataEntry?.series" class="text-lg font-semibold">
+                            {{ manga?.metadataEntry?.series }}
+                        </p>
                         <USkeleton v-else class="h-lh w-14" />
-                        <p v-if="manga?.metadataEntry?.year" class="text-dimmed text-sm">{{ manga.metadataEntry?.year }}</p>
+                        <p v-if="manga?.metadataEntry?.year" class="text-dimmed text-sm">
+                            {{ manga.metadataEntry?.year }}
+                        </p>
                     </div>
                     <div class="flex flex-row gap-2 items-center flex-wrap">
                         <UBadge
@@ -84,7 +90,7 @@ const { el, size, isDragging, onMouseDown, onTouchStart, onDoubleClick } = useRe
 
 const navigation = computed((): NavigationMenuProps => {
     const actionItems: NavigationMenuItem[] = (props.actions?.(props.manga) ?? []).map(
-        (action): NavigationMenuItem => ({ label: action.label, icon: action.icon, to: action.to, target: action.target })
+        (action): NavigationMenuItem => ({ label: action.label, icon: action.icon, to: action.to, target: action.target }),
     );
 
     return {

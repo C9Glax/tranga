@@ -7,8 +7,8 @@
                     color="neutral"
                     variant="subtle"
                     trailing-icon="i-lucide-chevron-down"
-                    @click="open = !open"
-                    block />
+                    block
+                    @click="open = !open" />
 
                 <template #content>
                     <UCard class="m-0.5 mt-2">
@@ -50,11 +50,13 @@
                                     label="Test Connection"
                                     color="neutral"
                                     variant="soft"
-                                    @click="testConnection"
                                     loading-auto
-                                    icon="i-lucide-plug" />
+                                    icon="i-lucide-plug"
+                                    @click="testConnection" />
                                 <UButton
                                     label="Cancel"
+                                    color="secondary"
+                                    variant="soft"
                                     @click="
                                         () => {
                                             state = {};
@@ -62,10 +64,8 @@
                                             connectionVerified = false;
                                             open = false;
                                         }
-                                    "
-                                    color="secondary"
-                                    variant="soft" />
-                                <UButton label="Add" @click="createLibrary" loading-auto icon="i-lucide-plus" />
+                                    " />
+                                <UButton label="Add" loading-auto icon="i-lucide-plus" @click="createLibrary" />
                             </div>
                         </div>
                     </UCard>
@@ -102,7 +102,7 @@ watch(
     () => {
         connectionVerified.value = false;
     },
-    { deep: true }
+    { deep: true },
 );
 
 const testConnection = async () => {

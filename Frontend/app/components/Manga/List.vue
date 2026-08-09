@@ -1,10 +1,10 @@
 <template>
     <UPageGrid :ui="{ base: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4' }">
-        <USkeleton v-if="loading" v-for="_ in [...Array(3)]" class="w-60 h-90" />
+        <USkeleton v-for="_ in [...Array(3)]" v-if="loading" class="w-60 h-90" />
 
         <UPageCard
-            v-if="!loading"
             v-for="manga in mangas"
+            v-if="!loading"
             :to="`/manga/${manga.mangaId}`"
             class="relative overflow-clip"
             :ui="{ container: 'p-0 sm:p-0' }"
@@ -16,7 +16,7 @@
             <MangaCover
                 :file-id="manga.metadataEntry?.coverId"
                 :manga-id="manga.mangaId"
-                noBlur
+                no-blur
                 class="z-0"
                 :class="manga.metadataEntry?.nsfw ? 'blur-md' : 'blur-xs'" />
         </UPageCard>

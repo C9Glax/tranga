@@ -22,7 +22,7 @@ const { data: manga, status: statusManga } = await useTranga<GetMangasByMangaIdR
 
 const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangasByMangaIdDownloadLinksResponse>(
     () => `/mangas/${mangaId}/downloadLinks`,
-    { key: ApiKeys.Manga.DownloadLinks(mangaId) }
+    { key: ApiKeys.Manga.DownloadLinks(mangaId) },
 );
 
 const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${mangaId}`, {
@@ -38,7 +38,7 @@ const actions = (manga?: ServicesMangaManga): ButtonProps[] | undefined => [
             icon: 'i-lucide-external-link',
             variant: 'outline',
             target: '_blank',
-        })
+        }),
     ),
 ];
 </script>

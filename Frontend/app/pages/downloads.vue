@@ -15,7 +15,7 @@ import type { GetTasksMangaDownloadsResponse, GetMangasChaptersResponse } from '
 const includeFinished = useState<boolean>(() => false);
 const { data, refresh, status } = await useTranga<GetTasksMangaDownloadsResponse>(
     () => `/tasks/manga/downloads?includeFinished=${includeFinished.value}`,
-    { lazy: true, watch: [includeFinished] }
+    { lazy: true, watch: [includeFinished] },
 );
 
 defineShortcuts({ meta_r: () => refresh() });

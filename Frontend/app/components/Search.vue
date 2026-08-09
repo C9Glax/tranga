@@ -17,8 +17,8 @@
                         </template>
                     </UInput>
                     <UCheckboxGroup
-                        legend="Search on:"
                         v-model="selectedExtensions"
+                        legend="Search on:"
                         orientation="horizontal"
                         color="secondary"
                         :items="metadataExtensions"
@@ -46,7 +46,7 @@ const toast = useToast();
 const { metadataExtensions } = await useMetadataExtensions();
 
 const selectedExtensions = ref<string[]>(
-    metadataExtensions.value?.map((e: ServicesMangaIMetadataExtension) => e.metadataExtensionId as string) ?? []
+    metadataExtensions.value?.map((e: ServicesMangaIMetadataExtension) => e.metadataExtensionId as string) ?? [],
 );
 const searchQuery = ref<{ title?: string }>({});
 

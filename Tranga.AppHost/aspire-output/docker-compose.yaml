@@ -53,7 +53,7 @@ services:
     volumes:
       - type: "bind"
         target: "/app/Mangas"
-        source: "Mangas"
+        source: "${MangaDirectory}"
     depends_on:
       tranga-pg:
         condition: "service_started"
@@ -94,7 +94,7 @@ services:
     expose:
       - "${SERVICES_MANGA_PORT}"
     volumes:
-      - type: "bind"
+      - type: "volume"
         target: "/app/Covers"
         source: "Covers"
     depends_on:
@@ -259,3 +259,5 @@ networks:
     driver: "bridge"
   tranga:
     driver: "bridge"
+volumes:
+  Covers: {}

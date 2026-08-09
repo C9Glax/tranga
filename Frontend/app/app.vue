@@ -31,7 +31,7 @@
                             trailing: 'hidden',
                         }" />
                     <UButton to="/settings" icon="i-lucide-settings" variant="ghost" color="secondary" />
-                    <UButton icon="i-lucide-book-search" @click="searchOverlay.open()">Search <UKbd value="ctrl+s" /></UButton>
+                    <UButton icon="i-lucide-book-search" @click="searchOverlay.open()"> Search <UKbd value="ctrl+s" /> </UButton>
                 </div>
             </template>
         </UHeader>
