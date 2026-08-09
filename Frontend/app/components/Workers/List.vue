@@ -2,7 +2,11 @@
     <UTable :data="sorted" :columns="columns" :loading="loading && !workers" class="w-full">
         <template #workerId-cell="{ row }">
             <UTooltip :text="row.original.workerId">
-                <UBadge :label="row.original.workerId.slice(0, 8)" variant="subtle" color="neutral" />
+                <UBadge
+                    :label="row.original.workerId.slice(row.original.workerId.length - 8, row.original.workerId.length)"
+                    variant="subtle"
+                    color="neutral"
+                    class="font-mono" />
             </UTooltip>
         </template>
 
