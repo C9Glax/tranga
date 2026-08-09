@@ -14,5 +14,5 @@ export default defineNuxtConfig({
 
     runtimeConfig: { public: { api: { baseUrl: '' } } },
 
-    vite: { server: { allowedHosts: ['host.docker.internal'] } },
+    vite: { server: { allowedHosts: ['host.docker.internal', 'aspire.dev.internal'] } },
 });
