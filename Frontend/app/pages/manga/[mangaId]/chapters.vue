@@ -1,22 +1,19 @@
 <template>
-    <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Metadata-Entries', icon: { name: 'i-lucide-list' } }">
-        <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
-            <MetadataList :metadata-list="metadataSources" :loading="statusMetadata !== 'success'" :manga-id="mangaId" />
-        </UPageSection>
+    <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Chapters', icon: { name: 'i-lucide-list-checks' } }" rimless>
+        <ChaptersList :chapters="data" :loading="status !== 'success'" />
     </TrangaPage>
 </template>
 
 <script setup lang="ts">
-import type { GetMangasByMangaIdMetadataRelatedResponse } from '~/api/tranga';
+import type { GetMangasByMangaIdChaptersResponse } from '~/api/tranga';
 import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 
 const mangaId = useRoute().params.mangaId as string;
 
-const { data: metadataSources, status: statusMetadata } = await useTranga<GetMangasByMangaIdMetadataRelatedResponse>(
-    () => `/mangas/${mangaId}/metadata/related`,
-    { key: ApiKeys.Manga.Metadata.RelatedManga(mangaId) },
-);
+const { data, status } = await useTranga<GetMangasByMangaIdChaptersResponse>(() => `/mangas/${mangaId}/chapters`, {
+    key: ApiKeys.Manga.Chapters.List(mangaId),
+});
 
 const navigation = computed((): NavigationMenuProps => {
     return {

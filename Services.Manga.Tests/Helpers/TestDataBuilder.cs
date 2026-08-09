@@ -96,4 +96,31 @@ public static class TestDataBuilder
 
         return chapter;
     }
+
+    public static async Task<DbChapterDownloadLink> SeedChapterDownloadLink(
+        MangaContext context, DbChapter chapter, bool downloaded, CancellationToken ct = default)
+    {
+        Guid? fileId = null;
+        if (downloaded)
+        {
+            DbFile file = new() { FileId = Guid.NewGuid(), Path = "/downloads", Name = "chapter.cbz", MimeType = "application/zip" };
+            await context.AddAsync(file, ct);
+            fileId = file.FileId;
+        }
+
+        DbChapterDownloadLink link = new()
+        {
+            ChapterId = chapter.ChapterId,
+            DownloadExtension = Guid.NewGuid(),
+            Identifier = Guid.NewGuid().ToString(),
+            Priority = 0,
+            FileId = fileId,
+            Chapter = chapter
+        };
+
+        await context.AddAsync(link, ct);
+        await context.SaveChangesAsync(ct);
+
+        return link;
+    }
 }

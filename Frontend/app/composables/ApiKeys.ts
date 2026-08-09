@@ -23,6 +23,8 @@ export namespace ApiKeys {
 
         export namespace Chapters {
             export const Chapter = (id: string) => `Chapter/${id}`;
+
+            export const List = (mangaId: string) => `Manga/${mangaId}/Chapters`;
         }
     }
 

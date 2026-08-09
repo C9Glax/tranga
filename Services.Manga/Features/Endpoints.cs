@@ -61,6 +61,10 @@ internal static class EndpointHelpers
             .WithSummary("Sets a Metadata-Entry as chosen \"Source of Truth\" for Manga")
             .WithTags("Metadata");
         
+        builder.MapGet("{mangaId}/chapters", GetMangaChaptersEndpoint.Handle)
+            .WithSummary("Chapters of Manga")
+            .WithTags("Chapter");
+
         builder.MapGet("{mangaId}/downloadLinks", GetMangaDownloadLinksEndpoint.Handle)
             .WithSummary("Download-Links of Manga")
             .WithTags("Download");

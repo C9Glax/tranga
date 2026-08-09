@@ -202,6 +202,40 @@
         }
       }
     },
+    "/mangas/{mangaId}/chapters": {
+      "get": {
+        "tags": [
+          "Chapter"
+        ],
+        "summary": "Chapters of Manga",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MangaChapter"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/mangas/{mangaId}/downloadLinks": {
       "get": {
         "tags": [
@@ -918,6 +952,59 @@
           }
         }
       },
+      "MangaChapter": {
+        "required": [
+          "isDownloaded",
+          "chapterId",
+          "mangaId",
+          "title",
+          "volume",
+          "number",
+          "releaseDate"
+        ],
+        "type": "object",
+        "properties": {
+          "isDownloaded": {
+            "type": "boolean"
+          },
+          "chapterId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mangaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "maxLength": 2048,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "volume": {
+            "maxLength": 16,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "number": {
+            "maxLength": 16,
+            "minLength": 0,
+            "type": "string"
+          },
+          "releaseDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "MangaDownloadLink": {
         "required": [
           "mangaId",
@@ -1265,10 +1352,10 @@
       "name": "Metadata"
     },
     {
-      "name": "Download"
+      "name": "Chapter"
     },
     {
-      "name": "Chapter"
+      "name": "Download"
     },
     {
       "name": "Files"

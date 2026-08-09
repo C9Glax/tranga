@@ -51,6 +51,18 @@ export const zServicesMangaIMetadataExtension = z.object({
 
 export type ServicesMangaIMetadataExtensionZodType = z.infer<typeof zServicesMangaIMetadataExtension>;
 
+export const zServicesMangaMangaChapter = z.object({
+    isDownloaded: z.boolean(),
+    chapterId: z.uuid(),
+    mangaId: z.uuid(),
+    title: z.nullable(z.string().check(z.minLength(0), z.maxLength(2048))),
+    volume: z.nullable(z.string().check(z.minLength(0), z.maxLength(16))),
+    number: z.string().check(z.minLength(0), z.maxLength(16)),
+    releaseDate: z.nullable(z.iso.datetime()),
+});
+
+export type ServicesMangaMangaChapterZodType = z.infer<typeof zServicesMangaMangaChapter>;
+
 export const zServicesMangaMangaDownloadLink = z.object({
     mangaId: z.uuid(),
     matched: z.boolean(),

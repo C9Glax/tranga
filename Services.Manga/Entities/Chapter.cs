@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Services.Manga.Entities;
 
-public sealed record Chapter
+public record Chapter
 {
     public required Guid ChapterId { get; init; }
     
