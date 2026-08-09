@@ -27,7 +27,10 @@ internal static class EndpointHelpers
 
         builder.MapGet("{taskId}", GetTaskEndpoint.Handle)
             .WithSummary("Get Task");
-        
+
+        builder.MapGet("{taskId}/logs", GetTaskLogsEndpoint.Handle)
+            .WithSummary("Get Log entries for a Task");
+
         builder.MapGroup("/create").CreateTaskEndpoints();
         
         builder.MapGroup("/manga").RelatedToMangaEndpoints();

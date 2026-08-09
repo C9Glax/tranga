@@ -39,6 +39,25 @@ internal sealed class NoOpLogger<T> : ILogger<T>
     }
 }
 
+/// <summary>
+/// An <see cref="ILogger"/> that reports every level as enabled (unlike <see cref="NoOpLogger"/>, whose
+/// <see cref="IsEnabled"/> always returns false) but otherwise does nothing - used where a test needs log calls to
+/// actually reach the logger (e.g. through a decorator like <see cref="Services.Tasks.WorkerLogic.TaskCapturingLogger"/>).
+/// </summary>
+internal sealed class AlwaysEnabledNoOpLogger : ILogger
+{
+    public static AlwaysEnabledNoOpLogger Instance { get; } = new();
+
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull => NoOpLogger.Instance.BeginScope(state);
+
+    public bool IsEnabled(LogLevel logLevel) => true;
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+        Func<TState, Exception?, string> formatter)
+    {
+    }
+}
+
 internal sealed class NoOpLoggerFactory : ILoggerFactory
 {
     public static NoOpLoggerFactory Instance { get; } = new();

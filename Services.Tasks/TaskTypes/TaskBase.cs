@@ -1,4 +1,11 @@
+using System.Collections.Concurrent;
+
 namespace Services.Tasks.TaskTypes;
+
+/// <summary>
+/// A single captured log line emitted while a <see cref="TaskBase"/> executed.
+/// </summary>
+internal sealed record TaskLogEntry(DateTimeOffset Timestamp, LogLevel Level, string Message);
 
 /// <summary>
 /// A Task
@@ -7,6 +14,12 @@ namespace Services.Tasks.TaskTypes;
 /// <param name="taskTypeId">A <b>unique</b> (across all <see cref="TaskBase"/>) that identifies what type of Task this is.</param>
 internal abstract class TaskBase(TaskType t, Guid taskTypeId) : ITask
 {
+    /// <summary>
+    /// Maximum number of <see cref="TaskLogEntry"/> retained per Task - older entries are dropped once exceeded,
+    /// to bound memory growth for long-lived <see cref="PeriodicTask"/> instances that run repeatedly.
+    /// </summary>
+    internal const int MaxLogEntries = 200;
+
     public Guid TaskId { get; init; } = Guid.CreateVersion7();
 
     public int Priority { get; set; } = 0;
@@ -18,6 +31,15 @@ internal abstract class TaskBase(TaskType t, Guid taskTypeId) : ITask
     public DateTimeOffset? LastRun { get; set; } = null;
 
     public TaskState Status { get; set; } = TaskState.Pending;
+
+    internal ConcurrentQueue<TaskLogEntry> LogEntries { get; } = new();
+
+    internal void AppendLog(LogLevel level, string message)
+    {
+        LogEntries.Enqueue(new TaskLogEntry(DateTimeOffset.UtcNow, level, message));
+        while (LogEntries.Count > MaxLogEntries)
+            LogEntries.TryDequeue(out _);
+    }
 
     /// <summary>
     /// <see cref="TaskTypeId"/>s of Tasks that must reach a terminal <see cref="TaskState"/> (<see cref="TaskState.Completed"/>
