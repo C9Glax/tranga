@@ -36,10 +36,12 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
 
     protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
+        logger.LogDebug("Downloading Chapter {ChapterId} of Manga {MangaId}...", ChapterId, MangaId);
         if (await _ctx.Chapters.Include(c => c.DownloadLinks)
                 .SingleOrDefaultAsync(c => c.ChapterId == ChapterId, stoppingToken)
             is not { } chapter)
         {
+            logger.LogError("Could not find Chapter {ChapterId}", ChapterId);
             return;
         }
 
@@ -50,16 +52,25 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         }
 
         if (chapter.DownloadLinks!.MinBy(d => d.Priority) is not { } link)
+        {
+            logger.LogWarning("Chapter {ChapterId} has no DownloadLinks.", ChapterId);
             return;
+        }
         logger.LogDebug("Got {link.DownloadExtension} {link.Identifier}.", link.DownloadExtension, link.Identifier);
         if (DownloadExtensionsCollection.GetExtension(link.DownloadExtension) is not { } extension)
+        {
+            logger.LogError("Could not find {nameof(IDownloadExtension)} {link.DownloadExtension}",
+                nameof(IDownloadExtension), link.DownloadExtension);
             return;
+        }
 
+        logger.LogDebug("Getting Chapter images...");
         if (await extension.GetChapterImages(link.ToChapterInfo(), stoppingToken) is not { } images)
         {
             logger.LogError("Could not get images!");
             return;
         }
+        logger.LogDebug("Got {images.Count} images.", images.Count);
 
         // Create archive
         using MemoryStream archiveStream = new();
@@ -71,6 +82,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
             image.image.Position = 0;
             await image.image.CopyToAsync(entryStream, stoppingToken);
         }
+        logger.LogTrace("Built archive with {images.Count} entries.", images.Count);
 
         // Get Manga directory Path
         if (await _ctx.GetManga(MangaId, stoppingToken) is not { Metadata: { Series: { } seriesName } })
@@ -93,6 +105,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         // For some reason you need to dispose the archive to write headers
         await archive.DisposeAsync();
         await dbFile.SaveFile(archiveStream, stoppingToken);
+        logger.LogDebug("Saved File {dbFile.FullPath}", dbFile.FullPath);
         await _ctx.AddAsync(dbFile, stoppingToken);
         link.FileId = dbFile.FileId;
 
@@ -101,6 +114,8 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         await scope.ServiceProvider.GetRequiredService<EventPublisher>().PublishAsync(
             new ChapterDownloadedEvent(dbFile.FullPath, MangaId, seriesName, chapter.Number, chapter.Title, chapter.Volume),
             stoppingToken);
+        logger.LogInformation("Downloaded Chapter {chapter.Number} of {seriesName} to {dbFile.FullPath}",
+            chapter.Number, seriesName, dbFile.FullPath);
     }
 
     protected override void RefreshScope(IServiceScope scope)

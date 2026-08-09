@@ -22,12 +22,16 @@ internal sealed class DbFileCleanupTask() : PeriodicTask(Guid.Parse("ded1e7d1-ec
     /// <returns></returns>
     protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
+        logger.LogDebug("Searching for orphaned {nameof(DbFile)}...", nameof(DbFile));
         int amount = await _ctx.Files.Where(f =>
             _ctx.ChapterDownloadLinks.Select(c => c.FileId).Union(_ctx.MetadataEntries.Select(m => m.CoverId))
                 .Union(_ctx.DownloadLinks.Select(d => d.CoverId))
                 .Any(i => i == f.FileId)
         ).ExecuteDeleteAsync(stoppingToken);
-        logger.LogDebug("Removed {amount} {nameof(DbFile)}", amount, nameof(DbFile));
+        if (amount > 0)
+            logger.LogInformation("Removed {amount} orphaned {nameof(DbFile)}", amount, nameof(DbFile));
+        else
+            logger.LogDebug("No orphaned {nameof(DbFile)} found.", nameof(DbFile));
     }
 
     protected override void RefreshScope(IServiceScope scope)
