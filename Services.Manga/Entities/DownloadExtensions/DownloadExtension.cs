@@ -27,3 +27,10 @@ public sealed record AsuraScans : IDownloadExtension
     public string Name => "AsuraScans";
     public string IconUrl => "https://asurascans.com/images/logo.webp";
 };
+
+public sealed record MangaPlus : IDownloadExtension
+{
+    public Guid DownloadExtensionsId => Guid.Parse("0bc30bc2-dbcf-47ce-a890-c8428a7e031b");
+    public string Name => "MangaPlus";
+    public string IconUrl => "https://mangaplus.shueisha.co.jp/apple-touch-icon.png";
+};
