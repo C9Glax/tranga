@@ -110,6 +110,11 @@ public class WorkerPoolTests : TrangaTest
             workersMin: 1, workersMax: 1);
 
         await pool.StartAsync(ct);
+        // BackgroundService.StartAsync only guarantees ExecuteAsync has been scheduled, not that it has actually
+        // begun running - stopping immediately with no yield in between can (rarely, under thread-pool pressure)
+        // have StopAsync return before ExecuteAsync ever ran, leaving the seed row un-wiped. Real hosts never call
+        // StopAsync this fast after StartAsync, so wait for the pool to actually come up first, like the other tests.
+        await AsyncAssert.WaitUntil(() => pool.WorkerCount == 1, TimeSpan.FromSeconds(5));
         await pool.StopAsync(ct);
 
         using IServiceScope assertScope = services.CreateScope();
