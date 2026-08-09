@@ -1,10 +1,11 @@
 using System.Text.RegularExpressions;
+using Common.Helpers;
 using Common.Settings;
 using Services.Manga.Database;
 
 namespace Services.Tasks.Helpers;
 
-public static partial class ChapterFileHelper
+public static class ChapterFileHelper
 {
     /// <summary>
     /// Creates the chapter filename for a given chapter.
@@ -55,13 +56,4 @@ public static partial class ChapterFileHelper
         "T" => chapter.Title,
         _ => throw new ArgumentOutOfRangeException(nameof(parameter), parameter, null)
     };
-
-    /// <summary>
-    /// Removes "illegal" characters
-    /// </summary>
-    /// <param name="str"></param>
-    /// <returns></returns>
-    public static string SafeFilesystemString(this string str) => SafeCharacters().Replace(str, string.Empty);
-    [GeneratedRegex(@"[^0-9a-zA-Z-._\ ]")]
-    private static partial Regex SafeCharacters();
 }
