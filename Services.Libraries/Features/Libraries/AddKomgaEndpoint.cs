@@ -1,10 +1,6 @@
-using Common.Helpers;
-using Extensions.Data;
-using Extensions.Extensions;
 using Komga.Client.Client;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Services.Libraries.Database;
 using Services.Libraries.Helpers;
@@ -45,44 +41,10 @@ public abstract class AddKomgaEndpoint
 
         await ctx.LibraryServices.AddAsync(dbLibraryService, ct);
 
-        await LinkExistingMangaByName(ctx, mangaContext, dbLibraryService, extension, logger, ct);
+        await KomgaSeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibraryService, extension, logger, ct);
 
         await ctx.SaveChangesAsync(ct);
         return TypedResults.Ok(dbLibraryService.LibraryServiceId);
-    }
-
-    /// <summary>
-    /// Links every Tranga manga to a Komga series on a name-equality basis (the Komga series name matches
-    /// the manga's on-disk directory name), and pushes metadata for each newly created link. Runs once
-    /// when a Komga library is first connected, so pre-existing manga get linked and synced immediately
-    /// instead of waiting on their next chapter download.
-    /// </summary>
-    private static async Task LinkExistingMangaByName(LibrariesContext ctx, MangaContext mangaContext, DbLibraryService dbLibraryService,
-        Extensions.Extensions.Komga extension, ILogger<AddKomgaEndpoint> logger, CancellationToken ct)
-    {
-        KomgaSeries[] seriesList = await extension.GetSeriesList(ct);
-        List<DbMangaMetadataEntries> mangaEntries = await mangaContext.MangaMetadataEntries
-            .Where(e => e.Chosen == true)
-            .ToListAsync(ct);
-
-        foreach (DbMangaMetadataEntries entry in mangaEntries)
-        {
-            string expectedName = entry.Metadata.Series.SafeFilesystemString();
-            KomgaSeries? match = seriesList.FirstOrDefault(s => s.Name == expectedName);
-            if (match is null)
-                continue;
-
-            try
-            {
-                await ctx.MangaMappings.AddAsync(new DbMangaIdMapping(dbLibraryService.LibraryServiceId, entry.MangaId, match.Id), ct);
-                await KomgaMetadataSync.PushMetadata(mangaContext, extension, match.Id, entry.MangaId, ct);
-            }
-            catch (Exception e)
-            {
-                logger.LogWarning(e, "Failed to link/push metadata for manga {MangaId} to Komga series {SeriesId} on connect",
-                    entry.MangaId, match.Id);
-            }
-        }
     }
 
     public sealed record AddKomgaLibraryRequest

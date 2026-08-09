@@ -66,9 +66,10 @@
 <script setup lang="ts">
 import { MangaCover } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
-import type { ServicesMangaManga } from '~/api/tranga';
+import type { GetLibrariesMappingsByMangaIdResponse, ServicesMangaManga } from '~/api/tranga';
 import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
 import type { NavigationMenuItem, NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
+import { ApiKeys } from '~/composables/ApiKeys';
 
 export interface MangaPageProps {
     title?: string;
@@ -88,9 +89,33 @@ const { el, size, isDragging, onMouseDown, onTouchStart, onDoubleClick } = useRe
     collapsible: false,
 });
 
+const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${props.manga?.mangaId}`, {
+    key: ApiKeys.Libraries.Mapping(props.manga?.mangaId ?? ''),
+});
+
 const navigation = computed((): NavigationMenuProps => {
     const actionItems: NavigationMenuItem[] = (props.actions?.(props.manga) ?? []).map(
-        (action): NavigationMenuItem => ({ label: action.label, icon: action.icon, to: action.to, target: action.target }),
+        (action): NavigationMenuItem => ({
+            label: action.label,
+            icon: action.icon,
+            to: action.to,
+            target: action.target,
+            onSelect: action.onClick
+                ? (e: Event) => {
+                      const handlers = Array.isArray(action.onClick) ? action.onClick : [action.onClick!];
+                      handlers.forEach((handler) => void handler(e as unknown as MouseEvent));
+                  }
+                : undefined,
+        }),
+    );
+
+    const komgaLinkItems: NavigationMenuItem[] = (libraryMappings.value ?? []).map(
+        (mapping): NavigationMenuItem => ({
+            label: 'View in Komga',
+            to: mapping.seriesUrl,
+            icon: 'i-lucide-external-link',
+            target: '_blank',
+        }),
     );
 
     return {
@@ -101,6 +126,7 @@ const navigation = computed((): NavigationMenuProps => {
             { label: 'Manga Tasks', to: `/tasks?manga=${props.manga?.mangaId}`, icon: 'i-lucide-biceps-flexed' },
             { label: 'Manga Downloads', to: `/manga/${props.manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
             { label: 'Chapters', to: `/manga/${props.manga?.mangaId}/chapters`, icon: 'i-lucide-list-checks' },
+            ...komgaLinkItems,
             ...(actionItems.length ? [{ label: 'Actions', type: 'label' } as NavigationMenuItem, ...actionItems] : []),
         ],
     };
