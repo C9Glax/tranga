@@ -10,7 +10,7 @@ public static class DownloadExtensionsCollection
 
     private static IDownloadExtension[] BuildExtensions()
     {
-        List<IDownloadExtension> extensions = [new MangaDex(), new AsuraScans()];
+        List<IDownloadExtension> extensions = [new MangaDex(), new AsuraScans(), new MangaPlus()];
         if (WeebCentral.IsAvailable)
             extensions.Add(new WeebCentral());
         return [.. extensions];
