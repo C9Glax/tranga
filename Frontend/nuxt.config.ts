@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
     app: { head: { title: 'Tranga', htmlAttrs: { lang: 'en' }, link: [{ rel: 'icon', type: 'image/png', href: '/blahaj.png' }] } },
 
-    runtimeConfig: { public: { api: { baseUrl: 'localhost:5000' } } },
+    runtimeConfig: { public: { api: { baseUrl: '' } } },
 
     vite: { server: { allowedHosts: ['host.docker.internal'] } },
 });

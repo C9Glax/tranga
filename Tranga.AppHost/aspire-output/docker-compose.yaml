@@ -187,7 +187,6 @@ services:
     image: "ghcr.io/c9glax/tranga-frontend:external-connectors"
     environment:
       NODE_ENV: "production"
-      NUXT_PUBLIC_API_BASE_URL: "localhost:5000"
       PORT: "3000"
       SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
       services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
