@@ -15,7 +15,7 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
 
     public string Name { get; init; } = "MangaDex";
 
-    public Language[] SupportedLanguages { get; init; } = ["en-us"!];
+    public Language[] SupportedLanguages { get; init; } = ["en"!];
 
     // ReSharper disable once ValueParameterNotUsed
     public string BaseUrl
@@ -270,10 +270,13 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
     {
         if (str is null)
             return null;
-        if (language is not null && str.TryGetValue(language.Name, out string? lang))
-            return lang;
-        if (str.FirstOrDefault(kv => kv.Key.Equals("en-us", StringComparison.InvariantCultureIgnoreCase)) is
-            { Value: { } langEnUs }) return langEnUs;
+        if (language is not null)
+        {
+            if (str.TryGetValue(language.Name, out string? exact))
+                return exact;
+            if (str.FirstOrDefault(kv => language.Equals(kv.Key)) is { Value: { } localeMatch })
+                return localeMatch;
+        }
         return str.FirstOrDefault().Value;
     }
 }

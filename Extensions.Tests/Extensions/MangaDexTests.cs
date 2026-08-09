@@ -73,6 +73,23 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
         Assert.NotNull(result);
         SearchResult? manga = result.FirstOrDefault(r => r.Url == "https://mangadex.org/title/b0b721ff-c388-4486-aa0f-c2b0bb321512");
         Assert.NotNull(manga);
+        Assert.Equal("Sousou no Frieren", manga.Series);
+    }
+
+    [Fact]
+    public async Task DownloadSearchWithSubLocaleMatchesLanguageOnlyEntry()
+    {
+        // MangaDex only has an "en" title, not "en-gb" - the sub-locale should still match it.
+        SearchQuery searchQuery = new()
+        {
+            Title = "Sousou no Frieren",
+            Language = "en-gb"
+        };
+        List<SearchResult>? result = await _extension.SearchMetadata(searchQuery, ct);
+        Assert.NotNull(result);
+        SearchResult? manga = result.FirstOrDefault(r => r.Url == "https://mangadex.org/title/b0b721ff-c388-4486-aa0f-c2b0bb321512");
+        Assert.NotNull(manga);
+        Assert.Equal("Sousou no Frieren", manga.Series);
     }
 
     [Fact]

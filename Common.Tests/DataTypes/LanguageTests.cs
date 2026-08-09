@@ -72,4 +72,60 @@ public class LanguageTests
 
         Assert.Null(language);
     }
+
+    [Theory]
+    [InlineData("en", "en")]
+    [InlineData("en", "en-US")]
+    [InlineData("en", "en-GB")]
+    [InlineData("en-US", "en")]
+    [InlineData("en-US", "en-us")]
+    [InlineData("en-US", "EN-US")]
+    public void EqualsStringTreatsBareLanguageAsMatchingAnySubLocale(string language, string other)
+    {
+        Language l = new(language);
+
+        Assert.True(l.Equals(other));
+    }
+
+    [Theory]
+    [InlineData("en-US", "en-GB")]
+    [InlineData("en-GB", "en-US")]
+    [InlineData("en", "de")]
+    [InlineData("en-US", "de-AT")]
+    public void EqualsStringReturnsFalseForDifferentSubLocalesOrLanguages(string language, string other)
+    {
+        Language l = new(language);
+
+        Assert.False(l.Equals(other));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("not-a-real-culture-code")]
+    public void EqualsStringReturnsFalseForUnparseableOrEmptyInput(string? other)
+    {
+        Language l = new("en");
+
+        Assert.False(l.Equals(other));
+    }
+
+    [Fact]
+    public void EqualsLanguageTreatsBareLanguageAsMatchingAnySubLocale()
+    {
+        Language bare = new("en");
+        Language subLocale = new("en-US");
+
+        Assert.True(bare.Equals(subLocale));
+        Assert.True(subLocale.Equals(bare));
+    }
+
+    [Fact]
+    public void EqualsLanguageReturnsFalseForNull()
+    {
+        Language l = new("en");
+
+        Assert.False(l.Equals((Language?)null));
+    }
 }
