@@ -3,6 +3,7 @@ using Common.Helpers;
 using Common.Tests;
 using Extensions.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Features.Manga.Search;
 using Services.Manga.Tests.Helpers;
@@ -36,6 +37,51 @@ public class PostSearchMangaEndpointTests : TrangaTest
 
         MetadataDto[] results = Assert.IsType<Ok<MetadataDto[]>>(result.Result).Value!;
         Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task FindExistingMetadata_DoesNotMatchAcrossDifferentExtensionsWithSameSeries()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        DbMetadata mangaUpdatesEntry = TestDataBuilder.NewMetadata(series: "One Piece");
+        mangaUpdatesEntry.Url = "https://mangaupdates.com/series/one-piece";
+        await context.AddAsync(mangaUpdatesEntry, ct);
+        await context.SaveChangesAsync(ct);
+
+        SearchResult mangaDexResult = new()
+        {
+            MetadataExtensionIdentifier = Guid.NewGuid(),
+            Identifier = Guid.NewGuid().ToString(),
+            Cover = new TrangaImage(),
+            Series = "One Piece",
+            Url = "https://mangadex.org/title/one-piece"
+        };
+
+        DbMetadata? existing = await PostSearchMangaEndpoint.FindExistingMetadata(context, mangaDexResult, ct);
+
+        Assert.Null(existing);
+    }
+
+    [Fact]
+    public async Task FindExistingMetadata_MatchesSameExtensionBySeriesTitle()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        DbMetadata mangaUpdatesEntry = TestDataBuilder.NewMetadata(series: "One Piece");
+        await context.AddAsync(mangaUpdatesEntry, ct);
+        await context.SaveChangesAsync(ct);
+
+        SearchResult sameExtensionResult = new()
+        {
+            MetadataExtensionIdentifier = mangaUpdatesEntry.MetadataExtension,
+            Identifier = Guid.NewGuid().ToString(),
+            Cover = new TrangaImage(),
+            Series = "One Piece"
+        };
+
+        DbMetadata? existing = await PostSearchMangaEndpoint.FindExistingMetadata(context, sameExtensionResult, ct);
+
+        Assert.NotNull(existing);
+        Assert.Equal(mangaUpdatesEntry.MetadataId, existing.MetadataId);
     }
 
     [Fact]

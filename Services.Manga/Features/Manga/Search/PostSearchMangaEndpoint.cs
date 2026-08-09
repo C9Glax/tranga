@@ -42,15 +42,7 @@ internal abstract class PostSearchMangaEndpoint
         
         foreach (SearchResult searchResult in searchResults)
         {
-            if (await mangaContext.MetadataEntries
-                    .Include(s => s.MangaMetadataEntries)
-                    .Include(s => s.Genres)
-                    .Include(s => s.Artists)
-                    .Include(s => s.Authors)
-                    .Where(s =>
-                        s.MetadataExtension == searchResult.MetadataExtensionIdentifier &&
-                        s.Identifier == searchResult.Identifier || s.Series == searchResult.Series)
-                    .FirstOrDefaultAsync(ct) is not { } existing)
+            if (await FindExistingMetadata(mangaContext, searchResult, ct) is not { } existing)
             {
                 DbMetadata metadata = await CreateMetadata(mangaContext, searchResult, ct);
                 metadataList.Add(metadata);
@@ -76,6 +68,25 @@ internal abstract class PostSearchMangaEndpoint
     /// <param name="SearchQuery">Search Query</param>
     /// <param name="MetadataExtensionIds">IDs of Metadata Extensions to Search on</param>
     public sealed record PostSearchMangaRequest(SearchQuery SearchQuery, Guid[]? MetadataExtensionIds);
+
+    /// <summary>
+    /// Looks up a previously-stored <see cref="DbMetadata"/> matching a search result. Matching is scoped to the
+    /// same extension (<see cref="SearchResult.MetadataExtensionIdentifier"/>): a result is only considered the
+    /// same entry as an existing row if it came from the same extension, and either shares the extension's own
+    /// identifier or the same series title. Without the extension scope, two different extensions' results for a
+    /// series with the same title would collapse into one row, silently overwriting fields (e.g. Url) from one
+    /// extension with another's.
+    /// </summary>
+    internal static async Task<DbMetadata?> FindExistingMetadata(MangaContext mangaContext, SearchResult searchResult, CancellationToken ct) =>
+        await mangaContext.MetadataEntries
+            .Include(s => s.MangaMetadataEntries)
+            .Include(s => s.Genres)
+            .Include(s => s.Artists)
+            .Include(s => s.Authors)
+            .Where(s =>
+                s.MetadataExtension == searchResult.MetadataExtensionIdentifier &&
+                (s.Identifier == searchResult.Identifier || s.Series == searchResult.Series))
+            .FirstOrDefaultAsync(ct);
 
     private static async Task<DbMetadata> CreateMetadata(MangaContext mangaContext, SearchResult searchResult, CancellationToken ct)
     {
