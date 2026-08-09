@@ -54,7 +54,7 @@ public sealed class DbLibraryToLibraryExtensionTests : Common.Tests.TrangaTest
         KomgaExtension? extension = InvokeToExtension(libraryService);
 
         Assert.NotNull(extension);
-        Assert.Equal("http://localhost:8080/", GetKomgaBasePath(extension));
+        Assert.Equal("http://localhost:8080", GetKomgaBasePath(extension));
         Assert.Equal("some-api-key", GetKomgaApiKeyHeader(extension));
     }
 

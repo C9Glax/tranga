@@ -19,6 +19,8 @@ public sealed class Komga : ILibraryExtension<KomgaSeries, KomgaBook, StringIden
 
     public Komga(string baseUrl, string apiKey)
     {
+        baseUrl = baseUrl.TrimEnd('/');
+
         _komgaRequestClient = new RequestClient
         {
             DefaultRequestHeaders = { { "X-API-Key", apiKey } }
@@ -63,6 +65,8 @@ public sealed class Komga : ILibraryExtension<KomgaSeries, KomgaBook, StringIden
     /// </summary>
     public static async Task<string> MintApiKey(string baseUrl, string username, string password, CancellationToken ct)
     {
+        baseUrl = baseUrl.TrimEnd('/');
+
         HttpClientHandler handler = new() { UseCookies = true, };
 
         RequestClient requestClient = new()
