@@ -33,4 +33,10 @@ export namespace ApiKeys {
 
         export const Extension = (id: string) => `/Notifications/Extensions/${id}`;
     }
+
+    export namespace Libraries {
+        export const Libraries = 'Libraries/Libraries';
+
+        export const Library = (id: string) => `/Libraries/Libraries/${id}`;
+    }
 }
