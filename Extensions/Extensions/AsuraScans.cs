@@ -29,9 +29,9 @@ public sealed class AsuraScans : IDownloadExtension
         new SlidingWindowRateLimiterOptions()
         {
             AutoReplenishment = true,
-            Window = TimeSpan.FromSeconds(2),
+            Window = TimeSpan.FromSeconds(1),
             SegmentsPerWindow = 1,
-            PermitLimit = 2,
+            PermitLimit = 8,
             QueueProcessingOrder = QueueProcessingOrder.OldestFirst
         }));
 
