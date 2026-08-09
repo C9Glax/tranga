@@ -28,6 +28,10 @@ export namespace ApiKeys {
 
     export namespace Tasks {}
 
+    export namespace Libraries {
+        export const Mapping = (mangaId: string) => `Libraries/Mapping/${mangaId}`;
+    }
+
     export namespace Notifications {
         export const Extensions = 'Notifications/Extensions';
 

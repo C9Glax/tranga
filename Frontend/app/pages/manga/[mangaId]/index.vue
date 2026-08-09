@@ -5,7 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import type { GetMangasByMangaIdDownloadLinksResponse, GetMangasByMangaIdResponse, ServicesMangaManga } from '~/api/tranga';
+import type {
+    GetLibrariesMappingsByMangaIdResponse,
+    GetMangasByMangaIdDownloadLinksResponse,
+    GetMangasByMangaIdResponse,
+    ServicesMangaManga,
+} from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 
@@ -20,6 +25,10 @@ const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangas
     { key: ApiKeys.Manga.DownloadLinks(mangaId) }
 );
 
+const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${mangaId}`, {
+    key: ApiKeys.Libraries.Mapping(mangaId),
+});
+
 const actions = (manga?: ServicesMangaManga): ButtonProps[] | undefined => [
     { label: 'More Download-Links', to: `/manga/${manga?.mangaId}/downloadLinks`, icon: 'i-lucide-download', variant: 'outline' },
     {
@@ -28,5 +37,14 @@ const actions = (manga?: ServicesMangaManga): ButtonProps[] | undefined => [
         icon: 'i-lucide-info',
         variant: 'outline',
     },
+    ...(libraryMappings.value ?? []).map(
+        (mapping): ButtonProps => ({
+            label: 'View in Komga',
+            to: mapping.seriesUrl,
+            icon: 'i-lucide-external-link',
+            variant: 'outline',
+            target: '_blank',
+        })
+    ),
 ];
 </script>
