@@ -20,6 +20,12 @@
                                 <UFormField label="Base URL" name="baseUrl">
                                     <UInput v-model="state.baseUrl" class="w-full" />
                                 </UFormField>
+                                <UFormField
+                                    label="Library Root Path"
+                                    name="libraryRootPath"
+                                    description="Path inside the Komga container where Tranga's manga volume is mounted. Defaults to /tranga.">
+                                    <UInput v-model="state.libraryRootPath" placeholder="/tranga" class="w-full" />
+                                </UFormField>
                             </UForm>
                             <UTabs v-model="active" :items="items" orientation="vertical" value-key="slot" class="h-40">
                                 <template #credentials>
@@ -93,7 +99,7 @@ const items = [
 
 const { data: libraries } = useTranga<GetLibrariesResponse>('/libraries', { key: Libraries.Libraries });
 
-const state = ref<{ name?: string; baseUrl?: string; username?: string; password?: string; apiKey?: string }>({});
+const state = ref<{ name?: string; baseUrl?: string; libraryRootPath?: string; username?: string; password?: string; apiKey?: string }>({});
 
 const connectionVerified = ref(false);
 
@@ -129,10 +135,16 @@ const createLibrary = async () => {
             method: 'put',
             body:
                 active.value === 'apiKey'
-                    ? { name: state.value.name, baseUrl: state.value.baseUrl, apiKey: state.value.apiKey }
+                    ? {
+                          name: state.value.name,
+                          baseUrl: state.value.baseUrl,
+                          libraryRootPath: state.value.libraryRootPath,
+                          apiKey: state.value.apiKey,
+                      }
                     : {
                           name: state.value.name,
                           baseUrl: state.value.baseUrl,
+                          libraryRootPath: state.value.libraryRootPath,
                           username: state.value.username,
                           password: state.value.password,
                       },
