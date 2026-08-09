@@ -20,12 +20,13 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(GetMangaC
     
     protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
+        logger.LogDebug("Fetching chapters for Manga {MangaId}...", MangaId);
         if (await _ctx.Mangas.Include(m => m.DownloadLinks).SingleOrDefaultAsync(m => m.MangaId == MangaId, stoppingToken) is not { } manga)
         {
             logger.LogError("Could not find Manga {MangaId}", MangaId);
             return;
         }
-        
+
         if (manga.DownloadLinks!.Where(d => d.Matched).MinBy(d => d.Priority)?.DownloadLink is not { } link)
         {
             logger.LogDebug("No Matched DownloadLink");
@@ -49,6 +50,7 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(GetMangaC
         logger.LogDebug("Got {chapters.Count} chapters...", chapters.Count);
 
         DbChapter[] newChapters = chapters.Select(c => c.ToChapter(manga).CreateAndAddChapterDownloadLink(c)).ToArray();
+        int addedLinks = 0, addedChapters = 0, skippedExisting = 0;
         foreach (DbChapterDownloadLink downloadLink in newChapters.SelectMany(c => c.DownloadLinks!))
         {
             logger.LogTrace($"Adding {nameof(DbChapter)} and/or {nameof(DbChapterDownloadLink)}...");
@@ -59,6 +61,7 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(GetMangaC
                 logger.LogTrace(
                     "{nameof(DbChapterDownloadLink)} {downloadLink.DownloadExtension} {downloadLink.Identifier} already exists.",
                     nameof(DbChapterDownloadLink), downloadLink.DownloadExtension, downloadLink.Identifier);
+                skippedExisting++;
                 continue;
             }
 
@@ -75,16 +78,21 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(GetMangaC
                 await _ctx.AddAsync(newLink, stoppingToken);
                 logger.LogDebug("Added {nameof(DbChapterDownloadLink)} to {dbChapter.ChapterId}",
                     nameof(DbChapterDownloadLink), dbChapter.ChapterId);
+                addedLinks++;
             }
             else
             {
                 await _ctx.AddAsync(downloadLink, stoppingToken);
                 logger.LogDebug("Added {nameof(DbChapter)} {chapter.ChapterId}", nameof(DbChapter),
                     downloadLink.ChapterId);
+                addedChapters++;
             }
         }
 
         await _ctx.SaveChangesAsync(stoppingToken);
+        logger.LogInformation(
+            "Manga {MangaId}: added {addedChapters} new Chapters, {addedLinks} new DownloadLinks, skipped {skippedExisting} existing.",
+            MangaId, addedChapters, addedLinks, skippedExisting);
     }
 
     protected override void RefreshScope(IServiceScope scope)

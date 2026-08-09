@@ -22,6 +22,7 @@ internal sealed class PeriodicMangaChapterFetcherTask() : PeriodicTask(Guid.Pars
         logger.LogDebug("Got {list.Count} Mangas.", list.Count);
 
         IEnumerable<GetMangaChaptersTask> newTasks = list.Select(m => new GetMangaChaptersTask(m));
+        int added = 0, skipped = 0;
         foreach (GetMangaChaptersTask task in newTasks)
         {
             // A completed/failed GetMangaChaptersTask must not block ever re-fetching this Manga again.
@@ -31,12 +32,15 @@ internal sealed class PeriodicMangaChapterFetcherTask() : PeriodicTask(Guid.Pars
             {
                 logger.LogDebug("Adding {nameof(GetMangaChaptersTask)} for Manga {task.MangaId}", nameof(GetMangaChaptersTask), task.MangaId);
                 TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task);
+                added++;
             }
             else
             {
                 logger.LogTrace("Manga {task.MangaId} already has {nameof(GetMangaChaptersTask)} Task.", task.MangaId, nameof(GetMangaChaptersTask));
+                skipped++;
             }
         }
+        logger.LogInformation("Queued {added} {nameof(GetMangaChaptersTask)} ({skipped} already in flight).", added, nameof(GetMangaChaptersTask), skipped);
     }
     
     protected override void RefreshScope(IServiceScope scope)

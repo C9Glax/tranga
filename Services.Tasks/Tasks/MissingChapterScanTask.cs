@@ -27,13 +27,16 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
             .Where(t => t.Status is not (TaskState.Completed or TaskState.Failed))
             .Select(t => t.ChapterId);
 
+        logger.LogDebug("Scanning for Chapters without downloaded {nameof(DbFile)}...", nameof(DbFile));
         var chaptersWithoutFiles = await _ctx.Chapters.Include(c => c.DownloadLinks)
             .Where(c => !chapterIds.Contains(c.ChapterId) && c.DownloadLinks!.All(d => d.FileId == null))
             .Select(c => new { MangaId = c.MangaId, ChapterId = c.ChapterId, Number = c.Number })
             .GroupBy(c => c.MangaId)
             .ToListAsync(stoppingToken);
+        logger.LogDebug("Found {chaptersWithoutFiles.Count} Mangas with missing Chapters.", chaptersWithoutFiles.Count);
 
         int mangaIndex = 0;
+        int totalTasksAdded = 0;
         foreach (var manga in chaptersWithoutFiles)
         {
             mangaIndex++;
@@ -47,8 +50,12 @@ internal sealed class MissingChapterScanTask() : PeriodicTask(Guid.Parse("9a9e92
             {
                 logger.LogDebug("Adding {nameof(DownloadChapterTask)} for Chapter {task.ChapterId}", nameof(DownloadChapterTask), task.ChapterId);
                 TasksCollection.RunOnceTasks.TryAdd(task.TaskId, task);
+                totalTasksAdded++;
             }
         }
+        if (totalTasksAdded > 0)
+            logger.LogInformation("Queued {totalTasksAdded} {nameof(DownloadChapterTask)} across {chaptersWithoutFiles.Count} Mangas.",
+                totalTasksAdded, nameof(DownloadChapterTask), chaptersWithoutFiles.Count);
     }
 
     /// <summary>
