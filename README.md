@@ -55,6 +55,12 @@
 - [.env](.env)
   - [Environment Variables](EnvVars.md)
 
+`Mangas` is bind-mounted from the host path set in `MangaDirectory`, so it keeps whatever ownership that host directory already has. The services write to it as a non-root container user (UID/GID `1654`), so if you hit `UnauthorizedAccessException`/`Permission denied` errors on download, chown the host directory before starting the stack:
+
+```bash
+sudo chown -R 1654:1654 /path/to/your/Manga
+```
+
 ## Screenshots
 
 <img src="Screenshots/startpage.png" width="512" alt="start page"/>
