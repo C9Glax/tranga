@@ -37,6 +37,7 @@
       <ProjectReference Include="..\Common.Services\Common.Services.csproj" />
       <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\Extensions\Extensions.csproj" />
+      <ProjectReference Include="..\Services.Manga\Services.Manga.csproj" />
     </ItemGroup>
 
     <ItemGroup>

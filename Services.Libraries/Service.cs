@@ -4,6 +4,7 @@ using RabbitMQ.Client;
 using Services.Libraries.Database;
 using Services.Libraries.EventHandlers;
 using Services.Libraries.Features;
+using Services.Manga.Database;
 using Constants = Common.Settings.Constants;
 
 namespace Services.Libraries;
@@ -11,10 +12,11 @@ namespace Services.Libraries;
 public sealed class Service : Common.Services.Service
 {
     private readonly List<IEventHandler> _eventHandlers = [];
-    
+
     public Service(string[] args) : base(args)
     {
         Builder.Services.AddDbContext<LibrariesContext>();
+        Builder.Services.AddDbContext<MangaContext>();
 
         Builder.Services.AddScoped<EventPublisher>();
 
@@ -34,6 +36,7 @@ public sealed class Service : Common.Services.Service
     {
         IChannel channel = app.Services.GetRequiredService<IChannel>();
         _eventHandlers.Add(new ChapterDownloadedHandler(channel, app.Services));
+        _eventHandlers.Add(new MangaUpdatedHandler(channel, app.Services));
     }
 
     public static void Main(string[] args)
