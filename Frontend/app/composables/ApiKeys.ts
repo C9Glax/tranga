@@ -28,7 +28,11 @@ export namespace ApiKeys {
         }
     }
 
-    export namespace Tasks {}
+    export namespace Tasks {
+        export const Task = (id: string) => `Tasks/${id}`;
+
+        export const Logs = (id: string) => `Tasks/${id}/Logs`;
+    }
 
     export namespace Libraries {
         export const Mapping = (mangaId: string) => `Libraries/Mapping/${mangaId}`;

@@ -221,6 +221,10 @@ export const zServicesTasksMangaSummary = z.object({ mangaId: z.uuid(), series: 
 
 export type ServicesTasksMangaSummaryZodType = z.infer<typeof zServicesTasksMangaSummary>;
 
+export const zServicesTasksTaskLogEntry = z.object({ timestamp: z.iso.datetime(), level: z.string(), message: z.string() });
+
+export type ServicesTasksTaskLogEntryZodType = z.infer<typeof zServicesTasksTaskLogEntry>;
+
 export const zServicesTasksTaskState = z.enum(['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed']);
 
 export type ServicesTasksTaskStateZodType = z.infer<typeof zServicesTasksTaskState>;

@@ -130,6 +130,8 @@ export type ServicesTasksTaskChapterTask = {
     interval?: null | string;
 };
 
+export type ServicesTasksTaskLogEntry = { timestamp: string; level: string; message: string };
+
 export type ServicesTasksTaskMangaTask = {
     kind?: 'mangaTask';
     manga: ServicesTasksMangaSummary;
@@ -699,6 +701,29 @@ export type GetTasksByTaskIdResponses = {
 };
 
 export type GetTasksByTaskIdResponse = GetTasksByTaskIdResponses[keyof GetTasksByTaskIdResponses];
+
+export type GetTasksByTaskIdLogsData = {
+    body?: never;
+    path: { taskId: string };
+    query?: { skip?: number | string; limit?: number | string };
+    url: '/tasks/{taskId}/logs';
+};
+
+export type GetTasksByTaskIdLogsErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type GetTasksByTaskIdLogsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesTasksTaskLogEntry>;
+};
+
+export type GetTasksByTaskIdLogsResponse = GetTasksByTaskIdLogsResponses[keyof GetTasksByTaskIdLogsResponses];
 
 export type PutTasksCreateGetMangaChaptersByMangaIdData = {
     body?: never;
