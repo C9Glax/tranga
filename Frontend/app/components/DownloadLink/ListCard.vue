@@ -16,7 +16,7 @@
                 <UBadge v-if="downloadLink.nsfw" label="NSFW" color="error" variant="solid" />
             </template>
             <template #authors>
-                <div class="flex flex-row gap-4">
+                <div class="flex flex-row items-center gap-4">
                     <UUser
                         :avatar="{
                             src:
