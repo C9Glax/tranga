@@ -61,6 +61,10 @@
 sudo chown -R 1654:1654 /path/to/your/Manga
 ```
 
+### Adding a Komga library
+
+When adding a Komga library, the "Library Root Path" must be the path *inside the Komga container* where Tranga's `Mangas` volume is mounted — not the path on the host, and not the path inside Tranga's own containers. Mount that same volume into your Komga container and point the field at wherever you mounted it (defaults to `/tranga` if left blank).
+
 ## Screenshots
 
 <img src="Screenshots/startpage.png" width="512" alt="start page"/>
