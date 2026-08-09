@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Services.Libraries.Database;
 using Services.Libraries.Helpers;
+using Services.Manga.Database;
 
 namespace Services.Libraries.EventHandlers;
 
@@ -25,6 +26,7 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
     protected override async Task<bool> HandleMessage(ChapterDownloadedEvent chapterDownloadedEvent)
     {
         LibrariesContext ctx = serviceProvider.GetRequiredService<LibrariesContext>();
+        MangaContext mangaContext = serviceProvider.GetRequiredService<MangaContext>();
         ILogger<ChapterDownloadedHandler> logger = serviceProvider.GetRequiredService<ILogger<ChapterDownloadedHandler>>();
         List<DbLibraryService> libraries = await ctx.LibraryServices.ToListAsync();
 
@@ -33,7 +35,7 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
         {
             if (dbLibrary.LibraryServiceType == LibraryServiceType.Komga && dbLibrary.ToExtension() is { } extension)
             {
-                bool ok = await ProcessKomga(ctx, dbLibrary, extension, chapterDownloadedEvent, logger);
+                bool ok = await ProcessKomga(ctx, mangaContext, dbLibrary, extension, chapterDownloadedEvent, logger);
                 allOk &= ok;
             }
         }
@@ -41,7 +43,7 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
         return allOk;
     }
 
-    private static async Task<bool> ProcessKomga(LibrariesContext ctx, DbLibraryService dbLibrary, Extensions.Extensions.Komga komga,
+    private static async Task<bool> ProcessKomga(LibrariesContext ctx, MangaContext mangaContext, DbLibraryService dbLibrary, Extensions.Extensions.Komga komga,
         ChapterDownloadedEvent chapterDownloadedEvent, ILogger<ChapterDownloadedHandler> logger)
     {
         if (await ctx.MangaMappings.SingleOrDefaultAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId &&
@@ -76,6 +78,17 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
             await ctx.MangaMappings.AddAsync(new DbMangaIdMapping(dbLibrary.LibraryServiceId, chapterDownloadedEvent.MangaId,
                 newSeries.Id));
             await ctx.SaveChangesAsync();
+
+            try
+            {
+                await KomgaMetadataSync.PushMetadata(mangaContext, komga, newSeries.Id, chapterDownloadedEvent.MangaId, CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,
+                    "Failed to push metadata to newly linked Komga series {SeriesId} for manga {MangaId} on library {LibraryServiceId}",
+                    newSeries.Id, chapterDownloadedEvent.MangaId, dbLibrary.LibraryServiceId);
+            }
         }
         else
         {

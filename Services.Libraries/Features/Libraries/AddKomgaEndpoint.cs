@@ -1,10 +1,14 @@
+using Common.Helpers;
 using Extensions.Data;
 using Extensions.Extensions;
 using Komga.Client.Client;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Services.Libraries.Database;
 using Services.Libraries.Helpers;
+using Services.Manga.Database;
 
 namespace Services.Libraries.Features.Libraries;
 
@@ -17,12 +21,15 @@ public abstract class AddKomgaEndpoint
     /// Add komga library extension
     /// </summary>
     /// <param name="ctx"></param>
+    /// <param name="mangaContext"></param>
     /// <param name="req">Request parameters</param>
+    /// <param name="logger"></param>
     /// <param name="ct"></param>
     /// <returns>200 OK if Komga extension added</returns>
     /// <response code="200">Komga extension added</response>
     /// <response code="400">Neither or both auth modes given, or the given credentials are invalid</response>
-    public static async Task<Results<Ok<Guid>, BadRequest<string>>> Handle(LibrariesContext ctx, [FromBody]AddKomgaLibraryRequest req, CancellationToken ct)
+    public static async Task<Results<Ok<Guid>, BadRequest<string>>> Handle(LibrariesContext ctx, MangaContext mangaContext,
+        [FromBody]AddKomgaLibraryRequest req, ILogger<AddKomgaEndpoint> logger, CancellationToken ct)
     {
         KomgaAuthResolutionResult authResult = await KomgaAuthHelper.ResolveApiKey(req.BaseUrl, req.ApiKey, req.Username, req.Password, ct);
         if (authResult.Error is { } error)
@@ -37,8 +44,45 @@ public abstract class AddKomgaEndpoint
         dbLibraryService.TrangaLibraryId = await extension.CreateTrangaLibrary(ct, req.libraryRootPath);
 
         await ctx.LibraryServices.AddAsync(dbLibraryService, ct);
+
+        await LinkExistingMangaByName(ctx, mangaContext, dbLibraryService, extension, logger, ct);
+
         await ctx.SaveChangesAsync(ct);
         return TypedResults.Ok(dbLibraryService.LibraryServiceId);
+    }
+
+    /// <summary>
+    /// Links every Tranga manga to a Komga series on a name-equality basis (the Komga series name matches
+    /// the manga's on-disk directory name), and pushes metadata for each newly created link. Runs once
+    /// when a Komga library is first connected, so pre-existing manga get linked and synced immediately
+    /// instead of waiting on their next chapter download.
+    /// </summary>
+    private static async Task LinkExistingMangaByName(LibrariesContext ctx, MangaContext mangaContext, DbLibraryService dbLibraryService,
+        Extensions.Extensions.Komga extension, ILogger<AddKomgaEndpoint> logger, CancellationToken ct)
+    {
+        KomgaSeries[] seriesList = await extension.GetSeriesList(ct);
+        List<DbMangaMetadataEntries> mangaEntries = await mangaContext.MangaMetadataEntries
+            .Where(e => e.Chosen == true)
+            .ToListAsync(ct);
+
+        foreach (DbMangaMetadataEntries entry in mangaEntries)
+        {
+            string expectedName = entry.Metadata.Series.SafeFilesystemString();
+            KomgaSeries? match = seriesList.FirstOrDefault(s => s.Name == expectedName);
+            if (match is null)
+                continue;
+
+            try
+            {
+                await ctx.MangaMappings.AddAsync(new DbMangaIdMapping(dbLibraryService.LibraryServiceId, entry.MangaId, match.Id), ct);
+                await KomgaMetadataSync.PushMetadata(mangaContext, extension, match.Id, entry.MangaId, ct);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "Failed to link/push metadata for manga {MangaId} to Komga series {SeriesId} on connect",
+                    entry.MangaId, match.Id);
+            }
+        }
     }
 
     public sealed record AddKomgaLibraryRequest

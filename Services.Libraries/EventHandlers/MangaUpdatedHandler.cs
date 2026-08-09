@@ -1,4 +1,3 @@
-using Common.Helpers;
 using Common.Services.Events;
 using Common.Services.Events.Events;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,6 @@ using RabbitMQ.Client;
 using Services.Libraries.Database;
 using Services.Libraries.Helpers;
 using Services.Manga.Database;
-using Services.Manga.Database.Helpers;
 
 namespace Services.Libraries.EventHandlers;
 
@@ -53,24 +51,6 @@ internal sealed class MangaUpdatedHandler(IChannel channel, IServiceProvider ser
         if (dbLibrary?.ToExtension() is not { } komga)
             return;
 
-        if (await mangaContext.GetManga(mangaUpdatedEvent.MangaId, CancellationToken.None) is not { } mangaMetadataEntry)
-            return;
-
-        DbMetadata metadata = mangaMetadataEntry.Metadata;
-
-        await komga.UpdateSeriesMetadata(new Extensions.Extensions.KomgaSeries(mapping.SeriesId, metadata.Series, metadata.Summary ?? ""),
-            CancellationToken.None);
-
-        if (metadata.CoverId is { } coverId)
-        {
-            if (await mangaContext.Files.FirstOrDefaultAsync(f => f.FileId == coverId) is { } file)
-            {
-                MemoryStream fileBytes = await file.LoadFile(CancellationToken.None);
-                TrangaImage image = new();
-                await fileBytes.CopyToAsync(image, CancellationToken.None);
-                image.Position = 0;
-                await komga.UpdateSeriesPoster(mapping.SeriesId, image, CancellationToken.None);
-            }
-        }
+        await KomgaMetadataSync.PushMetadata(mangaContext, komga, mapping.SeriesId, mangaUpdatedEvent.MangaId, CancellationToken.None);
     }
 }

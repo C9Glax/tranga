@@ -2,6 +2,7 @@ using System.Net;
 using System.Reflection;
 using Common.Services.Events.Events;
 using Common.Tests;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -9,6 +10,7 @@ using RabbitMQ.Client;
 using Services.Libraries.Database;
 using Services.Libraries.EventHandlers;
 using Services.Libraries.Tests.Helpers;
+using Services.Manga.Database;
 
 namespace Services.Libraries.Tests.EventHandlers;
 
@@ -25,16 +27,42 @@ public sealed class ChapterDownloadedHandlerTests : TrangaTest, IDisposable
         ChapterDownloadedHandler.SeriesPollInterval = _originalSeriesPollInterval;
     }
 
-    private static ChapterDownloadedHandler CreateHandler(LibrariesContext context)
+    private static ChapterDownloadedHandler CreateHandler(LibrariesContext context, MangaContext? mangaContext = null)
     {
         Mock<IChannel> mockChannel = new();
 
         ServiceCollection services = new();
         services.AddSingleton(context);
+        services.AddSingleton(mangaContext ?? MangaContextFactory.Create());
         services.AddLogging();
         ServiceProvider provider = services.BuildServiceProvider();
 
         return new ChapterDownloadedHandler(mockChannel.Object, provider);
+    }
+
+    private static async Task<(DbManga Manga, DbMetadata Metadata)> SeedMangaWithChosenMetadata(
+        MangaContext context, Guid mangaId, string series, CancellationToken ct)
+    {
+        DbManga manga = new() { MangaId = mangaId, Monitored = true };
+        DbMetadata metadata = new()
+        {
+            MetadataExtension = Guid.NewGuid(),
+            Identifier = Guid.NewGuid().ToString(),
+            Series = series,
+            Summary = "Some summary"
+        };
+        DbMangaMetadataEntries entry = new()
+        {
+            MangaId = manga.MangaId,
+            Chosen = true,
+            Manga = manga,
+            Metadata = metadata
+        };
+
+        await context.AddRangeAsync([manga, metadata, entry], ct);
+        await context.SaveChangesAsync(ct);
+
+        return (manga, metadata);
     }
 
     private static async Task<bool> InvokeHandleMessage(ChapterDownloadedHandler handler, ChapterDownloadedEvent chapterDownloadedEvent)
@@ -232,6 +260,49 @@ public sealed class ChapterDownloadedHandlerTests : TrangaTest, IDisposable
         DbMangaIdMapping? mapping = context.MangaMappings.SingleOrDefault(m => m.LibraryServiceId == library.LibraryServiceId && m.MangaId == mangaId);
         Assert.NotNull(mapping);
         Assert.Equal("new-series-id", mapping.SeriesId);
+    }
+
+    [Fact]
+    public async Task HandleMessage_NoExistingMapping_NewMappingCreated_PushesMetadataToKomga()
+    {
+        ChapterDownloadedHandler.SeriesPollInterval = TimeSpan.FromMilliseconds(1);
+
+        int seriesListCallCount = 0;
+        int metadataUpdateCallCount = 0;
+        using FakeKomgaServer server = new(path =>
+        {
+            if (path.Contains("/scan"))
+                return (HttpStatusCode.OK, null);
+
+            if (path.Contains("/metadata"))
+            {
+                metadataUpdateCallCount++;
+                return (HttpStatusCode.OK, null);
+            }
+
+            seriesListCallCount++;
+            return seriesListCallCount <= 2
+                ? (HttpStatusCode.OK, FakeKomgaServer.EmptySeriesListResponseBody)
+                : (HttpStatusCode.OK, SeriesListBody(("new-series-id", "New Series")));
+        });
+
+        await using LibrariesContext context = LibrariesContextFactory.Create();
+        await using MangaContext mangaContext = MangaContextFactory.Create();
+        DbLibraryService library = NewKomgaLibrary(server.BaseUrl);
+        await context.LibraryServices.AddAsync(library, ct);
+        await context.SaveChangesAsync(ct);
+
+        Guid mangaId = Guid.NewGuid();
+        await SeedMangaWithChosenMetadata(mangaContext, mangaId, "New Series", ct);
+
+        ChapterDownloadedHandler handler = CreateHandler(context, mangaContext);
+
+        bool result = await InvokeHandleMessage(handler, NewEvent(mangaId));
+
+        Assert.True(result);
+        DbMangaIdMapping? mapping = context.MangaMappings.SingleOrDefault(m => m.LibraryServiceId == library.LibraryServiceId && m.MangaId == mangaId);
+        Assert.NotNull(mapping);
+        Assert.Equal(1, metadataUpdateCallCount);
     }
 
     [Fact]
