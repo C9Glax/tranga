@@ -30,17 +30,15 @@ export namespace ApiKeys {
 
     export namespace Libraries {
         export const Mapping = (mangaId: string) => `Libraries/Mapping/${mangaId}`;
+
+        export const Libraries = 'Libraries/Libraries';
+
+        export const Library = (id: string) => `/Libraries/Libraries/${id}`;
     }
 
     export namespace Notifications {
         export const Extensions = 'Notifications/Extensions';
 
         export const Extension = (id: string) => `/Notifications/Extensions/${id}`;
-    }
-
-    export namespace Libraries {
-        export const Libraries = 'Libraries/Libraries';
-
-        export const Library = (id: string) => `/Libraries/Libraries/${id}`;
     }
 }
