@@ -202,31 +202,24 @@ internal abstract class PostSearchMangaEndpoint
         try
         {
             await searchResult.Cover.ToJpeg(ct);
-            Guid coverId = Guid.CreateVersion7();
-            DbFile file = new ()
-            {
-                FileId = coverId,
-                Name = $"{coverId}.jpg",
-                Path = Constants.CoverDirectory,
-                MimeType = "image/jpeg"
-            };
-            await mangaContext.AddAsync(file, ct);
-            await file.SaveFile(searchResult.Cover, ct);
-            metadata.CoverId = file.FileId;
         }
         catch
         {
-            Guid coverId = Guid.CreateVersion7();
-            DbFile file = new ()
-            {
-                FileId = coverId,
-                Name = $"{coverId}",
-                Path = Constants.CoverDirectory,
-                MimeType = "image/png"
-            };
-            await mangaContext.AddAsync(file, ct);
-            await file.SaveFile(searchResult.Cover, ct);
-            metadata.CoverId = file.FileId;
+            // Cover data isn't a valid/supported image - skip saving it rather than storing the raw,
+            // undecoded bytes under a made-up MIME type (consumers like Komga reject/fail to decode those).
+            return;
         }
+
+        Guid coverId = Guid.CreateVersion7();
+        DbFile file = new ()
+        {
+            FileId = coverId,
+            Name = $"{coverId}.jpg",
+            Path = Constants.CoverDirectory,
+            MimeType = "image/jpeg"
+        };
+        await mangaContext.AddAsync(file, ct);
+        await file.SaveFile(searchResult.Cover, ct);
+        metadata.CoverId = file.FileId;
     }
 }
