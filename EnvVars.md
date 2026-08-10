@@ -1,11 +1,11 @@
 # Tranga Environment Variables
 
-| ENV              | default    | behaviour                                                                                                                        |
-|------------------|------------|----------------------------------------------------------------------------------------------------------------------------------|
-| AllowNSFW        | `false`    | Allow NSFW content in search results (docker-compose/.env key: `ALLOWNSFW`)                                                      |
-| DownloadLanguage | `"en"`     | Language for downloaded chapters (docker-compose/.env key: `DOWNLOADLANGUAGE`)                                                   | 
-| MangaDirectory   | `"Manga"`  | Host path to bind-mount for downloaded Manga (docker-compose only; Covers are stored in a managed Docker volume)                | 
-| FLARESOLVERR_URL | null       | When set, a [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) instance will handler requests that Cloudflare rejected (docker-compose/.env key: `FLARESOLVERRURL`) |
+| ENV              | default    | behaviour                                                                                                                                                                          |
+|------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AllowNSFW        | `false`    | Allow NSFW content in search results (docker-compose/.env key: `ALLOWNSFW`)                                                                                                        |
+| DownloadLanguage | `"en"`     | Language for downloaded chapters (docker-compose/.env key: `DOWNLOADLANGUAGE`)                                                                                                     | 
+| MangaDirectory   | `"Manga"`  | Host path to bind-mount for downloaded Manga (docker-compose only; Covers are stored in a managed Docker volume) If you use Komga it is recommended to mount the path at `/tranga` | 
+| FLARESOLVERR_URL | null       | When set, a [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) instance will handler requests that Cloudflare rejected (docker-compose/.env key: `FLARESOLVERRURL`)      |
 
 ## Debug
 

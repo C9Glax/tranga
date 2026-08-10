@@ -41,21 +41,27 @@
     - Discord
     - Ntfy.sh
     - ...
+- [x] Library support using [Komga](https://komga.org/)
+  - Sync Metadata
+  - Scan chapters
+  - Sync Cover images
 
 #### TODO LIST
 
 - [ ] Unified webpage scraper ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
 - [ ] Accounts (Authorization) (`Services.Users`)
 - [ ] Existing chapter mapping (`Services.Manga`)
-- [ ] Library-support (`Services.Libraries`, `Extensions`) (_Komga_)
 
 ## Getting started
 
-- [docker-compose.yaml](docker-compose.yaml) You probably do not want to modify this. Use the `.env` file for configuration.
-- [.env](.env)
-  - [Environment Variables](EnvVars.md)
+- [docker-compose.yaml](Tranga.AppHost/aspire-output/docker-compose.yaml)
+You probably do not want to modify this. Use the [`.env`](Tranga.AppHost/aspire-output/.env) file for configuration.
+- [.env](Tranga.AppHost/aspire-output/.env)
+  - [Environment variable documentation](EnvVars.md)
 
-`Mangas` is bind-mounted from the host path set in `MangaDirectory`, so it keeps whatever ownership that host directory already has. The services write to it as a non-root container user (UID/GID `1654`), so if you hit `UnauthorizedAccessException`/`Permission denied` errors on download, chown the host directory before starting the stack:
+`Mangas` is bind-mounted from the host path set in `MangaDirectory`, so it keeps whatever ownership that host directory already has.
+The services write to it as a non-root container user (UID/GID `1654`), so if you hit `UnauthorizedAccessException`/`Permission denied` errors on download,
+chown the host directory before starting the stack:
 
 ```bash
 sudo chown -R 1654:1654 /path/to/your/Manga
@@ -63,7 +69,9 @@ sudo chown -R 1654:1654 /path/to/your/Manga
 
 ### Adding a Komga library
 
-When adding a Komga library, the "Library Root Path" must be the path *inside the Komga container* where Tranga's `Mangas` volume is mounted — not the path on the host, and not the path inside Tranga's own containers. Mount that same volume into your Komga container and point the field at wherever you mounted it (defaults to `/tranga` if left blank).
+When adding a Komga library, the "Library Root Path" must be the path *inside the Komga container*
+where Tranga's `Mangas` volume is mounted — not the path on the host, and not the path inside Tranga's own containers.
+Mount that same volume into your Komga container and point the field at wherever you mounted it (defaults to `/tranga` if left blank).
 
 ## Screenshots
 
