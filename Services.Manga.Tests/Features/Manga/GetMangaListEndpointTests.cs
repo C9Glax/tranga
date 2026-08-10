@@ -25,6 +25,20 @@ public class GetMangaListEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task GetMangaList_ReturnsMangaOrderedAlphabeticallyBySeries()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        await TestDataBuilder.SeedMangaWithChosenMetadata(context, series: "Zeta", ct: ct);
+        await TestDataBuilder.SeedMangaWithChosenMetadata(context, series: "Alpha", ct: ct);
+        await TestDataBuilder.SeedMangaWithChosenMetadata(context, series: "Mu", ct: ct);
+
+        Results<Ok<MangaDto[]>, InternalServerError> result = await GetMangaListEndpoint.Handle(context, ct);
+
+        MangaDto[] mangas = Assert.IsType<Ok<MangaDto[]>>(result.Result).Value!;
+        Assert.Equal(["Alpha", "Mu", "Zeta"], mangas.Select(m => m.MetadataEntry!.Series));
+    }
+
+    [Fact]
     public async Task GetMangaList_ReturnsEmptyWhenNoneExist()
     {
         await using MangaContext context = MangaContextFactory.Create();

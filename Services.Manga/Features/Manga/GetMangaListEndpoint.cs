@@ -21,6 +21,7 @@ internal abstract class GetMangaListEndpoint
     {
         if (await mangaContext.MangaMetadataEntries
                 .Where(s => s.Chosen == true)
+                .OrderBy(s => s.Metadata.Series)
                 .ToListAsync(ct) is not { } metadataSources)
         {
             return TypedResults.InternalServerError();
