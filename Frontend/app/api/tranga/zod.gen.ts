@@ -107,10 +107,6 @@ export const zServicesMangaPatchMangaDownloadLinkRequest = z.object({
 
 export type ServicesMangaPatchMangaDownloadLinkRequestZodType = z.infer<typeof zServicesMangaPatchMangaDownloadLinkRequest>;
 
-export const zServicesMangaPatchMangaMonitoredRequest = z.object({ monitored: z.boolean() });
-
-export type ServicesMangaPatchMangaMonitoredRequestZodType = z.infer<typeof zServicesMangaPatchMangaMonitoredRequest>;
-
 export const zServicesMangaReleaseStatus = z.enum(['Ongoing', 'Complete', 'Hiatus', 'Cancelled']);
 
 export type ServicesMangaReleaseStatusZodType = z.infer<typeof zServicesMangaReleaseStatus>;
