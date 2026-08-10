@@ -29,7 +29,7 @@ internal static class KomgaMetadataSync
                 TrangaImage image = new();
                 await fileBytes.CopyToAsync(image, ct);
                 image.Position = 0;
-                await komga.UpdateSeriesPoster(seriesId, image, ct);
+                await komga.UpdateSeriesPoster(seriesId, file.Name, file.MimeType, image, ct);
             }
         }
     }
