@@ -19,6 +19,7 @@ Tranga is a .NET 10, multi-service manga downloader with a Nuxt frontend, a YARP
 ## Developer workflow
 
 - Use a git worktree and a dedicated branch for code changes rather than editing the shared checkout directly.
+- When work is done (merged or otherwise no longer needed), clean up by removing the worktree and deleting both the local and remote branch the changes were pushed on.
 - Full test suite: `dotnet test Tranga.sln`
 - Single test project: `dotnet test <Project>.Tests/<Project>.Tests.csproj`
 - Single test: `dotnet test --filter "FullyQualifiedName~Namespace.ClassName.MethodName"`
