@@ -51,10 +51,11 @@ public class PostMangaDownloadLinkEndpointTests : TrangaTest
     }
 
     [Fact]
-    public async Task PostMangaDownloadLink_Returns400ForDuplicateLink()
+    public async Task PostMangaDownloadLink_DuplicateLink_SetsMonitoredAndReturnsOk()
     {
         await using MangaContext context = MangaContextFactory.Create();
-        (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
+        (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, monitored: false, ct: ct);
+        Assert.False(manga.Monitored);
 
         Guid extensionId = new MangaDex().Identifier;
         Guid seriesGuid = Guid.NewGuid();
@@ -84,6 +85,8 @@ public class PostMangaDownloadLinkEndpointTests : TrangaTest
             context, manga.MangaId,
             new PostMangaDownloadLinkEndpoint.PostMangaDownloadLinkRequest(extensionId, $"https://mangadex.org/title/{seriesGuid}"), ct);
 
-        Assert.IsType<BadRequest<string>>(result.Result);
+        MangaDownloadLinkDto dto = Assert.IsType<Ok<MangaDownloadLinkDto>>(result.Result).Value!;
+        Assert.Equal(downloadLink.DownloadLinkId, dto.DownloadId);
+        Assert.True(manga.Monitored);
     }
 }
