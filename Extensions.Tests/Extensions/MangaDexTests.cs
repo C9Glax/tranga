@@ -104,4 +104,30 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
         SearchResult? manga = result.FirstOrDefault(r => r.Url == "https://mangadex.org/title/b0b721ff-c388-4486-aa0f-c2b0bb321512");
         Assert.NotNull(manga);
     }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsIdentifierForMangaPage()
+    {
+        Assert.Equal("f9c33607-9180-4ba6-b85c-e4b5faee7192",
+            _extension.ParseIdentifierFromUrl("https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192"));
+    }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsIdentifierWhenTrailingSlugPresent()
+    {
+        Assert.Equal("f9c33607-9180-4ba6-b85c-e4b5faee7192",
+            _extension.ParseIdentifierFromUrl("https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga"));
+    }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsNullForForeignSite()
+    {
+        Assert.Null(_extension.ParseIdentifierFromUrl("https://asurascans.com/comics/solo-leveling-ragnarok"));
+    }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsNullForNonGuidSegment()
+    {
+        Assert.Null(_extension.ParseIdentifierFromUrl("https://mangadex.org/title/not-a-guid"));
+    }
 }

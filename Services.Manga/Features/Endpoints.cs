@@ -77,7 +77,11 @@ internal static class EndpointHelpers
         builder.MapGet("{mangaId}/downloadLinks", GetMangaDownloadLinksEndpoint.Handle)
             .WithSummary("Download-Links of Manga")
             .WithTags("Download");
-        
+
+        builder.MapPost("{mangaId}/downloadLinks", PostMangaDownloadLinkEndpoint.Handle)
+            .WithSummary("Manually add a Download-Link for Manga by pasting its page URL on an extension's site")
+            .WithTags("Download");
+
         builder.MapPatch("{mangaId}/downloadLinks/{downloadId}", PatchMangaDownloadLinkEndpoint.Handle)
             .WithSummary("Set Priority for Download-Link")
             .WithTags("Download");

@@ -88,4 +88,16 @@ public sealed class MangaPlusTests : DownloadExtensionTests<MangaPlus>
         Assert.Equal(0xD8, firstImageBytes[1]);
         Assert.Equal(0xFF, firstImageBytes[2]);
     }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsTitleId()
+    {
+        Assert.Equal(OnePieceTitleId, _extension.ParseIdentifierFromUrl("https://mangaplus.shueisha.co.jp/titles/100020"));
+    }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsNullForNonIntegerSegment()
+    {
+        Assert.Null(_extension.ParseIdentifierFromUrl("https://mangaplus.shueisha.co.jp/titles/one-piece"));
+    }
 }

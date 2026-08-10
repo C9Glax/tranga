@@ -86,6 +86,8 @@ export type ServicesMangaMetadataExtensionsList = { extensions?: Array<ServicesM
 
 export type ServicesMangaPatchMangaDownloadLinkRequest = { matched: boolean; priority: number | string };
 
+export type ServicesMangaPostMangaDownloadLinkRequest = { downloadExtensionId: string; url: string };
+
 export type ServicesMangaPostMangaMergeRequest = { sourceMangaId: string; keepSourceMetadata: boolean; keepSourceChapters: boolean };
 
 export type ServicesMangaPostSearchMangaDownloadLinksRequest = { searchTerm: null | string };
@@ -440,6 +442,36 @@ export type GetMangasByMangaIdDownloadLinksResponses = {
 
 export type GetMangasByMangaIdDownloadLinksResponse =
     GetMangasByMangaIdDownloadLinksResponses[keyof GetMangasByMangaIdDownloadLinksResponses];
+
+export type PostMangasByMangaIdDownloadLinksData = {
+    body: ServicesMangaPostMangaDownloadLinkRequest;
+    path: { mangaId: string };
+    query?: never;
+    url: '/mangas/{mangaId}/downloadLinks';
+};
+
+export type PostMangasByMangaIdDownloadLinksErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type PostMangasByMangaIdDownloadLinksError = PostMangasByMangaIdDownloadLinksErrors[keyof PostMangasByMangaIdDownloadLinksErrors];
+
+export type PostMangasByMangaIdDownloadLinksResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaMangaDownloadLink;
+};
+
+export type PostMangasByMangaIdDownloadLinksResponse =
+    PostMangasByMangaIdDownloadLinksResponses[keyof PostMangasByMangaIdDownloadLinksResponses];
 
 export type PatchMangasByMangaIdDownloadLinksByDownloadIdData = {
     body: ServicesMangaPatchMangaDownloadLinkRequest;

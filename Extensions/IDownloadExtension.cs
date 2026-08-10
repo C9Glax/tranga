@@ -20,6 +20,14 @@ public interface IDownloadExtension : IExtension
     public Task<List<MangaInfo>?> SearchDownload(SearchQuery query, CancellationToken ct);
 
     /// <summary>
+    /// Parses the extension-specific series <see cref="MangaInfo.Identifier"/> out of a manga page URL on this
+    /// extension's own site (e.g. as pasted by a user adding a Download-Link manually), without any network access.
+    /// </summary>
+    /// <param name="url">The manga's page URL on the extension's site.</param>
+    /// <returns>The parsed identifier, or <see langword="null"/> if <paramref name="url"/> does not match this extension's expected URL shape.</returns>
+    public string? ParseIdentifierFromUrl(string url);
+
+    /// <summary>
     /// Returns the chapters of a Manga.
     /// </summary>
     /// <param name="mangaInfo"></param>

@@ -51,4 +51,16 @@ public sealed class AsuraScansTests : DownloadExtensionTests<AsuraScans>
         Assert.NotEmpty(images);
         Assert.All(images, i => Assert.Equal("0ef51071-9881-48fc-9650-738435a566b8", i.chapterIdentifier));
     }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsSlugForComicsPage()
+    {
+        Assert.Equal("solo-leveling-ragnarok", _extension.ParseIdentifierFromUrl("https://asurascans.com/comics/solo-leveling-ragnarok"));
+    }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsNullForForeignSite()
+    {
+        Assert.Null(_extension.ParseIdentifierFromUrl("https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192"));
+    }
 }

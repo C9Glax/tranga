@@ -52,4 +52,17 @@ public sealed class WeebCentralTests : DownloadExtensionTests<WeebCentral>
         Assert.NotEmpty(images);
         Assert.All(images, i => Assert.Equal("01KB7YS3E5X7E58XDG1985CSAP", i.chapterIdentifier));
     }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsSeriesId()
+    {
+        Assert.Equal("01J76XY7M0W9WWJ55VJYYB2J1S",
+            _extension.ParseIdentifierFromUrl("https://weebcentral.com/series/01J76XY7M0W9WWJ55VJYYB2J1S/Tower-Of-God"));
+    }
+
+    [Fact]
+    public void ParseIdentifierFromUrlReturnsNullForForeignSite()
+    {
+        Assert.Null(_extension.ParseIdentifierFromUrl("https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192"));
+    }
 }
