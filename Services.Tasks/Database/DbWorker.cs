@@ -9,15 +9,21 @@ namespace Services.Tasks.Database;
 /// </summary>
 public sealed record DbWorker
 {
+    /// <summary>Id of the worker this row is a snapshot of.</summary>
     public Guid WorkerId { get; init; } = Guid.CreateVersion7();
 
+    /// <summary>Activity state of the worker at the time this row was last refreshed.</summary>
     public WorkerStatus Status { get; init; } = WorkerStatus.Idle;
 
+    /// <summary>Id of the Task currently being executed by this worker, if any.</summary>
     public Guid? CurrentTaskId { get; init; }
 
+    /// <summary>TaskTypeId of the Task currently being executed by this worker, if any.</summary>
     public Guid? CurrentTaskTypeId { get; init; }
 
+    /// <summary>When this worker was started.</summary>
     public DateTimeOffset StartedAt { get; init; } = DateTimeOffset.UtcNow;
 
+    /// <summary>Last time this row was refreshed by <see cref="WorkerPool"/>.</summary>
     public DateTimeOffset LastHeartbeat { get; init; } = DateTimeOffset.UtcNow;
 }

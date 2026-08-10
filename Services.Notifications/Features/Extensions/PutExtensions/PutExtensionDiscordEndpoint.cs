@@ -38,10 +38,16 @@ public abstract class PutExtensionDiscordEndpoint
         return TypedResults.Ok(result);
     }
 
+    /// <summary>Request to add a Discord notification extension.</summary>
+    /// <param name="Name">The user-assigned display name for the new extension instance.</param>
+    /// <param name="WebhookId">The identifier portion of the Discord webhook URL used to send messages.</param>
+    /// <param name="WebhookToken">The token portion of the Discord webhook URL used to authenticate the webhook.</param>
     public record PutExtensionRequestDiscord(string Name, string WebhookId, string WebhookToken)
         : PutExtensionNapriseEndpoint.PutExtensionRequestNaprise(Name, NotificationExtensionType.Discord, Discord.CreateServiceUrl(WebhookId, WebhookToken))
     {
+        /// <inheritdoc cref="WebhookId" />
         public string WebhookId { get; init; } = WebhookId;
+        /// <inheritdoc cref="WebhookToken" />
         public string WebhookToken { get; init; } = WebhookToken;
     }
 }

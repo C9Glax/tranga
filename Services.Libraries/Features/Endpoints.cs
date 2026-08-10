@@ -3,8 +3,12 @@ using Services.Libraries.Features.Libraries;
 
 namespace Services.Libraries.Features;
 
+/// <summary>
+/// Registers the Libraries service's route group ("Libraries" tag) and its endpoints.
+/// </summary>
 public sealed class Endpoints : EndpointsBuilder
 {
+    /// <inheritdoc />
     protected override void AddEndpoints(RouteGroupBuilder builder)
     {
         builder.MapGroup(string.Empty)

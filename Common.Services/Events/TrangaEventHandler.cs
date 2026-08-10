@@ -6,7 +6,13 @@ using RabbitMQ.Client.Events;
 
 namespace Common.Services.Events;
 
-public abstract class TrangaEventHandler<T> : IEventHandler where T : TrangaEvent 
+/// <summary>
+/// Base class for consuming a specific <see cref="TrangaEvent"/> type from RabbitMQ. Declares and binds a durable
+/// queue named after <typeparamref name="T"/> to the "tranga" exchange, and dispatches received messages to
+/// <see cref="HandleMessage"/>, acking on success and nacking (without requeue) on failure or deserialization error.
+/// </summary>
+/// <typeparam name="T">The event type this handler consumes.</typeparam>
+public abstract class TrangaEventHandler<T> : IEventHandler where T : TrangaEvent
 {
     private readonly IChannel _channel;
 
@@ -14,6 +20,8 @@ public abstract class TrangaEventHandler<T> : IEventHandler where T : TrangaEven
 
     private readonly string _queue = typeof(T).Name;
 
+    /// <summary>Declares and binds the queue for <typeparamref name="T"/> and starts consuming messages from it.</summary>
+    /// <param name="channel">The RabbitMQ channel to consume on.</param>
     protected TrangaEventHandler([FromServices]IChannel channel)
     {
         this._channel = channel;
@@ -47,7 +55,8 @@ public abstract class TrangaEventHandler<T> : IEventHandler where T : TrangaEven
         }
     }
 
-    // Abstract method for handling a message.
-    // Must be implemented in derived consumers (e.g., PaymentConsumer, InventoryConsumer).
+    /// <summary>Processes a received event.</summary>
+    /// <param name="notificationEvent">The deserialized event message.</param>
+    /// <returns><c>true</c> if the message was handled successfully and should be acknowledged; <c>false</c> if it should be nacked (without requeue).</returns>
     protected abstract Task<bool> HandleMessage(T notificationEvent);
 }

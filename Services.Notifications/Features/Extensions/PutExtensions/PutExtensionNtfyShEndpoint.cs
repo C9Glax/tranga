@@ -38,13 +38,25 @@ public abstract class PutExtensionNtfyShEndpoint
         return TypedResults.Ok(result);
     }
         
+    /// <summary>Request to add an Ntfy.sh notification extension.</summary>
+    /// <param name="Name">The user-assigned display name for the new extension instance.</param>
+    /// <param name="Host">The Ntfy.sh server host (optionally prefixed with a scheme, e.g. <c>https://</c>).</param>
+    /// <param name="Port">The Ntfy.sh server port.</param>
+    /// <param name="Topic">The topic to publish notifications to.</param>
+    /// <param name="User">Optional username for authenticating with the Ntfy.sh server.</param>
+    /// <param name="Password">Optional password for authenticating with the Ntfy.sh server.</param>
     public record PutExtensionRequestNtfySh(string Name, string Host, int Port, string Topic, string? User = null, string? Password = null)
         : PutExtensionNapriseEndpoint.PutExtensionRequestNaprise(Name, NotificationExtensionType.NtfySh, NtfySh.CreateServiceUrl(Host.StartsWith("https"), Host[(Host.IndexOf('/') + 2)..], Port, Topic, User, Password))
     {
+        /// <inheritdoc cref="Host" />
         public string Host { get; init; } = Host;
+        /// <inheritdoc cref="Port" />
         public int Port { get; init; } = Port;
+        /// <inheritdoc cref="Topic" />
         public string Topic { get; init; } = Topic;
+        /// <inheritdoc cref="User" />
         public string? User { get; init; } = User;
+        /// <inheritdoc cref="Password" />
         public string? Password { get; init; } = Password;
     }
 }

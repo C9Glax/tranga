@@ -37,13 +37,23 @@ public abstract class PutExtensionNapriseEndpoint
         return TypedResults.Ok(result);
     }
 
+    /// <summary>Request to add a Naprise notification extension by directly specifying its fully-formed service URL.</summary>
+    /// <param name="Name">The user-assigned display name for the new extension instance.</param>
+    /// <param name="NotificationExtensionType">The notification channel type being configured.</param>
+    /// <param name="ServiceUrl">The Naprise service URL identifying the notification channel and its configuration.</param>
     public record PutExtensionRequestNapriseServiceUrl(string Name, NotificationExtensionType NotificationExtensionType, string ServiceUrl) : PutExtensionRequestNaprise(Name, NotificationExtensionType, ServiceUrl)
     {
+        /// <inheritdoc cref="ServiceUrl" />
         public new string ServiceUrl { get; init; } = ServiceUrl;
     }
-    
+
+    /// <summary>Base request shape for Naprise-backed notification extensions, all of which resolve to a single service URL.</summary>
+    /// <param name="Name">The user-assigned display name for the new extension instance.</param>
+    /// <param name="NotificationExtensionType">The notification channel type being configured.</param>
+    /// <param name="ServiceUrl">The Naprise service URL identifying the notification channel and its configuration.</param>
     public record PutExtensionRequestNaprise(string Name, NotificationExtensionType NotificationExtensionType, string ServiceUrl) : PutExtensionEndpoint.PutExtensionRequest(Name, NotificationExtensionType)
     {
+        /// <inheritdoc cref="ServiceUrl" />
         internal string ServiceUrl { get; init; } = ServiceUrl;
     }
 }

@@ -46,7 +46,10 @@ internal sealed class WorkerRuntimeState(Guid workerId)
 /// </summary>
 public enum WorkerStatus
 {
+    /// <summary>The worker is running but not currently executing a Task.</summary>
     Idle,
+    /// <summary>The worker is currently executing a Task.</summary>
     Busy,
+    /// <summary>The worker has been signalled to shut down and will stop after its current Task (if any) finishes.</summary>
     Retiring
 }

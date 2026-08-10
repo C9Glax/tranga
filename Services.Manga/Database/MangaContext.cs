@@ -3,30 +3,46 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Services.Manga.Database;
 
+/// <summary>
+/// EF Core database context for the manga service, configuring the relational model for manga, chapters,
+/// metadata, download links, and their associated files.
+/// </summary>
 public sealed class MangaContext(DbContextOptions<MangaContext> options) : TrangaDbContext<MangaContext>(options)
 {
+    /// <summary>The manga series tracked by the service.</summary>
     public DbSet<DbManga> Mangas { get; init; }
-    
+
+    /// <summary>The distinct genres referenced by metadata entries.</summary>
     public DbSet<DbGenre> Genres { get; init; }
-    
+
+    /// <summary>The distinct authors referenced by metadata entries.</summary>
     public DbSet<DbPerson> Authors { get; init; }
-    
+
+    /// <summary>The distinct artists referenced by metadata entries.</summary>
     public DbSet<DbPerson> Artists { get; init; }
-    
+
+    /// <summary>The chapters belonging to tracked manga.</summary>
     public DbSet<DbChapter> Chapters { get; init; }
-    
+
+    /// <summary>The files (covers, chapter archives) referenced by manga entities.</summary>
     public DbSet<DbFile> Files { get; init; }
-    
+
+    /// <summary>The candidate metadata entries retrieved from metadata extensions.</summary>
     public DbSet<DbMetadata> MetadataEntries { get; init; }
-    
+
+    /// <summary>The join entries linking manga to their candidate metadata entries.</summary>
     public DbSet<DbMangaMetadataEntries> MangaMetadataEntries { get; init; }
-    
+
+    /// <summary>The download-source links retrieved from download extensions.</summary>
     public DbSet<DbDownloadLink> DownloadLinks { get; init; }
-    
+
+    /// <summary>The join entries linking manga to their matched download-source links.</summary>
     public DbSet<DbMangaDownloadLinks> MangaDownloadLinks { get; init; }
-    
+
+    /// <summary>The join entries linking chapters to their per-extension download links.</summary>
     public DbSet<DbChapterDownloadLink> ChapterDownloadLinks { get; init; }
-    
+
+    /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         CreateMangaModel(modelBuilder);
