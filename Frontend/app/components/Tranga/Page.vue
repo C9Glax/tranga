@@ -88,10 +88,5 @@ const searchModel = defineModel<string>('search');
 
 const searchInputRef = useTemplateRef('searchInputRef');
 
-defineShortcuts({
-    ctrl_f: {
-        usingInput: true,
-        handler: () => searchInputRef.value?.inputRef?.focus(),
-    },
-});
+defineShortcuts({ ctrl_f: { usingInput: true, handler: () => searchInputRef.value?.inputRef?.focus() } });
 </script>

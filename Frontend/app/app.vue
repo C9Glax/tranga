@@ -50,8 +50,5 @@ const overlay = useOverlay();
 
 const searchOverlay = overlay.create(LazySearch);
 
-defineShortcuts({
-    ctrl_s: () => searchOverlay.open(),
-    ctrl_h: () => navigateTo('/'),
-});
+defineShortcuts({ ctrl_s: () => searchOverlay.open(), ctrl_h: () => navigateTo('/') });
 </script>
