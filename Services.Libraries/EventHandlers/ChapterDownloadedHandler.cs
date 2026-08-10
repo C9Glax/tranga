@@ -1,6 +1,5 @@
 using Common.Services.Events;
 using Common.Services.Events.Events;
-using Extensions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -46,55 +45,30 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
     private static async Task<bool> ProcessKomga(LibrariesContext ctx, MangaContext mangaContext, DbLibraryService dbLibrary, Extensions.Extensions.Komga komga,
         ChapterDownloadedEvent chapterDownloadedEvent, ILogger<ChapterDownloadedHandler> logger)
     {
-        if (await ctx.MangaMappings.SingleOrDefaultAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId &&
-                                                              m.MangaId == chapterDownloadedEvent.MangaId) is null)
+        if (await ctx.MangaMappings.AnyAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId &&
+                                                   m.MangaId == chapterDownloadedEvent.MangaId))
         {
-            KomgaSeries[] seriesList = await komga.GetSeriesList(dbLibrary.TrangaLibraryId, CancellationToken.None);
             await komga.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
+            return true;
+        }
 
-            KomgaSeries[] newSeriesList = seriesList;
-            bool foundNewSeries = false;
-            for (int attempt = 0; attempt < MaxSeriesPollAttempts; attempt++)
-            {
-                newSeriesList = await komga.GetSeriesList(dbLibrary.TrangaLibraryId, CancellationToken.None);
-                if (newSeriesList.Length != seriesList.Length)
-                {
-                    foundNewSeries = true;
-                    break;
-                }
+        await komga.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
 
-                await Task.Delay(SeriesPollInterval);
-            }
-
-            if (!foundNewSeries)
-            {
-                logger.LogWarning(
-                    "Timed out after {Attempts} attempts waiting for Komga library service {LibraryServiceId} to pick up the newly scanned series for manga {MangaId}. No mapping was created; the next ChapterDownloadedEvent for this manga will retry mapping discovery.",
-                    MaxSeriesPollAttempts, dbLibrary.LibraryServiceId, chapterDownloadedEvent.MangaId);
-                return true;
-            }
-
-            KomgaSeries newSeries = newSeriesList.Single(l => seriesList.All(existing => existing.Id != l.Id));
-            await ctx.MangaMappings.AddAsync(new DbMangaIdMapping(dbLibrary.LibraryServiceId, chapterDownloadedEvent.MangaId,
-                newSeries.Id));
+        for (int attempt = 0; attempt < MaxSeriesPollAttempts; attempt++)
+        {
+            await KomgaSeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibrary, komga, logger, CancellationToken.None);
             await ctx.SaveChangesAsync();
 
-            try
-            {
-                await KomgaMetadataSync.PushMetadata(mangaContext, komga, newSeries.Id, chapterDownloadedEvent.MangaId, CancellationToken.None);
-            }
-            catch (Exception e)
-            {
-                logger.LogWarning(e,
-                    "Failed to push metadata to newly linked Komga series {SeriesId} for manga {MangaId} on library {LibraryServiceId}",
-                    newSeries.Id, chapterDownloadedEvent.MangaId, dbLibrary.LibraryServiceId);
-            }
-        }
-        else
-        {
-            await komga.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
+            if (await ctx.MangaMappings.AnyAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId &&
+                                                       m.MangaId == chapterDownloadedEvent.MangaId))
+                return true;
+
+            await Task.Delay(SeriesPollInterval);
         }
 
+        logger.LogWarning(
+            "Timed out after {Attempts} attempts waiting for Komga library service {LibraryServiceId} to pick up the newly scanned series for manga {MangaId}. No mapping was created; the next ChapterDownloadedEvent for this manga will retry mapping discovery.",
+            MaxSeriesPollAttempts, dbLibrary.LibraryServiceId, chapterDownloadedEvent.MangaId);
         return true;
     }
 }

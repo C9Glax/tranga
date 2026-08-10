@@ -149,6 +149,142 @@ public sealed class MangaUpdatedHandlerTests : Common.Tests.TrangaTest
         Assert.True(result);
     }
 
+    /// <summary>
+    /// Builds a full Komga "content" SeriesDto JSON array (mirrors ChapterDownloadedHandlerTests'/
+    /// LinkLibraryMangaEndpointTests' helper of the same shape, since every
+    /// [DataMember(IsRequired = true)] field must be present).
+    /// </summary>
+    private static string SeriesListBody(params (string Id, string Name)[] series)
+    {
+        string items = string.Join(",", series.Select(s => $$"""
+        {
+            "id": "{{s.Id}}",
+            "name": "{{s.Name}}",
+            "libraryId": "komga-library-id",
+            "booksCount": 0,
+            "booksInProgressCount": 0,
+            "booksReadCount": 0,
+            "booksUnreadCount": 0,
+            "created": "2024-01-01T00:00:00Z",
+            "deleted": false,
+            "fileLastModified": "2024-01-01T00:00:00Z",
+            "lastModified": "2024-01-01T00:00:00Z",
+            "oneshot": false,
+            "url": "/some/path",
+            "booksMetadata": {
+                "authors": [],
+                "created": "2024-01-01T00:00:00Z",
+                "lastModified": "2024-01-01T00:00:00Z",
+                "summary": "",
+                "summaryNumber": "",
+                "tags": []
+            },
+            "metadata": {
+                "ageRatingLock": false,
+                "alternateTitles": [],
+                "alternateTitlesLock": false,
+                "created": "2024-01-01T00:00:00Z",
+                "genres": [],
+                "genresLock": false,
+                "language": "",
+                "languageLock": false,
+                "lastModified": "2024-01-01T00:00:00Z",
+                "links": [],
+                "linksLock": false,
+                "publisher": "",
+                "publisherLock": false,
+                "readingDirection": "",
+                "readingDirectionLock": false,
+                "sharingLabels": [],
+                "sharingLabelsLock": false,
+                "status": "",
+                "statusLock": false,
+                "summary": "",
+                "summaryLock": false,
+                "tags": [],
+                "tagsLock": false,
+                "title": "",
+                "titleLock": false,
+                "titleSort": "",
+                "titleSortLock": false,
+                "totalBookCount": 0,
+                "totalBookCountLock": false
+            }
+        }
+        """));
+        return $$"""{ "content": [{{items}}] }""";
+    }
+
+    [Fact]
+    public async Task HandleMessage_NoExistingMapping_MatchingKomgaSeriesExists_LinksAndPushesMetadataAndPoster()
+    {
+        // The gap this closes: choosing a metadata source for a manga ("adding" it) used to leave
+        // it unlinked even if a matching Komga series already existed, until the manual /link
+        // button was clicked. Now MangaUpdatedEvent (published on choosing a source) attempts the
+        // same name-match linking automatically.
+        await using LibrariesContext librariesContext = LibrariesContextFactory.Create();
+        await using MangaContext mangaContext = MangaContextFactory.Create();
+
+        string tempDirectory = Path.Combine(Path.GetTempPath(), "TrangaTests", "MangaUpdatedHandlerTests", Guid.NewGuid().ToString("N"));
+        DbFile cover = await SeedCoverFile(mangaContext, tempDirectory, [1, 2, 3, 4], ct);
+        (DbManga manga, DbMetadata _) = await SeedMangaWithChosenMetadata(mangaContext, cover.FileId, ct);
+
+        ConcurrentBag<string> requestedPaths = [];
+        using FakeKomgaServer server = new(path =>
+        {
+            requestedPaths.Add(path);
+            if (path.Contains("/metadata") || path.Contains("/thumbnails"))
+                return (HttpStatusCode.OK, null);
+
+            // manga.Metadata.Series is "Updated Series Name" per SeedMangaWithChosenMetadata.
+            return (HttpStatusCode.OK, SeriesListBody(("matched-series-id", "Updated Series Name")));
+        });
+
+        DbLibraryService dbLibrary = new(LibraryServiceType.Komga, "MyLibrary", server.BaseUrl, "some-api-key") { TrangaLibraryId = "komga-library-id" };
+        await librariesContext.AddAsync(dbLibrary, ct);
+        await librariesContext.SaveChangesAsync(ct);
+
+        await using ServiceProvider serviceProvider = BuildServiceProvider(librariesContext, mangaContext);
+        MangaUpdatedHandler handler = CreateHandler(serviceProvider);
+
+        bool result = await InvokeHandleMessage(handler, new MangaUpdatedEvent(manga.MangaId));
+
+        Assert.True(result);
+        // One request for the series list (matching), one for the metadata update, one for the poster upload.
+        Assert.Equal(3, requestedPaths.Count);
+
+        DbMangaIdMapping? mapping = await librariesContext.MangaMappings
+            .SingleOrDefaultAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId && m.MangaId == manga.MangaId, ct);
+        Assert.NotNull(mapping);
+        Assert.Equal("matched-series-id", mapping.SeriesId);
+
+        Directory.Delete(tempDirectory, recursive: true);
+    }
+
+    [Fact]
+    public async Task HandleMessage_NoExistingMapping_NoMatchingKomgaSeries_NoMappingCreatedNoError()
+    {
+        await using LibrariesContext librariesContext = LibrariesContextFactory.Create();
+        await using MangaContext mangaContext = MangaContextFactory.Create();
+
+        (DbManga manga, DbMetadata _) = await SeedMangaWithChosenMetadata(mangaContext, ct: ct);
+
+        using FakeKomgaServer server = new(HttpStatusCode.OK, SeriesListBody(("some-series-id", "Some Unrelated Series")));
+        DbLibraryService dbLibrary = new(LibraryServiceType.Komga, "MyLibrary", server.BaseUrl, "some-api-key") { TrangaLibraryId = "komga-library-id" };
+        await librariesContext.AddAsync(dbLibrary, ct);
+        await librariesContext.SaveChangesAsync(ct);
+
+        await using ServiceProvider serviceProvider = BuildServiceProvider(librariesContext, mangaContext);
+        MangaUpdatedHandler handler = CreateHandler(serviceProvider);
+
+        bool result = await InvokeHandleMessage(handler, new MangaUpdatedEvent(manga.MangaId));
+
+        Assert.True(result);
+        DbMangaIdMapping? mapping = await librariesContext.MangaMappings
+            .SingleOrDefaultAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId && m.MangaId == manga.MangaId, ct);
+        Assert.Null(mapping);
+    }
+
     [Fact]
     public async Task HandleMessage_SkipsMappingWhenLibraryTypeUnsupported()
     {

@@ -24,7 +24,12 @@ internal sealed class MangaUpdatedHandler(IChannel channel, IServiceProvider ser
             .ToListAsync();
 
         if (mappings.Count == 0)
+        {
+            // KomgaSeriesLinker already pushes metadata for anything it newly links, so there's
+            // nothing left to do here for this manga either way.
+            await LinkToKomgaLibraries(librariesContext, mangaContext, logger);
             return true;
+        }
 
         foreach (DbMangaIdMapping mapping in mappings)
         {
@@ -52,5 +57,17 @@ internal sealed class MangaUpdatedHandler(IChannel channel, IServiceProvider ser
             return;
 
         await KomgaMetadataSync.PushMetadata(mangaContext, komga, mapping.SeriesId, mangaUpdatedEvent.MangaId, CancellationToken.None);
+    }
+
+    private static async Task LinkToKomgaLibraries(LibrariesContext librariesContext, MangaContext mangaContext, ILogger logger)
+    {
+        List<DbLibraryService> libraries = await librariesContext.LibraryServices.ToListAsync();
+        foreach (DbLibraryService dbLibrary in libraries)
+        {
+            if (dbLibrary.LibraryServiceType == LibraryServiceType.Komga && dbLibrary.ToExtension() is { } extension)
+                await KomgaSeriesLinker.LinkExistingMangaByName(librariesContext, mangaContext, dbLibrary, extension, logger, CancellationToken.None);
+        }
+
+        await librariesContext.SaveChangesAsync();
     }
 }

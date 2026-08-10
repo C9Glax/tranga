@@ -11,8 +11,10 @@ namespace Services.Libraries.Helpers;
 /// Links Tranga manga to Komga series on a name-equality basis (the Komga series name matches the
 /// manga's on-disk directory name), pushing metadata for each newly created link. Only considers
 /// series in the Komga library Tranga owns (<see cref="DbLibraryService.TrangaLibraryId"/>), and
-/// prunes mappings whose Komga series no longer exists there. Used both when a Komga library is
-/// first connected and when a user manually re-runs linking from the library settings page, so
+/// prunes mappings whose Komga series no longer exists there. Used when a Komga library is first
+/// connected, when a user manually re-runs linking from the library settings page, and automatically
+/// from <see cref="EventHandlers.MangaUpdatedHandler"/> (manga added/merged/synced) and
+/// <see cref="EventHandlers.ChapterDownloadedHandler"/> (after triggering a scan) — in all cases
 /// already-linked manga are skipped rather than re-added.
 /// </summary>
 internal static class KomgaSeriesLinker
