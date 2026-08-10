@@ -64,6 +64,9 @@ internal static class EndpointHelpers
         builder.MapPost("{mangaId}/sync", PostMangaSyncEndpoint.Handle)
             .WithSummary("Manually trigger a metadata sync to any linked library extensions (e.g. Komga)");
 
+        builder.MapPost("{mangaId}/remove", PostMangaRemoveEndpoint.Handle)
+            .WithSummary("Stop monitoring and un-choose a Manga, removing it from the Manga list");
+
         builder.MapGet("{mangaId}/chapters", GetMangaChaptersEndpoint.Handle)
             .WithSummary("Chapters of Manga")
             .WithTags("Chapter");
