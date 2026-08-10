@@ -107,6 +107,14 @@ export const zServicesMangaPatchMangaDownloadLinkRequest = z.object({
 
 export type ServicesMangaPatchMangaDownloadLinkRequestZodType = z.infer<typeof zServicesMangaPatchMangaDownloadLinkRequest>;
 
+export const zServicesMangaPostMangaMergeRequest = z.object({
+    sourceMangaId: z.uuid(),
+    keepSourceMetadata: z.boolean(),
+    keepSourceChapters: z.boolean(),
+});
+
+export type ServicesMangaPostMangaMergeRequestZodType = z.infer<typeof zServicesMangaPostMangaMergeRequest>;
+
 export const zServicesMangaReleaseStatus = z.enum(['Ongoing', 'Complete', 'Hiatus', 'Cancelled']);
 
 export type ServicesMangaReleaseStatusZodType = z.infer<typeof zServicesMangaReleaseStatus>;

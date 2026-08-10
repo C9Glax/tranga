@@ -41,6 +41,13 @@ const syncToKomgaAction = computed<ButtonProps>(() => ({
     onClick: () => syncMangaToKomga(mangaId),
 }));
 
+const mergeAction = computed<ButtonProps>(() => ({
+    label: 'Merge into...',
+    icon: 'i-lucide-git-merge',
+    variant: 'outline',
+    to: `/manga/${mangaId}/merge`,
+}));
+
 const removeAction = computed<ButtonProps>(() => ({
     label: 'Remove',
     icon: 'i-lucide-trash-2',
@@ -52,6 +59,7 @@ const removeAction = computed<ButtonProps>(() => ({
 const actions = (_manga?: ServicesMangaManga): ButtonProps[] | undefined => [
     moreDownloadLinksAction.value,
     syncToKomgaAction.value,
+    mergeAction.value,
     removeAction.value,
 ];
 </script>

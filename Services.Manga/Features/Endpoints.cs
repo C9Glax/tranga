@@ -67,6 +67,9 @@ internal static class EndpointHelpers
         builder.MapPost("{mangaId}/remove", PostMangaRemoveEndpoint.Handle)
             .WithSummary("Stop monitoring and un-choose a Manga, removing it from the Manga list");
 
+        builder.MapPost("{mangaId}/merge", PostMangaMergeEndpoint.Handle)
+            .WithSummary("Merge another Manga into this one, keeping this Manga's ID");
+
         builder.MapGet("{mangaId}/chapters", GetMangaChaptersEndpoint.Handle)
             .WithSummary("Chapters of Manga")
             .WithTags("Chapter");

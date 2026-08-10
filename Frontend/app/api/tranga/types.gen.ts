@@ -86,6 +86,8 @@ export type ServicesMangaMetadataExtensionsList = { extensions?: Array<ServicesM
 
 export type ServicesMangaPatchMangaDownloadLinkRequest = { matched: boolean; priority: number | string };
 
+export type ServicesMangaPostMangaMergeRequest = { sourceMangaId: string; keepSourceMetadata: boolean; keepSourceChapters: boolean };
+
 export type ServicesMangaPostSearchMangaRequest = { searchQuery: ServicesMangaSearchQuery; metadataExtensionIds: null | Array<string> };
 
 export type ServicesMangaReleaseStatus = 'Ongoing' | 'Complete' | 'Hiatus' | 'Cancelled';
@@ -369,6 +371,33 @@ export type PostMangasByMangaIdRemoveErrors = {
 };
 
 export type PostMangasByMangaIdRemoveResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostMangasByMangaIdMergeData = {
+    body: ServicesMangaPostMangaMergeRequest;
+    path: { mangaId: string };
+    query?: never;
+    url: '/mangas/{mangaId}/merge';
+};
+
+export type PostMangasByMangaIdMergeErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type PostMangasByMangaIdMergeError = PostMangasByMangaIdMergeErrors[keyof PostMangasByMangaIdMergeErrors];
+
+export type PostMangasByMangaIdMergeResponses = {
     /**
      * OK
      */
