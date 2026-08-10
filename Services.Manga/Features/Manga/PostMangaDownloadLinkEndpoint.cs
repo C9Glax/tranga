@@ -22,9 +22,9 @@ internal abstract class PostMangaDownloadLinkEndpoint
     /// <param name="mangaId">ID of Manga</param>
     /// <param name="req"></param>
     /// <param name="ct"></param>
-    /// <response code="200">The Download-Link was added</response>
+    /// <response code="200">The Download-Link was added, or already existed and the Manga was set to monitored</response>
     /// <response code="404">Manga with requested ID does not exist</response>
-    /// <response code="400">The extension is unknown, the URL does not match the extension's expected shape, a Download-Link for that extension/series already exists on this Manga, or the extension could not fetch chapters for the resolved series</response>
+    /// <response code="400">The extension is unknown, the URL does not match the extension's expected shape, or the extension could not fetch chapters for the resolved series</response>
     public static async Task<Results<Ok<MangaDownloadLink>, NotFound, BadRequest<string>>> Handle(
         [FromServices] MangaContext mangaContext, [FromRoute] Guid mangaId, [FromBody] PostMangaDownloadLinkRequest req, CancellationToken ct)
     {
@@ -37,9 +37,13 @@ internal abstract class PostMangaDownloadLinkEndpoint
         if (extension.ParseIdentifierFromUrl(req.Url) is not { } identifier)
             return TypedResults.BadRequest($"That doesn't look like a {extension.Name} manga page URL.");
 
-        if (await mangaContext.MangaDownloadLinks.AnyAsync(m =>
-                m.MangaId == mangaId && m.DownloadLink.DownloadExtension == req.DownloadExtensionId && m.DownloadLink.Identifier == identifier, ct))
-            return TypedResults.BadRequest("This Manga already has a Download-Link for that extension and series.");
+        if (await mangaContext.MangaDownloadLinks.FirstOrDefaultAsync(m =>
+                m.MangaId == mangaId && m.DownloadLink.DownloadExtension == req.DownloadExtensionId && m.DownloadLink.Identifier == identifier, ct) is { } existingLink)
+        {
+            source.Manga.Monitored = true;
+            await mangaContext.SaveChangesAsync(ct);
+            return TypedResults.Ok(existingLink.ToDTO());
+        }
 
         DbDownloadLink downloadLink = new()
         {
