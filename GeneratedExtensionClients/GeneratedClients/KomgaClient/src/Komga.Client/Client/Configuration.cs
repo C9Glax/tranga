@@ -117,7 +117,7 @@ namespace Komga.Client.Client
         public Configuration()
         {
             Proxy = null;
-            UserAgent = WebUtility.UrlEncode("OpenAPI-NswagGenerator/1.0.0/csharp");
+            UserAgent = WebUtility.UrlEncode("OpenAPI-Generator/1.0.0/csharp");
             BasePath = "https://demo.komga.org";
             DefaultHeaders = new ConcurrentDictionary<string, string>();
             ApiKey = new ConcurrentDictionary<string, string>();

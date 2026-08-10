@@ -72,7 +72,7 @@ namespace Komga.Client.Model
         /// <summary>
         /// Gets or Sets Parameters
         /// </summary>
-        [DataMember(Name = "parameters", EmitDefaultValue = false)]
+        [DataMember(Name = "parameters", EmitDefaultValue = true)]
         public Dictionary<string, string> Parameters { get; set; }
 
         /// <summary>

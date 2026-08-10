@@ -204,11 +204,11 @@ paths:
         name: library_id
         required: false
         schema:
+          default: null
           items:
             type: string
           type: array
           uniqueItems: true
-          default: null
         style: form
       - explode: true
         in: query
@@ -322,10 +322,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/AuthorDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -354,10 +354,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   type: string
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -376,10 +376,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   type: string
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -418,6 +418,7 @@ paths:
         name: media_status
         required: false
         schema:
+          default: null
           items:
             enum:
             - UNKNOWN
@@ -427,13 +428,13 @@ paths:
             - OUTDATED
             type: string
           type: array
-          default: null
         style: form
       - explode: true
         in: query
         name: read_status
         required: false
         schema:
+          default: null
           items:
             enum:
             - UNREAD
@@ -441,7 +442,6 @@ paths:
             - IN_PROGRESS
             type: string
           type: array
-          default: null
         style: form
       - explode: true
         in: query
@@ -1165,10 +1165,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/PageDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -1229,10 +1229,10 @@ paths:
         name: Accept
         required: false
         schema:
+          default: null
           items:
             $ref: "#/components/schemas/MediaType"
           type: array
-          default: null
         style: simple
       - explode: true
         in: query
@@ -1534,10 +1534,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/ReadListDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -1637,10 +1637,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/ThumbnailBookDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -2203,6 +2203,7 @@ paths:
         name: status
         required: false
         schema:
+          default: null
           items:
             enum:
             - ENDED
@@ -2211,7 +2212,6 @@ paths:
             - HIATUS
             type: string
           type: array
-          default: null
         style: form
       - explode: true
         in: query
@@ -2400,10 +2400,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/ThumbnailSeriesCollectionDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -2820,10 +2820,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/LibraryDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -3103,10 +3103,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/OAuth2ClientDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -3128,6 +3128,7 @@ paths:
         name: action
         required: false
         schema:
+          default: null
           items:
             enum:
             - DELETE_AUTO
@@ -3135,7 +3136,6 @@ paths:
             - IGNORE
             type: string
           type: array
-          default: null
         style: form
       - description: Zero-based page index (0..N)
         explode: true
@@ -3993,10 +3993,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/ThumbnailReadListDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -4155,10 +4155,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/ReleaseDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -4575,10 +4575,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/GroupCountDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -4734,10 +4734,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/GroupCountDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -5118,10 +5118,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/CollectionDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -5341,10 +5341,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/ThumbnailSeriesDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -5784,10 +5784,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/TransientBookDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -6023,10 +6023,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/UserDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -6155,10 +6155,10 @@ paths:
           content:
             application/json:
               schema:
+                default: null
                 items:
                   $ref: "#/components/schemas/ApiKeyDto"
                 type: array
-                default: null
           description: OK
         "400":
           content:
@@ -6709,7 +6709,7 @@ components:
           numberLock: true
           numberSort: 6.0274563
           numberSortLock: true
-          releaseDate: 2000-01-23
+          releaseDate: 2000-01-23T00:00:00.000+00:00
           releaseDateLock: true
           summary: summary
           summaryLock: true
@@ -6849,7 +6849,7 @@ components:
           role: role
         created: 2000-01-23T04:56:07.000+00:00
         lastModified: 2000-01-23T04:56:07.000+00:00
-        releaseDate: 2000-01-23
+        releaseDate: 2000-01-23T00:00:00.000+00:00
         summary: summary
         summaryNumber: summaryNumber
         tags:
@@ -6909,7 +6909,7 @@ components:
         numberLock: true
         numberSort: 6.0274563
         numberSortLock: true
-        releaseDate: 2000-01-23
+        releaseDate: 2000-01-23T00:00:00.000+00:00
         releaseDateLock: true
         summary: summary
         summaryLock: true
@@ -7016,7 +7016,7 @@ components:
         numberLock: true
         numberSort: 0.8008282
         numberSortLock: true
-        releaseDate: 2000-01-23
+        releaseDate: 2000-01-23T00:00:00.000+00:00
         releaseDateLock: true
         summary: summary
         summaryLock: true
@@ -7433,8 +7433,7 @@ components:
         id:
           type: string
         properties:
-          additionalProperties:
-            type: string
+          additionalProperties: {}
         seriesId:
           type: string
         timestamp:
@@ -8110,8 +8109,7 @@ components:
         concrete:
           type: boolean
         parameters:
-          additionalProperties:
-            type: string
+          additionalProperties: {}
         qualityValue:
           format: double
           type: number
@@ -8345,7 +8343,7 @@ components:
             numberLock: true
             numberSort: 6.0274563
             numberSortLock: true
-            releaseDate: 2000-01-23
+            releaseDate: 2000-01-23T00:00:00.000+00:00
             releaseDateLock: true
             summary: summary
             summaryLock: true
@@ -8407,7 +8405,7 @@ components:
             numberLock: true
             numberSort: 6.0274563
             numberSortLock: true
-            releaseDate: 2000-01-23
+            releaseDate: 2000-01-23T00:00:00.000+00:00
             releaseDateLock: true
             summary: summary
             summaryLock: true
@@ -9060,7 +9058,7 @@ components:
               role: role
             created: 2000-01-23T04:56:07.000+00:00
             lastModified: 2000-01-23T04:56:07.000+00:00
-            releaseDate: 2000-01-23
+            releaseDate: 2000-01-23T00:00:00.000+00:00
             summary: summary
             summaryNumber: summaryNumber
             tags:
@@ -9132,7 +9130,7 @@ components:
               role: role
             created: 2000-01-23T04:56:07.000+00:00
             lastModified: 2000-01-23T04:56:07.000+00:00
-            releaseDate: 2000-01-23
+            releaseDate: 2000-01-23T00:00:00.000+00:00
             summary: summary
             summaryNumber: summaryNumber
             tags:
@@ -9574,7 +9572,7 @@ components:
           number: number
           title: title
         series:
-          releaseDate: 2000-01-23
+          releaseDate: 2000-01-23T00:00:00.000+00:00
           seriesId: seriesId
           title: title
       properties:
@@ -9590,7 +9588,7 @@ components:
       - series
     ReadListRequestBookMatchSeriesDto:
       example:
-        releaseDate: 2000-01-23
+        releaseDate: 2000-01-23T00:00:00.000+00:00
         seriesId: seriesId
         title: title
       properties:
@@ -9615,7 +9613,7 @@ components:
             number: number
             title: title
           series:
-            releaseDate: 2000-01-23
+            releaseDate: 2000-01-23T00:00:00.000+00:00
             seriesId: seriesId
             title: title
         - books:
@@ -9626,7 +9624,7 @@ components:
             number: number
             title: title
           series:
-            releaseDate: 2000-01-23
+            releaseDate: 2000-01-23T00:00:00.000+00:00
             seriesId: seriesId
             title: title
         request:
@@ -9661,7 +9659,7 @@ components:
               number: number
               title: title
             series:
-              releaseDate: 2000-01-23
+              releaseDate: 2000-01-23T00:00:00.000+00:00
               seriesId: seriesId
               title: title
           - books:
@@ -9672,7 +9670,7 @@ components:
               number: number
               title: title
             series:
-              releaseDate: 2000-01-23
+              releaseDate: 2000-01-23T00:00:00.000+00:00
               seriesId: seriesId
               title: title
           request:
@@ -9689,7 +9687,7 @@ components:
               number: number
               title: title
             series:
-              releaseDate: 2000-01-23
+              releaseDate: 2000-01-23T00:00:00.000+00:00
               seriesId: seriesId
               title: title
           - books:
@@ -9700,7 +9698,7 @@ components:
               number: number
               title: title
             series:
-              releaseDate: 2000-01-23
+              releaseDate: 2000-01-23T00:00:00.000+00:00
               seriesId: seriesId
               title: title
           request:
@@ -9859,7 +9857,7 @@ components:
             role: role
           created: 2000-01-23T04:56:07.000+00:00
           lastModified: 2000-01-23T04:56:07.000+00:00
-          releaseDate: 2000-01-23
+          releaseDate: 2000-01-23T00:00:00.000+00:00
           summary: summary
           summaryNumber: summaryNumber
           tags:
@@ -11333,7 +11331,7 @@ components:
         penciler:
         - penciler
         - penciler
-        published: 2000-01-23
+        published: 2000-01-23T00:00:00.000+00:00
         publisher:
         - publisher
         - publisher
@@ -11658,7 +11656,7 @@ components:
           penciler:
           - penciler
           - penciler
-          published: 2000-01-23
+          published: 2000-01-23T00:00:00.000+00:00
           publisher:
           - publisher
           - publisher
