@@ -14,11 +14,14 @@
                             </p>
                         </div>
                     </slot>
-                    <UInput
-                        v-model="searchModel"
-                        :disabled="!searchEnabled"
-                        placeholder="Search..."
-                        :icon="`i-lucide-search${searchEnabled ? '' : '-slash'}`" />
+                    <UTooltip text="Search" :kbds="['ctrl', 'f']">
+                        <UInput
+                            ref="searchInputRef"
+                            v-model="searchModel"
+                            :disabled="!searchEnabled"
+                            placeholder="Search..."
+                            :icon="`i-lucide-search${searchEnabled ? '' : '-slash'}`" />
+                    </UTooltip>
                     <UNavigationMenu :items="nItems" orientation="vertical" />
                 </slot>
             </UDashboardSidebar>
@@ -82,4 +85,13 @@ const defaultItems = computed((): NavigationMenuItem[] => {
 });
 
 const searchModel = defineModel<string>('search');
+
+const searchInputRef = useTemplateRef('searchInputRef');
+
+defineShortcuts({
+    ctrl_f: {
+        usingInput: true,
+        handler: () => searchInputRef.value?.inputRef?.focus(),
+    },
+});
 </script>
