@@ -18,6 +18,7 @@ Tranga is a .NET 10, multi-service manga downloader with a Nuxt frontend, a YARP
 
 ## Developer workflow
 
+- Use a git worktree and a dedicated branch for code changes rather than editing the shared checkout directly.
 - Full test suite: `dotnet test Tranga.sln`
 - Single test project: `dotnet test <Project>.Tests/<Project>.Tests.csproj`
 - Single test: `dotnet test --filter "FullyQualifiedName~Namespace.ClassName.MethodName"`
@@ -27,7 +28,8 @@ Tranga is a .NET 10, multi-service manga downloader with a Nuxt frontend, a YARP
 - Tests are xUnit v3; `Common.Tests/TrangaTest.cs` provides a shared `ct` (CancellationToken) base class other test classes derive from.
 - After making changes, first check whether existing tests already cover the behavior; if not, add or update tests in the matching `*.Tests` project. Always run tests related to the changed endpoint/feature before handing off.
 - When adding tests, mirror the source file name in the matching `*.Tests` project (e.g. `GetTaskEndpoint.cs` -> `GetTaskEndpointTests.cs`).
-- Frontend (`cd Frontend`): `npm run dev` / `build` / `lint` / `typecheck` / `prettier`. `npm run openapi-ts` regenerates typed API clients from `app/api/config.ts` — do not hand-edit the generated output.
+- Frontend (`cd Frontend`): `npm run dev` / `build` / `lint` / `typecheck` / `prettier`. Whenever backend endpoint/DTO shapes change, run `npm run openapi-ts` to regenerate typed API clients from `app/api/config.ts` — do not hand-edit the generated output.
+- Before committing frontend changes, run `npm run typecheck`, `npm run lint`, and `npm run prettier` in `Frontend/` and make sure they pass.
 - Regenerate NSwag extension clients from `GeneratedExtensionClients/Program.cs`; never hand-edit files under `GeneratedExtensionClients/GeneratedClients/`.
 - Avoid editing `bin/`, `obj/`, and other generated build/client output unless the task is specifically about build artifacts or code generation.
 
