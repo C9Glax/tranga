@@ -234,25 +234,28 @@ public sealed class ChapterDownloadedHandlerTests : TrangaTest, IDisposable
         using FakeKomgaServer server = new(path =>
         {
             if (path.Contains("/scan"))
-            {
                 return (HttpStatusCode.OK, null);
-            }
+
+            if (path.Contains("/metadata") || path.Contains("/thumbnails"))
+                return (HttpStatusCode.OK, null);
 
             seriesListCallCount++;
-            // First call (pre-scan) and the next poll attempt return no series; the one after
-            // that simulates Komga having picked up the newly scanned series.
-            return seriesListCallCount <= 2
+            // The first poll attempt returns no series; the one after that simulates Komga
+            // having picked up the newly scanned series.
+            return seriesListCallCount <= 1
                 ? (HttpStatusCode.OK, FakeKomgaServer.EmptySeriesListResponseBody)
                 : (HttpStatusCode.OK, SeriesListBody(("new-series-id", "New Series")));
         });
 
         await using LibrariesContext context = LibrariesContextFactory.Create();
+        await using MangaContext mangaContext = MangaContextFactory.Create();
         DbLibraryService library = NewKomgaLibrary(server.BaseUrl);
         await context.LibraryServices.AddAsync(library, ct);
         await context.SaveChangesAsync(ct);
 
         Guid mangaId = Guid.NewGuid();
-        ChapterDownloadedHandler handler = CreateHandler(context);
+        await SeedMangaWithChosenMetadata(mangaContext, mangaId, "New Series", ct);
+        ChapterDownloadedHandler handler = CreateHandler(context, mangaContext);
 
         bool result = await InvokeHandleMessage(handler, NewEvent(mangaId));
 
@@ -260,6 +263,50 @@ public sealed class ChapterDownloadedHandlerTests : TrangaTest, IDisposable
         DbMangaIdMapping? mapping = context.MangaMappings.SingleOrDefault(m => m.LibraryServiceId == library.LibraryServiceId && m.MangaId == mangaId);
         Assert.NotNull(mapping);
         Assert.Equal("new-series-id", mapping.SeriesId);
+    }
+
+    [Fact]
+    public async Task HandleMessage_MultipleNewSeriesAppearInSamePollingWindow_LinksEachToCorrectManga()
+    {
+        // Regression coverage for the fragility that motivated this rewrite: the old diff-by-count
+        // approach picked the new series via `.Single(...)`, which throws if more than one new
+        // series appears within the same polling window (e.g. concurrent chapter downloads for
+        // different manga trigger overlapping scans). Name-based matching has no such assumption
+        // and correctly links each manga independently.
+        ChapterDownloadedHandler.SeriesPollInterval = TimeSpan.FromMilliseconds(1);
+
+        using FakeKomgaServer server = new(path =>
+        {
+            if (path.Contains("/scan"))
+                return (HttpStatusCode.OK, null);
+
+            if (path.Contains("/metadata") || path.Contains("/thumbnails"))
+                return (HttpStatusCode.OK, null);
+
+            return (HttpStatusCode.OK, SeriesListBody(("series-a-id", "Manga A"), ("series-b-id", "Manga B")));
+        });
+
+        await using LibrariesContext context = LibrariesContextFactory.Create();
+        await using MangaContext mangaContext = MangaContextFactory.Create();
+        DbLibraryService library = NewKomgaLibrary(server.BaseUrl);
+        await context.LibraryServices.AddAsync(library, ct);
+        await context.SaveChangesAsync(ct);
+
+        Guid mangaAId = Guid.NewGuid();
+        Guid mangaBId = Guid.NewGuid();
+        await SeedMangaWithChosenMetadata(mangaContext, mangaAId, "Manga A", ct);
+        await SeedMangaWithChosenMetadata(mangaContext, mangaBId, "Manga B", ct);
+        ChapterDownloadedHandler handler = CreateHandler(context, mangaContext);
+
+        bool result = await InvokeHandleMessage(handler, NewEvent(mangaAId));
+
+        Assert.True(result);
+        DbMangaIdMapping? mappingA = context.MangaMappings.SingleOrDefault(m => m.LibraryServiceId == library.LibraryServiceId && m.MangaId == mangaAId);
+        DbMangaIdMapping? mappingB = context.MangaMappings.SingleOrDefault(m => m.LibraryServiceId == library.LibraryServiceId && m.MangaId == mangaBId);
+        Assert.NotNull(mappingA);
+        Assert.Equal("series-a-id", mappingA.SeriesId);
+        Assert.NotNull(mappingB);
+        Assert.Equal("series-b-id", mappingB.SeriesId);
     }
 
     [Fact]
