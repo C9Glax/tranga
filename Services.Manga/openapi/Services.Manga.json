@@ -476,6 +476,22 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PostSearchMangaDownloadLinksRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -1356,6 +1372,20 @@
           },
           "keepSourceChapters": {
             "type": "boolean"
+          }
+        }
+      },
+      "PostSearchMangaDownloadLinksRequest": {
+        "required": [
+          "searchTerm"
+        ],
+        "type": "object",
+        "properties": {
+          "searchTerm": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },

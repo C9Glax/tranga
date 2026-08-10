@@ -88,6 +88,8 @@ export type ServicesMangaPatchMangaDownloadLinkRequest = { matched: boolean; pri
 
 export type ServicesMangaPostMangaMergeRequest = { sourceMangaId: string; keepSourceMetadata: boolean; keepSourceChapters: boolean };
 
+export type ServicesMangaPostSearchMangaDownloadLinksRequest = { searchTerm: null | string };
+
 export type ServicesMangaPostSearchMangaRequest = { searchQuery: ServicesMangaSearchQuery; metadataExtensionIds: null | Array<string> };
 
 export type ServicesMangaReleaseStatus = 'Ongoing' | 'Complete' | 'Hiatus' | 'Cancelled';
@@ -483,7 +485,7 @@ export type PostMangasSearchResponses = {
 export type PostMangasSearchResponse = PostMangasSearchResponses[keyof PostMangasSearchResponses];
 
 export type PostMangasSearchByMangaIdDownloadLinksData = {
-    body?: never;
+    body?: null | ServicesMangaPostSearchMangaDownloadLinksRequest;
     path: { mangaId: string };
     query?: never;
     url: '/mangas/search/{mangaId}/downloadLinks';
