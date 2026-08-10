@@ -19,8 +19,10 @@
                         ]" />
 
                     <div class="flex gap-3 rounded-md border border-default p-3 mt-1">
-                        <MangaCover :file-id="previewMetadata?.coverId" no-blur class="w-16 shrink-0 rounded" />
-                        <div class="flex flex-col gap-1 min-w-0">
+                        <div class="flex-1 min-w-0">
+                            <MangaCover :file-id="previewMetadata?.coverId" no-blur class="rounded" />
+                        </div>
+                        <div class="flex-1 min-w-0 flex flex-col gap-1">
                             <p class="text-xs text-dimmed uppercase tracking-wide">Preview</p>
                             <p class="font-semibold truncate">{{ previewMetadata?.series ?? 'No metadata' }}</p>
                             <p class="text-sm text-dimmed line-clamp-3">{{ previewMetadata?.summary }}</p>
