@@ -85,8 +85,8 @@ public sealed class Komga : ILibraryExtension<KomgaSeries, KomgaBook, StringIden
         return _series.UpdateSeriesMetadataAsync(series.Id, dto, ct);
     }
 
-    public Task UpdateSeriesPoster(StringIdentifier seriesId, TrangaImage poster, CancellationToken ct) =>
-        _seriesPoster.AddUserUploadedSeriesThumbnailAsync(seriesId, new FileParameter(poster), selected: true, ct);
+    public Task UpdateSeriesPoster(StringIdentifier seriesId, string fileName, string contentType, TrangaImage poster, CancellationToken ct) =>
+        _seriesPoster.AddUserUploadedSeriesThumbnailAsync(seriesId, new FileParameter(fileName, contentType, poster), selected: true, ct);
 
     public Task ScanLibrary(StringIdentifier libraryId, CancellationToken ct) =>
         _librariesApi.LibraryScanAsync(libraryId, cancellationToken: ct);

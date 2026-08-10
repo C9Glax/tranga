@@ -19,6 +19,7 @@ public sealed class KomgaTests : Common.Tests.TrangaTest
         private readonly HttpListener _listener = new();
         public string BaseUrl { get; }
         public HttpListenerRequest? LastRequest { get; private set; }
+        public byte[]? LastRequestBody { get; private set; }
         public string? LastAuthorizationHeader { get; private set; }
         public string? LastApiKeyHeader { get; private set; }
 
@@ -46,6 +47,12 @@ public sealed class KomgaTests : Common.Tests.TrangaTest
                     LastRequest = ctx.Request;
                     LastAuthorizationHeader = ctx.Request.Headers["Authorization"];
                     LastApiKeyHeader = ctx.Request.Headers["X-API-Key"];
+
+                    using (MemoryStream bodyBuffer = new())
+                    {
+                        await ctx.Request.InputStream.CopyToAsync(bodyBuffer);
+                        LastRequestBody = bodyBuffer.ToArray();
+                    }
 
                     ctx.Response.StatusCode = (int)_statusCode;
                     if (_body is not null)
@@ -252,5 +259,25 @@ public sealed class KomgaTests : Common.Tests.TrangaTest
         Assert.Empty(series);
         Assert.NotNull(server.LastRequest);
         Assert.Contains("library_id=the-tranga-library-id", server.LastRequest!.Url!.Query);
+    }
+
+    [Fact]
+    public async Task UpdateSeriesPoster_SendsFileNameAndContentType()
+    {
+        // Regression test: the multipart file part used to be built from just the raw stream, which
+        // defaults to filename "no_name_provided" and content type "application/octet-stream" -
+        // Komga silently ignores poster uploads that don't look like a real image file.
+        using RecordingHttpServer server = new(HttpStatusCode.OK);
+        KomgaExtension extension = new(server.BaseUrl, "api-key");
+        TrangaImage image = new();
+        await image.WriteAsync("fake-image-bytes"u8.ToArray(), ct);
+        image.Position = 0;
+
+        await extension.UpdateSeriesPoster("series-1", "cover.jpg", "image/jpeg", image, ct);
+
+        Assert.NotNull(server.LastRequestBody);
+        string body = Encoding.Latin1.GetString(server.LastRequestBody);
+        Assert.Contains("filename=cover.jpg", body);
+        Assert.Contains("Content-Type: image/jpeg", body);
     }
 }
