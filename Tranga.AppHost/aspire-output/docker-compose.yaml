@@ -58,6 +58,9 @@ services:
       RABBITMQ_PORT: "5672"
       RABBITMQ_USER: "tranga"
       RABBITMQ_PASSWORD: "tranga"
+      AllowNSFW: "${ALLOWNSFW}"
+      DownloadLanguage: "${DOWNLOADLANGUAGE}"
+      FLARESOLVERR_URL: "${FLARESOLVERRURL}"
     expose:
       - "${SERVICES_TASKS_PORT}"
     volumes:
@@ -101,6 +104,9 @@ services:
       RABBITMQ_PORT: "5672"
       RABBITMQ_USER: "tranga"
       RABBITMQ_PASSWORD: "tranga"
+      AllowNSFW: "${ALLOWNSFW}"
+      DownloadLanguage: "${DOWNLOADLANGUAGE}"
+      FLARESOLVERR_URL: "${FLARESOLVERRURL}"
     expose:
       - "${SERVICES_MANGA_PORT}"
     volumes:
