@@ -69,6 +69,16 @@ public sealed class Komga : ILibraryExtension<KomgaSeries, KomgaBook, StringIden
         return pageSeriesDto.Content.Select(s => new KomgaSeries(s.Id, s.Name, s.Metadata.Summary)).ToArray();
     }
 
+    /// <summary>
+    /// Fetches only the series belonging to the given Komga library, so matching/linking never
+    /// considers series from other libraries on the same Komga instance.
+    /// </summary>
+    public async Task<KomgaSeries[]> GetSeriesList(StringIdentifier libraryId, CancellationToken ct)
+    {
+        PageSeriesDto pageSeriesDto = await _series.GetSeriesDeprecatedAsync(libraryId: [libraryId], unpaged: true, cancellationToken: ct);
+        return pageSeriesDto.Content.Select(s => new KomgaSeries(s.Id, s.Name, s.Metadata.Summary)).ToArray();
+    }
+
     public Task UpdateSeriesMetadata(KomgaSeries series, CancellationToken ct)
     {
         SeriesMetadataUpdateDto dto = new(title: series.Name, summary: series.Summary);

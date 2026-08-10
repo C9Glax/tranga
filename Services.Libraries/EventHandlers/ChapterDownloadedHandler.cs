@@ -49,14 +49,14 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
         if (await ctx.MangaMappings.SingleOrDefaultAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId &&
                                                               m.MangaId == chapterDownloadedEvent.MangaId) is null)
         {
-            KomgaSeries[] seriesList = await komga.GetSeriesList(CancellationToken.None);
+            KomgaSeries[] seriesList = await komga.GetSeriesList(dbLibrary.TrangaLibraryId, CancellationToken.None);
             await komga.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
 
             KomgaSeries[] newSeriesList = seriesList;
             bool foundNewSeries = false;
             for (int attempt = 0; attempt < MaxSeriesPollAttempts; attempt++)
             {
-                newSeriesList = await komga.GetSeriesList(CancellationToken.None);
+                newSeriesList = await komga.GetSeriesList(dbLibrary.TrangaLibraryId, CancellationToken.None);
                 if (newSeriesList.Length != seriesList.Length)
                 {
                     foundNewSeries = true;
