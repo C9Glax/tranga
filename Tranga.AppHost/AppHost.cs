@@ -198,6 +198,14 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
         service.Name = "services-libraries";
         service.Networks = ["tranga"];
         service.Image = "ghcr.io/c9glax/tranga-services_libraries:external-connectors";
+        service.Volumes.Add(new Volume()
+        {
+            Name = "Covers",
+            Source = "Covers",
+            Target = "/app/Covers",
+            Type = "volume",
+            ReadOnly = true
+        });
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },

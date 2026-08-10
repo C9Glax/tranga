@@ -191,6 +191,11 @@ services:
       RABBITMQ_PASSWORD: "tranga"
     expose:
       - "${SERVICES_LIBRARIES_PORT}"
+    volumes:
+      - type: "volume"
+        target: "/app/Covers"
+        source: "Covers"
+        read_only: true
     depends_on:
       tranga-pg:
         condition: "service_started"
