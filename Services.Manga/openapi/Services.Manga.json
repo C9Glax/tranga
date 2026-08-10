@@ -256,6 +256,53 @@
         }
       }
     },
+    "/mangas/{mangaId}/merge": {
+      "post": {
+        "tags": [
+          "Manga"
+        ],
+        "summary": "Merge another Manga into this one, keeping this Manga's ID",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostMangaMergeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/mangas/{mangaId}/chapters": {
       "get": {
         "tags": [
@@ -1289,6 +1336,26 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "PostMangaMergeRequest": {
+        "required": [
+          "sourceMangaId",
+          "keepSourceMetadata",
+          "keepSourceChapters"
+        ],
+        "type": "object",
+        "properties": {
+          "sourceMangaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "keepSourceMetadata": {
+            "type": "boolean"
+          },
+          "keepSourceChapters": {
+            "type": "boolean"
           }
         }
       },

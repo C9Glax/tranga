@@ -5,10 +5,11 @@
         <UPageCard
             v-for="manga in mangas"
             v-if="!loading"
-            :to="`/manga/${manga.mangaId}`"
+            v-bind="selectMode ? {} : { to: `/manga/${manga.mangaId}` }"
             class="relative overflow-clip"
+            :class="selectMode && 'cursor-pointer'"
             :ui="{ container: 'p-0 sm:p-0' }"
-            @click="useOverlay().closeAll()">
+            @click="selectMode ? $emit('select', manga) : useOverlay().closeAll()">
             <p class="z-1 absolute text-2xl mx-2 my-3 font-bold text-shadow-sm">
                 {{ manga.metadataEntry?.series }}
                 <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
@@ -32,5 +33,6 @@
 import { MangaCover } from '#components';
 import type { ServicesMangaManga } from '~/api/tranga';
 
-defineProps<{ loading?: boolean; mangas?: ServicesMangaManga[] }>();
+defineProps<{ loading?: boolean; mangas?: ServicesMangaManga[]; selectMode?: boolean }>();
+defineEmits<{ select: [manga: ServicesMangaManga] }>();
 </script>
