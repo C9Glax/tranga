@@ -2,21 +2,23 @@
     <UApp>
         <UHeader :toggle="true">
             <template #left>
-                <NuxtLink to="/">
-                    <div class="h-full flex gap-2 items-center">
-                        <img src="/blahaj.png" class="h-lh cursor-grab" alt="Blahaj" />
-                        <p
-                            style="
-                                background: linear-gradient(110deg, var(--color-pink), var(--color-blue));
-                                background-clip: text;
-                                -webkit-background-clip: text;
-                                -webkit-text-fill-color: transparent;
-                            "
-                            class="font-bold cursor-pointer text-3xl">
-                            Tranga
-                        </p>
-                    </div>
-                </NuxtLink>
+                <UTooltip text="Home" :kbds="['ctrl', 'h']">
+                    <NuxtLink to="/">
+                        <div class="h-full flex gap-2 items-center">
+                            <img src="/blahaj.png" class="h-lh cursor-grab" alt="Blahaj" />
+                            <p
+                                style="
+                                    background: linear-gradient(110deg, var(--color-pink), var(--color-blue));
+                                    background-clip: text;
+                                    -webkit-background-clip: text;
+                                    -webkit-text-fill-color: transparent;
+                                "
+                                class="font-bold cursor-pointer text-3xl">
+                                Tranga
+                            </p>
+                        </div>
+                    </NuxtLink>
+                </UTooltip>
             </template>
             <template #right>
                 <div class="flex flex-row gap-2">
@@ -48,5 +50,8 @@ const overlay = useOverlay();
 
 const searchOverlay = overlay.create(LazySearch);
 
-defineShortcuts({ ctrl_s: () => searchOverlay.open() });
+defineShortcuts({
+    ctrl_s: () => searchOverlay.open(),
+    ctrl_h: () => navigateTo('/'),
+});
 </script>
