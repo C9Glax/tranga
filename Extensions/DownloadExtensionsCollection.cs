@@ -1,4 +1,5 @@
 using Common.Datatypes;
+using Common.Settings;
 using Extensions.Data;
 using Extensions.Extensions;
 
@@ -19,9 +20,12 @@ public static class DownloadExtensionsCollection
     public static IDownloadExtension? GetExtension(Guid extensionId) => Extensions.FirstOrDefault(e => e.Identifier == extensionId);
 
     public static List<MangaInfo> SearchAll(SearchQuery query, CancellationToken ct) => Search(query, Extensions, ct);
-    
+
     public static List<MangaInfo> Search(SearchQuery searchQuery, IDownloadExtension[] extensions, CancellationToken ct)
     {
+        if (searchQuery.Language is null)
+            searchQuery = searchQuery with { Language = Settings.DownloadLanguage };
+
         List<Task<List<MangaInfo>?>> tasks = extensions.Select(e => e.SearchDownload(searchQuery, ct)).ToList();
         
         Task.WaitAll(tasks, ct);
