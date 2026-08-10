@@ -1,5 +1,5 @@
 <template>
-    <UModal class="py-8" title="Merge Manga">
+    <UModal class="py-8" title="Merge Manga" :ui="{ content: 'max-w-2xl' }">
         <template #content>
             <div class="flex flex-col gap-6 p-6">
                 <p class="text-sm text-dimmed">
