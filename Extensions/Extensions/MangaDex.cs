@@ -44,7 +44,7 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         if (await GetManga(query, ct) is not { } mangas)
             return null;
 
-        List<Task<MangaInfo?>> tasks = mangas.Select(manga => ParseMangaInfo(manga, query.Language, ct)).ToList();
+        List<Task<MangaInfo?>> tasks = mangas.Select(manga => ParseMangaInfo(manga, query.Language ?? Settings.DownloadLanguage, ct)).ToList();
         await Task.WhenAll(tasks);
 
         List<MangaInfo> results = [];
