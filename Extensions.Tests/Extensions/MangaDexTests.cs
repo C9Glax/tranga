@@ -93,22 +93,6 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
     }
 
     [Fact]
-    public async Task DownloadSearchDefaultsToDownloadLanguage()
-    {
-        // No Language on the query - should fall back to Settings.DownloadLanguage ("en") rather than
-        // whatever locale MangaDex happens to return first.
-        SearchQuery searchQuery = new()
-        {
-            Title = "Sousou no Frieren"
-        };
-        List<MangaInfo>? result = await _extension.SearchDownload(searchQuery, ct);
-        Assert.NotNull(result);
-        MangaInfo? manga = result.FirstOrDefault(r => r.Url == "https://mangadex.org/title/b0b721ff-c388-4486-aa0f-c2b0bb321512");
-        Assert.NotNull(manga);
-        Assert.Equal("Sousou no Frieren", manga.Title);
-    }
-
-    [Fact]
     public async Task IdReturnsManga()
     {
         SearchQuery searchQuery = new()

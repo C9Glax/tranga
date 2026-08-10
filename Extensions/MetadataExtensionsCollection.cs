@@ -1,4 +1,5 @@
 using Common.Datatypes;
+using Common.Settings;
 using Extensions.Data;
 using Extensions.Extensions;
 
@@ -18,6 +19,9 @@ public static class MetadataExtensionsCollection
 
     public static List<SearchResult> Search(SearchQuery searchQuery, IMetadataExtension[] extensions, CancellationToken ct)
     {
+        if (searchQuery.Language is null)
+            searchQuery = searchQuery with { Language = Settings.DownloadLanguage };
+
         List<Task<List<SearchResult>?>> tasks = extensions.Select(e => e.SearchMetadata(searchQuery, ct)).ToList();
         
         Task.WaitAll(tasks, ct);
