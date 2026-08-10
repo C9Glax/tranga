@@ -171,6 +171,30 @@ public sealed class LinkLibraryMangaEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task Handle_RemovesMappingWhoseSeriesNoLongerExistsInKomga()
+    {
+        using FakeKomgaServer server = new(path => (HttpStatusCode.OK, SeriesListBody()));
+
+        await using LibrariesContext context = LibrariesContextFactory.Create();
+        await using MangaContext mangaContext = MangaContextFactory.Create();
+        DbLibraryService library = NewKomgaLibrary(server.BaseUrl);
+        await context.LibraryServices.AddAsync(library, ct);
+
+        DbManga manga = await SeedMangaWithChosenMetadata(mangaContext, "My Manga Title", ct);
+        await context.MangaMappings.AddAsync(new DbMangaIdMapping(library.LibraryServiceId, manga.MangaId, "deleted-series-id"), ct);
+        await context.SaveChangesAsync(ct);
+
+        Results<Ok<int>, NotFound, BadRequest<string>> result =
+            await LinkLibraryMangaEndpoint.Handle(context, mangaContext, library.LibraryServiceId, NullLogger<LinkLibraryMangaEndpoint>.Instance, ct);
+
+        Assert.Equal(0, Assert.IsType<Ok<int>>(result.Result).Value);
+
+        DbMangaIdMapping? mapping = await context.MangaMappings
+            .SingleOrDefaultAsync(m => m.LibraryServiceId == library.LibraryServiceId && m.MangaId == manga.MangaId, ct);
+        Assert.Null(mapping);
+    }
+
+    [Fact]
     public async Task Handle_UnknownLibrary_ReturnsNotFound()
     {
         await using LibrariesContext context = LibrariesContextFactory.Create();

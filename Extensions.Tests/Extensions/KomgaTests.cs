@@ -235,4 +235,22 @@ public sealed class KomgaTests : Common.Tests.TrangaTest
         Assert.Equal("Some Series", onlySeries.Name);
         Assert.Equal("Series summary", onlySeries.Summary);
     }
+
+    [Fact]
+    public async Task GetSeriesListScopedToLibrary_SendsLibraryIdFilter()
+    {
+        const string responseBody = """
+        {
+            "content": []
+        }
+        """;
+        using RecordingHttpServer server = new(HttpStatusCode.OK, responseBody);
+        KomgaExtension extension = new(server.BaseUrl, "api-key");
+
+        KomgaSeries[] series = await extension.GetSeriesList("the-tranga-library-id", ct);
+
+        Assert.Empty(series);
+        Assert.NotNull(server.LastRequest);
+        Assert.Contains("library_id=the-tranga-library-id", server.LastRequest!.Url!.Query);
+    }
 }

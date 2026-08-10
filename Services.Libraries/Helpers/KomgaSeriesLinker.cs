@@ -9,24 +9,34 @@ namespace Services.Libraries.Helpers;
 
 /// <summary>
 /// Links Tranga manga to Komga series on a name-equality basis (the Komga series name matches the
-/// manga's on-disk directory name), pushing metadata for each newly created link. Used both when a
-/// Komga library is first connected and when a user manually re-runs linking from the library
-/// settings page, so already-linked manga are skipped rather than re-added.
+/// manga's on-disk directory name), pushing metadata for each newly created link. Only considers
+/// series in the Komga library Tranga owns (<see cref="DbLibraryService.TrangaLibraryId"/>), and
+/// prunes mappings whose Komga series no longer exists there. Used both when a Komga library is
+/// first connected and when a user manually re-runs linking from the library settings page, so
+/// already-linked manga are skipped rather than re-added.
 /// </summary>
 internal static class KomgaSeriesLinker
 {
     public static async Task<int> LinkExistingMangaByName(LibrariesContext ctx, MangaContext mangaContext, DbLibraryService dbLibraryService,
         Extensions.Extensions.Komga extension, ILogger logger, CancellationToken ct)
     {
-        KomgaSeries[] seriesList = await extension.GetSeriesList(ct);
+        KomgaSeries[] seriesList = await extension.GetSeriesList(dbLibraryService.TrangaLibraryId, ct);
+        HashSet<string> currentSeriesIds = seriesList.Select(s => (string)s.Id).ToHashSet();
+
         List<DbMangaMetadataEntries> mangaEntries = await mangaContext.MangaMetadataEntries
             .Where(e => e.Chosen == true)
             .ToListAsync(ct);
 
-        HashSet<Guid> alreadyLinkedMangaIds = (await ctx.MangaMappings
-                .Where(m => m.LibraryServiceId == dbLibraryService.LibraryServiceId)
-                .Select(m => m.MangaId)
-                .ToListAsync(ct))
+        List<DbMangaIdMapping> existingMappings = await ctx.MangaMappings
+            .Where(m => m.LibraryServiceId == dbLibraryService.LibraryServiceId)
+            .ToListAsync(ct);
+
+        foreach (DbMangaIdMapping staleMapping in existingMappings.Where(m => !currentSeriesIds.Contains(m.SeriesId)))
+            ctx.MangaMappings.Remove(staleMapping);
+
+        HashSet<Guid> alreadyLinkedMangaIds = existingMappings
+            .Where(m => currentSeriesIds.Contains(m.SeriesId))
+            .Select(m => m.MangaId)
             .ToHashSet();
 
         int linkedCount = 0;
