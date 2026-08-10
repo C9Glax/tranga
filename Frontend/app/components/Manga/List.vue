@@ -12,6 +12,7 @@
             <p class="z-1 absolute text-2xl mx-2 my-3 font-bold text-shadow-sm">
                 {{ manga.metadataEntry?.series }}
                 <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
+                <UBadge v-if="!manga.monitored" label="Unmonitored" color="neutral" variant="subtle" />
             </p>
             <MangaCover
                 :file-id="manga.metadataEntry?.coverId"

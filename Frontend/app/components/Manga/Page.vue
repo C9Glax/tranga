@@ -43,6 +43,7 @@
                             variant="outline" />
                         <USkeleton v-else class="h-lh w-14" />
                         <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
+                        <UBadge v-if="manga && !manga.monitored" label="Unmonitored" color="neutral" variant="subtle" />
                     </div>
                 </div>
 
