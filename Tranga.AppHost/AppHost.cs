@@ -44,6 +44,10 @@ IResourceBuilder<PostgresDatabaseResource> db = postgres.AddDatabase(EnvVars.DBN
 
 IResourceBuilder<ParameterResource> rabbitUser = builder.AddParameter("RabbitMqUser");
 IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("RabbitMqPassword", secret: true);
+
+IResourceBuilder<ParameterResource> allowNsfw = builder.AddParameter("AllowNSFW");
+IResourceBuilder<ParameterResource> downloadLanguage = builder.AddParameter("DownloadLanguage");
+IResourceBuilder<ParameterResource> flaresolverrUrl = builder.AddParameter("FlaresolverrUrl");
 IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword)
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -75,6 +79,9 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
         context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
         context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
+        context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
+        context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -113,6 +120,9 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
         context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
         context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
+        context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
+        context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
