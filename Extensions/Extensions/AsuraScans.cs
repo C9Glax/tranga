@@ -74,6 +74,20 @@ public sealed class AsuraScans : IDownloadExtension
 
     #endregion
 
+    #region Identifier
+
+    public string? ParseIdentifierFromUrl(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || uri.Segments.Length < 3)
+            return null;
+        if (!uri.Segments[1].Equals("comics/", StringComparison.OrdinalIgnoreCase))
+            return null;
+        string slug = uri.Segments[2].Trim('/');
+        return string.IsNullOrEmpty(slug) ? null : slug;
+    }
+
+    #endregion
+
     #region Chapters
 
     public async Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct)

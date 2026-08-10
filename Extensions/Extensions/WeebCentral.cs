@@ -114,6 +114,20 @@ public sealed partial class WeebCentral : IDownloadExtension
 
     #endregion
 
+    #region Identifier
+
+    public string? ParseIdentifierFromUrl(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || uri.Segments.Length < 3)
+            return null;
+        if (!uri.Segments[1].Equals("series/", StringComparison.OrdinalIgnoreCase))
+            return null;
+        string identifier = uri.Segments[2].Trim('/');
+        return string.IsNullOrEmpty(identifier) ? null : identifier;
+    }
+
+    #endregion
+
     #region Chapters
 
     public async Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct)

@@ -74,6 +74,20 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
 
     #endregion
 
+    #region Identifier
+
+    public string? ParseIdentifierFromUrl(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || uri.Segments.Length < 3)
+            return null;
+        if (!uri.Segments[1].Equals("title/", StringComparison.OrdinalIgnoreCase))
+            return null;
+        string identifier = uri.Segments[2].Trim('/');
+        return Guid.TryParse(identifier, out _) ? identifier : null;
+    }
+
+    #endregion
+
     #region Chapters
 
     public async Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct)
