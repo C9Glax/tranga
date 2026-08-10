@@ -50,11 +50,19 @@ public abstract class PatchLibraryEndpoint
         return TypedResults.Ok();
     }
 
+    /// <summary>
+    /// Request body for renaming a library extension and/or rotating its credentials. All fields are optional;
+    /// omitted fields leave the corresponding value unchanged.
+    /// </summary>
     public sealed record PatchLibraryRequest
     {
+        /// <summary>New display name for the library connection. Unchanged if omitted.</summary>
         public string? Name { get; init; }
+        /// <summary>New API key to authenticate with. Mutually exclusive with <see cref="Username"/>/<see cref="Password"/>.</summary>
         public string? ApiKey { get; init; }
+        /// <summary>Username to mint a new API key from. Requires <see cref="Password"/>, mutually exclusive with <see cref="ApiKey"/>.</summary>
         public string? Username { get; init; }
+        /// <summary>Password to mint a new API key from. Requires <see cref="Username"/>, mutually exclusive with <see cref="ApiKey"/>.</summary>
         public string? Password { get; init; }
     }
 }

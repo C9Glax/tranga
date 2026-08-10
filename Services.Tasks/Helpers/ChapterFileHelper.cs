@@ -5,6 +5,9 @@ using Services.Manga.Database;
 
 namespace Services.Tasks.Helpers;
 
+/// <summary>
+/// Builds on-disk archive filenames for chapters from the configured <see cref="Settings.ChapterNamingScheme"/>.
+/// </summary>
 public static class ChapterFileHelper
 {
     /// <summary>

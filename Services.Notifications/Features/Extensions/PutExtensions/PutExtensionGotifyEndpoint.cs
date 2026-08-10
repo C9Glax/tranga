@@ -38,11 +38,19 @@ public abstract class PutExtensionGotifyEndpoint
         return TypedResults.Ok(result);
     }
 
+    /// <summary>Request to add a Gotify notification extension.</summary>
+    /// <param name="Name">The user-assigned display name for the new extension instance.</param>
+    /// <param name="Host">The Gotify server host (optionally prefixed with a scheme, e.g. <c>https://</c>).</param>
+    /// <param name="Port">The Gotify server port.</param>
+    /// <param name="AppToken">The Gotify application token used to authenticate when sending messages.</param>
     public record PutExtensionRequestGotify(string Name, string Host, int Port, string AppToken)
         : PutExtensionNapriseEndpoint.PutExtensionRequestNaprise(Name, NotificationExtensionType.Gotify, Gotify.CreateServiceUrl(Host.StartsWith("https"), Host[(Host.IndexOf('/') + 2)..], Port, AppToken))
     {
+        /// <inheritdoc cref="Host" />
         public string Host { get; init; } = Host;
+        /// <inheritdoc cref="Port" />
         public int Port { get; init; } = Port;
+        /// <inheritdoc cref="AppToken" />
         public string AppToken { get; init; } = AppToken;
     }
 }

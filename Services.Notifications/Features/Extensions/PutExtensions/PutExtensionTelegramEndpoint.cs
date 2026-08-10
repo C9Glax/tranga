@@ -38,10 +38,16 @@ public abstract class PutExtensionTelegramEndpoint
         return TypedResults.Ok(result);
     }
         
+    /// <summary>Request to add a Telegram notification extension.</summary>
+    /// <param name="Name">The user-assigned display name for the new extension instance.</param>
+    /// <param name="Token">The Telegram bot token used to authenticate and send messages.</param>
+    /// <param name="ChatId">The identifier of the Telegram chat that notifications will be sent to.</param>
     public record PutExtensionRequestTelegram(string Name, string Token, string ChatId)
         : PutExtensionNapriseEndpoint.PutExtensionRequestNaprise(Name, NotificationExtensionType.Telegram, Telegram.CreateServiceUrl(Token, ChatId))
     {
+        /// <inheritdoc cref="Token" />
         public string Token { get; init; } = Token;
+        /// <inheritdoc cref="ChatId" />
         public string ChatId { get; init; } = ChatId;
     }
 }

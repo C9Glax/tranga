@@ -47,14 +47,23 @@ public abstract class AddKomgaEndpoint
         return TypedResults.Ok(dbLibraryService.LibraryServiceId);
     }
 
+    /// <summary>
+    /// Request body for adding a Komga library extension connection.
+    /// </summary>
     public sealed record AddKomgaLibraryRequest
     {
+        /// <summary>User-chosen display name for the connection.</summary>
         public required string Name { get; init; }
+        /// <summary>Base URL of the Komga server.</summary>
         public required string BaseUrl { get; init; }
+        /// <summary>API key to authenticate with. Mutually exclusive with <see cref="Username"/>/<see cref="Password"/>.</summary>
         public string? ApiKey { get; init; }
+        /// <summary>Username to mint an API key from. Requires <see cref="Password"/>, mutually exclusive with <see cref="ApiKey"/>.</summary>
         public string? Username { get; init; }
+        /// <summary>Password to mint an API key from. Requires <see cref="Username"/>, mutually exclusive with <see cref="ApiKey"/>.</summary>
         public string? Password { get; init; }
 
+        /// <summary>Root path of the library to create on the Komga server.</summary>
         public string? libraryRootPath { get; init; }
     }
 }

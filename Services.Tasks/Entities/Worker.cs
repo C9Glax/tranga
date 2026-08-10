@@ -2,6 +2,10 @@ using Services.Tasks.WorkerLogic;
 
 namespace Services.Tasks.Entities;
 
+/// <summary>
+/// API-facing representation of a worker, projected from <see cref="Database.DbWorker"/> for the
+/// <c>GET /tasks/workers</c> endpoint.
+/// </summary>
 public sealed record Worker
 {
     /// <summary>

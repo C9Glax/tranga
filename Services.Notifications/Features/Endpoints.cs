@@ -4,8 +4,12 @@ using Services.Notifications.Features.Extensions.PutExtensions;
 
 namespace Services.Notifications.Features;
 
+/// <summary>
+/// Root endpoint builder for the Notifications service; maps the <c>/extensions</c> route group used to manage notification extensions.
+/// </summary>
 public sealed class Endpoints : EndpointsBuilder
 {
+    /// <inheritdoc />
     protected override void AddEndpoints(RouteGroupBuilder builder)
     {
         builder.MapGroup("/extensions")
@@ -14,8 +18,13 @@ public sealed class Endpoints : EndpointsBuilder
     }
 }
 
+/// <summary>Extension methods that register the notification-extension endpoints on a route group.</summary>
 internal static class EndpointHelpers
 {
+    /// <summary>
+    /// Maps the CRUD endpoints for notification extensions: listing, generic/channel-specific creation (Naprise, Discord, Gotify, Ntfy.sh, Telegram), and deletion.
+    /// </summary>
+    /// <param name="builder">The route group to map the endpoints onto.</param>
     internal static void MapExtensionsEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet(string.Empty, GetExtensionsEndpoint.Handle)

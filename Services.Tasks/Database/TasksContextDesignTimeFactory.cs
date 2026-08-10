@@ -10,6 +10,9 @@ namespace Services.Tasks.Database;
 /// </summary>
 public sealed class TasksContextDesignTimeFactory : IDesignTimeDbContextFactory<TasksContext>
 {
+    /// <summary>Creates a <see cref="TasksContext"/> with default options for design-time tooling.</summary>
+    /// <param name="args">Command-line arguments passed by the EF Core tooling (unused).</param>
+    /// <returns>A new <see cref="TasksContext"/> instance.</returns>
     public TasksContext CreateDbContext(string[] args)
     {
         DbContextOptions<TasksContext> options = new DbContextOptionsBuilder<TasksContext>().Options;

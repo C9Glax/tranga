@@ -31,5 +31,10 @@ public abstract class GetLibraryMangaLinkEndpoint
         return TypedResults.Ok(links);
     }
 
+    /// <summary>
+    /// A link from a Manga to its corresponding series page on a configured library extension.
+    /// </summary>
+    /// <param name="LibraryServiceId">Id of the library connection the series belongs to.</param>
+    /// <param name="SeriesUrl">URL of the series on the library extension's web UI.</param>
     public sealed record LibraryMangaLink(Guid LibraryServiceId, string SeriesUrl);
 }

@@ -49,11 +49,18 @@ public abstract class TestKomgaConnectionEndpoint
         }
     }
 
+    /// <summary>
+    /// Request body for validating Komga connection credentials.
+    /// </summary>
     public sealed record TestKomgaConnectionRequest
     {
+        /// <summary>Base URL of the Komga server.</summary>
         public required string BaseUrl { get; init; }
+        /// <summary>API key to validate. Mutually exclusive with <see cref="Username"/>/<see cref="Password"/>.</summary>
         public string? ApiKey { get; init; }
+        /// <summary>Username to validate by minting an API key from. Requires <see cref="Password"/>, mutually exclusive with <see cref="ApiKey"/>.</summary>
         public string? Username { get; init; }
+        /// <summary>Password to validate by minting an API key from. Requires <see cref="Username"/>, mutually exclusive with <see cref="ApiKey"/>.</summary>
         public string? Password { get; init; }
     }
 }
