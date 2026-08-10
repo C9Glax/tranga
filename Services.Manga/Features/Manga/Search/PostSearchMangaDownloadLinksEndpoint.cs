@@ -1,4 +1,5 @@
 using Common;
+using Common.Datatypes;
 using Common.Helpers;
 using Common.Settings;
 using Services.Manga.Helpers;
@@ -23,16 +24,21 @@ internal abstract class PostSearchMangaDownloadLinksEndpoint
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="mangaId">ID of Manga to Search</param>
+    /// <param name="req"></param>
     /// <param name="ct"></param>
     /// <returns>Search result</returns>
     /// <response code="200">Search result</response>
     /// <response code="404">Manga with ID does not exist</response>
-    public static async Task<Results<Ok<MangaDownloadLink[]>, NotFound, InternalServerError>> Handle(MangaContext mangaContext, [FromRoute] Guid mangaId, CancellationToken ct)
+    public static async Task<Results<Ok<MangaDownloadLink[]>, NotFound, InternalServerError>> Handle(MangaContext mangaContext, [FromRoute] Guid mangaId, [FromBody] PostSearchMangaDownloadLinksRequest? req, CancellationToken ct)
     {
         if (await mangaContext.GetManga(mangaId, ct) is not { } source)
             return TypedResults.NotFound();
 
-        List<MangaInfo> searchResult = DownloadExtensionsCollection.SearchAll(source.ToSearchQuery(), ct);
+        SearchQuery query = req?.SearchTerm is { Length: > 0 } term
+            ? source.ToSearchQuery() with { Title = term }
+            : source.ToSearchQuery();
+
+        List<MangaInfo> searchResult = DownloadExtensionsCollection.SearchAll(query, ct);
 
         if (await mangaContext.MangaDownloadLinks.Where(m => m.MangaId == mangaId).ToListAsync(ct) is not { } existingSources)
             return TypedResults.InternalServerError();
@@ -74,8 +80,12 @@ internal abstract class PostSearchMangaDownloadLinksEndpoint
 
         return TypedResults.Ok(result.Select(r => r.ToDTO()).ToArray());
     }
-    
-    
+
+    /// <summary>
+    /// Used in <see cref="PostSearchMangaDownloadLinksEndpoint"/>
+    /// </summary>
+    /// <param name="SearchTerm">Optional free-text override for the search term. Falls back to the manga's stored title when null/empty.</param>
+    public sealed record PostSearchMangaDownloadLinksRequest(string? SearchTerm);
 
     private static async Task SaveCover(MangaContext mangaContext, MangaInfo mangaInfo, DbDownloadLink downloadLink, CancellationToken ct)
     {

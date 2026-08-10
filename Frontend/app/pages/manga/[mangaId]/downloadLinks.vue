@@ -1,6 +1,17 @@
 <template>
     <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Download-Links', icon: { name: 'i-lucide-download' } }">
         <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }" title="Search Result">
+            <UInput
+                v-model="searchTerm"
+                placeholder="Search term (leave blank to use the manga's stored title)"
+                :loading="statusDownloadLinks === 'pending'"
+                :disabled="statusDownloadLinks === 'pending'"
+                class="w-full"
+                @keyup.enter="refreshDownloadLinks">
+                <template #trailing>
+                    <UIcon class="cursor-pointer" name="i-lucide-search" @click="refreshDownloadLinks" />
+                </template>
+            </UInput>
             <DownloadLinkList :download-links="downloadLinks" :loading="statusDownloadLinks !== 'success'" />
         </UPageSection>
     </TrangaPage>
@@ -12,10 +23,17 @@ import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue
 
 const mangaId = useRoute().params.mangaId as string;
 
-const { data: downloadLinks, status: statusDownloadLinks } = useTranga<PostMangasSearchByMangaIdDownloadLinksResponse>(
-    () => `/mangas/search/${mangaId}/downloadLinks`,
-    { method: 'POST' },
-);
+const searchTerm = ref<string>('');
+
+const {
+    data: downloadLinks,
+    status: statusDownloadLinks,
+    refresh: refreshDownloadLinks,
+} = useTranga<PostMangasSearchByMangaIdDownloadLinksResponse>(() => `/mangas/search/${mangaId}/downloadLinks`, {
+    method: 'POST',
+    body: computed(() => (searchTerm.value ? { searchTerm: searchTerm.value } : undefined)),
+    watch: false,
+});
 
 const navigation = computed((): NavigationMenuProps => {
     return {

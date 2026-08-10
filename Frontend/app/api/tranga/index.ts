@@ -195,6 +195,7 @@ export type {
     ServicesMangaMetadataExtensionsList,
     ServicesMangaPatchMangaDownloadLinkRequest,
     ServicesMangaPostMangaMergeRequest,
+    ServicesMangaPostSearchMangaDownloadLinksRequest,
     ServicesMangaPostSearchMangaRequest,
     ServicesMangaReleaseStatus,
     ServicesMangaSearchQuery,

@@ -20,7 +20,22 @@ public class PostSearchMangaDownloadLinksEndpointTests : TrangaTest
         await using MangaContext context = MangaContextFactory.Create();
 
         Results<Ok<MangaDownloadLinkDto[]>, NotFound, InternalServerError> result =
-            await PostSearchMangaDownloadLinksEndpoint.Handle(context, Guid.NewGuid(), ct);
+            await PostSearchMangaDownloadLinksEndpoint.Handle(context, Guid.NewGuid(), null, ct);
+
+        Assert.IsType<NotFound>(result.Result);
+    }
+
+    [Fact]
+    public async Task PostSearchMangaDownloadLinks_Returns404ForUnknownManga_WithSearchTermOverride()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+
+        Results<Ok<MangaDownloadLinkDto[]>, NotFound, InternalServerError> result =
+            await PostSearchMangaDownloadLinksEndpoint.Handle(
+                context,
+                Guid.NewGuid(),
+                new PostSearchMangaDownloadLinksEndpoint.PostSearchMangaDownloadLinksRequest("some term"),
+                ct);
 
         Assert.IsType<NotFound>(result.Result);
     }

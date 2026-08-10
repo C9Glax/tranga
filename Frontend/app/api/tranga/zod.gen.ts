@@ -115,6 +115,10 @@ export const zServicesMangaPostMangaMergeRequest = z.object({
 
 export type ServicesMangaPostMangaMergeRequestZodType = z.infer<typeof zServicesMangaPostMangaMergeRequest>;
 
+export const zServicesMangaPostSearchMangaDownloadLinksRequest = z.object({ searchTerm: z.nullable(z.string()) });
+
+export type ServicesMangaPostSearchMangaDownloadLinksRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaDownloadLinksRequest>;
+
 export const zServicesMangaReleaseStatus = z.enum(['Ongoing', 'Complete', 'Hiatus', 'Cancelled']);
 
 export type ServicesMangaReleaseStatusZodType = z.infer<typeof zServicesMangaReleaseStatus>;
