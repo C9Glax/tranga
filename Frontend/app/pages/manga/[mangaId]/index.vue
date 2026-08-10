@@ -14,6 +14,7 @@ import type { GetMangasByMangaIdDownloadLinksResponse, GetMangasByMangaIdRespons
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 import { syncMangaToKomga } from '~/utils/syncMangaToKomga';
+import { removeManga } from '~/utils/removeManga';
 
 const mangaId = useRoute().params.mangaId as string;
 
@@ -40,5 +41,17 @@ const syncToKomgaAction = computed<ButtonProps>(() => ({
     onClick: () => syncMangaToKomga(mangaId),
 }));
 
-const actions = (_manga?: ServicesMangaManga): ButtonProps[] | undefined => [moreDownloadLinksAction.value, syncToKomgaAction.value];
+const removeAction = computed<ButtonProps>(() => ({
+    label: 'Remove',
+    icon: 'i-lucide-trash-2',
+    color: 'error',
+    variant: 'outline',
+    onClick: () => removeManga(mangaId),
+}));
+
+const actions = (_manga?: ServicesMangaManga): ButtonProps[] | undefined => [
+    moreDownloadLinksAction.value,
+    syncToKomgaAction.value,
+    removeAction.value,
+];
 </script>

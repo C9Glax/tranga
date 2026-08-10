@@ -359,6 +359,22 @@ export type PostMangasByMangaIdSyncResponses = {
     200: unknown;
 };
 
+export type PostMangasByMangaIdRemoveData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/remove' };
+
+export type PostMangasByMangaIdRemoveErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type PostMangasByMangaIdRemoveResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type GetMangasByMangaIdChaptersData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/chapters' };
 
 export type GetMangasByMangaIdChaptersResponses = {
