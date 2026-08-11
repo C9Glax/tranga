@@ -33,7 +33,7 @@
                 <p v-if="$props.description">{{ $props.description }}</p>
                 <UEditor
                     v-else-if="manga?.metadataEntry"
-                    :modelValue="manga.metadataEntry.summary"
+                    :model-value="manga.metadataEntry.summary"
                     content-type="markdown"
                     :editable="false"
                     :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
