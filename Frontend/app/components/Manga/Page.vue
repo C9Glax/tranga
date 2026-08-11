@@ -1,21 +1,10 @@
 <template>
     <TrangaPage :navigation="navigation">
-        <div class="flex flex-col-reverse md:flex-row gap-6 py-6 sm:py-8">
+        <div class="flex flex-col-reverse xl:flex-row gap-6 py-6 sm:py-8">
             <div class="flex-1 min-w-0 md:pe-6">
                 <slot name="default" />
             </div>
-
-            <UDashboardResizeHandle
-                class="hidden md:block w-px shrink-0 transition-colors"
-                :class="isDragging ? 'bg-primary' : 'bg-border hover:bg-primary'"
-                @mousedown="onMouseDown"
-                @touchstart="onTouchStart"
-                @dblclick="onDoubleClick" />
-
-            <aside
-                ref="el"
-                class="flex flex-col gap-4 w-full md:w-(--sidebar-width) md:shrink-0 md:sticky md:top-4 md:self-start md:ps-6"
-                :style="{ '--sidebar-width': `${size}px` }">
+            <div class="flex-1 w-full xl:max-w-130 flex flex-col gap-4 items-center xl:items-start">
                 <MangaCover
                     :file-id="manga?.metadataEntry?.coverId"
                     :manga-id="manga?.mangaId"
@@ -53,7 +42,7 @@
                     <USkeleton class="h-lh" />
                     <USkeleton class="h-lh mr-12" />
                 </div>
-            </aside>
+            </div>
         </div>
     </TrangaPage>
 </template>
@@ -77,15 +66,6 @@ export interface MangaPageProps {
 const props = defineProps<MangaPageProps>();
 
 const displayTitle = computed(() => props.title ?? props.manga?.metadataEntry?.series);
-
-const { el, size, isDragging, onMouseDown, onTouchStart, onDoubleClick } = useResizable('manga-page-sidebar-width', {
-    side: 'right',
-    unit: 'px',
-    defaultSize: 320,
-    minSize: 240,
-    maxSize: 520,
-    collapsible: false,
-});
 
 const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${props.manga?.mangaId}`, {
     key: ApiKeys.Libraries.Mapping(props.manga?.mangaId ?? ''),
