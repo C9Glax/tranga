@@ -1,9 +1,9 @@
 <template>
-    <div class="flex flex-row flex-wrap gap-2 justify-center md:justify-start">
-        <div v-if="loading">
+    <div class="flex flex-row flex-wrap gap-2 justify-center md:justify-start w-full h-full">
+        <div v-if="loading" class="flex flex-row flex-wrap gap-2 justify-center md:justify-start w-full h-full">
             <USkeleton v-for="k in [...Array(3)]" :key="k" class="w-60 h-90" />
         </div>
-        <div v-else>
+        <div v-else-if="mangas && mangas.length > 0" class="flex flex-row flex-wrap gap-2 justify-center md:justify-start w-full h-full">
             <UPageCard
                 v-for="manga in mangas"
                 :key="manga.mangaId"
@@ -25,10 +25,17 @@
             </UPageCard>
         </div>
 
-        <div v-if="(mangas?.length ?? 0) < 1 && !loading" class="w-max flex gap-2">
-            <UIcon name="i-lucide-brackets" class="size-15" />
-            <p class="text-6xl inline">No Items</p>
-        </div>
+        <UEmpty
+            v-else
+            icon="i-lucide-download"
+            title="Nothing here!"
+            description="Start searching..."
+            class="mx-auto h-min"
+            variant="naked">
+            <template #actions>
+                <UDashboardSearchButton color="secondary" />
+            </template>
+        </UEmpty>
     </div>
 </template>
 

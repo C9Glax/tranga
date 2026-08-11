@@ -1,35 +1,38 @@
 <template>
     <UPage>
         <UDashboardGroup>
-            <UDashboardSidebar>
+            <UDashboardSidebar :default-size="20" :min-size="20" :max-size="20">
                 <template #default>
-                    <slot name="sidebar">
-                        <UTooltip text="Home" :kbds="['ctrl', 'h']" class="mx-4 my-2">
-                            <NuxtLink to="/">
-                                <div class="h-full flex gap-2 items-center">
-                                    <img src="/blahaj.png" class="h-lh cursor-grab" alt="Blahaj" />
-                                    <p
-                                        style="
-                                            background: linear-gradient(110deg, var(--color-pink), var(--color-blue));
-                                            background-clip: text;
-                                            -webkit-background-clip: text;
-                                            -webkit-text-fill-color: transparent;
-                                        "
-                                        class="font-bold cursor-pointer text-3xl">
-                                        Tranga
-                                    </p>
-                                </div>
-                            </NuxtLink>
-                        </UTooltip>
-                        <UNavigationMenu :items="nItems" orientation="vertical" />
-                        <UColorModeSelect variant="soft" :ui="{ base: 'place-self-end' }" />
-                    </slot>
+                    <div class="h-(--ui-header-height)" />
+                    <UNavigationMenu :items="nItems" orientation="vertical" />
+                </template>
+                <template #footer>
+                    <UColorModeSelect variant="soft" class="w-full" />
                 </template>
             </UDashboardSidebar>
 
             <UDashboardPanel>
                 <template #header>
                     <UDashboardNavbar :toggle="true">
+                        <template #left>
+                            <UTooltip text="Home" :kbds="['ctrl', 'h']" class="mx-4 my-2">
+                                <NuxtLink to="/">
+                                    <div class="h-full flex gap-2 items-center">
+                                        <img src="/blahaj.png" class="h-lh cursor-grab" alt="Blahaj" />
+                                        <p
+                                            style="
+                                                background: linear-gradient(110deg, var(--color-pink), var(--color-blue));
+                                                background-clip: text;
+                                                -webkit-background-clip: text;
+                                                -webkit-text-fill-color: transparent;
+                                            "
+                                            class="font-bold cursor-pointer text-3xl">
+                                            Tranga
+                                        </p>
+                                    </div>
+                                </NuxtLink>
+                            </UTooltip>
+                        </template>
                         <template #right>
                             <UDashboardSearchButton />
                         </template>
