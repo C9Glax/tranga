@@ -33,7 +33,7 @@
                     :to="downloadLink.url ?? undefined"
                     target="_blank"
                     :ui="{ description: 'truncate h-lh max-w-24' }" />
-                <UFieldGroup v-if="mDl">
+                <UFieldGroup v-if="mDl" class="tour-match-target">
                     <UButton v-if="!mDl.matched" variant="soft" label="Match" @click="updateMatch(true)" />
                     <UButton v-if="mDl.matched" variant="outline" label="Unmatch" @click="updateMatch(false)" />
                     <UInputNumber
@@ -56,6 +56,8 @@ const mDl = computed(() => props.downloadLink as ServicesMangaMangaDownloadLink 
 
 const { downloadExtensions } = await useDownloadExtensions();
 
+const { finishAndPersist } = useAppTour();
+
 const updateMatch = async (matched?: boolean, priority?: number) => {
     if (!mDl.value) return;
     if (matched === undefined && priority === undefined) return;
@@ -64,6 +66,7 @@ const updateMatch = async (matched?: boolean, priority?: number) => {
         priority: priority ?? mDl.value.priority,
     };
     await patchMangaDownloadLink(props.downloadLink.downloadId, mDl.value.mangaId, data);
+    if (matched) finishAndPersist();
     await navigateTo(`/manga/${mDl.value.mangaId}`);
 };
 </script>

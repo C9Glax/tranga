@@ -34,7 +34,7 @@
                             </UTooltip>
                         </template>
                         <template #right>
-                            <UDashboardSearchButton />
+                            <UDashboardSearchButton id="tour-search-button" />
                         </template>
                     </UDashboardNavbar>
                 </template>
