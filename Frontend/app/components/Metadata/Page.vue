@@ -1,5 +1,5 @@
 <template>
-    <TrangaPages>
+    <TrangaPage>
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
             <template #title>
                 <div class="flex flex-row gap-2 items-baseline">
@@ -25,19 +25,12 @@
                 <p v-if="$props.description">{{ $props.description }}</p>
                 <div v-else-if="metadata" class="flex flex-col gap-4">
                     <UUser
-                        :avatar="{
-                            src:
-                                metadataExtensions?.find((e) => e.metadataExtensionId == metadata!.metadataExtensionId)?.iconUrl ??
-                                '/blahaj.png',
-                        }"
-                        :name="
-                            metadataExtensions?.find((e) => e.metadataExtensionId == metadata!.metadataExtensionId)?.name ??
-                            metadata.metadataExtensionId
-                        "
+                        :avatar="{ src: metadataExtensions.getExtension(metadata!.metadataExtensionId)?.iconUrl ?? '/blahaj.png' }"
+                        :name="metadataExtensions.getExtension(metadata!.metadataExtensionId)?.name ?? metadata.metadataExtensionId"
                         :description="metadata.identifier"
                         :to="metadata.url ?? undefined"
                         target="_blank" />
-                    <UEditor v-model="metadata.summary" content-type="markdown" :editable="false" :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
+                    <UEditor :model-value="metadata.summary" content-type="markdown" :editable="false" :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
                 </div>
                 <div v-else class="flex flex-col gap-1">
                     <USkeleton class="h-lh mr-6" />
@@ -47,7 +40,7 @@
             </template>
 
             <!-- Passes through the slots -->
-            <template v-for="(_, slotName) in $slots" #[slotName]="slotProps">
+            <template v-for="(_, slotName) in $slots" #[slotName]="slotProps" :key="slotName">
                 <slot v-if="slotName !== 'default'" :name="slotName as unknown" v-bind="slotProps" />
                 <MangaCover v-else :file-id="metadata?.coverId" :no-blur="!metadata?.nsfw" class="aspect-6/9 max-h-sm max-w-sm" />
             </template>
@@ -57,7 +50,7 @@
         <UPageSection :ui="{ container: 'sm:py-8 lg:py-8' }">
             <slot name="default" />
         </UPageSection>
-    </TrangaPages>
+    </TrangaPage>
 </template>
 
 <script setup lang="ts">

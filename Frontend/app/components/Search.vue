@@ -21,7 +21,7 @@
                         legend="Search on:"
                         orientation="horizontal"
                         color="secondary"
-                        :items="metadataExtensions"
+                        :items="metadataExtensions.extensions"
                         label-key="name"
                         value-key="metadataExtensionId" />
                 </div>
@@ -46,7 +46,7 @@ const toast = useToast();
 const { metadataExtensions } = await useMetadataExtensions();
 
 const selectedExtensions = ref<string[]>(
-    metadataExtensions.value?.map((e: ServicesMangaIMetadataExtension) => e.metadataExtensionId as string) ?? [],
+    metadataExtensions.value.extensions?.map((e: ServicesMangaIMetadataExtension) => e.metadataExtensionId as string) ?? [],
 );
 const searchQuery = ref<{ title?: string }>({});
 

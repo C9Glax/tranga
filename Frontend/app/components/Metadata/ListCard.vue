@@ -23,21 +23,14 @@
             </template>
             <template #authors>
                 <UUser
-                    :avatar="{
-                        src:
-                            metadataExtensions?.find((e) => e.metadataExtensionId == metadata.metadataExtensionId)?.iconUrl ??
-                            '/blahaj.png',
-                    }"
-                    :name="
-                        metadataExtensions?.find((e) => e.metadataExtensionId == metadata.metadataExtensionId)?.name ??
-                        metadata.metadataExtensionId
-                    "
+                    :avatar="{ src: metadataExtensions.getExtension(metadata.metadataExtensionId)?.iconUrl ?? '/blahaj.png' }"
+                    :name="metadataExtensions.getExtension(metadata.metadataExtensionId)?.name ?? metadata.metadataExtensionId"
                     :description="metadata.identifier"
                     :to="metadata.url ?? undefined"
                     target="_blank"
                     :ui="{ description: 'truncate h-lh max-w-24' }" />
                 <slot name="actions">
-                    <UButton v-for="prop in actions" v-bind="prop" />
+                    <UButton v-for="prop in actions" v-bind="prop" :key="prop.name" />
                 </slot>
             </template>
         </UBlogPost>
