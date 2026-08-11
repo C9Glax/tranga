@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Metadata-Entries', icon: { name: 'i-lucide-list' } }">
+    <TrangaPage :navigation-props="navigation">
         <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
             <MetadataList :metadata-list="metadataSources" :loading="statusMetadata !== 'success'" :manga-id="mangaId" />
         </UPageSection>

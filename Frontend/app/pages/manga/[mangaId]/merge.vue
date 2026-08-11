@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage v-model:search="search" :page-title="{ title: 'Merge into...', icon: { name: 'i-lucide-git-merge' } }" search-enabled>
+    <TrangaPage v-model:search="search" search-term="Manga">
         <UContainer>
             <MangaList :mangas="mergeCandidates" :loading="status !== 'success'" select-mode @select="onSelectTarget" />
         </UContainer>

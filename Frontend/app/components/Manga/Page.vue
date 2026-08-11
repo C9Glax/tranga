@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Manga', icon: { name: 'i-lucide-book', color: 'warning' } }" :navigation-props="navigation">
+    <TrangaPage :navigation-props="navigation">
         <div class="flex flex-col-reverse md:flex-row gap-6 py-6 sm:py-8">
             <div class="flex-1 min-w-0 md:pe-6">
                 <slot name="default" />

@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Libraries', icon: { name: 'i-lucide-library' } }">
+    <TrangaPage>
         <UPageList class="gap-2">
             <UCollapsible :open="open">
                 <UButton

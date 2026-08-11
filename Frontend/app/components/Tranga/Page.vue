@@ -3,23 +3,12 @@
         <UDashboardGroup class="mt-(--ui-header-height)">
             <UDashboardSidebar v-model:collapsed="collapsed" :collapsible="true" :resizable="true">
                 <slot name="sidebar">
-                    <slot name="pageTitle">
-                        <div v-if="pageTitle" class="flex flex-col align-middle my-2">
-                            <UIcon
-                                v-bind="pageTitle.icon"
-                                class="size-10"
-                                :class="pageTitle.icon.color && `text-${pageTitle.icon.color}`" />
-                            <p class="text-3xl mt-1" :class="collapsed && 'hidden'">
-                                {{ pageTitle.title }}
-                            </p>
-                        </div>
-                    </slot>
                     <UTooltip text="Search" :kbds="['ctrl', 'f']">
                         <UInput
                             ref="searchInputRef"
                             v-model="searchModel"
                             :disabled="!searchEnabled"
-                            placeholder="Search..."
+                            :placeholder="`Search ${searchTerm ?? ''}...`"
                             :icon="`i-lucide-search${searchEnabled ? '' : '-slash'}`" />
                     </UTooltip>
                     <UNavigationMenu :items="nItems" orientation="vertical" />
@@ -35,19 +24,22 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem, NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
-import type { IconProps } from '@nuxt/ui/components/Icon.vue';
 import { LazySearch } from '#components';
+
+const props = defineProps<TrangaPageProps>();
 
 export interface TrangaPageProps {
     navigationProps?: NavigationMenuProps;
-    pageTitle?: { title: string; icon: IconProps & { color?: string } };
-    searchEnabled?: boolean;
+    /**
+     * If set, search will be enabled and placeholder 'Search <>...'
+     */
+    searchTerm?: string;
     rimless?: boolean;
 }
 
-const searchOverlay = useOverlay().create(LazySearch);
+const searchEnabled = computed(() => props.searchTerm !== undefined);
 
-const props = defineProps<TrangaPageProps>();
+const searchOverlay = useOverlay().create(LazySearch);
 
 const collapsed = ref(false);
 

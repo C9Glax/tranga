@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Notifications', icon: { name: 'i-lucide-megaphone' } }">
+    <TrangaPage>
         <UPageList class="gap-2">
             <UCollapsible :open="open">
                 <UButton

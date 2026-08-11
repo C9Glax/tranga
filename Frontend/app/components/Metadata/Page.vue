@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Metadata', icon: { name: 'i-lucide-info', color: 'info' } }">
+    <TrangaPages>
         <UPageCTA v-bind="$props" :links="links" orientation="horizontal" :ui="{ container: 'py-6 sm:py-8 lg:py-8' }" class="w-full h-max">
             <template #title>
                 <div class="flex flex-row gap-2 items-baseline">
@@ -57,7 +57,7 @@
         <UPageSection :ui="{ container: 'sm:py-8 lg:py-8' }">
             <slot name="default" />
         </UPageSection>
-    </TrangaPage>
+    </TrangaPages>
 </template>
 
 <script setup lang="ts">

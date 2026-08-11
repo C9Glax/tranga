@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Tasks', icon: { name: 'i-lucide-biceps-flexed' } }" rimless>
+    <TrangaPage rimless>
         <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8 mb-8' }">
             <div class="flex flex-wrap gap-4 items-end">
                 <UFormField label="Manga">

@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Workers', icon: { name: 'i-lucide-cpu' } }" rimless>
+    <TrangaPage rimless>
         <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
             <WorkersList :workers="workers" :tasks="tasks" :loading="workersStatus !== 'success'" />
         </UPageSection>

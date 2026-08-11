@@ -1,5 +1,5 @@
 <template>
-    <UPageGrid :ui="{ base: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4' }">
+    <div class="flex flex-row flex-wrap gap-2">
         <USkeleton v-for="_ in [...Array(3)]" v-if="loading" class="w-60 h-90" />
 
         <UPageCard
@@ -26,7 +26,7 @@
             <UIcon name="i-lucide-brackets" class="size-15" />
             <p class="text-6xl inline">No Items</p>
         </div>
-    </UPageGrid>
+    </div>
 </template>
 
 <script setup lang="ts">

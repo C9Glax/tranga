@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :page-title="{ title: 'Task', icon: { name: 'i-lucide-biceps-flexed' } }" rimless>
+    <TrangaPage rimless>
         <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-4 sm:gap-4 mb-4' }">
             <div class="flex flex-wrap gap-3 items-center">
                 <template v-if="task">

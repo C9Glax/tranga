@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :navigation-props="navigation" :page-title="{ title: 'Chapters', icon: { name: 'i-lucide-list-checks' } }" rimless>
+    <TrangaPage :navigation-props="navigation" rimless>
         <ChaptersList :chapters="data" :loading="status !== 'success'" />
     </TrangaPage>
 </template>
