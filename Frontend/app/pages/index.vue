@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage v-model:search="search" search-term="Manga">
+    <TrangaPage>
         <MangaList :mangas="mangaList" :loading="status !== 'success'" />
     </TrangaPage>
 </template>

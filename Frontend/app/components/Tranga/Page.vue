@@ -1,16 +1,25 @@
 <template>
     <UPage>
         <UDashboardGroup>
-            <UDashboardSidebar resizable>
+            <UDashboardSidebar>
                 <template #default>
                     <slot name="sidebar">
-                        <UTooltip text="Search" :kbds="['ctrl', 'f']">
-                            <UInput
-                                ref="searchInputRef"
-                                v-model="searchModel"
-                                :disabled="!searchEnabled"
-                                :placeholder="`Search ${searchTerm ?? ''}...`"
-                                :icon="`i-lucide-search${searchEnabled ? '' : '-slash'}`" />
+                        <UTooltip text="Home" :kbds="['ctrl', 'h']" class="mx-4 my-2">
+                            <NuxtLink to="/">
+                                <div class="h-full flex gap-2 items-center">
+                                    <img src="/blahaj.png" class="h-lh cursor-grab" alt="Blahaj" />
+                                    <p
+                                        style="
+                                            background: linear-gradient(110deg, var(--color-pink), var(--color-blue));
+                                            background-clip: text;
+                                            -webkit-background-clip: text;
+                                            -webkit-text-fill-color: transparent;
+                                        "
+                                        class="font-bold cursor-pointer text-3xl">
+                                        Tranga
+                                    </p>
+                                </div>
+                            </NuxtLink>
                         </UTooltip>
                         <UNavigationMenu :items="nItems" orientation="vertical" />
                         <UColorModeSelect variant="soft" :ui="{ base: 'place-self-end' }" />
@@ -18,28 +27,9 @@
                 </template>
             </UDashboardSidebar>
 
-            <UDashboardPanel resizable>
+            <UDashboardPanel>
                 <template #header>
                     <UDashboardNavbar :toggle="true">
-                        <template #left>
-                            <UTooltip text="Home" :kbds="['ctrl', 'h']">
-                                <NuxtLink to="/">
-                                    <div class="h-full flex gap-2 items-center">
-                                        <img src="/blahaj.png" class="h-lh cursor-grab" alt="Blahaj" />
-                                        <p
-                                            style="
-                                                background: linear-gradient(110deg, var(--color-pink), var(--color-blue));
-                                                background-clip: text;
-                                                -webkit-background-clip: text;
-                                                -webkit-text-fill-color: transparent;
-                                            "
-                                            class="font-bold cursor-pointer text-3xl">
-                                            Tranga
-                                        </p>
-                                    </div>
-                                </NuxtLink>
-                            </UTooltip>
-                        </template>
                         <template #right>
                             <UDashboardSearchButton />
                         </template>
@@ -65,10 +55,6 @@ export interface TrangaPageProps {
      * Additional section in the navigation menu
      */
     navigation?: TrangaPageTitleProps;
-    /**
-     * If set, search will be enabled and placeholder 'Search <>...'
-     */
-    searchTerm?: string;
     rimless?: boolean;
 }
 
@@ -76,8 +62,6 @@ export interface TrangaPageTitleProps {
     title: NavigationMenuItem;
     items: NavigationMenuItem[];
 }
-
-const searchEnabled = computed(() => props.searchTerm !== undefined);
 
 /**
  * The items for the navigation-menu
@@ -119,9 +103,5 @@ const defaultItems = computed((): NavigationMenuItem[] => {
     ];
 });
 
-const searchModel = defineModel<string>('search');
-
-const searchInputRef = useTemplateRef('searchInputRef');
-
-defineShortcuts({ ctrl_h: () => navigateTo('/'), ctrl_f: { usingInput: true, handler: () => searchInputRef.value?.inputRef?.focus() } });
+defineShortcuts({ ctrl_h: () => navigateTo('/') });
 </script>

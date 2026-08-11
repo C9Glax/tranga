@@ -1,6 +1,7 @@
 <template>
-    <TrangaPage v-model:search="search" search-term="Manga">
-        <UContainer>
+    <TrangaPage>
+        <UContainer class="flex gap-2 flex-col">
+            <UInput v-model="search" placeholder="Filter" class="w-full" />
             <MangaList :mangas="mergeCandidates" :loading="status !== 'success'" select-mode @select="onSelectTarget" />
         </UContainer>
     </TrangaPage>
