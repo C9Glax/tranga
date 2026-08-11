@@ -30,7 +30,11 @@
                         :description="metadata.identifier"
                         :to="metadata.url ?? undefined"
                         target="_blank" />
-                    <UEditor :model-value="metadata.summary" content-type="markdown" :editable="false" :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
+                    <UEditor
+                        :model-value="metadata.summary"
+                        content-type="markdown"
+                        :editable="false"
+                        :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
                 </div>
                 <div v-else class="flex flex-col gap-1">
                     <USkeleton class="h-lh mr-6" />

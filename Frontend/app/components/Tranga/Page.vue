@@ -41,9 +41,7 @@
                             </UTooltip>
                         </template>
                         <template #right>
-                            <UTooltip :kbds="['ctrl', 's']">
-                                <UButton icon="i-lucide-book-search" label="Search" @click="searchOverlay.open()" />
-                            </UTooltip>
+                            <UDashboardSearchButton />
                         </template>
                     </UDashboardNavbar>
                 </template>
@@ -51,13 +49,14 @@
                     <slot />
                 </template>
             </UDashboardPanel>
+
+            <MangaSearch />
         </UDashboardGroup>
     </UPage>
 </template>
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui/components/NavigationMenu.vue';
-import { LazySearch } from '#components';
 
 const props = defineProps<TrangaPageProps>();
 
@@ -79,8 +78,6 @@ export interface TrangaPageTitleProps {
 }
 
 const searchEnabled = computed(() => props.searchTerm !== undefined);
-
-const searchOverlay = useOverlay().create(LazySearch);
 
 /**
  * The items for the navigation-menu
@@ -126,9 +123,5 @@ const searchModel = defineModel<string>('search');
 
 const searchInputRef = useTemplateRef('searchInputRef');
 
-defineShortcuts({
-    ctrl_s: () => searchOverlay.open(),
-    ctrl_h: () => navigateTo('/'),
-    ctrl_f: { usingInput: true, handler: () => searchInputRef.value?.inputRef?.focus() },
-});
+defineShortcuts({ ctrl_h: () => navigateTo('/'), ctrl_f: { usingInput: true, handler: () => searchInputRef.value?.inputRef?.focus() } });
 </script>

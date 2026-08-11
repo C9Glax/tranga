@@ -18,7 +18,7 @@ export class MetadataExtensions {
 
     extensions: ServicesMangaIMetadataExtension[] | undefined;
 
-    getExtension(id?: string) : ServicesMangaIMetadataExtension | null {
-        return this.extensions?.find(e => e.metadataExtensionId === id) ?? null;
+    getExtension(id?: string): ServicesMangaIMetadataExtension | null {
+        return this.extensions?.find((e) => e.metadataExtensionId === id) ?? null;
     }
 }
