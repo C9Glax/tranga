@@ -8,7 +8,7 @@
                 v-for="manga in mangas"
                 :key="manga.mangaId"
                 v-bind="selectMode ? {} : { to: `/manga/${manga.mangaId}` }"
-                class="relative overflow-clip max-w-90 aspect-6/9"
+                class="relative overflow-clip max-h-90 max-w-90 aspect-6/9"
                 :class="selectMode && 'cursor-pointer'"
                 :ui="{ container: 'p-0 sm:p-0' }"
                 @click="selectMode ? $emit('select', manga) : useOverlay().closeAll()">
