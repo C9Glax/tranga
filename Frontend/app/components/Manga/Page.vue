@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :navigation-props="navigation">
+    <TrangaPage :navigation="navigation">
         <div class="flex flex-col-reverse md:flex-row gap-6 py-6 sm:py-8">
             <div class="flex-1 min-w-0 md:pe-6">
                 <slot name="default" />
@@ -49,7 +49,7 @@
                 <p v-if="$props.description">{{ $props.description }}</p>
                 <UEditor
                     v-else-if="manga?.metadataEntry"
-                    v-model="manga.metadataEntry.summary"
+                    :modelValue="manga.metadataEntry.summary"
                     content-type="markdown"
                     :editable="false"
                     :ui="{ base: 'sm:px-0 p-0 px-0 ps-0' }" />
@@ -68,8 +68,9 @@ import { MangaCover } from '#components';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import type { GetLibrariesMappingsByMangaIdResponse, ServicesMangaManga } from '~/api/tranga';
 import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
-import type { NavigationMenuItem, NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
+import type { NavigationMenuItem } from '@nuxt/ui/components/NavigationMenu.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
+import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
 export interface MangaPageProps {
     title?: string;
@@ -93,7 +94,7 @@ const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdRespons
     key: ApiKeys.Libraries.Mapping(props.manga?.mangaId ?? ''),
 });
 
-const navigation = computed((): NavigationMenuProps => {
+const navigation = computed((): TrangaPageTitleProps => {
     const actionItems: NavigationMenuItem[] = (props.actions?.(props.manga) ?? []).map(
         (action): NavigationMenuItem => ({
             label: action.label,
@@ -119,8 +120,8 @@ const navigation = computed((): NavigationMenuProps => {
     );
 
     return {
+        title: { label: 'Manga', type: 'label' },
         items: [
-            { label: 'Manga', type: 'label' },
             { label: 'Manga', to: `/manga/${props.manga?.mangaId}`, icon: 'i-lucide-book' },
             { label: 'Metadata-Entries', to: `/manga/${props.manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
             { label: 'Manga Tasks', to: `/tasks?manga=${props.manga?.mangaId}`, icon: 'i-lucide-biceps-flexed' },

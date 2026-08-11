@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :navigation-props="navigation">
+    <TrangaPage :navigation="navigation">
         <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }" title="Search Result">
             <div class="flex flex-row gap-2">
                 <UInput
@@ -33,6 +33,7 @@ import type { PostMangasSearchByMangaIdDownloadLinksResponse } from '~/api/trang
 import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
 import useDownloadExtensions from '~/composables/DownloadExtension';
 import { FetchError } from 'ofetch';
+import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
 const mangaId = useRoute().params.mangaId as string;
 const toast = useToast();
@@ -76,10 +77,10 @@ const addLink = async () => {
     addExtensionId.value = undefined;
 };
 
-const navigation = computed((): NavigationMenuProps => {
+const navigation = computed((): TrangaPageTitleProps => {
     return {
+        title: { label: 'Manga', type: 'label' },
         items: [
-            { label: 'Manga', type: 'label' },
             { label: 'Manga', to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
             { label: 'Metadata-Entries', to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
             { label: 'Manga Tasks', to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },

@@ -65,12 +65,17 @@ export interface TrangaPageProps {
     /**
      * Additional section in the navigation menu
      */
-    navigation?: { title: NavigationMenuItem; items: NavigationMenuItem[] };
+    navigation?: TrangaPageTitleProps;
     /**
      * If set, search will be enabled and placeholder 'Search <>...'
      */
     searchTerm?: string;
     rimless?: boolean;
+}
+
+export interface TrangaPageTitleProps {
+    title: NavigationMenuItem;
+    items: NavigationMenuItem[];
 }
 
 const searchEnabled = computed(() => props.searchTerm !== undefined);

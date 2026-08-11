@@ -1,5 +1,5 @@
 <template>
-    <TrangaPage :navigation-props="navigation">
+    <TrangaPage :navigation="navigation">
         <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
             <MetadataList :metadata-list="metadataSources" :loading="statusMetadata !== 'success'" :manga-id="mangaId" />
         </UPageSection>
@@ -10,6 +10,7 @@
 import type { GetMangasByMangaIdMetadataRelatedResponse } from '~/api/tranga';
 import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
+import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
 const mangaId = useRoute().params.mangaId as string;
 
@@ -18,10 +19,10 @@ const { data: metadataSources, status: statusMetadata } = await useTranga<GetMan
     { key: ApiKeys.Manga.Metadata.RelatedManga(mangaId) },
 );
 
-const navigation = computed((): NavigationMenuProps => {
+const navigation = computed((): TrangaPageTitleProps => {
     return {
+        title: { label: 'Manga', type: 'label' },
         items: [
-            { label: 'Manga', type: 'label' },
             { label: 'Manga', to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
             { label: 'Metadata-Entries', to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
             { label: 'Manga Tasks', to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },
