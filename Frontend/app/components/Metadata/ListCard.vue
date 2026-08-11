@@ -14,6 +14,9 @@
                 image: `object-center ${metadata.nsfw && 'blur-md'}`,
                 description: 'h-30 text-ellipsis overflow-hidden',
             }">
+            <template #title>
+                <TrangaTitle :title="metadata.series" />
+            </template>
             <template #badge>
                 <UBadge v-if="metadata.status" :label.camel="metadata.status" :color="releaseStatusBadgeColor(metadata.status)" />
                 <UBadge v-if="metadata.nsfw" label="NSFW" color="error" variant="solid" />

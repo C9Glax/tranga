@@ -3,9 +3,10 @@
         <template #content>
             <div class="flex flex-col gap-6 p-6">
                 <p class="text-sm text-dimmed">
-                    Merging combines both Manga into <span class="font-semibold">{{ targetManga.metadataEntry?.series }}</span
-                    >. <span class="font-semibold">{{ sourceManga?.metadataEntry?.series ?? '...' }}</span> will be deleted. Download Links
-                    from both Manga are always combined automatically.
+                    Merging combines both Manga into
+                    <TrangaTitle :title="targetManga.metadataEntry?.series" class="font-semibold" />.
+                    <TrangaTitle :title="sourceManga?.metadataEntry?.series ?? '...'" class="font-semibold" /> will be deleted. Download
+                    Links from both Manga are always combined automatically.
                 </p>
 
                 <div class="flex flex-col gap-2">
@@ -24,7 +25,7 @@
                         </div>
                         <div class="flex-1 min-w-0 flex flex-col gap-1">
                             <p class="text-xs text-dimmed uppercase tracking-wide">Preview</p>
-                            <p class="font-semibold truncate">{{ previewMetadata?.series ?? 'No metadata' }}</p>
+                            <TrangaTitle :title="previewMetadata?.series ?? 'No metadata'" class="font-semibold" />
                             <p class="text-sm text-dimmed line-clamp-3">{{ previewMetadata?.summary }}</p>
                         </div>
                     </div>

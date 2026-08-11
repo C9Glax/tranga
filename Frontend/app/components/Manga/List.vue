@@ -11,7 +11,7 @@
             :ui="{ container: 'p-0 sm:p-0' }"
             @click="selectMode ? $emit('select', manga) : useOverlay().closeAll()">
             <p class="z-1 absolute text-2xl mx-2 my-3 font-bold text-shadow-sm">
-                {{ manga.metadataEntry?.series }}
+                <TrangaTitle :title="manga.metadataEntry?.series" />
                 <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
             </p>
             <MangaCover

@@ -11,6 +11,9 @@
                 image: `object-center ${downloadLink.nsfw && 'blur-md'}`,
                 description: 'h-30 text-ellipsis overflow-hidden',
             }">
+            <template #title>
+                <TrangaTitle :title="downloadLink.series" />
+            </template>
             <template #badge>
                 <UBadge v-if="downloadLink.language" :label="downloadLink.language" />
                 <UBadge v-if="downloadLink.nsfw" label="NSFW" color="error" variant="solid" />

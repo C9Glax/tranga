@@ -24,12 +24,7 @@
 
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-row gap-2 items-baseline flex-wrap">
-                        <p v-if="$props.title" class="text-lg font-semibold">
-                            {{ $props.title }}
-                        </p>
-                        <p v-else-if="manga?.metadataEntry?.series" class="text-lg font-semibold">
-                            {{ manga?.metadataEntry?.series }}
-                        </p>
+                        <TrangaTitle v-if="displayTitle" :title="displayTitle" class="text-lg font-semibold" />
                         <USkeleton v-else class="h-lh w-14" />
                         <p v-if="manga?.metadataEntry?.year" class="text-dimmed text-sm">
                             {{ manga.metadataEntry?.year }}
@@ -80,6 +75,8 @@ export interface MangaPageProps {
 }
 
 const props = defineProps<MangaPageProps>();
+
+const displayTitle = computed(() => props.title ?? props.manga?.metadataEntry?.series);
 
 const { el, size, isDragging, onMouseDown, onTouchStart, onDoubleClick } = useResizable('manga-page-sidebar-width', {
     side: 'right',
