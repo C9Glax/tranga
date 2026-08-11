@@ -1,43 +1,40 @@
 <template>
-    <!-- MetadataListCard -->
-    <TrangaChip icon="i-lucide-info" color="info" size="sm">
-        <UBlogPost
-            :title="metadata.series"
-            :description="metadata.summary ?? undefined"
-            :image="{ src: `${$apiBaseUrl}/mangas/files/${metadata.coverId}`, loading: 'lazy' }"
-            :to="mangaId ? `/metadata/${metadata.metadataId}?mangaId=${mangaId}` : `/metadata/${metadata.metadataId}`"
-            :target="target"
-            external
-            class="w-full h-full"
-            :ui="{
-                header: 'aspect-[13/9]',
-                image: `object-center ${metadata.nsfw && 'blur-md'}`,
-                description: 'h-30 text-ellipsis overflow-hidden',
-            }">
-            <template #title>
-                <TrangaTitle :title="metadata.series" />
-            </template>
-            <template #badge>
-                <UBadge v-if="metadata.status" :label.camel="metadata.status" :color="releaseStatusBadgeColor(metadata.status)" />
-                <UBadge v-if="metadata.nsfw" label="NSFW" color="error" variant="solid" />
-            </template>
-            <template #date>
-                <p class="text-dimmed">{{ props.metadata.year }}</p>
-            </template>
-            <template #authors>
-                <UUser
-                    :avatar="{ src: metadataExtensions.getExtension(metadata.metadataExtensionId)?.iconUrl ?? '/blahaj.png' }"
-                    :name="metadataExtensions.getExtension(metadata.metadataExtensionId)?.name ?? metadata.metadataExtensionId"
-                    :description="metadata.identifier"
-                    :to="metadata.url ?? undefined"
-                    target="_blank"
-                    :ui="{ description: 'truncate h-lh max-w-24' }" />
-                <slot name="actions">
-                    <UButton v-for="prop in actions" v-bind="prop" :key="prop.name" />
-                </slot>
-            </template>
-        </UBlogPost>
-    </TrangaChip>
+    <UBlogPost
+        :title="metadata.series"
+        :description="metadata.summary ?? undefined"
+        :image="{ src: `${$apiBaseUrl}/mangas/files/${metadata.coverId}`, loading: 'lazy' }"
+        :to="mangaId ? `/metadata/${metadata.metadataId}?mangaId=${mangaId}` : `/metadata/${metadata.metadataId}`"
+        :target="target"
+        external
+        class="max-w-90 max-h-120"
+        :ui="{
+            header: 'aspect-[13/9]',
+            image: `object-center ${metadata.nsfw && 'blur-md'}`,
+            description: 'h-30 text-ellipsis overflow-hidden',
+        }">
+        <template #title>
+            <TrangaTitle :title="metadata.series" />
+        </template>
+        <template #badge>
+            <UBadge v-if="metadata.status" :label.camel="metadata.status" :color="releaseStatusBadgeColor(metadata.status)" />
+            <UBadge v-if="metadata.nsfw" label="NSFW" color="error" variant="solid" />
+        </template>
+        <template #date>
+            <p class="text-dimmed">{{ props.metadata.year }}</p>
+        </template>
+        <template #authors>
+            <UUser
+                :avatar="{ src: metadataExtensions.getExtension(metadata.metadataExtensionId)?.iconUrl ?? '/blahaj.png' }"
+                :name="metadataExtensions.getExtension(metadata.metadataExtensionId)?.name ?? metadata.metadataExtensionId"
+                :description="metadata.identifier"
+                :to="metadata.url ?? undefined"
+                target="_blank"
+                :ui="{ description: 'truncate h-lh max-w-24' }" />
+            <slot name="actions">
+                <UButton v-for="prop in actions" v-bind="prop" :key="prop.name" />
+            </slot>
+        </template>
+    </UBlogPost>
 </template>
 
 <script setup lang="ts">

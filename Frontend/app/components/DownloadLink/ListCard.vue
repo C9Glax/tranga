@@ -1,50 +1,48 @@
 <template>
-    <TrangaChip icon="i-lucide-download" color="primary" size="sm">
-        <UBlogPost
-            :title="downloadLink.series"
-            :description="downloadLink.summary ?? undefined"
-            :image="{ src: `${$apiBaseUrl}/mangas/files/${downloadLink.coverId}`, loading: 'lazy' }"
-            external
-            class="w-full h-full"
-            :ui="{
-                header: 'aspect-[13/9]',
-                image: `object-center ${downloadLink.nsfw && 'blur-md'}`,
-                description: 'h-30 text-ellipsis overflow-hidden',
-            }">
-            <template #title>
-                <TrangaTitle :title="downloadLink.series" />
-            </template>
-            <template #badge>
-                <UBadge v-if="downloadLink.language" :label="downloadLink.language" />
-                <UBadge v-if="downloadLink.nsfw" label="NSFW" color="error" variant="solid" />
-            </template>
-            <template #authors>
-                <div class="flex flex-row items-center gap-4">
-                    <UUser
-                        :avatar="{
-                            src:
-                                downloadExtensions?.find((e) => e.downloadExtensionsId == downloadLink.downloadExtensionId)?.iconUrl ??
-                                '/blahaj.png',
-                        }"
-                        :name="
-                            downloadExtensions?.find((e) => e.downloadExtensionsId == downloadLink.downloadExtensionId)?.name ??
-                            downloadLink.downloadExtensionId
-                        "
-                        :description="downloadLink.identifier"
-                        :to="downloadLink.url ?? undefined"
-                        target="_blank"
-                        :ui="{ description: 'truncate h-lh max-w-24' }" />
-                    <UFieldGroup v-if="mDl">
-                        <UButton v-if="!mDl.matched" variant="soft" label="Match" @click="updateMatch(true)" />
-                        <UButton v-if="mDl.matched" variant="outline" label="Unmatch" @click="updateMatch(false)" />
-                        <UInputNumber
-                            :default-value="mDl.priority as number"
-                            @update:model-value="(v: number | undefined) => updateMatch(undefined, v)" />
-                    </UFieldGroup>
-                </div>
-            </template>
-        </UBlogPost>
-    </TrangaChip>
+    <UBlogPost
+        :title="downloadLink.series"
+        :description="downloadLink.summary ?? undefined"
+        :image="{ src: `${$apiBaseUrl}/mangas/files/${downloadLink.coverId}`, loading: 'lazy' }"
+        external
+        class="max-w-90 max-h-120"
+        :ui="{
+            header: 'aspect-[13/9]',
+            image: `object-center ${downloadLink.nsfw && 'blur-md'}`,
+            description: 'h-30 text-ellipsis overflow-hidden',
+        }">
+        <template #title>
+            <TrangaTitle :title="downloadLink.series" />
+        </template>
+        <template #badge>
+            <UBadge v-if="downloadLink.language" :label="downloadLink.language" />
+            <UBadge v-if="downloadLink.nsfw" label="NSFW" color="error" variant="solid" />
+        </template>
+        <template #authors>
+            <div class="flex flex-row items-center gap-4">
+                <UUser
+                    :avatar="{
+                        src:
+                            downloadExtensions?.find((e) => e.downloadExtensionsId == downloadLink.downloadExtensionId)?.iconUrl ??
+                            '/blahaj.png',
+                    }"
+                    :name="
+                        downloadExtensions?.find((e) => e.downloadExtensionsId == downloadLink.downloadExtensionId)?.name ??
+                        downloadLink.downloadExtensionId
+                    "
+                    :description="downloadLink.identifier"
+                    :to="downloadLink.url ?? undefined"
+                    target="_blank"
+                    :ui="{ description: 'truncate h-lh max-w-24' }" />
+                <UFieldGroup v-if="mDl">
+                    <UButton v-if="!mDl.matched" variant="soft" label="Match" @click="updateMatch(true)" />
+                    <UButton v-if="mDl.matched" variant="outline" label="Unmatch" @click="updateMatch(false)" />
+                    <UInputNumber
+                        :default-value="mDl.priority as number"
+                        @update:model-value="(v: number | undefined) => updateMatch(undefined, v)" />
+                </UFieldGroup>
+            </div>
+        </template>
+    </UBlogPost>
 </template>
 
 <script setup lang="ts">

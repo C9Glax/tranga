@@ -1,13 +1,10 @@
 <template>
-    <UEmpty
-        v-if="!loading && !downloadLinks?.length && emptyTitle"
-        icon="i-lucide-download"
-        :title="emptyTitle"
-        :description="emptyDescription"
-        :actions="emptyActions"
-        class="mt-4" />
-    <TrangaList v-else :loading="loading">
+    <TrangaList :loading="loading" :empty="!downloadLinks || downloadLinks.length < 1">
         <DownloadLinkListCard v-for="downloadLink in downloadLinks" :key="downloadLink.downloadId" :download-link="downloadLink" />
+
+        <template #empty>
+            <UEmpty icon="i-lucide-download" :title="emptyTitle" :description="emptyDescription" :actions="emptyActions" class="mt-4" />
+        </template>
     </TrangaList>
 </template>
 
