@@ -52,5 +52,7 @@ const props = defineProps<{
 
 const { metadataExtensions } = await useMetadataExtensions();
 
-const coverSrc = useAuthedImageUrl(() => (props.metadata.coverId ? `/mangas/files/${props.metadata.coverId}` : undefined));
+const coverSrc = useAuthedImageUrl(() =>
+    props.metadata.coverId ? withCoverSize(`/mangas/files/${props.metadata.coverId}`, COVER_SIZES.blogCard) : undefined,
+);
 </script>

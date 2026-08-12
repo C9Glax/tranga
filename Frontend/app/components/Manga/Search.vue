@@ -20,6 +20,7 @@
                     :file-id="item?.fileId"
                     :manga-id="item?.mangaId"
                     :no-blur="!item?.metadataEntry?.nsfw"
+                    :size="COVER_SIZES.tiny"
                     class="aspect-6/9 max-h-6 max-w-9" />
             </template>
             <template #footer>

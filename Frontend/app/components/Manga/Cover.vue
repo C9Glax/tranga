@@ -4,12 +4,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ mangaId?: string | null; fileId?: string | null; noBlur?: boolean }>();
+const props = defineProps<{ mangaId?: string | null; fileId?: string | null; noBlur?: boolean; size: CoverSize }>();
 
 const path = computed(() => {
-    if (props.fileId) return `/mangas/files/${props.fileId}`;
-    if (props.mangaId) return `/mangas/${props.mangaId}/cover`;
-    return undefined;
+    let base: string | undefined;
+    if (props.fileId) base = `/mangas/files/${props.fileId}`;
+    else if (props.mangaId) base = `/mangas/${props.mangaId}/cover`;
+    return base ? withCoverSize(base, props.size) : undefined;
 });
 
 const src = useAuthedImageUrl(path);
