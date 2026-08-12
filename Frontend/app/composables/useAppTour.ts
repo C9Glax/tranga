@@ -3,12 +3,7 @@ import type { TourStep, UseTourReturn } from '@nuxt/ui/composables/useTour';
 const TOUR_SEEN_KEY = 'tranga:tour:seen';
 
 export const TOUR_STEPS: TourStep[] = [
-    { title: 'Welcome to Tranga!', body: "Let's take a quick look at how to download your first manga." },
-    {
-        target: '#tour-search-button',
-        title: 'Search for a manga',
-        body: 'Click here (or press ctrl+k) and type a title to search local and remote sources.',
-    },
+    { title: 'Welcome to Tranga!', body: 'Search for a manga using the search bar up top to get started downloading your first manga.' },
     {
         target: '#tour-metadata-action',
         title: 'Pick your source',

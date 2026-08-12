@@ -6,7 +6,6 @@
                 <p class="text-sm text-muted">{{ current?.body }}</p>
                 <div class="flex items-center justify-between gap-2">
                     <UButton variant="link" color="neutral" size="xs" label="Skip tour" @click="finishAndPersist" />
-                    <UButton v-if="index === 0" label="Let's go" size="xs" @click="next" />
                 </div>
             </div>
         </template>
@@ -15,23 +14,25 @@
 
 <script setup lang="ts">
 const { tour, finishAndPersist, startIfFirstVisit } = useAppTour();
-const { open, index, current, reference, next } = tour;
+const { open, index, current, reference } = tour;
 
 const route = useRoute();
 
+function advanceForRoute(name: string | symbol | null | undefined): void {
+    if (!open.value) return;
+    if (name === 'metadata-metadataId' && index.value < 1) {
+        tour.goTo(1);
+    } else if (name === 'manga-mangaId' && index.value < 2) {
+        tour.goTo(2);
+    }
+}
+
 onMounted(() => {
     startIfFirstVisit();
+    // Covers landing directly on a mid-flow route (deep link, or a reload
+    // mid-tour) — `watch` below only fires on subsequent route changes.
+    advanceForRoute(route.name);
 });
 
-watch(
-    () => route.name,
-    (name) => {
-        if (!open.value) return;
-        if (name === 'metadata-metadataId' && index.value < 2) {
-            tour.goTo(2);
-        } else if (name === 'manga-mangaId' && index.value < 3) {
-            tour.goTo(3);
-        }
-    },
-);
+watch(() => route.name, advanceForRoute);
 </script>
