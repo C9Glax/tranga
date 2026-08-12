@@ -18,6 +18,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (!status.enabled) return;
-    if (!status.configured) return navigateTo('/setup');
-    if (!getAuthToken()) return navigateTo('/login');
+
+    // On the very first client navigation the server has already rendered `to` (it has no idea a
+    // redirect is coming, since this check is client-only) and Vue hasn't mounted/hydrated yet. A
+    // soft `navigateTo` here would hydrate the setup/login page's markup onto that mismatched
+    // server-rendered DOM, leaving a broken layout until the next refresh. Forcing an external
+    // navigation in that case makes the browser do a real reload so the target route gets its own
+    // clean SSR render instead.
+    const redirect = (path: string) => navigateTo(path, useNuxtApp().isHydrating ? { external: true } : undefined);
+
+    if (!status.configured) return redirect('/setup');
+    if (!getAuthToken()) return redirect('/login');
 });
