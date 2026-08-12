@@ -2,7 +2,7 @@
     <UBlogPost
         :title="metadata.series"
         :description="metadata.summary ?? undefined"
-        :image="{ src: `${$apiBaseUrl}/mangas/files/${metadata.coverId}`, loading: 'lazy' }"
+        :image="{ src: coverSrc, loading: 'lazy' }"
         :to="mangaId ? `/metadata/${metadata.metadataId}?mangaId=${mangaId}` : `/metadata/${metadata.metadataId}`"
         :target="target"
         external
@@ -51,4 +51,6 @@ const props = defineProps<{
 }>();
 
 const { metadataExtensions } = await useMetadataExtensions();
+
+const coverSrc = useAuthedImageUrl(() => (props.metadata.coverId ? `/mangas/files/${props.metadata.coverId}` : undefined));
 </script>
