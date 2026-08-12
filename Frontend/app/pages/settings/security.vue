@@ -7,12 +7,19 @@
                 </template>
 
                 <div class="flex flex-col gap-4">
-                    <UAlert
-                        v-if="createdKey"
-                        color="success"
-                        icon="i-lucide-key-round"
-                        title="Copy this key now - it will not be shown again"
-                        :description="createdKey" />
+                    <UFormField v-if="createdKey" label="New API key" description="Copy this now - it will not be shown again.">
+                        <UInput :model-value="createdKey" readonly class="w-full">
+                            <template #trailing>
+                                <UButton
+                                    :color="keyCopied ? 'success' : 'neutral'"
+                                    variant="link"
+                                    size="sm"
+                                    :icon="keyCopied ? 'i-lucide-check' : 'i-lucide-copy'"
+                                    aria-label="Copy API key"
+                                    @click="copyCreatedKey" />
+                            </template>
+                        </UInput>
+                    </UFormField>
 
                     <UForm :state="newKeyState" class="flex flex-row items-end gap-4" @submit="createApiKey">
                         <UFormField label="Name" name="name" class="flex-1">
@@ -51,6 +58,14 @@ const { data: apiKeys, refresh } = useTranga<ServicesAuthApiKeyResponse[]>('/aut
 
 const newKeyState = ref<{ name?: string }>({});
 const createdKey = ref<string | null>(null);
+const keyCopied = ref(false);
+
+const copyCreatedKey = async () => {
+    if (!createdKey.value) return;
+    await navigator.clipboard.writeText(createdKey.value);
+    keyCopied.value = true;
+    setTimeout(() => (keyCopied.value = false), 2000);
+};
 
 const createApiKey = async () => {
     try {

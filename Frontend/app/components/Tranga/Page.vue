@@ -7,7 +7,10 @@
                     <UNavigationMenu :items="nItems" orientation="vertical" />
                 </template>
                 <template #footer>
-                    <UColorModeSelect variant="soft" class="w-full" />
+                    <div class="flex w-full flex-col gap-1">
+                        <UButton label="Log out" icon="i-lucide-log-out" color="neutral" variant="ghost" block @click="logout" />
+                        <UColorModeSelect variant="soft" class="w-full" />
+                    </div>
                 </template>
             </UDashboardSidebar>
 
@@ -50,6 +53,7 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui/components/NavigationMenu.vue';
+import { clearAuthToken } from '~/composables/authToken';
 
 const props = defineProps<TrangaPageProps>();
 
@@ -107,4 +111,9 @@ const defaultItems = computed((): NavigationMenuItem[] => {
 });
 
 defineShortcuts({ ctrl_h: () => navigateTo('/') });
+
+const logout = async () => {
+    clearAuthToken();
+    await navigateTo('/login');
+};
 </script>
