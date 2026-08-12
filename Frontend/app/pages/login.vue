@@ -1,38 +1,33 @@
 <template>
-    <div class="flex min-h-screen items-center justify-center p-4">
-        <UCard class="w-full max-w-sm">
-            <template #header>
-                <div class="flex items-center gap-2">
-                    <img src="/blahaj.png" class="h-8" alt="Blahaj" />
-                    <p class="text-xl font-bold">Log in</p>
-                </div>
-            </template>
-
-            <UForm :state="state" class="flex flex-col gap-4" @submit="submit">
-                <UFormField label="Password" name="password">
-                    <UInput v-model="state.password" type="password" class="w-full" autofocus />
-                </UFormField>
-                <UButton label="Log in" type="submit" loading-auto block />
-            </UForm>
-        </UCard>
-    </div>
+    <AuthPage>
+        <UAuthForm
+            :schema="schema"
+            :fields="fields"
+            title="Log in"
+            :submit="{ label: 'Log in' }"
+            class="w-full max-w-sm"
+            @submit="onSubmit" />
+    </AuthPage>
 </template>
 
 <script setup lang="ts">
 import type { ServicesAuthAuthTokenResponse } from '~/api/tranga';
 import { setAuthToken } from '~/composables/authToken';
 import { FetchError } from 'ofetch';
+import * as z from 'zod';
+import type { FormSubmitEvent } from '@nuxt/ui';
 
 const toast = useToast();
-const state = ref<{ password?: string }>({});
 
-const submit = async () => {
-    if (!state.value.password) return;
+const schema = z.object({ password: z.string().min(1, 'Password is required.') });
 
+const fields = [{ name: 'password', label: 'Password', type: 'password' as const, required: true }];
+
+const onSubmit = async (payload: FormSubmitEvent<z.infer<typeof schema>>) => {
     try {
         const response = await useNuxtApp().$tranga<ServicesAuthAuthTokenResponse>('/auth/login', {
             method: 'post',
-            body: { password: state.value.password },
+            body: { password: payload.data.password },
         });
         setAuthToken(response.token);
         await navigateTo('/');
