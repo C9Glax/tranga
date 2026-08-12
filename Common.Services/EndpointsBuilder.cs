@@ -9,10 +9,12 @@ public abstract class EndpointsBuilder
     /// <summary>Maps a route group at <paramref name="prefix"/> on <paramref name="builder"/> and registers the service's endpoints into it.</summary>
     /// <param name="builder">The web application to register the route group on.</param>
     /// <param name="prefix">The route prefix all of the service's endpoints are nested under.</param>
-    public void AddEndpoints(WebApplication builder, string prefix = "/")
+    /// <returns>The route group, so callers can conditionally chain conventions (e.g. <c>.RequireAuthorization()</c>) onto it.</returns>
+    public RouteGroupBuilder AddEndpoints(WebApplication builder, string prefix = "/")
     {
         RouteGroupBuilder routeGroupBuilder = builder.MapGroup(prefix);
         AddEndpoints(routeGroupBuilder);
+        return routeGroupBuilder;
     }
 
     /// <summary>Registers the service's endpoints onto the given route group.</summary>

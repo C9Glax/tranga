@@ -47,4 +47,10 @@ export namespace ApiKeys {
 
         export const Extension = (id: string) => `/Notifications/Extensions/${id}`;
     }
+
+    export namespace Auth {
+        export const Status = 'Auth/Status';
+
+        export const ApiKeys = 'Auth/ApiKeys';
+    }
 }

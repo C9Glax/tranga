@@ -48,6 +48,8 @@ IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("Rabbi
 IResourceBuilder<ParameterResource> allowNsfw = builder.AddParameter("AllowNSFW");
 IResourceBuilder<ParameterResource> downloadLanguage = builder.AddParameter("DownloadLanguage");
 IResourceBuilder<ParameterResource> flaresolverrUrl = builder.AddParameter("FlaresolverrUrl");
+IResourceBuilder<ParameterResource> useAuth = builder.AddParameter("UseAuth");
+IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthSigningKey", secret: true);
 IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword)
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -79,6 +81,8 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
         context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
         context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["UseAuth"] = useAuth.Resource;
+        context.EnvironmentVariables["AUTH_SIGNING_KEY"] = authSigningKey.Resource;
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
@@ -120,6 +124,8 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
         context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
         context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["UseAuth"] = useAuth.Resource;
+        context.EnvironmentVariables["AUTH_SIGNING_KEY"] = authSigningKey.Resource;
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
@@ -161,6 +167,8 @@ IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Serv
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
         context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
         context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["UseAuth"] = useAuth.Resource;
+        context.EnvironmentVariables["AUTH_SIGNING_KEY"] = authSigningKey.Resource;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -192,6 +200,8 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
         context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
         context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
         context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["UseAuth"] = useAuth.Resource;
+        context.EnvironmentVariables["AUTH_SIGNING_KEY"] = authSigningKey.Resource;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -206,6 +216,39 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
             Type = "volume",
             ReadOnly = true
         });
+        service.DependsOn = new()
+        {
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
+        };
+        service.Restart = "on-failure:3";
+    })
+    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+
+IResourceBuilder<ProjectResource> authService = builder.AddProject<Services_Auth>("services-auth")
+    .WaitFor(rabbitmq)
+    .WaitFor(db)
+    .WithReference(db)
+    .WithReference(rabbitmq)
+    .WithEnvironment(context =>
+    {
+        context.EnvironmentVariables["POSTGRES_HOST"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
+        context.EnvironmentVariables["POSTGRES_PORT"] = postgres.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["POSTGRES_USER"] = postgres.Resource.UserNameParameter;
+        context.EnvironmentVariables["POSTGRES_PASSWORD"] = postgres.Resource.PasswordParameter;
+        context.EnvironmentVariables["POSTGRES_DATABASE"] = db.Resource.DatabaseName;
+        context.EnvironmentVariables["RABBITMQ_HOST"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Host);
+        context.EnvironmentVariables["RABBITMQ_PORT"] = rabbitmq.Resource.PrimaryEndpoint.Property(EndpointProperty.Port);
+        context.EnvironmentVariables["RABBITMQ_USER"] = rabbitUser.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["RABBITMQ_PASSWORD"] = rabbitPassword.Resource.GetValueAsync(CancellationToken.None).Result;
+        context.EnvironmentVariables["UseAuth"] = useAuth.Resource;
+        context.EnvironmentVariables["AUTH_SIGNING_KEY"] = authSigningKey.Resource;
+    })
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Name = "services-auth";
+        service.Networks = ["tranga"];
+        service.Image = "ghcr.io/c9glax/tranga-services_auth:external-connectors";
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
@@ -243,6 +286,7 @@ builder.AddYarp("gateway")
         yarp.AddRoute("/api/tasks/{**catch-all}", tasksService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/notifications/{**catch-all}", notificationsService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/libraries/{**catch-all}", librariesService).WithTransformPathRemovePrefix("/api");
+        yarp.AddRoute("/api/auth/{**catch-all}", authService).WithTransformPathRemovePrefix("/api");
     })
     .WithHostPort(port)
     .PublishAsDockerComposeService((resource, service) =>
