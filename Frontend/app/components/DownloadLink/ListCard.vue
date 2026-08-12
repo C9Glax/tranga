@@ -34,7 +34,7 @@
                     target="_blank"
                     :ui="{ description: 'truncate h-lh max-w-24' }" />
                 <UFieldGroup v-if="mDl">
-                    <UButton v-if="!mDl.matched" variant="soft" label="Match" @click="updateMatch(true)" />
+                    <UButton v-if="!mDl.matched" variant="soft" label="Match" class="tour-match-download-link" @click="updateMatch(true)" />
                     <UButton v-if="mDl.matched" variant="outline" label="Unmatch" @click="updateMatch(false)" />
                     <UInputNumber
                         :default-value="mDl.priority as number"
