@@ -21,7 +21,14 @@
                     searchable
                     placeholder="Extension"
                     class="w-48" />
-                <UButton label="Add Link" icon="i-lucide-plus" loading-auto :disabled="!addExtensionId || !searchTerm" @click="addLink" />
+                <span ref="add-link">
+                    <UButton
+                        label="Add Link"
+                        icon="i-lucide-plus"
+                        loading-auto
+                        :disabled="!addExtensionId || !searchTerm"
+                        @click="addLink" />
+                </span>
             </div>
             <DownloadLinkList :download-links="downloadLinks" :loading="statusDownloadLinks !== 'success'" />
         </UPageSection>
@@ -37,6 +44,8 @@ import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
 const mangaId = useRoute().params.mangaId as string;
 const toast = useToast();
+
+useTourTargetRef('add-link');
 
 const searchTerm = ref<string>('');
 

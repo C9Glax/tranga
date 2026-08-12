@@ -20,4 +20,6 @@ const mangaList = computed(() =>
 );
 
 defineShortcuts({ shift_r: () => refresh() });
+
+onMounted(() => useNuxtApp().$tour.maybeAutoStart());
 </script>

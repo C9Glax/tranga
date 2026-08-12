@@ -32,6 +32,7 @@ const moreDownloadLinksAction = computed<ButtonProps>(() => ({
     to: `/manga/${mangaId}/downloadLinks`,
     icon: 'i-lucide-download',
     variant: 'outline',
+    class: 'tour-more-download-links',
 }));
 
 const syncToKomgaAction = computed<ButtonProps>(() => ({

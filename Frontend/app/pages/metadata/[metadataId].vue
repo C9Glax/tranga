@@ -35,20 +35,35 @@ const actions = (m?: ServicesMangaMetadata): ButtonProps[] | undefined => {
     const items: ButtonProps[] = [];
 
     if (mangaId && relatedMangaIds.value?.find((m) => m === mangaId) && !manga.value) {
-        items.push({ label: 'Go to Manga', icon: 'i-lucide-book', to: `/manga/${mangaId}`, target: '_blank', variant: 'soft' });
+        items.push({
+            label: 'Go to Manga',
+            icon: 'i-lucide-book',
+            to: `/manga/${mangaId}`,
+            target: '_blank',
+            variant: 'soft',
+            class: 'tour-go-to-manga',
+        });
         items.push({
             label: 'Use as Source for Manga',
             onClick: async () => await patchMangaMetadataSource(metadataId, mangaId),
             variant: 'solid',
+            class: 'tour-use-as-source',
         });
     } else if (manga.value) {
-        items.push({ label: 'Go to Manga', icon: 'i-lucide-book', to: `/manga/${manga.value.mangaId}`, variant: 'soft' });
+        items.push({
+            label: 'Go to Manga',
+            icon: 'i-lucide-book',
+            to: `/manga/${manga.value.mangaId}`,
+            variant: 'soft',
+            class: 'tour-go-to-manga',
+        });
         items.push({ label: 'Is Source', disabled: true, variant: 'outline' });
     } else if (relatedMangaIds.value?.length === 1) {
         items.push({
             label: 'Use as Source for Manga',
             onClick: async () => await patchMangaMetadataSource(metadataId, relatedMangaIds.value![0]!),
             variant: 'solid',
+            class: 'tour-use-as-source',
         });
     }
 

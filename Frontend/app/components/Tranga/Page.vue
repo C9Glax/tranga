@@ -37,7 +37,9 @@
                             </UTooltip>
                         </template>
                         <template #right>
-                            <UDashboardSearchButton />
+                            <span ref="search-button">
+                                <UDashboardSearchButton />
+                            </span>
                         </template>
                     </UDashboardNavbar>
                 </template>
@@ -54,6 +56,8 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui/components/NavigationMenu.vue';
 import { clearAuthToken } from '~/composables/authToken';
+
+useTourTargetRef('search-button');
 
 const props = defineProps<TrangaPageProps>();
 
