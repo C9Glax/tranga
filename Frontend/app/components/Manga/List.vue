@@ -15,6 +15,7 @@
             <MangaCover
                 :file-id="manga.metadataEntry?.coverId"
                 :manga-id="manga.mangaId"
+                :size="COVER_SIZES.card"
                 no-blur
                 class="z-0"
                 :class="manga.metadataEntry?.nsfw ? 'blur-md' : 'blur-xs'" />

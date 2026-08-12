@@ -56,7 +56,9 @@ const mDl = computed(() => props.downloadLink as ServicesMangaMangaDownloadLink 
 
 const { downloadExtensions } = await useDownloadExtensions();
 
-const coverSrc = useAuthedImageUrl(() => (props.downloadLink.coverId ? `/mangas/files/${props.downloadLink.coverId}` : undefined));
+const coverSrc = useAuthedImageUrl(() =>
+    props.downloadLink.coverId ? withCoverSize(`/mangas/files/${props.downloadLink.coverId}`, COVER_SIZES.blogCard) : undefined,
+);
 
 const updateMatch = async (matched?: boolean, priority?: number) => {
     if (!mDl.value) return;

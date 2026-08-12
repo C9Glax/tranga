@@ -58,6 +58,25 @@ public sealed class ImageHelperTests : TrangaTest
         Assert.Equal(originalBytes, image.ToArray());
     }
 
+    [Fact]
+    public async Task AsJpegWithDimensionsResizesToExactTargetSize()
+    {
+        using Image<Rgba32> image = new(40, 20);
+        TrangaImage stream = new();
+        image.SaveAsPng(stream);
+        stream.Position = 0;
+
+        MemoryStream result = await stream.AsJpeg(10, 10, ct);
+
+        IImageFormat format = await Image.DetectFormatAsync(result, ct);
+        Assert.Equal("JPEG", format.Name);
+
+        result.Position = 0;
+        ImageInfo info = await Image.IdentifyAsync(result, ct);
+        Assert.Equal(10, info.Width);
+        Assert.Equal(10, info.Height);
+    }
+
     [Theory]
     [InlineData("png")]
     [InlineData("bmp")]

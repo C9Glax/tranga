@@ -290,7 +290,12 @@ export type GetMangasByMangaIdResponses = {
 
 export type GetMangasByMangaIdResponse = GetMangasByMangaIdResponses[keyof GetMangasByMangaIdResponses];
 
-export type GetMangasByMangaIdCoverData = { body?: never; path: { mangaId: string }; query?: never; url: '/mangas/{mangaId}/cover' };
+export type GetMangasByMangaIdCoverData = {
+    body?: never;
+    path: { mangaId: string };
+    query?: { width?: number | string; height?: number | string };
+    url: '/mangas/{mangaId}/cover';
+};
 
 export type GetMangasByMangaIdCoverErrors = {
     /**
@@ -758,7 +763,12 @@ export type GetMangasDownloadLinksByDownloadIdResponses = {
 export type GetMangasDownloadLinksByDownloadIdResponse =
     GetMangasDownloadLinksByDownloadIdResponses[keyof GetMangasDownloadLinksByDownloadIdResponses];
 
-export type GetMangasFilesByFileIdData = { body?: never; path: { fileId: string }; query?: never; url: '/mangas/files/{fileId}' };
+export type GetMangasFilesByFileIdData = {
+    body?: never;
+    path: { fileId: string };
+    query?: { width?: number | string; height?: number | string };
+    url: '/mangas/files/{fileId}';
+};
 
 export type GetMangasFilesByFileIdErrors = {
     /**

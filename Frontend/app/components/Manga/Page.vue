@@ -9,6 +9,7 @@
                     :file-id="manga?.metadataEntry?.coverId"
                     :manga-id="manga?.mangaId"
                     :no-blur="!manga?.metadataEntry?.nsfw"
+                    :size="COVER_SIZES.hero"
                     class="aspect-6/9 w-full max-w-2xs mx-auto md:mx-0" />
 
                 <div class="flex flex-col gap-2">
