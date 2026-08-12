@@ -58,6 +58,8 @@ services:
       RABBITMQ_PORT: "5672"
       RABBITMQ_USER: "tranga"
       RABBITMQ_PASSWORD: "tranga"
+      UseAuth: "${USEAUTH}"
+      AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
@@ -104,6 +106,8 @@ services:
       RABBITMQ_PORT: "5672"
       RABBITMQ_USER: "tranga"
       RABBITMQ_PASSWORD: "tranga"
+      UseAuth: "${USEAUTH}"
+      AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
@@ -150,6 +154,8 @@ services:
       RABBITMQ_PORT: "5672"
       RABBITMQ_USER: "tranga"
       RABBITMQ_PASSWORD: "tranga"
+      UseAuth: "${USEAUTH}"
+      AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
     expose:
       - "${SERVICES_NOTIFICATIONS_PORT}"
     depends_on:
@@ -189,6 +195,8 @@ services:
       RABBITMQ_PORT: "5672"
       RABBITMQ_USER: "tranga"
       RABBITMQ_PASSWORD: "tranga"
+      UseAuth: "${USEAUTH}"
+      AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
     expose:
       - "${SERVICES_LIBRARIES_PORT}"
     volumes:
@@ -196,6 +204,47 @@ services:
         target: "/app/Covers"
         source: "Covers"
         read_only: true
+    depends_on:
+      tranga-pg:
+        condition: "service_started"
+      messaging:
+        condition: "service_healthy"
+    networks:
+      - "tranga"
+    restart: "on-failure:3"
+  services-auth:
+    image: "ghcr.io/c9glax/tranga-services_auth:external-connectors"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${SERVICES_AUTH_PORT}"
+      ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
+      TRANGA_HOST: "tranga-pg"
+      TRANGA_PORT: "5432"
+      TRANGA_USERNAME: "${POSTGRESUSER}"
+      TRANGA_PASSWORD: "${POSTGRESPASSWORD}"
+      TRANGA_URI: "postgresql://${POSTGRESUSER}:${POSTGRESPASSWORD}@tranga-pg:5432/tranga"
+      TRANGA_JDBCCONNECTIONSTRING: "jdbc:postgresql://tranga-pg:5432/tranga"
+      TRANGA_DATABASENAME: "tranga"
+      ConnectionStrings__messaging: "amqp://${RABBITMQUSER}:${RABBITMQPASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "${RABBITMQUSER}"
+      MESSAGING_PASSWORD: "${RABBITMQPASSWORD}"
+      MESSAGING_URI: "amqp://${RABBITMQUSER}:${RABBITMQPASSWORD}@messaging:5672"
+      POSTGRES_HOST: "tranga-pg"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: "${POSTGRESUSER}"
+      POSTGRES_PASSWORD: "${POSTGRESPASSWORD}"
+      POSTGRES_DATABASE: "tranga"
+      RABBITMQ_HOST: "messaging"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USER: "tranga"
+      RABBITMQ_PASSWORD: "tranga"
+      UseAuth: "${USEAUTH}"
+      AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
+    expose:
+      - "${SERVICES_AUTH_PORT}"
     depends_on:
       tranga-pg:
         condition: "service_started"
@@ -248,11 +297,15 @@ services:
       REVERSEPROXY__ROUTES__route4__MATCH__PATH: "/api/libraries/{**catch-all}"
       REVERSEPROXY__ROUTES__route4__CLUSTERID: "cluster_services-libraries"
       REVERSEPROXY__ROUTES__route4__TRANSFORMS__0__PathRemovePrefix: "/api"
+      REVERSEPROXY__ROUTES__route5__MATCH__PATH: "/api/auth/{**catch-all}"
+      REVERSEPROXY__ROUTES__route5__CLUSTERID: "cluster_services-auth"
+      REVERSEPROXY__ROUTES__route5__TRANSFORMS__0__PathRemovePrefix: "/api"
       REVERSEPROXY__CLUSTERS__cluster_frontend__DESTINATIONS__destination1__ADDRESS: "http://frontend"
       REVERSEPROXY__CLUSTERS__cluster_services-manga__DESTINATIONS__destination1__ADDRESS: "https+http://services-manga"
       REVERSEPROXY__CLUSTERS__cluster_services-tasks__DESTINATIONS__destination1__ADDRESS: "https+http://services-tasks"
       REVERSEPROXY__CLUSTERS__cluster_services-notifications__DESTINATIONS__destination1__ADDRESS: "https+http://services-notifications"
       REVERSEPROXY__CLUSTERS__cluster_services-libraries__DESTINATIONS__destination1__ADDRESS: "https+http://services-libraries"
+      REVERSEPROXY__CLUSTERS__cluster_services-auth__DESTINATIONS__destination1__ADDRESS: "https+http://services-auth"
       services__frontend__http__0: "http://frontend:3000"
       SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
       services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
@@ -266,6 +319,9 @@ services:
       SERVICES_LIBRARIES_HTTP: "http://services-libraries:${SERVICES_LIBRARIES_PORT}"
       services__services-libraries__http__0: "http://services-libraries:${SERVICES_LIBRARIES_PORT}"
       SERVICES_LIBRARIES_HTTPS: "https://services-libraries:${SERVICES_LIBRARIES_PORT}"
+      SERVICES_AUTH_HTTP: "http://services-auth:${SERVICES_AUTH_PORT}"
+      services__services-auth__http__0: "http://services-auth:${SERVICES_AUTH_PORT}"
+      SERVICES_AUTH_HTTPS: "https://services-auth:${SERVICES_AUTH_PORT}"
     ports:
       - "5000:5000"
     expose:

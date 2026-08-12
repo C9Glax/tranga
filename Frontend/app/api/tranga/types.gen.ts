@@ -228,6 +228,32 @@ export type ServicesLibrariesTestKomgaConnectionRequest = {
     password?: null | string;
 };
 
+export type ServicesAuthApiKeyResponse = {
+    id: string;
+    name: null | string;
+    scope: ServicesAuthApiKeyScope;
+    createdAt: string;
+    lastUsedAt: null | string;
+};
+
+export type ServicesAuthApiKeyScope = 'All';
+
+export type ServicesAuthAuthStatusResponse = { enabled: boolean; configured: boolean };
+
+export type ServicesAuthAuthTokenResponse = { token: string };
+
+export type ServicesAuthCreateApiKeyRequest = { name: null | string; scope?: ServicesAuthApiKeyScope };
+
+export type ServicesAuthCreateApiKeyResponse = {
+    id: string;
+    key: string;
+    name: null | string;
+    scope: ServicesAuthApiKeyScope;
+    createdAt: string;
+};
+
+export type ServicesAuthSetupRequest = { password: string };
+
 export type GetMangasData = { body?: never; path?: never; query?: never; url: '/mangas' };
 
 export type GetMangasErrors = {
@@ -1213,3 +1239,87 @@ export type GetLibrariesMappingsByMangaIdResponses = {
 };
 
 export type GetLibrariesMappingsByMangaIdResponse = GetLibrariesMappingsByMangaIdResponses[keyof GetLibrariesMappingsByMangaIdResponses];
+
+export type GetAuthStatusData = { body?: never; path?: never; query?: never; url: '/auth/status' };
+
+export type GetAuthStatusResponses = {
+    /**
+     * OK
+     */
+    200: ServicesAuthAuthStatusResponse;
+};
+
+export type GetAuthStatusResponse = GetAuthStatusResponses[keyof GetAuthStatusResponses];
+
+export type PostAuthSetupData = { body: ServicesAuthSetupRequest; path?: never; query?: never; url: '/auth/setup' };
+
+export type PostAuthSetupErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+    /**
+     * Conflict
+     */
+    409: unknown;
+};
+
+export type PostAuthSetupError = PostAuthSetupErrors[keyof PostAuthSetupErrors];
+
+export type PostAuthSetupResponses = {
+    /**
+     * OK
+     */
+    200: ServicesAuthAuthTokenResponse;
+};
+
+export type PostAuthSetupResponse = PostAuthSetupResponses[keyof PostAuthSetupResponses];
+
+export type PostAuthLoginData = { body: ServicesAuthSetupRequest; path?: never; query?: never; url: '/auth/login' };
+
+export type PostAuthLoginResponses = {
+    /**
+     * OK
+     */
+    200: ServicesAuthAuthTokenResponse;
+};
+
+export type PostAuthLoginResponse = PostAuthLoginResponses[keyof PostAuthLoginResponses];
+
+export type GetAuthApikeysData = { body?: never; path?: never; query?: never; url: '/auth/apikeys' };
+
+export type GetAuthApikeysResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesAuthApiKeyResponse>;
+};
+
+export type GetAuthApikeysResponse = GetAuthApikeysResponses[keyof GetAuthApikeysResponses];
+
+export type PostAuthApikeysData = { body: ServicesAuthCreateApiKeyRequest; path?: never; query?: never; url: '/auth/apikeys' };
+
+export type PostAuthApikeysResponses = {
+    /**
+     * OK
+     */
+    200: ServicesAuthCreateApiKeyResponse;
+};
+
+export type PostAuthApikeysResponse = PostAuthApikeysResponses[keyof PostAuthApikeysResponses];
+
+export type DeleteAuthApikeysByApiKeyIdData = { body?: never; path: { apiKeyId: string }; query?: never; url: '/auth/apikeys/{apiKeyId}' };
+
+export type DeleteAuthApikeysByApiKeyIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type DeleteAuthApikeysByApiKeyIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};

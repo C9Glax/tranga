@@ -4,6 +4,7 @@ export default {
         '../Services.Tasks/openapi/Services.Tasks.json',
         '../Services.Notifications/openapi/Services.Notifications.json',
         '../Services.Libraries/openapi/Services.Libraries.json',
+        '../Services.Auth/openapi/Services.Auth.json',
     ],
     output: { path: `app/api/tranga`, postProcess: ['eslint', 'prettier'] },
     plugins: [

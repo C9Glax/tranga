@@ -1,3 +1,4 @@
+using Common.Services.Authentication;
 using Common.Services.Events;
 using Common.Settings;
 using Scalar.AspNetCore;
@@ -39,7 +40,10 @@ public abstract class Service : IAsyncDisposable
 
             Builder.Services.AddRabbitMq(host, port, user, pass);
         }
-        
+
+        if (EnvVars.UseAuth)
+            Builder.Services.AddTrangaAuthentication();
+
         Builder.Logging.ClearProviders();
         Builder.Logging.AddConsole();
 
@@ -61,11 +65,19 @@ public abstract class Service : IAsyncDisposable
             .AllowAnyHeader()
             .SetIsOriginAllowed(_ => true) // allow any origin
             .AllowCredentials()); // allow credentials
-        
+
+        if (EnvVars.UseAuth)
+        {
+            App.UseAuthentication();
+            App.UseAuthorization();
+        }
+
         App.MapDefaultEndpoints();
-        
-        new TEndpointsBuilder().AddEndpoints(App, endpointsPrefix);
-        
+
+        RouteGroupBuilder endpoints = new TEndpointsBuilder().AddEndpoints(App, endpointsPrefix);
+        if (EnvVars.UseAuth)
+            endpoints.RequireAuthorization();
+
         App.UseHttpsRedirection();
         
         App.MapOpenApi();

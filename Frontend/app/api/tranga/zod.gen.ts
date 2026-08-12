@@ -428,3 +428,43 @@ export const zServicesLibrariesTestKomgaConnectionRequest = z.object({
 });
 
 export type ServicesLibrariesTestKomgaConnectionRequestZodType = z.infer<typeof zServicesLibrariesTestKomgaConnectionRequest>;
+
+export const zServicesAuthApiKeyScope = z.enum(['All']);
+
+export type ServicesAuthApiKeyScopeZodType = z.infer<typeof zServicesAuthApiKeyScope>;
+
+export const zServicesAuthApiKeyResponse = z.object({
+    id: z.uuid(),
+    name: z.nullable(z.string()),
+    scope: zServicesAuthApiKeyScope,
+    createdAt: z.iso.datetime(),
+    lastUsedAt: z.nullable(z.iso.datetime()),
+});
+
+export type ServicesAuthApiKeyResponseZodType = z.infer<typeof zServicesAuthApiKeyResponse>;
+
+export const zServicesAuthAuthStatusResponse = z.object({ enabled: z.boolean(), configured: z.boolean() });
+
+export type ServicesAuthAuthStatusResponseZodType = z.infer<typeof zServicesAuthAuthStatusResponse>;
+
+export const zServicesAuthAuthTokenResponse = z.object({ token: z.string() });
+
+export type ServicesAuthAuthTokenResponseZodType = z.infer<typeof zServicesAuthAuthTokenResponse>;
+
+export const zServicesAuthCreateApiKeyRequest = z.object({ name: z.nullable(z.string()), scope: z.optional(zServicesAuthApiKeyScope) });
+
+export type ServicesAuthCreateApiKeyRequestZodType = z.infer<typeof zServicesAuthCreateApiKeyRequest>;
+
+export const zServicesAuthCreateApiKeyResponse = z.object({
+    id: z.uuid(),
+    key: z.string(),
+    name: z.nullable(z.string()),
+    scope: zServicesAuthApiKeyScope,
+    createdAt: z.iso.datetime(),
+});
+
+export type ServicesAuthCreateApiKeyResponseZodType = z.infer<typeof zServicesAuthCreateApiKeyResponse>;
+
+export const zServicesAuthSetupRequest = z.object({ password: z.string() });
+
+export type ServicesAuthSetupRequestZodType = z.infer<typeof zServicesAuthSetupRequest>;
