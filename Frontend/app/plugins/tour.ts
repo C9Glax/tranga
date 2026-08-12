@@ -28,6 +28,14 @@ interface FirstDownloadStep extends TourStep {
     key?: TourKey;
     title: string;
     body: string;
+    /**
+     * Shows a manual "Next step" button alongside "Skip tour" instead of relying
+     * solely on the click-delegation advance. Reserved for steps whose action is
+     * genuinely optional (e.g. adding a download link is skippable if the user
+     * already sees a suitable match from an earlier search) - without it, a user
+     * who never performs the pointed-at action would be stuck on that step forever.
+     */
+    manualNext?: boolean;
 }
 
 interface TourApi {
@@ -130,7 +138,8 @@ export default defineNuxtPlugin({
                 key: 'add-link',
                 target: () => targets['add-link'] ?? undefined,
                 title: 'Add a download link',
-                body: 'Type a title (or paste a manga URL), choose an extension, then click Add Link.',
+                body: "Type a title (or paste a manga URL), choose an extension, then click Add Link. If the results aren't what you're looking for, search again with a different query, or paste a direct link to the chapter or series instead.",
+                manualNext: true,
             },
             {
                 key: 'match-download-link',
@@ -153,7 +162,13 @@ export default defineNuxtPlugin({
         let observer: MutationObserver | undefined;
         const syncClassTargets = (): void => {
             for (const [key, selector] of Object.entries(SYNCED_CLASS_SELECTORS)) {
-                const el = document.querySelector<HTMLElement>(selector);
+                // Some actions (e.g. "More Download-Links") are rendered twice - once
+                // as a sidebar nav item, once as a prominent empty-state CTA - both
+                // carrying the same class. Anchor the popover to the last match (the
+                // CTA, since the sidebar renders first in DOM order) as the more
+                // visible target; the click listener below still accepts either.
+                const matches = document.querySelectorAll<HTMLElement>(selector);
+                const el = matches.length ? matches[matches.length - 1]! : null;
                 if (targets[key as TourKey] !== el) targets[key as TourKey] = el;
             }
         };
@@ -181,8 +196,20 @@ export default defineNuxtPlugin({
                 if (!tour.open.value) return;
                 const key = currentStepKey();
                 if (!key) return;
+                const target = event.target;
+                if (!(target instanceof Node)) return;
+
+                // Class-keyed targets can render more than once (see the sidebar/CTA
+                // duplication note above) - accept a click on any matching instance,
+                // not just the one currently anchored.
+                const selector = SYNCED_CLASS_SELECTORS[key];
+                if (selector) {
+                    if (target instanceof Element && target.closest(selector)) tour.next();
+                    return;
+                }
+
                 const el = targets[key];
-                if (el && event.target instanceof Node && el.contains(event.target)) tour.next();
+                if (el && el.contains(target)) tour.next();
             },
             true,
         );

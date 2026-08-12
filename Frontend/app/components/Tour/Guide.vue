@@ -14,9 +14,9 @@
                     >
                 </div>
                 <p class="text-sm text-muted">{{ body }}</p>
-                <div class="flex items-center justify-end pt-1">
-                    <UButton v-if="isEdgeStep" size="sm" @click="onPrimary">{{ tour.hasNext.value ? "Let's go" : 'Finish' }}</UButton>
-                    <UButton v-else variant="ghost" color="neutral" size="sm" @click="tour.finish()">Skip tour</UButton>
+                <div class="flex items-center pt-1" :class="showSkip && showPrimary ? 'justify-between' : 'justify-end'">
+                    <UButton v-if="showSkip" variant="ghost" color="neutral" size="sm" @click="tour.finish()">Skip tour</UButton>
+                    <UButton v-if="showPrimary" size="sm" @click="onPrimary">{{ primaryLabel }}</UButton>
                 </div>
             </div>
         </template>
@@ -26,9 +26,19 @@
 <script setup lang="ts">
 const { tour } = useNuxtApp().$tour;
 
-const title = computed(() => (tour.current.value as { title?: string } | undefined)?.title ?? '');
-const body = computed(() => (tour.current.value as { body?: string } | undefined)?.body ?? '');
-const isEdgeStep = computed(() => (tour.current.value as { key?: string } | undefined)?.key === undefined);
+type CurrentStep = { title?: string; body?: string; key?: string; manualNext?: boolean } | undefined;
+const current = computed(() => tour.current.value as CurrentStep);
+
+const title = computed(() => current.value?.title ?? '');
+const body = computed(() => current.value?.body ?? '');
+const isEdgeStep = computed(() => current.value?.key === undefined);
+
+const showSkip = computed(() => !isEdgeStep.value);
+const showPrimary = computed(() => isEdgeStep.value || current.value?.manualNext === true);
+const primaryLabel = computed(() => {
+    if (!isEdgeStep.value) return 'Next step';
+    return tour.hasNext.value ? "Let's go" : 'Finish';
+});
 
 const onPrimary = (): void => {
     if (tour.hasNext.value) tour.next();
