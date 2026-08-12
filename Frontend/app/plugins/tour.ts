@@ -173,14 +173,31 @@ export default defineNuxtPlugin({
         // doesn't exist yet (e.g. the user still has to search and pick a result) -
         // `tour.reference` is a computed that reads the registry reactively, so it
         // resolves on its own the moment that target gets registered.
+        const currentStepKey = (): TourKey | undefined => (tour.current.value as FirstDownloadStep | undefined)?.key;
+
         document.addEventListener(
             'click',
             (event) => {
                 if (!tour.open.value) return;
-                const key = (tour.current.value as FirstDownloadStep | undefined)?.key;
+                const key = currentStepKey();
                 if (!key) return;
                 const el = targets[key];
                 if (el && event.target instanceof Node && el.contains(event.target)) tour.next();
+            },
+            true,
+        );
+
+        // The search modal's keyboard shortcut (⌘K / Ctrl K, `UDashboardSearch`'s
+        // default `shortcut="meta_k"`) toggles it directly inside that component via
+        // its own `defineShortcuts` call, bypassing any click on the search button -
+        // the click listener above never sees it. This is the one step whose target
+        // has a keyboard trigger, so it gets a matching keydown check here.
+        document.addEventListener(
+            'keydown',
+            (event) => {
+                if (!tour.open.value) return;
+                if (currentStepKey() !== 'search-button') return;
+                if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') tour.next();
             },
             true,
         );
