@@ -2,7 +2,7 @@
     <UBlogPost
         :title="downloadLink.series"
         :description="downloadLink.summary ?? undefined"
-        :image="{ src: `${$apiBaseUrl}/mangas/files/${downloadLink.coverId}`, loading: 'lazy' }"
+        :image="{ src: coverSrc, loading: 'lazy' }"
         external
         class="max-w-90 max-h-120"
         :ui="{
@@ -55,6 +55,8 @@ const props = defineProps<{ downloadLink: ServicesMangaMangaDownloadLink }>();
 const mDl = computed(() => props.downloadLink as ServicesMangaMangaDownloadLink | undefined);
 
 const { downloadExtensions } = await useDownloadExtensions();
+
+const coverSrc = useAuthedImageUrl(() => (props.downloadLink.coverId ? `/mangas/files/${props.downloadLink.coverId}` : undefined));
 
 const updateMatch = async (matched?: boolean, priority?: number) => {
     if (!mDl.value) return;
