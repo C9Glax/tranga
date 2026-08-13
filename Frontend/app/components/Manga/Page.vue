@@ -37,6 +37,19 @@
                             :class="{ 'opacity-50 pointer-events-none': togglingMonitored }"
                             @click="toggleMonitored" />
                     </div>
+                    <UUser
+                        v-if="manga?.metadataEntry"
+                        :avatar="{
+                            src: metadataExtensions.getExtension(manga.metadataEntry.metadataExtensionId)?.iconUrl ?? '/blahaj.png',
+                        }"
+                        :name="
+                            metadataExtensions.getExtension(manga.metadataEntry.metadataExtensionId)?.name ??
+                            manga.metadataEntry.metadataExtensionId
+                        "
+                        :description="manga.metadataEntry.identifier"
+                        :to="manga.metadataEntry.url ?? undefined"
+                        target="_blank" />
+                    <USkeleton v-else class="h-lh w-32" />
                 </div>
 
                 <p v-if="$props.description">{{ $props.description }}</p>
@@ -64,6 +77,7 @@ import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
 import type { NavigationMenuItem } from '@nuxt/ui/components/NavigationMenu.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
+import useMetadataExtensions from '~/composables/MetadataExtension';
 
 export interface MangaPageProps {
     title?: string;
@@ -86,6 +100,8 @@ const toggleMonitored = async () => {
         togglingMonitored.value = false;
     }
 };
+  
+const { metadataExtensions } = await useMetadataExtensions();
 
 const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${props.manga?.mangaId}`, {
     key: ApiKeys.Libraries.Mapping(props.manga?.mangaId ?? ''),
