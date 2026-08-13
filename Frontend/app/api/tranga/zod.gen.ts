@@ -107,6 +107,10 @@ export const zServicesMangaPatchMangaDownloadLinkRequest = z.object({
 
 export type ServicesMangaPatchMangaDownloadLinkRequestZodType = z.infer<typeof zServicesMangaPatchMangaDownloadLinkRequest>;
 
+export const zServicesMangaPatchMangaMonitoredRequest = z.object({ monitored: z.boolean() });
+
+export type ServicesMangaPatchMangaMonitoredRequestZodType = z.infer<typeof zServicesMangaPatchMangaMonitoredRequest>;
+
 export const zServicesMangaPostMangaDownloadLinkRequest = z.object({ downloadExtensionId: z.uuid(), url: z.string() });
 
 export type ServicesMangaPostMangaDownloadLinkRequestZodType = z.infer<typeof zServicesMangaPostMangaDownloadLinkRequest>;

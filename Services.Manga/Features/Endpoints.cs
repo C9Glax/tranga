@@ -61,6 +61,9 @@ internal static class EndpointHelpers
             .WithSummary("Sets a Metadata-Entry as chosen \"Source of Truth\" for Manga")
             .WithTags("Metadata");
 
+        builder.MapPatch("{mangaId}/monitored", PatchMangaMonitoredEndpoint.Handle)
+            .WithSummary("Set the monitored status of a Manga");
+
         builder.MapPost("{mangaId}/sync", PostMangaSyncEndpoint.Handle)
             .WithSummary("Manually trigger a metadata sync to any linked library extensions (e.g. Komga)");
 

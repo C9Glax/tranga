@@ -28,6 +28,14 @@
                             variant="outline" />
                         <USkeleton v-else class="h-lh w-14" />
                         <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
+                        <UBadge
+                            v-if="manga"
+                            :label="manga.monitored ? 'Monitored' : 'Not Monitored'"
+                            :color="manga.monitored ? 'success' : 'neutral'"
+                            :variant="manga.monitored ? 'solid' : 'outline'"
+                            class="cursor-pointer select-none"
+                            :class="{ 'opacity-50 pointer-events-none': togglingMonitored }"
+                            @click="toggleMonitored" />
                     </div>
                 </div>
 
@@ -67,6 +75,17 @@ export interface MangaPageProps {
 const props = defineProps<MangaPageProps>();
 
 const displayTitle = computed(() => props.title ?? props.manga?.metadataEntry?.series);
+
+const togglingMonitored = ref(false);
+const toggleMonitored = async () => {
+    if (!props.manga?.mangaId || togglingMonitored.value) return;
+    togglingMonitored.value = true;
+    try {
+        await patchMangaMonitored(props.manga.mangaId, !props.manga.monitored);
+    } finally {
+        togglingMonitored.value = false;
+    }
+};
 
 const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${props.manga?.mangaId}`, {
     key: ApiKeys.Libraries.Mapping(props.manga?.mangaId ?? ''),

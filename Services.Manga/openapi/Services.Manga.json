@@ -226,6 +226,43 @@
         }
       }
     },
+    "/mangas/{mangaId}/monitored": {
+      "patch": {
+        "tags": [
+          "Manga"
+        ],
+        "summary": "Set the monitored status of a Manga",
+        "parameters": [
+          {
+            "name": "mangaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchMangaMonitoredRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/mangas/{mangaId}/sync": {
       "post": {
         "tags": [
@@ -1452,6 +1489,17 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "PatchMangaMonitoredRequest": {
+        "required": [
+          "monitored"
+        ],
+        "type": "object",
+        "properties": {
+          "monitored": {
+            "type": "boolean"
           }
         }
       },
