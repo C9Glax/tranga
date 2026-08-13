@@ -73,6 +73,19 @@ When adding a Komga library, the "Library Root Path" must be the path *inside th
 where Tranga's `Mangas` volume is mounted — not the path on the host, and not the path inside Tranga's own containers.
 Mount that same volume into your Komga container and point the field at wherever you mounted it (defaults to `/tranga` if left blank).
 
+### Resetting the admin password
+
+If `UseAuth` is enabled and you've forgotten the admin password, or the account is locked out after too many failed logins,
+run the `reset-password` tool shipped inside the auth container:
+
+```bash
+docker exec -it <auth-container> /app/reset-password
+```
+
+It prompts for a new password (input hidden, entered twice to confirm) and clears any active lockout.
+Leaving the prompt empty removes the password entirely, putting the deployment back into first-run setup —
+the login page will show the setup screen again on next load.
+
 ## Screenshots
 
 <img src="Screenshots/startpage.png" width="512" alt="start page"/>
