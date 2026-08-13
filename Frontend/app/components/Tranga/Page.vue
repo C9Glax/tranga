@@ -107,7 +107,6 @@ const defaultItems = computed((): NavigationMenuItem[] => {
         { label: 'Tranga', type: 'label' },
         { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
         { label: 'Workers', to: `/workers`, icon: 'i-lucide-cpu' },
-        { label: 'Downloads', to: `/downloads`, icon: 'i-lucide-cloud-download' },
         { label: 'Settings', to: '/settings', icon: 'i-lucide-settings' },
         { label: 'Links', type: 'label' },
         { label: 'Github', to: 'https://github.com/C9Glax/tranga', external: true, icon: 'i-lucide-github' },
