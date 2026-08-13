@@ -2,16 +2,13 @@
     <UTable
         ref="tableRef"
         v-model:sorting="sorting"
-        v-model:grouping="grouping"
-        v-model:expanded="expanded"
-        :grouping-options="groupingOptions"
-        :data="sorted"
+        :data="displayRows"
         :columns="columns"
         :loading="loading && !tasks"
         sticky
         class="w-full h-full">
         <template #type-cell="{ row }">
-            <span v-if="row.getIsGrouped()" class="text-dimmed">-</span>
+            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
             <UTooltip v-else :text="`${row.original.taskType} · ${row.original.taskTypeId}`">
                 <UButton
                     :to="`/tasks/${row.original.taskId}`"
@@ -23,33 +20,33 @@
         </template>
 
         <template #state-cell="{ row }">
-            <span v-if="row.getIsGrouped()" class="text-dimmed">-</span>
+            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
             <UTooltip v-else :text="taskStateDescription(row.original.status)">
                 <UBadge :label="row.original.status" :color="taskStateBadgeColor(row.original.status)" variant="subtle" />
             </UTooltip>
         </template>
 
         <template #manga-cell="{ row }">
-            <div v-if="row.getIsGrouped()" class="flex items-center gap-2">
+            <div v-if="isGroupRow(row.original)" class="flex items-center gap-2">
                 <UButton
-                    :icon="row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                    :icon="expandedGroups.has(row.original.mangaId) ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
                     variant="ghost"
                     color="neutral"
                     size="xs"
-                    @click="row.toggleExpanded()" />
-                <TasksMangaCell :manga="(row.subRows[0]!.original as ServicesTasksTaskChapterTask).manga" />
-                <UBadge :label="`${row.subRows.length} chapters`" variant="subtle" color="neutral" />
+                    @click="toggleGroup(row.original.mangaId)" />
+                <TasksMangaCell :manga="row.original.manga" />
+                <UBadge :label="`${row.original.tasks.length} chapters`" variant="subtle" color="neutral" />
             </div>
             <TasksMangaCell v-else-if="'manga' in row.original" :manga="row.original.manga" />
         </template>
 
         <template #chapter-cell="{ row }">
-            <span v-if="row.getIsGrouped()" class="text-dimmed">-</span>
+            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
             <TasksChapterCell v-else-if="'chapter' in row.original" :chapter="row.original.chapter" />
         </template>
 
         <template #lastRun-cell="{ row }">
-            <span v-if="row.getIsGrouped()" class="text-dimmed">-</span>
+            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
             <template v-else>
                 <TrangaTime v-if="row.original.lastRun" :model-value="row.original.lastRun" relative />
                 <span v-else class="text-dimmed">-</span>
@@ -57,7 +54,7 @@
         </template>
 
         <template #interval-cell="{ row }">
-            <span v-if="row.getIsGrouped()" class="text-dimmed">-</span>
+            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
             <template v-else>
                 <UBadge v-if="row.original.interval" :label="row.original.interval" variant="outline" color="neutral" />
                 <span v-else class="text-dimmed">-</span>
@@ -65,7 +62,7 @@
         </template>
 
         <template #nextRun-cell="{ row }">
-            <span v-if="row.getIsGrouped()" class="text-dimmed">-</span>
+            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
             <template v-else>
                 <TrangaTime v-if="nextRun(row.original)" :model-value="nextRun(row.original)" relative />
                 <span v-else class="text-dimmed">-</span>
@@ -75,10 +72,20 @@
 </template>
 
 <script setup lang="ts">
-import type { ServicesTasksTask, ServicesTasksTaskChapterTask, ServicesTasksTaskState } from '~/api/tranga';
+import type { ServicesTasksChapterSummary, ServicesTasksMangaSummary, ServicesTasksTask, ServicesTasksTaskState } from '~/api/tranga';
 import type { TableColumn } from '@nuxt/ui/components/Table.vue';
-import type { Column, ExpandedState, GroupingOptions, SortingState } from '@tanstack/vue-table';
-import { getGroupedRowModel } from '@tanstack/vue-table';
+import type { Column, SortingState } from '@tanstack/vue-table';
+
+// Multiple DownloadChapterTask rows for the same manga are collapsed into a single group row
+// (see #manga-cell); every other task renders as a normal row. Grouping is done as a plain data
+// transform rather than via TanStack's built-in grouping row model, since that model always
+// nests every row (even singleton groups) under a synthetic parent row - which would wrap every
+// non-chapter-download task in a spurious, duplicate "group" row too.
+type ChapterTask = Extract<ServicesTasksTask, { chapter: ServicesTasksChapterSummary }>;
+type ChapterTaskGroup = { __group: true; mangaId: string; manga: ServicesTasksMangaSummary; tasks: ChapterTask[] };
+type DisplayRow = ServicesTasksTask | ChapterTaskGroup;
+
+const isGroupRow = (row: DisplayRow): row is ChapterTaskGroup => '__group' in row;
 
 const props = defineProps<{ tasks?: ServicesTasksTask[]; loading?: boolean }>();
 
@@ -91,22 +98,79 @@ const nextRun = (task: ServicesTasksTask): Date | undefined => {
     return next;
 };
 
+const expandedGroups = ref<Set<string>>(new Set());
+const toggleGroup = (mangaId: string) => {
+    const next = new Set(expandedGroups.value);
+    if (next.has(mangaId)) next.delete(mangaId);
+    else next.add(mangaId);
+    expandedGroups.value = next;
+};
+
 // Order is set server-side (newest TaskId first) so that batches stay stable for infinite scroll,
 // unless the user opts into a column sort below.
-const sorted = computed((): ServicesTasksTask[] => props.tasks ?? []);
+const displayRows = computed((): DisplayRow[] => {
+    const tasks = props.tasks ?? [];
+
+    const chapterTasksByManga = new Map<string, ChapterTask[]>();
+    for (const task of tasks) {
+        if (task.taskTypeName === 'DownloadChapterTask' && 'chapter' in task) {
+            const list = chapterTasksByManga.get(task.manga.mangaId) ?? [];
+            list.push(task);
+            chapterTasksByManga.set(task.manga.mangaId, list);
+        }
+    }
+
+    const rows: DisplayRow[] = [];
+    const emittedGroups = new Set<string>();
+    for (const task of tasks) {
+        const isChapterDownload = task.taskTypeName === 'DownloadChapterTask' && 'chapter' in task;
+        const groupTasks = isChapterDownload ? chapterTasksByManga.get(task.manga.mangaId) : undefined;
+
+        if (!isChapterDownload || !groupTasks || groupTasks.length < 2) {
+            rows.push(task);
+            continue;
+        }
+
+        const mangaId = task.manga.mangaId;
+        if (emittedGroups.has(mangaId)) continue;
+        emittedGroups.add(mangaId);
+
+        rows.push({ __group: true, mangaId, manga: task.manga, tasks: groupTasks });
+        if (expandedGroups.value.has(mangaId)) rows.push(...groupTasks);
+    }
+    return rows;
+});
 
 const tableRef = useTemplateRef('tableRef');
 defineExpose({ tableRef });
 
 const sorting = ref<SortingState>([]);
 
-// Group DownloadChapterTask rows for the same manga together; every other row gets a unique
-// key (its own taskId) so it renders as a normal, ungrouped row.
-const grouping = ref<string[]>(['manga']);
-const groupingOptions = ref<GroupingOptions>({ groupedColumnMode: false, getGroupedRowModel: getGroupedRowModel() });
-const expanded = ref<ExpandedState>(true);
-
 const STATE_SORT_ORDER: Record<ServicesTasksTaskState, number> = { Failed: 0, Completed: 1, Running: 2, Queued: 3, Blocked: 4, Pending: 5 };
+
+// A group row sorts by the most urgent state/soonest next run/latest last run among its tasks.
+const rowState = (row: DisplayRow): ServicesTasksTaskState | undefined =>
+    isGroupRow(row)
+        ? row.tasks.reduce<ServicesTasksTaskState | undefined>(
+              (worst, t) => (!worst || STATE_SORT_ORDER[t.status] < STATE_SORT_ORDER[worst] ? t.status : worst),
+              undefined,
+          )
+        : row.status;
+
+const rowChapterNumber = (row: DisplayRow): string | null => (!isGroupRow(row) && 'chapter' in row ? row.chapter.number : null);
+
+const rowLastRun = (row: DisplayRow): string | null =>
+    isGroupRow(row)
+        ? row.tasks.reduce<string | null>((latest, t) => (t.lastRun && (!latest || t.lastRun > latest) ? t.lastRun : latest), null)
+        : row.lastRun;
+
+const rowNextRun = (row: DisplayRow): Date | undefined =>
+    isGroupRow(row)
+        ? row.tasks.reduce<Date | undefined>((soonest, t) => {
+              const next = nextRun(t);
+              return next && (!soonest || next < soonest) ? next : soonest;
+          }, undefined)
+        : nextRun(row);
 
 // Compares chapter numbers numerically when possible, falls back to string compare, nulls sort last.
 const compareChapterNumber = (a: string | null, b: string | null): number => {
@@ -121,8 +185,6 @@ const compareChapterNumber = (a: string | null, b: string | null): number => {
     return a.localeCompare(b);
 };
 
-const chapterNumber = (task: ServicesTasksTask): string | null => ('chapter' in task ? task.chapter.number : null);
-
 // Nulls/undefined sort last regardless of the current sort direction.
 const compareNullableDate = (a: Date | string | null | undefined, b: Date | string | null | undefined): number => {
     if (!a && !b) return 0;
@@ -132,7 +194,7 @@ const compareNullableDate = (a: Date | string | null | undefined, b: Date | stri
 };
 
 const sortableHeader = (label: string) => {
-    return ({ column }: { column: Column<ServicesTasksTask, unknown> }) => {
+    return ({ column }: { column: Column<DisplayRow, unknown> }) => {
         const isSorted = column.getIsSorted();
         return h(resolveComponent('UButton'), {
             color: 'neutral',
@@ -149,34 +211,36 @@ const sortableHeader = (label: string) => {
     };
 };
 
-const columns: TableColumn<ServicesTasksTask>[] = [
+const columns: TableColumn<DisplayRow>[] = [
     { accessorKey: 'type', header: 'Type', enableSorting: false },
     {
         accessorKey: 'state',
         header: sortableHeader('State'),
-        sortingFn: (rowA, rowB) => STATE_SORT_ORDER[rowA.original.status] - STATE_SORT_ORDER[rowB.original.status],
+        sortingFn: (rowA, rowB) => {
+            const a = rowState(rowA.original);
+            const b = rowState(rowB.original);
+            if (a === undefined && b === undefined) return 0;
+            if (a === undefined) return 1;
+            if (b === undefined) return -1;
+            return STATE_SORT_ORDER[a] - STATE_SORT_ORDER[b];
+        },
     },
-    {
-        id: 'manga',
-        accessorFn: (task) => (task.taskTypeName === 'DownloadChapterTask' && 'manga' in task ? task.manga.mangaId : task.taskId),
-        header: 'Manga',
-        enableSorting: false,
-    },
+    { accessorKey: 'manga', header: 'Manga', enableSorting: false },
     {
         accessorKey: 'chapter',
         header: sortableHeader('Chapter'),
-        sortingFn: (rowA, rowB) => compareChapterNumber(chapterNumber(rowA.original), chapterNumber(rowB.original)),
+        sortingFn: (rowA, rowB) => compareChapterNumber(rowChapterNumber(rowA.original), rowChapterNumber(rowB.original)),
     },
     {
         accessorKey: 'lastRun',
         header: sortableHeader('Last Run'),
-        sortingFn: (rowA, rowB) => compareNullableDate(rowA.original.lastRun, rowB.original.lastRun),
+        sortingFn: (rowA, rowB) => compareNullableDate(rowLastRun(rowA.original), rowLastRun(rowB.original)),
     },
     { accessorKey: 'interval', header: 'Interval', enableSorting: false },
     {
         accessorKey: 'nextRun',
         header: sortableHeader('Next Run'),
-        sortingFn: (rowA, rowB) => compareNullableDate(nextRun(rowA.original), nextRun(rowB.original)),
+        sortingFn: (rowA, rowB) => compareNullableDate(rowNextRun(rowA.original), rowNextRun(rowB.original)),
     },
 ];
 </script>
