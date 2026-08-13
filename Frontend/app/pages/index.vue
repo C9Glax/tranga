@@ -1,13 +1,14 @@
 <template>
-    <TrangaPage>
+    <TrangaPage :navigation="navigation">
         <MangaList :mangas="mangaList" :loading="status !== 'success'" />
     </TrangaPage>
 </template>
 
 <script setup lang="ts">
 import { MangaList } from '#components';
-import type { GetMangasResponse } from '~/api/tranga';
+import type { GetLibrariesResponse, GetMangasResponse } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
+import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
 const search = ref<string>();
 
@@ -20,6 +21,23 @@ const mangaList = computed(() =>
 );
 
 defineShortcuts({ shift_r: () => refresh() });
+
+const { data: libraries } = useTranga<GetLibrariesResponse>('/libraries', { key: ApiKeys.Libraries.Libraries });
+
+const navigation = computed((): TrangaPageTitleProps | undefined =>
+    libraries.value
+        ? {
+              title: { label: 'Libraries', type: 'label' },
+              items:
+                  libraries.value?.map((library) => ({
+                      label: library.baseUrl,
+                      to: library.baseUrl,
+                      external: true,
+                      icon: 'i-lucide-library',
+                  })) ?? [],
+          }
+        : undefined,
+);
 
 onMounted(() => useNuxtApp().$tour.maybeAutoStart());
 </script>
