@@ -55,6 +55,8 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui/components/NavigationMenu.vue';
+import type { GetLibrariesResponse } from '~/api/tranga';
+import { ApiKeys } from '~/composables/ApiKeys';
 import { clearAuthToken } from '~/composables/authToken';
 
 useTourTargetRef('search-button');
@@ -90,6 +92,14 @@ const nItems = computed((): NavigationMenuItem[][] => {
 const router = useRouter();
 const route = useRoute();
 
+const { data: libraries } = useTranga<GetLibrariesResponse>('/libraries', { key: ApiKeys.Libraries.Libraries });
+
+const libraryItems = computed(
+    (): NavigationMenuItem[] =>
+        libraries.value?.map((library) => ({ label: library.baseUrl, to: library.baseUrl, external: true, icon: 'i-lucide-library' })) ??
+        [],
+);
+
 const defaultItems = computed((): NavigationMenuItem[] => {
     void route.fullPath;
     const canGoBack = import.meta.client && !!window.history.state?.back;
@@ -111,6 +121,7 @@ const defaultItems = computed((): NavigationMenuItem[] => {
         { label: 'Settings', to: '/settings', icon: 'i-lucide-settings' },
         { label: 'Links', type: 'label' },
         { label: 'Github', to: 'https://github.com/C9Glax/tranga', external: true, icon: 'i-lucide-github' },
+        ...(libraryItems.value.length ? [{ label: 'Libraries', type: 'label' } as NavigationMenuItem, ...libraryItems.value] : []),
     ];
 });
 
