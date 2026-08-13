@@ -5,10 +5,26 @@
         :data="displayRows"
         :columns="columns"
         :loading="loading && !tasks"
+        :meta="rowMeta"
         sticky
         class="w-full h-full">
+        <template #expand-cell="{ row }">
+            <UButton
+                v-if="isGroupRow(row.original)"
+                :icon="expandedGroups.has(row.original.mangaId) ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                variant="ghost"
+                color="neutral"
+                size="xs"
+                @click="toggleGroup(row.original.mangaId)" />
+        </template>
+
         <template #type-cell="{ row }">
-            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
+            <UBadge
+                v-if="isGroupRow(row.original)"
+                :label="taskTypeLabel(row.original.tasks[0]!.taskTypeName)"
+                icon="i-lucide-line-dot-right-horizontal"
+                variant="subtle"
+                color="neutral" />
             <UTooltip v-else :text="`${row.original.taskType} · ${row.original.taskTypeId}`">
                 <UButton
                     :to="`/tasks/${row.original.taskId}`"
@@ -27,21 +43,12 @@
         </template>
 
         <template #manga-cell="{ row }">
-            <div v-if="isGroupRow(row.original)" class="flex items-center gap-2">
-                <UButton
-                    :icon="expandedGroups.has(row.original.mangaId) ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
-                    variant="ghost"
-                    color="neutral"
-                    size="xs"
-                    @click="toggleGroup(row.original.mangaId)" />
-                <TasksMangaCell :manga="row.original.manga" />
-                <UBadge :label="`${row.original.tasks.length} chapters`" variant="subtle" color="neutral" />
-            </div>
+            <TasksMangaCell v-if="isGroupRow(row.original)" :manga="row.original.manga" />
             <TasksMangaCell v-else-if="'manga' in row.original" :manga="row.original.manga" />
         </template>
 
         <template #chapter-cell="{ row }">
-            <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
+            <UBadge v-if="isGroupRow(row.original)" :label="`${row.original.tasks.length} chapters`" variant="subtle" color="neutral" />
             <TasksChapterCell v-else-if="'chapter' in row.original" :chapter="row.original.chapter" />
         </template>
 
@@ -74,7 +81,7 @@
 <script setup lang="ts">
 import type { ServicesTasksChapterSummary, ServicesTasksMangaSummary, ServicesTasksTask, ServicesTasksTaskState } from '~/api/tranga';
 import type { TableColumn } from '@nuxt/ui/components/Table.vue';
-import type { Column, SortingState } from '@tanstack/vue-table';
+import type { Column, Row, SortingState } from '@tanstack/vue-table';
 
 // Multiple DownloadChapterTask rows for the same manga are collapsed into a single group row
 // (see #manga-cell); every other task renders as a normal row. Grouping is done as a plain data
@@ -108,7 +115,7 @@ const toggleGroup = (mangaId: string) => {
 
 // Order is set server-side (newest TaskId first) so that batches stay stable for infinite scroll,
 // unless the user opts into a column sort below.
-const displayRows = computed((): DisplayRow[] => {
+const displayRowsResult = computed((): { rows: DisplayRow[]; childTaskIds: Set<string> } => {
     const tasks = props.tasks ?? [];
 
     const chapterTasksByManga = new Map<string, ChapterTask[]>();
@@ -121,6 +128,7 @@ const displayRows = computed((): DisplayRow[] => {
     }
 
     const rows: DisplayRow[] = [];
+    const childTaskIds = new Set<string>();
     const emittedGroups = new Set<string>();
     for (const task of tasks) {
         const isChapterDownload = task.taskTypeName === 'DownloadChapterTask' && 'chapter' in task;
@@ -136,10 +144,23 @@ const displayRows = computed((): DisplayRow[] => {
         emittedGroups.add(mangaId);
 
         rows.push({ __group: true, mangaId, manga: task.manga, tasks: groupTasks });
-        if (expandedGroups.value.has(mangaId)) rows.push(...groupTasks);
+        if (expandedGroups.value.has(mangaId)) {
+            rows.push(...groupTasks);
+            for (const groupTask of groupTasks) childTaskIds.add(groupTask.taskId);
+        }
     }
-    return rows;
+    return { rows, childTaskIds };
 });
+
+const displayRows = computed((): DisplayRow[] => displayRowsResult.value.rows);
+const childTaskIds = computed((): Set<string> => displayRowsResult.value.childTaskIds);
+
+// Rows nested under an expanded group get an elevated background to set them apart visually.
+const rowMeta = computed(() => ({
+    class: {
+        tr: (row: Row<DisplayRow>) => (!isGroupRow(row.original) && childTaskIds.value.has(row.original.taskId) ? 'bg-elevated' : ''),
+    },
+}));
 
 const tableRef = useTemplateRef('tableRef');
 defineExpose({ tableRef });
@@ -212,6 +233,7 @@ const sortableHeader = (label: string) => {
 };
 
 const columns: TableColumn<DisplayRow>[] = [
+    { accessorKey: 'expand', header: '', enableSorting: false },
     { accessorKey: 'type', header: 'Type', enableSorting: false },
     {
         accessorKey: 'state',
