@@ -74,6 +74,7 @@ services:
         condition: "service_started"
       messaging:
         condition: "service_healthy"
+    user: "${PUID:-1000}:${PGID:-1000}"
     networks:
       - "tranga"
     restart: "on-failure:3"
