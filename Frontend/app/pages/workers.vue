@@ -1,6 +1,6 @@
 <template>
     <TrangaPage rimless>
-        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0 px-0 sm:px-0 lg:px-0\' ' }">
+        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0 px-0 sm:px-0 lg:px-0' }">
             <WorkersList :workers="workers" :tasks="tasks" :loading="workersStatus !== 'success'" />
         </UPageSection>
     </TrangaPage>
