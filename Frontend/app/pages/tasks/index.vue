@@ -1,10 +1,10 @@
 <template>
     <TrangaPage rimless>
-        <UPageSection :ui="{ container: 'py-2 sm:py-2 lg:py-4 px-0 sm:px-0 lg:px-0\' ' }">
+        <UPageSection description="Filters" :ui="{ container: 'py-2 sm:py-2 lg:py-4 px-0 sm:px-0 lg:px-0\' ' }">
             <div class="flex flex-wrap gap-4 items-end">
-                <UFormField label="Filters">
+                <UFormField label="Presets">
                     <UFieldGroup>
-                        <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" placeholder="Filters" class="w-56" />
+                        <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" placeholder="Preset" class="w-56" />
                         <UButton
                             v-if="presetFilter"
                             icon="i-lucide-x"
