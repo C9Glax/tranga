@@ -100,7 +100,7 @@ const toggleMonitored = async () => {
         togglingMonitored.value = false;
     }
 };
-  
+
 const { metadataExtensions } = await useMetadataExtensions();
 
 const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdResponse>(() => `/libraries/mappings/${props.manga?.mangaId}`, {
