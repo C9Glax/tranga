@@ -71,6 +71,22 @@ public class PatchMangaDownloadLinkEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task PatchMangaDownloadLink_SetsMangaMonitoredWhenMatched()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, monitored: false, ct: ct);
+        DbMangaDownloadLinks link = await TestDataBuilder.SeedMangaDownloadLink(context, manga, matched: false, priority: 0, ct: ct);
+        Assert.False(manga.Monitored);
+
+        Results<Ok, NotFound> result = await PatchMangaDownloadLinkEndpoint.Handle(
+            context, CreateEventPublisher(channelOpen: true), manga.MangaId, link.DownloadLinkId,
+            new PatchMangaDownloadLinkEndpoint.PatchMangaDownloadLinkRequest(Matched: true, Priority: 0), ct);
+
+        Assert.IsType<Ok>(result.Result);
+        Assert.True((await context.Mangas.SingleAsync(m => m.MangaId == manga.MangaId, ct)).Monitored);
+    }
+
+    [Fact]
     public async Task PatchMangaDownloadLink_Returns404ForUnknownLink()
     {
         await using MangaContext context = MangaContextFactory.Create();
