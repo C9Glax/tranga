@@ -14,6 +14,12 @@ public sealed record DbCredential
     /// <summary>PBKDF2 hash of the password, formatted as <c>"{iterations}.{saltBase64}.{hashBase64}"</c>.</summary>
     public string PasswordHash { get; init; } = string.Empty;
 
+    /// <summary>Consecutive failed login attempts since the last successful login. Drives <see cref="Common.Services.Authentication.LoginLockoutPolicy"/>.</summary>
+    public int FailedLoginAttempts { get; init; } = 0;
+
+    /// <summary>Set once <see cref="FailedLoginAttempts"/> crosses <see cref="Common.Services.Authentication.LoginLockoutPolicy.Threshold"/>; login is rejected without checking the password until this passes.</summary>
+    public DateTimeOffset? LockedUntil { get; init; }
+
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
 
     public DateTimeOffset UpdatedAt { get; init; } = DateTimeOffset.UtcNow;

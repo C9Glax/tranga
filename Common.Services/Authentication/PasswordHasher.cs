@@ -8,6 +8,9 @@ namespace Common.Services.Authentication;
 /// </summary>
 public static class PasswordHasher
 {
+    /// <summary>Minimum accepted length for the admin password, enforced wherever it's set.</summary>
+    public const int MinPasswordLength = 8;
+
     private const int SaltSize = 16;
     private const int HashSize = 32;
     private const int Iterations = 210_000;
