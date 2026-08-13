@@ -39,7 +39,11 @@ internal abstract class PatchMangaDownloadLinkEndpoint
 
         entry.Priority = req.Priority;
         entry.Matched = req.Matched;
-        
+
+        // Start monitoring the Manga for new chapters once we have a matched source
+        if (entry.Matched)
+            entry.Manga.Monitored = true;
+
         await mangaContext.SaveChangesAsync(ct);
 
         // Fetch chapters if we started matching
