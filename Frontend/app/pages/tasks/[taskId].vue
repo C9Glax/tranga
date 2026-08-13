@@ -29,7 +29,7 @@
                     @click="exportLogsCsv" />
             </div>
         </UPageSection>
-        <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
+        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0' }">
             <TasksLogList :logs="logs" :loading="statusLogs !== 'success' && !logs?.length" />
         </UPageSection>
     </TrangaPage>

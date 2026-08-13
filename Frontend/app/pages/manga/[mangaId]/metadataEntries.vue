@@ -8,7 +8,6 @@
 
 <script setup lang="ts">
 import type { GetMangasByMangaIdMetadataRelatedResponse } from '~/api/tranga';
-import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
@@ -26,7 +25,6 @@ const navigation = computed((): TrangaPageTitleProps => {
             { label: 'Manga', to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
             { label: 'Metadata-Entries', to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
             { label: 'Manga Tasks', to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },
-            { label: 'Manga Download Tasks', to: `/manga/${mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
             { label: 'Chapters', to: `/manga/${mangaId}/chapters`, icon: 'i-lucide-list-checks' },
         ],
     };

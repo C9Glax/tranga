@@ -14,7 +14,7 @@
                 </template>
             </UDashboardSidebar>
 
-            <UDashboardPanel>
+            <UDashboardPanel :ui="{ body: rimless && 'p-0 sm:p-0' }">
                 <template #header>
                     <UDashboardNavbar :toggle="true">
                         <template #left>
@@ -55,8 +55,6 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui/components/NavigationMenu.vue';
-import type { GetLibrariesResponse } from '~/api/tranga';
-import { ApiKeys } from '~/composables/ApiKeys';
 import { clearAuthToken } from '~/composables/authToken';
 
 useTourTargetRef('search-button');

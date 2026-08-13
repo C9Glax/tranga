@@ -45,7 +45,7 @@
                     @click="clearFilters" />
             </div>
         </UPageSection>
-        <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8' }">
+        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0' }">
             <TasksList ref="listRef" :tasks="tasks" :loading="status !== 'success' && tasks.length === 0" />
         </UPageSection>
     </TrangaPage>
