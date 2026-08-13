@@ -2,6 +2,18 @@
     <TrangaPage rimless>
         <UPageSection :ui="{ container: 'py-2 sm:py-2 lg:py-4 px-0 sm:px-0 lg:px-0\' ' }">
             <div class="flex flex-wrap gap-4 items-end">
+                <UFormField label="Filters">
+                    <UFieldGroup>
+                        <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" placeholder="Filters" class="w-56" />
+                        <UButton
+                            v-if="presetFilter"
+                            icon="i-lucide-x"
+                            color="neutral"
+                            variant="outline"
+                            @click="presetFilter = undefined" />
+                    </UFieldGroup>
+                </UFormField>
+
                 <UFormField label="Manga">
                     <UFieldGroup>
                         <USelectMenu
@@ -100,6 +112,29 @@ const typeOptions = TASK_TYPE_NAMES.map((n) => ({ label: taskTypeLabel(n), value
 const stateOptions: { label: string; description: string; value: ServicesTasksTaskState }[] = (
     ['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed'] as ServicesTasksTaskState[]
 ).map((s) => ({ label: s, description: taskStateDescription(s), value: s }));
+
+// Presets combine Type + State filters for common views. Derived from (not stored separately
+// from) the type/state query params, so the dropdown stays in sync however those get set.
+const presetOptions: { label: string; value: string; taskTypes: string[]; taskStates: ServicesTasksTaskState[] }[] = [
+    {
+        label: 'Active Downloads',
+        value: 'active-downloads',
+        taskTypes: ['DownloadChapterTask'],
+        taskStates: ['Queued', 'Pending', 'Running'],
+    },
+];
+
+function sameSet(a: string[], b: string[]) {
+    return a.length === b.length && new Set(a).size === new Set(b).size && a.every((v) => b.includes(v));
+}
+
+const presetFilter = computed<string | undefined>({
+    get: () => presetOptions.find((p) => sameSet(p.taskTypes, typeFilter.value) && sameSet(p.taskStates, stateFilter.value))?.value,
+    set: (v) => {
+        const preset = presetOptions.find((p) => p.value === v);
+        setQueries({ type: preset?.taskTypes.join(','), state: preset?.taskStates.join(',') });
+    },
+});
 
 const LIMIT = 25;
 const skip = ref(0);
