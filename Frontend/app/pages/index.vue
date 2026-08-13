@@ -30,7 +30,7 @@ const navigation = computed((): TrangaPageTitleProps | undefined =>
               title: { label: 'Libraries', type: 'label' },
               items:
                   libraries.value?.map((library) => ({
-                      label: library.baseUrl,
+                      label: library.id,
                       to: library.baseUrl,
                       external: true,
                       icon: 'i-lucide-library',
