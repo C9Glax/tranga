@@ -1,6 +1,6 @@
 <template>
     <TrangaPage rimless>
-        <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-4 sm:gap-4 mb-4' }">
+        <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-4 sm:gap-4 mb-4 px-0 sm:px-0 lg:px-0\' ' }">
             <div class="flex flex-wrap gap-3 items-center">
                 <template v-if="task">
                     <UTooltip :text="`${task.taskType} · ${task.taskTypeId}`">
@@ -29,7 +29,7 @@
                     @click="exportLogsCsv" />
             </div>
         </UPageSection>
-        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0' }">
+        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0 px-0 sm:px-0 lg:px-0\' ' }">
             <TasksLogList :logs="logs" :loading="statusLogs !== 'success' && !logs?.length" />
         </UPageSection>
     </TrangaPage>

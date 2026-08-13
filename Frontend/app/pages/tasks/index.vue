@@ -1,6 +1,6 @@
 <template>
     <TrangaPage rimless>
-        <UPageSection :ui="{ container: 'px-0 max-w-none sm:py-0 lg:py-0 gap-8 sm:gap-8 mb-8' }">
+        <UPageSection :ui="{ container: 'py-2 sm:py-2 lg:py-4 px-0 sm:px-0 lg:px-0\' ' }">
             <div class="flex flex-wrap gap-4 items-end">
                 <UFormField label="Manga">
                     <UFieldGroup>
@@ -45,7 +45,7 @@
                     @click="clearFilters" />
             </div>
         </UPageSection>
-        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0' }">
+        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0 px-0 sm:px-0 lg:px-0' }">
             <TasksList ref="listRef" :tasks="tasks" :loading="status !== 'success' && tasks.length === 0" />
         </UPageSection>
     </TrangaPage>

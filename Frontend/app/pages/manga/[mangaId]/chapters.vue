@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 import type { GetMangasByMangaIdChaptersResponse } from '~/api/tranga';
-import type { NavigationMenuProps } from '@nuxt/ui/components/NavigationMenu.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 

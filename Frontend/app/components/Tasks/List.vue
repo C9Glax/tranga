@@ -1,5 +1,5 @@
 <template>
-    <UTable ref="tableRef" :data="sorted" :columns="columns" :loading="loading && !tasks" sticky class="w-full h-[70vh]">
+    <UTable ref="tableRef" :data="sorted" :columns="columns" :loading="loading && !tasks" sticky class="w-full h-full">
         <template #type-cell="{ row }">
             <UTooltip :text="`${row.original.taskType} · ${row.original.taskTypeId}`">
                 <UButton
