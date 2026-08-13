@@ -303,6 +303,7 @@
         "required": [
           "libraryServiceType",
           "id",
+          "name",
           "baseUrl"
         ],
         "type": "object",
@@ -313,6 +314,9 @@
           "id": {
             "type": "string",
             "format": "uuid"
+          },
+          "name": {
+            "type": "string"
           },
           "baseUrl": {
             "type": "string"

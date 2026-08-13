@@ -406,6 +406,7 @@ export type ServicesLibrariesLibraryServiceTypeZodType = z.infer<typeof zService
 export const zServicesLibrariesLibrary = z.object({
     libraryServiceType: zServicesLibrariesLibraryServiceType,
     id: z.uuid(),
+    name: z.string(),
     baseUrl: z.string(),
 });
 

@@ -208,7 +208,12 @@ export type ServicesLibrariesAddKomgaLibraryRequest = {
     libraryRootPath?: null | string;
 };
 
-export type ServicesLibrariesLibrary = { libraryServiceType: ServicesLibrariesLibraryServiceType; id: string; baseUrl: string };
+export type ServicesLibrariesLibrary = {
+    libraryServiceType: ServicesLibrariesLibraryServiceType;
+    id: string;
+    name: string;
+    baseUrl: string;
+};
 
 export type ServicesLibrariesLibraryMangaLink = { libraryServiceId: string; seriesUrl: string };
 
