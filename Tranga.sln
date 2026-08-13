@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Auth.Tests", "Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services.Tests", "Common.Services.Tests\Common.Services.Tests.csproj", "{ECE6685E-C5D4-45C2-B19B-1A7FE1C72654}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Auth.ResetPasswordTool", "Services.Auth.ResetPasswordTool\Services.Auth.ResetPasswordTool.csproj", "{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Auth.ResetPasswordTool.Tests", "Services.Auth.ResetPasswordTool.Tests\Services.Auth.ResetPasswordTool.Tests.csproj", "{EE701BF3-2A2F-432F-BFDC-445698593C92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -297,6 +301,30 @@ Global
 		{ECE6685E-C5D4-45C2-B19B-1A7FE1C72654}.Release|x64.Build.0 = Release|Any CPU
 		{ECE6685E-C5D4-45C2-B19B-1A7FE1C72654}.Release|x86.ActiveCfg = Release|Any CPU
 		{ECE6685E-C5D4-45C2-B19B-1A7FE1C72654}.Release|x86.Build.0 = Release|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Debug|x64.Build.0 = Debug|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Debug|x86.Build.0 = Debug|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Release|x64.ActiveCfg = Release|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Release|x64.Build.0 = Release|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Release|x86.ActiveCfg = Release|Any CPU
+		{E6D6EAC1-C125-4B63-B8DB-E734D72B8421}.Release|x86.Build.0 = Release|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Debug|x64.Build.0 = Debug|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Debug|x86.Build.0 = Debug|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Release|x64.ActiveCfg = Release|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Release|x64.Build.0 = Release|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE701BF3-2A2F-432F-BFDC-445698593C92}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

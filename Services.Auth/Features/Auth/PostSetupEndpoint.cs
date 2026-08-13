@@ -11,8 +11,6 @@ namespace Services.Auth.Features.Auth;
 /// </summary>
 internal abstract class PostSetupEndpoint
 {
-    private const int MinPasswordLength = 8;
-
     /// <summary>
     /// Creates the one admin password. Only works once - a password can't be replaced through this endpoint
     /// once one exists.
@@ -26,8 +24,8 @@ internal abstract class PostSetupEndpoint
     public static async Task<Results<Ok<AuthTokenResponse>, Conflict, BadRequest<string>>> Handle(
         AuthContext authContext, [FromBody] SetupRequest req, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(req.Password) || req.Password.Length < MinPasswordLength)
-            return TypedResults.BadRequest($"Password must be at least {MinPasswordLength} characters.");
+        if (string.IsNullOrWhiteSpace(req.Password) || req.Password.Length < PasswordHasher.MinPasswordLength)
+            return TypedResults.BadRequest($"Password must be at least {PasswordHasher.MinPasswordLength} characters.");
 
         if (await authContext.Credentials.AnyAsync(ct))
             return TypedResults.Conflict();
