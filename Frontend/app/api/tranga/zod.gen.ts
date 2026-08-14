@@ -17,6 +17,19 @@ export const zServicesMangaContentRating = z.enum(['Safe', 'Suggestive', 'Erotic
 
 export type ServicesMangaContentRatingZodType = z.infer<typeof zServicesMangaContentRating>;
 
+export const zServicesMangaDownloadExtension = z.object({
+    downloadExtensionsId: z.uuid(),
+    name: z.string(),
+    iconUrl: z.string(),
+    isSuwayomiSource: z.boolean(),
+});
+
+export type ServicesMangaDownloadExtensionZodType = z.infer<typeof zServicesMangaDownloadExtension>;
+
+export const zServicesMangaDownloadExtensionsList = z.object({ extensions: z.optional(z.array(zServicesMangaDownloadExtension)) });
+
+export type ServicesMangaDownloadExtensionsListZodType = z.infer<typeof zServicesMangaDownloadExtensionsList>;
+
 export const zServicesMangaDownloadLink = z.object({
     downloadId: z.uuid(),
     downloadExtensionId: z.uuid(),
@@ -30,26 +43,6 @@ export const zServicesMangaDownloadLink = z.object({
 });
 
 export type ServicesMangaDownloadLinkZodType = z.infer<typeof zServicesMangaDownloadLink>;
-
-export const zServicesMangaIDownloadExtension = z.object({
-    downloadExtensionsId: z.optional(z.uuid()),
-    name: z.nullish(z.string()),
-    iconUrl: z.nullish(z.string()),
-});
-
-export type ServicesMangaIDownloadExtensionZodType = z.infer<typeof zServicesMangaIDownloadExtension>;
-
-export const zServicesMangaDownloadExtensionsList = z.object({ extensions: z.optional(z.array(zServicesMangaIDownloadExtension)) });
-
-export type ServicesMangaDownloadExtensionsListZodType = z.infer<typeof zServicesMangaDownloadExtensionsList>;
-
-export const zServicesMangaIMetadataExtension = z.object({
-    metadataExtensionId: z.optional(z.uuid()),
-    name: z.nullish(z.string()),
-    iconUrl: z.nullish(z.string()),
-});
-
-export type ServicesMangaIMetadataExtensionZodType = z.infer<typeof zServicesMangaIMetadataExtension>;
 
 export const zServicesMangaMangaChapter = z.object({
     isDownloaded: z.boolean(),
@@ -88,7 +81,11 @@ export const zServicesMangaMangaDownloadLink = z.object({
 
 export type ServicesMangaMangaDownloadLinkZodType = z.infer<typeof zServicesMangaMangaDownloadLink>;
 
-export const zServicesMangaMetadataExtensionsList = z.object({ extensions: z.optional(z.array(zServicesMangaIMetadataExtension)) });
+export const zServicesMangaMetadataExtension = z.object({ metadataExtensionId: z.uuid(), name: z.string(), iconUrl: z.string() });
+
+export type ServicesMangaMetadataExtensionZodType = z.infer<typeof zServicesMangaMetadataExtension>;
+
+export const zServicesMangaMetadataExtensionsList = z.object({ extensions: z.optional(z.array(zServicesMangaMetadataExtension)) });
 
 export type ServicesMangaMetadataExtensionsListZodType = z.infer<typeof zServicesMangaMetadataExtensionsList>;
 
@@ -226,6 +223,59 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 });
 
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
+
+/**
+ * An extension offered by, or installed from, a configured extension store.
+ */
+export const zServicesMangaSuwayomiExtensionInfo = z.object({
+    pkgName: z.string(),
+    name: z.string(),
+    lang: z.string(),
+    iconUrl: z.string(),
+    versionName: z.string(),
+    isNsfw: z.boolean(),
+    isInstalled: z.boolean(),
+    isObsolete: z.boolean(),
+    hasUpdate: z.boolean(),
+});
+
+export type ServicesMangaSuwayomiExtensionInfoZodType = z.infer<typeof zServicesMangaSuwayomiExtensionInfo>;
+
+/**
+ * A source exposed by an installed extension, and the Tranga download-extension it is registered as.
+ */
+export const zServicesMangaSuwayomiSourceInfo = z.object({
+    sourceId: z.string(),
+    extensionId: z.uuid(),
+    name: z.string(),
+    lang: z.string(),
+    iconUrl: z.string(),
+    homeUrl: z.string(),
+    isNsfw: z.boolean(),
+});
+
+export type ServicesMangaSuwayomiSourceInfoZodType = z.infer<typeof zServicesMangaSuwayomiSourceInfo>;
+
+/**
+ * Reachability and version of the Suwayomi sidecar.
+ */
+export const zServicesMangaSuwayomiStatus = z.object({
+    enabled: z.boolean(),
+    reachable: z.boolean(),
+    serverName: z.nullable(z.string()),
+    serverVersion: z.nullable(z.string()),
+    installedSourceCount: z.union([
+        z
+            .int()
+            .check(
+                z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+            ),
+        z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+    ]),
+});
+
+export type ServicesMangaSuwayomiStatusZodType = z.infer<typeof zServicesMangaSuwayomiStatus>;
 
 export const zServicesTasksChapterSummary = z.object({
     chapterId: z.uuid(),

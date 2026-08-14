@@ -45,6 +45,8 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
+- [x] Optional [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, unlocking the ~2000 sources of the
+  [keiyoushi](https://github.com/keiyoushi/extensions) extension repository
 
 #### TODO LIST
 
@@ -66,6 +68,30 @@ chown the host directory before starting the stack:
 ```bash
 sudo chown -R 1654:1654 /path/to/your/Manga
 ```
+
+### Extra download sources (Suwayomi + keiyoushi)
+
+Tranga ships four built-in download extensions. To go beyond them, it can run a
+[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, which executes the Android extension APKs of the
+[keiyoushi](https://github.com/keiyoushi/extensions) repository on the JVM — around 1400 extensions covering 2000
+sources. Every source you install there shows up in Tranga as an ordinary download extension.
+
+To turn it on, set both of these in your `.env`:
+
+```dotenv
+ENABLESUWAYOMI=true
+COMPOSE_PROFILES=suwayomi
+```
+
+Both are needed because `docker compose` can only start a service conditionally through profiles: `ENABLESUWAYOMI`
+tells Tranga to use the sidecar, `COMPOSE_PROFILES` starts the container. Then manage extensions under
+**Settings → Sources**. Suwayomi's own WebUI is proxied at `/suwayomi/` for the per-source preferences Tranga does not
+wrap.
+
+If FlareSolverr is configured for Tranga, the sidecar is pointed at the same instance.
+
+> The `Suwayomi` volume is persistent state, not a cache. It holds the installed extension JARs as well as the rows
+> that map manga URLs back to the sidecar's internal ids. Deleting it means reinstalling your extensions.
 
 ### Adding a Komga library
 

@@ -24,6 +24,8 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         init => Client.BaseUrl = "https://api.mangadex.org/";
     }
 
+    public string IconUrl { get; init; } = "https://mangadex.org/img/brand/mangadex-logo.svg";
+
     private static readonly RequestClient MangaDexRequestClient = new(new SlidingWindowRateLimiter(
         new SlidingWindowRateLimiterOptions()
         {

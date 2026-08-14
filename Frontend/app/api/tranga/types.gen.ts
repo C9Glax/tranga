@@ -13,7 +13,9 @@ export type ServicesMangaChapter = {
 
 export type ServicesMangaContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 
-export type ServicesMangaDownloadExtensionsList = { extensions?: Array<ServicesMangaIDownloadExtension> };
+export type ServicesMangaDownloadExtension = { downloadExtensionsId: string; name: string; iconUrl: string; isSuwayomiSource: boolean };
+
+export type ServicesMangaDownloadExtensionsList = { extensions?: Array<ServicesMangaDownloadExtension> };
 
 export type ServicesMangaDownloadLink = {
     downloadId: string;
@@ -26,10 +28,6 @@ export type ServicesMangaDownloadLink = {
     coverId: null | string;
     nsfw: null | boolean;
 };
-
-export type ServicesMangaIDownloadExtension = { downloadExtensionsId?: string; name?: null | string; iconUrl?: null | string };
-
-export type ServicesMangaIMetadataExtension = { metadataExtensionId?: string; name?: null | string; iconUrl?: null | string };
 
 export type ServicesMangaManga = {
     mangaId: string;
@@ -82,7 +80,9 @@ export type ServicesMangaMetadata = {
     nsfw: null | boolean;
 };
 
-export type ServicesMangaMetadataExtensionsList = { extensions?: Array<ServicesMangaIMetadataExtension> };
+export type ServicesMangaMetadataExtension = { metadataExtensionId: string; name: string; iconUrl: string };
+
+export type ServicesMangaMetadataExtensionsList = { extensions?: Array<ServicesMangaMetadataExtension> };
 
 export type ServicesMangaPatchMangaDownloadLinkRequest = { matched: boolean; priority: number | string };
 
@@ -108,6 +108,108 @@ export type ServicesMangaSearchQuery = {
     language?: null | string;
     mangaUpdatesSeriesId?: null | number | string;
     mangaDexSeriesId?: null | string;
+};
+
+/**
+ * An extension offered by, or installed from, a configured extension store.
+ */
+export type ServicesMangaSuwayomiExtensionInfo = {
+    /**
+     * Android package name; the identifier used to install, update and uninstall.
+     */
+    pkgName: string;
+    /**
+     * Display name of the extension.
+     */
+    name: string;
+    /**
+     * Tachiyomi language code, e.g. `en`, `pt-BR`, `all`.
+     */
+    lang: string;
+    /**
+     * Gateway-relative url of the extension's icon.
+     */
+    iconUrl: string;
+    /**
+     * Version currently installed, or offered by the store when not installed.
+     */
+    versionName: string;
+    /**
+     * Whether the extension is flagged as NSFW. Its sources return nothing while `AllowNSFW` is off.
+     */
+    isNsfw: boolean;
+    /**
+     * Whether the extension is installed on the sidecar.
+     */
+    isInstalled: boolean;
+    /**
+     * Whether the extension is no longer offered by any configured store.
+     */
+    isObsolete: boolean;
+    /**
+     * Whether a newer version is available.
+     */
+    hasUpdate: boolean;
+};
+
+/**
+ * A source exposed by an installed extension, and the Tranga download-extension it is registered as.
+ */
+export type ServicesMangaSuwayomiSourceInfo = {
+    /**
+     * The Tachiyomi source id.
+     */
+    sourceId: string;
+    /**
+     * The Tranga extension identifier derived from SourceId.
+     */
+    extensionId: string;
+    /**
+     * Display name of the source, normally including its language.
+     */
+    name: string;
+    /**
+     * Tachiyomi language code.
+     */
+    lang: string;
+    /**
+     * Gateway-relative url of the source's icon.
+     */
+    iconUrl: string;
+    /**
+     * The source's own website.
+     */
+    homeUrl: string;
+    /**
+     * Whether the source is flagged as NSFW.
+     */
+    isNsfw: boolean;
+};
+
+/**
+ * Reachability and version of the Suwayomi sidecar.
+ */
+export type ServicesMangaSuwayomiStatus = {
+    /**
+     * Whether `ENABLE_SUWAYOMI` is set for this deployment.
+     */
+    enabled: boolean;
+    /**
+     * Whether the sidecar answered. False while enabled means the container is missing or still starting.
+     */
+    reachable: boolean;
+    /**
+     * Sidecar product name, when reachable.
+     */
+    serverName: null | string;
+    /**
+     * Sidecar version, when reachable.
+     */
+    serverVersion: null | string;
+    /**
+     * Number of sources currently exposed by installed extensions.
+     */
+    installedSourceCount: number | string;
 };
 
 export type ServicesTasksChapterSummary = {
@@ -808,6 +910,97 @@ export type GetMangasFilesByFileIdErrors = {
      */
     500: unknown;
 };
+
+export type GetMangasSuwayomiStatusData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/status' };
+
+export type GetMangasSuwayomiStatusResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaSuwayomiStatus;
+};
+
+export type GetMangasSuwayomiStatusResponse = GetMangasSuwayomiStatusResponses[keyof GetMangasSuwayomiStatusResponses];
+
+export type GetMangasSuwayomiExtensionsData = {
+    body?: never;
+    path?: never;
+    query?: { refresh?: boolean };
+    url: '/mangas/suwayomi/extensions';
+};
+
+export type GetMangasSuwayomiExtensionsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesMangaSuwayomiExtensionInfo>;
+};
+
+export type GetMangasSuwayomiExtensionsResponse = GetMangasSuwayomiExtensionsResponses[keyof GetMangasSuwayomiExtensionsResponses];
+
+export type PostMangasSuwayomiExtensionsByPkgNameInstallData = {
+    body?: never;
+    path: { pkgName: string };
+    query?: never;
+    url: '/mangas/suwayomi/extensions/{pkgName}/install';
+};
+
+export type PostMangasSuwayomiExtensionsByPkgNameInstallResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostMangasSuwayomiExtensionsByPkgNameUpdateData = {
+    body?: never;
+    path: { pkgName: string };
+    query?: never;
+    url: '/mangas/suwayomi/extensions/{pkgName}/update';
+};
+
+export type PostMangasSuwayomiExtensionsByPkgNameUpdateResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type DeleteMangasSuwayomiExtensionsByPkgNameData = {
+    body?: never;
+    path: { pkgName: string };
+    query?: never;
+    url: '/mangas/suwayomi/extensions/{pkgName}';
+};
+
+export type DeleteMangasSuwayomiExtensionsByPkgNameResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetMangasSuwayomiSourcesData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/sources' };
+
+export type GetMangasSuwayomiSourcesResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesMangaSuwayomiSourceInfo>;
+};
+
+export type GetMangasSuwayomiSourcesResponse = GetMangasSuwayomiSourcesResponses[keyof GetMangasSuwayomiSourcesResponses];
+
+export type PostMangasSuwayomiRefreshData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/refresh' };
+
+export type PostMangasSuwayomiRefreshResponses = {
+    /**
+     * OK
+     */
+    200: number | string;
+};
+
+export type PostMangasSuwayomiRefreshResponse = PostMangasSuwayomiRefreshResponses[keyof PostMangasSuwayomiRefreshResponses];
 
 export type GetTasksData = {
     body?: never;

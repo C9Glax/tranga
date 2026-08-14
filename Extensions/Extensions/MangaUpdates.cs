@@ -32,6 +32,8 @@ public sealed class MangaUpdates : IMetadataExtension
 
     public string Name { get; init; } = "MangaUpdates";
 
+    public string IconUrl { get; init; } = "https://www.mangaupdates.com/images/manga-updates.svg";
+
     public async Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct)
     {
         // If MangaUpdates ID is included, try getting the series directly first

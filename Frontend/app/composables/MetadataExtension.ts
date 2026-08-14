@@ -1,4 +1,4 @@
-import type { GetMangasMetadataExtensionsResponse, ServicesMangaIMetadataExtension } from '~/api/tranga';
+import type { GetMangasMetadataExtensionsResponse, ServicesMangaMetadataExtension } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
 
 export default async function useMetadataExtensions() {
@@ -12,13 +12,13 @@ export default async function useMetadataExtensions() {
 }
 
 export class MetadataExtensions {
-    constructor(extensions?: ServicesMangaIMetadataExtension[]) {
+    constructor(extensions?: ServicesMangaMetadataExtension[]) {
         this.extensions = extensions;
     }
 
-    extensions: ServicesMangaIMetadataExtension[] | undefined;
+    extensions: ServicesMangaMetadataExtension[] | undefined;
 
-    getExtension(id?: string): ServicesMangaIMetadataExtension | null {
+    getExtension(id?: string): ServicesMangaMetadataExtension | null {
         return this.extensions?.find((e) => e.metadataExtensionId === id) ?? null;
     }
 }

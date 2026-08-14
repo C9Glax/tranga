@@ -21,6 +21,8 @@ public sealed class AsuraScans : IDownloadExtension
 
     public string BaseUrl { get; init; } = "https://asurascans.com";
 
+    public string IconUrl { get; init; } = "https://asurascans.com/images/logo.webp";
+
     private const string ApiUrl = "https://api.asurascans.com/api";
 
     private const int SearchLimit = 32;

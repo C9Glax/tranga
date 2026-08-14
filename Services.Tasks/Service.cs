@@ -1,4 +1,5 @@
 using Common.Services.Events;
+using Extensions;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
@@ -55,6 +56,10 @@ public sealed class Service : Common.Services.Service
             using TasksContext tasksContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<TasksContext>();
             tasksContext.Database.MigrateAsync(CancellationToken.None).Wait();
 
+            // Best-effort: an unreachable sidecar leaves the collection untouched, and SuwayomiSourceRefreshTask
+            // retries on its own schedule.
+            DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(CancellationToken.None).Wait();
+
             CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
         }
     }
@@ -68,6 +73,7 @@ public sealed class Service : Common.Services.Service
     {
         IChannel channel = app.Services.GetRequiredService<IChannel>();
         _eventHandlers.Add(new DownloadLinkModifiedHandler(channel, app.Services));
+        _eventHandlers.Add(new SuwayomiSourcesChangedHandler(channel));
     }
 
     /// <summary>
@@ -83,6 +89,7 @@ public sealed class Service : Common.Services.Service
         TasksCollection.PeriodicTasks.Add(new DbFileCleanupTask());
         TasksCollection.PeriodicTasks.Add(new MissingChapterScanTask());
         TasksCollection.PeriodicTasks.Add(new PeriodicMangaChapterFetcherTask());
+        TasksCollection.PeriodicTasks.Add(new SuwayomiSourceRefreshTask());
         try
         {
             foreach (TaskBase task in TasksCollection.GetKnownTasks())

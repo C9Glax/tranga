@@ -24,6 +24,8 @@ public sealed class MangaPlus : IDownloadExtension, IMetadataExtension
 
     public string BaseUrl { get; init; } = "https://mangaplus.shueisha.co.jp";
 
+    public string IconUrl { get; init; } = "https://mangaplus.shueisha.co.jp/apple-touch-icon.png";
+
     private const string ApiUrl = "https://jumpg-webapi.tokyo-cdn.com/api";
 
     private static readonly RequestClient RequestClient = new(new SlidingWindowRateLimiter(

@@ -23,6 +23,8 @@ public sealed partial class WeebCentral : IDownloadExtension
 
     public string BaseUrl { get; init; } = "https://weebcentral.com";
 
+    public string IconUrl { get; init; } = "https://weebcentral.com/static/images/apple-touch-icon.png";
+
     // The site sits behind Cloudflare, which RequestClient solves via FlareSolverr's
     // ClearanceHandler when EnvVars.FlareSolverrUrl is configured (see IsAvailable). Without
     // FlareSolverr there is no real way to pass the challenge; the browser-like User-Agent below
