@@ -1,5 +1,4 @@
 using Extensions;
-using Extensions.Extensions.Suwayomi;
 using Services.Tasks.TaskTypes;
 
 namespace Services.Tasks.Tasks;
@@ -18,12 +17,6 @@ internal sealed class SuwayomiSourceRefreshTask() : PeriodicTask(Guid.Parse("0b6
 
     protected override async Task RunAsync(IServiceScope scope, ILogger logger, CancellationToken stoppingToken)
     {
-        if (!SuwayomiSource.IsAvailable)
-        {
-            logger.LogDebug("Suwayomi sidecar is disabled, skipping source refresh.");
-            return;
-        }
-
         int count = await DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(stoppingToken);
         logger.LogDebug("Suwayomi sidecar provides {count} download extensions.", count);
     }

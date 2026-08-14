@@ -16,7 +16,7 @@ internal abstract class GetSuwayomiExtensionsEndpoint
     /// <param name="ct"></param>
     /// <returns>Every extension offered by the configured stores, installed or not</returns>
     /// <response code="200">The extension catalogue</response>
-    /// <response code="503">The Suwayomi sidecar is disabled or unreachable</response>
+    /// <response code="503">The Suwayomi sidecar is unreachable</response>
     public static async Task<Results<Ok<SuwayomiExtensionInfo[]>, StatusCodeHttpResult>> Handle([FromQuery]bool? refresh, CancellationToken ct)
     {
         if (await SuwayomiExtensionManager.GetExtensionsAsync(refresh ?? false, ct) is not { } extensions)

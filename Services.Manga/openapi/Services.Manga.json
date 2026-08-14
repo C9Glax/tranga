@@ -1942,7 +1942,6 @@
       },
       "SuwayomiStatus": {
         "required": [
-          "enabled",
           "reachable",
           "serverName",
           "serverVersion",
@@ -1950,13 +1949,9 @@
         ],
         "type": "object",
         "properties": {
-          "enabled": {
-            "type": "boolean",
-            "description": "Whether `ENABLE_SUWAYOMI` is set for this deployment."
-          },
           "reachable": {
             "type": "boolean",
-            "description": "Whether the sidecar answered. False while enabled means the container is missing or still starting."
+            "description": "Whether the sidecar answered. False means the container is missing or still starting."
           },
           "serverName": {
             "type": [

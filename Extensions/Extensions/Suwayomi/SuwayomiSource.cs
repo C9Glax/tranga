@@ -51,9 +51,6 @@ public sealed class SuwayomiSource : IDownloadExtension
         "hentai", "adult", "smut", "erotica", "pornographic", "porn", "nsfw", "18+", "r18", "r-18", "mature"
     };
 
-    /// <summary>Whether the sidecar is switched on. Mirrors <see cref="WeebCentral.IsAvailable"/>'s role for FlareSolverr.</summary>
-    public static bool IsAvailable => EnvVars.EnableSuwayomi;
-
     /// <summary>
     /// Namespace for the version-5 UUIDs identifying Suwayomi-backed extensions. It must never change: the derived
     /// <see cref="Identifier"/>s are persisted against download links, so a new namespace would orphan every existing row.
@@ -99,12 +96,10 @@ public sealed class SuwayomiSource : IDownloadExtension
 
     /// <summary>
     /// Returns one extension per source currently installed on the sidecar, or an empty array when the sidecar is
-    /// switched off or unreachable.
+    /// unreachable.
     /// </summary>
     public static async Task<IDownloadExtension[]> DiscoverAsync(CancellationToken ct)
     {
-        if (!IsAvailable)
-            return [];
         if (await SuwayomiClient.GetSourcesAsync(ct) is not { } sources)
             return [];
 

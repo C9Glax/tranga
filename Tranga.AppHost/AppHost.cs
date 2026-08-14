@@ -10,12 +10,6 @@ using EnvVars = Tranga.AppHost.EnvVars;
 
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
-// The Suwayomi sidecar runs Tachiyomi/Mihon extension APKs (the keiyoushi repository) on the JVM, which is the only
-// way to reach those sources from .NET. It is opt-in: with ENABLE_SUWAYOMI unset, the container is never added and the
-// services register no Suwayomi-backed extensions. Read up here because the compose volume list needs it.
-IResourceBuilder<ParameterResource> enableSuwayomiParameter = builder.AddParameter("EnableSuwayomi");
-bool enableSuwayomi = bool.TryParse(enableSuwayomiParameter.Resource.GetValueAsync(CancellationToken.None).Result, out bool suwayomiRequested) && suwayomiRequested;
-
 builder.AddDockerComposeEnvironment("env")
     .WithProperties(env =>
     {
@@ -32,11 +26,10 @@ builder.AddDockerComposeEnvironment("env")
         {
             Name = "Covers"
         });
-        if (enableSuwayomi)
-            conf.AddVolume(new Volume()
-            {
-                Name = "Suwayomi"
-            });
+        conf.AddVolume(new Volume()
+        {
+            Name = "Suwayomi"
+        });
     });
 
 IResourceBuilder<ParameterResource> postgresUser = builder.AddParameter("PostgresUser");
@@ -67,41 +60,39 @@ IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthS
 // there (see PublishAsDockerComposeService below).
 bool flaresolverrConfigured = !string.IsNullOrEmpty(flaresolverrUrl.Resource.GetValueAsync(CancellationToken.None).Result);
 
-IResourceBuilder<ContainerResource>? suwayomi = enableSuwayomi
-    ? builder.AddContainer("suwayomi", "ghcr.io/suwayomi/suwayomi-server", "stable")
-        .WithHttpEndpoint(name: "http", port: 4567, targetPort: 4567)
-        .WithEnvironment("EXTENSION_STORES", "[\"https://github.com/keiyoushi/extensions/raw/repo/index.pb\"]")
-        .WithEnvironment("WEB_UI_ENABLED", "true")
-        .WithEnvironment("AUTH_MODE", "none")
-        // KCEF downloads a ~500MB Chromium at first start to provide a WebView. FlareSolverr covers the Cloudflare
-        // cases Tranga cares about, so it stays off.
-        .WithEnvironment("KCEF_ENABLED", "false")
-        .WithEnvironment("FLARESOLVERR_ENABLED", flaresolverrConfigured ? "true" : "false")
-        .WithEnvironment("FLARESOLVERR_URL", flaresolverrUrl.Resource)
-        .PublishAsDockerComposeService((resource, service) =>
+// The Suwayomi sidecar runs Tachiyomi/Mihon extension APKs (the keiyoushi repository) on the JVM, which is the only
+// way to reach those sources from .NET. Tranga depends on it: MangaDex aside, every download source comes from here.
+IResourceBuilder<ContainerResource> suwayomi = builder.AddContainer("suwayomi", "ghcr.io/suwayomi/suwayomi-server", "stable")
+    .WithHttpEndpoint(name: "http", port: 4567, targetPort: 4567)
+    .WithEnvironment("EXTENSION_STORES", "[\"https://github.com/keiyoushi/extensions/raw/repo/index.pb\"]")
+    .WithEnvironment("WEB_UI_ENABLED", "true")
+    .WithEnvironment("AUTH_MODE", "none")
+    // KCEF downloads a ~500MB Chromium at first start to provide a WebView. FlareSolverr covers the Cloudflare
+    // cases Tranga cares about, so it stays off.
+    .WithEnvironment("KCEF_ENABLED", "false")
+    .WithEnvironment("FLARESOLVERR_ENABLED", flaresolverrConfigured ? "true" : "false")
+    .WithEnvironment("FLARESOLVERR_URL", flaresolverrUrl.Resource)
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Name = "suwayomi";
+        service.Networks = ["tranga"];
+        // Derive the flag from FLARESOLVERRURL at container start rather than baking in whatever the parameter
+        // happened to be when this file was generated, so setting FlareSolverr in .env is enough to enable it here
+        // too. Compose expands ":+" to "true" only when the variable is set and non-empty; when it is empty the
+        // image's startup script falls back to the config default (`${FLARESOLVERR_ENABLED:-\1}`), i.e. false.
+        service.Environment["FLARESOLVERR_ENABLED"] = "${FLARESOLVERRURL:+true}";
+        // Persistent state, not a cache: this volume holds the installed extension JARs as well as the manga rows
+        // whose ids back url-to-id resolution. Wiping it means reinstalling every extension.
+        service.Volumes.Add(new Volume()
         {
-            service.Name = "suwayomi";
-            service.Networks = ["tranga"];
-            // Derive the flag from FLARESOLVERRURL at container start rather than baking in whatever the parameter
-            // happened to be when this file was generated, so setting FlareSolverr in .env is enough to enable it here
-            // too. Compose expands ":+" to "true" only when the variable is set and non-empty; when it is empty the
-            // image's startup script falls back to the config default (`${FLARESOLVERR_ENABLED:-\1}`), i.e. false.
-            service.Environment["FLARESOLVERR_ENABLED"] = "${FLARESOLVERRURL:+true}";
-            // docker compose cannot start a service conditionally from an arbitrary variable, so the container is
-            // gated behind a profile: a compose deployment sets COMPOSE_PROFILES=suwayomi alongside ENABLE_SUWAYOMI.
-            service.Profiles = ["suwayomi"];
-            // Persistent state, not a cache: this volume holds the installed extension JARs as well as the manga rows
-            // whose ids back url-to-id resolution. Wiping it means reinstalling every extension.
-            service.Volumes.Add(new Volume()
-            {
-                Name = "Suwayomi",
-                Source = "Suwayomi",
-                Target = "/home/suwayomi/.local/share/Tachidesk",
-                Type = "volume"
-            });
-            service.Restart = "on-failure:3";
-        })
-    : null;
+            Name = "Suwayomi",
+            Source = "Suwayomi",
+            Target = "/home/suwayomi/.local/share/Tachidesk",
+            Type = "volume"
+        });
+        service.Restart = "on-failure:3";
+    });
+
 IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword)
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -138,9 +129,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
-        context.EnvironmentVariables["ENABLE_SUWAYOMI"] = enableSuwayomiParameter.Resource;
-        if (suwayomi is not null)
-            context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
+        context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -158,7 +147,10 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } },
+            // Only "started": the sidecar takes a while to be usable, and extension discovery is best-effort with a
+            // retry, so there is no reason to hold the service back until it is ready.
+            { "suwayomi", new ServiceDependency(){ Condition = "service_started" } }
         };
         service.Restart = "on-failure:3";
     })
@@ -185,9 +177,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
-        context.EnvironmentVariables["ENABLE_SUWAYOMI"] = enableSuwayomiParameter.Resource;
-        if (suwayomi is not null)
-            context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
+        context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -204,7 +194,10 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } },
+            // Only "started": the sidecar takes a while to be usable, and extension discovery is best-effort with a
+            // retry, so there is no reason to hold the service back until it is ready.
+            { "suwayomi", new ServiceDependency(){ Condition = "service_started" } }
         };
         service.Restart = "on-failure:3";
     })
@@ -351,8 +344,7 @@ builder.AddYarp("gateway")
         // relative base so they resolve under this prefix, but its router has no basename — link to /suwayomi/ and
         // treat deep links as unsupported. Tranga's own Settings -> Sources page is the primary way to manage
         // extensions; services reach the sidecar directly over the tranga network, not through here.
-        if (suwayomi is not null)
-            yarp.AddRoute("/suwayomi/{**catch-all}", suwayomi.GetEndpoint("http")).WithTransformPathRemovePrefix("/suwayomi");
+        yarp.AddRoute("/suwayomi/{**catch-all}", suwayomi.GetEndpoint("http")).WithTransformPathRemovePrefix("/suwayomi");
     })
     .WithHostPort(port)
     .PublishAsDockerComposeService((resource, service) =>
@@ -364,8 +356,6 @@ builder.AddYarp("gateway")
         {
             { "frontend", new ServiceDependency(){ Condition = "service_started" } }
         };
-        // Deliberately not a DependsOn: the sidecar lives behind a compose profile, and depending on a service that
-        // the active profile did not start would refuse to bring the gateway up at all.
     });
 
 builder.Build().Run();

@@ -199,11 +199,7 @@ export type ServicesMangaSuwayomiSourceInfo = {
  */
 export type ServicesMangaSuwayomiStatus = {
     /**
-     * Whether `ENABLE_SUWAYOMI` is set for this deployment.
-     */
-    enabled: boolean;
-    /**
-     * Whether the sidecar answered. False while enabled means the container is missing or still starting.
+     * Whether the sidecar answered. False means the container is missing or still starting.
      */
     reachable: boolean;
     /**

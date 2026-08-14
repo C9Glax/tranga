@@ -2,17 +2,9 @@
     <TrangaPage>
         <UPageList class="gap-2">
             <UAlert
-                v-if="status && !status.enabled"
-                title="Suwayomi sidecar is disabled"
-                description="Set ENABLE_SUWAYOMI=true to run the sidecar and get access to the keiyoushi extensions. On docker-compose also set COMPOSE_PROFILES=suwayomi."
-                icon="i-lucide-plug-zap"
-                color="neutral"
-                variant="subtle" />
-
-            <UAlert
-                v-else-if="status && !status.reachable"
+                v-if="status && !status.reachable"
                 title="Suwayomi sidecar is not responding"
-                description="The sidecar is enabled but could not be reached. It may still be starting up."
+                description="Tranga could not reach the sidecar that provides its download sources. It may still be starting up."
                 icon="i-lucide-triangle-alert"
                 color="warning"
                 variant="subtle" />

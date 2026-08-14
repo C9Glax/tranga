@@ -6,20 +6,14 @@ namespace Extensions.Extensions.Suwayomi;
 /// </summary>
 public static class SuwayomiExtensionManager
 {
-    /// <summary>Whether the sidecar is switched on for this deployment.</summary>
-    public static bool IsEnabled => SuwayomiSource.IsAvailable;
-
-    /// <summary>Reports whether the sidecar is configured and answering, along with the number of sources it exposes.</summary>
+    /// <summary>Reports whether the sidecar is answering, along with the number of sources it exposes.</summary>
     public static async Task<SuwayomiStatus> GetStatusAsync(CancellationToken ct)
     {
-        if (!IsEnabled)
-            return new SuwayomiStatus(false, false, null, null, 0);
-
         if (await SuwayomiClient.GetAboutAsync(ct) is not { } about)
-            return new SuwayomiStatus(true, false, null, null, 0);
+            return new SuwayomiStatus(false, null, null, 0);
 
         SuwayomiSourceDto[] sources = await SuwayomiClient.GetSourcesAsync(ct) ?? [];
-        return new SuwayomiStatus(true, true, about.Name, about.Version, sources.Length);
+        return new SuwayomiStatus(true, about.Name, about.Version, sources.Length);
     }
 
     /// <summary>
@@ -30,12 +24,9 @@ public static class SuwayomiExtensionManager
     /// network and is slow, so the frontend only asks for it on an explicit refresh.
     /// </param>
     /// <param name="ct"></param>
-    /// <returns><see langword="null"/> when the sidecar is disabled or unreachable.</returns>
+    /// <returns><see langword="null"/> when the sidecar is unreachable.</returns>
     public static async Task<SuwayomiExtensionInfo[]?> GetExtensionsAsync(bool refresh, CancellationToken ct)
     {
-        if (!IsEnabled)
-            return null;
-
         SuwayomiExtensionDto[]? extensions = refresh
             ? await SuwayomiClient.FetchExtensionsAsync(ct)
             : await SuwayomiClient.GetExtensionsAsync(ct);
@@ -53,12 +44,9 @@ public static class SuwayomiExtensionManager
     public static Task<bool> UninstallAsync(string pkgName, CancellationToken ct) => SetStateAsync(pkgName, SuwayomiExtensionAction.Uninstall, ct);
 
     /// <summary>The sources of every installed extension, paired with the Tranga extension id each one is registered under.</summary>
-    /// <returns><see langword="null"/> when the sidecar is disabled or unreachable.</returns>
+    /// <returns><see langword="null"/> when the sidecar is unreachable.</returns>
     public static async Task<SuwayomiSourceInfo[]?> GetSourcesAsync(CancellationToken ct)
     {
-        if (!IsEnabled)
-            return null;
-
         return (await SuwayomiClient.GetSourcesAsync(ct))
             ?.Select(source => new SuwayomiSourceInfo(
                 source.Id,
@@ -71,12 +59,8 @@ public static class SuwayomiExtensionManager
             .ToArray();
     }
 
-    private static async Task<bool> SetStateAsync(string pkgName, SuwayomiExtensionAction action, CancellationToken ct)
-    {
-        if (!IsEnabled)
-            return false;
-        return await SuwayomiClient.SetExtensionStateAsync(pkgName, action, ct) is not null;
-    }
+    private static async Task<bool> SetStateAsync(string pkgName, SuwayomiExtensionAction action, CancellationToken ct) =>
+        await SuwayomiClient.SetExtensionStateAsync(pkgName, action, ct) is not null;
 
     private static SuwayomiExtensionInfo ToInfo(SuwayomiExtensionDto extension) => new(
         extension.PkgName,
@@ -91,12 +75,11 @@ public static class SuwayomiExtensionManager
 }
 
 /// <summary>Reachability and version of the Suwayomi sidecar.</summary>
-/// <param name="Enabled">Whether <c>ENABLE_SUWAYOMI</c> is set for this deployment.</param>
-/// <param name="Reachable">Whether the sidecar answered. False while enabled means the container is missing or still starting.</param>
+/// <param name="Reachable">Whether the sidecar answered. False means the container is missing or still starting.</param>
 /// <param name="ServerName">Sidecar product name, when reachable.</param>
 /// <param name="ServerVersion">Sidecar version, when reachable.</param>
 /// <param name="InstalledSourceCount">Number of sources currently exposed by installed extensions.</param>
-public sealed record SuwayomiStatus(bool Enabled, bool Reachable, string? ServerName, string? ServerVersion, int InstalledSourceCount);
+public sealed record SuwayomiStatus(bool Reachable, string? ServerName, string? ServerVersion, int InstalledSourceCount);
 
 /// <summary>An extension offered by, or installed from, a configured extension store.</summary>
 /// <param name="PkgName">Android package name; the identifier used to install, update and uninstall.</param>

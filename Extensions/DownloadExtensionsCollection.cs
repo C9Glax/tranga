@@ -8,8 +8,11 @@ namespace Extensions;
 
 public static class DownloadExtensionsCollection
 {
-    /// <summary>Extensions compiled into Tranga. Fixed for the lifetime of the process.</summary>
-    private static readonly IDownloadExtension[] BuiltIn = BuildBuiltInExtensions();
+    /// <summary>
+    /// Extensions compiled into Tranga. MangaDex is kept as a fallback so Tranga can still find something while the
+    /// Suwayomi sidecar is starting up or has no extensions installed yet; everything else comes from the sidecar.
+    /// </summary>
+    private static readonly IDownloadExtension[] BuiltIn = [new MangaDex()];
 
     /// <summary>
     /// Extensions backed by the Suwayomi sidecar, one per installed source. Replaced wholesale by
@@ -20,31 +23,17 @@ public static class DownloadExtensionsCollection
     /// <summary>Every download extension currently available, built-in and sidecar-backed alike.</summary>
     public static IDownloadExtension[] Extensions => [.. BuiltIn, .. _sidecar];
 
-    private static IDownloadExtension[] BuildBuiltInExtensions()
-    {
-        List<IDownloadExtension> extensions = [new MangaDex(), new AsuraScans(), new MangaPlus()];
-        if (WeebCentral.IsAvailable)
-            extensions.Add(new WeebCentral());
-        return [.. extensions];
-    }
-
     /// <summary>
     /// Re-reads the sources installed on the Suwayomi sidecar and republishes them as download extensions.
     /// <para>
-    /// Best-effort by design: when the sidecar is switched off, unreachable or erroring, the previously discovered set
-    /// is left in place and no exception escapes. Callers are startup hooks, the sources-changed event handler and a
-    /// periodic task, none of which should be able to take a service down.
+    /// Best-effort by design: when the sidecar is unreachable the previously discovered set is left in place and no
+    /// exception escapes. Callers are startup hooks, the sources-changed event handler and a periodic task, none of
+    /// which should be able to take a service down just because the sidecar is still booting.
     /// </para>
     /// </summary>
     /// <returns>The number of sidecar-backed extensions now registered.</returns>
     public static async Task<int> RefreshSidecarExtensionsAsync(CancellationToken ct)
     {
-        if (!SuwayomiSource.IsAvailable)
-        {
-            _sidecar = [];
-            return 0;
-        }
-
         IDownloadExtension[] discovered = await SuwayomiSource.DiscoverAsync(ct);
 
         // DiscoverAsync answers with an empty array both for "no sources installed" and for "sidecar unreachable".

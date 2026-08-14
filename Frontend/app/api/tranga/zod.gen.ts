@@ -270,7 +270,6 @@ export type ServicesMangaSuwayomiSourceInfoZodType = z.infer<typeof zServicesMan
  * Reachability and version of the Suwayomi sidecar.
  */
 export const zServicesMangaSuwayomiStatus = z.object({
-    enabled: z.boolean(),
     reachable: z.boolean(),
     serverName: z.nullable(z.string()),
     serverVersion: z.nullable(z.string()),

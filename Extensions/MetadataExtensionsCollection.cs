@@ -10,8 +10,7 @@ public static class MetadataExtensionsCollection
     public static readonly IMetadataExtension[] Extensions =
     [
         new MangaUpdates(),
-        new MangaDex(),
-        new MangaPlus()
+        new MangaDex()
     ];
 
     public static List<SearchResult> SearchAll(SearchQuery searchQuery, CancellationToken ct) =>

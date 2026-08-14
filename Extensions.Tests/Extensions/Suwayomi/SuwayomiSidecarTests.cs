@@ -6,32 +6,32 @@ using Extensions.Extensions.Suwayomi;
 namespace Extensions.Tests.Extensions.Suwayomi;
 
 /// <summary>
-/// Live tests against a running Suwayomi sidecar. They skip unless <c>ENABLE_SUWAYOMI</c> is set, because unlike the
-/// other extension tests in this project the dependency is a container the developer has to bring up, not a public site.
+/// Live tests against a running Suwayomi sidecar. Unlike the other extension tests in this project the dependency is a
+/// container the developer has to bring up rather than a public site, so each test probes the sidecar and skips when it
+/// is not answering.
 /// </summary>
 public sealed class SuwayomiSidecarTests : Common.Tests.TrangaTest
 {
-    private static void SkipIfDisabled()
+    /// <returns>The sidecar status, once it is known to be reachable.</returns>
+    private async Task<SuwayomiStatus> SkipUnlessReachable()
     {
-        Assert.SkipUnless(SuwayomiSource.IsAvailable,
-            "Set ENABLE_SUWAYOMI=true and run the suwayomi container to exercise these tests.");
+        SuwayomiStatus status = await SuwayomiExtensionManager.GetStatusAsync(ct);
+        Assert.SkipUnless(status.Reachable,
+            $"No Suwayomi sidecar answering at {Common.Settings.EnvVars.SuwayomiUrl}; start one to exercise these tests.");
+        return status;
     }
 
     [Fact]
     public async Task SidecarIsReachable()
     {
-        SkipIfDisabled();
-
-        SuwayomiStatus status = await SuwayomiExtensionManager.GetStatusAsync(ct);
-        Assert.True(status.Enabled);
-        Assert.True(status.Reachable);
+        SuwayomiStatus status = await SkipUnlessReachable();
         Assert.False(string.IsNullOrEmpty(status.ServerVersion));
     }
 
     [Fact]
     public async Task ExtensionCatalogueIsPopulated()
     {
-        SkipIfDisabled();
+        await SkipUnlessReachable();
 
         // Requires the keiyoushi store to be configured, which the AppHost does via EXTENSION_STORES.
         SuwayomiExtensionInfo[]? extensions = await SuwayomiExtensionManager.GetExtensionsAsync(refresh: true, ct);
@@ -42,7 +42,7 @@ public sealed class SuwayomiSidecarTests : Common.Tests.TrangaTest
     [Fact]
     public async Task InstalledSourcesBecomeDownloadExtensions()
     {
-        SkipIfDisabled();
+        await SkipUnlessReachable();
 
         SuwayomiSourceInfo[]? sources = await SuwayomiExtensionManager.GetSourcesAsync(ct);
         Assert.NotNull(sources);
@@ -63,7 +63,7 @@ public sealed class SuwayomiSidecarTests : Common.Tests.TrangaTest
     [Fact]
     public async Task InstalledSourceSearchesAndDownloads()
     {
-        SkipIfDisabled();
+        await SkipUnlessReachable();
 
         await DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(ct);
 
@@ -122,7 +122,7 @@ public sealed class SuwayomiSidecarTests : Common.Tests.TrangaTest
     [Fact]
     public async Task RefreshIsIdempotent()
     {
-        SkipIfDisabled();
+        await SkipUnlessReachable();
 
         int first = await DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(ct);
         int second = await DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(ct);

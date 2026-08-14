@@ -20,7 +20,7 @@ internal abstract class PostSuwayomiExtensionEndpoint
     /// <param name="pkgName">Package name of the extension, as returned by the extension catalogue</param>
     /// <param name="ct"></param>
     /// <response code="200">The extension was installed and its sources are now available</response>
-    /// <response code="503">The Suwayomi sidecar is disabled, unreachable, or refused the install</response>
+    /// <response code="503">The Suwayomi sidecar is unreachable or refused the install</response>
     public static Task<Results<Ok, StatusCodeHttpResult>> Install([FromServices]EventPublisher eventPublisher, [FromRoute]string pkgName, CancellationToken ct) =>
         Apply(() => SuwayomiExtensionManager.InstallAsync(pkgName, ct), eventPublisher, ct);
 
@@ -31,7 +31,7 @@ internal abstract class PostSuwayomiExtensionEndpoint
     /// <param name="pkgName">Package name of the extension</param>
     /// <param name="ct"></param>
     /// <response code="200">The extension was updated</response>
-    /// <response code="503">The Suwayomi sidecar is disabled, unreachable, or refused the update</response>
+    /// <response code="503">The Suwayomi sidecar is unreachable or refused the update</response>
     public static Task<Results<Ok, StatusCodeHttpResult>> Update([FromServices]EventPublisher eventPublisher, [FromRoute]string pkgName, CancellationToken ct) =>
         Apply(() => SuwayomiExtensionManager.UpdateAsync(pkgName, ct), eventPublisher, ct);
 
@@ -46,7 +46,7 @@ internal abstract class PostSuwayomiExtensionEndpoint
     /// deleted, so re-installing the extension restores them.
     /// </remarks>
     /// <response code="200">The extension was uninstalled</response>
-    /// <response code="503">The Suwayomi sidecar is disabled, unreachable, or refused the uninstall</response>
+    /// <response code="503">The Suwayomi sidecar is unreachable or refused the uninstall</response>
     public static Task<Results<Ok, StatusCodeHttpResult>> Uninstall([FromServices]EventPublisher eventPublisher, [FromRoute]string pkgName, CancellationToken ct) =>
         Apply(() => SuwayomiExtensionManager.UninstallAsync(pkgName, ct), eventPublisher, ct);
 

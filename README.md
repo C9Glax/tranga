@@ -45,8 +45,8 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
-- [x] Optional [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, unlocking the ~2000 sources of the
-  [keiyoushi](https://github.com/keiyoushi/extensions) extension repository
+- [x] Download sources via a bundled [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, giving access to
+  the ~2000 sources of the [keiyoushi](https://github.com/keiyoushi/extensions) extension repository
 
 #### TODO LIST
 
@@ -69,24 +69,17 @@ chown the host directory before starting the stack:
 sudo chown -R 1654:1654 /path/to/your/Manga
 ```
 
-### Extra download sources (Suwayomi + keiyoushi)
+### Download sources (Suwayomi + keiyoushi)
 
-Tranga ships four built-in download extensions. To go beyond them, it can run a
-[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, which executes the Android extension APKs of the
+Apart from MangaDex, which is built in, Tranga gets its download sources from a bundled
+[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar. Suwayomi executes the Android extension APKs of the
 [keiyoushi](https://github.com/keiyoushi/extensions) repository on the JVM — around 1400 extensions covering 2000
-sources. Every source you install there shows up in Tranga as an ordinary download extension.
+sources — and Tranga drives it over its API. The container starts with the rest of the stack; there is nothing to
+switch on.
 
-To turn it on, set both of these in your `.env`:
-
-```dotenv
-ENABLESUWAYOMI=true
-COMPOSE_PROFILES=suwayomi
-```
-
-Both are needed because `docker compose` can only start a service conditionally through profiles: `ENABLESUWAYOMI`
-tells Tranga to use the sidecar, `COMPOSE_PROFILES` starts the container. Then manage extensions under
-**Settings → Sources**. Suwayomi's own WebUI is proxied at `/suwayomi/` for the per-source preferences Tranga does not
-wrap.
+Install the sources you want under **Settings → Sources**. Each one then behaves like any other download extension:
+searchable, attachable as a download link, and downloaded by the normal task pipeline. Suwayomi's own WebUI is proxied
+at `/suwayomi/` for the per-source preferences Tranga does not wrap.
 
 If FlareSolverr is configured for Tranga, the sidecar is pointed at the same instance.
 
@@ -130,6 +123,8 @@ the login page will show the setup screen again on next load.
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
   - [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
+- [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server)
+  - [keiyoushi extensions](https://github.com/keiyoushi/extensions)
 - [Naprise](https://github.com/Genteure/naprise)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - [GitInfo](https://github.com/devlooped/GitInfo)

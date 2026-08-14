@@ -14,7 +14,7 @@ internal abstract class GetSuwayomiSourcesEndpoint
     /// <param name="ct"></param>
     /// <returns>The installed sources, each with the Tranga download-extension id it is registered under</returns>
     /// <response code="200">The installed sources</response>
-    /// <response code="503">The Suwayomi sidecar is disabled or unreachable</response>
+    /// <response code="503">The Suwayomi sidecar is unreachable</response>
     public static async Task<Results<Ok<SuwayomiSourceInfo[]>, StatusCodeHttpResult>> Handle(CancellationToken ct)
     {
         if (await SuwayomiExtensionManager.GetSourcesAsync(ct) is not { } sources)

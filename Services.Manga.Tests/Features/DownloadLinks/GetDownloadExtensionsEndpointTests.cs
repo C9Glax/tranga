@@ -13,7 +13,9 @@ public class GetDownloadExtensionsEndpointTests
 
         Assert.NotNull(result.Value);
         Assert.NotEmpty(result.Value.Extensions);
+        // MangaDex is the only compiled-in download extension; everything else is discovered from the Suwayomi
+        // sidecar at runtime, so it cannot be asserted on here.
         Assert.Contains(result.Value.Extensions, e => e.Name == "MangaDex");
-        Assert.Contains(result.Value.Extensions, e => e.Name == "MangaPlus");
+        Assert.All(result.Value.Extensions, e => Assert.False(string.IsNullOrEmpty(e.IconUrl)));
     }
 }

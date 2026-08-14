@@ -28,8 +28,6 @@ services:
     networks:
       - "tranga"
     restart: "on-failure:3"
-    profiles:
-      - "suwayomi"
   messaging:
     image: "docker.io/library/rabbitmq:4.3"
     environment:
@@ -83,7 +81,6 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
-      ENABLE_SUWAYOMI: "${ENABLESUWAYOMI}"
       SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_TASKS_PORT}"
@@ -96,6 +93,8 @@ services:
         condition: "service_started"
       messaging:
         condition: "service_healthy"
+      suwayomi:
+        condition: "service_started"
     user: "${PUID:-1000}:${PGID:-1000}"
     networks:
       - "tranga"
@@ -134,7 +133,6 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
-      ENABLE_SUWAYOMI: "${ENABLESUWAYOMI}"
       SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_MANGA_PORT}"
@@ -147,6 +145,8 @@ services:
         condition: "service_started"
       messaging:
         condition: "service_healthy"
+      suwayomi:
+        condition: "service_started"
     networks:
       - "tranga"
     restart: "on-failure:3"
