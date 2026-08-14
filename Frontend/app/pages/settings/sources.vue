@@ -30,77 +30,86 @@
             </UAlert>
 
             <template v-if="status?.reachable">
-                <UCard>
-                    <div class="flex flex-col gap-3">
-                        <div class="flex flex-row flex-wrap items-center gap-2">
-                            <UInput
-                                v-model="query"
-                                placeholder="Search extensions"
-                                icon="i-lucide-search"
-                                class="grow"
-                                @update:model-value="page = 1" />
-                            <USelect
-                                v-model="language"
-                                :items="languageItems"
-                                class="w-40"
-                                placeholder="Language"
-                                @update:model-value="page = 1" />
-                            <UButton
-                                label="Refresh catalogue"
-                                icon="i-lucide-refresh-cw"
-                                color="neutral"
-                                variant="soft"
-                                loading-auto
-                                @click="refreshCatalogue" />
-                        </div>
-                        <div class="flex flex-row flex-wrap items-center gap-4">
-                            <USwitch v-model="installedOnly" label="Installed only" @update:model-value="page = 1" />
-                            <USwitch v-model="showNsfw" label="Show NSFW" @update:model-value="page = 1" />
-                            <span class="text-sm text-muted">{{ filtered.length }} of {{ extensions?.length ?? 0 }} extensions</span>
-                        </div>
-                    </div>
-                </UCard>
+                <div class="flex flex-row flex-wrap items-center gap-2">
+                    <UInput v-model="query" placeholder="Search extensions" icon="i-lucide-search" class="grow" />
+                    <USelect v-model="language" :items="languageItems" class="w-40" placeholder="Language" />
+                    <UButton
+                        label="Refresh catalogue"
+                        icon="i-lucide-refresh-cw"
+                        color="neutral"
+                        variant="soft"
+                        loading-auto
+                        @click="refreshCatalogue" />
+                </div>
+                <div class="flex flex-row flex-wrap items-center gap-4">
+                    <USwitch v-model="installedOnly" label="Installed only" />
+                    <USwitch v-model="showNsfw" label="Show NSFW" />
+                    <span class="text-sm text-muted">{{ filtered.length }} of {{ extensions?.length ?? 0 }} extensions</span>
+                </div>
 
-                <UCard v-for="extension in paged" :key="extension.pkgName">
-                    <div class="flex flex-row items-center gap-3">
-                        <NuxtImg :src="extension.iconUrl" :alt="extension.name" class="size-10 rounded" />
-                        <div class="flex flex-col grow min-w-0">
-                            <div class="flex flex-row items-center gap-2 flex-wrap">
-                                <span class="font-medium truncate">{{ extension.name }}</span>
-                                <UBadge :label="extension.lang" variant="outline" color="neutral" />
-                                <UBadge v-if="extension.isNsfw" label="NSFW" color="error" variant="solid" />
-                                <UBadge v-if="extension.isObsolete" label="Obsolete" color="warning" variant="subtle" />
-                                <UBadge v-if="extension.hasUpdate" label="Update available" color="info" variant="subtle" />
+                <!-- The catalogue is ~1400 rows. Virtualizing keeps the DOM to the visible window, so the whole list
+                     stays scrollable without paging it. `sticky` is deliberately absent: UTable does not support it
+                     together with `virtualize`. -->
+                <UTable
+                    :data="filtered"
+                    :columns="columns"
+                    :loading="pending"
+                    :virtualize="{ estimateSize: 64, overscan: 8 }"
+                    class="w-full h-[70vh]">
+                    <template #name-cell="{ row }">
+                        <div class="flex flex-row items-center gap-3 min-w-0">
+                            <img :src="row.original.iconUrl" :alt="row.original.name" class="size-8 shrink-0 rounded" />
+                            <div class="flex flex-col min-w-0">
+                                <span class="font-medium truncate">{{ row.original.name }}</span>
+                                <span class="text-xs text-muted truncate">{{ row.original.pkgName }}</span>
                             </div>
-                            <span class="text-sm text-muted truncate">v{{ extension.versionName }} &middot; {{ extension.pkgName }}</span>
                         </div>
-                        <div class="flex flex-row items-center gap-2">
+                    </template>
+
+                    <template #lang-cell="{ row }">
+                        <UBadge :label="row.original.lang" variant="outline" color="neutral" />
+                    </template>
+
+                    <template #versionName-cell="{ row }"> v{{ row.original.versionName }} </template>
+
+                    <template #state-cell="{ row }">
+                        <div class="flex flex-row items-center gap-1">
+                            <UBadge v-if="row.original.isInstalled" label="Installed" color="secondary" variant="subtle" />
+                            <UBadge v-if="row.original.isNsfw" label="NSFW" color="error" variant="solid" />
+                            <UBadge v-if="row.original.isObsolete" label="Obsolete" color="warning" variant="subtle" />
+                            <UBadge v-if="row.original.hasUpdate" label="Update" color="info" variant="subtle" />
+                        </div>
+                    </template>
+
+                    <template #actions-cell="{ row }">
+                        <div class="flex flex-row items-center justify-end gap-2">
                             <UButton
-                                v-if="!extension.isInstalled"
+                                v-if="!row.original.isInstalled"
                                 label="Install"
                                 icon="i-lucide-download"
+                                size="sm"
                                 loading-auto
-                                @click="install(extension)" />
+                                @click="install(row.original)" />
                             <UButton
-                                v-if="extension.isInstalled && extension.hasUpdate"
+                                v-if="row.original.isInstalled && row.original.hasUpdate"
                                 label="Update"
                                 icon="i-lucide-arrow-up"
                                 color="info"
+                                size="sm"
                                 loading-auto
-                                @click="update(extension)" />
+                                @click="update(row.original)" />
                             <UButton
-                                v-if="extension.isInstalled"
+                                v-if="row.original.isInstalled"
                                 label="Uninstall"
                                 icon="i-lucide-trash-2"
                                 color="error"
                                 variant="soft"
+                                size="sm"
                                 loading-auto
-                                @click="uninstall(extension)" />
+                                @click="uninstall(row.original)" />
                         </div>
-                    </div>
-                </UCard>
-
-                <UPagination v-if="filtered.length > pageSize" v-model:page="page" :total="filtered.length" :items-per-page="pageSize" />
+                    </template>
+                </UTable>
             </template>
         </UPageList>
     </TrangaPage>
@@ -112,6 +121,7 @@ import type {
     GetMangasSuwayomiExtensionsResponse,
     ServicesMangaSuwayomiExtensionInfo,
 } from '~/api/tranga';
+import type { TableColumn } from '@nuxt/ui/components/Table.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 import { FetchError } from 'ofetch';
 
@@ -119,55 +129,47 @@ const toast = useToast();
 
 const { data: status } = await useTranga<GetMangasSuwayomiStatusResponse>('/mangas/suwayomi/status', { key: ApiKeys.SuwayomiStatus });
 
-// The catalogue is ~1400 rows, but it is a flat list of small objects: one fetch and client-side filtering keeps the
-// page responsive without paging the API.
-const { data: extensions } = await useTranga<GetMangasSuwayomiExtensionsResponse>('/mangas/suwayomi/extensions', {
+// Fetched unconditionally: the endpoint answers 503 when the sidecar is off, which useFetch surfaces as an error and
+// the status alerts above already cover. Deferring this with `immediate: false` instead would hang the page, because
+// awaiting a deferred useFetch never resolves.
+const { data: extensions, pending } = await useTranga<GetMangasSuwayomiExtensionsResponse>('/mangas/suwayomi/extensions', {
     key: ApiKeys.SuwayomiExtensions,
-    immediate: false,
 });
 
+const ALL_LANGUAGES = 'all languages';
+
 const query = ref('');
-const language = ref<string>('all languages');
+const language = ref<string>(ALL_LANGUAGES);
 const installedOnly = ref(false);
 const showNsfw = ref(false);
-const page = ref(1);
-const pageSize = 25;
 
-watch(
-    () => status.value?.reachable,
-    (reachable) => {
-        if (reachable) refreshNuxtData(ApiKeys.SuwayomiExtensions);
-    },
-    { immediate: true },
-);
+const columns: TableColumn<ServicesMangaSuwayomiExtensionInfo>[] = [
+    { accessorKey: 'name', header: 'Extension' },
+    { accessorKey: 'lang', header: 'Language' },
+    { accessorKey: 'versionName', header: 'Version' },
+    { id: 'state', header: 'Status' },
+    { id: 'actions', header: '' },
+];
 
-const languageItems = computed(() => ['all languages', ...new Set((extensions.value ?? []).map((e) => e.lang))].sort());
+const languageItems = computed(() => [ALL_LANGUAGES, ...[...new Set((extensions.value ?? []).map((e) => e.lang))].sort()]);
 
 const filtered = computed(() => {
     const term = query.value.trim().toLowerCase();
     return (extensions.value ?? []).filter((extension) => {
         if (!showNsfw.value && extension.isNsfw) return false;
         if (installedOnly.value && !extension.isInstalled) return false;
-        if (language.value !== 'all languages' && extension.lang !== language.value) return false;
+        if (language.value !== ALL_LANGUAGES && extension.lang !== language.value) return false;
         if (term && !extension.name.toLowerCase().includes(term) && !extension.pkgName.toLowerCase().includes(term)) return false;
         return true;
     });
 });
 
-const paged = computed(() => filtered.value.slice((page.value - 1) * pageSize, page.value * pageSize));
-
-watch(filtered, () => {
-    const lastPage = Math.max(1, Math.ceil(filtered.value.length / pageSize));
-    if (page.value > lastPage) page.value = lastPage;
-});
-
 const refreshCatalogue = async () => {
     try {
         // refresh=true makes the sidecar re-read the configured extension stores, which hits the network.
-        const fresh = await useNuxtApp().$tranga<GetMangasSuwayomiExtensionsResponse>('/mangas/suwayomi/extensions', {
+        extensions.value = await useNuxtApp().$tranga<GetMangasSuwayomiExtensionsResponse>('/mangas/suwayomi/extensions', {
             query: { refresh: true },
         });
-        extensions.value = fresh;
         toast.add({ title: 'Extension catalogue refreshed.', color: 'success' });
     } catch (error: unknown) {
         toast.add({ title: 'Failed refreshing the catalogue.', description: describe(error), color: 'error' });
