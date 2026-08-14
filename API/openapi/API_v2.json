@@ -1354,7 +1354,7 @@
           {
             "name": "CoverSize",
             "in": "path",
-            "description": "Size of the cover returned\n            \n - API.Controllers.MangaController.CoverSize.SmallAPI.Constants.ImageSmSize\n - API.Controllers.MangaController.CoverSize.MediumAPI.Constants.ImageMdSize\n - API.Controllers.MangaController.CoverSize.LargeAPI.Constants.ImageLgSize",
+            "description": "Size of the cover returned\r\n            \r\n - API.Controllers.MangaController.CoverSize.SmallAPI.Constants.ImageSmSize\r\n - API.Controllers.MangaController.CoverSize.MediumAPI.Constants.ImageMdSize\r\n - API.Controllers.MangaController.CoverSize.LargeAPI.Constants.ImageLgSize",
             "required": true,
             "schema": {
               "$ref": "#/components/schemas/CoverSize"
@@ -3231,7 +3231,7 @@
           "Settings"
         ],
         "summary": "Gets the Chapter Naming Scheme",
-        "description": "Placeholders:\n%M Obj Name\n%V Volume\n%C Chapter\n%T Title\n%A Author (first in list)\n%I Chapter Internal ID\n%i Obj Internal ID\n%Y Year (Obj)\n            \n?_(...) replace _ with a value from above:\nEverything inside the braces will only be added if the value of %_ is not null",
+        "description": "Placeholders:\r\n%M Obj Name\r\n%V Volume\r\n%C Chapter\r\n%T Title\r\n%A Author (first in list)\r\n%I Chapter Internal ID\r\n%i Obj Internal ID\r\n%Y Year (Obj)\r\n            \r\n?_(...) replace _ with a value from above:\r\nEverything inside the braces will only be added if the value of %_ is not null",
         "responses": {
           "200": {
             "description": "",
@@ -3250,7 +3250,7 @@
           "Settings"
         ],
         "summary": "Sets the Chapter Naming Scheme",
-        "description": "Placeholders:\n%M Obj Name\n%V Volume\n%C Chapter\n%T Title\n%A Author (first in list)\n%Y Year (Obj)\n            \n?_(...) replace _ with a value from above:\nEverything inside the braces will only be added if the value of %_ is not null",
+        "description": "Placeholders:\r\n%M Obj Name\r\n%V Volume\r\n%C Chapter\r\n%T Title\r\n%A Author (first in list)\r\n%Y Year (Obj)\r\n            \r\n?_(...) replace _ with a value from above:\r\nEverything inside the braces will only be added if the value of %_ is not null",
         "requestBody": {
           "content": {
             "application/json-patch+json; x-version=2.0": {
@@ -4670,7 +4670,7 @@
           },
           "chapterNamingScheme": {
             "type": "string",
-            "description": "Placeholders:\n%M Obj Name\n%V Volume\n%C Chapter\n%T Title\n%A Author (first in list)\n%I Chapter Internal ID\n%i Obj Internal ID\n%Y Year (Obj)\n            \n?_(...) replace _ with a value from above:\nEverything inside the braces will only be added if the value of %_ is not null",
+            "description": "Placeholders:\r\n%M Obj Name\r\n%V Volume\r\n%C Chapter\r\n%T Title\r\n%A Author (first in list)\r\n%I Chapter Internal ID\r\n%i Obj Internal ID\r\n%Y Year (Obj)\r\n            \r\n?_(...) replace _ with a value from above:\r\nEverything inside the braces will only be added if the value of %_ is not null",
             "nullable": true
           },
           "workCycleTimeoutMs": {
@@ -4729,6 +4729,29 @@
           },
           "state": {
             "$ref": "#/components/schemas/WorkerExecutionState"
+          },
+          "progress": {
+            "type": "number",
+            "description": "Overall progress (0.0 to 1.0).",
+            "format": "float",
+            "nullable": true
+          },
+          "currentStep": {
+            "type": "integer",
+            "description": "Current step number (e.g. images downloaded so far).",
+            "format": "int32",
+            "nullable": true
+          },
+          "totalSteps": {
+            "type": "integer",
+            "description": "Total steps expected (e.g. total images in chapter).",
+            "format": "int32",
+            "nullable": true
+          },
+          "progressDescription": {
+            "type": "string",
+            "description": "Human-readable progress description.",
+            "nullable": true
           },
           "key": {
             "maxLength": 64,

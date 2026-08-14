@@ -34,12 +34,14 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     private ActionsContext ActionsContext = null!;
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private NotificationsContext NotificationsContext = null!;
+    private DownloadProgressReporter? ProgressReporter;
 
     protected override void SetContexts(IServiceScope serviceScope)
     {
         MangaContext = GetContext<MangaContext>(serviceScope);
         ActionsContext = GetContext<ActionsContext>(serviceScope);
         NotificationsContext = GetContext<NotificationsContext>(serviceScope);
+        ProgressReporter = serviceScope.ServiceProvider.GetService<DownloadProgressReporter>();
     }
     
     protected override async Task<BaseWorker[]> DoWorkInternal()
@@ -79,6 +81,10 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
         
         Log.Info($"Getting imageUrls for chapter {chapter}");
+        if (ProgressReporter is not null)
+            await ProgressReporter.ReportPhaseChanged(this, chapter.Key, chapter.ParentMangaId,
+                chapter.ParentManga.Name, chapter.ChapterNumber, DownloadPhase.FetchingUrls);
+
         string[] imageUrls = mangaConnector.GetChapterImageUrls(mangaConnectorId);
         if (imageUrls.Length < 1)
         {
@@ -109,6 +115,7 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
 
         Log.Info($"Downloading images: {chapter}");
         List<Stream> images = [];
+        int imageCount = 0;
         //Download all Images to temporary Folder
         foreach (string imageUrl in imageUrls)
         {
@@ -117,15 +124,28 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
                 if (await mangaConnector.DownloadImage(imageUrl, CancellationToken) is not { } stream)
                 {
                     Log.Error($"Failed to download image: {imageUrl}");
+                    if (ProgressReporter is not null)
+                        await ProgressReporter.ReportFailed(this, chapter.Key, chapter.ParentMangaId,
+                            chapter.ParentManga.Name, chapter.ChapterNumber);
                     return [];
                 }
                 else
+                {
                     images.Add(await ProcessImage(stream, CancellationToken));
+                    imageCount++;
+                    if (ProgressReporter is not null)
+                        await ProgressReporter.ReportProgress(this, chapter.Key, chapter.ParentMangaId,
+                            chapter.ParentManga.Name, chapter.ChapterNumber, imageCount, imageUrls.Length,
+                            DownloadPhase.DownloadingImages);
+                }
             }
             catch (Exception ex)
             {
                 Log.Error(ex);
                 images.ForEach(i => i.Dispose());
+                if (ProgressReporter is not null)
+                    await ProgressReporter.ReportFailed(this, chapter.Key, chapter.ParentMangaId,
+                        chapter.ParentManga.Name, chapter.ChapterNumber);
                 return [];
             }
         }
@@ -143,6 +163,9 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         }
 
         //Create cbz archive
+        if (ProgressReporter is not null)
+            await ProgressReporter.ReportPhaseChanged(this, chapter.Key, chapter.ParentMangaId,
+                chapter.ParentManga.Name, chapter.ChapterNumber, DownloadPhase.PackagingArchive);
         try
         {
             Log.Debug($"Creating archive: {saveArchiveFilePath}");
@@ -185,6 +208,10 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
             Log.Error($"Failed to save database changes: {chapterContextException.exceptionMessage}");
         
         Log.Debug($"Downloaded chapter {chapter}.");
+
+        if (ProgressReporter is not null)
+            await ProgressReporter.ReportCompleted(this, chapter.Key, chapter.ParentMangaId,
+                chapter.ParentManga.Name, chapter.ChapterNumber, imageUrls.Length);
 
         await ActionsContext.Actions.AddAsync(new ChapterDownloadedActionRecord(chapter.ParentManga, chapter));
         if(await ActionsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } actionsContextException)
