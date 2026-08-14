@@ -108,6 +108,8 @@ export type ServicesMangaSearchQuery = {
     language?: null | string;
     mangaUpdatesSeriesId?: null | number | string;
     mangaDexSeriesId?: null | string;
+    aniListSeriesId?: null | number | string;
+    myAnimeListSeriesId?: null | number | string;
 };
 
 /**

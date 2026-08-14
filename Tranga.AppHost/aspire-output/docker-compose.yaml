@@ -81,6 +81,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
+      MAL_CLIENT_ID: "${MALCLIENTID}"
       SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_TASKS_PORT}"
@@ -133,6 +134,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
+      MAL_CLIENT_ID: "${MALCLIENTID}"
       SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_MANGA_PORT}"

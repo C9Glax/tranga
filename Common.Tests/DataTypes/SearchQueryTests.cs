@@ -18,6 +18,8 @@ public class SearchQueryTests
         Assert.Null(query.Language);
         Assert.Null(query.MangaUpdatesSeriesId);
         Assert.Null(query.MangaDexSeriesId);
+        Assert.Null(query.AniListSeriesId);
+        Assert.Null(query.MyAnimeListSeriesId);
     }
 
     [Fact]
@@ -33,6 +35,8 @@ public class SearchQueryTests
         Assert.Equal(1L, new SearchQuery(MangaUpdatesSeriesId: 1L).MangaUpdatesSeriesId);
         Guid id = Guid.NewGuid();
         Assert.Equal(id, new SearchQuery(MangaDexSeriesId: id).MangaDexSeriesId);
+        Assert.Equal(118586, new SearchQuery(AniListSeriesId: 118586).AniListSeriesId);
+        Assert.Equal(126287, new SearchQuery(MyAnimeListSeriesId: 126287).MyAnimeListSeriesId);
     }
 
     [Fact]
@@ -48,7 +52,9 @@ public class SearchQueryTests
             Artist: "Eiichiro Oda",
             Language: "en",
             MangaUpdatesSeriesId: 42L,
-            MangaDexSeriesId: mangaDexId);
+            MangaDexSeriesId: mangaDexId,
+            AniListSeriesId: 118586,
+            MyAnimeListSeriesId: 126287);
 
         Assert.Equal("One Piece", query.Title);
         Assert.Equal(["action", "adventure"], query.Tags ?? []);
@@ -59,6 +65,8 @@ public class SearchQueryTests
         Assert.Equal("en", query.Language);
         Assert.Equal(42L, query.MangaUpdatesSeriesId);
         Assert.Equal(mangaDexId, query.MangaDexSeriesId);
+        Assert.Equal(118586, query.AniListSeriesId);
+        Assert.Equal(126287, query.MyAnimeListSeriesId);
     }
 
     [Fact]
