@@ -29,7 +29,7 @@ Generate a random value for `AUTH_SIGNING_KEY`:
 | ENV             | default                | behaviour                                                |
 |-----------------|------------------------|----------------------------------------------------------|
 | SETTINGS_FILE   | `"settings.json"`      | Location of settings file                                |
-| SUWAYOMI_URL    | `"http://suwayomi:4567"` | Base address of the [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, which provides Tranga's download sources. Set automatically by the AppHost — the default is correct for docker-compose, and the dev stack injects the right value — so only change it to point Tranga at a Suwayomi instance you run yourself |
+| SUWAYOMI_URL    | `"http://suwayomi:4567/suwayomi"` | Base address of the [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, which provides Tranga's download sources. Set automatically by the AppHost — the default is correct for docker-compose, and the dev stack injects the right value — so only change it to point Tranga at a Suwayomi instance you run yourself. The `/suwayomi` suffix is not a typo: the sidecar is configured to serve itself under that subpath so it can be reverse-proxied |
 | WORKERS_MIN     | `1`                    | Minimum number of Task workers kept running at all times |
 | WORKERS_MAX     | `{ProcessorCount / 2}` | Maximum number of Task workers the pool may scale up to  |
 

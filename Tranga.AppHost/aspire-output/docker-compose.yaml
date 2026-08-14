@@ -12,6 +12,10 @@ services:
       - "tranga"
   suwayomi:
     image: "ghcr.io/suwayomi/suwayomi-server:stable"
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "[ -x /home/suwayomi/create_server_conf.sh ] && /home/suwayomi/create_server_conf.sh; [ -f /home/suwayomi/.local/share/Tachidesk/server.conf ] && sed -i 's|^server.webUISubpath = .*|server.webUISubpath = \"/suwayomi\" #|' /home/suwayomi/.local/share/Tachidesk/server.conf; exec /home/suwayomi/startup_script.sh"
     environment:
       EXTENSION_STORES: "[\"https://github.com/keiyoushi/extensions/raw/repo/index.pb\"]"
       WEB_UI_ENABLED: "true"
@@ -81,7 +85,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
-      SUWAYOMI_URL: "http://suwayomi:4567"
+      SUWAYOMI_URL: "http://suwayomi:4567/suwayomi"
     expose:
       - "${SERVICES_TASKS_PORT}"
     volumes:
@@ -133,7 +137,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
-      SUWAYOMI_URL: "http://suwayomi:4567"
+      SUWAYOMI_URL: "http://suwayomi:4567/suwayomi"
     expose:
       - "${SERVICES_MANGA_PORT}"
     volumes:
@@ -327,7 +331,6 @@ services:
       REVERSEPROXY__ROUTES__route5__TRANSFORMS__0__PathRemovePrefix: "/api"
       REVERSEPROXY__ROUTES__route6__MATCH__PATH: "/suwayomi/{**catch-all}"
       REVERSEPROXY__ROUTES__route6__CLUSTERID: "cluster_suwayomi"
-      REVERSEPROXY__ROUTES__route6__TRANSFORMS__0__PathRemovePrefix: "/suwayomi"
       REVERSEPROXY__CLUSTERS__cluster_frontend__DESTINATIONS__destination1__ADDRESS: "http://frontend"
       REVERSEPROXY__CLUSTERS__cluster_services-manga__DESTINATIONS__destination1__ADDRESS: "https+http://services-manga"
       REVERSEPROXY__CLUSTERS__cluster_services-tasks__DESTINATIONS__destination1__ADDRESS: "https+http://services-tasks"
