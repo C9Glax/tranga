@@ -22,7 +22,7 @@
             </UAlert>
 
             <template v-if="status?.reachable">
-                <div class="flex flex-row flex-wrap items-center gap-2">
+                <div ref="install-source" class="flex flex-row flex-wrap items-center gap-2">
                     <UInput v-model="query" placeholder="Search extensions" icon="i-lucide-search" class="grow" />
                     <USelect v-model="language" :items="languageItems" class="w-40" placeholder="Language" />
                     <UButton
@@ -84,6 +84,7 @@
                                 label="Install"
                                 icon="i-lucide-download"
                                 size="sm"
+                                class="tour-install-source"
                                 loading-auto
                                 @click="install(row.original)" />
                             <UButton
@@ -122,6 +123,9 @@ import { ApiKeys } from '~/composables/ApiKeys';
 import { FetchError } from 'ofetch';
 
 const toast = useToast();
+
+// Anchors the tour's "install a source" step to the filter bar, which stays put while the table scrolls.
+useTourTargetRef('install-source');
 
 const { data: status } = await useTranga<GetMangasSuwayomiStatusResponse>('/mangas/suwayomi/status', { key: ApiKeys.SuwayomiStatus });
 
