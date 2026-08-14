@@ -45,7 +45,7 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
-- [x] Download sources via a bundled [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, giving access to
+- [x] Download sources via a bundled [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server, giving access to
   the ~2000 sources of the [keiyoushi](https://github.com/keiyoushi/extensions) extension repository
 
 #### TODO LIST
@@ -61,30 +61,12 @@ You probably do not want to modify this. Use the [`.env`](Tranga.AppHost/aspire-
 - [.env](Tranga.AppHost/aspire-output/.env)
   - [Environment variable documentation](EnvVars.md)
 
-`Mangas` is bind-mounted from the host path set in `MangaDirectory`, so it keeps whatever ownership that host directory already has.
-The services write to it as a non-root container user (UID/GID `1654`), so if you hit `UnauthorizedAccessException`/`Permission denied` errors on download,
-chown the host directory before starting the stack:
-
-```bash
-sudo chown -R 1654:1654 /path/to/your/Manga
-```
-
 ### Download sources (Suwayomi + keiyoushi)
 
 Apart from MangaDex, which is built in, Tranga gets its download sources from a bundled
-[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar. Suwayomi executes the Android extension APKs of the
-[keiyoushi](https://github.com/keiyoushi/extensions) repository on the JVM — around 1400 extensions covering 2000
-sources — and Tranga drives it over its API. The container starts with the rest of the stack; there is nothing to
-switch on.
+[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server. Install the sources you want under **Settings → Sources**.
 
-Install the sources you want under **Settings → Sources**. Each one then behaves like any other download extension:
-searchable, attachable as a download link, and downloaded by the normal task pipeline.
-
-The sidecar is reachable only by Tranga's own services on the internal network — it is not exposed through the gateway,
-and its own WebUI is switched off. That is deliberate: the gateway does not authenticate (each service checks
-credentials itself), so anything routed straight to the sidecar would bypass `UseAuth` entirely.
-
-If FlareSolverr is configured for Tranga, the sidecar is pointed at the same instance.
+**If FlareSolverr is configured for Tranga, the Suwayomi is pointed at the same instance.**
 
 > The `Suwayomi` volume is persistent state, not a cache. It holds the installed extension JARs as well as the rows
 > that map manga URLs back to the sidecar's internal ids. Deleting it means reinstalling your extensions.
@@ -93,7 +75,8 @@ If FlareSolverr is configured for Tranga, the sidecar is pointed at the same ins
 
 When adding a Komga library, the "Library Root Path" must be the path *inside the Komga container*
 where Tranga's `Mangas` volume is mounted — not the path on the host, and not the path inside Tranga's own containers.
-Mount that same volume into your Komga container and point the field at wherever you mounted it (defaults to `/tranga` if left blank).
+Mount that same volume into your Komga container and point the field at wherever you mounted it
+(defaults to `/tranga` if left blank).
 
 ### Resetting the admin password
 
