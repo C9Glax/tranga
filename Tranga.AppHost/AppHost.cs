@@ -92,6 +92,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         service.Name = "services-tasks";
         service.Networks = ["tranga"];
         service.Image = "ghcr.io/c9glax/tranga-services_tasks:external-connectors";
+        service.User = "${PUID:-1000}:${PGID:-1000}";
         service.Volumes.Add(new Volume()
         {
             Name = "Mangas",
