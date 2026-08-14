@@ -76,7 +76,7 @@ function setQuery(key: string, value: string | undefined) {
 }
 
 function setQueries(values: Record<string, string | undefined>) {
-    const query = Object.fromEntries(Object.entries(route.query).filter(([k]) => !(k in values)));
+    const query = Object.fromEntries(Object.entries(route.query).filter((entry) => !(entry[0] in values)));
     for (const [key, value] of Object.entries(values)) if (value) query[key] = value;
     router.replace({ query });
 }
