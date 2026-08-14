@@ -25,7 +25,7 @@ defineShortcuts({ shift_r: () => refresh() });
 const { data: libraries } = useTranga<GetLibrariesResponse>('/libraries', { key: ApiKeys.Libraries.Libraries });
 
 const navigation = computed((): TrangaPageTitleProps | undefined =>
-    libraries.value
+    libraries.value && libraries.value.length > 0
         ? {
               title: { label: 'Libraries', type: 'label' },
               items:
@@ -34,6 +34,7 @@ const navigation = computed((): TrangaPageTitleProps | undefined =>
                       to: library.baseUrl,
                       external: true,
                       icon: 'i-lucide-library',
+                      ui: { linkLeadingIcon: 'text-neutral-400', linkLabel: 'text-neutral-400' },
                   })) ?? [],
           }
         : undefined,

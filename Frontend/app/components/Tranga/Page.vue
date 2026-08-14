@@ -95,7 +95,7 @@ const defaultItems = computed((): NavigationMenuItem[] => {
     const canGoBack = import.meta.client && !!window.history.state?.back;
 
     return [
-        { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link' },
+        { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link', ui: { linkLeadingIcon: 'text-primary', linkLabel: 'text-primary' } },
         {
             label: 'Back',
             onSelect: () => router.back(),
@@ -110,7 +110,13 @@ const defaultItems = computed((): NavigationMenuItem[] => {
         { label: 'Sources', to: '/settings/sources', icon: 'i-lucide-globe', class: 'tour-sources-nav' },
         { label: 'Settings', to: '/settings', icon: 'i-lucide-settings' },
         { label: 'Links', type: 'label' },
-        { label: 'Github', to: 'https://github.com/C9Glax/tranga', external: true, icon: 'i-lucide-github' },
+        {
+            label: 'Github',
+            to: 'https://github.com/C9Glax/tranga',
+            external: true,
+            icon: 'i-lucide-github',
+            ui: { linkLeadingIcon: 'text-neutral-400', linkLabel: 'text-neutral-400' },
+        },
     ];
 });
 
