@@ -10,6 +10,14 @@ public class StatusTests
     [InlineData("complete", ReleaseStatus.Complete)]
     [InlineData("completed", ReleaseStatus.Complete)]
     [InlineData("hiatus", ReleaseStatus.Hiatus)]
+    // AniList spellings
+    [InlineData("finished", ReleaseStatus.Complete)]
+    [InlineData("cancelled", ReleaseStatus.Cancelled)]
+    [InlineData("canceled", ReleaseStatus.Cancelled)]
+    // MyAnimeList spellings
+    [InlineData("currently_publishing", ReleaseStatus.Ongoing)]
+    [InlineData("on_hiatus", ReleaseStatus.Hiatus)]
+    [InlineData("discontinued", ReleaseStatus.Cancelled)]
     public void ParseStatusParsesValidStatusStrings(string status, ReleaseStatus expected)
     {
         Assert.Equal(expected, status.ParseStatus());
@@ -35,6 +43,9 @@ public class StatusTests
     [InlineData("unknown-status")]
     [InlineData("")]
     [InlineData("   ")]
+    // Not-yet-published series have no ReleaseStatus equivalent
+    [InlineData("not_yet_published")]
+    [InlineData("not_yet_released")]
     public void ParseStatusReturnsNullForUnknownOrEmptyInput(string status)
     {
         Assert.Null(status.ParseStatus());

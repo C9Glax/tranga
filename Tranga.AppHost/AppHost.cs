@@ -52,6 +52,7 @@ IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("Rabbi
 IResourceBuilder<ParameterResource> allowNsfw = builder.AddParameter("AllowNSFW");
 IResourceBuilder<ParameterResource> downloadLanguage = builder.AddParameter("DownloadLanguage");
 IResourceBuilder<ParameterResource> flaresolverrUrl = builder.AddParameter("FlaresolverrUrl");
+IResourceBuilder<ParameterResource> malClientId = builder.AddParameter("MalClientId", secret: true);
 IResourceBuilder<ParameterResource> useAuth = builder.AddParameter("UseAuth");
 IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthSigningKey", secret: true);
 
@@ -131,6 +132,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
+        context.EnvironmentVariables["MAL_CLIENT_ID"] = malClientId.Resource;
         context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>
@@ -179,6 +181,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
+        context.EnvironmentVariables["MAL_CLIENT_ID"] = malClientId.Resource;
         context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>

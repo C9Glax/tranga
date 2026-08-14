@@ -52,6 +52,28 @@ public class SearchQueryHelperTests
     }
 
     [Fact]
+    public void ToSearchQuery_AniListMetadata_SetsAniListSeriesId()
+    {
+        DbMangaMetadataEntries entry = BuildEntry(new AniList().Identifier, "118586");
+
+        SearchQuery query = entry.ToSearchQuery();
+
+        Assert.Equal(118586, query.AniListSeriesId);
+        Assert.Null(query.MyAnimeListSeriesId);
+    }
+
+    [Fact]
+    public void ToSearchQuery_MyAnimeListMetadata_SetsMyAnimeListSeriesId()
+    {
+        DbMangaMetadataEntries entry = BuildEntry(new MyAnimeList().Identifier, "126287");
+
+        SearchQuery query = entry.ToSearchQuery();
+
+        Assert.Equal(126287, query.MyAnimeListSeriesId);
+        Assert.Null(query.AniListSeriesId);
+    }
+
+    [Fact]
     public void ToSearchQuery_MangaUpdatesMetadata_SetsMangaUpdatesSeriesId()
     {
         DbMangaMetadataEntries entry = BuildEntry(new MangaUpdates().Identifier, "12345");

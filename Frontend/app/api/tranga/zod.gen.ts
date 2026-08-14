@@ -213,6 +213,28 @@ export const zServicesMangaSearchQuery = z.object({
         ]),
     ),
     mangaDexSeriesId: z.nullish(z.uuid()),
+    aniListSeriesId: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
+    myAnimeListSeriesId: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
 });
 
 export type ServicesMangaSearchQueryZodType = z.infer<typeof zServicesMangaSearchQuery>;

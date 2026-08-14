@@ -12,6 +12,8 @@ namespace Common.Datatypes;
 /// <param name="Language">The ISO language-code of a translation</param>
 /// <param name="MangaUpdatesSeriesId">The MangaUpdates.com series id</param>
 /// <param name="MangaDexSeriesId">The Mangadex.or series id</param>
+/// <param name="AniListSeriesId">The AniList.co media id</param>
+/// <param name="MyAnimeListSeriesId">The MyAnimeList.net manga id</param>
 public sealed record SearchQuery(
     string? Title = null,
     string[]? Tags = null,
@@ -21,5 +23,7 @@ public sealed record SearchQuery(
     string? Artist = null,
     string? Language = null,
     long? MangaUpdatesSeriesId = null,
-    Guid? MangaDexSeriesId = null
+    Guid? MangaDexSeriesId = null,
+    int? AniListSeriesId = null,
+    int? MyAnimeListSeriesId = null
     );
