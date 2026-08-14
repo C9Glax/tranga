@@ -62,8 +62,9 @@ IResourceBuilder<ParameterResource> flaresolverrUrl = builder.AddParameter("Flar
 IResourceBuilder<ParameterResource> useAuth = builder.AddParameter("UseAuth");
 IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthSigningKey", secret: true);
 
-// Suwayomi speaks FlareSolverr natively, so it inherits whatever Tranga is configured to use. Resolved here rather
-// than at container start because the compose file bakes the enabled flag in at publish time.
+// Suwayomi speaks FlareSolverr natively, so it inherits whatever Tranga is configured to use. Under `aspire run` the
+// parameter is resolved now; the compose output overrides this with an interpolation so that .env stays authoritative
+// there (see PublishAsDockerComposeService below).
 bool flaresolverrConfigured = !string.IsNullOrEmpty(flaresolverrUrl.Resource.GetValueAsync(CancellationToken.None).Result);
 
 IResourceBuilder<ContainerResource>? suwayomi = enableSuwayomi
@@ -81,6 +82,11 @@ IResourceBuilder<ContainerResource>? suwayomi = enableSuwayomi
         {
             service.Name = "suwayomi";
             service.Networks = ["tranga"];
+            // Derive the flag from FLARESOLVERRURL at container start rather than baking in whatever the parameter
+            // happened to be when this file was generated, so setting FlareSolverr in .env is enough to enable it here
+            // too. Compose expands ":+" to "true" only when the variable is set and non-empty; when it is empty the
+            // image's startup script falls back to the config default (`${FLARESOLVERR_ENABLED:-\1}`), i.e. false.
+            service.Environment["FLARESOLVERR_ENABLED"] = "${FLARESOLVERRURL:+true}";
             // docker compose cannot start a service conditionally from an arbitrary variable, so the container is
             // gated behind a profile: a compose deployment sets COMPOSE_PROFILES=suwayomi alongside ENABLE_SUWAYOMI.
             service.Profiles = ["suwayomi"];

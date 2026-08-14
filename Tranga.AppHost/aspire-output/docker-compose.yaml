@@ -17,7 +17,7 @@ services:
       WEB_UI_ENABLED: "true"
       AUTH_MODE: "none"
       KCEF_ENABLED: "false"
-      FLARESOLVERR_ENABLED: "false"
+      FLARESOLVERR_ENABLED: "${FLARESOLVERRURL:+true}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
     expose:
       - "4567"
