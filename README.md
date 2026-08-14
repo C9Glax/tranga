@@ -78,8 +78,11 @@ sources — and Tranga drives it over its API. The container starts with the res
 switch on.
 
 Install the sources you want under **Settings → Sources**. Each one then behaves like any other download extension:
-searchable, attachable as a download link, and downloaded by the normal task pipeline. Suwayomi's own WebUI is proxied
-at `/suwayomi/` for the per-source preferences Tranga does not wrap.
+searchable, attachable as a download link, and downloaded by the normal task pipeline.
+
+The sidecar is reachable only by Tranga's own services on the internal network — it is not exposed through the gateway,
+and its own WebUI is switched off. That is deliberate: the gateway does not authenticate (each service checks
+credentials itself), so anything routed straight to the sidecar would bypass `UseAuth` entirely.
 
 If FlareSolverr is configured for Tranga, the sidecar is pointed at the same instance.
 

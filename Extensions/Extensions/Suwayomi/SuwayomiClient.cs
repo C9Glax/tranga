@@ -135,16 +135,59 @@ internal static class SuwayomiClient
     }
 
     /// <summary>
-    /// Rewrites a sidecar-relative url so a browser can load it through the YARP gateway, which serves Suwayomi under
-    /// <c>/suwayomi</c>. Absolute urls are passed through untouched.
+    /// Turns the sidecar's own icon url into one the browser can load from Tranga. The sidecar is not reachable from
+    /// the browser at all — only Tranga's API is — so icons are served back through
+    /// <c>/api/mangas/suwayomi/icons/{id}</c>.
     /// </summary>
-    internal static string ToGatewayUrl(string? suwayomiUrl)
+    internal static string ToIconUrl(string? suwayomiIconUrl)
     {
-        if (string.IsNullOrEmpty(suwayomiUrl))
+        if (IconIdFrom(suwayomiIconUrl) is not { } iconId)
             return string.Empty;
-        return suwayomiUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-            ? suwayomiUrl
-            : $"/suwayomi/{suwayomiUrl.TrimStart('/')}";
+        return $"/api/mangas/suwayomi/icons/{iconId}";
+    }
+
+    /// <summary>
+    /// The trailing identifier of a Suwayomi icon url (<c>/api/v1/extension/icon/&lt;pkgName&gt;</c>), or
+    /// <see langword="null"/> when it does not look like one.
+    /// </summary>
+    internal static string? IconIdFrom(string? suwayomiIconUrl)
+    {
+        if (string.IsNullOrEmpty(suwayomiIconUrl))
+            return null;
+        string id = suwayomiIconUrl.TrimEnd('/');
+        int lastSlash = id.LastIndexOf('/');
+        if (lastSlash >= 0)
+            id = id[(lastSlash + 1)..];
+        return IsValidIconId(id) ? id : null;
+    }
+
+    /// <summary>
+    /// Package names are the only thing this identifier is ever built from, so anything outside that character set is
+    /// rejected rather than forwarded — the icon endpoint is anonymous and must not become a way to address arbitrary
+    /// sidecar paths.
+    /// </summary>
+    internal static bool IsValidIconId(string iconId) =>
+        iconId.Length is > 0 and <= 200 && iconId.All(c => char.IsAsciiLetterOrDigit(c) || c is '.' or '_' or '-');
+
+    /// <summary>Downloads an extension icon from the sidecar, with the content type it reports.</summary>
+    internal static async Task<(byte[] Content, string ContentType)?> GetIconAsync(string iconId, CancellationToken ct)
+    {
+        if (!IsValidIconId(iconId))
+            return null;
+
+        try
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, $"{BaseUrl}/api/v1/extension/icon/{iconId}");
+            HttpResponseMessage response = await RequestClient.SendAsync(request, ct);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            byte[] content = await response.Content.ReadAsByteArrayAsync(ct);
+            return (content, response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream");
+        }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException)
+        {
+            return null;
+        }
     }
 
     private static async Task<TData?> ExecuteAsync<TData>(string document, CancellationToken ct)

@@ -1117,6 +1117,30 @@
         }
       }
     },
+    "/mangas/suwayomi/icons/{iconId}": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Get the icon of a Suwayomi extension",
+        "parameters": [
+          {
+            "name": "iconId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/mangas/suwayomi/sources": {
       "get": {
         "tags": [

@@ -170,6 +170,11 @@ internal static class EndpointHelpers
         builder.MapDelete("/extensions/{pkgName}", PostSuwayomiExtensionEndpoint.Uninstall)
             .WithSummary("Uninstall a Suwayomi extension");
 
+        // Anonymous on purpose - see the endpoint's remarks. Everything else in this group stays behind auth.
+        builder.MapGet("/icons/{iconId}", GetSuwayomiIconEndpoint.Handle)
+            .WithSummary("Get the icon of a Suwayomi extension")
+            .AllowAnonymous();
+
         builder.MapGet("/sources", GetSuwayomiSourcesEndpoint.Handle)
             .WithSummary("Get the sources of all installed Suwayomi extensions");
 

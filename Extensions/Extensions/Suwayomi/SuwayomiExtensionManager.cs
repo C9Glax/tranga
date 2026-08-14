@@ -53,11 +53,19 @@ public static class SuwayomiExtensionManager
                 SuwayomiSource.IdentifierFor(source.Id),
                 string.IsNullOrWhiteSpace(source.DisplayName) ? source.Name : source.DisplayName,
                 source.Lang,
-                SuwayomiClient.ToGatewayUrl(source.IconUrl),
+                SuwayomiClient.ToIconUrl(source.IconUrl),
                 source.HomeUrl ?? string.Empty,
                 SuwayomiSource.ParseContentWarning(source.ContentWarning)))
             .ToArray();
     }
+
+    /// <summary>
+    /// An extension's icon, fetched from the sidecar so the browser never has to reach it directly.
+    /// <paramref name="iconId"/> is validated as a package name before use.
+    /// </summary>
+    /// <returns><see langword="null"/> when the id is not a package name, the icon does not exist, or the sidecar is unreachable.</returns>
+    public static Task<(byte[] Content, string ContentType)?> GetIconAsync(string iconId, CancellationToken ct) =>
+        SuwayomiClient.GetIconAsync(iconId, ct);
 
     private static async Task<bool> SetStateAsync(string pkgName, SuwayomiExtensionAction action, CancellationToken ct) =>
         await SuwayomiClient.SetExtensionStateAsync(pkgName, action, ct) is not null;
@@ -66,7 +74,7 @@ public static class SuwayomiExtensionManager
         extension.PkgName,
         extension.Name,
         extension.Lang,
-        SuwayomiClient.ToGatewayUrl(extension.IconUrl),
+        SuwayomiClient.ToIconUrl(extension.IconUrl),
         extension.VersionName,
         SuwayomiSource.ParseContentWarning(extension.ContentWarning),
         extension.IsInstalled,

@@ -15,11 +15,7 @@
                 :description="`${status.installedSourceCount} source(s) available as download extensions.`"
                 icon="i-lucide-check"
                 color="success"
-                variant="subtle">
-                <template #actions>
-                    <UButton label="Open Suwayomi" icon="i-lucide-external-link" variant="soft" to="/suwayomi/" target="_blank" />
-                </template>
-            </UAlert>
+                variant="subtle" />
 
             <template v-if="status?.reachable">
                 <div ref="install-source" class="flex flex-row flex-wrap items-center gap-2">

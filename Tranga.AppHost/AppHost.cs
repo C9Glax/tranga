@@ -60,28 +60,14 @@ IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthS
 // there (see PublishAsDockerComposeService below).
 bool flaresolverrConfigured = !string.IsNullOrEmpty(flaresolverrUrl.Resource.GetValueAsync(CancellationToken.None).Result);
 
-// Serves the sidecar under /suwayomi instead of the root. Its WebUI emits an absolute <base href>, so behind a
-// path-stripping proxy every asset would resolve to the gateway root and the page would come up blank; Suwayomi's own
-// webUISubpath moves the whole server (WebUI and API alike) under the prefix, which is what makes proxying work.
-// It is the one setting the container image maps neither to an env var nor to a JVM property, so it has to be seeded
-// into server.conf before the real entrypoint runs. Written defensively: if the image ever moves these scripts the
-// sidecar still starts, it just loses the subpath.
-// Deliberately free of shell variables: this string is rendered into docker-compose.yaml, which would interpolate
-// any "$name" of its own before the container ever sees it.
-const string suwayomiSubpathCommand =
-    "[ -x /home/suwayomi/create_server_conf.sh ] && /home/suwayomi/create_server_conf.sh; " +
-    "[ -f /home/suwayomi/.local/share/Tachidesk/server.conf ] && " +
-    "sed -i 's|^server.webUISubpath = .*|server.webUISubpath = \"/suwayomi\" #|' " +
-    "/home/suwayomi/.local/share/Tachidesk/server.conf; " +
-    "exec /home/suwayomi/startup_script.sh";
-
 // The Suwayomi sidecar runs Tachiyomi/Mihon extension APKs (the keiyoushi repository) on the JVM, which is the only
 // way to reach those sources from .NET. Tranga depends on it: MangaDex aside, every download source comes from here.
 IResourceBuilder<ContainerResource> suwayomi = builder.AddContainer("suwayomi", "ghcr.io/suwayomi/suwayomi-server", "stable")
     .WithHttpEndpoint(name: "http", port: 4567, targetPort: 4567)
-    .WithArgs("/bin/sh", "-c", suwayomiSubpathCommand)
     .WithEnvironment("EXTENSION_STORES", "[\"https://github.com/keiyoushi/extensions/raw/repo/index.pb\"]")
-    .WithEnvironment("WEB_UI_ENABLED", "true")
+    // The sidecar is never reached by a browser: it is not routed through the gateway, so it would be unauthenticated
+    // if it were. Tranga's own Settings -> Sources page manages extensions, so the WebUI has no reason to run.
+    .WithEnvironment("WEB_UI_ENABLED", "false")
     .WithEnvironment("AUTH_MODE", "none")
     // KCEF downloads a ~500MB Chromium at first start to provide a WebView. FlareSolverr covers the Cloudflare
     // cases Tranga cares about, so it stays off.
@@ -145,7 +131,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
-        context.EnvironmentVariables["SUWAYOMI_URL"] = ReferenceExpression.Create($"{suwayomi.GetEndpoint("http")}/suwayomi");
+        context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -193,7 +179,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["AllowNSFW"] = allowNsfw.Resource;
         context.EnvironmentVariables["DownloadLanguage"] = downloadLanguage.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
-        context.EnvironmentVariables["SUWAYOMI_URL"] = ReferenceExpression.Create($"{suwayomi.GetEndpoint("http")}/suwayomi");
+        context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -356,11 +342,10 @@ builder.AddYarp("gateway")
         yarp.AddRoute("/api/libraries/{**catch-all}", librariesService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/auth/{**catch-all}", authService).WithTransformPathRemovePrefix("/api");
 
-        // Suwayomi's own WebUI, for the per-source preferences Tranga does not wrap. Its assets are built with a
-        // The prefix is deliberately *not* stripped: the sidecar is configured to serve itself under /suwayomi (see
-        // suwayomiSubpathCommand), so it expects to receive the full path. Tranga's own Settings -> Sources page is
-        // the primary way to manage extensions; services reach the sidecar directly over the tranga network.
-        yarp.AddRoute("/suwayomi/{**catch-all}", suwayomi.GetEndpoint("http"));
+        // The Suwayomi sidecar is deliberately not routed here. The gateway does not authenticate - every other route
+        // is protected by the service behind it - so exposing the sidecar would hand out unauthenticated control of
+        // it. Services reach it directly over the tranga network, and its extension icons are served back through
+        // the manga service.
     })
     .WithHostPort(port)
     .PublishAsDockerComposeService((resource, service) =>

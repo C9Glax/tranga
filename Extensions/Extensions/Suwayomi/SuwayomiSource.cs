@@ -110,7 +110,7 @@ public sealed class SuwayomiSource : IDownloadExtension
                 source.Id,
                 string.IsNullOrWhiteSpace(source.DisplayName) ? source.Name : source.DisplayName,
                 source.HomeUrl ?? string.Empty,
-                SuwayomiClient.ToGatewayUrl(source.IconUrl),
+                SuwayomiClient.ToIconUrl(source.IconUrl),
                 source.Lang,
                 ParseContentWarning(source.ContentWarning)))
             .ToArray();

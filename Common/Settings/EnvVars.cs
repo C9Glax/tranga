@@ -19,7 +19,7 @@ public struct EnvVars
     public static readonly int WorkersMin = Math.Max(Environment.GetEnvironmentVariable("WORKERS_MIN") is { } workersMin ? int.Parse(workersMin) : 1, 1);
     public static readonly int WorkersMax = Math.Max(Environment.GetEnvironmentVariable("WORKERS_MAX") is { } workersMax ? int.Parse(workersMax) : Math.Max(Environment.ProcessorCount / 2, 1), WorkersMin);
     public static readonly string? FlareSolverrUrl = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("FLARESOLVERR_URL")) ? null : Environment.GetEnvironmentVariable("FLARESOLVERR_URL");
-    public static readonly string SuwayomiUrl = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SUWAYOMI_URL")) ? "http://suwayomi:4567/suwayomi" : Environment.GetEnvironmentVariable("SUWAYOMI_URL")!;
+    public static readonly string SuwayomiUrl = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SUWAYOMI_URL")) ? "http://suwayomi:4567" : Environment.GetEnvironmentVariable("SUWAYOMI_URL")!;
     public static readonly bool UseAuth = Environment.GetEnvironmentVariable("UseAuth") is { } useAuth && bool.Parse(useAuth);
     public static readonly string? AuthSigningKey = Environment.GetEnvironmentVariable("AUTH_SIGNING_KEY");
 }

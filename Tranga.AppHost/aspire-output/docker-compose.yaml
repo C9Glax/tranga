@@ -12,13 +12,9 @@ services:
       - "tranga"
   suwayomi:
     image: "ghcr.io/suwayomi/suwayomi-server:stable"
-    command:
-      - "/bin/sh"
-      - "-c"
-      - "[ -x /home/suwayomi/create_server_conf.sh ] && /home/suwayomi/create_server_conf.sh; [ -f /home/suwayomi/.local/share/Tachidesk/server.conf ] && sed -i 's|^server.webUISubpath = .*|server.webUISubpath = \"/suwayomi\" #|' /home/suwayomi/.local/share/Tachidesk/server.conf; exec /home/suwayomi/startup_script.sh"
     environment:
       EXTENSION_STORES: "[\"https://github.com/keiyoushi/extensions/raw/repo/index.pb\"]"
-      WEB_UI_ENABLED: "true"
+      WEB_UI_ENABLED: "false"
       AUTH_MODE: "none"
       KCEF_ENABLED: "false"
       FLARESOLVERR_ENABLED: "${FLARESOLVERRURL:+true}"
@@ -85,7 +81,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
-      SUWAYOMI_URL: "http://suwayomi:4567/suwayomi"
+      SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_TASKS_PORT}"
     volumes:
@@ -137,7 +133,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
-      SUWAYOMI_URL: "http://suwayomi:4567/suwayomi"
+      SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_MANGA_PORT}"
     volumes:
@@ -329,15 +325,12 @@ services:
       REVERSEPROXY__ROUTES__route5__MATCH__PATH: "/api/auth/{**catch-all}"
       REVERSEPROXY__ROUTES__route5__CLUSTERID: "cluster_services-auth"
       REVERSEPROXY__ROUTES__route5__TRANSFORMS__0__PathRemovePrefix: "/api"
-      REVERSEPROXY__ROUTES__route6__MATCH__PATH: "/suwayomi/{**catch-all}"
-      REVERSEPROXY__ROUTES__route6__CLUSTERID: "cluster_suwayomi"
       REVERSEPROXY__CLUSTERS__cluster_frontend__DESTINATIONS__destination1__ADDRESS: "http://frontend"
       REVERSEPROXY__CLUSTERS__cluster_services-manga__DESTINATIONS__destination1__ADDRESS: "https+http://services-manga"
       REVERSEPROXY__CLUSTERS__cluster_services-tasks__DESTINATIONS__destination1__ADDRESS: "https+http://services-tasks"
       REVERSEPROXY__CLUSTERS__cluster_services-notifications__DESTINATIONS__destination1__ADDRESS: "https+http://services-notifications"
       REVERSEPROXY__CLUSTERS__cluster_services-libraries__DESTINATIONS__destination1__ADDRESS: "https+http://services-libraries"
       REVERSEPROXY__CLUSTERS__cluster_services-auth__DESTINATIONS__destination1__ADDRESS: "https+http://services-auth"
-      REVERSEPROXY__CLUSTERS__cluster_suwayomi__DESTINATIONS__destination1__ADDRESS: "http://suwayomi"
       services__frontend__http__0: "http://frontend:3000"
       SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
       services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
@@ -354,8 +347,6 @@ services:
       SERVICES_AUTH_HTTP: "http://services-auth:${SERVICES_AUTH_PORT}"
       services__services-auth__http__0: "http://services-auth:${SERVICES_AUTH_PORT}"
       SERVICES_AUTH_HTTPS: "https://services-auth:${SERVICES_AUTH_PORT}"
-      SUWAYOMI_HTTP: "http://suwayomi:4567"
-      services__suwayomi__http__0: "http://suwayomi:4567"
     ports:
       - "5000:5000"
     expose:

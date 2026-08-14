@@ -984,6 +984,20 @@ export type DeleteMangasSuwayomiExtensionsByPkgNameResponses = {
     200: unknown;
 };
 
+export type GetMangasSuwayomiIconsByIconIdData = {
+    body?: never;
+    path: { iconId: string };
+    query?: never;
+    url: '/mangas/suwayomi/icons/{iconId}';
+};
+
+export type GetMangasSuwayomiIconsByIconIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
 export type GetMangasSuwayomiSourcesData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/sources' };
 
 export type GetMangasSuwayomiSourcesResponses = {

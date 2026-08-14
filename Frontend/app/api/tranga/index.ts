@@ -94,6 +94,8 @@ export type {
     GetMangasSuwayomiExtensionsData,
     GetMangasSuwayomiExtensionsResponse,
     GetMangasSuwayomiExtensionsResponses,
+    GetMangasSuwayomiIconsByIconIdData,
+    GetMangasSuwayomiIconsByIconIdErrors,
     GetMangasSuwayomiSourcesData,
     GetMangasSuwayomiSourcesResponse,
     GetMangasSuwayomiSourcesResponses,
