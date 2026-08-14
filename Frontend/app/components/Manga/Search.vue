@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ServicesMangaIMetadataExtension, GetMangasResponse, PostMangasSearchResponse, ServicesMangaMetadata } from '~/api/tranga';
+import type { ServicesMangaMetadataExtension, GetMangasResponse, PostMangasSearchResponse, ServicesMangaMetadata } from '~/api/tranga';
 import useMetadataExtensions from '~/composables/MetadataExtension';
 import { ApiKeys } from '~/composables/ApiKeys';
 import type { CommandPaletteGroup, CommandPaletteItem } from '@nuxt/ui/components/CommandPalette.vue';
@@ -58,10 +58,10 @@ watch(
     metadataExtensions,
     () =>
         (selectedExtensions.value =
-            metadataExtensions.value.extensions?.map((e: ServicesMangaIMetadataExtension) => e.metadataExtensionId as string) ?? []),
+            metadataExtensions.value.extensions?.map((e: ServicesMangaMetadataExtension) => e.metadataExtensionId as string) ?? []),
 );
 const selectedExtensions = ref<string[]>(
-    metadataExtensions.value.extensions?.map((e: ServicesMangaIMetadataExtension) => e.metadataExtensionId as string) ?? [],
+    metadataExtensions.value.extensions?.map((e: ServicesMangaMetadataExtension) => e.metadataExtensionId as string) ?? [],
 );
 
 const displayManga = computed((): CommandPaletteGroup<CommandPaletteItem>[] => [...matchedManga.value, ...searchResultItems.value]);

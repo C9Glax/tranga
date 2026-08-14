@@ -990,6 +990,206 @@
           }
         }
       }
+    },
+    "/mangas/suwayomi/status": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Status of the Suwayomi sidecar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuwayomiStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mangas/suwayomi/extensions": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Get the Suwayomi extension catalogue",
+        "parameters": [
+          {
+            "name": "refresh",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SuwayomiExtensionInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mangas/suwayomi/extensions/{pkgName}/install": {
+      "post": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Install a Suwayomi extension",
+        "parameters": [
+          {
+            "name": "pkgName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/mangas/suwayomi/extensions/{pkgName}/update": {
+      "post": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Update a Suwayomi extension",
+        "parameters": [
+          {
+            "name": "pkgName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/mangas/suwayomi/extensions/{pkgName}": {
+      "delete": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Uninstall a Suwayomi extension",
+        "parameters": [
+          {
+            "name": "pkgName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/mangas/suwayomi/icons/{iconId}": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Get the icon of a Suwayomi extension",
+        "parameters": [
+          {
+            "name": "iconId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/mangas/suwayomi/sources": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Get the sources of all installed Suwayomi extensions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SuwayomiSourceInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mangas/suwayomi/refresh": {
+      "post": {
+        "tags": [
+          "Manga",
+          "Suwayomi"
+        ],
+        "summary": "Re-read the sources installed on the Suwayomi sidecar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "pattern": "^-?(?:0|[1-9]\\d*)$",
+                  "type": [
+                    "integer",
+                    "string"
+                  ],
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1052,13 +1252,37 @@
           null
         ]
       },
+      "DownloadExtension": {
+        "required": [
+          "downloadExtensionsId",
+          "name",
+          "iconUrl",
+          "isSuwayomiSource"
+        ],
+        "type": "object",
+        "properties": {
+          "downloadExtensionsId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "iconUrl": {
+            "type": "string"
+          },
+          "isSuwayomiSource": {
+            "type": "boolean"
+          }
+        }
+      },
       "DownloadExtensionsList": {
         "type": "object",
         "properties": {
           "extensions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/IDownloadExtension"
+              "$ref": "#/components/schemas/DownloadExtension"
             }
           }
         }
@@ -1125,48 +1349,6 @@
             "type": [
               "null",
               "boolean"
-            ]
-          }
-        }
-      },
-      "IDownloadExtension": {
-        "type": "object",
-        "properties": {
-          "downloadExtensionsId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "iconUrl": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
-      "IMetadataExtension": {
-        "type": "object",
-        "properties": {
-          "metadataExtensionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "iconUrl": {
-            "type": [
-              "null",
-              "string"
             ]
           }
         }
@@ -1461,13 +1643,33 @@
           }
         }
       },
+      "MetadataExtension": {
+        "required": [
+          "metadataExtensionId",
+          "name",
+          "iconUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "metadataExtensionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "iconUrl": {
+            "type": "string"
+          }
+        }
+      },
       "MetadataExtensionsList": {
         "type": "object",
         "properties": {
           "extensions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/IMetadataExtension"
+              "$ref": "#/components/schemas/MetadataExtension"
             }
           }
         }
@@ -1656,6 +1858,150 @@
             "format": "uuid"
           }
         }
+      },
+      "SuwayomiContentWarning": {
+        "enum": [
+          "Safe",
+          "Mixed",
+          "Nsfw"
+        ],
+        "description": "            How a Suwayomi source or extension is classified by its extension store.\n            Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into\nSuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else\n(MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed)."
+      },
+      "SuwayomiExtensionInfo": {
+        "required": [
+          "pkgName",
+          "name",
+          "lang",
+          "iconUrl",
+          "versionName",
+          "contentWarning",
+          "isInstalled",
+          "isObsolete",
+          "hasUpdate"
+        ],
+        "type": "object",
+        "properties": {
+          "pkgName": {
+            "type": "string",
+            "description": "Android package name; the identifier used to install, update and uninstall."
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the extension."
+          },
+          "lang": {
+            "type": "string",
+            "description": "Tachiyomi language code, e.g. `en`, `pt-BR`, `all`."
+          },
+          "iconUrl": {
+            "type": "string",
+            "description": "Gateway-relative url of the extension's icon."
+          },
+          "versionName": {
+            "type": "string",
+            "description": "Version currently installed, or offered by the store when not installed."
+          },
+          "contentWarning": {
+            "description": "How the extension store classifies the content. A `Mixed` extension stays usable while `AllowNSFW` is off; only `Nsfw` ones are held back.",
+            "$ref": "#/components/schemas/SuwayomiContentWarning"
+          },
+          "isInstalled": {
+            "type": "boolean",
+            "description": "Whether the extension is installed on the sidecar."
+          },
+          "isObsolete": {
+            "type": "boolean",
+            "description": "Whether the extension is no longer offered by any configured store."
+          },
+          "hasUpdate": {
+            "type": "boolean",
+            "description": "Whether a newer version is available."
+          }
+        },
+        "description": "An extension offered by, or installed from, a configured extension store."
+      },
+      "SuwayomiSourceInfo": {
+        "required": [
+          "sourceId",
+          "extensionId",
+          "name",
+          "lang",
+          "iconUrl",
+          "homeUrl",
+          "contentWarning"
+        ],
+        "type": "object",
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "description": "The Tachiyomi source id."
+          },
+          "extensionId": {
+            "type": "string",
+            "description": "The Tranga extension identifier derived from SourceId.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the source, normally including its language."
+          },
+          "lang": {
+            "type": "string",
+            "description": "Tachiyomi language code."
+          },
+          "iconUrl": {
+            "type": "string",
+            "description": "Gateway-relative url of the source's icon."
+          },
+          "homeUrl": {
+            "type": "string",
+            "description": "The source's own website."
+          },
+          "contentWarning": {
+            "description": "How the extension store classifies the source's content.",
+            "$ref": "#/components/schemas/SuwayomiContentWarning"
+          }
+        },
+        "description": "A source exposed by an installed extension, and the Tranga download-extension it is registered as."
+      },
+      "SuwayomiStatus": {
+        "required": [
+          "reachable",
+          "serverName",
+          "serverVersion",
+          "installedSourceCount"
+        ],
+        "type": "object",
+        "properties": {
+          "reachable": {
+            "type": "boolean",
+            "description": "Whether the sidecar answered. False means the container is missing or still starting."
+          },
+          "serverName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Sidecar product name, when reachable."
+          },
+          "serverVersion": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Sidecar version, when reachable."
+          },
+          "installedSourceCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Number of sources currently exposed by installed extensions.",
+            "format": "int32"
+          }
+        },
+        "description": "Reachability and version of the Suwayomi sidecar."
       }
     }
   },
@@ -1674,6 +2020,9 @@
     },
     {
       "name": "Files"
+    },
+    {
+      "name": "Suwayomi"
     }
   ]
 }

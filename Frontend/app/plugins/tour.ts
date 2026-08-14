@@ -2,14 +2,24 @@ import type { TourStep, UseTourReturn } from '~/composables/useTour';
 
 const SEEN_KEY = 'tranga-tour-first-download-seen';
 
-const TOUR_KEYS = ['search-button', 'use-as-source', 'go-to-manga', 'more-download-links', 'add-link', 'match-download-link'] as const;
+const TOUR_KEYS = [
+    'sources-nav',
+    'install-source',
+    'search-button',
+    'use-as-source',
+    'go-to-manga',
+    'more-download-links',
+    'add-link',
+    'match-download-link',
+] as const;
 type TourKey = (typeof TOUR_KEYS)[number];
 
 /**
- * "Use as Source for Manga", "Go to Manga" and "More Download-Links" only exist as
- * entries inside `ButtonProps[]`/`NavigationMenuItem[]` arrays passed into shared
- * page components (see `Metadata/Page.vue`/`Manga/Page.vue`'s `actions` prop) - a Vue
- * ref can't attach inside a plain data array. "Match" is a real template element but
+ * "Sources", "Use as Source for Manga", "Go to Manga" and "More Download-Links" only
+ * exist as entries inside `ButtonProps[]`/`NavigationMenuItem[]` arrays passed into
+ * shared page components (see `Tranga/Page.vue`'s nav items and
+ * `Metadata/Page.vue`/`Manga/Page.vue`'s `actions` prop) - a Vue ref can't attach
+ * inside a plain data array. "Match" is a real template element but
  * lives inside a `UFieldGroup`, which rounds/joins its children via Tailwind
  * `first:`/`last:`/`only:` selectors keyed off actual DOM sibling position -
  * wrapping it in a ref span would remove it from that sibling set and visibly break
@@ -18,6 +28,7 @@ type TourKey = (typeof TOUR_KEYS)[number];
  * targets below.
  */
 const SYNCED_CLASS_SELECTORS: Partial<Record<TourKey, string>> = {
+    'sources-nav': '.tour-sources-nav',
     'use-as-source': '.tour-use-as-source',
     'go-to-manga': '.tour-go-to-manga',
     'more-download-links': '.tour-more-download-links',
@@ -36,6 +47,13 @@ interface FirstDownloadStep extends TourStep {
      * who never performs the pointed-at action would be stuck on that step forever.
      */
     manualNext?: boolean;
+    /**
+     * Advance when this selector is clicked, rather than when the step's own anchor is.
+     * Needed where the thing to click is not a sensible thing to point at: the Install
+     * buttons live on virtualised table rows that scroll in and out, so the popover
+     * anchors to the stable filter bar above them instead.
+     */
+    advanceSelector?: string;
 }
 
 interface TourApi {
@@ -93,6 +111,8 @@ export default defineNuxtPlugin({
         }
 
         const targets = reactive<Record<TourKey, HTMLElement | null>>({
+            'sources-nav': null,
+            'install-source': null,
             'search-button': null,
             'use-as-source': null,
             'go-to-manga': null,
@@ -108,7 +128,21 @@ export default defineNuxtPlugin({
         const steps: FirstDownloadStep[] = [
             {
                 title: "Let's queue your first download",
-                body: "We'll walk through finding a manga and downloading its first chapters. It only takes a minute.",
+                body: "We'll install a download source, then find a manga and download its first chapters. It only takes a minute.",
+            },
+            {
+                key: 'sources-nav',
+                target: () => targets['sources-nav'] ?? undefined,
+                title: 'Pick where to download from',
+                body: 'Apart from MangaDex, Tranga gets its sources from installable extensions. Open Sources to browse them.',
+            },
+            {
+                key: 'install-source',
+                target: () => targets['install-source'] ?? undefined,
+                advanceSelector: '.tour-install-source',
+                title: 'Install a source',
+                body: 'Search for a site you read on and click Install. Its sources become available to Tranga straight away. Already have one installed? Skip ahead.',
+                manualNext: true,
             },
             {
                 key: 'search-button',
@@ -198,6 +232,14 @@ export default defineNuxtPlugin({
                 if (!key) return;
                 const target = event.target;
                 if (!(target instanceof Node)) return;
+
+                // Steps that point at one element but advance on another handle it here,
+                // before the anchor-based checks below.
+                const advanceSelector = (tour.current.value as FirstDownloadStep | undefined)?.advanceSelector;
+                if (advanceSelector) {
+                    if (target instanceof Element && target.closest(advanceSelector)) tour.next();
+                    return;
+                }
 
                 // Class-keyed targets can render more than once (see the sidebar/CTA
                 // duplication note above) - accept a click on any matching instance,

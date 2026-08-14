@@ -10,6 +10,24 @@ services:
       - "5432"
     networks:
       - "tranga"
+  suwayomi:
+    image: "ghcr.io/suwayomi/suwayomi-server:stable"
+    environment:
+      EXTENSION_STORES: "[\"https://github.com/keiyoushi/extensions/raw/repo/index.pb\"]"
+      WEB_UI_ENABLED: "false"
+      AUTH_MODE: "none"
+      KCEF_ENABLED: "false"
+      FLARESOLVERR_ENABLED: "${FLARESOLVERRURL:+true}"
+      FLARESOLVERR_URL: "${FLARESOLVERRURL}"
+    expose:
+      - "4567"
+    volumes:
+      - type: "volume"
+        target: "/home/suwayomi/.local/share/Tachidesk"
+        source: "Suwayomi"
+    networks:
+      - "tranga"
+    restart: "on-failure:3"
   messaging:
     image: "docker.io/library/rabbitmq:4.3"
     environment:
@@ -63,6 +81,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
+      SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_TASKS_PORT}"
     volumes:
@@ -74,6 +93,8 @@ services:
         condition: "service_started"
       messaging:
         condition: "service_healthy"
+      suwayomi:
+        condition: "service_started"
     user: "${PUID:-1000}:${PGID:-1000}"
     networks:
       - "tranga"
@@ -112,6 +133,7 @@ services:
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
+      SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
       - "${SERVICES_MANGA_PORT}"
     volumes:
@@ -123,6 +145,8 @@ services:
         condition: "service_started"
       messaging:
         condition: "service_healthy"
+      suwayomi:
+        condition: "service_started"
     networks:
       - "tranga"
     restart: "on-failure:3"
@@ -339,3 +363,4 @@ networks:
     driver: "bridge"
 volumes:
   Covers: {}
+  Suwayomi: {}

@@ -45,6 +45,8 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
+- [x] Download sources via a bundled [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server, giving access to
+  the ~2000 sources of the [keiyoushi](https://github.com/keiyoushi/extensions) extension repository
 
 #### TODO LIST
 
@@ -59,19 +61,22 @@ You probably do not want to modify this. Use the [`.env`](Tranga.AppHost/aspire-
 - [.env](Tranga.AppHost/aspire-output/.env)
   - [Environment variable documentation](EnvVars.md)
 
-`Mangas` is bind-mounted from the host path set in `MangaDirectory`, so it keeps whatever ownership that host directory already has.
-The services write to it as a non-root container user (UID/GID `1654`), so if you hit `UnauthorizedAccessException`/`Permission denied` errors on download,
-chown the host directory before starting the stack:
+### Download sources (Suwayomi + keiyoushi)
 
-```bash
-sudo chown -R 1654:1654 /path/to/your/Manga
-```
+Apart from MangaDex, which is built in, Tranga gets its download sources from a bundled
+[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server. Install the sources you want under **Settings → Sources**.
+
+**If FlareSolverr is configured for Tranga, the Suwayomi is pointed at the same instance.**
+
+> The `Suwayomi` volume is persistent state, not a cache. It holds the installed extension JARs as well as the rows
+> that map manga URLs back to the sidecar's internal ids. Deleting it means reinstalling your extensions.
 
 ### Adding a Komga library
 
 When adding a Komga library, the "Library Root Path" must be the path *inside the Komga container*
 where Tranga's `Mangas` volume is mounted — not the path on the host, and not the path inside Tranga's own containers.
-Mount that same volume into your Komga container and point the field at wherever you mounted it (defaults to `/tranga` if left blank).
+Mount that same volume into your Komga container and point the field at wherever you mounted it
+(defaults to `/tranga` if left blank).
 
 ### Resetting the admin password
 
@@ -104,6 +109,8 @@ the login page will show the setup screen again on next load.
 - [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
   - [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
+- [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server)
+  - [keiyoushi extensions](https://github.com/keiyoushi/extensions)
 - [Naprise](https://github.com/Genteure/naprise)
 - [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - [GitInfo](https://github.com/devlooped/GitInfo)

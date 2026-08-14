@@ -16,4 +16,10 @@ public interface IExtension
     /// The Url of the extension
     /// </summary>
     public string BaseUrl { get; init; }
+
+    /// <summary>
+    /// Url to the extension's icon/logo, shown by the frontend. Absolute for the built-in extensions; relative to the
+    /// gateway for extensions served through the Suwayomi sidecar.
+    /// </summary>
+    public string IconUrl { get; init; }
 }

@@ -1,6 +1,7 @@
 using Common.Database;
 using Common.Services.Events;
 using Common.Settings;
+using Extensions;
 using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Features;
@@ -30,6 +31,11 @@ public sealed class Service : Common.Services.Service
         {
             using MangaContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
             context.Database.MigrateAsync(CancellationToken.None).Wait();
+
+            // Registers the sources installed on the Suwayomi sidecar as download extensions. Best-effort: if the
+            // sidecar is off or not up yet, this is a no-op and the periodic refresh in Services.Tasks or an explicit
+            // POST /suwayomi/refresh picks the sources up later.
+            DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(CancellationToken.None).Wait();
         }
     }
 
