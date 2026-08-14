@@ -35,7 +35,7 @@
                 </div>
                 <div class="flex flex-row flex-wrap items-center gap-4">
                     <USwitch v-model="installedOnly" label="Installed only" />
-                    <USwitch v-model="showNsfw" label="Show NSFW-only" />
+                    <USwitch v-model="showNsfw" label="Show NSFW" />
                     <span class="text-sm text-muted">{{ filtered.length }} of {{ extensions?.length ?? 0 }} extensions</span>
                 </div>
 
