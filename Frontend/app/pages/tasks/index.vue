@@ -1,65 +1,46 @@
 <template>
     <TrangaPage rimless>
-        <UPageSection :ui="{ container: 'py-2 sm:py-2 lg:py-4 px-0 sm:px-0 lg:px-0\' ' }">
-            <div class="flex flex-wrap gap-4 items-end">
-                <UFormField label="Filter presets">
-                    <UFieldGroup>
-                        <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" placeholder="Preset" class="w-56" />
-                        <UButton
-                            v-if="presetFilter"
-                            icon="i-lucide-x"
-                            color="neutral"
-                            variant="outline"
-                            @click="presetFilter = undefined" />
-                    </UFieldGroup>
-                </UFormField>
+        <div class="m-4 px-4 flex flex-wrap gap-4 items-end">
+            <UFormField label="Filter presets">
+                <UFieldGroup>
+                    <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" placeholder="Preset" class="w-56" />
+                    <UButton v-if="presetFilter" icon="i-lucide-x" color="neutral" variant="outline" @click="presetFilter = undefined" />
+                </UFieldGroup>
+            </UFormField>
 
-                <UFormField label="Manga">
-                    <UFieldGroup>
-                        <USelectMenu
-                            v-model="mangaFilter"
-                            :items="mangaOptions"
-                            :loading="mangaStatus === 'pending'"
-                            value-key="value"
-                            searchable
-                            placeholder="All Mangas"
-                            class="w-56" />
-                        <UButton v-if="mangaFilter" icon="i-lucide-x" color="neutral" variant="outline" @click="mangaFilter = undefined" />
-                    </UFieldGroup>
-                </UFormField>
-
-                <UFormField label="Type">
+            <UFormField label="Manga">
+                <UFieldGroup>
                     <USelectMenu
-                        v-model="typeFilter"
-                        :items="typeOptions"
+                        v-model="mangaFilter"
+                        :items="mangaOptions"
+                        :loading="mangaStatus === 'pending'"
                         value-key="value"
-                        multiple
-                        placeholder="All Types"
+                        searchable
+                        placeholder="All Mangas"
                         class="w-56" />
-                </UFormField>
+                    <UButton v-if="mangaFilter" icon="i-lucide-x" color="neutral" variant="outline" @click="mangaFilter = undefined" />
+                </UFieldGroup>
+            </UFormField>
 
-                <UFormField label="State">
-                    <USelectMenu
-                        v-model="stateFilter"
-                        :items="stateOptions"
-                        value-key="value"
-                        multiple
-                        placeholder="All States"
-                        class="w-56" />
-                </UFormField>
+            <UFormField label="Type">
+                <USelectMenu v-model="typeFilter" :items="typeOptions" value-key="value" multiple placeholder="All Types" class="w-56" />
+            </UFormField>
 
-                <UButton
-                    v-if="mangaFilter || typeFilter.length || stateFilter.length"
-                    label="Clear filters"
-                    icon="i-lucide-filter-x"
-                    color="neutral"
-                    variant="ghost"
-                    @click="clearFilters" />
-            </div>
-        </UPageSection>
-        <UPageSection :ui="{ container: 'py-0 sm:py-0 lg:py-0 px-0 sm:px-0 lg:px-0' }">
+            <UFormField label="State">
+                <USelectMenu v-model="stateFilter" :items="stateOptions" value-key="value" multiple placeholder="All States" class="w-56" />
+            </UFormField>
+
+            <UButton
+                v-if="mangaFilter || typeFilter.length || stateFilter.length"
+                label="Clear filters"
+                icon="i-lucide-filter-x"
+                color="neutral"
+                variant="ghost"
+                @click="clearFilters" />
+        </div>
+        <div class="w-full h-full p-0 m-0">
             <TasksList ref="listRef" :tasks="tasks" :loading="status !== 'success' && tasks.length === 0" />
-        </UPageSection>
+        </div>
     </TrangaPage>
 </template>
 
