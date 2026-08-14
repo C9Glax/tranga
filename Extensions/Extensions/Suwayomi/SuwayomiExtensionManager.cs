@@ -67,7 +67,7 @@ public static class SuwayomiExtensionManager
                 source.Lang,
                 SuwayomiClient.ToGatewayUrl(source.IconUrl),
                 source.HomeUrl ?? string.Empty,
-                source.IsNsfw))
+                SuwayomiSource.ParseContentWarning(source.ContentWarning)))
             .ToArray();
     }
 
@@ -84,7 +84,7 @@ public static class SuwayomiExtensionManager
         extension.Lang,
         SuwayomiClient.ToGatewayUrl(extension.IconUrl),
         extension.VersionName,
-        extension.IsNsfw,
+        SuwayomiSource.ParseContentWarning(extension.ContentWarning),
         extension.IsInstalled,
         extension.IsObsolete,
         extension.HasUpdate);
@@ -104,7 +104,7 @@ public sealed record SuwayomiStatus(bool Enabled, bool Reachable, string? Server
 /// <param name="Lang">Tachiyomi language code, e.g. <c>en</c>, <c>pt-BR</c>, <c>all</c>.</param>
 /// <param name="IconUrl">Gateway-relative url of the extension's icon.</param>
 /// <param name="VersionName">Version currently installed, or offered by the store when not installed.</param>
-/// <param name="IsNsfw">Whether the extension is flagged as NSFW. Its sources return nothing while <c>AllowNSFW</c> is off.</param>
+/// <param name="ContentWarning">How the extension store classifies the content. A <c>Mixed</c> extension stays usable while <c>AllowNSFW</c> is off; only <c>Nsfw</c> ones are held back.</param>
 /// <param name="IsInstalled">Whether the extension is installed on the sidecar.</param>
 /// <param name="IsObsolete">Whether the extension is no longer offered by any configured store.</param>
 /// <param name="HasUpdate">Whether a newer version is available.</param>
@@ -114,7 +114,7 @@ public sealed record SuwayomiExtensionInfo(
     string Lang,
     string IconUrl,
     string VersionName,
-    bool IsNsfw,
+    SuwayomiContentWarning ContentWarning,
     bool IsInstalled,
     bool IsObsolete,
     bool HasUpdate);
@@ -126,7 +126,7 @@ public sealed record SuwayomiExtensionInfo(
 /// <param name="Lang">Tachiyomi language code.</param>
 /// <param name="IconUrl">Gateway-relative url of the source's icon.</param>
 /// <param name="HomeUrl">The source's own website.</param>
-/// <param name="IsNsfw">Whether the source is flagged as NSFW.</param>
+/// <param name="ContentWarning">How the extension store classifies the source's content.</param>
 public sealed record SuwayomiSourceInfo(
     string SourceId,
     Guid ExtensionId,
@@ -134,4 +134,4 @@ public sealed record SuwayomiSourceInfo(
     string Lang,
     string IconUrl,
     string HomeUrl,
-    bool IsNsfw);
+    SuwayomiContentWarning ContentWarning);

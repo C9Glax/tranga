@@ -13,7 +13,7 @@ public sealed class SuwayomiSourceTests : Common.Tests.TrangaTest
     private const string ComickSourceId = "1234567890123";
 
     private static SuwayomiSource CreateSource(string sourceId = BatoSourceId, string homeUrl = "https://bato.to") =>
-        new(sourceId, "Bato.to (EN)", homeUrl, "/suwayomi/api/v1/extension/icon/bato.png", "en", false);
+        new(sourceId, "Bato.to (EN)", homeUrl, "/suwayomi/api/v1/extension/icon/bato.png", "en", SuwayomiContentWarning.Safe);
 
     [Fact]
     public void IdentifierIsDeterministic()
@@ -92,7 +92,7 @@ public sealed class SuwayomiSourceTests : Common.Tests.TrangaTest
     [Fact]
     public void SupportedLanguagesParsesTachiyomiCode()
     {
-        SuwayomiSource source = new(BatoSourceId, "Bato.to", "https://bato.to", string.Empty, "pt-BR", false);
+        SuwayomiSource source = new(BatoSourceId, "Bato.to", "https://bato.to", string.Empty, "pt-BR", SuwayomiContentWarning.Safe);
         Assert.Single(source.SupportedLanguages);
         Assert.Equal("pt-BR", source.SupportedLanguages[0].Name);
     }
@@ -105,7 +105,64 @@ public sealed class SuwayomiSourceTests : Common.Tests.TrangaTest
     {
         // Tachiyomi's multi-language and unclassified markers have no CultureInfo equivalent; claiming a specific
         // language for them would be wrong, so the list is left empty.
-        SuwayomiSource source = new(BatoSourceId, "Bato.to", "https://bato.to", string.Empty, lang, false);
+        SuwayomiSource source = new(BatoSourceId, "Bato.to", "https://bato.to", string.Empty, lang, SuwayomiContentWarning.Safe);
         Assert.Empty(source.SupportedLanguages);
+    }
+
+    [Theory]
+    [InlineData("SAFE", SuwayomiContentWarning.Safe)]
+    [InlineData("MIXED", SuwayomiContentWarning.Mixed)]
+    [InlineData("NSFW", SuwayomiContentWarning.Nsfw)]
+    [InlineData("Mixed", SuwayomiContentWarning.Mixed)]
+    public void ParseContentWarningMapsGraphQlEnumNames(string value, SuwayomiContentWarning expected)
+    {
+        Assert.Equal(expected, SuwayomiSource.ParseContentWarning(value));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("CONTENT_WARNING_NSFW")]
+    public void ParseContentWarningFallsBackToMixed(string? value)
+    {
+        // Unrecognised values must not silently become Safe: the source stays usable, but its entries are still
+        // tag-filtered while NSFW is disallowed. ("CONTENT_WARNING_NSFW" is the extension-store index spelling, which
+        // the GraphQL API does not use.)
+        Assert.Equal(SuwayomiContentWarning.Mixed, SuwayomiSource.ParseContentWarning(value));
+    }
+
+    [Fact]
+    public void EverythingFromAnNsfwSourceIsAdultContent()
+    {
+        Assert.True(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Nsfw, ["Comedy"]));
+        Assert.True(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Nsfw, null));
+    }
+
+    [Fact]
+    public void MixedSourceEntriesAreJudgedByGenre()
+    {
+        // This is what keeps MangaDex and Weeb Central usable while NSFW is disallowed: the source is allowed through,
+        // and only the individual adult entries are dropped.
+        Assert.False(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Mixed, ["Action", "Comedy"]));
+        Assert.True(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Mixed, ["Action", "Hentai"]));
+    }
+
+    [Theory]
+    [InlineData("Hentai")]
+    [InlineData("adult")]
+    [InlineData("  Smut  ")]
+    [InlineData("Erotica")]
+    [InlineData("18+")]
+    public void AdultGenresAreMatchedCaseAndWhitespaceInsensitively(string genre)
+    {
+        Assert.True(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Mixed, [genre]));
+    }
+
+    [Fact]
+    public void SafeSourceWithoutAdultGenresIsNotAdultContent()
+    {
+        Assert.False(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Safe, ["Action"]));
+        Assert.False(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Safe, null));
+        Assert.False(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Safe, []));
     }
 }

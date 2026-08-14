@@ -43,13 +43,12 @@
                 </div>
                 <div class="flex flex-row flex-wrap items-center gap-4">
                     <USwitch v-model="installedOnly" label="Installed only" />
-                    <USwitch v-model="showNsfw" label="Show NSFW" />
+                    <USwitch v-model="showNsfw" label="Show NSFW-only" />
                     <span class="text-sm text-muted">{{ filtered.length }} of {{ extensions?.length ?? 0 }} extensions</span>
                 </div>
 
                 <!-- The catalogue is ~1400 rows. Virtualizing keeps the DOM to the visible window, so the whole list
-                     stays scrollable without paging it. `sticky` is deliberately absent: UTable does not support it
-                     together with `virtualize`. -->
+                     stays scrollable without paging it. -->
                 <UTable
                     :data="filtered"
                     :columns="columns"
@@ -75,7 +74,8 @@
                     <template #state-cell="{ row }">
                         <div class="flex flex-row items-center gap-1">
                             <UBadge v-if="row.original.isInstalled" label="Installed" color="secondary" variant="subtle" />
-                            <UBadge v-if="row.original.isNsfw" label="NSFW" color="error" variant="solid" />
+                            <UBadge v-if="row.original.contentWarning === 'Nsfw'" label="NSFW" color="error" variant="solid" />
+                            <UBadge v-if="row.original.contentWarning === 'Mixed'" label="Mixed" color="warning" variant="outline" />
                             <UBadge v-if="row.original.isObsolete" label="Obsolete" color="warning" variant="subtle" />
                             <UBadge v-if="row.original.hasUpdate" label="Update" color="info" variant="subtle" />
                         </div>
@@ -156,7 +156,9 @@ const languageItems = computed(() => [ALL_LANGUAGES, ...[...new Set((extensions.
 const filtered = computed(() => {
     const term = query.value.trim().toLowerCase();
     return (extensions.value ?? []).filter((extension) => {
-        if (!showNsfw.value && extension.isNsfw) return false;
+        // Only dedicated adult extensions are hidden. Mixed ones (MangaDex, Weeb Central, ...) stay listed; their
+        // individual results are filtered server-side while AllowNSFW is off.
+        if (!showNsfw.value && extension.contentWarning === 'Nsfw') return false;
         if (installedOnly.value && !extension.isInstalled) return false;
         if (language.value !== ALL_LANGUAGES && extension.lang !== language.value) return false;
         if (term && !extension.name.toLowerCase().includes(term) && !extension.pkgName.toLowerCase().includes(term)) return false;

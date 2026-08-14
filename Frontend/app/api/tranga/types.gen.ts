@@ -111,6 +111,14 @@ export type ServicesMangaSearchQuery = {
 };
 
 /**
+ *             How a Suwayomi source or extension is classified by its extension store.
+ * Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into
+ * SuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else
+ * (MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed).
+ */
+export type ServicesMangaSuwayomiContentWarning = 'Safe' | 'Mixed' | 'Nsfw';
+
+/**
  * An extension offered by, or installed from, a configured extension store.
  */
 export type ServicesMangaSuwayomiExtensionInfo = {
@@ -135,9 +143,9 @@ export type ServicesMangaSuwayomiExtensionInfo = {
      */
     versionName: string;
     /**
-     * Whether the extension is flagged as NSFW. Its sources return nothing while `AllowNSFW` is off.
+     * How the extension store classifies the content. A `Mixed` extension stays usable while `AllowNSFW` is off; only `Nsfw` ones are held back.
      */
-    isNsfw: boolean;
+    contentWarning: ServicesMangaSuwayomiContentWarning;
     /**
      * Whether the extension is installed on the sidecar.
      */
@@ -181,9 +189,9 @@ export type ServicesMangaSuwayomiSourceInfo = {
      */
     homeUrl: string;
     /**
-     * Whether the source is flagged as NSFW.
+     * How the extension store classifies the source's content.
      */
-    isNsfw: boolean;
+    contentWarning: ServicesMangaSuwayomiContentWarning;
 };
 
 /**

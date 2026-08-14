@@ -225,6 +225,16 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
 
 /**
+ *             How a Suwayomi source or extension is classified by its extension store.
+ * Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into
+ * SuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else
+ * (MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed).
+ */
+export const zServicesMangaSuwayomiContentWarning = z.enum(['Safe', 'Mixed', 'Nsfw']);
+
+export type ServicesMangaSuwayomiContentWarningZodType = z.infer<typeof zServicesMangaSuwayomiContentWarning>;
+
+/**
  * An extension offered by, or installed from, a configured extension store.
  */
 export const zServicesMangaSuwayomiExtensionInfo = z.object({
@@ -233,7 +243,7 @@ export const zServicesMangaSuwayomiExtensionInfo = z.object({
     lang: z.string(),
     iconUrl: z.string(),
     versionName: z.string(),
-    isNsfw: z.boolean(),
+    contentWarning: zServicesMangaSuwayomiContentWarning,
     isInstalled: z.boolean(),
     isObsolete: z.boolean(),
     hasUpdate: z.boolean(),
@@ -251,7 +261,7 @@ export const zServicesMangaSuwayomiSourceInfo = z.object({
     lang: z.string(),
     iconUrl: z.string(),
     homeUrl: z.string(),
-    isNsfw: z.boolean(),
+    contentWarning: zServicesMangaSuwayomiContentWarning,
 });
 
 export type ServicesMangaSuwayomiSourceInfoZodType = z.infer<typeof zServicesMangaSuwayomiSourceInfo>;

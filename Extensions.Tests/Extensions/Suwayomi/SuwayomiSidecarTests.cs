@@ -1,4 +1,5 @@
 using Common.Datatypes;
+using Common.Settings;
 using Extensions.Data;
 using Extensions.Extensions.Suwayomi;
 
@@ -69,7 +70,15 @@ public sealed class SuwayomiSidecarTests : Common.Tests.TrangaTest
         // The built-in "Local source" has no homeUrl and serves files from the sidecar's own disk, so it cannot stand
         // in for a real remote source here.
         SuwayomiSourceInfo[] sources = await SuwayomiExtensionManager.GetSourcesAsync(ct) ?? [];
-        SuwayomiSourceInfo? candidate = sources.FirstOrDefault(s => !string.IsNullOrEmpty(s.HomeUrl) && !s.IsNsfw);
+        SuwayomiSourceInfo[] usable = [.. sources.Where(s =>
+            !string.IsNullOrEmpty(s.HomeUrl) && s.ContentWarning is not SuwayomiContentWarning.Nsfw)];
+
+        // Prefer the configured download language. Multi-language extensions register one source per language, and
+        // most of those (MangaDex has ~50) carry almost nothing translated, which would make this test skip.
+        string downloadLanguage = Settings.DownloadLanguage.TwoLetterISOLanguageName;
+        SuwayomiSourceInfo? candidate =
+            usable.FirstOrDefault(s => s.Lang.StartsWith(downloadLanguage, StringComparison.OrdinalIgnoreCase))
+            ?? usable.FirstOrDefault();
         Assert.SkipWhen(candidate is null, "No remote Suwayomi source is installed on the sidecar.");
 
         IDownloadExtension extension = Assert.IsType<SuwayomiSource>(DownloadExtensionsCollection.GetExtension(candidate!.ExtensionId));
@@ -84,9 +93,23 @@ public sealed class SuwayomiSidecarTests : Common.Tests.TrangaTest
         Assert.False(string.IsNullOrEmpty(manga.Title));
         Assert.True(manga.Cover.Length > 0);
 
-        List<ChapterInfo>? chapters = await extension.GetChapters(manga, ct);
+        // Whichever source happens to be installed may legitimately carry entries with no chapters — a MangaDex
+        // language variant with nothing translated yet, for instance — so walk the results until one has some.
+        // GetChapters must still answer with an empty list rather than null for those, never conflating "none" with
+        // "failed"; that is asserted on every candidate along the way.
+        List<ChapterInfo>? chapters = null;
+        foreach (MangaInfo candidateManga in searchResult.Take(10))
+        {
+            chapters = await extension.GetChapters(candidateManga, ct);
+            Assert.NotNull(chapters);
+            if (chapters.Count > 0)
+            {
+                manga = candidateManga;
+                break;
+            }
+        }
         Assert.NotNull(chapters);
-        Assert.NotEmpty(chapters);
+        Assert.SkipWhen(chapters.Count == 0, $"{candidate.Name} exposes no chapters for any of its first results.");
 
         // GetChapterImages, not FetchChapterImages: the default interface method also runs the JPEG conversion the
         // download pipeline depends on, so this covers what DownloadChapterTask actually calls.

@@ -1835,6 +1835,14 @@
           }
         }
       },
+      "SuwayomiContentWarning": {
+        "enum": [
+          "Safe",
+          "Mixed",
+          "Nsfw"
+        ],
+        "description": "            How a Suwayomi source or extension is classified by its extension store.\n            Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into\nSuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else\n(MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed)."
+      },
       "SuwayomiExtensionInfo": {
         "required": [
           "pkgName",
@@ -1842,7 +1850,7 @@
           "lang",
           "iconUrl",
           "versionName",
-          "isNsfw",
+          "contentWarning",
           "isInstalled",
           "isObsolete",
           "hasUpdate"
@@ -1869,9 +1877,9 @@
             "type": "string",
             "description": "Version currently installed, or offered by the store when not installed."
           },
-          "isNsfw": {
-            "type": "boolean",
-            "description": "Whether the extension is flagged as NSFW. Its sources return nothing while `AllowNSFW` is off."
+          "contentWarning": {
+            "description": "How the extension store classifies the content. A `Mixed` extension stays usable while `AllowNSFW` is off; only `Nsfw` ones are held back.",
+            "$ref": "#/components/schemas/SuwayomiContentWarning"
           },
           "isInstalled": {
             "type": "boolean",
@@ -1896,7 +1904,7 @@
           "lang",
           "iconUrl",
           "homeUrl",
-          "isNsfw"
+          "contentWarning"
         ],
         "type": "object",
         "properties": {
@@ -1925,9 +1933,9 @@
             "type": "string",
             "description": "The source's own website."
           },
-          "isNsfw": {
-            "type": "boolean",
-            "description": "Whether the source is flagged as NSFW."
+          "contentWarning": {
+            "description": "How the extension store classifies the source's content.",
+            "$ref": "#/components/schemas/SuwayomiContentWarning"
           }
         },
         "description": "A source exposed by an installed extension, and the Tranga download-extension it is registered as."

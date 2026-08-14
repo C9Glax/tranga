@@ -33,8 +33,8 @@ internal static class SuwayomiClient
     /// <summary>Base address of the sidecar, without a trailing slash.</summary>
     internal static string BaseUrl => EnvVars.SuwayomiUrl.TrimEnd('/');
 
-    private const string SourceFields = "id name lang displayName iconUrl homeUrl isNsfw supportsLatest";
-    private const string ExtensionFields = "pkgName name lang iconUrl versionName isNsfw isInstalled isObsolete hasUpdate";
+    private const string SourceFields = "id name lang displayName iconUrl homeUrl contentWarning supportsLatest";
+    private const string ExtensionFields = "pkgName name lang iconUrl versionName contentWarning isInstalled isObsolete hasUpdate";
     private const string MangaFields = "id sourceId url title thumbnailUrl description author artist genre realUrl";
     private const string ChapterFields = "id url name chapterNumber scanlator sourceOrder";
 
@@ -158,9 +158,11 @@ internal static class SuwayomiClient
             GraphQlResponse<TData>? response = await RequestClient.SendAsyncAndParseJson<GraphQlResponse<TData>>(request, ct);
 
             // A GraphQL endpoint answers 200 even for query errors, so the envelope has to be checked explicitly.
-            if (response is null || response.Errors is { Length: > 0 })
-                return default;
-            return response.Data;
+            // Errors and data can arrive together, though: Suwayomi reports a series with no chapters as an empty
+            // chapter list *plus* a "No chapters found" error. Treating that as a failure would turn "this manga has
+            // no chapters" into "the fetch failed", which is a meaningful difference to the download pipeline. So data
+            // wins whenever it is present, and only a response without data counts as a failure.
+            return response is null ? default : response.Data;
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException)
         {

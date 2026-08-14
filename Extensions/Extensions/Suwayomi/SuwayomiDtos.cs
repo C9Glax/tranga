@@ -16,8 +16,7 @@ internal sealed record GraphQlError(string? Message);
 /// A source exposed by an installed Suwayomi extension. One of these becomes one Tranga <see cref="SuwayomiSource"/>.
 /// <para>
 /// <c>Id</c> is the Tachiyomi source id: a 64-bit value transported as a string by Suwayomi's <c>LongString</c> scalar.
-/// <c>IsNsfw</c> is deprecated upstream in favour of <c>contentWarning</c>, but it is the only plain boolean available —
-/// that enum's GraphQL member names are not part of any published contract.
+/// <c>ContentWarning</c> arrives as the GraphQL enum name (<c>SAFE</c>, <c>MIXED</c> or <c>NSFW</c>).
 /// </para>
 /// </summary>
 internal sealed record SuwayomiSourceDto(
@@ -27,7 +26,7 @@ internal sealed record SuwayomiSourceDto(
     string? DisplayName,
     string? IconUrl,
     string? HomeUrl,
-    bool IsNsfw,
+    string? ContentWarning,
     bool SupportsLatest);
 
 /// <summary>An extension as known to Suwayomi, whether installed or merely listed by a configured extension store.</summary>
@@ -37,7 +36,7 @@ internal sealed record SuwayomiExtensionDto(
     string Lang,
     string? IconUrl,
     string VersionName,
-    bool IsNsfw,
+    string? ContentWarning,
     bool IsInstalled,
     bool IsObsolete,
     bool HasUpdate);

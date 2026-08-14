@@ -38,7 +38,18 @@ public sealed class SuwayomiSource : IDownloadExtension
     /// <summary>The Tachiyomi source id, as a string because it does not fit a signed 32-bit integer.</summary>
     private readonly string _sourceId;
 
-    private readonly bool _isNsfw;
+    private readonly SuwayomiContentWarning _contentWarning;
+
+    /// <summary>
+    /// Genre tags that mark an individual entry as adult. Tachiyomi's manga model carries no content rating of its own —
+    /// the classification exists only per source — so for a <see cref="SuwayomiContentWarning.Mixed"/> source the tags
+    /// are the only per-entry signal available. Deliberately broad: while NSFW is disallowed, showing adult content is
+    /// the worse failure than hiding a borderline entry.
+    /// </summary>
+    private static readonly HashSet<string> AdultGenres = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "hentai", "adult", "smut", "erotica", "pornographic", "porn", "nsfw", "18+", "r18", "r-18", "mature"
+    };
 
     /// <summary>Whether the sidecar is switched on. Mirrors <see cref="WeebCentral.IsAvailable"/>'s role for FlareSolverr.</summary>
     public static bool IsAvailable => EnvVars.EnableSuwayomi;
@@ -57,11 +68,11 @@ public sealed class SuwayomiSource : IDownloadExtension
     /// <param name="homeUrl">The source's own website, used to parse manga identifiers out of pasted urls. May be empty.</param>
     /// <param name="iconUrl">Gateway-relative url of the source's icon.</param>
     /// <param name="lang">Tachiyomi language code, e.g. <c>en</c>, <c>pt-BR</c>, <c>all</c>.</param>
-    /// <param name="isNsfw">Whether the source is flagged as NSFW.</param>
-    public SuwayomiSource(string sourceId, string name, string homeUrl, string iconUrl, string lang, bool isNsfw)
+    /// <param name="contentWarning">How the extension store classifies the source's content.</param>
+    public SuwayomiSource(string sourceId, string name, string homeUrl, string iconUrl, string lang, SuwayomiContentWarning contentWarning)
     {
         _sourceId = sourceId;
-        _isNsfw = isNsfw;
+        _contentWarning = contentWarning;
         Identifier = IdentifierFor(sourceId);
         Name = name;
         BaseUrl = homeUrl;
@@ -106,8 +117,29 @@ public sealed class SuwayomiSource : IDownloadExtension
                 source.HomeUrl ?? string.Empty,
                 SuwayomiClient.ToGatewayUrl(source.IconUrl),
                 source.Lang,
-                source.IsNsfw))
+                ParseContentWarning(source.ContentWarning)))
             .ToArray();
+    }
+
+    /// <summary>
+    /// Maps Suwayomi's <c>contentWarning</c> enum name onto <see cref="SuwayomiContentWarning"/>.
+    /// Anything unrecognised is treated as <see cref="SuwayomiContentWarning.Mixed"/>: the source stays usable, but its
+    /// entries are still tag-filtered while NSFW is disallowed.
+    /// </summary>
+    public static SuwayomiContentWarning ParseContentWarning(string? contentWarning) =>
+        Enum.TryParse(contentWarning, ignoreCase: true, out SuwayomiContentWarning parsed)
+            ? parsed
+            : SuwayomiContentWarning.Mixed;
+
+    /// <summary>
+    /// Whether an individual entry counts as adult content: everything from an
+    /// <see cref="SuwayomiContentWarning.Nsfw"/> source does, and elsewhere it is decided by the entry's genre tags.
+    /// </summary>
+    public static bool IsAdultContent(SuwayomiContentWarning contentWarning, IEnumerable<string>? genres)
+    {
+        if (contentWarning is SuwayomiContentWarning.Nsfw)
+            return true;
+        return genres?.Any(genre => AdultGenres.Contains(genre.Trim())) is true;
     }
 
     #region Search
@@ -115,13 +147,20 @@ public sealed class SuwayomiSource : IDownloadExtension
     /// <inheritdoc />
     public async Task<List<MangaInfo>?> SearchDownload(SearchQuery query, CancellationToken ct)
     {
-        if (_isNsfw && !Settings.AllowNSFW)
+        // Only dedicated adult sources are locked out entirely; a mixed source stays searchable and has its individual
+        // results filtered below.
+        if (_contentWarning is SuwayomiContentWarning.Nsfw && !Settings.AllowNSFW)
             return [];
 
         if (await SuwayomiClient.SearchSourceAsync(_sourceId, query.Title ?? string.Empty, 1, ct) is not { } mangas)
             return null;
 
-        List<Task<MangaInfo?>> tasks = mangas.Select(manga => ToMangaInfo(manga, ct)).ToList();
+        // Filtered before mapping, because mapping downloads a cover per entry.
+        IEnumerable<SuwayomiMangaDto> allowed = Settings.AllowNSFW
+            ? mangas
+            : mangas.Where(manga => !IsAdultContent(_contentWarning, manga.Genre));
+
+        List<Task<MangaInfo?>> tasks = allowed.Select(manga => ToMangaInfo(manga, ct)).ToList();
         await Task.WhenAll(tasks);
 
         return tasks
@@ -143,7 +182,7 @@ public sealed class SuwayomiSource : IDownloadExtension
             manga.Url,
             cover,
             manga.Description,
-            _isNsfw);
+            IsAdultContent(_contentWarning, manga.Genre));
     }
 
     #endregion

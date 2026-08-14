@@ -254,6 +254,7 @@ export type {
     ServicesMangaPostSearchMangaRequest,
     ServicesMangaReleaseStatus,
     ServicesMangaSearchQuery,
+    ServicesMangaSuwayomiContentWarning,
     ServicesMangaSuwayomiExtensionInfo,
     ServicesMangaSuwayomiSourceInfo,
     ServicesMangaSuwayomiStatus,
