@@ -13,6 +13,16 @@ public sealed class MetadataExtensionCollectionTests : Common.Tests.TrangaTest
     }
 
     [Fact]
+    public void MyAnimeListIsOnlyRegisteredWhenClientIdIsConfigured()
+    {
+        // The MyAnimeList API answers 403 without a client-id, so an unconfigured instance would be a provider that
+        // can never return anything - it must not be offered at all.
+        bool registered = MetadataExtensionsCollection.Extensions.Any(e => e.Identifier == new MyAnimeList().Identifier);
+
+        Assert.Equal(Common.Settings.EnvVars.MAL_CLIENT_ID is not null, registered);
+    }
+
+    [Fact]
     public async Task SearchDefaultsToDownloadLanguageWhenQueryHasNoLanguage()
     {
         // Individual extensions should never see a null Language - Search fills it in from

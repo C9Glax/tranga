@@ -16,6 +16,9 @@ public class GetMetadataExtensionsEndpointTests
         Assert.Contains(result.Value.Extensions, e => e.Name == "MangaDex");
         Assert.Contains(result.Value.Extensions, e => e.Name == "MangaUpdates");
         Assert.Contains(result.Value.Extensions, e => e.Name == "AniList");
-        Assert.Contains(result.Value.Extensions, e => e.Name == "MyAnimeList");
+        // MyAnimeList is only registered when MAL_CLIENT_ID is configured, so the list tracks that rather than
+        // always advertising it
+        Assert.Equal(Common.Settings.EnvVars.MAL_CLIENT_ID is not null,
+            result.Value.Extensions.Any(e => e.Name == "MyAnimeList"));
     }
 }
