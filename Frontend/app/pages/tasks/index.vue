@@ -1,8 +1,8 @@
 <template>
     <TrangaPage rimless>
-        <UPageSection description="Filters" :ui="{ container: 'py-2 sm:py-2 lg:py-4 px-0 sm:px-0 lg:px-0\' ' }">
+        <UPageSection :ui="{ container: 'py-2 sm:py-2 lg:py-4 px-0 sm:px-0 lg:px-0\' ' }">
             <div class="flex flex-wrap gap-4 items-end">
-                <UFormField label="Presets">
+                <UFormField label="Filter presets">
                     <UFieldGroup>
                         <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" placeholder="Preset" class="w-56" />
                         <UButton
