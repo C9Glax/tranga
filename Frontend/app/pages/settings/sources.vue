@@ -48,12 +48,16 @@
                 </div>
 
                 <!-- The catalogue is ~1400 rows. Virtualizing keeps the DOM to the visible window, so the whole list
-                     stays scrollable without paging it. -->
+                     stays scrollable without paging it.
+                     The header is made sticky through `ui.thead` rather than the `sticky` prop: @nuxt/ui 4.6.0 forces
+                     `sticky` off whenever `virtualize` is on (Table.vue), so the prop would be silently ignored. These
+                     are the exact classes its own `sticky` theme variant applies. -->
                 <UTable
                     :data="filtered"
                     :columns="columns"
                     :loading="pending"
                     :virtualize="{ estimateSize: 64, overscan: 8 }"
+                    :ui="{ thead: 'sticky top-0 inset-x-0 bg-default/75 backdrop-blur z-1' }"
                     class="w-full h-[70vh]">
                     <template #name-cell="{ row }">
                         <div class="flex flex-row items-center gap-3 min-w-0">
