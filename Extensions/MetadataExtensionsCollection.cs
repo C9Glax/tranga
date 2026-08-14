@@ -12,7 +12,10 @@ public static class MetadataExtensionsCollection
         new MangaUpdates(),
         new MangaDex(),
         new AniList(),
-        new MyAnimeList()
+        // MyAnimeList's API rejects every request without a client-id, so without one the extension could only ever
+        // return nothing. Leave it out of the collection entirely rather than offering a provider that cannot answer:
+        // it then never shows up in the frontend's provider list either (see Services.Manga MetadataExtensionsList).
+        .. EnvVars.MAL_CLIENT_ID is not null ? new IMetadataExtension[] { new MyAnimeList() } : []
     ];
 
     public static List<SearchResult> SearchAll(SearchQuery searchQuery, CancellationToken ct) =>

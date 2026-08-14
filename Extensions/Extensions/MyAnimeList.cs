@@ -10,8 +10,9 @@ namespace Extensions.Extensions;
 /// <summary>
 /// Metadata from https://myanimelist.net/ via the official API v2. Every request needs a client-id, obtained by
 /// registering an application at https://myanimelist.net/apiconfig and passed in through the <c>MAL_CLIENT_ID</c>
-/// environment variable; without it the API answers 403, so this extension reports no results at all and the search
-/// silently falls back to the other metadata providers.
+/// environment variable; without it the API answers 403. <see cref="MetadataExtensionsCollection"/> therefore only
+/// registers this extension when the client-id is configured, and the search below refuses to run without one too, so
+/// a directly-constructed instance cannot produce 403s either.
 /// </summary>
 public sealed class MyAnimeList : IMetadataExtension
 {
