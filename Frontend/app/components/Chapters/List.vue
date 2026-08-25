@@ -5,16 +5,21 @@
         :columns="columns"
         :loading="loading && !chapters"
         sticky
-        class="w-full h-[70vh]"
-        @select="onSelectChapter">
+        class="w-full h-full">
         <template #volume-cell="{ row }">
             <UBadge v-if="row.original.volume" :label="row.original.volume" variant="outline" color="neutral" />
             <span v-else class="text-dimmed">-</span>
         </template>
 
         <template #title-cell="{ row }">
-            <span v-if="row.original.title">{{ row.original.title }}</span>
-            <span v-else class="text-dimmed">-</span>
+            <ULink v-if="row.original.sourceUrl" :to="row.original.sourceUrl" target="_blank" class="hover:underline">
+                <span v-if="row.original.title">{{ row.original.title }}</span>
+                <span v-else class="text-dimmed">-</span>
+            </ULink>
+            <template v-else>
+                <span v-if="row.original.title">{{ row.original.title }}</span>
+                <span v-else class="text-dimmed">-</span>
+            </template>
         </template>
 
         <template #releaseDate-cell="{ row }">
@@ -30,12 +35,7 @@
         </template>
 
         <template #actions-cell="{ row }">
-            <UButton
-                icon="i-lucide-trash-2"
-                color="error"
-                variant="ghost"
-                aria-label="Delete Chapter"
-                @click.stop="onDelete(row.original)" />
+            <UButton icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Delete Chapter" @click="onDelete(row.original)" />
         </template>
     </UTable>
 </template>
@@ -44,14 +44,9 @@
 import { TrangaConfirmModal } from '#components';
 import type { ServicesMangaMangaChapter } from '~/api/tranga';
 import type { TableColumn } from '@nuxt/ui/components/Table.vue';
-import type { Column, Row, SortingState } from '@tanstack/vue-table';
+import type { Column, SortingState } from '@tanstack/vue-table';
 
 defineProps<{ chapters?: ServicesMangaMangaChapter[]; loading?: boolean }>();
-
-const onSelectChapter = (_event: Event, row: Row<ServicesMangaMangaChapter>) => {
-    const url = row.original.sourceUrl;
-    if (url) window.open(url, '_blank', 'noopener');
-};
 
 const confirmModal = useOverlay().create(TrangaConfirmModal);
 
