@@ -56,6 +56,15 @@ IResourceBuilder<ParameterResource> malClientId = builder.AddParameter("MalClien
 IResourceBuilder<ParameterResource> useAuth = builder.AddParameter("UseAuth");
 IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthSigningKey", secret: true);
 
+// SixLabors.ImageSharp (pulled in transitively via Common) only warns about a missing license in Debug builds;
+// `aspire publish` builds every project in Release, where the same check is a hard build failure (MSBuild reads
+// SixLaborsLicenseKey as a plain property, and picks up an unset one from the environment automatically - so
+// setting it here, before Aspire spawns each project's build, is all that's needed; no per-resource wiring).
+IResourceBuilder<ParameterResource> sixLaborsLicenseKey = builder.AddParameter("SixLaborsLicenseKey", secret: true);
+string? sixLaborsLicenseKeyValue = sixLaborsLicenseKey.Resource.GetValueAsync(CancellationToken.None).Result;
+if (!string.IsNullOrEmpty(sixLaborsLicenseKeyValue))
+    Environment.SetEnvironmentVariable("SixLaborsLicenseKey", sixLaborsLicenseKeyValue);
+
 // Suwayomi speaks FlareSolverr natively, so it inherits whatever Tranga is configured to use. Under `aspire run` the
 // parameter is resolved now; the compose output overrides this with an interpolation so that .env stays authoritative
 // there (see PublishAsDockerComposeService below).
@@ -315,6 +324,28 @@ IResourceBuilder<ProjectResource> authService = builder.AddProject<Services_Auth
     })
     .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
 
+// Combined API docs: one Scalar instance showing every service's OpenAPI document side by side. It's a browser
+// app, so the "sources" URLs must be reachable by the visitor's browser - they point at the gateway-routed
+// /api/{service}/openapi/... paths (see the gateway config below), not at the services directly.
+IResourceBuilder<ContainerResource> scalarDocs = builder.AddContainer("scalar-docs", "scalarapi/api-reference", "latest")
+    .WithHttpEndpoint(name: "http", port: 8080, targetPort: 8080)
+    .WithEnvironment("BASE_PATH", "/docs")
+    .WithEnvironment("API_REFERENCE_CONFIG", """
+        {"sources":[
+            {"title":"Manga","slug":"manga","url":"/api/mangas/openapi/v1.json","default":true},
+            {"title":"Tasks","slug":"tasks","url":"/api/tasks/openapi/v1.json"},
+            {"title":"Notifications","slug":"notifications","url":"/api/notifications/openapi/v1.json"},
+            {"title":"Libraries","slug":"libraries","url":"/api/libraries/openapi/v1.json"},
+            {"title":"Auth","slug":"auth","url":"/api/auth/openapi/v1.json"}
+        ]}
+        """)
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Name = "scalar-docs";
+        service.Networks = ["tranga"];
+        service.Restart = "on-failure:3";
+    });
+
 IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("frontend", "../Frontend")
     .WithHttpEndpoint(port: 3000, env: "PORT")
     .WithReference(mangaService)
@@ -338,6 +369,10 @@ builder.AddYarp("gateway")
     {
         // Add catch-all route for frontend service
         yarp.AddRoute(frontend).WithMatchMethods("GET");
+
+        // Combined API docs UI. The container serves its page at "/" and only uses BASE_PATH to prefix the
+        // asset/config URLs it generates for itself, so the gateway still needs to strip "/docs" here.
+        yarp.AddRoute("/docs/{**catch-all}", scalarDocs.GetEndpoint("http")).WithTransformPathRemovePrefix("/docs");
 
         // Docs: each service's OpenAPI JSON is mapped at its own root (/openapi/v1.json), not under its
         // endpointsPrefix, so these routes strip the full "/api/{service}" prefix instead of just "/api" to

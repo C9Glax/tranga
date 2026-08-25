@@ -112,7 +112,7 @@ const defaultItems = computed((): NavigationMenuItem[] => {
         { label: 'Links', type: 'label' },
         {
             label: 'API Docs',
-            to: '/docs.html',
+            to: '/docs/',
             external: true,
             icon: 'i-lucide-file-code',
             ui: { linkLeadingIcon: 'text-neutral-400', linkLabel: 'text-neutral-400' },
