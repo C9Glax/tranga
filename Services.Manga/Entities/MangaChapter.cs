@@ -7,4 +7,7 @@ public sealed record MangaChapter : Chapter
 {
     /// <summary>Whether the chapter's file has already been downloaded and stored.</summary>
     public required bool IsDownloaded { get; init; }
+
+    /// <summary>The URL of the chapter on its preferred download source, if known.</summary>
+    public required string? SourceUrl { get; init; }
 }

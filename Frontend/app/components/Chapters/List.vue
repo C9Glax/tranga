@@ -5,7 +5,8 @@
         :columns="columns"
         :loading="loading && !chapters"
         sticky
-        class="w-full h-[70vh]">
+        class="w-full h-[70vh]"
+        @select="onSelectChapter">
         <template #volume-cell="{ row }">
             <UBadge v-if="row.original.volume" :label="row.original.volume" variant="outline" color="neutral" />
             <span v-else class="text-dimmed">-</span>
@@ -33,9 +34,14 @@
 <script setup lang="ts">
 import type { ServicesMangaMangaChapter } from '~/api/tranga';
 import type { TableColumn } from '@nuxt/ui/components/Table.vue';
-import type { Column, SortingState } from '@tanstack/vue-table';
+import type { Column, Row, SortingState } from '@tanstack/vue-table';
 
 defineProps<{ chapters?: ServicesMangaMangaChapter[]; loading?: boolean }>();
+
+const onSelectChapter = (_event: Event, row: Row<ServicesMangaMangaChapter>) => {
+    const url = row.original.sourceUrl;
+    if (url) window.open(url, '_blank', 'noopener');
+};
 
 const sorting = ref<SortingState>([
     { id: 'volume', desc: false },

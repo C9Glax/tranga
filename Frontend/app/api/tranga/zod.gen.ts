@@ -60,6 +60,7 @@ export type ServicesMangaGitInfoResponseZodType = z.infer<typeof zServicesMangaG
 
 export const zServicesMangaMangaChapter = z.object({
     isDownloaded: z.boolean(),
+    sourceUrl: z.nullable(z.string()),
     chapterId: z.uuid(),
     mangaId: z.uuid(),
     title: z.nullable(z.string().check(z.minLength(0), z.maxLength(2048))),

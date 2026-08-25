@@ -13,6 +13,7 @@ internal static class ChapterDTOHelper
         Volume = chapter.Volume,
         Number = chapter.Number,
         ReleaseDate = chapter.ReleaseDate,
-        IsDownloaded = chapter.DownloadLinks?.Any(l => l.FileId != null) ?? false
+        IsDownloaded = chapter.DownloadLinks?.Any(l => l.FileId != null) ?? false,
+        SourceUrl = chapter.DownloadLinks?.MinBy(l => l.Priority)?.Url
     };
 }

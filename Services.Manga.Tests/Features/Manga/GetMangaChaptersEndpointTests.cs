@@ -65,6 +65,50 @@ public class GetMangaChaptersEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task GetMangaChapters_SetsSourceUrlFromDownloadLink()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
+        DbChapter chapter = await TestDataBuilder.SeedChapter(context, manga, ct: ct);
+        await TestDataBuilder.SeedChapterDownloadLink(context, chapter, downloaded: false, url: "https://example.com/chapter", ct: ct);
+
+        Ok<MangaChapterDto[]> result = await GetMangaChaptersEndpoint.Handle(context, manga.MangaId, ct);
+
+        MangaChapterDto dto = Assert.Single(result.Value!);
+        Assert.Equal("https://example.com/chapter", dto.SourceUrl);
+    }
+
+    [Fact]
+    public async Task GetMangaChapters_SourceUrlNullWhenNoLinks()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
+        await TestDataBuilder.SeedChapter(context, manga, ct: ct);
+
+        Ok<MangaChapterDto[]> result = await GetMangaChaptersEndpoint.Handle(context, manga.MangaId, ct);
+
+        MangaChapterDto dto = Assert.Single(result.Value!);
+        Assert.Null(dto.SourceUrl);
+    }
+
+    [Fact]
+    public async Task GetMangaChapters_SourceUrlUsesLowestPriorityLink()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
+        DbChapter chapter = await TestDataBuilder.SeedChapter(context, manga, ct: ct);
+        await TestDataBuilder.SeedChapterDownloadLink(
+            context, chapter, downloaded: false, priority: 1, url: "https://example.com/low-priority", ct: ct);
+        await TestDataBuilder.SeedChapterDownloadLink(
+            context, chapter, downloaded: false, priority: 0, url: "https://example.com/preferred", ct: ct);
+
+        Ok<MangaChapterDto[]> result = await GetMangaChaptersEndpoint.Handle(context, manga.MangaId, ct);
+
+        MangaChapterDto dto = Assert.Single(result.Value!);
+        Assert.Equal("https://example.com/preferred", dto.SourceUrl);
+    }
+
+    [Fact]
     public async Task GetMangaChapters_ReturnsEmptyForUnknownManga()
     {
         await using MangaContext context = MangaContextFactory.Create();

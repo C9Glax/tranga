@@ -68,6 +68,7 @@ export type ServicesMangaManga = {
 
 export type ServicesMangaMangaChapter = {
     isDownloaded: boolean;
+    sourceUrl: null | string;
     chapterId: string;
     mangaId: string;
     title: null | string;

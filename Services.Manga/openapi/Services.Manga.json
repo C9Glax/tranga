@@ -1450,6 +1450,7 @@
       "MangaChapter": {
         "required": [
           "isDownloaded",
+          "sourceUrl",
           "chapterId",
           "mangaId",
           "title",
@@ -1461,6 +1462,12 @@
         "properties": {
           "isDownloaded": {
             "type": "boolean"
+          },
+          "sourceUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "chapterId": {
             "type": "string",
