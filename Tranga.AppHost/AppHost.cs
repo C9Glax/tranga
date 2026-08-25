@@ -57,13 +57,12 @@ IResourceBuilder<ParameterResource> useAuth = builder.AddParameter("UseAuth");
 IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthSigningKey", secret: true);
 
 // SixLabors.ImageSharp (pulled in transitively via Common) only warns about a missing license in Debug builds;
-// `aspire publish` builds every project in Release, where the same check is a hard build failure (MSBuild reads
-// SixLaborsLicenseKey as a plain property, and picks up an unset one from the environment automatically - so
-// setting it here, before Aspire spawns each project's build, is all that's needed; no per-resource wiring).
+// `aspire publish` builds every project in Release, where the same check is a hard build failure. The plain
+// project-publish path Aspire uses by default (a hardcoded `dotnet publish /t:PublishContainer` invocation) has
+// no hook for extra MSBuild properties or environment variables, so each service instead publishes from its own
+// existing CI Dockerfile (see e.g. Services.Manga/Dockerfile) via PublishAsDockerFile below, which already mounts
+// this exact secret id for its own `dotnet build`/`publish` steps.
 IResourceBuilder<ParameterResource> sixLaborsLicenseKey = builder.AddParameter("SixLaborsLicenseKey", secret: true);
-string? sixLaborsLicenseKeyValue = sixLaborsLicenseKey.Resource.GetValueAsync(CancellationToken.None).Result;
-if (!string.IsNullOrEmpty(sixLaborsLicenseKeyValue))
-    Environment.SetEnvironmentVariable("SixLaborsLicenseKey", sixLaborsLicenseKeyValue);
 
 // Suwayomi speaks FlareSolverr natively, so it inherits whatever Tranga is configured to use. Under `aspire run` the
 // parameter is resolved now; the compose output overrides this with an interpolation so that .env stays authoritative
@@ -167,7 +166,9 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Tasks/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Manga>("services-manga")
     .WaitFor(rabbitmq)
@@ -215,7 +216,9 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Manga/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Services_Notifications>("services-notifications")
     .WaitFor(rabbitmq)
@@ -248,7 +251,9 @@ IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Serv
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Notifications/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services_Libraries>("services-libraries")
     .WaitFor(rabbitmq)
@@ -289,7 +294,9 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Libraries/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> authService = builder.AddProject<Services_Auth>("services-auth")
     .WaitFor(rabbitmq)
@@ -322,7 +329,9 @@ IResourceBuilder<ProjectResource> authService = builder.AddProject<Services_Auth
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Auth/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 // Combined API docs: one Scalar instance showing every service's OpenAPI document side by side. It's a browser
 // app, so the "sources" URLs must be reachable by the visitor's browser - they point at the gateway-routed
