@@ -359,8 +359,10 @@ IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("fro
     .WithHttpEndpoint(port: 3000, env: "PORT")
     .WithReference(mangaService)
     .WithReference(tasksService)
+    .WithReference(scalarDocs.GetEndpoint("http"))
     .WaitFor(mangaService)
     .WaitFor(tasksService)
+    .WaitFor(scalarDocs)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "frontend";
@@ -379,9 +381,14 @@ builder.AddYarp("gateway")
         // Add catch-all route for frontend service
         yarp.AddRoute(frontend).WithMatchMethods("GET");
 
-        // Combined API docs UI. The container serves its page at "/" and only uses BASE_PATH to prefix the
-        // asset/config URLs it generates for itself, so the gateway still needs to strip "/docs" here.
-        yarp.AddRoute("/docs/{**catch-all}", scalarDocs.GetEndpoint("http")).WithTransformPathRemovePrefix("/docs");
+        // Combined API docs UI (scalar-docs container). No dedicated gateway route: ASP.NET Core/YARP's path
+        // matching treats "/docs" and "/docs/" as equivalent, so a route meant to catch only one of them ends up
+        // stealing the other too - a real problem here, since the container's own HTML references its script
+        // with a bare relative path that only resolves correctly with the trailing slash present, and a route
+        // meant to redirect only the bare path would occasionally swallow the already-correct one instead.
+        // /docs** already falls through to the frontend catch-all above, which proxies it to the scalar-docs
+        // container itself (see Frontend/server/routes/docs.get.ts) - the raw path is available there as a
+        // plain string, letting it draw that distinction reliably.
 
         // Docs: each service's OpenAPI JSON is mapped at its own root (/openapi/v1.json), not under its
         // endpointsPrefix, so these routes strip the full "/api/{service}" prefix instead of just "/api" to

@@ -20,6 +20,8 @@ export default defineNuxtConfig({
     css: ['~/assets/css/main.css'],
 
     runtimeConfig: {
+        // @ts-expect-error -- no @types/node in this project; `process` is a real Node global at config-eval time.
+        scalarDocsUrl: process.env.SCALAR_DOCS_HTTP ?? '',
         public: {
             api: { baseUrl: '' },
             appVersion: gitInfo?.semverString ?? gitInfo?.raw ?? 'unknown',
