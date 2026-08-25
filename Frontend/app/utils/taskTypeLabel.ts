@@ -1,4 +1,5 @@
 const labels: Record<string, string> = {
+    BackfillComicInfoTask: 'Backfill ComicInfo',
     DbFileCleanupTask: 'File cleanup',
     GetMangaChaptersTask: 'Get chapters',
     MissingChapterScanTask: 'Missing chapter scan',

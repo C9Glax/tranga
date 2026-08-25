@@ -1125,6 +1125,25 @@ export type PutTasksCreateGetMangaChaptersByMangaIdResponses = {
 export type PutTasksCreateGetMangaChaptersByMangaIdResponse =
     PutTasksCreateGetMangaChaptersByMangaIdResponses[keyof PutTasksCreateGetMangaChaptersByMangaIdResponses];
 
+export type PutTasksCreateBackfillComicInfoData = { body?: never; path?: never; query?: never; url: '/tasks/create/backfillComicInfo' };
+
+export type PutTasksCreateBackfillComicInfoErrors = {
+    /**
+     * Internal Server Error
+     */
+    500: unknown;
+};
+
+export type PutTasksCreateBackfillComicInfoResponses = {
+    /**
+     * OK
+     */
+    200: ServicesTasksTask;
+};
+
+export type PutTasksCreateBackfillComicInfoResponse =
+    PutTasksCreateBackfillComicInfoResponses[keyof PutTasksCreateBackfillComicInfoResponses];
+
 export type GetTasksMangaByMangaIdData = {
     body?: never;
     path: { mangaId: string };

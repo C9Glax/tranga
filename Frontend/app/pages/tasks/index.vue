@@ -87,6 +87,7 @@ const TASK_TYPE_NAMES = [
     'MissingChapterScanTask',
     'PeriodicMangaChapterFetcherTask',
     'DbFileCleanupTask',
+    'BackfillComicInfoTask',
 ];
 const typeOptions = TASK_TYPE_NAMES.map((n) => ({ label: taskTypeLabel(n), value: n })).sort((a, b) => a.label.localeCompare(b.label));
 
