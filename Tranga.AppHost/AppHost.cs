@@ -359,7 +359,9 @@ IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("fro
     .WithHttpEndpoint(port: 3000, env: "PORT")
     .WithReference(mangaService)
     .WithReference(tasksService)
-    .WithReference(scalarDocs.GetEndpoint("http"))
+    // Named to match Nuxt's automatic NUXT_-prefixed env-to-runtimeConfig mapping (see nuxt.config.ts /
+    // https://nuxt.com/docs/4.x/directory-structure/env), so the frontend doesn't need to read process.env itself.
+    .WithEnvironment("NUXT_SCALAR_DOCS_URL", scalarDocs.GetEndpoint("http"))
     .WaitFor(mangaService)
     .WaitFor(tasksService)
     .WaitFor(scalarDocs)
