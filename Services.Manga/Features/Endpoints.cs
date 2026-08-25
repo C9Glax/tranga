@@ -102,6 +102,9 @@ internal static class EndpointHelpers
 
         builder.MapGet("{chapterId}", GetChapterEndpoint.Handle)
             .WithSummary("Get Chapter");
+
+        builder.MapDelete("{chapterId}", DeleteChapterEndpoint.Handle)
+            .WithSummary("Delete Chapter");
     }
 
     private static void MapMangaSearchEndpoints(this RouteGroupBuilder builder)

@@ -699,6 +699,32 @@
             "description": "Not Found"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Manga",
+          "Chapter"
+        ],
+        "summary": "Delete Chapter",
+        "parameters": [
+          {
+            "name": "chapterId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
       }
     },
     "/mangas/metadata/extensions": {

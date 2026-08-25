@@ -25,6 +25,16 @@ public static class DbFileHelper
     }
 
     /// <summary>
+    /// Deletes the on-disk contents referenced by <paramref name="file"/>, if present.
+    /// </summary>
+    /// <param name="file">The file entity describing what to delete.</param>
+    public static void DeleteFile(this DbFile file)
+    {
+        if (File.Exists(file.FullPath))
+            File.Delete(file.FullPath);
+    }
+
+    /// <summary>
     /// Reads the on-disk contents referenced by <paramref name="file"/> into memory.
     /// </summary>
     /// <param name="file">The file entity describing what to load.</param>
