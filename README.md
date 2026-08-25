@@ -51,7 +51,6 @@
 #### TODO LIST
 
 - [ ] Unified webpage scraper ([Common/Helpers/RequestClient.cs](Common/Helpers/RequestClient.cs))
-- [ ] Accounts (Authorization) (`Services.Users`)
 - [ ] Existing chapter mapping (`Services.Manga`)
 
 ## Getting started
@@ -106,22 +105,21 @@ the login page will show the setup screen again on next load.
   - [EF Core](https://learn.microsoft.com/en-us/ef/core/)
 - [PostgreSQL](https://www.postgresql.org/about/licence/)
   - [Ngpsql](https://github.com/npgsql/npgsql/blob/main/LICENSE)
-- [Sixlabors.ImageSharp](https://docs-v2.sixlabors.com/articles/imagesharp/index.html#license)
+- [Sixlabors.ImageSharp](https://sixlabors.com/products/imagesharp/)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
   - [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
 - [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server)
   - [keiyoushi extensions](https://github.com/keiyoushi/extensions)
 - [Naprise](https://github.com/Genteure/naprise)
-- [BuildInformation](https://github.com/linkdotnet/BuildInformation)
 - [GitInfo](https://github.com/devlooped/GitInfo)
+- [Git-Describe](https://github.com/tvdstaaij/node-git-describe)
 - [xUnit](https://xunit.net/index.html?tabs=cs)
 - [XmlSchemaClassGenerator](https://github.com/mganss/XmlSchemaClassGenerator)
 - [NSwag](https://github.com/RicoSuter/NSwag)
-- [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE)
 - [Nuxt](https://nuxt.com/)
   - [Nuxt UI](https://ui.nuxt.com/)
-- [TailwindCSS](https://tailwindcss.com/)
-- [Lucide](https://lucide.dev/)
+  - [TailwindCSS](https://tailwindcss.com/)
+  - [Lucide Icons](https://lucide.dev/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -148,7 +146,7 @@ Please read [CONTRIBUTING](CONTRIBUTING.md)
 
 ## License
 
-Distributed under the GNU GPLv3  License. See [LICENSE](https://github.com/C9Glax/tranga/blob/main/LICENSE) for more information.
+Distributed under the GNU GPLv3 License. See [LICENSE](https://github.com/C9Glax/tranga/blob/main/LICENSE) for more information.
 
 ## Acknowledgments
 
