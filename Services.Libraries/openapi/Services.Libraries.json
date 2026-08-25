@@ -4,6 +4,11 @@
     "title": "Services.Libraries | v1",
     "version": "1.0.0"
   },
+  "servers": [
+    {
+      "url": "/api/libraries"
+    }
+  ],
   "paths": {
     "/libraries": {
       "get": {

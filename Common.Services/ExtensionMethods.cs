@@ -10,7 +10,7 @@ public static class ExtensionMethods
     /// <returns>The same builder, for chaining.</returns>
     public static WebApplicationBuilder SetupWebApplicationBuilder(this WebApplicationBuilder builder)
     {
-        builder.Services.AddOpenApi().ConfigureHttpJsonOptions(opts =>
+        builder.Services.ConfigureHttpJsonOptions(opts =>
         {
             opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });

@@ -4,6 +4,11 @@
     "title": "Services.Notifications | v1",
     "version": "1.0.0"
   },
+  "servers": [
+    {
+      "url": "/api/notifications"
+    }
+  ],
   "paths": {
     "/notifications/extensions": {
       "get": {

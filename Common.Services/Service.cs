@@ -2,6 +2,7 @@ using Common.Services.Authentication;
 using Common.Services.Events;
 using Common.Settings;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
 namespace Common.Services;
@@ -59,6 +60,20 @@ public abstract class Service : IAsyncDisposable
     /// <param name="endpointsPrefix">Route prefix all of the service's endpoints are nested under.</param>
     protected void SetupWebApplication<TEndpointsBuilder>(string endpointsPrefix = "/") where TEndpointsBuilder : EndpointsBuilder, new()
     {
+        // The OpenAPI document's default "servers" entry reflects wherever the request that fetched it landed -
+        // under `aspire run` that's each service's own dev-loop tunnel host (aspire.dev.internal:...), not the
+        // gateway. Since that's unreachable from a browser outside the dev loop, pin it to the service's actual
+        // public route instead, so Scalar's "Test Request" (and the raw document) point somewhere that works.
+        string publicPrefix = $"/api{endpointsPrefix.TrimEnd('/')}";
+        Builder.Services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer((document, _, _) =>
+            {
+                document.Servers = [new OpenApiServer { Url = publicPrefix }];
+                return Task.CompletedTask;
+            });
+        });
+
         App = Builder.Build();
 
         App.UseCors(x => x
