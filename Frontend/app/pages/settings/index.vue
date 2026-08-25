@@ -5,6 +5,7 @@
             <UButton to="/settings/notifications" label="Notifications" icon="i-lucide-megaphone" />
             <UButton to="/settings/libraries" label="Libraries" icon="i-lucide-library" />
             <UButton to="/settings/security" label="Security" icon="i-lucide-key-round" />
+            <UButton to="/settings/about" label="About" icon="i-lucide-info" />
             <UButton label="Replay first-download tour" icon="i-lucide-wand-sparkles" variant="outline" @click="replayTour" />
             <UButton
                 label="Backfill ComicInfo for downloaded chapters"

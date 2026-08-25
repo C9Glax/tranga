@@ -256,6 +256,27 @@
           }
         }
       }
+    },
+    "/libraries/gitinfo": {
+      "get": {
+        "tags": [
+          "GitInfo"
+        ],
+        "summary": "Build commit/version/branch info for this service",
+        "operationId": "GetGitInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -298,6 +319,44 @@
             ]
           }
         }
+      },
+      "GitInfoResponse": {
+        "required": [
+          "sha",
+          "commit",
+          "branch",
+          "version",
+          "commitDate",
+          "isDirty"
+        ],
+        "type": "object",
+        "properties": {
+          "sha": {
+            "type": "string",
+            "description": "Full git commit SHA."
+          },
+          "commit": {
+            "type": "string",
+            "description": "Short (8-character) git commit SHA."
+          },
+          "branch": {
+            "type": "string",
+            "description": "Git branch the build was produced from."
+          },
+          "version": {
+            "type": "string",
+            "description": "SemVer derived from the nearest git tag and commit count."
+          },
+          "commitDate": {
+            "type": "string",
+            "description": "Timestamp of the commit the build was produced from."
+          },
+          "isDirty": {
+            "type": "boolean",
+            "description": "Whether the working tree had uncommitted changes at build time."
+          }
+        },
+        "description": "Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time."
       },
       "Library": {
         "required": [
@@ -407,6 +466,9 @@
   "tags": [
     {
       "name": "Libraries"
+    },
+    {
+      "name": "GitInfo"
     }
   ]
 }

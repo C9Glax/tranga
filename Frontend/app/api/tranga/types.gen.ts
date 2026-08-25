@@ -29,6 +29,36 @@ export type ServicesMangaDownloadLink = {
     nsfw: null | boolean;
 };
 
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export type ServicesMangaGitInfoResponse = {
+    /**
+     * Full git commit SHA.
+     */
+    sha: string;
+    /**
+     * Short (8-character) git commit SHA.
+     */
+    commit: string;
+    /**
+     * Git branch the build was produced from.
+     */
+    branch: string;
+    /**
+     * SemVer derived from the nearest git tag and commit count.
+     */
+    version: string;
+    /**
+     * Timestamp of the commit the build was produced from.
+     */
+    commitDate: string;
+    /**
+     * Whether the working tree had uncommitted changes at build time.
+     */
+    isDirty: boolean;
+};
+
 export type ServicesMangaManga = {
     mangaId: string;
     monitored: boolean;
@@ -226,6 +256,36 @@ export type ServicesTasksChapterSummary = {
     number: string;
 };
 
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export type ServicesTasksGitInfoResponse = {
+    /**
+     * Full git commit SHA.
+     */
+    sha: string;
+    /**
+     * Short (8-character) git commit SHA.
+     */
+    commit: string;
+    /**
+     * Git branch the build was produced from.
+     */
+    branch: string;
+    /**
+     * SemVer derived from the nearest git tag and commit count.
+     */
+    version: string;
+    /**
+     * Timestamp of the commit the build was produced from.
+     */
+    commitDate: string;
+    /**
+     * Whether the working tree had uncommitted changes at build time.
+     */
+    isDirty: boolean;
+};
+
 export type ServicesTasksMangaSummary = { mangaId: string; series?: null | string };
 
 export type ServicesTasksTask =
@@ -286,6 +346,36 @@ export type ServicesTasksWorker = {
 
 export type ServicesTasksWorkerStatus = 'Idle' | 'Busy' | 'Retiring';
 
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export type ServicesNotificationsGitInfoResponse = {
+    /**
+     * Full git commit SHA.
+     */
+    sha: string;
+    /**
+     * Short (8-character) git commit SHA.
+     */
+    commit: string;
+    /**
+     * Git branch the build was produced from.
+     */
+    branch: string;
+    /**
+     * SemVer derived from the nearest git tag and commit count.
+     */
+    version: string;
+    /**
+     * Timestamp of the commit the build was produced from.
+     */
+    commitDate: string;
+    /**
+     * Whether the working tree had uncommitted changes at build time.
+     */
+    isDirty: boolean;
+};
+
 export type ServicesNotificationsNotificationExtension = { id: string; name: string; type: ServicesNotificationsNotificationExtensionType };
 
 export type ServicesNotificationsNotificationExtensionType = 'Naprise' | 'Discord' | 'Gotify' | 'NtfySh' | 'Telegram';
@@ -316,6 +406,36 @@ export type ServicesLibrariesAddKomgaLibraryRequest = {
     username?: null | string;
     password?: null | string;
     libraryRootPath?: null | string;
+};
+
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export type ServicesLibrariesGitInfoResponse = {
+    /**
+     * Full git commit SHA.
+     */
+    sha: string;
+    /**
+     * Short (8-character) git commit SHA.
+     */
+    commit: string;
+    /**
+     * Git branch the build was produced from.
+     */
+    branch: string;
+    /**
+     * SemVer derived from the nearest git tag and commit count.
+     */
+    version: string;
+    /**
+     * Timestamp of the commit the build was produced from.
+     */
+    commitDate: string;
+    /**
+     * Whether the working tree had uncommitted changes at build time.
+     */
+    isDirty: boolean;
 };
 
 export type ServicesLibrariesLibrary = {
@@ -365,6 +485,36 @@ export type ServicesAuthCreateApiKeyResponse = {
     name: null | string;
     scope: ServicesAuthApiKeyScope;
     createdAt: string;
+};
+
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export type ServicesAuthGitInfoResponse = {
+    /**
+     * Full git commit SHA.
+     */
+    sha: string;
+    /**
+     * Short (8-character) git commit SHA.
+     */
+    commit: string;
+    /**
+     * Git branch the build was produced from.
+     */
+    branch: string;
+    /**
+     * SemVer derived from the nearest git tag and commit count.
+     */
+    version: string;
+    /**
+     * Timestamp of the commit the build was produced from.
+     */
+    commitDate: string;
+    /**
+     * Whether the working tree had uncommitted changes at build time.
+     */
+    isDirty: boolean;
 };
 
 export type ServicesAuthSetupRequest = { password: string };
@@ -1022,6 +1172,17 @@ export type PostMangasSuwayomiRefreshResponses = {
 
 export type PostMangasSuwayomiRefreshResponse = PostMangasSuwayomiRefreshResponses[keyof PostMangasSuwayomiRefreshResponses];
 
+export type ServicesMangaGetGitInfoData = { body?: never; path?: never; query?: never; url: '/mangas/gitinfo' };
+
+export type ServicesMangaGetGitInfoResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaGitInfoResponse;
+};
+
+export type ServicesMangaGetGitInfoResponse = ServicesMangaGetGitInfoResponses[keyof ServicesMangaGetGitInfoResponses];
+
 export type GetTasksData = {
     body?: never;
     path?: never;
@@ -1192,6 +1353,17 @@ export type GetTasksMangaDownloadsResponses = {
 };
 
 export type GetTasksMangaDownloadsResponse = GetTasksMangaDownloadsResponses[keyof GetTasksMangaDownloadsResponses];
+
+export type ServicesTasksGetGitInfoData = { body?: never; path?: never; query?: never; url: '/tasks/gitinfo' };
+
+export type ServicesTasksGetGitInfoResponses = {
+    /**
+     * OK
+     */
+    200: ServicesTasksGitInfoResponse;
+};
+
+export type ServicesTasksGetGitInfoResponse = ServicesTasksGetGitInfoResponses[keyof ServicesTasksGetGitInfoResponses];
 
 export type GetNotificationsExtensionsData = { body?: never; path?: never; query?: never; url: '/notifications/extensions' };
 
@@ -1368,6 +1540,18 @@ export type DeleteNotificationsExtensionsByExtensionIdResponses = {
     200: unknown;
 };
 
+export type ServicesNotificationsGetGitInfoData = { body?: never; path?: never; query?: never; url: '/notifications/gitinfo' };
+
+export type ServicesNotificationsGetGitInfoResponses = {
+    /**
+     * OK
+     */
+    200: ServicesNotificationsGitInfoResponse;
+};
+
+export type ServicesNotificationsGetGitInfoResponse =
+    ServicesNotificationsGetGitInfoResponses[keyof ServicesNotificationsGetGitInfoResponses];
+
 export type GetLibrariesData = { body?: never; path?: never; query?: never; url: '/libraries' };
 
 export type GetLibrariesResponses = {
@@ -1510,6 +1694,17 @@ export type GetLibrariesMappingsByMangaIdResponses = {
 
 export type GetLibrariesMappingsByMangaIdResponse = GetLibrariesMappingsByMangaIdResponses[keyof GetLibrariesMappingsByMangaIdResponses];
 
+export type ServicesLibrariesGetGitInfoData = { body?: never; path?: never; query?: never; url: '/libraries/gitinfo' };
+
+export type ServicesLibrariesGetGitInfoResponses = {
+    /**
+     * OK
+     */
+    200: ServicesLibrariesGitInfoResponse;
+};
+
+export type ServicesLibrariesGetGitInfoResponse = ServicesLibrariesGetGitInfoResponses[keyof ServicesLibrariesGetGitInfoResponses];
+
 export type GetAuthStatusData = { body?: never; path?: never; query?: never; url: '/auth/status' };
 
 export type GetAuthStatusResponses = {
@@ -1593,3 +1788,14 @@ export type DeleteAuthApikeysByApiKeyIdResponses = {
      */
     200: unknown;
 };
+
+export type ServicesAuthGetGitInfoData = { body?: never; path?: never; query?: never; url: '/auth/gitinfo' };
+
+export type ServicesAuthGetGitInfoResponses = {
+    /**
+     * OK
+     */
+    200: ServicesAuthGitInfoResponse;
+};
+
+export type ServicesAuthGetGitInfoResponse = ServicesAuthGetGitInfoResponses[keyof ServicesAuthGetGitInfoResponses];
