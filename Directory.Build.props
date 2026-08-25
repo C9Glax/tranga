@@ -1,5 +1,12 @@
 <Project>
 
+    <PropertyGroup>
+        <!-- We only consume ThisAssembly.Git.* (see Common.Services/Service.cs) for logging/the /gitinfo endpoint.
+             GitInfo's own $(Version)/$(PackageVersion) assignment is disabled: it produces an invalid NuGet version
+             string (e.g. "0.0.0+main.") when git metadata isn't fully available, such as in the Docker build context. -->
+        <GitVersion>false</GitVersion>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="GitInfo" Version="3.6.1" PrivateAssets="all" />
     </ItemGroup>
