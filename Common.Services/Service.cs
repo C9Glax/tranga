@@ -1,6 +1,7 @@
 using Common.Services.Authentication;
 using Common.Services.Events;
 using Common.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
@@ -73,6 +74,52 @@ public abstract class Service : IAsyncDisposable
                 document.Servers = [new OpenApiServer { Url = "/api" }];
                 return Task.CompletedTask;
             });
+
+            // .RequireAuthorization() below doesn't get reflected into the OpenAPI document on its own - without
+            // this, Scalar has no Authorization UI and "Test Request" always sends unauthenticated calls, which
+            // 401 whenever UseAuth is on. Declare both schemes JwtAuthenticationExtensions actually accepts, and
+            // attach the requirement only to operations that need it (endpoints under .AllowAnonymous(), like
+            // Services.Auth's /status, /setup and /login, must stay uncredentialed here too).
+            if (EnvVars.UseAuth)
+            {
+                options.AddDocumentTransformer((document, _, _) =>
+                {
+                    document.Components ??= new OpenApiComponents();
+                    document.Components.SecuritySchemes = new Dictionary<string, IOpenApiSecurityScheme>
+                    {
+                        ["Bearer"] = new OpenApiSecurityScheme
+                        {
+                            Type = SecuritySchemeType.Http,
+                            Scheme = "bearer",
+                            BearerFormat = "JWT",
+                            Description = "Session JWT from POST /auth/login."
+                        },
+                        [ApiKeyAuthenticationDefaults.SchemeName] = new OpenApiSecurityScheme
+                        {
+                            Type = SecuritySchemeType.ApiKey,
+                            In = ParameterLocation.Header,
+                            Name = ApiKeyAuthenticationDefaults.HeaderName,
+                            Description = "API key from POST /auth/apikeys."
+                        }
+                    };
+                    return Task.CompletedTask;
+                });
+
+                options.AddOperationTransformer((operation, context, _) =>
+                {
+                    IList<object> metadata = context.Description.ActionDescriptor.EndpointMetadata;
+                    bool requiresAuth = metadata.OfType<IAuthorizeData>().Any() && !metadata.OfType<IAllowAnonymous>().Any();
+                    if (requiresAuth)
+                    {
+                        operation.Security =
+                        [
+                            new OpenApiSecurityRequirement { [new OpenApiSecuritySchemeReference("Bearer", context.Document)] = [] },
+                            new OpenApiSecurityRequirement { [new OpenApiSecuritySchemeReference(ApiKeyAuthenticationDefaults.SchemeName, context.Document)] = [] }
+                        ];
+                    }
+                    return Task.CompletedTask;
+                });
+            }
         });
 
         App = Builder.Build();
