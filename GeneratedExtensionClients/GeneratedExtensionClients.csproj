@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="JsonSubTypes" Version="2.0.1" />
+      <PackageReference Include="JsonSubTypes" Version="2.1.0" />
       <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="14.7.1" />
       <PackageReference Include="NSwag.Core" Version="14.7.1" />
       <PackageReference Include="NSwag.Core.Yaml" Version="14.7.1" />
