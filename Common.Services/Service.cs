@@ -62,14 +62,15 @@ public abstract class Service : IAsyncDisposable
     {
         // The OpenAPI document's default "servers" entry reflects wherever the request that fetched it landed -
         // under `aspire run` that's each service's own dev-loop tunnel host (aspire.dev.internal:...), not the
-        // gateway. Since that's unreachable from a browser outside the dev loop, pin it to the service's actual
-        // public route instead, so Scalar's "Test Request" (and the raw document) point somewhere that works.
-        string publicPrefix = $"/api{endpointsPrefix.TrimEnd('/')}";
+        // gateway. Since that's unreachable from a browser outside the dev loop, pin it to the gateway's public
+        // route instead, so Scalar's "Test Request" (and the raw document) point somewhere that works. Just "/api":
+        // every operation's path already carries the service's own endpointsPrefix (e.g. "/mangas/{mangaId}",
+        // from the route group below), so prefixing the server with it too would double it up.
         Builder.Services.AddOpenApi(options =>
         {
             options.AddDocumentTransformer((document, _, _) =>
             {
-                document.Servers = [new OpenApiServer { Url = publicPrefix }];
+                document.Servers = [new OpenApiServer { Url = "/api" }];
                 return Task.CompletedTask;
             });
         });
