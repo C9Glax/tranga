@@ -5,11 +5,6 @@ namespace Common.Tests.DataTypes;
 
 public class ComicInfoTests
 {
-    // ComicInfo is abstract (generated from the ComicInfo.xsd schema); XmlSerializer cannot
-    // (de)serialize an abstract root type directly, so tests exercise a concrete test subclass.
-    // The subclass must be public: XmlSerializer refuses to process non-public types.
-    public sealed record ConcreteComicInfo : ComicInfo;
-
     private static readonly XmlSerializer Serializer = new(typeof(ConcreteComicInfo), new XmlRootAttribute("ComicInfo"));
 
     private const string SampleXml = """
