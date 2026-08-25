@@ -98,7 +98,7 @@ public static class TestDataBuilder
     }
 
     public static async Task<DbChapterDownloadLink> SeedChapterDownloadLink(
-        MangaContext context, DbChapter chapter, bool downloaded, CancellationToken ct = default)
+        MangaContext context, DbChapter chapter, bool downloaded, int priority = 0, string? url = null, CancellationToken ct = default)
     {
         Guid? fileId = null;
         if (downloaded)
@@ -113,8 +113,9 @@ public static class TestDataBuilder
             ChapterId = chapter.ChapterId,
             DownloadExtension = Guid.NewGuid(),
             Identifier = Guid.NewGuid().ToString(),
-            Priority = 0,
+            Priority = priority,
             FileId = fileId,
+            Url = url,
             Chapter = chapter
         };
 
