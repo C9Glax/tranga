@@ -45,6 +45,7 @@ public sealed class Service : Common.Services.Service
     {
         IChannel channel = app.Services.GetRequiredService<IChannel>();
         _eventHandlers.Add(new ChapterDownloadedHandler(channel, app.Services));
+        _eventHandlers.Add(new ChapterDeletedHandler(channel, app.Services));
         _eventHandlers.Add(new MangaUpdatedHandler(channel, app.Services));
         _eventHandlers.Add(new MangaMergedHandler(channel, app.Services));
     }

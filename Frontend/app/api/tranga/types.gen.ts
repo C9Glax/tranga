@@ -873,6 +873,27 @@ export type GetMangasChaptersResponses = {
 
 export type GetMangasChaptersResponse = GetMangasChaptersResponses[keyof GetMangasChaptersResponses];
 
+export type DeleteMangasChaptersByChapterIdData = {
+    body?: never;
+    path: { chapterId: string };
+    query?: never;
+    url: '/mangas/chapters/{chapterId}';
+};
+
+export type DeleteMangasChaptersByChapterIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type DeleteMangasChaptersByChapterIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type GetMangasChaptersByChapterIdData = {
     body?: never;
     path: { chapterId: string };
