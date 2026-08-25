@@ -158,7 +158,7 @@ public class NotificationConnectorController(NotificationsContext context) : Con
             Name = createPushoverConnectorRecord.Name,
             Url = "https://api.pushover.net/1/messages.json",
             HttpMethod = "POST",
-            Body = $"{{\"token\": \"{createPushoverConnectorRecord.AppToken}\", \"user\": \"{createPushoverConnectorRecord.Username}\", \"message:\":\"%text\", \"%title\" }}",
+            Body = $"{{\"token\": \"{createPushoverConnectorRecord.AppToken}\", \"user\": \"{createPushoverConnectorRecord.Username}\", \"message\": \"%text\", \"title\": \"%title\"}}",
             Headers = new ()
         };
         return await CreateConnector(pushoverConnector);
