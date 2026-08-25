@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
@@ -19,14 +20,18 @@ RUN dotnet restore "Services.Auth/Services.Auth.csproj"
 RUN dotnet restore "Services.Auth.ResetPasswordTool/Services.Auth.ResetPasswordTool.csproj"
 COPY . .
 WORKDIR "/src/Services.Auth"
-RUN dotnet build "./Services.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet build "./Services.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
 WORKDIR "/src/Services.Auth.ResetPasswordTool"
-RUN dotnet build "./Services.Auth.ResetPasswordTool.csproj" -c $BUILD_CONFIGURATION -o /app/build-tools
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet build "./Services.Auth.ResetPasswordTool.csproj" -c $BUILD_CONFIGURATION -o /app/build-tools /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "/src/Services.Auth/Services.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-RUN dotnet publish "/src/Services.Auth.ResetPasswordTool/Services.Auth.ResetPasswordTool.csproj" -c $BUILD_CONFIGURATION -o /app/publish/tools /p:UseAppHost=false
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet publish "/src/Services.Auth/Services.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet publish "/src/Services.Auth.ResetPasswordTool/Services.Auth.ResetPasswordTool.csproj" -c $BUILD_CONFIGURATION -o /app/publish/tools /p:UseAppHost=false /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
 
 FROM base AS final
 USER root

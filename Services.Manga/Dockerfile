@@ -1,4 +1,5 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+﻿# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 RUN mkdir -p /app/Covers && chown $APP_UID /app/Covers
 USER $APP_UID
@@ -18,11 +19,13 @@ COPY ["GeneratedExtensionClients/GeneratedExtensionClients.csproj", "GeneratedEx
 RUN dotnet restore "Services.Manga/Services.Manga.csproj"
 COPY . .
 WORKDIR "/src/Services.Manga"
-RUN dotnet build "./Services.Manga.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet build "./Services.Manga.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Services.Manga.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet publish "./Services.Manga.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
 
 FROM base AS final
 WORKDIR /app

@@ -1,4 +1,5 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+﻿# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
@@ -18,11 +19,13 @@ COPY ["Services.Manga/Services.Manga.csproj", "Services.Manga/"]
 RUN dotnet restore "Services.Tasks/Services.Tasks.csproj"
 COPY . .
 WORKDIR "/src/Services.Tasks"
-RUN dotnet build "./Services.Tasks.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet build "./Services.Tasks.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Services.Tasks.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN --mount=type=secret,id=sixlabors_lic \
+    dotnet publish "./Services.Tasks.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:SixLaborsLicenseFile=/run/secrets/sixlabors_lic
 
 FROM base AS final
 WORKDIR /app

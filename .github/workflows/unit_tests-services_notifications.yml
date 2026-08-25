@@ -24,6 +24,8 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.x'
+      - name: Write Six Labors license
+        run: echo "${{ secrets.SIXLABORS_LICENSE_B64 }}" | base64 -d > Common/sixlabors.lic
       - name: Restore dependencies
         run: dotnet restore ./Services.Notifications.Tests/Services.Notifications.Tests.csproj
       - name: Build the solution

@@ -28,3 +28,6 @@ Mangas/
 
 .env.Production
 .claude
+
+# Six Labors license (fetched from a secret at build time, never committed)
+sixlabors.lic
