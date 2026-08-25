@@ -249,6 +249,29 @@
         }
       }
     },
+    "/tasks/create/backfillComicInfo": {
+      "put": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Create a Task to add ComicInfo.xml to already-downloaded Chapter archives that are missing one.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/tasks/manga/{mangaId}": {
       "get": {
         "tags": [

@@ -40,6 +40,9 @@ internal static class EndpointHelpers
     {
         builder.MapPut("getMangaChapters/{mangaId}", PutGetMangaChaptersTaskEndpoint.Handle)
             .WithSummary("Create a Task to get the Chapters of the Manga with requested ID.");
+
+        builder.MapPut("backfillComicInfo", PutBackfillComicInfoTaskEndpoint.Handle)
+            .WithSummary("Create a Task to add ComicInfo.xml to already-downloaded Chapter archives that are missing one.");
     }
 
     private static void RelatedToMangaEndpoints(this RouteGroupBuilder builder)

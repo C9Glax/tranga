@@ -1,4 +1,6 @@
 using System.IO.Compression;
+using System.Xml.Serialization;
+using Common.Datatypes;
 using Common.Helpers;
 using Common.Services.Events;
 using Common.Services.Events.Events;
@@ -21,6 +23,9 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
     : RunOnceTask(DownloadChapterTask.TaskTypeIdValue), IChapterTask
 {
     internal static readonly Guid TaskTypeIdValue = Guid.Parse("87d2b155-5723-4483-a2f9-c15292a14f44");
+
+    private static readonly XmlSerializer ComicInfoSerializer =
+        new(typeof(ConcreteComicInfo), new XmlRootAttribute("ComicInfo"));
 
     /// <summary>
     /// A <see cref="DownloadChapterTask"/> reads the <see cref="DbChapterDownloadLink"/>s a
@@ -73,6 +78,15 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         }
         logger.LogDebug("Got {images.Count} images.", images.Count);
 
+        // Get Manga directory Path
+        if (await _ctx.GetManga(MangaId, stoppingToken) is not { Metadata: { Series: { } seriesName } })
+        {
+            logger.LogError("Could not Manga (directoryName)!");
+            return;
+        }
+
+        string directoryPath = Path.Join(Constants.MangaDirectory, seriesName.SafeFilesystemString());
+
         // Create archive
         using MemoryStream archiveStream = new();
         await using ZipArchive archive = new(archiveStream, ZipArchiveMode.Create, true);
@@ -83,16 +97,14 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
             image.image.Position = 0;
             await image.image.CopyToAsync(entryStream, stoppingToken);
         }
+
+        // Write ComicInfo.xml so readers like Komga order chapters by Volume/Number instead of falling back
+        // to filename sorting, which misorders volumed and volume-less chapters relative to each other.
+        ZipArchiveEntry comicInfoEntry = archive.CreateEntry("ComicInfo.xml", CompressionLevel.SmallestSize);
+        await using (Stream comicInfoStream = await comicInfoEntry.OpenAsync(stoppingToken))
+            ComicInfoSerializer.Serialize(comicInfoStream, chapter.CreateComicInfo(seriesName));
+
         logger.LogTrace("Built archive with {images.Count} entries.", images.Count);
-
-        // Get Manga directory Path
-        if (await _ctx.GetManga(MangaId, stoppingToken) is not { Metadata: { Series: { } seriesName } })
-        {
-            logger.LogError("Could not Manga (directoryName)!");
-            return;
-        }
-
-        string directoryPath = Path.Join(Constants.MangaDirectory, seriesName.SafeFilesystemString());
 
         // Create dbFile entry for File
         DbFile dbFile = new()
