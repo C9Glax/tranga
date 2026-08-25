@@ -165,4 +165,25 @@ public sealed class SuwayomiSourceTests : Common.Tests.TrangaTest
         Assert.False(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Safe, null));
         Assert.False(SuwayomiSource.IsAdultContent(SuwayomiContentWarning.Safe, []));
     }
+
+    [Fact]
+    public void ParseReleaseDateConvertsEpochMillisToDateTimeOffset()
+    {
+        // 2024-01-02T03:04:05Z
+        Assert.Equal(DateTimeOffset.FromUnixTimeSeconds(1704164645),
+            SuwayomiSource.ParseReleaseDate(1704164645000));
+    }
+
+    [Fact]
+    public void ParseReleaseDateReturnsNullWhenZero()
+    {
+        // Suwayomi reports 0, not null, when a source doesn't provide an upload date.
+        Assert.Null(SuwayomiSource.ParseReleaseDate(0));
+    }
+
+    [Fact]
+    public void ParseReleaseDateReturnsNullWhenMissing()
+    {
+        Assert.Null(SuwayomiSource.ParseReleaseDate(null));
+    }
 }

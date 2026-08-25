@@ -13,7 +13,9 @@ public class MangaInfoHelperTests
     public void ToChapter_ConvertsChapterInfoToDbChapterAndLinksManga()
     {
         DbManga manga = new() { MangaId = Guid.NewGuid(), Monitored = true };
-        ChapterInfo info = new(Guid.NewGuid(), "12", "https://example.com/12", "chapter-12", Volume: "2", Title: "Title");
+        DateTimeOffset releaseDate = DateTimeOffset.Parse("2024-01-02T03:04:05+00:00");
+        ChapterInfo info = new(Guid.NewGuid(), "12", "https://example.com/12", "chapter-12", Volume: "2",
+            Title: "Title", ReleaseDate: releaseDate);
 
         DbChapter chapter = info.ToChapter(manga);
 
@@ -23,6 +25,7 @@ public class MangaInfoHelperTests
         Assert.Equal("2", chapter.Volume);
         Assert.Equal("12", chapter.Number);
         Assert.Equal("Title", chapter.Title);
+        Assert.Equal(releaseDate, chapter.ReleaseDate);
         Assert.NotNull(chapter.DownloadLinks);
         Assert.Empty(chapter.DownloadLinks!);
     }

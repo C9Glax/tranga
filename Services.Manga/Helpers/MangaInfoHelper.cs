@@ -23,6 +23,7 @@ public static class MangaInfoHelper
         Volume = info.Volume,
         Number = info.Number,
         Title = info.Title,
+        ReleaseDate = info.ReleaseDate,
         DownloadLinks = []
     };
 

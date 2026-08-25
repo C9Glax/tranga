@@ -6,5 +6,6 @@ public sealed record ChapterInfo(
     string Url,
     string Identifier,
     string? Volume = null,
-    string? Title = null
+    string? Title = null,
+    DateTimeOffset? ReleaseDate = null
 );

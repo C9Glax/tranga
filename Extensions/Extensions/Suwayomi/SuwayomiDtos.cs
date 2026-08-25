@@ -61,7 +61,8 @@ internal sealed record SuwayomiChapterDto(
     string? Name,
     double ChapterNumber,
     string? Scanlator,
-    int SourceOrder);
+    int SourceOrder,
+    long? UploadDate);
 
 internal sealed record SourcesData(SourceNodeList? Sources);
 
