@@ -4,6 +4,11 @@
     "title": "Services.Tasks | v1",
     "version": "1.0.0"
   },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
   "paths": {
     "/tasks": {
       "get": {

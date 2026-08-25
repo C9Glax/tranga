@@ -137,6 +137,42 @@ the login page will show the setup screen again on next load.
 
 [.NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 
+### Running locally with Aspire
+
+Tranga uses [.NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/) ([Tranga.AppHost/AppHost.cs](Tranga.AppHost/AppHost.cs)) to
+orchestrate the full stack (Postgres, RabbitMQ, all services, the frontend and the YARP gateway) for local development:
+
+```bash
+dotnet run --project Tranga.AppHost/Tranga.AppHost.csproj
+```
+
+This starts everything and opens the Aspire dashboard, from which you can inspect logs, traces and each resource's state.
+
+### Publishing (regenerating docker-compose.yaml)
+
+[docker-compose.yaml](Tranga.AppHost/aspire-output/docker-compose.yaml) is generated from `AppHost.cs` — don't hand-edit it.
+Regenerate it with:
+
+```bash
+dotnet run --project Tranga.AppHost/Tranga.AppHost.csproj --publisher docker-compose --output-path aspire-output
+```
+
+Building the service container images during publish requires a [SixLabors ImageSharp](https://sixlabors.com/pricing/)
+license — `Common` depends on ImageSharp, and its license check only tolerates a missing license in Debug builds; the
+Release build used for publish fails without one. Supply yours via the `SixLaborsLicenseKey` Aspire parameter:
+
+```bash
+Parameters__SixLaborsLicenseKey="$(cat Common/sixlabors.lic)" \
+  dotnet run --project Tranga.AppHost/Tranga.AppHost.csproj --publisher docker-compose --output-path aspire-output
+```
+
+(`Common/sixlabors.lic` is gitignored — get one from [sixlabors.com/pricing](https://sixlabors.com/pricing/) and drop it there,
+or pass the license string directly.)
+
+> Aspire caches resolved publish parameter values per-deployment under `~/.aspire/deployments/*/development.json`. If you
+> change the license value and a re-run doesn't seem to pick it up, edit that file directly or delete it to force
+> re-resolution.
+
 <!-- CONTRIBUTING -->
 ## Contributing
 

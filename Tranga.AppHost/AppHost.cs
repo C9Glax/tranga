@@ -56,6 +56,14 @@ IResourceBuilder<ParameterResource> malClientId = builder.AddParameter("MalClien
 IResourceBuilder<ParameterResource> useAuth = builder.AddParameter("UseAuth");
 IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthSigningKey", secret: true);
 
+// SixLabors.ImageSharp (pulled in transitively via Common) only warns about a missing license in Debug builds;
+// `aspire publish` builds every project in Release, where the same check is a hard build failure. The plain
+// project-publish path Aspire uses by default (a hardcoded `dotnet publish /t:PublishContainer` invocation) has
+// no hook for extra MSBuild properties or environment variables, so each service instead publishes from its own
+// existing CI Dockerfile (see e.g. Services.Manga/Dockerfile) via PublishAsDockerFile below, which already mounts
+// this exact secret id for its own `dotnet build`/`publish` steps.
+IResourceBuilder<ParameterResource> sixLaborsLicenseKey = builder.AddParameter("SixLaborsLicenseKey", secret: true);
+
 // Suwayomi speaks FlareSolverr natively, so it inherits whatever Tranga is configured to use. Under `aspire run` the
 // parameter is resolved now; the compose output overrides this with an interpolation so that .env stays authoritative
 // there (see PublishAsDockerComposeService below).
@@ -158,7 +166,9 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Tasks/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Manga>("services-manga")
     .WaitFor(rabbitmq)
@@ -206,7 +216,9 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Manga/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Services_Notifications>("services-notifications")
     .WaitFor(rabbitmq)
@@ -239,7 +251,9 @@ IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Serv
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Notifications/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services_Libraries>("services-libraries")
     .WaitFor(rabbitmq)
@@ -280,7 +294,9 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Libraries/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
 
 IResourceBuilder<ProjectResource> authService = builder.AddProject<Services_Auth>("services-auth")
     .WaitFor(rabbitmq)
@@ -313,14 +329,42 @@ IResourceBuilder<ProjectResource> authService = builder.AddProject<Services_Auth
         };
         service.Restart = "on-failure:3";
     })
-    .WithDockerfileBaseImage("mcr.microsoft.com/dotnet/sdk:10.0", "mcr.microsoft.com/dotnet/aspnet:10.0");
+    .PublishAsDockerFile(container => container
+        .WithDockerfile("..", "Services.Auth/Dockerfile")
+        .WithBuildSecret("sixlabors_lic", sixLaborsLicenseKey));
+
+// Combined API docs: one Scalar instance showing every service's OpenAPI document side by side. It's a browser
+// app, so the "sources" URLs must be reachable by the visitor's browser - they point at the gateway-routed
+// /api/{service}/openapi/... paths (see the gateway config below), not at the services directly.
+IResourceBuilder<ContainerResource> scalarDocs = builder.AddContainer("scalar-docs", "scalarapi/api-reference", "latest")
+    .WithHttpEndpoint(name: "http", port: 8080, targetPort: 8080)
+    .WithEnvironment("BASE_PATH", "/docs")
+    .WithEnvironment("API_REFERENCE_CONFIG", """
+        {"sources":[
+            {"title":"Manga","slug":"manga","url":"/api/mangas/openapi/v1.json","default":true},
+            {"title":"Tasks","slug":"tasks","url":"/api/tasks/openapi/v1.json"},
+            {"title":"Notifications","slug":"notifications","url":"/api/notifications/openapi/v1.json"},
+            {"title":"Libraries","slug":"libraries","url":"/api/libraries/openapi/v1.json"},
+            {"title":"Auth","slug":"auth","url":"/api/auth/openapi/v1.json"}
+        ]}
+        """)
+    .PublishAsDockerComposeService((resource, service) =>
+    {
+        service.Name = "scalar-docs";
+        service.Networks = ["tranga"];
+        service.Restart = "on-failure:3";
+    });
 
 IResourceBuilder<JavaScriptAppResource> frontend = builder.AddJavaScriptApp("frontend", "../Frontend")
     .WithHttpEndpoint(port: 3000, env: "PORT")
     .WithReference(mangaService)
     .WithReference(tasksService)
+    // Named to match Nuxt's automatic NUXT_-prefixed env-to-runtimeConfig mapping (see nuxt.config.ts /
+    // https://nuxt.com/docs/4.x/directory-structure/env), so the frontend doesn't need to read process.env itself.
+    .WithEnvironment("NUXT_SCALAR_DOCS_URL", scalarDocs.GetEndpoint("http"))
     .WaitFor(mangaService)
     .WaitFor(tasksService)
+    .WaitFor(scalarDocs)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "frontend";
@@ -338,6 +382,24 @@ builder.AddYarp("gateway")
     {
         // Add catch-all route for frontend service
         yarp.AddRoute(frontend).WithMatchMethods("GET");
+
+        // Combined API docs UI (scalar-docs container). No dedicated gateway route: ASP.NET Core/YARP's path
+        // matching treats "/docs" and "/docs/" as equivalent, so a route meant to catch only one of them ends up
+        // stealing the other too - a real problem here, since the container's own HTML references its script
+        // with a bare relative path that only resolves correctly with the trailing slash present, and a route
+        // meant to redirect only the bare path would occasionally swallow the already-correct one instead.
+        // /docs** already falls through to the frontend catch-all above, which proxies it to the scalar-docs
+        // container itself (see Frontend/server/routes/docs.get.ts) - the raw path is available there as a
+        // plain string, letting it draw that distinction reliably.
+
+        // Docs: each service's OpenAPI JSON is mapped at its own root (/openapi/v1.json), not under its
+        // endpointsPrefix, so these routes strip the full "/api/{service}" prefix instead of just "/api" to
+        // land on it. Registered before the broader catch-alls below so they take precedence.
+        yarp.AddRoute("/api/mangas/openapi/{**catch-all}", mangaService).WithTransformPathRemovePrefix("/api/mangas");
+        yarp.AddRoute("/api/tasks/openapi/{**catch-all}", tasksService).WithTransformPathRemovePrefix("/api/tasks");
+        yarp.AddRoute("/api/notifications/openapi/{**catch-all}", notificationsService).WithTransformPathRemovePrefix("/api/notifications");
+        yarp.AddRoute("/api/libraries/openapi/{**catch-all}", librariesService).WithTransformPathRemovePrefix("/api/libraries");
+        yarp.AddRoute("/api/auth/openapi/{**catch-all}", authService).WithTransformPathRemovePrefix("/api/auth");
 
         yarp.AddRoute("/api/mangas/{**catch-all}", mangaService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/tasks/{**catch-all}", tasksService).WithTransformPathRemovePrefix("/api");
