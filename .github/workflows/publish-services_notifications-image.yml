@@ -28,6 +28,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          # full history + tags so GitInfo (Common.Services/Service.cs) can derive an accurate version/commit
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Write Six Labors license
         run: echo "${{ secrets.SIXLABORS_LICENSE_B64 }}" | base64 -d > "${{ runner.temp }}/sixlabors.lic"
