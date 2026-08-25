@@ -30,7 +30,12 @@
         </template>
 
         <template #actions-cell="{ row }">
-            <UButton icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Delete Chapter" @click="onDelete(row.original)" />
+            <UButton
+                icon="i-lucide-trash-2"
+                color="error"
+                variant="ghost"
+                aria-label="Delete Chapter"
+                @click.stop="onDelete(row.original)" />
         </template>
     </UTable>
 </template>
@@ -47,7 +52,7 @@ const onSelectChapter = (_event: Event, row: Row<ServicesMangaMangaChapter>) => 
     const url = row.original.sourceUrl;
     if (url) window.open(url, '_blank', 'noopener');
 };
-  
+
 const confirmModal = useOverlay().create(TrangaConfirmModal);
 
 const chapterLabel = (chapter: ServicesMangaMangaChapter) =>
@@ -59,7 +64,7 @@ const onDelete = (chapter: ServicesMangaMangaChapter) => {
         description: `This permanently deletes "${chapterLabel(chapter)}": its downloaded file is removed from disk, and if a Komga library is linked, a rescan is triggered so it's removed there too. This cannot be undone.`,
         onConfirm: () => deleteChapter(chapter.mangaId, chapter.chapterId),
     });
-}
+};
 
 const sorting = ref<SortingState>([
     { id: 'volume', desc: false },
