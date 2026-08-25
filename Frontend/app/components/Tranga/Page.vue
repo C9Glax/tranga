@@ -111,6 +111,13 @@ const defaultItems = computed((): NavigationMenuItem[] => {
         { label: 'Settings', to: '/settings', icon: 'i-lucide-settings' },
         { label: 'Links', type: 'label' },
         {
+            label: 'API Docs',
+            to: '/docs.html',
+            external: true,
+            icon: 'i-lucide-file-code',
+            ui: { linkLeadingIcon: 'text-neutral-400', linkLabel: 'text-neutral-400' },
+        },
+        {
             label: 'Github',
             to: 'https://github.com/C9Glax/tranga',
             external: true,

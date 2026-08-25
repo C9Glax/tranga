@@ -339,6 +339,15 @@ builder.AddYarp("gateway")
         // Add catch-all route for frontend service
         yarp.AddRoute(frontend).WithMatchMethods("GET");
 
+        // Docs: each service's OpenAPI JSON is mapped at its own root (/openapi/v1.json), not under its
+        // endpointsPrefix, so these routes strip the full "/api/{service}" prefix instead of just "/api" to
+        // land on it. Registered before the broader catch-alls below so they take precedence.
+        yarp.AddRoute("/api/mangas/openapi/{**catch-all}", mangaService).WithTransformPathRemovePrefix("/api/mangas");
+        yarp.AddRoute("/api/tasks/openapi/{**catch-all}", tasksService).WithTransformPathRemovePrefix("/api/tasks");
+        yarp.AddRoute("/api/notifications/openapi/{**catch-all}", notificationsService).WithTransformPathRemovePrefix("/api/notifications");
+        yarp.AddRoute("/api/libraries/openapi/{**catch-all}", librariesService).WithTransformPathRemovePrefix("/api/libraries");
+        yarp.AddRoute("/api/auth/openapi/{**catch-all}", authService).WithTransformPathRemovePrefix("/api/auth");
+
         yarp.AddRoute("/api/mangas/{**catch-all}", mangaService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/tasks/{**catch-all}", tasksService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/notifications/{**catch-all}", notificationsService).WithTransformPathRemovePrefix("/api");
