@@ -44,6 +44,20 @@ export const zServicesMangaDownloadLink = z.object({
 
 export type ServicesMangaDownloadLinkZodType = z.infer<typeof zServicesMangaDownloadLink>;
 
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export const zServicesMangaGitInfoResponse = z.object({
+    sha: z.string(),
+    commit: z.string(),
+    branch: z.string(),
+    version: z.string(),
+    commitDate: z.string(),
+    isDirty: z.boolean(),
+});
+
+export type ServicesMangaGitInfoResponseZodType = z.infer<typeof zServicesMangaGitInfoResponse>;
+
 export const zServicesMangaMangaChapter = z.object({
     isDownloaded: z.boolean(),
     chapterId: z.uuid(),
@@ -318,6 +332,20 @@ export const zServicesTasksChapterSummary = z.object({
 
 export type ServicesTasksChapterSummaryZodType = z.infer<typeof zServicesTasksChapterSummary>;
 
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export const zServicesTasksGitInfoResponse = z.object({
+    sha: z.string(),
+    commit: z.string(),
+    branch: z.string(),
+    version: z.string(),
+    commitDate: z.string(),
+    isDirty: z.boolean(),
+});
+
+export type ServicesTasksGitInfoResponseZodType = z.infer<typeof zServicesTasksGitInfoResponse>;
+
 export const zServicesTasksMangaSummary = z.object({ mangaId: z.uuid(), series: z.nullish(z.string()) });
 
 export type ServicesTasksMangaSummaryZodType = z.infer<typeof zServicesTasksMangaSummary>;
@@ -398,6 +426,20 @@ export const zServicesTasksWorker = z.object({
 });
 
 export type ServicesTasksWorkerZodType = z.infer<typeof zServicesTasksWorker>;
+
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export const zServicesNotificationsGitInfoResponse = z.object({
+    sha: z.string(),
+    commit: z.string(),
+    branch: z.string(),
+    version: z.string(),
+    commitDate: z.string(),
+    isDirty: z.boolean(),
+});
+
+export type ServicesNotificationsGitInfoResponseZodType = z.infer<typeof zServicesNotificationsGitInfoResponse>;
 
 export const zServicesNotificationsNotificationExtensionType = z.enum(['Naprise', 'Discord', 'Gotify', 'NtfySh', 'Telegram']);
 
@@ -480,6 +522,20 @@ export const zServicesLibrariesAddKomgaLibraryRequest = z.object({
 
 export type ServicesLibrariesAddKomgaLibraryRequestZodType = z.infer<typeof zServicesLibrariesAddKomgaLibraryRequest>;
 
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export const zServicesLibrariesGitInfoResponse = z.object({
+    sha: z.string(),
+    commit: z.string(),
+    branch: z.string(),
+    version: z.string(),
+    commitDate: z.string(),
+    isDirty: z.boolean(),
+});
+
+export type ServicesLibrariesGitInfoResponseZodType = z.infer<typeof zServicesLibrariesGitInfoResponse>;
+
 export const zServicesLibrariesLibraryMangaLink = z.object({ libraryServiceId: z.uuid(), seriesUrl: z.string() });
 
 export type ServicesLibrariesLibraryMangaLinkZodType = z.infer<typeof zServicesLibrariesLibraryMangaLink>;
@@ -550,6 +606,20 @@ export const zServicesAuthCreateApiKeyResponse = z.object({
 });
 
 export type ServicesAuthCreateApiKeyResponseZodType = z.infer<typeof zServicesAuthCreateApiKeyResponse>;
+
+/**
+ * Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time.
+ */
+export const zServicesAuthGitInfoResponse = z.object({
+    sha: z.string(),
+    commit: z.string(),
+    branch: z.string(),
+    version: z.string(),
+    commitDate: z.string(),
+    isDirty: z.boolean(),
+});
+
+export type ServicesAuthGitInfoResponseZodType = z.infer<typeof zServicesAuthGitInfoResponse>;
 
 export const zServicesAuthSetupRequest = z.object({ password: z.string() });
 

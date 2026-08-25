@@ -1,4 +1,15 @@
+import { gitDescribeSync } from 'git-describe';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+const gitInfo = (() => {
+    try {
+        return gitDescribeSync({ dirtySemver: false });
+    } catch {
+        return null;
+    }
+})();
+
 export default defineNuxtConfig({
     modules: ['@nuxt/eslint', '@nuxt/ui'],
 
@@ -8,7 +19,13 @@ export default defineNuxtConfig({
 
     css: ['~/assets/css/main.css'],
 
-    runtimeConfig: { public: { api: { baseUrl: '' } } },
+    runtimeConfig: {
+        public: {
+            api: { baseUrl: '' },
+            appVersion: gitInfo?.semverString ?? gitInfo?.raw ?? 'unknown',
+            appCommit: gitInfo?.hash ?? 'unknown',
+        },
+    },
 
     compatibilityDate: '2025-01-15',
 

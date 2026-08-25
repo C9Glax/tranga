@@ -55,4 +55,12 @@ export namespace ApiKeys {
 
         export const ApiKeys = 'Auth/ApiKeys';
     }
+
+    export namespace GitInfo {
+        export const Manga = 'GitInfo/Manga';
+        export const Tasks = 'GitInfo/Tasks';
+        export const Notifications = 'GitInfo/Notifications';
+        export const Libraries = 'GitInfo/Libraries';
+        export const Auth = 'GitInfo/Auth';
+    }
 }
