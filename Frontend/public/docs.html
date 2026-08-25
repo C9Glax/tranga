@@ -6,16 +6,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
     </head>
     <body>
-        <script
-            id="api-reference"
-            type="application/json"
-            data-configuration='{"sources":[
-        {"title":"Manga","url":"/api/mangas/openapi/v1.json","default":true},
-        {"title":"Tasks","url":"/api/tasks/openapi/v1.json"},
-        {"title":"Notifications","url":"/api/notifications/openapi/v1.json"},
-        {"title":"Libraries","url":"/api/libraries/openapi/v1.json"},
-        {"title":"Auth","url":"/api/auth/openapi/v1.json"}
-      ]}'></script>
-        <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+        <div id="app"></div>
+        <script type="module">
+            import { createApiReference } from 'https://esm.sh/@scalar/api-reference@1.66.1';
+            createApiReference('#app', {
+                sources: [
+                    { title: 'Manga', slug: 'manga', url: '/api/mangas/openapi/v1.json', default: true },
+                    { title: 'Tasks', slug: 'tasks', url: '/api/tasks/openapi/v1.json' },
+                    { title: 'Notifications', slug: 'notifications', url: '/api/notifications/openapi/v1.json' },
+                    { title: 'Libraries', slug: 'libraries', url: '/api/libraries/openapi/v1.json' },
+                    { title: 'Auth', slug: 'auth', url: '/api/auth/openapi/v1.json' },
+                ],
+            });
+        </script>
     </body>
 </html>
