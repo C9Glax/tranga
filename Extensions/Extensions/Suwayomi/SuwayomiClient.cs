@@ -36,7 +36,7 @@ internal static class SuwayomiClient
     private const string SourceFields = "id name lang displayName iconUrl homeUrl contentWarning supportsLatest";
     private const string ExtensionFields = "pkgName name lang iconUrl versionName contentWarning isInstalled isObsolete hasUpdate";
     private const string MangaFields = "id sourceId url title thumbnailUrl description author artist genre realUrl";
-    private const string ChapterFields = "id url name chapterNumber scanlator sourceOrder";
+    private const string ChapterFields = "id url name chapterNumber scanlator sourceOrder uploadDate";
 
     /// <summary>Server name/version, or <see langword="null"/> when the sidecar cannot be reached. Doubles as the reachability probe.</summary>
     internal static async Task<AboutServerPayload?> GetAboutAsync(CancellationToken ct) =>

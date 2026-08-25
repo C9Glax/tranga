@@ -42,6 +42,8 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
         Assert.NotEmpty(chapters);
         Assert.True(chapters.Count > 100); // multiple pages
         Assert.Contains("249f2aa4-38a9-428f-8632-9a4aecc013ad", chapters.Select(c => c.Identifier));
+        ChapterInfo knownChapter = chapters.Single(c => c.Identifier == "249f2aa4-38a9-428f-8632-9a4aecc013ad");
+        Assert.NotNull(knownChapter.ReleaseDate);
     }
     
 

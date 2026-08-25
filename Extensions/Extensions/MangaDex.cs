@@ -133,8 +133,11 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
             if (chapter.Attributes?.Chapter is not { } number)
                 continue;
             string url = $"https://mangadex.org/chapter/{id}";
+            DateTimeOffset? releaseDate = DateTimeOffset.TryParse(chapter.Attributes?.PublishAt, out DateTimeOffset parsed)
+                ? parsed
+                : null;
             result.Add(new ChapterInfo(this.Identifier, number, url, id.ToString(), chapter.Attributes?.Volume,
-                chapter.Attributes?.Title));
+                chapter.Attributes?.Title, releaseDate));
         }
 
         return result;

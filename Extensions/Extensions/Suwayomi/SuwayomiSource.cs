@@ -222,7 +222,8 @@ public sealed class SuwayomiSource : IDownloadExtension
                 // The manga url is carried alongside the chapter url so a chapter can still be resolved when the
                 // sidecar has forgotten it (its ids are row ids, and only the urls are stable).
                 $"{mangaUrl}{IdentifierSeparator}{chapter.Url}",
-                Title: string.IsNullOrWhiteSpace(chapter.Name) ? null : chapter.Name))
+                Title: string.IsNullOrWhiteSpace(chapter.Name) ? null : chapter.Name,
+                ReleaseDate: ParseReleaseDate(chapter.UploadDate)))
             .ToList();
     }
 
@@ -231,6 +232,10 @@ public sealed class SuwayomiSource : IDownloadExtension
             ? chapter.ChapterNumber.ToString("0.####", CultureInfo.InvariantCulture)
             // Sources that do not expose a chapter number report -1; fall back to the source's own ordering.
             : (chapter.SourceOrder + 1).ToString(CultureInfo.InvariantCulture);
+
+    // Suwayomi reports 0, not null, when a source doesn't provide an upload date.
+    public static DateTimeOffset? ParseReleaseDate(long? uploadDateEpochMillis) =>
+        uploadDateEpochMillis is > 0 ? DateTimeOffset.FromUnixTimeMilliseconds(uploadDateEpochMillis.Value) : null;
 
     #endregion
 
