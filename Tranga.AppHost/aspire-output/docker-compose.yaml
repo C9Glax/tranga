@@ -52,7 +52,7 @@ services:
     environment:
       OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-      HTTP_PORTS: "${SERVICES_TASKS_PORT}"
+      HTTP_PORTS: "8080"
       ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
       TRANGA_HOST: "tranga-pg"
       TRANGA_PORT: "5432"
@@ -84,7 +84,7 @@ services:
       MAL_CLIENT_ID: "${MALCLIENTID}"
       SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
-      - "${SERVICES_TASKS_PORT}"
+      - "8080"
     volumes:
       - type: "bind"
         target: "/app/Mangas"
@@ -105,7 +105,7 @@ services:
     environment:
       OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-      HTTP_PORTS: "${SERVICES_MANGA_PORT}"
+      HTTP_PORTS: "8080"
       ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
       TRANGA_HOST: "tranga-pg"
       TRANGA_PORT: "5432"
@@ -137,7 +137,7 @@ services:
       MAL_CLIENT_ID: "${MALCLIENTID}"
       SUWAYOMI_URL: "http://suwayomi:4567"
     expose:
-      - "${SERVICES_MANGA_PORT}"
+      - "8080"
     volumes:
       - type: "volume"
         target: "/app/Covers"
@@ -157,7 +157,7 @@ services:
     environment:
       OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-      HTTP_PORTS: "${SERVICES_NOTIFICATIONS_PORT}"
+      HTTP_PORTS: "8080"
       ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
       TRANGA_HOST: "tranga-pg"
       TRANGA_PORT: "5432"
@@ -184,7 +184,7 @@ services:
       UseAuth: "${USEAUTH}"
       AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
     expose:
-      - "${SERVICES_NOTIFICATIONS_PORT}"
+      - "8080"
     depends_on:
       tranga-pg:
         condition: "service_started"
@@ -198,7 +198,7 @@ services:
     environment:
       OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-      HTTP_PORTS: "${SERVICES_LIBRARIES_PORT}"
+      HTTP_PORTS: "8080"
       ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
       TRANGA_HOST: "tranga-pg"
       TRANGA_PORT: "5432"
@@ -225,7 +225,7 @@ services:
       UseAuth: "${USEAUTH}"
       AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
     expose:
-      - "${SERVICES_LIBRARIES_PORT}"
+      - "8080"
     volumes:
       - type: "volume"
         target: "/app/Covers"
@@ -244,7 +244,7 @@ services:
     environment:
       OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-      HTTP_PORTS: "${SERVICES_AUTH_PORT}"
+      HTTP_PORTS: "8080"
       ConnectionStrings__tranga: "Host=tranga-pg;Port=5432;Username=${POSTGRESUSER};Password=${POSTGRESPASSWORD};Database=tranga"
       TRANGA_HOST: "tranga-pg"
       TRANGA_PORT: "5432"
@@ -271,7 +271,7 @@ services:
       UseAuth: "${USEAUTH}"
       AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
     expose:
-      - "${SERVICES_AUTH_PORT}"
+      - "8080"
     depends_on:
       tranga-pg:
         condition: "service_started"
@@ -280,17 +280,28 @@ services:
     networks:
       - "tranga"
     restart: "on-failure:3"
+  scalar-docs:
+    image: "scalarapi/api-reference:latest"
+    environment:
+      BASE_PATH: "/docs"
+      API_REFERENCE_CONFIG: "{\"sources\":[\n    {\"title\":\"Manga\",\"slug\":\"manga\",\"url\":\"/api/mangas/openapi/v1.json\",\"default\":true},\n    {\"title\":\"Tasks\",\"slug\":\"tasks\",\"url\":\"/api/tasks/openapi/v1.json\"},\n    {\"title\":\"Notifications\",\"slug\":\"notifications\",\"url\":\"/api/notifications/openapi/v1.json\"},\n    {\"title\":\"Libraries\",\"slug\":\"libraries\",\"url\":\"/api/libraries/openapi/v1.json\"},\n    {\"title\":\"Auth\",\"slug\":\"auth\",\"url\":\"/api/auth/openapi/v1.json\"}\n]}"
+    expose:
+      - "8080"
+    networks:
+      - "tranga"
+    restart: "on-failure:3"
   frontend:
     image: "ghcr.io/c9glax/tranga-frontend:external-connectors"
     environment:
       NODE_ENV: "production"
       PORT: "3000"
-      SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
-      services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
-      SERVICES_MANGA_HTTPS: "https://services-manga:${SERVICES_MANGA_PORT}"
-      SERVICES_TASKS_HTTP: "http://services-tasks:${SERVICES_TASKS_PORT}"
-      services__services-tasks__http__0: "http://services-tasks:${SERVICES_TASKS_PORT}"
-      SERVICES_TASKS_HTTPS: "https://services-tasks:${SERVICES_TASKS_PORT}"
+      SERVICES_MANGA_HTTP: "http://services-manga:8080"
+      services__services-manga__http__0: "http://services-manga:8080"
+      SERVICES_MANGA_HTTPS: "https://services-manga:8080"
+      SERVICES_TASKS_HTTP: "http://services-tasks:8080"
+      services__services-tasks__http__0: "http://services-tasks:8080"
+      SERVICES_TASKS_HTTPS: "https://services-tasks:8080"
+      NUXT_SCALAR_DOCS_URL: "http://scalar-docs:8080"
     expose:
       - "3000"
     depends_on:
@@ -349,21 +360,21 @@ services:
       REVERSEPROXY__CLUSTERS__cluster_services-libraries__DESTINATIONS__destination1__ADDRESS: "https+http://services-libraries"
       REVERSEPROXY__CLUSTERS__cluster_services-auth__DESTINATIONS__destination1__ADDRESS: "https+http://services-auth"
       services__frontend__http__0: "http://frontend:3000"
-      SERVICES_MANGA_HTTP: "http://services-manga:${SERVICES_MANGA_PORT}"
-      services__services-manga__http__0: "http://services-manga:${SERVICES_MANGA_PORT}"
-      SERVICES_MANGA_HTTPS: "https://services-manga:${SERVICES_MANGA_PORT}"
-      SERVICES_TASKS_HTTP: "http://services-tasks:${SERVICES_TASKS_PORT}"
-      services__services-tasks__http__0: "http://services-tasks:${SERVICES_TASKS_PORT}"
-      SERVICES_TASKS_HTTPS: "https://services-tasks:${SERVICES_TASKS_PORT}"
-      SERVICES_NOTIFICATIONS_HTTP: "http://services-notifications:${SERVICES_NOTIFICATIONS_PORT}"
-      services__services-notifications__http__0: "http://services-notifications:${SERVICES_NOTIFICATIONS_PORT}"
-      SERVICES_NOTIFICATIONS_HTTPS: "https://services-notifications:${SERVICES_NOTIFICATIONS_PORT}"
-      SERVICES_LIBRARIES_HTTP: "http://services-libraries:${SERVICES_LIBRARIES_PORT}"
-      services__services-libraries__http__0: "http://services-libraries:${SERVICES_LIBRARIES_PORT}"
-      SERVICES_LIBRARIES_HTTPS: "https://services-libraries:${SERVICES_LIBRARIES_PORT}"
-      SERVICES_AUTH_HTTP: "http://services-auth:${SERVICES_AUTH_PORT}"
-      services__services-auth__http__0: "http://services-auth:${SERVICES_AUTH_PORT}"
-      SERVICES_AUTH_HTTPS: "https://services-auth:${SERVICES_AUTH_PORT}"
+      SERVICES_MANGA_HTTP: "http://services-manga:8080"
+      services__services-manga__http__0: "http://services-manga:8080"
+      SERVICES_MANGA_HTTPS: "https://services-manga:8080"
+      SERVICES_TASKS_HTTP: "http://services-tasks:8080"
+      services__services-tasks__http__0: "http://services-tasks:8080"
+      SERVICES_TASKS_HTTPS: "https://services-tasks:8080"
+      SERVICES_NOTIFICATIONS_HTTP: "http://services-notifications:8080"
+      services__services-notifications__http__0: "http://services-notifications:8080"
+      SERVICES_NOTIFICATIONS_HTTPS: "https://services-notifications:8080"
+      SERVICES_LIBRARIES_HTTP: "http://services-libraries:8080"
+      services__services-libraries__http__0: "http://services-libraries:8080"
+      SERVICES_LIBRARIES_HTTPS: "https://services-libraries:8080"
+      SERVICES_AUTH_HTTP: "http://services-auth:8080"
+      services__services-auth__http__0: "http://services-auth:8080"
+      SERVICES_AUTH_HTTPS: "https://services-auth:8080"
     ports:
       - "5000:5000"
     expose:
