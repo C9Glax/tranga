@@ -34,7 +34,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     private static readonly Regex ChapterNumberRegex = new(@"(?:\d+\.)*\d+", RegexOptions.Compiled);
     public Chapter(Manga parentManga, string chapterNumber,
         int? volumeNumber, string? title = null)
-        : base(TokenGen.CreateToken(typeof(Chapter), parentManga.Key, chapterNumber))
+        : base(TokenGen.CreateToken(typeof(Chapter), parentManga.Key, chapterNumber, volumeNumber.ToString() ?? ""))
     {
         if(ChapterNumberRegex.Match(chapterNumber) is not { Success: true } match || !match.Value.Equals(chapterNumber))
             throw new ArgumentException($"Invalid chapter number: {chapterNumber}");
