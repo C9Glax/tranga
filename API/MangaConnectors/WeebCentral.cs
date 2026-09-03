@@ -245,10 +245,22 @@ public class WeebCentral : MangaConnector
 					continue;
 				}
 			}
+			
+			bool? isOfficial = null;
+			string? stroke = node.SelectSingleNode(".//svg")?.GetAttributeValue("stroke", "").Trim().ToLowerInvariant();
+			
+			if (stroke == "#d8b4fe")
+				isOfficial = true;
+			else if (stroke == "#4c4d54")
+				isOfficial = false;
+			Log.Debug($"Chapter {chapterNumber} official:{isOfficial}");
 
             string? title = null;
 
-            Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, title);
+            Chapter ch = new(manga.Obj, chapterNumber, volumeNumber, title)
+			{
+				IsOfficial = isOfficial
+			};
 			string chapterIdOnSite = new Uri(href).Segments.Last();
 			string canonicalChapterUrl = $"https://weebcentral.com/chapters/{chapterIdOnSite}";
             MangaConnectorId<Chapter> mcId = new(ch, this, chapterIdOnSite, canonicalChapterUrl);

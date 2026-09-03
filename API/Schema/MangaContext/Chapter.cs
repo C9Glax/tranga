@@ -26,6 +26,8 @@ public class Chapter : Identifiable, IComparable<Chapter>
     [StringLength(256)] public string? FileName { get; internal set; }
 
     public bool Downloaded { get; internal set; }
+	
+	public bool? IsOfficial { get; internal set; }
 
     /// <exception cref="DirectoryNotFoundException">Library for Manga not loaded</exception>
     [NotMapped]
@@ -51,7 +53,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
     /// <summary>
     /// EF ONLY!!!
     /// </summary>
-    internal Chapter(string key, int? volumeNumber, string chapterNumber, string? title, string? fileName, bool downloaded)
+    internal Chapter(string key, int? volumeNumber, string chapterNumber, string? title, string? fileName, bool downloaded, bool? isOfficial)
         : base(key)
     {
         this.VolumeNumber = volumeNumber;
@@ -59,6 +61,7 @@ public class Chapter : Identifiable, IComparable<Chapter>
         this.Title = title;
         this.FileName = fileName;
         this.Downloaded = downloaded;
+		this.IsOfficial = isOfficial;
     }
 
     public int CompareTo(Chapter? other)
