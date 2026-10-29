@@ -21,11 +21,21 @@ public class Global : MangaConnector
         foreach (Task<(Manga, MangaConnectorId<Manga>)[]> task in tasks)
             task.Start();
         
-        //Wait for all tasks to finish
+        //Wait for all tasks to finish with a timeout to prevent infinite hangs
+        int timeoutMs = Constants.HttpRequestTimeout * 1000; // 10x the HTTP timeout
+        int elapsedMs = 0;
         do
         {
             Thread.Sleep(500);
-            Log.DebugFormat("Waiting for search to finish: {0}", tasks.Count(t => !t.IsCompleted));
+            elapsedMs += 500;
+            int pending = tasks.Count(t => !t.IsCompleted);
+            if (pending > 0 && elapsedMs % 5000 < 500) // Log every ~5 seconds
+                Log.DebugFormat("Waiting for search to finish: {0} connectors remaining, {1}ms elapsed", pending, elapsedMs);
+            if (elapsedMs >= timeoutMs)
+            {
+                Log.WarnFormat("Search timeout reached ({0}ms). {1} connectors did not complete.", timeoutMs, tasks.Count(t => !t.IsCompletedSuccessfully));
+                break;
+            }
         }while(tasks.Any(t => !t.IsCompleted));
         
         //Concatenate all results into one
