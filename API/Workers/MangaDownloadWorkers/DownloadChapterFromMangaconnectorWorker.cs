@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using API.MangaConnectors;
@@ -244,7 +245,39 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
     private async Task<Stream> ProcessImage(Stream imageStream, CancellationToken? cancellationToken = null)
     {
         Log.Debug("Processing image");
+        
+        // Validate that the content is actually an image by checking magic bytes
+        byte[] header = new byte[8];
+        int bytesRead = await imageStream.ReadAsync(header, 0, 8, cancellationToken ?? CancellationToken.None);
         imageStream.Position = 0;
+        
+        bool isValidImage = bytesRead >= 2 && (
+            // JPEG: FF D8
+            (header[0] == 0xFF && header[1] == 0xD8) ||
+            // PNG: 89 50 4E 47
+            (bytesRead >= 4 && header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47) ||
+            // GIF: 47 49 46 38
+            (bytesRead >= 4 && header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38) ||
+            // WebP: 57 45 42 50
+            (bytesRead >= 4 && header[0] == 0x57 && header[1] == 0x45 && header[2] == 0x42 && header[3] == 0x50) ||
+            // BMP: 42 4D
+            (header[0] == 0x42 && header[1] == 0x4D) ||
+            // TIFF: 49 49 2A 00 or 4D 4D 00 2A
+            (bytesRead >= 4 && ((header[0] == 0x49 && header[1] == 0x49 && header[2] == 0x2A && header[3] == 0x00) ||
+                                (header[0] == 0x4D && header[1] == 0x4D && header[2] == 0x00 && header[3] == 0x2A)))
+        );
+        
+        if (!isValidImage)
+        {
+            // Reset stream and read first bytes for logging
+            imageStream.Position = 0;
+            byte[] preview = new byte[Math.Min(200, imageStream.Length)];
+            await imageStream.ReadAsync(preview, 0, preview.Length, cancellationToken ?? CancellationToken.None);
+            string previewStr = System.Text.Encoding.UTF8.GetString(preview);
+            Log.Error($"Downloaded content is not a valid image. First bytes: {string.Join(" ", header.Take(Math.Min(8, bytesRead)))}. Preview: {previewStr.Substring(0, Math.Min(100, previewStr.Length))}");
+            throw new InvalidImageContentException("Downloaded content is not a valid image format");
+        }
+        
         if (!Tranga.Settings.BlackWhiteImages && Tranga.Settings.ImageCompression == 100)
         {
             Log.Debug("No processing requested for image");
