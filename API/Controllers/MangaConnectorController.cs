@@ -1,4 +1,5 @@
 ﻿using API.Controllers.DTOs;
+using API.Schema.ActionsContext;
 using API.Schema.MangaContext;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,7 +12,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaConnectorController(MangaContext context) : ControllerBase
+public class MangaConnectorController(ActionsContext context) : ControllerBase
 {
     /// <summary>
     /// Get all <see cref="API.MangaConnectors.MangaConnector"/> (Scanlation-Sites)
@@ -75,6 +76,17 @@ public class MangaConnectorController(MangaContext context) : ControllerBase
             return TypedResults.NotFound(nameof(MangaConnectorName));
         
         connector.Enabled = Enabled;
+        
+        // Persist connector state to database so it survives restarts
+        var settings = await context.ConnectorSettings.FindAsync(MangaConnectorName, HttpContext.RequestAborted);
+        if (settings is null)
+        {
+            context.ConnectorSettings.Add(new ConnectorSettings(MangaConnectorName, Enabled));
+        }
+        else
+        {
+            settings.Enabled = Enabled;
+        }
         
         if(await context.Sync(HttpContext.RequestAborted, GetType(), System.Reflection.MethodBase.GetCurrentMethod()?.Name) is { success: false } result)
             return TypedResults.InternalServerError(result.exceptionMessage);

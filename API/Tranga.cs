@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using API.MangaConnectors;
 using API.MangaDownloadClients;
+using API.Schema;
+using API.Schema.ActionsContext;
 using API.Schema.MangaContext;
 using API.Schema.MangaContext.MetadataFetchers;
 using API.Workers;
@@ -39,6 +41,7 @@ public static class Tranga
 
     internal static void StartupTasks()
     {
+        LoadConnectorSettings();
         AddWorker(SendNotificationsWorker);
         AddWorker(CleanupMangaconnectorIdsWithoutConnector);
         AddWorker(CleanupMangaCoversWorker);
@@ -69,6 +72,37 @@ public static class Tranga
         mangaConnector =
             MangaConnectors.FirstOrDefault(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         return mangaConnector != null;
+    }
+
+    /// <summary>
+    /// Load connector enabled states from the database so they survive restarts.
+    /// Must be called after ServiceProvider is set and database migrations are applied.
+    /// </summary>
+    internal static void LoadConnectorSettings()
+    {
+        if (ServiceProvider is null)
+        {
+            Log.Warn("ServiceProvider is null, skipping connector settings load.");
+            return;
+        }
+        try
+        {
+            using var scope = ServiceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<API.Schema.ActionsContext.ActionsContext>();
+            var savedSettings = context.ConnectorSettings.ToList();
+            foreach (var setting in savedSettings)
+            {
+                if (TryGetMangaConnector(setting.Name, out var connector))
+                {
+                    connector.Enabled = setting.Enabled;
+                    Log.InfoFormat("Loaded connector setting: {0} = {1}", setting.Name, setting.Enabled);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error("Failed to load connector settings from database", e);
+        }
     }
     
     internal static readonly ConcurrentDictionary<IPeriodic, Task> PeriodicWorkers = new ();

@@ -22,6 +22,20 @@ namespace API.Migrations.Actions
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("API.Schema.ActionsContext.ConnectorSettings", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("ConnectorSettings");
+                });
+
             modelBuilder.Entity("API.Schema.ActionsContext.ActionRecord", b =>
                 {
                     b.Property<string>("Key")

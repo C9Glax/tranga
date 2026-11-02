@@ -7,6 +7,7 @@ namespace API.Schema.ActionsContext;
 public class ActionsContext(DbContextOptions<ActionsContext> options) : TrangaBaseContext<ActionsContext>(options)
 {
     public DbSet<ActionRecord> Actions  { get; set; }
+    public DbSet<ConnectorSettings> ConnectorSettings { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
