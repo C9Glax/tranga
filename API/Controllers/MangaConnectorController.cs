@@ -12,7 +12,7 @@ namespace API.Controllers;
 [ApiVersion(2)]
 [ApiController]
 [Route("v{v:apiVersion}/[controller]")]
-public class MangaConnectorController(MangaContext context) : ControllerBase
+public class MangaConnectorController(ActionsContext context) : ControllerBase
 {
     /// <summary>
     /// Get all <see cref="API.MangaConnectors.MangaConnector"/> (Scanlation-Sites)
