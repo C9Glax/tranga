@@ -53,7 +53,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
 
         if (chapter.DownloadLinks!.FirstOrDefault(d => d.FileId != null) is { } file)
         {
-            logger.LogDebug("Chapter is already downloaded. File {file.FileId}", file.FileId);
+            logger.LogDebug("Chapter {ChapterId} is already downloaded. File {FileId}", ChapterId, file.FileId);
             return;
         }
 
@@ -62,26 +62,41 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
             logger.LogWarning("Chapter {ChapterId} has no DownloadLinks.", ChapterId);
             return;
         }
-        logger.LogDebug("Got {link.DownloadExtension} {link.Identifier}.", link.DownloadExtension, link.Identifier);
+        logger.LogDebug(
+            "Chapter {Number} ('{Title}') has {LinkCount} DownloadLink(s); using {DownloadExtension} {Identifier} ({Url}).",
+            chapter.Number, chapter.Title, chapter.DownloadLinks!.Count, link.DownloadExtension, link.Identifier, link.Url);
         if (DownloadExtensionsCollection.GetExtension(link.DownloadExtension) is not { } extension)
         {
-            logger.LogError("Could not find {nameof(IDownloadExtension)} {link.DownloadExtension}",
+            logger.LogError("Could not find {ExtensionType} {DownloadExtension}",
                 nameof(IDownloadExtension), link.DownloadExtension);
             return;
         }
 
         logger.LogDebug("Getting Chapter images...");
-        if (await extension.GetChapterImages(link.ToChapterInfo(), stoppingToken) is not { } images)
+        List<ChapterImage>? images;
+        try
         {
-            logger.LogError("Could not get images!");
+            images = await extension.GetChapterImages(link.ToChapterInfo(), stoppingToken);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            logger.LogError(e, "Fetching images of Chapter {Number} via {DownloadExtension} {Identifier} threw.",
+                chapter.Number, link.DownloadExtension, link.Identifier);
+            throw;
+        }
+
+        if (images is null)
+        {
+            logger.LogError("Could not get images of Chapter {Number} via {DownloadExtension} {Identifier} ({Url})!",
+                chapter.Number, link.DownloadExtension, link.Identifier, link.Url);
             return;
         }
-        logger.LogDebug("Got {images.Count} images.", images.Count);
+        logger.LogDebug("Got {ImageCount} images.", images.Count);
 
         // Get Manga directory Path
         if (await _ctx.GetManga(MangaId, stoppingToken) is not { Metadata: { Series: { } seriesName } })
         {
-            logger.LogError("Could not Manga (directoryName)!");
+            logger.LogError("Could not get Manga {MangaId} with chosen Metadata Series (needed for directory name)!", MangaId);
             return;
         }
 
@@ -104,7 +119,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         await using (Stream comicInfoStream = await comicInfoEntry.OpenAsync(stoppingToken))
             ComicInfoSerializer.Serialize(comicInfoStream, chapter.CreateComicInfo(seriesName));
 
-        logger.LogTrace("Built archive with {images.Count} entries.", images.Count);
+        logger.LogTrace("Built archive with {ImageCount} entries ({ArchiveBytes} bytes).", images.Count, archiveStream.Length);
 
         // Create dbFile entry for File
         DbFile dbFile = new()
@@ -118,7 +133,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         // For some reason you need to dispose the archive to write headers
         await archive.DisposeAsync();
         await dbFile.SaveFile(archiveStream, stoppingToken);
-        logger.LogDebug("Saved File {dbFile.FullPath}", dbFile.FullPath);
+        logger.LogDebug("Saved File {FullPath}", dbFile.FullPath);
         await _ctx.AddAsync(dbFile, stoppingToken);
         link.FileId = dbFile.FileId;
 
@@ -127,7 +142,7 @@ internal sealed class DownloadChapterTask(Guid mangaId, Guid chapterId)
         await scope.ServiceProvider.GetRequiredService<EventPublisher>().PublishAsync(
             new ChapterDownloadedEvent(dbFile.FullPath, MangaId, seriesName, chapter.Number, chapter.Title, chapter.Volume),
             stoppingToken);
-        logger.LogInformation("Downloaded Chapter {chapter.Number} of {seriesName} to {dbFile.FullPath}",
+        logger.LogInformation("Downloaded Chapter {Number} of {SeriesName} to {FullPath}",
             chapter.Number, seriesName, dbFile.FullPath);
     }
 

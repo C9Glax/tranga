@@ -31,7 +31,16 @@ internal sealed class TaskWorker(Guid workerId, TaskQueue queue, IServiceProvide
                     state.OnTaskPickedUp(workItem);
                     logger.LogInformation("{workItem} running.", workItem);
                     ILogger taskLogger = new TaskCapturingLogger(logger, workItem);
-                    await workItem.ExecuteAsync(serviceProvider.CreateScope(), taskLogger, stoppingToken);
+                    try
+                    {
+                        await workItem.ExecuteAsync(serviceProvider.CreateScope(), taskLogger, stoppingToken);
+                    }
+                    catch (Exception ex) when (ex is not OperationCanceledException)
+                    {
+                        // Log to the task's own logger so the failure shows up in the task's log.
+                        taskLogger.LogError(ex, "{workItem} failed.", workItem);
+                        throw;
+                    }
                     state.OnTaskFinished();
                 }
                 else
