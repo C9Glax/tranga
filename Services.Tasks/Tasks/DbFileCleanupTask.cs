@@ -24,9 +24,9 @@ internal sealed class DbFileCleanupTask() : PeriodicTask(Guid.Parse("ded1e7d1-ec
     {
         logger.LogDebug("Searching for orphaned {nameof(DbFile)}...", nameof(DbFile));
         int amount = await _ctx.Files.Where(f =>
-            _ctx.ChapterDownloadLinks.Select(c => c.FileId).Union(_ctx.MetadataEntries.Select(m => m.CoverId))
-                .Union(_ctx.DownloadLinks.Select(d => d.CoverId))
-                .Any(i => i == f.FileId)
+            !_ctx.ChapterDownloadLinks.Any(c => c.FileId == f.FileId) &&
+            !_ctx.MetadataEntries.Any(m => m.CoverId == f.FileId) &&
+            !_ctx.DownloadLinks.Any(d => d.CoverId == f.FileId)
         ).ExecuteDeleteAsync(stoppingToken);
         if (amount > 0)
             logger.LogInformation("Removed {amount} orphaned {nameof(DbFile)}", amount, nameof(DbFile));

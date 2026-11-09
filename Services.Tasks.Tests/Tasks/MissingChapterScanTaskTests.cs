@@ -13,7 +13,7 @@ public class MissingChapterScanTaskTests : TrangaTest
     [Fact]
     public async Task RunAsync_OrdersDownloadTasksByChapterNumber_WithinSameManga()
     {
-        IServiceProvider services = BuildServices();
+        IServiceProvider services = MangaContextFactory.CreateServices();
         Guid mangaId = Guid.CreateVersion7();
         Guid chapter1Id, chapter2Id, chapter10Id;
 
@@ -66,20 +66,5 @@ public class MissingChapterScanTaskTests : TrangaTest
                 TasksCollection.RunOnceTasks.TryRemove(taskId, out _);
             }
         }
-    }
-
-    private static IServiceProvider BuildServices()
-    {
-        string dbPath = Path.Combine(Path.GetTempPath(), "TrangaTests", "Services.Tasks.Tests.MangaContext", $"{Guid.NewGuid():N}.db");
-        Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-
-        ServiceCollection services = new();
-        services.AddDbContext<MangaContext>(options => options.UseSqlite($"Data Source={dbPath}"));
-        ServiceProvider provider = services.BuildServiceProvider();
-
-        using IServiceScope scope = provider.CreateScope();
-        scope.ServiceProvider.GetRequiredService<MangaContext>().Database.EnsureCreated();
-
-        return provider;
     }
 }
