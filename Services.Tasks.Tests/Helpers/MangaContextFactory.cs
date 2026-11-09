@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Services.Manga.Database;
 
 namespace Services.Tasks.Tests.Helpers;
@@ -24,5 +25,24 @@ internal static class MangaContextFactory
         MangaContext context = new(options);
         context.Database.EnsureCreated();
         return context;
+    }
+
+    /// <summary>
+    /// Builds a <see cref="IServiceProvider"/> with a <see cref="MangaContext"/> registered (scoped) against a fresh
+    /// temp-file Sqlite database whose schema is already created. For tests that resolve the context from a scope.
+    /// </summary>
+    internal static IServiceProvider CreateServices()
+    {
+        Directory.CreateDirectory(RootDirectory);
+        string dbPath = Path.Combine(RootDirectory, $"{Guid.NewGuid():N}.db");
+
+        ServiceCollection services = new();
+        services.AddDbContext<MangaContext>(options => options.UseSqlite($"Data Source={dbPath}"));
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        using IServiceScope scope = provider.CreateScope();
+        scope.ServiceProvider.GetRequiredService<MangaContext>().Database.EnsureCreated();
+
+        return provider;
     }
 }

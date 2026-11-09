@@ -15,7 +15,7 @@ public class DbFileCleanupTaskTests : TrangaTest
     [Fact]
     public async Task RunAsync_DeletesOrphanedFiles_KeepsReferencedFiles()
     {
-        IServiceProvider services = BuildServices();
+        IServiceProvider services = MangaContextFactory.CreateServices();
         Guid mangaId = Guid.CreateVersion7();
         DbFile orphan = NewFile(), chapterFile = NewFile(), metadataCover = NewFile(), linkCover = NewFile();
 
@@ -52,20 +52,5 @@ public class DbFileCleanupTaskTests : TrangaTest
             Assert.Contains(metadataCover.FileId, remaining);
             Assert.Contains(linkCover.FileId, remaining);
         }
-    }
-
-    private static IServiceProvider BuildServices()
-    {
-        string dbPath = Path.Combine(Path.GetTempPath(), "TrangaTests", "Services.Tasks.Tests.MangaContext", $"{Guid.NewGuid():N}.db");
-        Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-
-        ServiceCollection services = new();
-        services.AddDbContext<MangaContext>(options => options.UseSqlite($"Data Source={dbPath}"));
-        ServiceProvider provider = services.BuildServiceProvider();
-
-        using IServiceScope scope = provider.CreateScope();
-        scope.ServiceProvider.GetRequiredService<MangaContext>().Database.EnsureCreated();
-
-        return provider;
     }
 }

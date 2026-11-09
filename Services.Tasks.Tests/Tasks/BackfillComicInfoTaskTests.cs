@@ -14,7 +14,7 @@ public class BackfillComicInfoTaskTests : TrangaTest
     [Fact]
     public async Task RunAsync_AddsComicInfoXml_WhenArchiveIsMissingOne()
     {
-        IServiceProvider services = BuildServices();
+        IServiceProvider services = MangaContextFactory.CreateServices();
         (DbFile dbFile, string _) = await SeedDownloadedChapter(services, "Series Name", volume: "1", number: "4", title: "Title", withComicInfo: false);
 
         using IServiceScope scope = services.CreateScope();
@@ -31,7 +31,7 @@ public class BackfillComicInfoTaskTests : TrangaTest
     [Fact]
     public async Task RunAsync_DoesNotTouchArchive_WhenComicInfoXmlAlreadyPresent()
     {
-        IServiceProvider services = BuildServices();
+        IServiceProvider services = MangaContextFactory.CreateServices();
         (DbFile dbFile, string originalContentHash) = await SeedDownloadedChapter(services, "Series Name", volume: "1", number: "4", title: "Title", withComicInfo: true);
 
         using IServiceScope scope = services.CreateScope();
@@ -119,20 +119,5 @@ public class BackfillComicInfoTaskTests : TrangaTest
         await using Stream entryStream = entry.Open();
         System.Xml.Serialization.XmlSerializer serializer = new(typeof(ConcreteComicInfo), new System.Xml.Serialization.XmlRootAttribute("ComicInfo"));
         return (ConcreteComicInfo)serializer.Deserialize(entryStream)!;
-    }
-
-    private static IServiceProvider BuildServices()
-    {
-        string dbPath = Path.Combine(Path.GetTempPath(), "TrangaTests", "Services.Tasks.Tests.MangaContext", $"{Guid.NewGuid():N}.db");
-        Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-
-        ServiceCollection services = new();
-        services.AddDbContext<MangaContext>(options => options.UseSqlite($"Data Source={dbPath}"));
-        ServiceProvider provider = services.BuildServiceProvider();
-
-        using IServiceScope scope = provider.CreateScope();
-        scope.ServiceProvider.GetRequiredService<MangaContext>().Database.EnsureCreated();
-
-        return provider;
     }
 }

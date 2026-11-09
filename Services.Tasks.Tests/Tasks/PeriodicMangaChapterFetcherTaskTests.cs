@@ -13,7 +13,7 @@ public class PeriodicMangaChapterFetcherTaskTests : TrangaTest
     [Fact]
     public async Task RunAsync_QueuesGetMangaChaptersTask_OnlyForMonitoredMangas()
     {
-        IServiceProvider services = BuildServices();
+        IServiceProvider services = MangaContextFactory.CreateServices();
         Guid monitoredMangaId = Guid.CreateVersion7();
         Guid unmonitoredMangaId = Guid.CreateVersion7();
 
@@ -53,20 +53,5 @@ public class PeriodicMangaChapterFetcherTaskTests : TrangaTest
                 TasksCollection.RunOnceTasks.TryRemove(taskId, out _);
             }
         }
-    }
-
-    private static IServiceProvider BuildServices()
-    {
-        string dbPath = Path.Combine(Path.GetTempPath(), "TrangaTests", "Services.Tasks.Tests.MangaContext", $"{Guid.NewGuid():N}.db");
-        Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-
-        ServiceCollection services = new();
-        services.AddDbContext<MangaContext>(options => options.UseSqlite($"Data Source={dbPath}"));
-        ServiceProvider provider = services.BuildServiceProvider();
-
-        using IServiceScope scope = provider.CreateScope();
-        scope.ServiceProvider.GetRequiredService<MangaContext>().Database.EnsureCreated();
-
-        return provider;
     }
 }
