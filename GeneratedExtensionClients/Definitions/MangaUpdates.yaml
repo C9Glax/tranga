@@ -8200,6 +8200,7 @@ components:
         category_id:
           title: category_id
           type: integer
+          format: int64
         position:
           title: position
           type: integer
@@ -8223,6 +8224,7 @@ components:
         category_id:
           title: category_id
           type: integer
+          format: int64
         position:
           title: position
           type: integer
@@ -8243,6 +8245,7 @@ components:
         entry_id:
           title: entry_id
           type: integer
+          format: int64
         position:
           title: position
           type: integer
@@ -8252,6 +8255,7 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
         url:
           title: url
           type: string
@@ -8267,6 +8271,7 @@ components:
         entry_id:
           title: entry_id
           type: integer
+          format: int64
         position:
           title: position
           type: integer
@@ -8332,6 +8337,7 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
         username:
           title: username
           type: string
@@ -8553,6 +8559,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -8632,6 +8639,7 @@ components:
               series_id:
                 title: series_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -8691,6 +8699,7 @@ components:
         series_id:
           title: series_id
           type: integer
+          format: int64
         category:
           title: category
           type: string
@@ -8706,6 +8715,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
     CategoriesModelUpdateV1:
       required:
         - category
@@ -8815,12 +8825,15 @@ components:
         message_id:
           title: message_id
           type: integer
+          format: int64
         convo_id:
           title: convo_id
           type: integer
+          format: int64
         author_id:
           title: author_id
           type: integer
+          format: int64
         author_name:
           title: author_name
           type: string
@@ -8847,6 +8860,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -8895,12 +8909,14 @@ components:
         convo_id:
           title: convo_id
           type: integer
+          format: int64
         topic:
           title: topic
           type: string
         author_id:
           title: author_id
           type: integer
+          format: int64
         author_name:
           title: author_name
           type: string
@@ -8928,6 +8944,7 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
         username:
           title: username
           type: string
@@ -8987,6 +9004,7 @@ components:
         category_id:
           title: category_id
           type: integer
+          format: int64
         title:
           title: title
           type: string
@@ -9000,6 +9018,7 @@ components:
         category_id:
           title: category_id
           type: integer
+          format: int64
         title:
           title: title
           type: string
@@ -9023,6 +9042,7 @@ components:
         category_id:
           title: category_id
           type: integer
+          format: int64
         position:
           title: position
           type: integer
@@ -9038,6 +9058,7 @@ components:
         question_id:
           title: question_id
           type: integer
+          format: int64
         question:
           title: question
           type: string
@@ -9054,6 +9075,7 @@ components:
         question_id:
           title: question_id
           type: integer
+          format: int64
         question:
           title: question
           type: string
@@ -9075,6 +9097,7 @@ components:
         question_id:
           title: question_id
           type: integer
+          format: int64
         position:
           title: position
           type: integer
@@ -9125,16 +9148,19 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
     ForumAdminModelUpdateV1:
       properties:
         user_id:
           title: user_id
           type: integer
+          format: int64
     ForumCategoryModelV1:
       properties:
         category_id:
           title: category_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -9146,6 +9172,7 @@ components:
         category_id:
           title: category_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -9171,6 +9198,7 @@ components:
         forum_id:
           title: forum_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -9189,6 +9217,7 @@ components:
             category_id:
               title: category_id
               type: integer
+              format: int64
             category_name:
               title: category_name
               type: string
@@ -9230,6 +9259,7 @@ components:
         forum_id:
           title: forum_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -9303,9 +9333,11 @@ components:
         topic_id:
           title: topic_id
           type: integer
+          format: int64
         forum_id:
           title: forum_id
           type: integer
+          format: int64
     ForumPollAnswerModelV1:
       required:
         - answer_id
@@ -9314,6 +9346,7 @@ components:
         answer_id:
           title: answer_id
           type: integer
+          format: int64
         answer:
           title: answer
           type: string
@@ -9344,12 +9377,14 @@ components:
         answer_id:
           title: answer_id
           type: integer
+          format: int64
         answer:
           title: answer
           type: string
         temp_image_id:
           title: temp_image_id
           type: integer
+          format: int64
     ForumPollModelV1:
       properties:
         question:
@@ -9385,6 +9420,7 @@ components:
         image_id:
           title: image_id
           type: integer
+          format: int64
         caption:
           title: caption
           type: string
@@ -9411,11 +9447,13 @@ components:
         choice_id:
           title: choice_id
           type: integer
+          format: int64
     ForumPostByUserResponseV1:
       properties:
         topic_id:
           title: topic_id
           type: integer
+          format: int64
         post_id_list:
           title: post_id_list
           type: array
@@ -9454,6 +9492,7 @@ components:
         post_id:
           title: post_id
           type: integer
+          format: int64
         body:
           title: body
           type: string
@@ -9463,9 +9502,11 @@ components:
             forum_id:
               title: forum_id
               type: integer
+              format: int64
             topic_id:
               title: topic_id
               type: integer
+              format: int64
             topic:
               title: topic
               type: string
@@ -9481,12 +9522,14 @@ components:
             post_id:
               title: post_id
               type: integer
+              format: int64
             post_author:
               title: ForumPostModelV1ReplyToPostAuthor
               properties:
                 author_id:
                   title: author_id
                   type: integer
+                  format: int64
                 author_name:
                   title: author_name
                   type: string
@@ -9511,6 +9554,7 @@ components:
         post_id:
           title: post_id
           type: integer
+          format: int64
         body_excerpt:
           title: body_excerpt
           type: string
@@ -9520,9 +9564,11 @@ components:
             forum_id:
               title: forum_id
               type: integer
+              format: int64
             topic_id:
               title: topic_id
               type: integer
+              format: int64
             topic:
               title: topic
               type: string
@@ -9547,19 +9593,23 @@ components:
         report_id:
           title: report_id
           type: integer
+          format: int64
         topic_id:
           title: topic_id
           type: integer
+          format: int64
         topic:
           $ref: '#/components/schemas/ForumTopicModelSearchV1'
         post_id:
           title: post_id
           type: integer
+          format: int64
         post:
           $ref: '#/components/schemas/ForumPostModelSearchV1'
         user_id:
           title: user_id
           type: integer
+          format: int64
         user:
           $ref: '#/components/schemas/UserModelSearchV1'
         reason:
@@ -9593,9 +9643,11 @@ components:
         after_id:
           title: after_id
           type: integer
+          format: int64
         before_id:
           title: before_id
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -9605,9 +9657,11 @@ components:
         by_user_id:
           title: by_user_id
           type: integer
+          format: int64
         filter_user_id:
           title: filter_user_id
           type: integer
+          format: int64
     ForumSearchResponseV1:
       properties:
         total_hits:
@@ -9703,6 +9757,7 @@ components:
         topic_id:
           title: topic_id
           type: integer
+          format: int64
         topic:
           title: topic
           type: string
@@ -9727,6 +9782,7 @@ components:
             forum_id:
               title: forum_id
               type: integer
+              format: int64
             forum_name:
               title: forum_name
               type: string
@@ -9761,6 +9817,7 @@ components:
         topic_id:
           title: topic_id
           type: integer
+          format: int64
         topic:
           title: topic
           type: string
@@ -9785,6 +9842,7 @@ components:
             forum_id:
               title: forum_id
               type: integer
+              format: int64
             forum_name:
               title: forum_name
               type: string
@@ -9823,6 +9881,7 @@ components:
             forum_id:
               title: forum_id
               type: integer
+              format: int64
           type: object
         admin:
           title: ForumTopicModelUpdateV1Admin
@@ -9845,6 +9904,7 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
         time_added:
           $ref: '#/components/schemas/TimeV1'
         level:
@@ -9941,6 +10001,7 @@ components:
         group_id:
           title: group_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -10011,6 +10072,7 @@ components:
         group_id:
           title: group_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -10124,6 +10186,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -10179,6 +10242,7 @@ components:
               series_id:
                 title: series_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -10284,6 +10348,7 @@ components:
         list_id:
           title: list_id
           type: integer
+          format: int64
         title:
           title: title
           type: string
@@ -10423,6 +10488,7 @@ components:
               series_id:
                 title: series_id
                 type: integer
+                format: int64
               series_title:
                 title: series_title
                 type: string
@@ -10518,6 +10584,7 @@ components:
         list_id:
           title: list_id
           type: integer
+          format: int64
         list_type:
           title: list_type
           type: string
@@ -10558,6 +10625,7 @@ components:
         list_id:
           title: list_id
           type: integer
+          format: int64
         status:
           title: ListsSeriesModelUpdateV1Status
           properties:
@@ -10591,6 +10659,7 @@ components:
               user_id:
                 title: user_id
                 type: integer
+                format: int64
               user_name:
                 title: user_name
                 type: string
@@ -10665,6 +10734,7 @@ components:
         poll_id:
           title: poll_id
           type: integer
+          format: int64
         question:
           title: question
           type: string
@@ -10734,6 +10804,7 @@ components:
               answer_id:
                 title: answer_id
                 type: integer
+                format: int64
               answer:
                 title: answer
                 type: string
@@ -10769,6 +10840,7 @@ components:
         publisher_id:
           title: publisher_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -10843,6 +10915,7 @@ components:
         publisher_id:
           title: publisher_id
           type: integer
+          format: int64
         name:
           title: name
           type: string
@@ -10950,6 +11023,7 @@ components:
             publisher_id:
               title: publisher_id
               type: integer
+              format: int64
             url:
               title: url
               type: string
@@ -10966,6 +11040,7 @@ components:
               series_id:
                 title: series_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -10986,6 +11061,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -11044,6 +11120,7 @@ components:
               series_id:
                 title: series_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -11103,6 +11180,7 @@ components:
               group_id:
                 title: group_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -11156,6 +11234,7 @@ components:
               group_id:
                 title: group_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -11256,6 +11335,7 @@ components:
               group_id:
                 title: group_id
                 type: integer
+                format: int64
               hold:
                 title: hold
                 type: boolean
@@ -11274,6 +11354,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -11307,6 +11388,7 @@ components:
         group_id:
           title: group_id
           type: integer
+          format: int64
         pending:
           title: pending
           type: boolean
@@ -11351,6 +11433,7 @@ components:
         review_id:
           title: review_id
           type: integer
+          format: int64
         subject:
           title: subject
           type: string
@@ -11365,6 +11448,7 @@ components:
             user_id:
               title: user_id
               type: integer
+              format: int64
             name:
               title: name
               type: string
@@ -11399,6 +11483,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -11442,6 +11527,7 @@ components:
             user_id:
               title: user_id
               type: integer
+              format: int64
             name:
               title: name
               type: string
@@ -11499,6 +11585,7 @@ components:
             user_id:
               title: user_id
               type: integer
+              format: int64
             name:
               title: name
               type: string
@@ -11577,9 +11664,11 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         series_id:
           title: series_id
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -11653,6 +11742,7 @@ components:
         series_id:
           title: series_id
           type: integer
+          format: int64
         subject:
           title: subject
           type: string
@@ -11748,6 +11838,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         page:
           title: page
           type: integer
@@ -11802,6 +11893,7 @@ components:
         change_id:
           title: change_id
           type: integer
+          format: int64
         username:
           title: username
           type: string
@@ -11847,6 +11939,7 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
         username:
           title: username
           type: string
@@ -11862,6 +11955,7 @@ components:
         series_id:
           title: series_id
           type: integer
+          format: int64
         title:
           title: title
           type: string
@@ -11936,6 +12030,7 @@ components:
         forum_id:
           title: forum_id
           type: integer
+          format: int64
         status:
           title: status
           type: string
@@ -11967,6 +12062,7 @@ components:
               relation_id:
                 title: relation_id
                 type: integer
+                format: int64
               relation_type:
                 title: relation_type
                 type: string
@@ -11984,6 +12080,7 @@ components:
               related_series_id:
                 title: related_series_id
                 type: integer
+                format: int64
               related_series_name:
                 title: related_series_name
                 type: string
@@ -11993,6 +12090,7 @@ components:
               triggered_by_relation_id:
                 title: triggered_by_relation_id
                 type: integer
+                format: int64
             type: object
         authors:
           title: authors
@@ -12009,6 +12107,7 @@ components:
               author_id:
                 title: author_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -12034,6 +12133,7 @@ components:
               publisher_id:
                 title: publisher_id
                 type: integer
+                format: int64
               url:
                 title: url
                 type: string
@@ -12064,6 +12164,7 @@ components:
               publisher_id:
                 title: publisher_id
                 type: integer
+                format: int64
             type: object
         recommendations:
           title: recommendations
@@ -12383,6 +12484,7 @@ components:
               related_series_id:
                 title: related_series_id
                 type: integer
+                format: int64
             type: object
         authors:
           title: authors
@@ -12485,6 +12587,7 @@ components:
         series_id:
           title: series_id
           type: integer
+          format: int64
         series_image:
           $ref: '#/components/schemas/ImageModelV1'
         weight:
@@ -12498,6 +12601,7 @@ components:
         added_by:
           title: added_by
           type: integer
+          format: int64
         stype:
           title: stype
           type: string
@@ -12701,6 +12805,7 @@ components:
         genre_id:
           title: genre_id
           type: integer
+          format: int64
         genre_name:
           title: genre_name
           type: string
@@ -12709,6 +12814,7 @@ components:
         genre_id:
           title: genre_id
           type: integer
+          format: int64
         genre_name:
           title: genre_name
           type: string
@@ -12725,6 +12831,7 @@ components:
         group_id:
           title: group_id
           type: integer
+          format: int64
         group_name:
           title: group_name
           type: string
@@ -12736,6 +12843,7 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
         username:
           title: username
           type: string
@@ -12940,6 +13048,7 @@ components:
         user_id:
           title: user_id
           type: integer
+          format: int64
         username:
           title: username
           type: string
@@ -13022,6 +13131,7 @@ components:
         new_avatar_id:
           title: new_avatar_id
           type: integer
+          format: int64
         gender:
           title: gender
           type: string
@@ -13146,12 +13256,14 @@ components:
         notification_id:
           title: notification_id
           type: integer
+          format: int64
         notification_type:
           title: notification_type
           type: string
         reference_id:
           title: reference_id
           type: integer
+          format: int64
         payload:
           title: payload
           description: 'Free-form JSON object. Structure varies by notification type.'
@@ -13300,6 +13412,7 @@ components:
         topic_id:
           title: topic_id
           type: integer
+          format: int64
         topic:
           $ref: '#/components/schemas/ForumTopicModelSearchV1'
         time_subscribed_since:

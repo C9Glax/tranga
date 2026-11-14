@@ -132,4 +132,41 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
     {
         Assert.Null(_extension.ParseIdentifierFromUrl("https://mangadex.org/title/not-a-guid"));
     }
+
+    [Theory]
+    [InlineData("https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192")]
+    [InlineData("https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga")]
+    [InlineData("https://www.mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/")]
+    public void ParseSearchQueryFromUrlReturnsMangaDexId(string url)
+    {
+        SearchQuery? query = _extension.ParseSearchQueryFromUrl(url);
+        Assert.NotNull(query);
+        Assert.Equal(Guid.Parse("f9c33607-9180-4ba6-b85c-e4b5faee7192"), query.MangaDexSeriesId);
+        Assert.Null(query.Title);
+    }
+
+    [Theory]
+    [InlineData("https://comick.io/title/f9c33607-9180-4ba6-b85c-e4b5faee7192")]
+    [InlineData("https://mangadex.org/group/f9c33607-9180-4ba6-b85c-e4b5faee7192")]
+    [InlineData("https://mangadex.org/title/not-a-guid")]
+    public void ParseSearchQueryFromUrlRejectsOtherUrls(string url) =>
+        Assert.Null(_extension.ParseSearchQueryFromUrl(url));
+
+    [Fact]
+    public async Task MetadataSearchByUrlReturnsExactManga()
+    {
+        SearchQuery query = _extension.ParseSearchQueryFromUrl("https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga")!;
+        List<SearchResult>? result = await _extension.SearchMetadata(query, ct);
+        Assert.NotNull(result);
+        SearchResult manga = Assert.Single(result);
+        Assert.Equal("f9c33607-9180-4ba6-b85c-e4b5faee7192", manga.Identifier);
+    }
+
+    [Fact]
+    public async Task MetadataSearchByUnknownIdDoesNotFallBackToArbitraryResults()
+    {
+        // Without a title there is nothing to fall back on - an unknown id must not turn into a title-less search.
+        List<SearchResult>? result = await _extension.SearchMetadata(new SearchQuery(MangaDexSeriesId: Guid.Empty), ct);
+        Assert.True(result is null or { Count: 0 });
+    }
 }

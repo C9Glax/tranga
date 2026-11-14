@@ -24501,7 +24501,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Category_id { get; set; }
+        public required long Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
@@ -24546,7 +24546,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Category_id { get; set; }
+        public required long Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
@@ -24588,7 +24588,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("entry_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Entry_id { get; set; }
+        public required long Entry_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
@@ -24597,7 +24597,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Username { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -24636,7 +24636,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("entry_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Entry_id { get; set; }
+        public required long Entry_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
@@ -24760,7 +24760,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Reason { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
@@ -24967,7 +24967,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Search { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -25105,7 +25105,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -25121,7 +25121,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public int? Votes_minus { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -25333,13 +25333,13 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("message_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Message_id { get; set; }
+        public long? Message_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("convo_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Convo_id { get; set; }
+        public long? Convo_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Author_id { get; set; }
+        public long? Author_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("author_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_name { get; set; }
@@ -25393,7 +25393,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Search { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -25468,13 +25468,13 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("convo_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Convo_id { get; set; }
+        public long? Convo_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
 
         [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Author_id { get; set; }
+        public long? Author_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("author_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_name { get; set; }
@@ -25541,7 +25541,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
@@ -25640,7 +25640,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Category_id { get; set; }
+        public required long Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
@@ -25664,7 +25664,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Category_id { get; set; }
+        public required long Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
@@ -25709,7 +25709,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Category_id { get; set; }
+        public required long Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
@@ -25733,7 +25733,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("question_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Question_id { get; set; }
+        public required long Question_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
@@ -25760,7 +25760,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("question_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Question_id { get; set; }
+        public required long Question_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
@@ -25805,7 +25805,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("question_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Question_id { get; set; }
+        public required long Question_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("position", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Position { get; set; }
@@ -25904,7 +25904,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public UserModelSearchV1? User { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -25922,7 +25922,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -25940,7 +25940,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Category_id { get; set; }
+        public long? Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -25964,7 +25964,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Category_id { get; set; }
+        public long? Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -26009,7 +26009,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -26057,7 +26057,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -26129,10 +26129,10 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -26150,7 +26150,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("answer_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Answer_id { get; set; }
+        public required long Answer_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -26178,14 +26178,14 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("answer_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Answer_id { get; set; }
+        public required long Answer_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public required string Answer { get; set; }
 
         [Newtonsoft.Json.JsonProperty("temp_image_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Temp_image_id { get; set; }
+        public long? Temp_image_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -26251,7 +26251,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("image_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Image_id { get; set; }
+        public long? Image_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("caption", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Caption { get; set; }
@@ -26284,7 +26284,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("choice_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Choice_id { get; set; }
+        public long? Choice_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -26302,7 +26302,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("post_id_list", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<int>? Post_id_list { get; set; }
@@ -26350,7 +26350,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Post_id { get; set; }
+        public long? Post_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body { get; set; }
@@ -26386,7 +26386,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Post_id { get; set; }
+        public long? Post_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("body_excerpt", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Body_excerpt { get; set; }
@@ -26437,22 +26437,22 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("report_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Report_id { get; set; }
+        public long? Report_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Topic { get; set; }
 
         [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Post_id { get; set; }
+        public long? Post_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("post", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumPostModelSearchV1? Post { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public UserModelSearchV1? User { get; set; }
@@ -26508,10 +26508,10 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public int? Since { get; set; }
 
         [Newtonsoft.Json.JsonProperty("after_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? After_id { get; set; }
+        public long? After_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("before_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Before_id { get; set; }
+        public long? Before_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -26520,10 +26520,10 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public int? Perpage { get; set; }
 
         [Newtonsoft.Json.JsonProperty("by_user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? By_user_id { get; set; }
+        public long? By_user_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("filter_user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Filter_user_id { get; set; }
+        public long? Filter_user_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -26647,7 +26647,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
@@ -26695,7 +26695,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
@@ -26764,7 +26764,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("time_added", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TimeV1? Time_added { get; set; }
@@ -26925,7 +26925,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Group_id { get; set; }
+        public long? Group_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -26967,7 +26967,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Group_id { get; set; }
+        public long? Group_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -27039,7 +27039,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Search { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -27250,7 +27250,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("list_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? List_id { get; set; }
+        public long? List_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
@@ -27429,7 +27429,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public Series? Series { get; set; }
 
         [Newtonsoft.Json.JsonProperty("list_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? List_id { get; set; }
+        public long? List_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("list_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? List_type { get; set; }
@@ -27466,7 +27466,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public required Series2 Series { get; set; }
 
         [Newtonsoft.Json.JsonProperty("list_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? List_id { get; set; }
+        public long? List_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Status2? Status { get; set; }
@@ -27590,7 +27590,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("poll_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Poll_id { get; set; }
+        public long? Poll_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("question", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Question { get; set; }
@@ -27741,7 +27741,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Publisher_id { get; set; }
+        public long? Publisher_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -27790,7 +27790,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Publisher_id { get; set; }
+        public long? Publisher_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -27882,7 +27882,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Search { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -28175,7 +28175,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public ReleaseSearchRequestV1Search_type? Search_type { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -28201,7 +28201,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public ReleaseSearchRequestV1Asc? Asc { get; set; }
 
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Group_id { get; set; }
+        public long? Group_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("pending", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Pending { get; set; }
@@ -28255,7 +28255,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public int? Id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("review_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Review_id { get; set; }
+        public long? Review_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Subject { get; set; }
@@ -28318,7 +28318,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -28477,10 +28477,10 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Search { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -28603,7 +28603,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public int? Id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Subject { get; set; }
@@ -28715,7 +28715,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public SeriesCommentSearchRequestV1Method? Method { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("page", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Page { get; set; }
@@ -28805,7 +28805,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("change_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Change_id { get; set; }
+        public long? Change_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
@@ -28871,7 +28871,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Reason { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
@@ -28913,7 +28913,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Title { get; set; }
@@ -28953,7 +28953,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public int? Latest_chapter { get; set; }
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Status { get; set; }
@@ -29180,7 +29180,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Series_url { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_image", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ImageModelV1? Series_image { get; set; }
@@ -29207,7 +29207,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Search { get; set; }
 
         [Newtonsoft.Json.JsonProperty("added_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Added_by { get; set; }
+        public long? Added_by { get; set; }
 
         [Newtonsoft.Json.JsonProperty("stype", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
@@ -29433,7 +29433,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("genre_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Genre_id { get; set; }
+        public long? Genre_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("genre_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre_name { get; set; }
@@ -29454,7 +29454,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("genre_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Genre_id { get; set; }
+        public long? Genre_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("genre_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Genre_name { get; set; }
@@ -29496,7 +29496,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Group_id { get; set; }
+        public long? Group_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("group_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Group_name { get; set; }
@@ -29520,7 +29520,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
@@ -29597,7 +29597,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Username { get; set; }
@@ -29658,7 +29658,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public System.Collections.Generic.ICollection<UserRolesModelUpdateV1>? Roles { get; set; }
 
         [Newtonsoft.Json.JsonProperty("new_avatar_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? New_avatar_id { get; set; }
+        public long? New_avatar_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("gender", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
@@ -29746,13 +29746,13 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("notification_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Notification_id { get; set; }
+        public long? Notification_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("notification_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Notification_type { get; set; }
 
         [Newtonsoft.Json.JsonProperty("reference_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Reference_id { get; set; }
+        public long? Reference_id { get; set; }
 
         /// <summary>
         /// Free-form JSON object. Structure varies by notification type.
@@ -29993,7 +29993,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ForumTopicModelSearchV1? Topic { get; set; }
@@ -30484,7 +30484,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Title { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -30652,7 +30652,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("category_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Category_id { get; set; }
+        public long? Category_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("category_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Category_name { get; set; }
@@ -30874,10 +30874,10 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic1 { get; set; }
@@ -30901,7 +30901,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("post_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Post_id { get; set; }
+        public long? Post_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("post_author", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Post_author? Post_author { get; set; }
@@ -30943,10 +30943,10 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Topic_id { get; set; }
+        public long? Topic_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Topic { get; set; }
@@ -31090,7 +31090,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("forum_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_name { get; set; }
@@ -31159,7 +31159,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("forum_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Forum_name { get; set; }
@@ -31207,7 +31207,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("forum_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Forum_id { get; set; }
+        public long? Forum_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -31479,7 +31479,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Title { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -31696,7 +31696,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Series_title { get; set; }
@@ -31864,7 +31864,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? User_name { get; set; }
@@ -31966,7 +31966,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("answer_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Answer_id { get; set; }
+        public long? Answer_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Answer { get; set; }
@@ -32325,7 +32325,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Publisher_name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Publisher_id { get; set; }
+        public long? Publisher_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -32349,7 +32349,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Title { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -32421,7 +32421,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Title { get; set; }
 
         [Newtonsoft.Json.JsonProperty("series_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Series_id { get; set; }
+        public long? Series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -32472,7 +32472,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Group_id { get; set; }
+        public long? Group_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -32520,7 +32520,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Group_id { get; set; }
+        public long? Group_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -32601,7 +32601,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Group_id { get; set; }
+        public long? Group_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("hold", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Hold { get; set; }
@@ -32691,7 +32691,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public UserModelSearchV1? User_info { get; set; }
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -32748,7 +32748,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -32823,7 +32823,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? User_id { get; set; }
+        public long? User_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Name { get; set; }
@@ -33218,7 +33218,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("relation_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Relation_id { get; set; }
+        public long? Relation_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("relation_type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -33226,7 +33226,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public required Related_seriesRelation_type Relation_type { get; set; }
 
         [Newtonsoft.Json.JsonProperty("related_series_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Related_series_id { get; set; }
+        public required long Related_series_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("related_series_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Related_series_name { get; set; }
@@ -33235,7 +33235,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Related_series_url { get; set; }
 
         [Newtonsoft.Json.JsonProperty("triggered_by_relation_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Triggered_by_relation_id { get; set; }
+        public long? Triggered_by_relation_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -33257,7 +33257,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public required string Name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Author_id { get; set; }
+        public long? Author_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -33287,7 +33287,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public required string Publisher_name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Publisher_id { get; set; }
+        public long? Publisher_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Url { get; set; }
@@ -33323,7 +33323,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public string? Publisher_name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("publisher_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Publisher_id { get; set; }
+        public long? Publisher_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -33626,7 +33626,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
         public required Related_series2Relation_type Relation_type { get; set; }
 
         [Newtonsoft.Json.JsonProperty("related_series_id", Required = Newtonsoft.Json.Required.Always)]
-        public required int Related_series_id { get; set; }
+        public required long Related_series_id { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
 
@@ -34419,7 +34419,7 @@ namespace GeneratedExtensionClients.GeneratedClients.MangaUpdates
     {
 
         [Newtonsoft.Json.JsonProperty("author_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Author_id { get; set; }
+        public long? Author_id { get; set; }
 
         [Newtonsoft.Json.JsonProperty("author_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? Author_name { get; set; }

@@ -23,17 +23,46 @@ public static class MetadataExtensionsCollection
 
     public static List<SearchResult> Search(SearchQuery searchQuery, IMetadataExtension[] extensions, CancellationToken ct)
     {
-        if (searchQuery.Language is null)
-            searchQuery = searchQuery with { Language = Settings.DownloadLanguage };
-
-        List<Task<List<SearchResult>?>> tasks = extensions.Select(e => e.SearchMetadata(searchQuery, ct)).ToList();
-        
-        Task.WaitAll(tasks, ct);
-        
-        List<SearchResult> ret = tasks
-            .Where(t => t is { IsCompleted: true, Result: not null })
-            .SelectMany(t => t.Result!).ToList();
-
-        return ret;
+        return Search(extensions.Select(e => (e, searchQuery)).ToArray(), ct);
     }
+
+    /// <summary>
+    /// Runs each extension with its own query (e.g. the per-extension queries from <see cref="ParseUrl"/>). An
+    /// extension that fails or throws contributes no results instead of failing the whole search.
+    /// </summary>
+    public static List<SearchResult> Search((IMetadataExtension Extension, SearchQuery Query)[] searches, CancellationToken ct)
+    {
+        List<Task<List<SearchResult>?>> tasks = searches.Select(s => SearchSafe(s.Extension,
+            s.Query.Language is null ? s.Query with { Language = Settings.DownloadLanguage } : s.Query, ct)).ToList();
+
+        Task.WaitAll(tasks, ct);
+
+        return tasks.Where(t => t.Result is not null).SelectMany(t => t.Result!).ToList();
+    }
+
+    private static async Task<List<SearchResult>?> SearchSafe(IMetadataExtension extension, SearchQuery searchQuery, CancellationToken ct)
+    {
+        try
+        {
+            return await extension.SearchMetadata(searchQuery, ct);
+        }
+        catch (Exception) when (!ct.IsCancellationRequested)
+        {
+            // e.g. an unknown id from a pasted URL (404) or the provider being down: this extension just has no results.
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Resolves a manga page URL into a direct lookup on every extension that recognises it.
+    /// </summary>
+    /// <param name="url">A manga page URL, e.g. <c>https://anilist.co/manga/30002</c>.</param>
+    /// <param name="extensions">Extensions to try; defaults to <see cref="Extensions"/>.</param>
+    /// <returns>The matching extensions with their parsed queries; empty if no extension recognises the URL.</returns>
+    public static (IMetadataExtension Extension, SearchQuery Query)[] ParseUrl(string url, IMetadataExtension[]? extensions = null) =>
+        (extensions ?? Extensions)
+            .Select(e => (Extension: e, Query: e.ParseSearchQueryFromUrl(url)))
+            .Where(p => p.Query is not null)
+            .Select(p => (p.Extension, p.Query!))
+            .ToArray();
 }

@@ -40,6 +40,21 @@ public class PostSearchMangaEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task PostSearchManga_ReturnsNothingForUrlNoExtensionRecognises()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        // A pasted link is resolved by URL only; an unknown site must not fall back to a fuzzy title search for the URL text.
+        PostSearchMangaEndpoint.PostSearchMangaRequest request = new(
+            new SearchQuery(Title: "https://example.com/manga/12345/some-series"), null);
+
+        Results<Ok<MetadataDto[]>, BadRequest, InternalServerError> result = await PostSearchMangaEndpoint.Handle(context, request, ct);
+
+        MetadataDto[] results = Assert.IsType<Ok<MetadataDto[]>>(result.Result).Value!;
+        Assert.Empty(results);
+        Assert.Empty(context.MetadataEntries);
+    }
+
+    [Fact]
     public async Task FindExistingMetadata_DoesNotMatchAcrossDifferentExtensionsWithSameSeries()
     {
         await using MangaContext context = MangaContextFactory.Create();

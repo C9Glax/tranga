@@ -19,7 +19,8 @@ namespace Services.Manga.Features.Manga.Search;
 internal abstract class PostSearchMangaEndpoint
 {
     /// <summary>
-    /// Search Manga on Metadata-Extensions
+    /// Search Manga on Metadata-Extensions. If the title is a manga page URL on a Metadata-Extension's site
+    /// (e.g. https://anilist.co/manga/30002), only that series is looked up.
     /// </summary>
     /// <param name="mangaContext"></param>
     /// <param name="req"></param>
@@ -31,12 +32,26 @@ internal abstract class PostSearchMangaEndpoint
         if (req.SearchQuery is { MangaDexSeriesId: null, MangaUpdatesSeriesId: null, Title: null })
             return TypedResults.BadRequest();
         
-        IMetadataExtension[] extensions = req.MetadataExtensionIds is { Length: > 0 }
-            ? MetadataExtensionsCollection.Extensions.Where(e => req.MetadataExtensionIds.Contains(e.Identifier))
-                .ToArray()
-            : MetadataExtensionsCollection.Extensions;
-        
-        List<SearchResult> searchResults = MetadataExtensionsCollection.Search(req.SearchQuery, extensions, ct);
+        List<SearchResult> searchResults;
+        if (req.SearchQuery.Title is { } title && UriHelper.IsWebUrl(title, out _))
+        {
+            // A pasted manga page URL: look up exactly that series on the extension(s) owning the site. The URL
+            // already names the site, so the selected MetadataExtensionIds do not apply.
+            (IMetadataExtension Extension, SearchQuery Query)[] lookups = MetadataExtensionsCollection.ParseUrl(title);
+            searchResults = lookups.Length > 0
+                ? MetadataExtensionsCollection.Search(
+                    lookups.Select(l => (l.Extension, l.Query with { Language = req.SearchQuery.Language })).ToArray(), ct)
+                : [];
+        }
+        else
+        {
+            IMetadataExtension[] extensions = req.MetadataExtensionIds is { Length: > 0 }
+                ? MetadataExtensionsCollection.Extensions.Where(e => req.MetadataExtensionIds.Contains(e.Identifier))
+                    .ToArray()
+                : MetadataExtensionsCollection.Extensions;
+
+            searchResults = MetadataExtensionsCollection.Search(req.SearchQuery, extensions, ct);
+        }
 
         List<DbMetadata> metadataList = [];
         

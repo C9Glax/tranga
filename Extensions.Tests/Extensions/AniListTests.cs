@@ -41,4 +41,25 @@ public sealed class AniListTests : ExtensionTests<AniList>
         // Descriptions arrive with inline markup that has to be stripped before it reaches the frontend
         Assert.DoesNotContain("<br>", manga.Summary ?? string.Empty);
     }
+
+    [Theory]
+    [InlineData(FrierenUrl)]
+    [InlineData("https://anilist.co/manga/118586/Sousou-no-Frieren/")]
+    [InlineData("https://www.AniList.co/manga/118586")]
+    public void ParseSearchQueryFromUrlReturnsAniListId(string url)
+    {
+        SearchQuery? query = _extension.ParseSearchQueryFromUrl(url);
+        Assert.NotNull(query);
+        Assert.Equal(FrierenAniListId, query.AniListSeriesId);
+        Assert.Null(query.Title);
+    }
+
+    [Theory]
+    [InlineData("https://anilist.co/anime/154587/Sousou-no-Frieren")]
+    [InlineData("https://anilist.co/manga/frieren")]
+    [InlineData("https://anilist.co/manga/0")]
+    [InlineData("https://myanimelist.net/manga/118586")]
+    [InlineData("Sousou no Frieren")]
+    public void ParseSearchQueryFromUrlRejectsOtherUrls(string url) =>
+        Assert.Null(_extension.ParseSearchQueryFromUrl(url));
 }
