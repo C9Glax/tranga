@@ -8,7 +8,7 @@
                 <MangaCover
                     :file-id="manga?.metadataEntry?.coverId"
                     :manga-id="manga?.mangaId"
-                    :no-blur="!manga?.metadataEntry?.nsfw"
+                    :nsfw="!!manga?.metadataEntry?.nsfw"
                     :size="COVER_SIZES.hero"
                     class="aspect-6/9 w-full max-w-2xs mx-auto md:mx-0" />
 

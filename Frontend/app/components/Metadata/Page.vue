@@ -49,13 +49,13 @@
                 <MangaCover
                     v-else
                     :file-id="metadata?.coverId"
-                    :no-blur="!metadata?.nsfw"
+                    :nsfw="!!metadata?.nsfw"
                     :size="COVER_SIZES.hero"
                     class="aspect-6/9 max-h-sm max-w-sm" />
             </template>
             <MangaCover
                 :file-id="metadata?.coverId"
-                :no-blur="!metadata?.nsfw"
+                :nsfw="!!metadata?.nsfw"
                 :size="COVER_SIZES.hero"
                 class="aspect-6/9 max-h-sm max-w-sm" />
         </UPageCTA>
