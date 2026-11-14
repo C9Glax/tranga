@@ -7,7 +7,7 @@
         class="max-w-90 max-h-120"
         :ui="{
             header: 'aspect-[13/9]',
-            image: `object-center ${downloadLink.nsfw && 'blur-md'}`,
+            image: `object-center ${downloadLink.nsfw && nsfwCoverMode !== 'show' ? 'blur-md' : ''}`,
             description: 'h-30 text-ellipsis overflow-hidden',
         }">
         <template #title>
@@ -49,6 +49,8 @@
 import useDownloadExtensions from '~/composables/DownloadExtension';
 import type { ServicesMangaMangaDownloadLink, ServicesMangaPatchMangaDownloadLinkRequest } from '~/api/tranga';
 import { patchMangaDownloadLink } from '~/utils/patchMangaDownloadLink';
+
+const nsfwCoverMode = useNsfwCoverMode();
 
 const props = defineProps<{ downloadLink: ServicesMangaMangaDownloadLink }>();
 

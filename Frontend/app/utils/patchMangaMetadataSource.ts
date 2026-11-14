@@ -9,6 +9,7 @@ export const patchMangaMetadataSource = async (metadataId: string, mangaId: stri
         await refreshNuxtData([
             ApiKeys.Manga.Metadata.Entry(metadataId),
             ApiKeys.Manga.Manga(mangaId),
+            ApiKeys.Manga.List,
             ApiKeys.Manga.RelatedMetadata(mangaId),
             ApiKeys.Manga.Metadata.RelatedManga(metadataId),
             ApiKeys.Manga.Metadata.Manga(metadataId),

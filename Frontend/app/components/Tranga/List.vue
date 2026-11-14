@@ -2,7 +2,7 @@
     <div v-if="loading" class="flex flex-row flex-wrap gap-2 justify-center md:justify-start w-full h-full">
         <USkeleton v-for="k in [...Array(3)]" :key="k" class="w-60 h-90" />
     </div>
-    <div v-else-if="!empty" class="flex flex-row flex-wrap gap-2 justify-center md:justify-start w-full h-full">
+    <div v-else-if="!empty" class="flex flex-row flex-wrap gap-3 justify-center md:justify-start w-full h-full">
         <slot />
     </div>
 

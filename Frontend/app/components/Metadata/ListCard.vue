@@ -9,7 +9,7 @@
         class="max-w-90 max-h-120"
         :ui="{
             header: 'aspect-[13/9]',
-            image: `object-center ${metadata.nsfw && 'blur-md'}`,
+            image: `object-center ${metadata.nsfw && nsfwCoverMode !== 'show' ? 'blur-md' : ''}`,
             description: 'h-30 text-ellipsis overflow-hidden',
         }">
         <template #title>
@@ -42,6 +42,8 @@ import useMetadataExtensions from '~/composables/MetadataExtension';
 import type { ServicesMangaMetadata } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { releaseStatusBadgeColor } from '~/utils/releaseStatusBadgeColor';
+
+const nsfwCoverMode = useNsfwCoverMode();
 
 const props = defineProps<{
     metadata: ServicesMangaMetadata;
