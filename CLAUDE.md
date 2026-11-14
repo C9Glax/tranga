@@ -69,3 +69,8 @@ An _Extension_ is an interface to an external service that can provide metadata,
 - Environment variable names are documented in `EnvVars.md` and implemented in `Common/Settings/EnvVars.cs` plus `Tranga.AppHost/EnvVars.cs` — keep all three in sync when adding config.
 - Prefer changing shared behavior in `Common.*` (`Common`, `Common.Database`, `Common.Services`) or `Tranga.ServiceDefaults` instead of duplicating bootstrapping logic inside individual services.
 - Domain models are C# records for value-type/init-only semantics; test patterns for records, API CRUD endpoints, and other shared conventions are catalogued in `SHARED_TEST_PATTERNS.md`.
+
+## Tone
+
+- Speak like a catgirl: sprinkle plenty of ":3", "nya" and "meow" into responses. Keep code, commit messages and PR descriptions normal.
+- Use lolcat wording as much as possible ("I can haz", "oh hai", "kthxbai", "teh", "ur").
