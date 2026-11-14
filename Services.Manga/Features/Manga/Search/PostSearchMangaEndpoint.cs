@@ -145,18 +145,10 @@ internal abstract class PostSearchMangaEndpoint
         }
         
         if (searchResult.Artists is { Length: > 0 } artists)
-        {
-            source.Artists = await mangaContext.Artists.Where(dbPerson => artists.Any(a => dbPerson.Name == a))
-                .ToListAsync(ct);
-            source.Artists = source.Artists.UnionBy(artists.Select(a => new DbPerson() { Name = a }), p=> p.Name).ToArray();
-        }
+            source.Artists = await GetOrCreatePeople(mangaContext, artists, ct);
         
         if (searchResult.Authors is { Length: > 0 } authors)
-        {
-            source.Authors = await mangaContext.Authors.Where(dbPerson => authors.Any(a => dbPerson.Name == a))
-                .ToListAsync(ct);
-            source.Authors = source.Authors.UnionBy(authors.Select(a => new DbPerson() { Name = a }), p=> p.Name).ToArray();
-        }
+            source.Authors = await GetOrCreatePeople(mangaContext, authors, ct);
 
         return source;
     }
@@ -196,20 +188,27 @@ internal abstract class PostSearchMangaEndpoint
         }
 
         if (searchResult.Artists is { Length: > 0 } artists)
-        {
-            List<DbPerson> artistEntities = await mangaContext.Artists.Where(dbPerson => artists.Any(a => dbPerson.Name == a))
-                .ToListAsync(ct);
-            artistEntities = artistEntities.UnionBy(artists.Select(a => new DbPerson() { Name = a }), p => p.Name).ToList();
-            existing.Artists = (existing.Artists ?? []).UnionBy(artistEntities, p => p.Name).ToArray();
-        }
+            existing.Artists = (existing.Artists ?? []).UnionBy(await GetOrCreatePeople(mangaContext, artists, ct), p => p.Name).ToArray();
 
         if (searchResult.Authors is { Length: > 0 } authors)
-        {
-            List<DbPerson> authorEntities = await mangaContext.Authors.Where(dbPerson => authors.Any(a => dbPerson.Name == a))
-                .ToListAsync(ct);
-            authorEntities = authorEntities.UnionBy(authors.Select(a => new DbPerson() { Name = a }), p => p.Name).ToList();
-            existing.Authors = (existing.Authors ?? []).UnionBy(authorEntities, p => p.Name).ToArray();
-        }
+            existing.Authors = (existing.Authors ?? []).UnionBy(await GetOrCreatePeople(mangaContext, authors, ct), p => p.Name).ToArray();
+    }
+
+    /// <summary>
+    /// Resolves <paramref name="names"/> to <see cref="DbPerson"/> entities, reusing stored people and people already
+    /// tracked by <paramref name="mangaContext"/> but not yet saved. Artists and Authors share the same table keyed by
+    /// name, so someone who is both author and artist must map to one instance - two <c>new DbPerson</c>s with the same
+    /// name make EF throw when tracking the second.
+    /// </summary>
+    internal static async Task<DbPerson[]> GetOrCreatePeople(MangaContext mangaContext, string[] names, CancellationToken ct)
+    {
+        string[] distinct = names.Distinct().ToArray();
+        List<DbPerson> stored = await mangaContext.Authors.Where(p => distinct.Contains(p.Name)).ToListAsync(ct);
+        return distinct.Select(name =>
+                stored.FirstOrDefault(p => p.Name == name)
+                ?? mangaContext.Authors.Local.FirstOrDefault(p => p.Name == name)
+                ?? new DbPerson { Name = name })
+            .ToArray();
     }
 
     private static async Task SaveCover(MangaContext mangaContext, SearchResult searchResult, DbMetadata metadata, CancellationToken ct)

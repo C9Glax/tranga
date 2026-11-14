@@ -37,7 +37,7 @@ public sealed class MangaUpdatesTests : ExtensionTests<MangaUpdates>
 
     [Fact]
     public void ParseSearchQueryFromUrlDecodesKnownSeriesId() =>
-        Assert.Equal(55099564912, _extension.ParseSearchQueryFromUrl("https://www.mangaupdates.com/series/pb8uwds/berserk")?.MangaUpdatesSeriesId);
+        Assert.Equal(55099564912, _extension.ParseSearchQueryFromUrl("https://www.mangaupdates.com/series/pb8uwds/one-piece")?.MangaUpdatesSeriesId);
 
     [Theory]
     [InlineData("https://www.mangaupdates.com/series.html?id=88")]
