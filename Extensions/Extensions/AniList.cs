@@ -71,6 +71,11 @@ public sealed class AniList : IMetadataExtension
           }
           """;
 
+    public SearchQuery? ParseSearchQueryFromUrl(string url) =>
+        UriHelper.GetPathSegmentsOnHost(url, "anilist.co") is ["manga", { } id, ..] && int.TryParse(id, out int seriesId) && seriesId > 0
+            ? new SearchQuery(AniListSeriesId: seriesId)
+            : null;
+
     public async Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct)
     {
         // If an AniList ID is included, get the media directly instead of running a fuzzy title search

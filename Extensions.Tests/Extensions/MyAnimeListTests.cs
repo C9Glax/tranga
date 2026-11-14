@@ -66,4 +66,22 @@ public sealed class MyAnimeListTests : ExtensionTests<MyAnimeList>
         List<SearchResult>? result = await _extension.SearchMetadata(new SearchQuery { Title = "ab" }, ct);
         Assert.Null(result);
     }
+
+    [Theory]
+    [InlineData("https://myanimelist.net/manga/126287/Sousou_no_Frieren")]
+    [InlineData("https://www.myanimelist.net/manga/126287")]
+    public void ParseSearchQueryFromUrlReturnsMyAnimeListId(string url)
+    {
+        SearchQuery? query = _extension.ParseSearchQueryFromUrl(url);
+        Assert.NotNull(query);
+        Assert.Equal(FrierenMalId, query.MyAnimeListSeriesId);
+        Assert.Null(query.Title);
+    }
+
+    [Theory]
+    [InlineData("https://myanimelist.net/anime/52991/Sousou_no_Frieren")]
+    [InlineData("https://myanimelist.net/manga/frieren")]
+    [InlineData("https://anilist.co/manga/126287")]
+    public void ParseSearchQueryFromUrlRejectsOtherUrls(string url) =>
+        Assert.Null(_extension.ParseSearchQueryFromUrl(url));
 }

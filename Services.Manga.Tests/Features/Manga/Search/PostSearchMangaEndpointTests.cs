@@ -40,6 +40,21 @@ public class PostSearchMangaEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task PostSearchManga_ReturnsNothingForUrlNoExtensionRecognises()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        // A pasted link is resolved by URL only; an unknown site must not fall back to a fuzzy title search for the URL text.
+        PostSearchMangaEndpoint.PostSearchMangaRequest request = new(
+            new SearchQuery(Title: "https://example.com/manga/12345/some-series"), null);
+
+        Results<Ok<MetadataDto[]>, BadRequest, InternalServerError> result = await PostSearchMangaEndpoint.Handle(context, request, ct);
+
+        MetadataDto[] results = Assert.IsType<Ok<MetadataDto[]>>(result.Result).Value!;
+        Assert.Empty(results);
+        Assert.Empty(context.MetadataEntries);
+    }
+
+    [Fact]
     public async Task FindExistingMetadata_DoesNotMatchAcrossDifferentExtensionsWithSameSeries()
     {
         await using MangaContext context = MangaContextFactory.Create();
@@ -151,5 +166,34 @@ public class PostSearchMangaEndpointTests : TrangaTest
 
         Assert.Equal("Old Summary", existing.Summary);
         Assert.Equal(2000, existing.Year);
+    }
+
+    [Fact]
+    public async Task MergeMetadata_SamePersonAsAuthorAndArtistIsStoredOnce()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        DbFile cover = new() { FileId = Guid.NewGuid(), Path = "/covers", Name = "cover.jpg", MimeType = "image/jpeg" };
+        DbMetadata existing = TestDataBuilder.NewMetadata(coverId: cover.FileId);
+        await context.AddAsync(cover, ct);
+        await context.AddAsync(existing, ct);
+        await context.SaveChangesAsync(ct);
+
+        // e.g. Berserk: Miura Kentarou is both author and artist. Artists and Authors share one table keyed by name.
+        SearchResult searchResult = new()
+        {
+            MetadataExtensionIdentifier = existing.MetadataExtension,
+            Identifier = existing.Identifier,
+            Cover = new TrangaImage(),
+            Series = existing.Series,
+            Artists = ["Miura Kentarou"],
+            Authors = ["Miura Kentarou", "Miura Kentarou"]
+        };
+
+        await PostSearchMangaEndpoint.MergeMetadata(context, searchResult, existing, ct);
+        await context.SaveChangesAsync(ct);
+
+        DbPerson artist = Assert.Single(existing.Artists!);
+        Assert.Same(artist, Assert.Single(existing.Authors!));
+        Assert.Single(context.Authors, p => p.Name == "Miura Kentarou");
     }
 }
