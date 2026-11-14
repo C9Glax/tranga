@@ -4,7 +4,7 @@
             v-bind="$props"
             v-model:search-term="searchTerm"
             :color-mode="false"
-            :placeholder="`Search for... (${randomManga}?)`"
+            :placeholder="`Search for a title or paste a link... (${randomManga}?)`"
             :groups="displayManga"
             :ui="{ modal: 'sm:h-auto max-h-full' }"
             :loading="loading"
@@ -93,6 +93,8 @@ const searchResultItems = computed((): CommandPaletteGroup<MyCommandPaletteItem>
     {
         id: 'searchResults',
         label: 'Search Results',
+        // A pasted link never fuzzy-matches the title of the manga it resolved to, so don't filter those results client-side.
+        ignoreFilter: isUrl(searchTerm.value),
         items: searchResult.value?.map((manga) => ({
             label: manga?.series,
             description: manga?.summary ?? undefined,
@@ -109,12 +111,13 @@ const search = async (title: string) => {
             body: { searchQuery: { title }, metadataExtensionIds: selectedExtensions.value },
             method: 'POST',
         });
-        await refreshNuxtData([ApiKeys.Manga.Metadata.List, ApiKeys.Manga.List]);
         searchResult.value = data.value;
     } finally {
         loading.value = false;
     }
 };
+
+const isUrl = (term?: string) => !!term && /^https?:\/\/\S+$/i.test(term.trim());
 
 const DEBOUNCE_TIME = 1000;
 const countDown = ref();
@@ -124,6 +127,13 @@ const debounceSearch = (searchTerm?: string) => {
     clearTimeout(debounceTimeout.value);
     clearInterval(countDown.value);
     progressValue.value = DEBOUNCE_TIME;
+    if (isUrl(searchTerm)) {
+        // A pasted link is complete as-is, no need to wait for further typing.
+        debounceTimeout.value = undefined;
+        progressValue.value = 0;
+        search(searchTerm!.trim());
+        return;
+    }
     debounceTimeout.value = setTimeout(() => {
         if (searchTerm) search(searchTerm);
     }, DEBOUNCE_TIME);

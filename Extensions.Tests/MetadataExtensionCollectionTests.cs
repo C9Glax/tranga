@@ -36,4 +36,38 @@ public sealed class MetadataExtensionCollectionTests : Common.Tests.TrangaTest
         Assert.NotNull(manga);
         Assert.Equal("Sousou no Frieren", manga.Series);
     }
+
+    [Theory]
+    [InlineData("https://www.mangaupdates.com/series/ugf5dzu/sousou-no-frieren", typeof(MangaUpdates))]
+    [InlineData("https://mangadex.org/title/b0b721ff-c388-4486-aa0f-c2b0bb321512", typeof(MangaDex))]
+    [InlineData("https://anilist.co/manga/118586", typeof(AniList))]
+    public void ParseUrlMatchesOnlyTheOwningExtension(string url, Type extensionType)
+    {
+        (IMetadataExtension Extension, SearchQuery Query) match = Assert.Single(MetadataExtensionsCollection.ParseUrl(url));
+        Assert.IsType(extensionType, match.Extension);
+    }
+
+    [Fact]
+    public void ParseUrlMatchesNothingForUnknownSite() =>
+        Assert.Empty(MetadataExtensionsCollection.ParseUrl("https://example.com/manga/118586"));
+
+    [Fact]
+    public void SearchSkipsExtensionsThatThrow()
+    {
+        List<SearchResult> result = MetadataExtensionsCollection.Search(new SearchQuery(Title: "anything"), [new ThrowingExtension()], ct);
+        Assert.Empty(result);
+    }
+
+    private sealed class ThrowingExtension : IMetadataExtension
+    {
+        public Guid Identifier { get; init; } = Guid.NewGuid();
+        public string Name { get; init; } = "Throwing";
+        public string BaseUrl { get; init; } = "https://example.com";
+        public string IconUrl { get; init; } = "https://example.com/icon.png";
+
+        public Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct) =>
+            throw new HttpRequestException("boom");
+
+        public SearchQuery? ParseSearchQueryFromUrl(string url) => null;
+    }
 }

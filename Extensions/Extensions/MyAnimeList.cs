@@ -44,6 +44,11 @@ public sealed class MyAnimeList : IMetadataExtension
             QueueProcessingOrder = QueueProcessingOrder.OldestFirst
         }));
 
+    public SearchQuery? ParseSearchQueryFromUrl(string url) =>
+        UriHelper.GetPathSegmentsOnHost(url, "myanimelist.net") is ["manga", { } id, ..] && int.TryParse(id, out int seriesId) && seriesId > 0
+            ? new SearchQuery(MyAnimeListSeriesId: seriesId)
+            : null;
+
     public async Task<List<SearchResult>?> SearchMetadata(SearchQuery searchQuery, CancellationToken ct)
     {
         if (EnvVars.MAL_CLIENT_ID is null)

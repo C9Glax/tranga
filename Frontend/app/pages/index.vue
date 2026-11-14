@@ -1,6 +1,6 @@
 <template>
     <TrangaPage :navigation="navigation">
-        <MangaList :mangas="mangaList" :loading="status !== 'success'" />
+        <MangaList :mangas="mangaList" :loading="status !== 'success' && !data" />
     </TrangaPage>
 </template>
 

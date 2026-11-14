@@ -88,6 +88,11 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         return Guid.TryParse(identifier, out _) ? identifier : null;
     }
 
+    public SearchQuery? ParseSearchQueryFromUrl(string url) =>
+        UriHelper.GetPathSegmentsOnHost(url, "mangadex.org") is ["title", { } id, ..] && Guid.TryParse(id, out Guid seriesId)
+            ? new SearchQuery(MangaDexSeriesId: seriesId)
+            : null;
+
     #endregion
 
     #region Chapters
@@ -253,10 +258,22 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
             Anonymous4.Artist,
             Anonymous4.Tag
         ];
-        if (searchQuery.MangaDexSeriesId is { } seriesId && await Client.GetMangaIdAsync(seriesId, includes, ct) is
-                { Result: MangaResponseResult.Ok, Data: { } manga })
+        if (searchQuery.MangaDexSeriesId is { } seriesId)
         {
-            return [manga];
+            try
+            {
+                if (await Client.GetMangaIdAsync(seriesId, includes, ct) is { Result: MangaResponseResult.Ok, Data: { } manga })
+                    return [manga];
+            }
+            catch (MangaDexApiException)
+            {
+                // Unknown/removed id - handled below.
+            }
+
+            // Without a title there is nothing to fall back on: a title-less search would return arbitrary manga
+            // rather than the one the id (e.g. from a pasted URL) refers to.
+            if (string.IsNullOrWhiteSpace(searchQuery.Title))
+                return null;
         }
 
         if (await Client.GetSearchMangaAsync(limit: 10, offset: 0, title: searchQuery.Title, includes: includes,
