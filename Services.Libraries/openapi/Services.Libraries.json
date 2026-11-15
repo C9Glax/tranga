@@ -107,6 +107,80 @@
         }
       }
     },
+    "/libraries/kavita": {
+      "put": {
+        "tags": [
+          "Libraries"
+        ],
+        "summary": "Add kavita library extension",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddKavitaLibraryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libraries/kavita/test-connection": {
+      "post": {
+        "tags": [
+          "Libraries"
+        ],
+        "summary": "Validate Kavita credentials without persisting anything and list its libraries",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestKavitaConnectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KavitaLibraryInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/libraries/{libraryId}": {
       "delete": {
         "tags": [
@@ -286,6 +360,29 @@
   },
   "components": {
     "schemas": {
+      "AddKavitaLibraryRequest": {
+        "required": [
+          "name",
+          "baseUrl",
+          "apiKey",
+          "kavitaLibraryId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "apiKey": {
+            "type": "string"
+          },
+          "kavitaLibraryId": {
+            "type": "string"
+          }
+        }
+      },
       "AddKomgaLibraryRequest": {
         "required": [
           "name",
@@ -363,6 +460,21 @@
         },
         "description": "Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time."
       },
+      "KavitaLibraryInfo": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "Library": {
         "required": [
           "libraryServiceType",
@@ -405,7 +517,8 @@
       },
       "LibraryServiceType": {
         "enum": [
-          "Komga"
+          "Komga",
+          "Kavita"
         ]
       },
       "PatchLibraryRequest": {
@@ -434,6 +547,21 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "TestKavitaConnectionRequest": {
+        "required": [
+          "baseUrl",
+          "apiKey"
+        ],
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "apiKey": {
+            "type": "string"
           }
         }
       },

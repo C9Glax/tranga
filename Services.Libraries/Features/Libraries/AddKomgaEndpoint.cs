@@ -41,7 +41,7 @@ public abstract class AddKomgaEndpoint
 
         await ctx.LibraryServices.AddAsync(dbLibraryService, ct);
 
-        await KomgaSeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibraryService, extension, logger, ct);
+        await SeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibraryService, new KomgaLibraryClient(extension), logger, ct);
 
         await ctx.SaveChangesAsync(ct);
         return TypedResults.Ok(dbLibraryService.LibraryServiceId);

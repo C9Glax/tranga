@@ -28,5 +28,7 @@ public sealed record DbLibraryService(LibraryServiceType LibraryServiceType, str
 public enum LibraryServiceType
 {
     /// <summary>A Komga server.</summary>
-    Komga
+    Komga,
+    /// <summary>A Kavita server.</summary>
+    Kavita
 }

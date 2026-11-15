@@ -56,7 +56,7 @@ const chapterLabel = (chapter: ServicesMangaMangaChapter) =>
 const onDelete = (chapter: ServicesMangaMangaChapter) => {
     confirmModal.open({
         title: 'Delete Chapter',
-        description: `This permanently deletes "${chapterLabel(chapter)}": its downloaded file is removed from disk, and if a Komga library is linked, a rescan is triggered so it's removed there too. This cannot be undone.`,
+        description: `This permanently deletes "${chapterLabel(chapter)}": its downloaded file is removed from disk, and if a library is linked, a rescan is triggered so it's removed there too. This cannot be undone.`,
         onConfirm: () => deleteChapter(chapter.mangaId, chapter.chapterId),
     });
 };

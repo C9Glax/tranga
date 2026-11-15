@@ -31,6 +31,25 @@ public sealed class GetLibraryMangaLinkEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task GetLibraryMangaLink_BuildsKavitaSeriesUrlWithLibraryId()
+    {
+        await using LibrariesContext context = LibrariesContextFactory.Create();
+        DbLibraryService library = new(LibraryServiceType.Kavita, "MyKavita", "http://localhost:5000/", "some-api-key")
+        {
+            TrangaLibraryId = "3"
+        };
+        await context.LibraryServices.AddAsync(library, ct);
+
+        Guid mangaId = Guid.NewGuid();
+        await context.MangaMappings.AddAsync(new DbMangaIdMapping(library.LibraryServiceId, mangaId, "11"), ct);
+        await context.SaveChangesAsync(ct);
+
+        Ok<GetLibraryMangaLinkEndpoint.LibraryMangaLink[]> result = await GetLibraryMangaLinkEndpoint.Handle(context, mangaId, ct);
+
+        Assert.Equal("http://localhost:5000/library/3/series/11", Assert.Single(result.Value!).SeriesUrl);
+    }
+
+    [Fact]
     public async Task GetLibraryMangaLink_ReturnsEmptyArrayWhenNoMappingsExist()
     {
         await using LibrariesContext context = LibrariesContextFactory.Create();

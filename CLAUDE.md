@@ -12,8 +12,8 @@ Tranga is a .NET 10, multi-service manga downloader with a Nuxt frontend, a YARP
   - `Services.Manga` owns manga/chapter/metadata/download-link/file APIs (the persistent-information service).
   - `Services.Tasks` owns queueing + workers + periodic jobs (automated tasks like fetching chapters and updating metadata).
   - `Services.Notifications` owns notification extensions (Naprise-based: Gotify, Telegram, Discord, Ntfy.sh, ...).
-  - `Services.Libraries` owns library extensions (Komga today).
-- `Extensions` is a shared library of third-party integrations (MangaDex, MangaUpdates, Komga, ...) consumed by the services above — it is not itself a runtime service.
+  - `Services.Libraries` owns library extensions (Komga and Kavita).
+- `Extensions` is a shared library of third-party integrations (MangaDex, MangaUpdates, Komga, Kavita, ...) consumed by the services above — it is not itself a runtime service.
 - `Frontend` is a Nuxt 4 / Nuxt UI / Tailwind v4 SPA, served behind the YARP gateway alongside the API services.
 
 ## Developer workflow

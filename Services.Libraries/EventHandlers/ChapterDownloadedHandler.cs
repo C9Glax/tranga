@@ -13,9 +13,9 @@ namespace Services.Libraries.EventHandlers;
 internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvider serviceProvider) : TrangaEventHandler<ChapterDownloadedEvent>(channel)
 {
     /// <summary>
-    /// Bound on how many times we poll Komga for a newly discovered series after triggering a
+    /// Bound on how many times we poll the library service for a newly discovered series after triggering a
     /// library scan, at ~1s per attempt (~30s total by default), so a misconfigured/unresponsive
-    /// Komga instance can never block the RabbitMQ consumer thread indefinitely.
+    /// library instance can never block the RabbitMQ consumer thread indefinitely.
     /// Internal (not const/readonly) so tests can shrink the bound/interval instead of waiting ~30s.
     /// </summary>
     internal static int MaxSeriesPollAttempts = 30;
@@ -32,9 +32,9 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
         bool allOk = true;
         foreach (DbLibraryService dbLibrary in libraries)
         {
-            if (dbLibrary.LibraryServiceType == LibraryServiceType.Komga && dbLibrary.ToExtension() is { } extension)
+            if (dbLibrary.ToClient() is { } client)
             {
-                bool ok = await ProcessKomga(ctx, mangaContext, dbLibrary, extension, chapterDownloadedEvent, logger);
+                bool ok = await ProcessLibrary(ctx, mangaContext, dbLibrary, client, chapterDownloadedEvent, logger);
                 allOk &= ok;
             }
         }
@@ -42,21 +42,21 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
         return allOk;
     }
 
-    private static async Task<bool> ProcessKomga(LibrariesContext ctx, MangaContext mangaContext, DbLibraryService dbLibrary, Extensions.Extensions.Komga komga,
+    private static async Task<bool> ProcessLibrary(LibrariesContext ctx, MangaContext mangaContext, DbLibraryService dbLibrary, ILibraryClient client,
         ChapterDownloadedEvent chapterDownloadedEvent, ILogger<ChapterDownloadedHandler> logger)
     {
         if (await ctx.MangaMappings.AnyAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId &&
                                                    m.MangaId == chapterDownloadedEvent.MangaId))
         {
-            await komga.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
+            await client.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
             return true;
         }
 
-        await komga.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
+        await client.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
 
         for (int attempt = 0; attempt < MaxSeriesPollAttempts; attempt++)
         {
-            await KomgaSeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibrary, komga, logger, CancellationToken.None);
+            await SeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibrary, client, logger, CancellationToken.None);
             await ctx.SaveChangesAsync();
 
             if (await ctx.MangaMappings.AnyAsync(m => m.LibraryServiceId == dbLibrary.LibraryServiceId &&
@@ -67,7 +67,7 @@ internal sealed class ChapterDownloadedHandler(IChannel channel, IServiceProvide
         }
 
         logger.LogWarning(
-            "Timed out after {Attempts} attempts waiting for Komga library service {LibraryServiceId} to pick up the newly scanned series for manga {MangaId}. No mapping was created; the next ChapterDownloadedEvent for this manga will retry mapping discovery.",
+            "Timed out after {Attempts} attempts waiting for library service {LibraryServiceId} to pick up the newly scanned series for manga {MangaId}. No mapping was created; the next ChapterDownloadedEvent for this manga will retry mapping discovery.",
             MaxSeriesPollAttempts, dbLibrary.LibraryServiceId, chapterDownloadedEvent.MangaId);
         return true;
     }

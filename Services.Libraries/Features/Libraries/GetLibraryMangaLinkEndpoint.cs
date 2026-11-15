@@ -20,15 +20,30 @@ public abstract class GetLibraryMangaLinkEndpoint
     /// <response code="200">Array of library links for the Manga</response>
     public static async Task<Ok<LibraryMangaLink[]>> Handle(LibrariesContext ctx, [FromRoute]Guid mangaId, CancellationToken ct)
     {
-        LibraryMangaLink[] links = await ctx.MangaMappings
-            .Where(m => m.MangaId == mangaId)
-            .Join(ctx.LibraryServices, m => m.LibraryServiceId, l => l.LibraryServiceId, (m, l) => new LibraryMangaLink(
-                l.LibraryServiceId,
-                // Assumption: Komga's web UI series route is "{baseUrl}/series/{seriesId}" - verify against a real Komga instance.
-                $"{l.BaseUrl.TrimEnd('/')}/series/{m.SeriesId}"))
-            .ToArrayAsync(ct);
+        List<DbMangaIdMapping> mappings = await ctx.MangaMappings.Where(m => m.MangaId == mangaId).ToListAsync(ct);
+        Guid[] libraryIds = mappings.Select(m => m.LibraryServiceId).Distinct().ToArray();
+        Dictionary<Guid, DbLibraryService> libraries = await ctx.LibraryServices
+            .Where(l => libraryIds.Contains(l.LibraryServiceId))
+            .ToDictionaryAsync(l => l.LibraryServiceId, ct);
+
+        LibraryMangaLink[] links = mappings
+            .Where(m => libraries.ContainsKey(m.LibraryServiceId))
+            .Select(m => new LibraryMangaLink(m.LibraryServiceId, SeriesUrl(libraries[m.LibraryServiceId], m.SeriesId)))
+            .ToArray();
 
         return TypedResults.Ok(links);
+    }
+
+    private static string SeriesUrl(DbLibraryService library, string seriesId)
+    {
+        string baseUrl = library.BaseUrl.TrimEnd('/');
+        return library.LibraryServiceType switch
+        {
+            // Kavita's web UI series route is "{baseUrl}/library/{libraryId}/series/{seriesId}".
+            LibraryServiceType.Kavita => $"{baseUrl}/library/{library.TrangaLibraryId}/series/{seriesId}",
+            // Assumption: Komga's web UI series route is "{baseUrl}/series/{seriesId}" - verify against a real Komga instance.
+            _ => $"{baseUrl}/series/{seriesId}"
+        };
     }
 
     /// <summary>

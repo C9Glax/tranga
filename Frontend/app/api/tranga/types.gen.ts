@@ -404,6 +404,8 @@ export type ServicesNotificationsPutExtensionRequestNtfySh = {
 
 export type ServicesNotificationsPutExtensionRequestTelegram = { token: string; chatId: string; name: string };
 
+export type ServicesLibrariesAddKavitaLibraryRequest = { name: string; baseUrl: string; apiKey: string; kavitaLibraryId: string };
+
 export type ServicesLibrariesAddKomgaLibraryRequest = {
     name: string;
     baseUrl: string;
@@ -443,6 +445,8 @@ export type ServicesLibrariesGitInfoResponse = {
     isDirty: boolean;
 };
 
+export type ServicesLibrariesKavitaLibraryInfo = { id: string; name: string };
+
 export type ServicesLibrariesLibrary = {
     libraryServiceType: ServicesLibrariesLibraryServiceType;
     id: string;
@@ -452,7 +456,7 @@ export type ServicesLibrariesLibrary = {
 
 export type ServicesLibrariesLibraryMangaLink = { libraryServiceId: string; seriesUrl: string };
 
-export type ServicesLibrariesLibraryServiceType = 'Komga';
+export type ServicesLibrariesLibraryServiceType = 'Komga' | 'Kavita';
 
 export type ServicesLibrariesPatchLibraryRequest = {
     name?: null | string;
@@ -460,6 +464,8 @@ export type ServicesLibrariesPatchLibraryRequest = {
     username?: null | string;
     password?: null | string;
 };
+
+export type ServicesLibrariesTestKavitaConnectionRequest = { baseUrl: string; apiKey: string };
 
 export type ServicesLibrariesTestKomgaConnectionRequest = {
     baseUrl: string;
@@ -1665,6 +1671,48 @@ export type PostLibrariesKomgaTestConnectionResponses = {
      */
     200: unknown;
 };
+
+export type PutLibrariesKavitaData = {
+    body: ServicesLibrariesAddKavitaLibraryRequest;
+    path?: never;
+    query?: never;
+    url: '/libraries/kavita';
+};
+
+export type PutLibrariesKavitaErrors = {
+    /**
+     * Bad Request
+     */
+    400: string;
+};
+
+export type PutLibrariesKavitaError = PutLibrariesKavitaErrors[keyof PutLibrariesKavitaErrors];
+
+export type PutLibrariesKavitaResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type PutLibrariesKavitaResponse = PutLibrariesKavitaResponses[keyof PutLibrariesKavitaResponses];
+
+export type PostLibrariesKavitaTestConnectionData = {
+    body: ServicesLibrariesTestKavitaConnectionRequest;
+    path?: never;
+    query?: never;
+    url: '/libraries/kavita/test-connection';
+};
+
+export type PostLibrariesKavitaTestConnectionResponses = {
+    /**
+     * OK
+     */
+    200: Array<ServicesLibrariesKavitaLibraryInfo>;
+};
+
+export type PostLibrariesKavitaTestConnectionResponse =
+    PostLibrariesKavitaTestConnectionResponses[keyof PostLibrariesKavitaTestConnectionResponses];
 
 export type DeleteLibrariesByLibraryIdData = { body?: never; path: { libraryId: string }; query?: never; url: '/libraries/{libraryId}' };
 
