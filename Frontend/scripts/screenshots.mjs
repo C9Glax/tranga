@@ -5,7 +5,7 @@
  * contains a few mangas, and a Chromium for Playwright (`npx playwright install chromium`).
  *
  * Usage:
- *   npm run screenshots -- --base-url http://localhost:3000 [--out ../Screenshots] [--password <admin password>]
+ *   npm run screenshots -- --base-url http://localhost:5000 [--out ../Screenshots] [--password <admin password>]
  *
  * Every option can also be set through the environment: TRANGA_URL, TRANGA_SCREENSHOT_DIR, TRANGA_PASSWORD.
  */
@@ -16,7 +16,7 @@ import { resolve } from 'node:path';
 
 const { values } = parseArgs({
     options: {
-        'base-url': { type: 'string', default: process.env.TRANGA_URL ?? 'http://localhost:3000' },
+        'base-url': { type: 'string', default: process.env.TRANGA_URL ?? 'http://localhost:5000' },
         out: { type: 'string', default: process.env.TRANGA_SCREENSHOT_DIR ?? '../Screenshots' },
         password: { type: 'string', default: process.env.TRANGA_PASSWORD },
     },
@@ -71,7 +71,7 @@ try {
         .getByRole('button', { name: /search/i })
         .first()
         .click();
-    await dark.page.getByPlaceholder(/search for a title/i).fill('one piece');
+    await dark.page.getByPlaceholder(/search for a title/i).fill('destiny unchain');
     await settle(dark.page);
     await shot(dark.page, 'search');
     await dark.page.keyboard.press('Escape');

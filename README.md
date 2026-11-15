@@ -110,7 +110,7 @@ To regenerate them, start the stack (see [Running locally with Aspire](#running-
 cd Frontend
 npm install
 npx playwright install chromium
-npm run screenshots -- --base-url http://localhost:3000
+npm run screenshots -- --base-url http://localhost:5000
 ```
 
 ## Built With
