@@ -134,7 +134,7 @@
                                 label="Result item selector"
                                 name="search.itemSelector"
                                 required
-                                description="One element per search result.">
+                                description="One element per search result: the wrapper around the whole result. The title, link and cover below are looked up inside this element, so their selectors are relative to it.">
                                 <UInput
                                     v-model="state.search.itemSelector"
                                     placeholder="div.search-result"
