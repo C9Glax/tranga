@@ -154,13 +154,6 @@
                                 required
                                 attribute-placeholder="Attribute, e.g. src or data-src,src"
                                 description="Several attributes can be listed, the first one that has a value is used." />
-                            <CustomSourceTestPanel
-                                v-model:input="testUrls.search"
-                                v-model:test="test"
-                                :definition="state"
-                                step="search"
-                                input-label="Search text"
-                                input-placeholder="one piece" />
                         </div>
                     </template>
 
@@ -219,14 +212,6 @@
                                 label="Next page link"
                                 description="Optional. When the chapter list is split over several pages, the link to the next one (followed up to 50 times)."
                                 attribute-placeholder="Attribute, e.g. href" />
-                            <CustomSourceTestPanel
-                                v-model:input="testUrls.chapters"
-                                v-model:test="test"
-                                :definition="state"
-                                step="chapters"
-                                input-label="Series URL"
-                                input-placeholder="https://example.com/series/1"
-                                help="A series page of the website. Use the button in the search test results to fill it in." />
                         </div>
                     </template>
 
@@ -356,7 +341,27 @@
                         </template>
                     </div>
                 </div>
-                <CustomSourceTestResults v-else :test="test" @pick="pickFromResults" />
+                <div v-else class="flex flex-col gap-4 lg:sticky lg:top-4">
+                    <!-- Search and chapters are tried from here; the pages step still has its test input in the step itself. -->
+                    <CustomSourceTestPanel
+                        v-if="step === 'search'"
+                        v-model:input="testUrls.search"
+                        v-model:test="test"
+                        :definition="state"
+                        step="search"
+                        input-label="Search text"
+                        input-placeholder="one piece" />
+                    <CustomSourceTestPanel
+                        v-else-if="step === 'chapters'"
+                        v-model:input="testUrls.chapters"
+                        v-model:test="test"
+                        :definition="state"
+                        step="chapters"
+                        input-label="Series URL"
+                        input-placeholder="https://example.com/series/1"
+                        help="A series page of the website. Use the button in the search test results to fill it in." />
+                    <CustomSourceTestResults :test="test" @pick="pickFromResults" />
+                </div>
             </div>
         </div>
 
