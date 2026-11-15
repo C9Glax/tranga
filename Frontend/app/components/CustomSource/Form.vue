@@ -146,8 +146,7 @@
                                 v-model="state.search.url"
                                 label="Series link"
                                 required
-                                attribute-placeholder="e.g. href"
-                                description="Relative links are resolved." />
+                                attribute-placeholder="e.g. href" />
                             <CustomSourceFieldInput
                                 v-model="state.search.cover"
                                 label="Cover image"
