@@ -8,7 +8,7 @@
 
         <p v-if="!test" class="text-sm text-muted">
             Use the <strong>Test</strong> button {{ buttonAbove ? 'above' : 'of this step' }} to try it on the website. The result shows up
-            here and stays visible while you change the selectors or move between the steps.
+            here and stays visible while you change the selectors.
         </p>
 
         <div v-else-if="test.loading" class="flex flex-row items-center gap-2 text-sm text-muted">

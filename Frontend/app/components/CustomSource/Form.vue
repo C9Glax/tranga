@@ -254,7 +254,7 @@
                             </UFormField>
                             <CustomSourceTestPanel
                                 v-model:input="testUrls.images"
-                                v-model:test="test"
+                                v-model:test="tests.images"
                                 :definition="state"
                                 step="images"
                                 input-label="Chapter URL"
@@ -300,7 +300,7 @@
             </UForm>
 
             <!-- The sidebar: on the General step the test of the series URL pattern (level with the pattern field), on the
-                 other steps the latest test result. -->
+                 other steps the latest test result of that step. -->
             <div ref="sidebar" class="min-w-0 lg:col-span-1" :style="{ paddingTop: `${isGeneralStep ? patternOffset : 0}px` }">
                 <div v-if="isGeneralStep" class="flex flex-col gap-2">
                     <UInput
@@ -346,7 +346,7 @@
                     <CustomSourceTestPanel
                         v-if="step === 'search'"
                         v-model:input="testUrls.search"
-                        v-model:test="test"
+                        v-model:test="tests.search"
                         :definition="state"
                         step="search"
                         input-label="Search text"
@@ -354,14 +354,14 @@
                     <CustomSourceTestPanel
                         v-else-if="step === 'chapters'"
                         v-model:input="testUrls.chapters"
-                        v-model:test="test"
+                        v-model:test="tests.chapters"
                         :definition="state"
                         step="chapters"
                         input-label="Series URL"
                         input-placeholder="https://example.com/series/1"
                         help="A series page of the website. Use the button in the search test results to fill it in." />
                     <CustomSourceTestResults
-                        :test="test"
+                        :test="currentTest"
                         :button-above="step === 'search' || step === 'chapters'"
                         @pick="pickFromResults" />
                 </div>
@@ -444,7 +444,14 @@ const steps: StepperItem[] = [
 const step = ref('general');
 const stepper = useTemplateRef<{ next: () => void; prev: () => void; hasNext: boolean; hasPrev: boolean }>('stepper');
 
-const test = ref<CustomSourceTestState>();
+// The latest test of every step. The sidebar shows the one of the step that is open, so going from the search to the
+// chapters step does not leave the search result next to the chapter selectors.
+const tests = reactive<Partial<Record<CustomSourceTestStep, CustomSourceTestState>>>({});
+const testStepOf: Record<string, CustomSourceTestStep | undefined> = { search: 'search', chapters: 'chapters', pages: 'images' };
+const currentTest = computed(() => {
+    const testStep = testStepOf[step.value];
+    return testStep ? tests[testStep] : undefined;
+});
 
 const { data: capabilities } = await useTranga<GetMangasCustomDownloadersCapabilitiesResponse>('/mangas/customDownloaders/capabilities', {
     key: ApiKeys.CustomDownloaderCapabilities,
