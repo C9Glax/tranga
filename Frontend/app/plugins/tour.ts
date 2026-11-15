@@ -1,8 +1,17 @@
+import type { ComputedRef } from 'vue';
 import type { TourStep, UseTourReturn } from '@nuxt/ui/composables';
 
 const SEEN_KEY = 'tranga-tour-first-download-seen';
 
-const TOUR_KEYS = ['search-button', 'use-as-source', 'go-to-manga', 'more-download-links', 'add-link', 'match-download-link'] as const;
+const TOUR_KEYS = [
+    'intro',
+    'search-button',
+    'use-as-source',
+    'go-to-manga',
+    'more-download-links',
+    'add-link',
+    'match-download-link',
+] as const;
 type TourKey = (typeof TOUR_KEYS)[number];
 
 /**
@@ -19,6 +28,9 @@ type TourKey = (typeof TOUR_KEYS)[number];
  * targets below.
  */
 const SYNCED_CLASS_SELECTORS: Partial<Record<TourKey, string>> = {
+    // The empty state of the start page, which the intro points at (it is not a ref-able element: it only exists
+    // while the manga list is empty, inside a slot of a shared list component).
+    intro: '.tour-intro',
     'use-as-source': '.tour-use-as-source',
     'go-to-manga': '.tour-go-to-manga',
     'more-download-links': '.tour-more-download-links',
@@ -51,6 +63,10 @@ interface TourApi {
     setTourTarget: (key: string, el: HTMLElement | null) => void;
     maybeAutoStart: () => void;
     restart: () => Promise<void>;
+    /** True when an earlier step can be shown on the page the user is on right now. */
+    canGoBack: ComputedRef<boolean>;
+    /** Goes back to the nearest earlier step that can be shown on this page (see `canGoBack`). */
+    goBack: () => void;
 }
 
 function hasSeenTour(): boolean {
@@ -90,6 +106,8 @@ function createInertTour(): TourApi {
         setTourTarget: () => {},
         maybeAutoStart: () => {},
         restart: async () => {},
+        canGoBack: computed(() => false),
+        goBack: () => {},
     };
 }
 
@@ -101,6 +119,7 @@ export default defineNuxtPlugin({
         }
 
         const targets = reactive<Record<TourKey, HTMLElement | null>>({
+            intro: null,
             'search-button': null,
             'use-as-source': null,
             'go-to-manga': null,
@@ -115,6 +134,9 @@ export default defineNuxtPlugin({
 
         const steps: FirstDownloadStep[] = [
             {
+                // No `key`: this is an intro step (it has "Let's go" instead of "Skip tour"). It points at the empty state
+                // of the start page when there is one, otherwise at the search button, so it never floats attached to nothing.
+                target: () => targets.intro ?? targets['search-button'] ?? undefined,
                 title: "Let's queue your first download",
                 body: "We'll find a manga and download its first chapters. It only takes a minute.",
             },
@@ -145,8 +167,8 @@ export default defineNuxtPlugin({
             {
                 key: 'add-link',
                 target: () => targets['add-link'] ?? undefined,
-                title: 'Add a download link',
-                body: "Type a title (or paste a manga URL), choose an extension, then click Add Link. If the results aren't what you're looking for, search again with a different query, or paste a direct link to the chapter or series instead.",
+                title: 'Check the results',
+                body: 'Tranga has already searched all extensions for this series: the results are listed below. If none of them is right, search again with a different title, or paste a link to the series, choose an extension and click Add Link.',
                 manualNext: true,
             },
             {
@@ -162,6 +184,22 @@ export default defineNuxtPlugin({
         ];
 
         const tour = useTour(steps);
+
+        // Going back: the steps follow what the user does across several pages, and some of what they did cannot be
+        // undone (a created manga has no "Use as Source" button anymore). So "back" means the nearest earlier step that
+        // can be shown on the page the user is on right now: intro steps always can, the others when their element exists.
+        const canShow = (index: number): boolean => {
+            const key = steps[index]?.key;
+            return steps[index] !== undefined && (key === undefined || targets[key] !== null);
+        };
+        const previousShowable = computed(() => {
+            for (let index = tour.index.value - 1; index >= 0; index--) if (canShow(index)) return index;
+            return -1;
+        });
+        const canGoBack = computed(() => previousShowable.value >= 0);
+        const goBack = (): void => {
+            if (previousShowable.value >= 0) tour.goTo(previousShowable.value);
+        };
 
         // Keeps the class-selector-only targets in sync with the DOM while the tour
         // is open. Scoped to "open" so it costs nothing the rest of the time, and it
@@ -258,6 +296,6 @@ export default defineNuxtPlugin({
             tour.start(0);
         };
 
-        return { provide: { tour: { tour, setTourTarget, maybeAutoStart, restart } } };
+        return { provide: { tour: { tour, setTourTarget, maybeAutoStart, restart, canGoBack, goBack } } };
     },
 });
