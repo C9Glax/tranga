@@ -5,6 +5,7 @@ using Extensions;
 using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Features;
+using Services.Manga.Helpers;
 using Task = System.Threading.Tasks.Task;
 
 namespace Services.Manga;
@@ -38,7 +39,8 @@ public sealed class Service : Common.Services.Service
                 && bool.TryParse(allowNsfw.Value, out bool allowNsfwValue))
                 Settings.AllowNSFW = allowNsfwValue;
 
-            // Loads the download extensions from all registered providers.
+            // The user-defined sources live in this service's database; then load all download extensions.
+            DownloadExtensionsCollection.RegisterProvider(CustomDownloaderStore.CreateProvider(App.Services));
             DownloadExtensionsCollection.RefreshAsync(CancellationToken.None).Wait();
         }
     }

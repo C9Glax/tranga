@@ -1,4 +1,5 @@
 using Extensions;
+using Extensions.Custom;
 
 namespace Services.Manga.Entities.DownloadExtensions;
 
@@ -17,7 +18,8 @@ public sealed record DownloadExtensionsList
         {
             DownloadExtensionsId = extension.Identifier,
             Name = extension.Name,
-            IconUrl = extension.IconUrl
+            IconUrl = extension.IconUrl,
+            IsCustom = extension is SelectorDownloadExtension
         })
         .ToArray();
 }

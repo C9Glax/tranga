@@ -15,4 +15,10 @@ public sealed record DownloadExtension
     /// URL to the download extension's icon/logo.
     /// </summary>
     public required string IconUrl { get; init; }
+
+    /// <summary>
+    /// Whether this is a user-defined, selector based source (created under Settings -> Sources) rather than one that
+    /// is built into Tranga. Only custom sources can be edited or deleted.
+    /// </summary>
+    public required bool IsCustom { get; init; }
 }

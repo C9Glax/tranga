@@ -15,5 +15,7 @@ public class GetDownloadExtensionsEndpointTests
         Assert.NotEmpty(result.Value.Extensions);
         Assert.Contains(result.Value.Extensions, e => e.Name == "MangaDex");
         Assert.All(result.Value.Extensions, e => Assert.False(string.IsNullOrEmpty(e.IconUrl)));
+        // custom (selector based) sources are only present when a user created some
+        Assert.False(result.Value.Extensions.Single(e => e.Name == "MangaDex").IsCustom);
     }
 }

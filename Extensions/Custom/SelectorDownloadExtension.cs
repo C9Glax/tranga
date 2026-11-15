@@ -394,7 +394,7 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
             if (!response.IsSuccessStatusCode)
                 return new StepTestResult
                 {
-                    RequestUrl = url.ToString(), StatusCode = status, Warnings = warnings,
+                    RequestUrl = url.AbsoluteUri, StatusCode = status, Warnings = warnings,
                     Error = $"The website answered with HTTP {status} {response.ReasonPhrase}." + (status is 403 or 503 ? " It may be protected by Cloudflare: try enabling FlareSolverr." : "")
                 };
 
@@ -409,12 +409,12 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
 
             return new StepTestResult
             {
-                RequestUrl = url.ToString(), StatusCode = status, ItemCount = count, Rows = rows.Take(MaxTestRows).ToList(), Warnings = warnings
+                RequestUrl = url.AbsoluteUri, StatusCode = status, ItemCount = count, Rows = rows.Take(MaxTestRows).ToList(), Warnings = warnings
             };
         }
         catch (Exception e) when (!ct.IsCancellationRequested)
         {
-            return new StepTestResult { RequestUrl = url.ToString(), Warnings = warnings, Error = e.InnerException?.Message ?? e.Message };
+            return new StepTestResult { RequestUrl = url.AbsoluteUri, Warnings = warnings, Error = e.InnerException?.Message ?? e.Message };
         }
     }
 

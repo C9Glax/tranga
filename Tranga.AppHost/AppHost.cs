@@ -46,6 +46,7 @@ IResourceBuilder<ParameterResource> rabbitUser = builder.AddParameter("RabbitMqU
 IResourceBuilder<ParameterResource> rabbitPassword = builder.AddParameter("RabbitMqPassword", secret: true);
 
 IResourceBuilder<ParameterResource> allowNsfw = builder.AddParameter("AllowNSFW");
+IResourceBuilder<ParameterResource> allowPrivateSourceHosts = builder.AddParameter("AllowPrivateSourceHosts");
 IResourceBuilder<ParameterResource> downloadLanguage = builder.AddParameter("DownloadLanguage");
 IResourceBuilder<ParameterResource> chapterNamingScheme = builder.AddParameter("ChapterNamingScheme");
 IResourceBuilder<ParameterResource> flaresolverrUrl = builder.AddParameter("FlaresolverrUrl");
@@ -99,6 +100,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["ChapterNamingScheme"] = chapterNamingScheme.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
         context.EnvironmentVariables["MAL_CLIENT_ID"] = malClientId.Resource;
+        context.EnvironmentVariables["ALLOW_PRIVATE_SOURCE_HOSTS"] = allowPrivateSourceHosts.Resource;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -147,6 +149,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["ChapterNamingScheme"] = chapterNamingScheme.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
         context.EnvironmentVariables["MAL_CLIENT_ID"] = malClientId.Resource;
+        context.EnvironmentVariables["ALLOW_PRIVATE_SOURCE_HOSTS"] = allowPrivateSourceHosts.Resource;
     })
     .PublishAsDockerComposeService((resource, service) =>
     {

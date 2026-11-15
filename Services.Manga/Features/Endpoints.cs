@@ -1,5 +1,6 @@
 using Common.Services;
 using Services.Manga.Features.Chapters;
+using Services.Manga.Features.CustomDownloaders;
 using Services.Manga.Features.DownloadLinks;
 using Services.Manga.Features.File;
 using Services.Manga.Features.Manga;
@@ -36,6 +37,10 @@ internal sealed class Endpoints : EndpointsBuilder
         builder.MapGroup("/settings")
             .WithTags("Manga", "Settings")
             .MapSettingsEndpoints();
+
+        builder.MapGroup("/customDownloaders")
+            .WithTags("Manga", "Download", "CustomDownloaders")
+            .MapCustomDownloaderEndpoints();
     }
 }
 
@@ -154,5 +159,38 @@ internal static class EndpointHelpers
     {
         builder.MapGet("{fileId}", GetFileEndpoint.Handle)
             .WithSummary("Get File");
+    }
+
+    internal static void MapCustomDownloaderEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet(string.Empty, GetCustomDownloadersEndpoint.Handle)
+            .WithSummary("List of all custom Download-Sources");
+
+        builder.MapGet("capabilities", GetCustomDownloaderCapabilitiesEndpoint.Handle)
+            .WithSummary("What this installation supports for custom Download-Sources");
+
+        builder.MapGet("{customDownloaderId}", GetCustomDownloaderEndpoint.Handle)
+            .WithSummary("Get custom Download-Source");
+
+        builder.MapPost(string.Empty, PostCustomDownloaderEndpoint.Handle)
+            .WithSummary("Create custom Download-Source");
+
+        builder.MapPut("{customDownloaderId}", PutCustomDownloaderEndpoint.Handle)
+            .WithSummary("Change custom Download-Source");
+
+        builder.MapDelete("{customDownloaderId}", DeleteCustomDownloaderEndpoint.Handle)
+            .WithSummary("Delete custom Download-Source");
+
+        builder.MapPost("test", PostCustomDownloaderTestEndpoint.Handle)
+            .WithSummary("Test one step of a custom Download-Source definition against the real website");
+    }
+
+    internal static void MapSettingsEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet("behavior", GetBehaviorSettingsEndpoint.Handle)
+            .WithSummary("Get the Behavior-Settings");
+
+        builder.MapPatch("behavior", PatchBehaviorSettingsEndpoint.Handle)
+            .WithSummary("Update the Behavior-Settings");
     }
 }

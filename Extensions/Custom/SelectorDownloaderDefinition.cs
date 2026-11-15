@@ -70,6 +70,8 @@ public sealed record SelectorDownloaderDefinition
             errors.Add("Id must be set.");
         if (string.IsNullOrWhiteSpace(Name))
             errors.Add("Name is required.");
+        else if (Name.Length > 256)
+            errors.Add("Name can be at most 256 characters long.");
         if (!Uri.TryCreate(BaseUrl, UriKind.Absolute, out Uri? baseUri) || baseUri.Scheme is not ("http" or "https"))
             errors.Add("Base URL must be an absolute http(s) URL.");
         if (IconUrl is { Length: > 0 } && !Uri.TryCreate(IconUrl, UriKind.Absolute, out _))

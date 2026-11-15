@@ -64,6 +64,7 @@ services:
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
       MAL_CLIENT_ID: "${MALCLIENTID}"
+      ALLOW_PRIVATE_SOURCE_HOSTS: "${ALLOWPRIVATESOURCEHOSTS}"
     expose:
       - "8080"
     volumes:
@@ -114,6 +115,7 @@ services:
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
       MAL_CLIENT_ID: "${MALCLIENTID}"
+      ALLOW_PRIVATE_SOURCE_HOSTS: "${ALLOWPRIVATESOURCEHOSTS}"
     expose:
       - "8080"
     volumes:

@@ -3,6 +3,7 @@ using Extensions;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
+using Services.Manga.Helpers;
 using Services.Tasks.Database;
 using Services.Tasks.EventHandlers;
 using Services.Tasks.Features;
@@ -56,7 +57,8 @@ public sealed class Service : Common.Services.Service
             using TasksContext tasksContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<TasksContext>();
             tasksContext.Database.MigrateAsync(CancellationToken.None).Wait();
 
-            // Loads the download extensions from all registered providers.
+            // The user-defined sources live in the manga database; then load all download extensions.
+            DownloadExtensionsCollection.RegisterProvider(CustomDownloaderStore.CreateProvider(App.Services));
             DownloadExtensionsCollection.RefreshAsync(CancellationToken.None).Wait();
 
             CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
@@ -72,6 +74,7 @@ public sealed class Service : Common.Services.Service
     {
         IChannel channel = app.Services.GetRequiredService<IChannel>();
         _eventHandlers.Add(new DownloadLinkModifiedHandler(channel, app.Services));
+        _eventHandlers.Add(new DownloadExtensionsChangedHandler(channel));
     }
 
     /// <summary>
