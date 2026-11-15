@@ -3,13 +3,23 @@
         <div class="flex flex-col gap-4">
             <h1 class="text-2xl font-semibold">Settings</h1>
 
-            <UTabs v-model="active" :items="items" :content="false" class="w-full" />
+            <div class="flex flex-col gap-2 md:flex-row">
+                <UTabs
+                    v-model="active"
+                    :items="items"
+                    :content="false"
+                    orientation="vertical"
+                    :ui="{ trigger: 'w-full justify-start text-left' }"
+                    class="shrink-0 self-start md:sticky md:top-0 md:w-48" />
 
-            <SettingsNotifications v-if="active === 'notifications'" />
-            <SettingsLibraries v-else-if="active === 'libraries'" />
-            <SettingsAppearance v-else-if="active === 'appearance'" />
-            <SettingsSecurity v-else-if="active === 'security'" />
-            <SettingsDebug v-else-if="active === 'debug'" />
+                <div class="min-w-0 flex-1">
+                    <SettingsNotifications v-if="active === 'notifications'" />
+                    <SettingsLibraries v-else-if="active === 'libraries'" />
+                    <SettingsAppearance v-else-if="active === 'appearance'" />
+                    <SettingsSecurity v-else-if="active === 'security'" />
+                    <SettingsDebug v-else-if="active === 'debug'" />
+                </div>
+            </div>
         </div>
     </TrangaPage>
 </template>
