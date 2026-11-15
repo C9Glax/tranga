@@ -1664,6 +1664,10 @@
               "string"
             ],
             "description": "Attribute holding the image URL. Defaults to `data-src,data-lazy-src,src`."
+          },
+          "pageSelector": {
+            "description": "Only for sites that show one image per HTML page: selects the links (or the options of a page dropdown) that\nlead to each page of the chapter, in reading order. The attribute defaults to `href,value`. Every page\nfound is then fetched and the image selector is applied to it. The chapter page itself is not fetched twice\nwhen it is one of the pages. When the selector finds nothing, the image selector is applied to the chapter\npage, as if this was not set.",
+            "$ref": "#/components/schemas/SelectorField"
           }
         },
         "description": "How to find the pages of a chapter."

@@ -220,11 +220,17 @@
                         description="{url} is the chapter link. Some sites load the images from a separate URL, e.g. {url}/images">
                         <UInput v-model="state.images.urlTemplate" placeholder="{url}" :ui="{ base: 'font-mono' }" class="w-full" />
                     </UFormField>
+                    <CustomSourceFieldInput
+                        v-model="state.images.pageSelector"
+                        label="Page links"
+                        description="Optional. Only for sites that show one image per web page: the links (or the options of a page dropdown) to every page of the chapter, in reading order. Every page is then opened to find its image."
+                        selector-placeholder="e.g. select.pages option"
+                        attribute-placeholder="Attribute (default href,value)" />
                     <UFormField
                         label="Image selector"
                         name="images.imageSelector"
                         required
-                        description="One element per page image, in reading order.">
+                        description="One element per page image, in reading order. With page links: the image on each of those pages.">
                         <UInput
                             v-model="state.images.imageSelector"
                             placeholder="div.reader img"

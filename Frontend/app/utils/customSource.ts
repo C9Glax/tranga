@@ -25,7 +25,7 @@ export type CustomSourceDefinition = {
         dateFormat: string;
         nextPage: CustomSourceField;
     };
-    images: { urlTemplate: string; imageSelector: string; attribute: string };
+    images: { urlTemplate: string; pageSelector: CustomSourceField; imageSelector: string; attribute: string };
 };
 
 export const emptyField = (): CustomSourceField => ({ selector: '', attribute: '', regex: '', replacement: '' });
@@ -51,7 +51,7 @@ export const emptyCustomSource = (): CustomSourceDefinition => ({
         dateFormat: '',
         nextPage: emptyField(),
     },
-    images: { urlTemplate: '{url}', imageSelector: '', attribute: '' },
+    images: { urlTemplate: '{url}', pageSelector: emptyField(), imageSelector: '', attribute: '' },
 });
 
 const field = (source: ServicesMangaSelectorField | undefined): CustomSourceField => ({
@@ -94,6 +94,7 @@ export const normalizeCustomSource = (source: ServicesMangaSelectorDownloaderDef
         },
         images: {
             urlTemplate: source.images?.urlTemplate ?? defaults.images.urlTemplate,
+            pageSelector: field(source.images?.pageSelector),
             imageSelector: source.images?.imageSelector ?? '',
             attribute: source.images?.attribute ?? '',
         },
@@ -139,6 +140,7 @@ export const customSourceForApi = (source: CustomSourceDefinition): ServicesMang
     },
     images: {
         urlTemplate: source.images.urlTemplate.trim(),
+        pageSelector: fieldForApi(source.images.pageSelector),
         imageSelector: source.images.imageSelector.trim(),
         attribute: blankToNull(source.images.attribute),
     },

@@ -66,17 +66,6 @@ export const zServicesMangaGitInfoResponse = z.object({
 
 export type ServicesMangaGitInfoResponseZodType = z.infer<typeof zServicesMangaGitInfoResponse>;
 
-/**
- * How to find the pages of a chapter.
- */
-export const zServicesMangaImagesSpec = z.object({
-    urlTemplate: z.optional(z.string()),
-    imageSelector: z.optional(z.string()),
-    attribute: z.nullish(z.string()),
-});
-
-export type ServicesMangaImagesSpecZodType = z.infer<typeof zServicesMangaImagesSpec>;
-
 export const zServicesMangaMangaChapter = z.object({
     isDownloaded: z.boolean(),
     sourceUrl: z.nullable(z.string()),
@@ -313,6 +302,18 @@ export const zServicesMangaChaptersSpec = z.object({
 });
 
 export type ServicesMangaChaptersSpecZodType = z.infer<typeof zServicesMangaChaptersSpec>;
+
+/**
+ * How to find the pages of a chapter.
+ */
+export const zServicesMangaImagesSpec = z.object({
+    urlTemplate: z.optional(z.string()),
+    imageSelector: z.optional(z.string()),
+    attribute: z.nullish(z.string()),
+    pageSelector: z.optional(zServicesMangaSelectorField),
+});
+
+export type ServicesMangaImagesSpecZodType = z.infer<typeof zServicesMangaImagesSpec>;
 
 /**
  * How to find series on the website.

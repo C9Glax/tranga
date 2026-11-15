@@ -312,11 +312,11 @@ public sealed record ImagesSpec
     public string? Attribute { get; init; }
 
     /// <summary>
-    /// Only for sites that show one image per HTML page: selects the links (or <c>&lt;option&gt;</c>s of a page
-    /// dropdown) that lead to each page of the chapter, in reading order. <see cref="SelectorField.Attribute"/>
-    /// defaults to <c>href,value</c>. Every page found is then fetched and <see cref="ImageSelector"/> is applied to
-    /// it. The chapter page itself is not fetched twice when it is one of the pages. When the selector finds nothing,
-    /// <see cref="ImageSelector"/> is applied to the chapter page, as if this was not set.
+    /// Only for sites that show one image per HTML page: selects the links (or the options of a page dropdown) that
+    /// lead to each page of the chapter, in reading order. The attribute defaults to <c>href,value</c>. Every page
+    /// found is then fetched and the image selector is applied to it. The chapter page itself is not fetched twice
+    /// when it is one of the pages. When the selector finds nothing, the image selector is applied to the chapter
+    /// page, as if this was not set.
     /// </summary>
     public SelectorField PageSelector { get; init; } = new();
 }

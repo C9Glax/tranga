@@ -75,7 +75,10 @@ the selectors extracted, so you can fix them before saving:
 2. **Chapters**: the page listing the chapters (by default the series page; `{url}` is the series link), a selector for
    one element per chapter, and fields for link and number (optionally title and release date). A "next page" link is
    followed if the list is paginated.
-3. **Pages**: the page that shows a chapter's images (by default the chapter page) and a selector for the images.
+3. **Pages**: the page that shows a chapter's images (by default the chapter page) and a selector for the images. Some
+   sites show only one image per web page; for those, add **Page links** (the links, or the options of a page dropdown,
+   that lead to every page of the chapter, in reading order). Every page is then opened and the image selector is applied
+   to it. A chapter fails (and is retried later) if one of its pages cannot be loaded or has no image.
 
 A *field* is a selector (CSS or XPath, detected automatically; empty = the item itself), an attribute to read (empty = the
 text; `srcset,src` tries several), and optionally a regular expression (the first group is kept, or with "Replace with"
@@ -123,6 +126,43 @@ live on the series page but at `/series/{id}/full-chapter-list`, which is what t
   "images": {
     "urlTemplate": "{url}/images?is_prev=False&reading_style=long_strip",
     "imageSelector": "section[x-data*=scroll] > img",
+    "attribute": "src"
+  }
+}
+```
+
+**MangaTown** is built in as a second example and mirrors the
+[keiyoushi](https://github.com/keiyoushi/extensions-source/tree/main/src/en/mangatown) extension. It is built differently
+from WeebCentral, which shows what the selectors can do: the chapters are listed on the series page, their number is only
+in the link (`/manga/vagabond/v33/c327/` is chapter 327, not volume 33), the title is an XPath, and every page of a chapter is
+its own web page that is found through the page dropdown. Dates such as "Today" cannot be parsed with a date format and stay
+unknown.
+
+```json
+{
+  "name": "MangaTown",
+  "baseUrl": "https://www.mangatown.com",
+  "languages": ["en"],
+  "requestsPerSecond": 2,
+  "seriesUrlPattern": "^https?://(?:www\\.)?mangatown\\.com/manga/(?<id>[^/?#]+)/?$",
+  "search": {
+    "urlTemplate": "/search?name={query}",
+    "itemSelector": "li:has(a.manga_cover)",
+    "title": { "selector": "p.title a" },
+    "url": { "selector": "p.title a", "attribute": "href" },
+    "cover": { "selector": "img", "attribute": "src" }
+  },
+  "chapters": {
+    "itemSelector": "ul.chapter_list li",
+    "url": { "selector": "a", "attribute": "href" },
+    "number": { "selector": "a", "attribute": "href", "regex": "/c(\\d+(?:\\.\\d+)?)/?$" },
+    "title": { "selector": "./span[not(@class)][last()]", "regex": "^(?!Vol\\.?\\s*\\d+$).+$" },
+    "date": { "selector": "span.time" },
+    "dateFormat": "MMM dd,yyyy"
+  },
+  "images": {
+    "pageSelector": { "selector": "div.page_select option:not([value$='featured.html'])", "attribute": "value" },
+    "imageSelector": "div#viewer img",
     "attribute": "src"
   }
 }

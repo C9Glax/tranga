@@ -120,6 +120,14 @@ export type ServicesMangaImagesSpec = {
      * Attribute holding the image URL. Defaults to `data-src,data-lazy-src,src`.
      */
     attribute?: null | string;
+    /**
+     * Only for sites that show one image per HTML page: selects the links (or the options of a page dropdown) that
+     * lead to each page of the chapter, in reading order. The attribute defaults to `href,value`. Every page
+     * found is then fetched and the image selector is applied to it. The chapter page itself is not fetched twice
+     * when it is one of the pages. When the selector finds nothing, the image selector is applied to the chapter
+     * page, as if this was not set.
+     */
+    pageSelector?: ServicesMangaSelectorField;
 };
 
 export type ServicesMangaManga = {
