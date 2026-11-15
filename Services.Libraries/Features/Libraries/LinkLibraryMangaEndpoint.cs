@@ -14,8 +14,8 @@ namespace Services.Libraries.Features.Libraries;
 public abstract class LinkLibraryMangaEndpoint
 {
     /// <summary>
-    /// Manually links unmapped Tranga manga to Komga series on a name-equality basis, and pushes
-    /// metadata for each newly created link. Re-runs the same linking Komga libraries get on connect,
+    /// Manually links unmapped Tranga manga to library series on a name-equality basis, and pushes
+    /// metadata for each newly created link. Re-runs the same linking libraries get on connect,
     /// for manga added or downloaded after the library was already connected.
     /// </summary>
     /// <param name="ctx"></param>
@@ -34,10 +34,10 @@ public abstract class LinkLibraryMangaEndpoint
         if (dbLibrary is null)
             return TypedResults.NotFound();
 
-        if (dbLibrary.ToExtension() is not { } extension)
+        if (dbLibrary.ToClient() is not { } client)
             return TypedResults.BadRequest("Unsupported library type.");
 
-        int linkedCount = await KomgaSeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibrary, extension, logger, ct);
+        int linkedCount = await SeriesLinker.LinkExistingMangaByName(ctx, mangaContext, dbLibrary, client, logger, ct);
         await ctx.SaveChangesAsync(ct);
 
         return TypedResults.Ok(linkedCount);

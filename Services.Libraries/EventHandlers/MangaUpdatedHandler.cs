@@ -25,9 +25,9 @@ internal sealed class MangaUpdatedHandler(IChannel channel, IServiceProvider ser
 
         if (mappings.Count == 0)
         {
-            // KomgaSeriesLinker already pushes metadata for anything it newly links, so there's
+            // SeriesLinker already pushes metadata for anything it newly links, so there's
             // nothing left to do here for this manga either way.
-            await LinkToKomgaLibraries(librariesContext, mangaContext, logger);
+            await LinkToLibraries(librariesContext, mangaContext, logger);
             return true;
         }
 
@@ -53,19 +53,19 @@ internal sealed class MangaUpdatedHandler(IChannel channel, IServiceProvider ser
         DbLibraryService? dbLibrary = await librariesContext.LibraryServices
             .SingleOrDefaultAsync(l => l.LibraryServiceId == mapping.LibraryServiceId);
 
-        if (dbLibrary?.ToExtension() is not { } komga)
+        if (dbLibrary?.ToClient() is not { } client)
             return;
 
-        await KomgaMetadataSync.PushMetadata(mangaContext, komga, mapping.SeriesId, mangaUpdatedEvent.MangaId, CancellationToken.None);
+        await MetadataSync.PushMetadata(mangaContext, client, mapping.SeriesId, mangaUpdatedEvent.MangaId, CancellationToken.None);
     }
 
-    private static async Task LinkToKomgaLibraries(LibrariesContext librariesContext, MangaContext mangaContext, ILogger logger)
+    private static async Task LinkToLibraries(LibrariesContext librariesContext, MangaContext mangaContext, ILogger logger)
     {
         List<DbLibraryService> libraries = await librariesContext.LibraryServices.ToListAsync();
         foreach (DbLibraryService dbLibrary in libraries)
         {
-            if (dbLibrary.LibraryServiceType == LibraryServiceType.Komga && dbLibrary.ToExtension() is { } extension)
-                await KomgaSeriesLinker.LinkExistingMangaByName(librariesContext, mangaContext, dbLibrary, extension, logger, CancellationToken.None);
+            if (dbLibrary.ToClient() is { } client)
+                await SeriesLinker.LinkExistingMangaByName(librariesContext, mangaContext, dbLibrary, client, logger, CancellationToken.None);
         }
 
         await librariesContext.SaveChangesAsync();

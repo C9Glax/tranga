@@ -36,7 +36,7 @@ const moreDownloadLinksAction = computed<ButtonProps>(() => ({
 }));
 
 const syncToKomgaAction = computed<ButtonProps>(() => ({
-    label: 'Sync to Komga',
+    label: 'Sync to Library',
     icon: 'i-lucide-refresh-cw',
     variant: 'outline',
     onClick: () => syncMangaToKomga(mangaId),

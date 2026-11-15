@@ -29,7 +29,7 @@
     - Discord
     - Ntfy.sh
     - ...
-- [x] Library support using [Komga](https://komga.org/)
+- [x] Library support using [Komga](https://komga.org/) and [Kavita](https://www.kavitareader.com/)
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
@@ -66,7 +66,7 @@ All configuration that doesn't live in the [`.env`](Tranga.AppHost/aspire-output
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Sources**       | Install, update and uninstall download extensions (Suwayomi / keiyoushi). Search, filter by language, show only installed ones, optionally show NSFW-only sources, refresh the catalogue.   |
 | **Notifications** | Add notification extensions: Gotify, Discord, ntfy.sh, Telegram, or any other [Naprise](https://github.com/Genteure/naprise) service URL.                                                    |
-| **Libraries**     | Connect [Komga](https://komga.org/) libraries (base URL, credentials and library root path, see [Adding a Komga library](#adding-a-komga-library)).                                         |
+| **Libraries**     | Connect [Komga](https://komga.org/) or [Kavita](https://www.kavitareader.com/) libraries (see [Adding a Komga library](#adding-a-komga-library) and [Adding a Kavita library](#adding-a-kavita-library)).                                         |
 | **Appearance**    | Choose how covers of NSFW manga are displayed: always visible, visible on click, or never visible (blurred).                                                                                  |
 | **Security**      | Create and revoke API keys (only relevant when `UseAuth` is enabled).                                                                                                                         |
 | **About**         | Shows version and git commit of every running service.                                                                                                                                        |
@@ -80,6 +80,14 @@ When adding a Komga library, the "Library Root Path" must be the path *inside th
 where Tranga's `Mangas` volume is mounted — not the path on the host, and not the path inside Tranga's own containers.
 Mount that same volume into your Komga container and point the field at wherever you mounted it
 (defaults to `/tranga` if left blank).
+
+### Adding a Kavita library
+
+Kavita libraries are created in Kavita itself: add a library there whose folder is Tranga's `Mangas` volume
+(mounted into your Kavita container). In Tranga, pick **Kavita** as the library type, enter your server's base URL and an
+**Auth Key** (Kavita: User Settings → Manage Auth Keys; Kavita 0.9.x or newer), click **Test Connection**, then choose the
+Kavita library to bind to. Tranga triggers a Kavita library scan whenever chapters are downloaded or deleted.
+Kavita reads series metadata from the `ComicInfo.xml` Tranga writes into each chapter, so Tranga does not push metadata or covers to Kavita.
 
 ### Resetting the admin password
 

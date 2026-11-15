@@ -29,6 +29,12 @@ internal static class EndpointHelpers
         builder.MapPost("/komga/test-connection", TestKomgaConnectionEndpoint.Handle)
             .WithSummary("Validate Komga credentials without persisting anything");
 
+        builder.MapPut("/kavita", AddKavitaEndpoint.Handle)
+            .WithSummary("Add kavita library extension");
+
+        builder.MapPost("/kavita/test-connection", TestKavitaConnectionEndpoint.Handle)
+            .WithSummary("Validate Kavita credentials without persisting anything and list its libraries");
+
         builder.MapDelete("{libraryId}", DeleteLibraryEndpoint.Handle)
             .WithSummary("Remove a library extension");
 

@@ -520,6 +520,15 @@ export const zServicesNotificationsPutExtensionRequestTelegram = z.object({ toke
 
 export type ServicesNotificationsPutExtensionRequestTelegramZodType = z.infer<typeof zServicesNotificationsPutExtensionRequestTelegram>;
 
+export const zServicesLibrariesAddKavitaLibraryRequest = z.object({
+    name: z.string(),
+    baseUrl: z.string(),
+    apiKey: z.string(),
+    kavitaLibraryId: z.string(),
+});
+
+export type ServicesLibrariesAddKavitaLibraryRequestZodType = z.infer<typeof zServicesLibrariesAddKavitaLibraryRequest>;
+
 export const zServicesLibrariesAddKomgaLibraryRequest = z.object({
     name: z.string(),
     baseUrl: z.string(),
@@ -545,11 +554,15 @@ export const zServicesLibrariesGitInfoResponse = z.object({
 
 export type ServicesLibrariesGitInfoResponseZodType = z.infer<typeof zServicesLibrariesGitInfoResponse>;
 
+export const zServicesLibrariesKavitaLibraryInfo = z.object({ id: z.string(), name: z.string() });
+
+export type ServicesLibrariesKavitaLibraryInfoZodType = z.infer<typeof zServicesLibrariesKavitaLibraryInfo>;
+
 export const zServicesLibrariesLibraryMangaLink = z.object({ libraryServiceId: z.uuid(), seriesUrl: z.string() });
 
 export type ServicesLibrariesLibraryMangaLinkZodType = z.infer<typeof zServicesLibrariesLibraryMangaLink>;
 
-export const zServicesLibrariesLibraryServiceType = z.enum(['Komga']);
+export const zServicesLibrariesLibraryServiceType = z.enum(['Komga', 'Kavita']);
 
 export type ServicesLibrariesLibraryServiceTypeZodType = z.infer<typeof zServicesLibrariesLibraryServiceType>;
 
@@ -570,6 +583,10 @@ export const zServicesLibrariesPatchLibraryRequest = z.object({
 });
 
 export type ServicesLibrariesPatchLibraryRequestZodType = z.infer<typeof zServicesLibrariesPatchLibraryRequest>;
+
+export const zServicesLibrariesTestKavitaConnectionRequest = z.object({ baseUrl: z.string(), apiKey: z.string() });
+
+export type ServicesLibrariesTestKavitaConnectionRequestZodType = z.infer<typeof zServicesLibrariesTestKavitaConnectionRequest>;
 
 export const zServicesLibrariesTestKomgaConnectionRequest = z.object({
     baseUrl: z.string(),

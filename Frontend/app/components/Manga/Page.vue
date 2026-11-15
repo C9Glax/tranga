@@ -125,7 +125,7 @@ const navigation = computed((): TrangaPageTitleProps => {
 
     const komgaLinkItems: NavigationMenuItem[] = (libraryMappings.value ?? []).map(
         (mapping): NavigationMenuItem => ({
-            label: 'View in Komga',
+            label: 'View in Library',
             to: mapping.seriesUrl,
             icon: 'i-lucide-external-link',
             target: '_blank',

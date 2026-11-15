@@ -20,8 +20,8 @@ internal sealed class ChapterDeletedHandler(IChannel channel, IServiceProvider s
 
         foreach (DbLibraryService dbLibrary in libraries)
         {
-            if (dbLibrary.LibraryServiceType == LibraryServiceType.Komga && dbLibrary.ToExtension() is { } extension)
-                await extension.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
+            if (dbLibrary.ToClient() is { } client)
+                await client.ScanLibrary(dbLibrary.TrangaLibraryId, CancellationToken.None);
         }
 
         return true;
