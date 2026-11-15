@@ -4,6 +4,9 @@ using Extensions;
 using Extensions.Extensions.Suwayomi;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Services.Manga.Database;
 
 namespace Services.Manga.Features.Suwayomi;
 
@@ -39,16 +42,66 @@ internal abstract class PostSuwayomiExtensionEndpoint
     /// Uninstall a Suwayomi extension
     /// </summary>
     /// <param name="eventPublisher"></param>
+    /// <param name="mangaContext"></param>
     /// <param name="pkgName">Package name of the extension</param>
     /// <param name="ct"></param>
     /// <remarks>
-    /// Download links pointing at this extension's sources stop resolving until it is installed again. They are not
-    /// deleted, so re-installing the extension restores them.
+    /// Download links pointing at this extension's sources are deleted with it. Mangas, chapters, metadata and
+    /// already downloaded files are kept. Re-installing the extension does not restore the deleted links.
     /// </remarks>
     /// <response code="200">The extension was uninstalled</response>
     /// <response code="503">The Suwayomi sidecar is unreachable or refused the uninstall</response>
-    public static Task<Results<Ok, StatusCodeHttpResult>> Uninstall([FromServices]EventPublisher eventPublisher, [FromRoute]string pkgName, CancellationToken ct) =>
-        Apply(() => SuwayomiExtensionManager.UninstallAsync(pkgName, ct), eventPublisher, ct);
+    public static async Task<Results<Ok, StatusCodeHttpResult>> Uninstall([FromServices]EventPublisher eventPublisher, [FromServices]MangaContext mangaContext, [FromRoute]string pkgName, CancellationToken ct)
+    {
+        // The sources an extension provides are only known to the sidecar, so diff the source list around the uninstall.
+        HashSet<Guid> before = (await SuwayomiExtensionManager.GetSourcesAsync(ct))?.Select(s => s.ExtensionId).ToHashSet() ?? [];
+
+        Results<Ok, StatusCodeHttpResult> result = await Apply(() => SuwayomiExtensionManager.UninstallAsync(pkgName, ct), eventPublisher, ct);
+        if (result.Result is not Ok)
+            return result;
+
+        // An unreachable sidecar after a successful uninstall means the diff is unknowable; delete nothing rather than guess.
+        if (await SuwayomiExtensionManager.GetSourcesAsync(ct) is { } after)
+        {
+            HashSet<Guid> remaining = after.Select(s => s.ExtensionId).ToHashSet();
+            await DeleteLinksOfRemovedExtensions(mangaContext, before.Where(id => !remaining.Contains(id)).ToList(), ct);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Deletes every download link that refers to one of <paramref name="removedExtensionIds"/>: the manga's
+    /// <see cref="DbMangaDownloadLinks"/> matches, the <see cref="DbDownloadLink"/> candidates themselves and the
+    /// <see cref="DbChapterDownloadLink"/>s that were never downloaded.
+    /// <para>
+    /// Chapter links that already hold a downloaded file are kept: they are what marks the chapter as downloaded, and
+    /// nothing reads them again once the file exists. Mangas, chapters, metadata and files are left untouched.
+    /// </para>
+    /// </summary>
+    /// <returns>The number of <see cref="DbDownloadLink"/> candidates deleted.</returns>
+    internal static async Task<int> DeleteLinksOfRemovedExtensions(MangaContext mangaContext, ICollection<Guid> removedExtensionIds, CancellationToken ct)
+    {
+        if (removedExtensionIds.Count == 0)
+            return 0;
+
+        await using IDbContextTransaction transaction = await mangaContext.Database.BeginTransactionAsync(ct);
+
+        await mangaContext.MangaDownloadLinks
+            .Where(l => removedExtensionIds.Contains(l.DownloadLink.DownloadExtension))
+            .ExecuteDeleteAsync(ct);
+
+        int deletedLinks = await mangaContext.DownloadLinks
+            .Where(l => removedExtensionIds.Contains(l.DownloadExtension))
+            .ExecuteDeleteAsync(ct);
+
+        await mangaContext.ChapterDownloadLinks
+            .Where(l => removedExtensionIds.Contains(l.DownloadExtension) && l.FileId == null)
+            .ExecuteDeleteAsync(ct);
+
+        await transaction.CommitAsync(ct);
+        return deletedLinks;
+    }
 
     private static async Task<Results<Ok, StatusCodeHttpResult>> Apply(Func<Task<bool>> action, EventPublisher eventPublisher, CancellationToken ct)
     {
