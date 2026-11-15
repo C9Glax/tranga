@@ -1,12 +1,12 @@
 using Common.Tests;
 using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
-using Services.Manga.Database.Helpers;
+using Services.Manga.Features.Suwayomi;
 using Services.Manga.Tests.Helpers;
 
-namespace Services.Manga.Tests.Helpers;
+namespace Services.Manga.Tests.Features.Suwayomi;
 
-public class DownloadLinkCleanupHelperTests : TrangaTest
+public class PostSuwayomiExtensionEndpointTests : TrangaTest
 {
     private static async Task<DbMangaDownloadLinks> SeedMangaLink(MangaContext context, DbManga manga, Guid extensionId, CancellationToken ct)
     {
@@ -66,7 +66,7 @@ public class DownloadLinkCleanupHelperTests : TrangaTest
         await SeedChapterLink(context, chapter, removed, downloaded: false, ct);
         await SeedChapterLink(context, chapter, kept, downloaded: false, ct);
 
-        int deleted = await context.DeleteLinksOfRemovedExtensions([removed], ct);
+        int deleted = await PostSuwayomiExtensionEndpoint.DeleteLinksOfRemovedExtensions(context, [removed], ct);
 
         Assert.Equal(1, deleted);
         using MangaContext fresh = MangaContextFactory.Reopen(context);
@@ -90,7 +90,7 @@ public class DownloadLinkCleanupHelperTests : TrangaTest
         DbChapterDownloadLink downloaded = await SeedChapterLink(context, chapter, removed, downloaded: true, ct);
         await SeedMangaLink(context, manga, removed, ct);
 
-        await context.DeleteLinksOfRemovedExtensions([removed], ct);
+        await PostSuwayomiExtensionEndpoint.DeleteLinksOfRemovedExtensions(context, [removed], ct);
 
         using MangaContext fresh = MangaContextFactory.Reopen(context);
         Assert.True(await fresh.Mangas.AnyAsync(m => m.MangaId == manga.MangaId, ct));
@@ -109,7 +109,7 @@ public class DownloadLinkCleanupHelperTests : TrangaTest
         await context.SaveChangesAsync(ct);
         await SeedMangaLink(context, manga, Guid.NewGuid(), ct);
 
-        int deleted = await context.DeleteLinksOfRemovedExtensions([], ct);
+        int deleted = await PostSuwayomiExtensionEndpoint.DeleteLinksOfRemovedExtensions(context, [], ct);
 
         Assert.Equal(0, deleted);
         Assert.Equal(1, await context.DownloadLinks.CountAsync(ct));
