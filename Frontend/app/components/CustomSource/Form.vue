@@ -146,13 +146,13 @@
                                 v-model="state.search.url"
                                 label="Series link"
                                 required
-                                attribute-placeholder="Attribute, e.g. href"
+                                attribute-placeholder="e.g. href"
                                 description="Relative links are resolved." />
                             <CustomSourceFieldInput
                                 v-model="state.search.cover"
                                 label="Cover image"
                                 required
-                                attribute-placeholder="Attribute, e.g. src or data-src,src"
+                                attribute-placeholder="e.g. data-src,src"
                                 description="Several attributes can be listed, the first one that has a value is used." />
                         </div>
                     </template>
@@ -186,7 +186,7 @@
                                 v-model="state.chapters.url"
                                 label="Chapter link"
                                 required
-                                attribute-placeholder="Attribute, e.g. href" />
+                                attribute-placeholder="e.g. href" />
                             <CustomSourceFieldInput
                                 v-model="state.chapters.number"
                                 label="Chapter number"
@@ -196,7 +196,7 @@
                                 v-model="state.chapters.date"
                                 label="Release date"
                                 description="Optional."
-                                attribute-placeholder="Attribute, e.g. datetime" />
+                                attribute-placeholder="e.g. datetime" />
                             <UFormField
                                 label="Date format"
                                 name="chapters.dateFormat"
@@ -211,7 +211,7 @@
                                 v-model="state.chapters.nextPage"
                                 label="Next page link"
                                 description="Optional. When the chapter list is split over several pages, the link to the next one (followed up to 50 times)."
-                                attribute-placeholder="Attribute, e.g. href" />
+                                attribute-placeholder="e.g. href" />
                         </div>
                     </template>
 
@@ -230,7 +230,8 @@
                                 label="Page links"
                                 description="Optional. Only for sites that show one image per web page: the links (or the options of a page dropdown) to every page of the chapter, in reading order. Every page is then opened to find its image."
                                 selector-placeholder="e.g. select.pages option"
-                                attribute-placeholder="Attribute (default href,value)" />
+                                attribute-placeholder="default: href,value"
+                                attribute-hint="Leave empty to use href for links and value for the options of a page dropdown." />
                             <UFormField
                                 label="Image selector"
                                 name="images.imageSelector"
