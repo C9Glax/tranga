@@ -10,6 +10,42 @@ public sealed class SelectorDownloaderDefinitionTests
     public void WeebCentralExampleIsValid() => Assert.Empty(Valid.Validate());
 
     [Fact]
+    public void MangaTownExampleIsValid() => Assert.Empty((SelectorDownloaderJson.MangaTownExample() with { Id = Guid.NewGuid() }).Validate());
+
+    [Fact]
+    public void ThePageListIsOptional() => Assert.True(Valid.Images.PageSelector.IsUnused);
+
+    [Fact]
+    public void ThePageListNeedsASelectorThatCompiles()
+    {
+        SelectorDownloaderDefinition definition = Valid;
+
+        IReadOnlyList<string> noSelector = (definition with
+        {
+            Images = definition.Images with { PageSelector = new SelectorField { Attribute = "value" } }
+        }).Validate();
+        IReadOnlyList<string> badSelector = (definition with
+        {
+            Images = definition.Images with { PageSelector = new SelectorField { Selector = "div[" } }
+        }).Validate();
+
+        Assert.Contains(noSelector, e => e.Contains("Chapter page list"));
+        Assert.Contains(badSelector, e => e.Contains("Chapter page list"));
+    }
+
+    [Fact]
+    public void ThePageListSurvivesJsonRoundTrip()
+    {
+        SelectorDownloaderDefinition example = SelectorDownloaderJson.MangaTownExample();
+
+        SelectorDownloaderDefinition? copy = SelectorDownloaderJson.Deserialize(SelectorDownloaderJson.Serialize(example));
+
+        Assert.NotNull(copy);
+        Assert.False(copy.Images.PageSelector.IsUnused);
+        Assert.Equal(example.Images.PageSelector, copy.Images.PageSelector);
+    }
+
+    [Fact]
     public void ExampleWithoutIdIsInvalid() =>
         Assert.Contains("Id must be set.", (Valid with { Id = Guid.Empty }).Validate());
 

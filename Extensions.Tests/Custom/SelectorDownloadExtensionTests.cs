@@ -285,6 +285,133 @@ public sealed class SelectorDownloadExtensionTests : Common.Tests.TrangaTest, ID
         Assert.Null(await extension.FetchChapterImages(new ChapterInfo(extension.Identifier, "1", chapterUrl, chapterUrl), ct));
     }
 
+    private SelectorDownloaderDefinition WithPageList() => Definition() with
+    {
+        Images = new ImagesSpec
+        {
+            PageSelector = new SelectorField { Selector = "select.pages option:not(.skip)", Attribute = "value" },
+            ImageSelector = "div.reader img", Attribute = "src"
+        }
+    };
+
+    private FixtureSite OnePagePerImageChapter(string imageForSecondPage = "/img/2.jpg")
+    {
+        const string pageList = """
+            <select class="pages">
+              <option value="/chapter/1" selected>1</option>
+              <option value="/chapter/1/2.html">2</option>
+              <option value="/chapter/1/3.html">3</option>
+              <option class="skip" value="/chapter/1/featured.html">Featured</option>
+            </select>
+            """;
+        return _site
+            .Html("/chapter/1", pageList + """<div class="reader"><img src="/img/1.jpg"></div>""")
+            .Html("/chapter/1/2.html", pageList + $"""<div class="reader"><img src="{imageForSecondPage}"></div>""")
+            .Html("/chapter/1/3.html", pageList + """<div class="reader"><img src="/img/3.jpg"></div>""")
+            .Map("/img/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()))
+            .Map("/img/2.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()))
+            .Map("/img/3.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+    }
+
+    [Fact]
+    public async Task ImagesCanBeSpreadOverOneHtmlPagePerImage()
+    {
+        string chapterUrl = $"{_site.BaseUrl}/chapter/1";
+        OnePagePerImageChapter();
+        SelectorDownloadExtension extension = Extension(WithPageList());
+
+        List<ChapterImage>? images = await extension.FetchChapterImages(new ChapterInfo(extension.Identifier, "1", chapterUrl, chapterUrl), ct);
+
+        Assert.NotNull(images);
+        Assert.Equal([0, 1, 2], images.Select(i => i.order));
+        // in page order, the skipped "featured" option was not followed, and the chapter page (first option) was not requested twice
+        Assert.Equal(["/chapter/1", "/chapter/1/2.html", "/chapter/1/3.html"],
+            _site.Requests.Select(r => r.PathAndQuery).Where(p => p.StartsWith("/chapter")));
+        Assert.Equal(["/img/1.jpg", "/img/2.jpg", "/img/3.jpg"], _site.Requests.Select(r => r.PathAndQuery).Where(p => p.StartsWith("/img")));
+        Assert.All(_site.Requests.Where(r => r.PathAndQuery.StartsWith("/img")), r => Assert.Equal(chapterUrl, r.Referer));
+    }
+
+    [Fact]
+    public async Task AChapterWhoseOnePageFailsToLoadFails()
+    {
+        string chapterUrl = $"{_site.BaseUrl}/chapter/1";
+        OnePagePerImageChapter();
+        _site.Map("/chapter/1/3.html", new FixtureSite.Response("", Status: System.Net.HttpStatusCode.InternalServerError));
+        SelectorDownloadExtension extension = Extension(WithPageList());
+
+        Assert.Null(await extension.FetchChapterImages(new ChapterInfo(extension.Identifier, "1", chapterUrl, chapterUrl), ct));
+    }
+
+    [Fact]
+    public async Task AChapterWithAPageWithoutAnImageFails()
+    {
+        string chapterUrl = $"{_site.BaseUrl}/chapter/1";
+        _site
+            .Html("/chapter/1", """<select class="pages"><option value="/chapter/1/2.html">2</option></select><div class="reader"><img src="/img/1.jpg"></div>""")
+            .Html("/chapter/1/2.html", "<div class=\"reader\"></div>")
+            .Map("/img/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+        SelectorDownloadExtension extension = Extension(WithPageList());
+
+        Assert.Null(await extension.FetchChapterImages(new ChapterInfo(extension.Identifier, "1", chapterUrl, chapterUrl), ct));
+    }
+
+    [Fact]
+    public async Task WithoutPageLinksTheImagesOfTheChapterPageAreUsed()
+    {
+        string chapterUrl = $"{_site.BaseUrl}/chapter/1";
+        _site
+            .Html("/chapter/1", """<div class="reader"><img src="/img/1.jpg"><img src="/img/2.jpg"></div>""")
+            .Map("/img/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()))
+            .Map("/img/2.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+        SelectorDownloadExtension extension = Extension(WithPageList());
+
+        List<ChapterImage>? images = await extension.FetchChapterImages(new ChapterInfo(extension.Identifier, "1", chapterUrl, chapterUrl), ct);
+
+        Assert.NotNull(images);
+        Assert.Equal(2, images.Count);
+    }
+
+    [Fact]
+    public async Task TheTestPanelListsThePagesAndLooksIntoTheFirstOnes()
+    {
+        OnePagePerImageChapter();
+        SelectorDownloadExtension extension = Extension(WithPageList());
+
+        StepTestResult result = await extension.TestImagesAsync($"{_site.BaseUrl}/chapter/1", ct);
+
+        Assert.Null(result.Error);
+        Assert.Empty(result.Warnings);
+        Assert.Equal(3, result.ItemCount);
+        Assert.Equal([$"{_site.BaseUrl}/chapter/1", $"{_site.BaseUrl}/chapter/1/2.html", $"{_site.BaseUrl}/chapter/1/3.html"], result.Rows.Select(r => r["page"]));
+        Assert.Equal([$"{_site.BaseUrl}/img/1.jpg", $"{_site.BaseUrl}/img/2.jpg", $"{_site.BaseUrl}/img/3.jpg"], result.Rows.Select(r => r["image"]));
+    }
+
+    [Fact]
+    public async Task TheTestPanelWarnsWhenAPageHasNoImage()
+    {
+        _site
+            .Html("/chapter/1", """<select class="pages"><option value="/chapter/1/2.html">2</option></select>""")
+            .Html("/chapter/1/2.html", "<p>nothing here</p>");
+        SelectorDownloadExtension extension = Extension(WithPageList());
+
+        StepTestResult result = await extension.TestImagesAsync($"{_site.BaseUrl}/chapter/1", ct);
+
+        Assert.Null(result.Error);
+        Assert.Contains(result.Warnings, w => w.Contains("no image") && w.Contains("/chapter/1/2.html"));
+    }
+
+    [Fact]
+    public async Task AChapterWithoutAPageListIsTestedLikeBefore()
+    {
+        _site.Html("/chapter/1", """<div class="reader"><img src="/img/1.jpg"></div>""");
+        SelectorDownloadExtension extension = Extension();
+
+        StepTestResult result = await extension.TestImagesAsync($"{_site.BaseUrl}/chapter/1", ct);
+
+        Assert.Equal(1, result.ItemCount);
+        Assert.Equal($"{_site.BaseUrl}/img/1.jpg", result.Rows[0]["url"]);
+    }
+
     [Fact]
     public async Task AChapterWithoutImagesIsNull()
     {

@@ -131,6 +131,9 @@ public sealed record SelectorDownloaderDefinition
         {
             ValidateTemplate(errors, "Chapter pages URL", Images.UrlTemplate, ["url"], required: true);
             ValidateSelector(errors, "Page image selector", Images.ImageSelector, required: true);
+            ValidateField(errors, "Chapter page list", Images.PageSelector, required: false);
+            if (!Images.PageSelector.IsUnused && string.IsNullOrWhiteSpace(Images.PageSelector.Selector))
+                errors.Add("Chapter page list needs a selector for the page links.");
         }
 
         return errors;
@@ -307,4 +310,13 @@ public sealed record ImagesSpec
 
     /// <summary>Attribute holding the image URL. Defaults to <c>data-src,data-lazy-src,src</c>.</summary>
     public string? Attribute { get; init; }
+
+    /// <summary>
+    /// Only for sites that show one image per HTML page: selects the links (or <c>&lt;option&gt;</c>s of a page
+    /// dropdown) that lead to each page of the chapter, in reading order. <see cref="SelectorField.Attribute"/>
+    /// defaults to <c>href,value</c>. Every page found is then fetched and <see cref="ImageSelector"/> is applied to
+    /// it. The chapter page itself is not fetched twice when it is one of the pages. When the selector finds nothing,
+    /// <see cref="ImageSelector"/> is applied to the chapter page, as if this was not set.
+    /// </summary>
+    public SelectorField PageSelector { get; init; } = new();
 }

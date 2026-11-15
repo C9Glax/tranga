@@ -18,5 +18,6 @@ public class GetCustomDownloaderExamplesEndpointTests
             Assert.Empty((example with { Id = Guid.NewGuid() }).Validate());
         });
         Assert.Contains(result.Value!, example => example.BaseUrl == "https://weebcentral.com");
+        Assert.Contains(result.Value!, example => example.BaseUrl == "https://www.mangatown.com");
     }
 }

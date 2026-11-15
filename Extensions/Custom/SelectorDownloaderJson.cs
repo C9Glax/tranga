@@ -32,10 +32,22 @@ public static class SelectorDownloaderJson
     /// A ready-made definition for WeebCentral, mirroring the keiyoushi Tachiyomi extension. Used as a worked example
     /// and as a test fixture. Its <see cref="SelectorDownloaderDefinition.Id"/> is empty and must be replaced before use.
     /// </summary>
-    public static SelectorDownloaderDefinition WeebCentralExample()
+    public static SelectorDownloaderDefinition WeebCentralExample() => Example("weebcentral");
+
+    /// <summary>
+    /// A ready-made definition for MangaTown, mirroring the keiyoushi Tachiyomi extension. Unlike WeebCentral it shows
+    /// one image per HTML page (see <see cref="ImagesSpec.PageSelector"/>) and takes the chapter number from the URL.
+    /// Its <see cref="SelectorDownloaderDefinition.Id"/> is empty and must be replaced before use.
+    /// </summary>
+    public static SelectorDownloaderDefinition MangaTownExample() => Example("mangatown");
+
+    /// <summary>All embedded examples, in the order they are offered to users.</summary>
+    public static IReadOnlyList<SelectorDownloaderDefinition> Examples() => [WeebCentralExample(), MangaTownExample()];
+
+    private static SelectorDownloaderDefinition Example(string name)
     {
-        using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Extensions.Custom.Examples.weebcentral.json")
-                              ?? throw new InvalidOperationException("The WeebCentral example is not embedded.");
+        using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Extensions.Custom.Examples.{name}.json")
+                              ?? throw new InvalidOperationException($"The {name} example is not embedded.");
         return JsonSerializer.Deserialize<SelectorDownloaderDefinition>(stream, Options)!;
     }
 }

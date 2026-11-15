@@ -13,5 +13,5 @@ internal abstract class GetCustomDownloaderExamplesEndpoint
     /// </summary>
     /// <response code="200">The example definitions</response>
     public static Ok<List<SelectorDownloaderDefinition>> Handle() =>
-        TypedResults.Ok(new List<SelectorDownloaderDefinition> { SelectorDownloaderJson.WeebCentralExample() });
+        TypedResults.Ok(SelectorDownloaderJson.Examples().ToList());
 }

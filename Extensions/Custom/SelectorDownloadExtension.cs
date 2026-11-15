@@ -28,8 +28,11 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
 {
     private const int MaxSearchResults = 10;
     private const int MaxChapterPages = 50;
+    private const int MaxChapterImagePages = 500;
     private const int MaxTestRows = 25;
+    private const int MaxTestSampledPages = 3;
     private const string DefaultImageAttributes = "data-src,data-lazy-src,src";
+    private const string DefaultPageAttributes = "href,value";
 
     private static readonly Regex Placeholder = new(@"\{(\w+)\}", RegexOptions.Compiled, SelectorDownloaderDefinition.RegexTimeout);
     private static readonly Regex FirstNumber = new(@"\d+(?:\.\d+)?", RegexOptions.Compiled, SelectorDownloaderDefinition.RegexTimeout);
@@ -304,8 +307,8 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
             await TryFetchDocument(url, ct) is not { Document: { } document } page)
             return null;
 
-        List<string> imageUrls = ParseImageUrls(document, page.Url);
-        if (imageUrls.Count == 0)
+        List<string>? imageUrls = await CollectImageUrls(document, page.Url, ct);
+        if (imageUrls is not { Count: > 0 })
             return null;
 
         TrangaImage?[] downloaded = await Task.WhenAll(imageUrls.Select(imageUrl => DownloadImage(new Uri(imageUrl), chapterInfo.Identifier, ct)));
@@ -316,6 +319,52 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
 
         return downloaded
             .Select((image, index) => new ChapterImage(Identifier, chapterInfo.Identifier, index, image!))
+            .ToList();
+    }
+
+    /// <summary>
+    /// The image URLs of a chapter. Normally they are all on the chapter page; with a
+    /// <see cref="ImagesSpec.PageSelector"/> every page of the chapter is fetched, one after the other (the site's
+    /// rate limit applies). Null when one of the pages could not be loaded or has no image, because a chapter with a
+    /// missing page is worse than no chapter.
+    /// </summary>
+    private async Task<List<string>?> CollectImageUrls(IDocument chapterDocument, Uri chapterUrl, CancellationToken ct)
+    {
+        List<Uri> pageUrls = ParsePageUrls(chapterDocument, chapterUrl);
+        if (pageUrls.Count == 0)
+            return ParseImageUrls(chapterDocument, chapterUrl);
+
+        List<string> imageUrls = [];
+        foreach (Uri pageUrl in pageUrls)
+        {
+            // Usually the first option of the page list is the chapter page itself, which is already loaded.
+            FetchedPage? page = pageUrl == chapterUrl ? new FetchedPage(chapterDocument, chapterUrl) : await TryFetchDocument(pageUrl, ct);
+            if (page?.Document is not { } document)
+                return null;
+
+            List<string> found = ParseImageUrls(document, page.Url);
+            if (found.Count == 0)
+                return null;
+            imageUrls.AddRange(found);
+        }
+
+        return imageUrls.Distinct().ToList();
+    }
+
+    /// <summary>The pages of a chapter that shows one image per page, in order. Empty when no page list is configured or found.</summary>
+    private List<Uri> ParsePageUrls(IDocument document, Uri pageUrl)
+    {
+        SelectorField field = _definition.Images.PageSelector;
+        if (string.IsNullOrWhiteSpace(field.Selector))
+            return [];
+
+        SelectorField link = field with { Selector = "", Attribute = string.IsNullOrWhiteSpace(field.Attribute) ? DefaultPageAttributes : field.Attribute };
+        return SelectorEvaluator.SelectAll(document, field.Selector, relative: false)
+            .Select(node => SelectorEvaluator.ExtractUrl(node, link, pageUrl))
+            .OfType<string>()
+            .Distinct()
+            .Take(MaxChapterImagePages)
+            .Select(url => new Uri(url))
             .ToList();
     }
 
@@ -365,18 +414,54 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
         });
     }
 
-    /// <summary>Runs the page image step for a chapter URL and reports what was extracted (without downloading the images).</summary>
-    public Task<StepTestResult> TestImagesAsync(string chapterUrl, CancellationToken ct)
+    /// <summary>
+    /// Runs the page image step for a chapter URL and reports what was extracted (without downloading the images).
+    /// With a <see cref="ImagesSpec.PageSelector"/> the rows are the pages of the chapter; only the first few of them
+    /// are loaded to check that the image selector finds an image (loading all of them could take minutes).
+    /// </summary>
+    public async Task<StepTestResult> TestImagesAsync(string chapterUrl, CancellationToken ct)
     {
         if (BuildUrl(_definition.Images.UrlTemplate, new Dictionary<string, string> { ["url"] = chapterUrl }) is not { } url)
-            return Task.FromResult(new StepTestResult { Error = "The page URL could not be built from that chapter URL." });
+            return new StepTestResult { Error = "The page URL could not be built from that chapter URL." };
 
-        return TestStep(url, ct, (document, pageUrl) =>
+        bool listsPages = false;
+        StepTestResult result = await TestStep(url, ct, (document, pageUrl) =>
         {
+            List<Uri> pages = ParsePageUrls(document, pageUrl);
+            if (pages.Count > 0)
+            {
+                listsPages = true;
+                return (pages.Count, 0, pages.Count, pages.Select(p => new Dictionary<string, string?> { ["page"] = p.AbsoluteUri }), "page link");
+            }
+
             List<string> urls = ParseImageUrls(document, pageUrl);
             int matched = SelectorEvaluator.SelectAll(document, _definition.Images.ImageSelector, relative: false).Count;
             return (matched, matched - urls.Count, urls.Count, urls.Select(u => new Dictionary<string, string?> { ["url"] = u }), "usable image URL");
         });
+
+        if (!listsPages || result.Error is not null)
+            return result;
+
+        List<string> warnings = [.. result.Warnings];
+        foreach (Dictionary<string, string?> row in result.Rows.Take(MaxTestSampledPages))
+        {
+            Uri pageUrl = new(row["page"]!);
+            if (await TryFetchDocument(pageUrl, ct) is not { Document: { } document } page)
+            {
+                warnings.Add($"The page {pageUrl} could not be loaded.");
+                continue;
+            }
+
+            List<string> images = ParseImageUrls(document, page.Url);
+            if (images.Count == 0)
+                warnings.Add($"The image selector found no image on the page {pageUrl}.");
+            else
+                row["image"] = images[0];
+        }
+
+        if (result.ItemCount > MaxTestSampledPages)
+            warnings.Add($"Only the first {MaxTestSampledPages} of {result.ItemCount} pages were loaded to look for images.");
+        return result with { Warnings = warnings };
     }
 
     private async Task<StepTestResult> TestStep(Uri url, CancellationToken ct,

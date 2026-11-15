@@ -1,0 +1,32 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "name": "MangaTown (example)",
+  "baseUrl": "https://www.mangatown.com",
+  "languages": ["en"],
+  "useFlareSolverr": false,
+  "requestsPerSecond": 2,
+  "headers": {},
+  "seriesUrlPattern": "^https?://(?:www\\.)?mangatown\\.com/manga/(?<id>[^/?#]+)/?$",
+  "search": {
+    "urlTemplate": "/search?name={query}",
+    "itemSelector": "li:has(a.manga_cover)",
+    "title": { "selector": "p.title a" },
+    "url": { "selector": "p.title a", "attribute": "href" },
+    "cover": { "selector": "img", "attribute": "src" }
+  },
+  "chapters": {
+    "urlTemplate": "{url}",
+    "itemSelector": "ul.chapter_list li",
+    "url": { "selector": "a", "attribute": "href" },
+    "number": { "selector": "a", "attribute": "href", "regex": "/c(\\d+(?:\\.\\d+)?)/?$" },
+    "title": { "selector": "./span[not(@class)][last()]", "regex": "^(?!Vol\\.?\\s*\\d+$).+$" },
+    "date": { "selector": "span.time" },
+    "dateFormat": "MMM dd,yyyy"
+  },
+  "images": {
+    "urlTemplate": "{url}",
+    "pageSelector": { "selector": "div.page_select option:not([value$='featured.html'])", "attribute": "value" },
+    "imageSelector": "div#viewer img",
+    "attribute": "src"
+  }
+}
