@@ -8,5 +8,5 @@ public sealed class BuiltInDownloadExtensionProvider : IDownloadExtensionProvide
     public string Name => "Built-in";
 
     public Task<IReadOnlyList<IDownloadExtension>> LoadAsync(CancellationToken ct) =>
-        Task.FromResult<IReadOnlyList<IDownloadExtension>>([new MangaDex()]);
+        Task.FromResult<IReadOnlyList<IDownloadExtension>>([new MangaDex(), new MangaPlus()]);
 }

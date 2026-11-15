@@ -33,7 +33,7 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
-- [x] Modular download sources (currently [MangaDex](https://api.mangadex.org/docs/))
+- [x] Modular download sources (currently [MangaDex](https://api.mangadex.org/docs/) and [MANGA Plus](https://mangaplus.shueisha.co.jp))
 
 #### TODO LIST
 

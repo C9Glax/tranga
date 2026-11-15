@@ -18,6 +18,20 @@
 
     <ItemGroup>
       <PackageReference Include="Naprise" Version="0.1.1" />
+      <PackageReference Include="Google.Protobuf" Version="3.34.1" />
+      <PackageReference Include="Grpc.Tools" Version="2.80.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <!-- Message types for the MANGA Plus API -->
+      <Protobuf Include="Extensions\MangaPlusApi\mangaplus.proto" GrpcServices="None" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <InternalsVisibleTo Include="Extensions.Tests" />
     </ItemGroup>
 
 </Project>
