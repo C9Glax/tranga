@@ -361,7 +361,10 @@
                         input-label="Series URL"
                         input-placeholder="https://example.com/series/1"
                         help="A series page of the website. Use the button in the search test results to fill it in." />
-                    <CustomSourceTestResults :test="test" @pick="pickFromResults" />
+                    <CustomSourceTestResults
+                        :test="test"
+                        :button-above="step === 'search' || step === 'chapters'"
+                        @pick="pickFromResults" />
                 </div>
             </div>
         </div>
