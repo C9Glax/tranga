@@ -129,6 +129,17 @@ public class PostCustomDownloaderTestEndpointTests : TrangaTest
     }
 
     [Fact]
+    public async Task Test_IgnoresSectionsOfOtherSteps()
+    {
+        // found end to end: the request does not check a section of another step, so the engine must not see it either
+        PostCustomDownloaderTestRequest request = SearchRequest(baseUrl: "http://localhost:1") with { Chapters = new ChaptersSpec(), Images = new ImagesSpec() };
+
+        Ok<StepTestResult> result = await PostCustomDownloaderTestEndpoint.Handle(request, ct);
+
+        Assert.NotNull(result.Value!.RequestUrl);
+    }
+
+    [Fact]
     public async Task Test_AssignsAnIdItself()
     {
         // the frontend sends no id; the test works without one

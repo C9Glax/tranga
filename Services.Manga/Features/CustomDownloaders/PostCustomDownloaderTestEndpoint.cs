@@ -22,8 +22,14 @@ internal abstract class PostCustomDownloaderTestEndpoint
     /// <response code="400">The request is invalid (unknown step, missing input or section, invalid settings or section); the validation problem lists what is wrong</response>
     public static async Task<Ok<StepTestResult>> Handle([FromBody] PostCustomDownloaderTestRequest req, CancellationToken ct)
     {
-        // The request validated itself before we got here (see PostCustomDownloaderTestRequest.Validate).
-        using SelectorDownloadExtension extension = SelectorDownloadExtension.CreateForTest(req.Settings, req.Search, req.Chapters, req.Images);
+        // The request validated itself before we got here (see PostCustomDownloaderTestRequest.Validate). It only checked
+        // the section of the tested step, so only that one is handed on: the engine validates every section it is given.
+        using SelectorDownloadExtension extension = req.TestedStep switch
+        {
+            SelectorDownloaderStep.Search => SelectorDownloadExtension.CreateForTest(req.Settings, search: req.Search),
+            SelectorDownloaderStep.Chapters => SelectorDownloadExtension.CreateForTest(req.Settings, chapters: req.Chapters),
+            _ => SelectorDownloadExtension.CreateForTest(req.Settings, images: req.Images)
+        };
         using CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
         timeout.CancelAfter(Timeout);
         try
