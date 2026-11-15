@@ -10,7 +10,8 @@
         "lint": "eslint .",
         "typecheck": "nuxt typecheck",
         "prettier": "prettier . --write",
-        "openapi-ts": "openapi-ts --file app/api/config.ts"
+        "openapi-ts": "openapi-ts --file app/api/config.ts",
+        "screenshots": "node scripts/screenshots.mjs"
     },
     "dependencies": {
         "@iconify-json/lucide": "^1.2.98",
@@ -27,6 +28,7 @@
         "@vue/eslint-config-prettier": "^10.2.0",
         "eslint": "^10.0.3",
         "git-describe": "^4.1.1",
+        "playwright": "^1.65.1",
         "prettier": "^3.8.1",
         "typescript": "^5.9.3",
         "vue-tsc": "^3.2.5"

@@ -13,18 +13,6 @@
       <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/main?label=main"></th>
       <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-main.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
     </tr>
-    <tr>
-      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/cuttingedge?label=cuttingedge"></th>
-      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-cuttingedge.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
-    </tr>
-    <tr>
-      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/testing?label=testing"></th>
-      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-testing.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
-    </tr>
-    <tr>
-      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/oldstable?label=oldstable"></th>
-      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-oldstable.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
-    </tr>
   </table>
 
 </div>
@@ -63,12 +51,28 @@ You probably do not want to modify this. Use the [`.env`](Tranga.AppHost/aspire-
 ### Download sources (Suwayomi + keiyoushi)
 
 Apart from MangaDex, which is built in, Tranga gets its download sources from a bundled
-[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server. Install the sources you want under **Settings → Sources**.
+[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server. Install the sources you want under **Settings → Sources** (see [Settings](#settings)).
 
 **If FlareSolverr is configured for Tranga, the Suwayomi is pointed at the same instance.**
 
 > The `Suwayomi` volume is persistent state, not a cache. It holds the installed extension JARs as well as the rows
 > that map manga URLs back to the sidecar's internal ids. Deleting it means reinstalling your extensions.
+
+### Settings
+
+All configuration that doesn't live in the [`.env`](Tranga.AppHost/aspire-output/.env) file is done in the web UI under **Settings**:
+
+| Page              | What it does                                                                                                                                                                                  |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Sources**       | Install, update and uninstall download extensions (Suwayomi / keiyoushi). Search, filter by language, show only installed ones, optionally show NSFW-only sources, refresh the catalogue.   |
+| **Notifications** | Add notification extensions: Gotify, Discord, ntfy.sh, Telegram, or any other [Naprise](https://github.com/Genteure/naprise) service URL.                                                    |
+| **Libraries**     | Connect [Komga](https://komga.org/) libraries (base URL, credentials and library root path, see [Adding a Komga library](#adding-a-komga-library)).                                         |
+| **Appearance**    | Choose how covers of NSFW manga are displayed: always visible, visible on click, or never visible (blurred).                                                                                  |
+| **Security**      | Create and revoke API keys (only relevant when `UseAuth` is enabled).                                                                                                                         |
+| **About**         | Shows version and git commit of every running service.                                                                                                                                        |
+
+The Settings overview additionally offers **Replay first-download tour** (restarts the guided walkthrough) and
+**Backfill ComicInfo for downloaded chapters** (creates a task that adds `ComicInfo.xml` to already downloaded chapters; progress is shown on the Tasks page).
 
 ### Adding a Komga library
 
@@ -97,6 +101,17 @@ the login page will show the setup screen again on next load.
 <img src="Screenshots/tasks.png" width="512" alt="tasks page"/>
 <img src="Screenshots/manga.png" width="512" alt="manga page"/>
 <img src="Screenshots/manga-light.png" width="512" alt="light mode manga page"/>
+<img src="Screenshots/settings-sources.png" width="512" alt="settings: sources"/>
+<img src="Screenshots/settings-appearance.png" width="512" alt="settings: appearance"/>
+
+To regenerate them, start the stack (see [Running locally with Aspire](#running-locally-with-aspire)), then:
+
+```bash
+cd Frontend
+npm install
+npx playwright install chromium
+npm run screenshots -- --base-url http://localhost:5000
+```
 
 ## Built With
 
