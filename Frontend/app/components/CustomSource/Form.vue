@@ -27,11 +27,7 @@
                             <UFormField label="Name" name="name" required>
                                 <UInput v-model="state.name" placeholder="My Manga Site" class="w-full" />
                             </UFormField>
-                            <UFormField
-                                label="Base URL"
-                                name="baseUrl"
-                                required
-                                :description="`Root of the website. Relative links are resolved against it. A trailing / is removed.${privateHint}`">
+                            <UFormField label="Base URL" name="baseUrl" required>
                                 <UInput
                                     v-model="state.baseUrl"
                                     placeholder="https://example.com"
@@ -46,57 +42,20 @@
                                 name="languages"
                                 required
                                 :error="languageError"
-                                description="Languages the website publishes in, as codes like en, en-us or pt-BR. Press Enter to add one.">
+                                description="Languages the website publishes in, as codes like en, en-us or pt-BR.">
                                 <UInputTags v-model="languages" placeholder="en" class="w-full" />
                             </UFormField>
                             <UFormField
                                 label="Series URL pattern"
                                 name="seriesUrlPattern"
                                 description="Optional regular expression a series URL has to match. Named groups like (?<id>[^/]+) can be used as {id} in the chapter list URL. Try it on a URL on the right.">
-                                <div class="flex flex-col gap-2">
-                                    <div class="grid gap-2 md:grid-cols-2">
-                                        <UInput
-                                            v-model="state.seriesUrlPattern"
-                                            placeholder="^https://example\.com/series/(?<id>[^/]+)"
-                                            :ui="{ base: 'font-mono' }"
-                                            class="w-full" />
-                                        <UInput
-                                            v-model="testUrls.pattern"
-                                            placeholder="A series URL to try the pattern on"
-                                            class="w-full" />
-                                    </div>
-                                    <div v-if="patternResult.state !== 'empty'" class="flex flex-row flex-wrap items-center gap-2 text-sm">
-                                        <template v-if="patternResult.state === 'invalid'">
-                                            <UIcon name="i-lucide-circle-alert" class="text-error" />
-                                            <span class="text-error">{{ patternResult.message }}</span>
-                                        </template>
-                                        <template v-else-if="patternResult.state === 'no-match'">
-                                            <UIcon name="i-lucide-x" class="text-warning" />
-                                            <span class="text-warning">The pattern does not match this URL.</span>
-                                        </template>
-                                        <template v-else>
-                                            <UIcon name="i-lucide-check" class="text-success" />
-                                            <span class="text-success">Matches.</span>
-                                            <template v-if="patternResult.groups.length">
-                                                <UBadge
-                                                    v-for="group in patternResult.groups"
-                                                    :key="group.name"
-                                                    color="neutral"
-                                                    variant="subtle"
-                                                    class="font-mono">
-                                                    {{ placeholder(group.name) }} = {{ group.value || '(empty)' }}
-                                                </UBadge>
-                                            </template>
-                                            <span v-else class="text-muted">No named groups.</span>
-                                            <UButton
-                                                label="Use for the chapters test"
-                                                icon="i-lucide-arrow-down-to-line"
-                                                color="neutral"
-                                                variant="subtle"
-                                                size="xs"
-                                                @click="useSeriesUrl(testUrls.pattern.trim())" />
-                                        </template>
-                                    </div>
+                                <!-- measured, so the pattern test in the sidebar can start at the same height -->
+                                <div ref="patternInput">
+                                    <UInput
+                                        v-model="state.seriesUrlPattern"
+                                        placeholder="^https://example\.com/series/(?<id>[^/]+)"
+                                        :ui="{ base: 'font-mono' }"
+                                        class="w-full" />
                                 </div>
                             </UFormField>
                             <div class="flex flex-row flex-wrap gap-6">
@@ -114,12 +73,18 @@
                                 <UFormField
                                     label="FlareSolverr"
                                     name="useFlareSolverr"
-                                    :description="
-                                        flareSolverrMissing
-                                            ? 'No FlareSolverr instance is configured (FLARESOLVERR_URL).'
-                                            : 'Route requests through FlareSolverr, for Cloudflare protected sites.'
-                                    ">
-                                    <USwitch v-model="state.useFlareSolverr" :disabled="flareSolverrMissing" label="Use FlareSolverr" />
+                                    description="Route requests through FlareSolverr, for Cloudflare protected sites.">
+                                    <!-- Only explains itself while the switch is disabled. The wrapper keeps hovering working on a disabled switch. -->
+                                    <UTooltip
+                                        text="No FlareSolverr instance is configured (FLARESOLVERR_URL)."
+                                        :disabled="!flareSolverrMissing">
+                                        <span class="inline-flex">
+                                            <USwitch
+                                                v-model="state.useFlareSolverr"
+                                                :disabled="flareSolverrMissing"
+                                                label="Use FlareSolverr" />
+                                        </span>
+                                    </UTooltip>
                                 </UFormField>
                             </div>
                             <UFormField
@@ -349,7 +314,50 @@
                 </div>
             </UForm>
 
-            <CustomSourceTestResults :test="test" class="lg:col-span-1" @pick="pickFromResults" />
+            <!-- The sidebar: on the General step the test of the series URL pattern (level with the pattern field), on the
+                 other steps the latest test result. -->
+            <div ref="sidebar" class="min-w-0 lg:col-span-1" :style="{ paddingTop: `${isGeneralStep ? patternOffset : 0}px` }">
+                <div v-if="isGeneralStep" class="flex flex-col gap-2">
+                    <UInput
+                        v-model="testUrls.pattern"
+                        aria-label="A series URL to try the pattern on"
+                        placeholder="A series URL to try the pattern on"
+                        class="w-full" />
+                    <div v-if="patternResult.state !== 'empty'" class="flex flex-row flex-wrap items-center gap-2 text-sm">
+                        <template v-if="patternResult.state === 'invalid'">
+                            <UIcon name="i-lucide-circle-alert" class="text-error" />
+                            <span class="text-error">{{ patternResult.message }}</span>
+                        </template>
+                        <template v-else-if="patternResult.state === 'no-match'">
+                            <UIcon name="i-lucide-x" class="text-warning" />
+                            <span class="text-warning">The pattern does not match this URL.</span>
+                        </template>
+                        <template v-else>
+                            <UIcon name="i-lucide-check" class="text-success" />
+                            <span class="text-success">Matches.</span>
+                            <template v-if="patternResult.groups.length">
+                                <UBadge
+                                    v-for="group in patternResult.groups"
+                                    :key="group.name"
+                                    color="neutral"
+                                    variant="subtle"
+                                    class="font-mono">
+                                    {{ placeholder(group.name) }} = {{ group.value || '(empty)' }}
+                                </UBadge>
+                            </template>
+                            <span v-else class="text-muted">No named groups.</span>
+                            <UButton
+                                label="Use for the chapters test"
+                                icon="i-lucide-arrow-down-to-line"
+                                color="neutral"
+                                variant="subtle"
+                                size="xs"
+                                @click="useSeriesUrl(testUrls.pattern.trim())" />
+                        </template>
+                    </div>
+                </div>
+                <CustomSourceTestResults v-else :test="test" @pick="pickFromResults" />
+            </div>
         </div>
 
         <UModal
@@ -396,6 +404,7 @@
 import type { DropdownMenuItem } from '@nuxt/ui/components/DropdownMenu.vue';
 import type { StepperItem } from '@nuxt/ui/components/Stepper.vue';
 import type { GetMangasCustomDownloadersCapabilitiesResponse, GetMangasCustomDownloadersExamplesResponse } from '~/api/tranga';
+import { useResizeObserver } from '@vueuse/core';
 import { ApiKeys } from '~/composables/ApiKeys';
 
 const props = withDefaults(
@@ -440,11 +449,6 @@ const { data: examples } = props.showExamples
 
 const flareSolverrMissing = computed(
     () => capabilities.value !== undefined && capabilities.value !== null && !capabilities.value.flareSolverrConfigured,
-);
-const privateHint = computed(() =>
-    capabilities.value && !capabilities.value.allowPrivateHosts
-        ? ' Only public websites can be used: addresses on your own network are blocked (ALLOW_PRIVATE_SOURCE_HOSTS).'
-        : '',
 );
 
 const exampleItems = computed<DropdownMenuItem[]>(() =>
@@ -505,6 +509,27 @@ watch(headerRows, syncHeaders, { deep: true });
 
 // The source can only be created / saved on the last step, after all of them have been seen.
 const isLastStep = computed(() => step.value === steps[steps.length - 1]?.value);
+const isGeneralStep = computed(() => step.value === steps[0]?.value);
+
+// The pattern test in the sidebar starts at the height of the pattern field. The sidebar only sits next to the steps
+// from the `lg` breakpoint on (below that it is stacked underneath), and the height changes with the content above the
+// field (an error line, an example being loaded, the window width), so it is measured again when the layout changes.
+const sidebar = useTemplateRef<HTMLElement>('sidebar');
+const patternInput = useTemplateRef<HTMLElement>('patternInput');
+const patternOffset = ref(0);
+const measurePatternOffset = () => {
+    const sideBySide = window.matchMedia('(min-width: 1024px)').matches;
+    if (!sideBySide || !sidebar.value || !patternInput.value) {
+        patternOffset.value = 0;
+        return;
+    }
+    // The sidebar's own top edge does not move with its padding, so the difference is the padding it needs.
+    const offset = Math.round(patternInput.value.getBoundingClientRect().top - sidebar.value.getBoundingClientRect().top);
+    patternOffset.value = Math.max(0, offset);
+};
+useResizeObserver(() => sidebar.value?.parentElement, measurePatternOffset);
+onMounted(() => measurePatternOffset());
+watch(step, () => nextTick(measurePatternOffset));
 
 const submit = () => {
     // Pressing Enter in a field of an earlier step must not save a half finished source.
