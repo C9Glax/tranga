@@ -1,22 +1,33 @@
 <template>
     <UFormField :label="label" :description="description" :required="required">
-        <div class="flex flex-row flex-wrap items-center gap-2">
+        <div class="flex flex-col gap-1">
             <!-- What an empty value means does not fit into a placeholder, it is shown as tooltip. -->
-            <div class="min-w-60 grow">
+            <UFieldGroup class="w-full">
                 <UTooltip :text="selectorHint">
-                    <UInput v-model="selector" :placeholder="selectorPlaceholder" :ui="{ base: 'font-mono' }" class="w-full" />
+                    <UInput v-model="selector" :placeholder="selectorPlaceholder" :ui="{ base: 'font-mono' }" class="min-w-0 grow" />
                 </UTooltip>
-            </div>
-            <UTooltip :text="attributeHint">
-                <UInput v-model="attribute" :placeholder="attributePlaceholder" :ui="{ base: 'font-mono' }" class="w-52" />
-            </UTooltip>
-            <template v-if="advanced">
-                <UInput v-model="regex" placeholder="Regex" :ui="{ base: 'font-mono' }" class="w-48" />
-                <UInput v-model="replacement" placeholder="Replace with" :ui="{ base: 'font-mono' }" class="w-40" />
-            </template>
-            <UTooltip v-else text="Post-process the value with a regular expression">
-                <UButton icon="i-lucide-regex" color="neutral" variant="ghost" size="sm" aria-label="Add regex" @click="advanced = true" />
-            </UTooltip>
+                <UTooltip :text="attributeHint">
+                    <UInput v-model="attribute" :placeholder="attributePlaceholder" :ui="{ base: 'font-mono' }" class="w-36 sm:w-52" />
+                </UTooltip>
+            </UFieldGroup>
+
+            <!-- Regex and replacement are rarely needed: collapsed unless they are already in use. -->
+            <UCollapsible v-model:open="advanced">
+                <UButton
+                    label="Regex and replacement"
+                    icon="i-lucide-regex"
+                    :trailing-icon="advanced ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    class="self-start" />
+                <template #content>
+                    <UFieldGroup class="w-full pt-1">
+                        <UInput v-model="regex" placeholder="Regex" :ui="{ base: 'font-mono' }" class="min-w-0 grow" />
+                        <UInput v-model="replacement" placeholder="Replace with" :ui="{ base: 'font-mono' }" class="min-w-0 grow" />
+                    </UFieldGroup>
+                </template>
+            </UCollapsible>
         </div>
     </UFormField>
 </template>

@@ -40,6 +40,11 @@
         <template #lastHeartbeat-cell="{ row }">
             <TrangaTime :model-value="row.original.lastHeartbeat" relative />
         </template>
+
+        <template #loading><TrangaTableLoading /></template>
+        <template #empty>
+            <UEmpty icon="i-lucide-cpu" title="No workers" description="No worker is running right now." variant="naked" />
+        </template>
     </UTable>
 </template>
 

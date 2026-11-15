@@ -1,12 +1,14 @@
 <template>
     <TrangaPage>
-        <UAlert
+        <UEmpty
             v-if="!definition"
-            color="error"
-            variant="subtle"
-            icon="i-lucide-circle-alert"
+            icon="i-lucide-globe"
             title="Source not found"
-            description="This custom source does not exist (anymore)." />
+            description="This custom source does not exist (anymore)."
+            variant="naked"
+            :actions="[
+                { label: 'Back to sources', icon: 'i-lucide-arrow-left', color: 'neutral', variant: 'subtle', to: '/settings/sources' },
+            ]" />
         <CustomSourceForm v-else :initial="definition" submit-label="Save changes" :saving="saving" :errors="errors" @submit="save" />
     </TrangaPage>
 </template>

@@ -1,16 +1,18 @@
 <template>
-    <div class="flex flex-row flex-wrap items-end gap-2 rounded-md border border-default p-3">
-        <UFormField :label="inputLabel" :description="help" class="grow">
-            <UInput v-model="input" :placeholder="inputPlaceholder" class="w-full" @keydown.enter.prevent="run" />
+    <UCard variant="outline" :ui="{ body: 'p-3 sm:p-3' }">
+        <UFormField :label="inputLabel" :description="help">
+            <UFieldGroup class="w-full">
+                <UInput v-model="input" :placeholder="inputPlaceholder" class="grow" @keydown.enter.prevent="run" />
+                <UButton
+                    label="Test"
+                    icon="i-lucide-flask-conical"
+                    color="neutral"
+                    :loading="test?.loading && test.step === step"
+                    :disabled="!input.trim()"
+                    @click="run" />
+            </UFieldGroup>
         </UFormField>
-        <UButton
-            label="Test"
-            icon="i-lucide-flask-conical"
-            color="neutral"
-            :loading="test?.loading && test.step === step"
-            :disabled="!input.trim()"
-            @click="run" />
-    </div>
+    </UCard>
 </template>
 
 <script setup lang="ts">

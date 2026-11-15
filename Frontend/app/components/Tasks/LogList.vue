@@ -11,6 +11,15 @@
         <template #message-cell="{ row }">
             <span class="font-mono text-sm whitespace-pre-wrap">{{ row.original.message }}</span>
         </template>
+
+        <template #loading><TrangaTableLoading /></template>
+        <template #empty>
+            <UEmpty
+                icon="i-lucide-scroll-text"
+                title="No log entries"
+                description="Nothing has been logged for this task yet."
+                variant="naked" />
+        </template>
     </UTable>
 </template>
 

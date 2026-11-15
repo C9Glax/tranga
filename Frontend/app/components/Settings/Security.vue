@@ -39,7 +39,13 @@
                         <UButton label="Revoke" color="error" variant="soft" size="xs" @click="revokeApiKey(key.id)" />
                     </div>
                 </div>
-                <p v-else class="text-sm text-muted">No API keys yet.</p>
+                <UEmpty
+                    v-else
+                    icon="i-lucide-key-round"
+                    title="No API keys yet"
+                    description="Create one to use Tranga from scripts and other tools."
+                    variant="naked"
+                    size="sm" />
             </div>
         </UCard>
     </UPageList>
