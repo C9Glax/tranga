@@ -16,7 +16,8 @@
                     variant="subtle"
                     trailing-icon="i-lucide-chevron-down" />
             </UDropdownMenu>
-            <UButton label="JSON" icon="i-lucide-braces" color="neutral" variant="subtle" @click="openJson" />
+            <UButton label="Show JSON" icon="i-lucide-braces" color="neutral" variant="subtle" @click="openJson" />
+            <UButton label="Import JSON" icon="i-lucide-file-input" color="neutral" variant="subtle" @click="openImport" />
         </div>
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -344,7 +345,7 @@
                             variant="outline"
                             :disabled="!stepper?.hasNext"
                             @click="stepper?.next()" />
-                        <UButton type="submit" :label="submitLabel" icon="i-lucide-save" :loading="saving" />
+                        <UButton v-if="isLastStep" type="submit" :label="submitLabel" icon="i-lucide-save" :loading="saving" />
                     </div>
                 </div>
             </UForm>
@@ -355,17 +356,37 @@
         <UModal
             v-model:open="jsonOpen"
             title="Source as JSON"
-            description="Copy this to share the source, or paste someone else's definition and load it into the form.">
+            description="The definition as it is in the form now. Copy it to share the source.">
+            <template #body>
+                <UTextarea :model-value="json" readonly :rows="18" :ui="{ base: 'font-mono text-xs' }" class="w-full" />
+            </template>
+            <template #footer>
+                <div class="flex w-full flex-row justify-end gap-2">
+                    <UButton label="Close" color="neutral" variant="ghost" @click="jsonOpen = false" />
+                    <UButton label="Copy" icon="i-lucide-copy" @click="copyJson" />
+                </div>
+            </template>
+        </UModal>
+
+        <UModal
+            v-model:open="importOpen"
+            title="Import JSON"
+            description="Paste someone else's definition. It replaces what is in the form; nothing is saved until you create the source.">
             <template #body>
                 <div class="flex flex-col gap-3">
-                    <UTextarea v-model="json" :rows="18" :ui="{ base: 'font-mono text-xs' }" class="w-full" />
-                    <UAlert v-if="jsonError" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="jsonError" />
+                    <UTextarea
+                        v-model="importText"
+                        :rows="18"
+                        placeholder='{ "name": "…", … }'
+                        :ui="{ base: 'font-mono text-xs' }"
+                        class="w-full" />
+                    <UAlert v-if="importError" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="importError" />
                 </div>
             </template>
             <template #footer>
                 <div class="flex w-full flex-row justify-end gap-2">
-                    <UButton label="Copy" icon="i-lucide-copy" color="neutral" variant="subtle" @click="copyJson" />
-                    <UButton label="Load into form" icon="i-lucide-download" @click="loadJson" />
+                    <UButton label="Cancel" color="neutral" variant="ghost" @click="importOpen = false" />
+                    <UButton label="Import" icon="i-lucide-file-input" :disabled="!importText.trim()" @click="importJson" />
                 </div>
             </template>
         </UModal>
@@ -483,20 +504,23 @@ const syncHeaders = () => {
 };
 watch(headerRows, syncHeaders, { deep: true });
 
+// The source can only be created / saved on the last step, after all of them have been seen.
+const isLastStep = computed(() => step.value === steps[steps.length - 1]?.value);
+
 const submit = () => {
+    // Pressing Enter in a field of an earlier step must not save a half finished source.
+    if (!isLastStep.value) return;
     syncHeaders();
     emit('submit', state.value);
 };
 
-// ----------------------------------------------------------------------- JSON import / export
+// ----------------------------------------------------------------------- JSON show / import
 const jsonOpen = ref(false);
 const json = ref('');
-const jsonError = ref<string>();
 
 const openJson = () => {
     syncHeaders();
     json.value = customSourceToJson(state.value);
-    jsonError.value = undefined;
     jsonOpen.value = true;
 };
 
@@ -509,14 +533,28 @@ const copyJson = async () => {
     }
 };
 
-const loadJson = () => {
-    const { source, error } = customSourceFromJson(json.value);
+const importOpen = ref(false);
+const importText = ref('');
+const importError = ref<string>();
+
+const openImport = () => {
+    importText.value = '';
+    importError.value = undefined;
+    importOpen.value = true;
+};
+
+const importJson = () => {
+    const { source, error } = customSourceFromJson(importText.value);
     if (!source) {
-        jsonError.value = error;
+        importError.value = error;
         return;
     }
     loadState({ ...source, id: state.value.id });
-    jsonOpen.value = false;
-    toast.add({ title: 'Loaded the definition into the form.', description: 'Review it before saving.', color: 'success' });
+    importOpen.value = false;
+    toast.add({
+        title: 'Imported the definition into the form.',
+        description: 'Review it and use the test buttons before saving.',
+        color: 'success',
+    });
 };
 </script>

@@ -136,6 +136,9 @@ const sourcesScreenshots = async (page) => {
             );
         }
 
+        // Creating is only possible on the last step (search -> chapters -> pages).
+        await page.getByRole('button', { name: 'Next', exact: true }).click();
+        await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByRole('button', { name: 'Create source' }).click();
         await page.waitForURL((url) => url.pathname === '/settings/sources');
         created = true;
