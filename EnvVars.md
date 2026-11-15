@@ -4,6 +4,7 @@
 |------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | AllowNSFW        | `false`    | Allow NSFW content in search results (docker-compose/.env key: `ALLOWNSFW`)                                                                                                        |
 | DownloadLanguage | `"en"`     | Language for downloaded chapters (docker-compose/.env key: `DOWNLOADLANGUAGE`)                                                                                                     | 
+| ChapterNamingScheme | `"?V(Vol. %V ) Ch. %C?T( - %T)"` | Template used to name downloaded chapter files: `%V` volume, `%C` chapter, `%T` title; `?X(...)` includes the text in parentheses only if that value exists |
 | MangaDirectory   | `"Manga"`  | Host path to bind-mount for downloaded Manga (docker-compose only; Covers are stored in a managed Docker volume) If you use Komga it is recommended to mount the path at `/tranga` | 
 | PUID              | `1000`     | User ID that owns files written into `MangaDirectory` (docker-compose only). Set this to your host user's UID (`id -u`) so files are readable/writable outside the container, and match Komga's own `PUID` if Komga also needs write access to the same directory. If `MangaDirectory` doesn't already exist on the host, Docker creates it owned by `root` on first `up` — `chown` it to `PUID:PGID` (or pre-create it yourself) before the container can write to it. |
 | PGID              | `1000`     | Group ID that owns files written into `MangaDirectory` (docker-compose only); see `PUID` |
@@ -30,7 +31,7 @@ Generate a random value for `AUTH_SIGNING_KEY`:
 | ENV             | default                | behaviour                                                |
 |-----------------|------------------------|----------------------------------------------------------|
 | SETTINGS_FILE   | `"settings.json"`      | Location of settings file                                |
-| SUWAYOMI_URL    | `"http://suwayomi:4567"` | Base address of the [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, which provides Tranga's download sources. Set automatically by the AppHost — the default is correct for docker-compose, and the dev stack injects the right value — so only change it to point Tranga at a Suwayomi instance you run yourself.. The sidecar is only ever reached by Tranga's own services, never by a browser |
+| SUWAYOMI_URL    | `"http://suwayomi:4567"` | Base address of the [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) sidecar, which provides Tranga's download sources. Set automatically by the AppHost — the default is correct for docker-compose, and the dev stack injects the right value — so only change it to point Tranga at a Suwayomi instance you run yourself. The sidecar is only ever reached by Tranga's own services, never by a browser |
 | WORKERS_MIN     | `1`                    | Minimum number of Task workers kept running at all times |
 | WORKERS_MAX     | `{ProcessorCount / 2}` | Maximum number of Task workers the pool may scale up to  |
 
@@ -43,9 +44,9 @@ Generate a random value for `AUTH_SIGNING_KEY`:
 | POSTGRES_USER        | `"postgres"`  | Postgres user         |
 | POSTGRES_PASSWORD    | `"postgres"`  | Postgres password     |
 | DBName               | `"tranga"`    | Database name         |
-| DBHost               |               | undefined             | 
-| DBUser               |               | undefined             |
-| DBPass               |               | undefined             |
-| DBConnectionLifetime | `60`          |                       |
-| DBConnectionTimeout  | `30`          |                       |
-| DBCommandTimeout     |               |                       |
+| DBHost               |               | Overrides `POSTGRES_HOST` if set |
+| DBUser               |               | Overrides `POSTGRES_USER` if set |
+| DBPass               |               | Overrides `POSTGRES_PASSWORD` if set |
+| DBConnectionLifetime | `60`          | Connection lifetime (seconds) |
+| DBConnectionTimeout  | `30`          | Connection timeout (seconds)  |
+| DBCommandTimeout     | `60`          | Command timeout (seconds)     |

@@ -11,7 +11,7 @@ public static class Settings
     private static Language _downloadLanguage = new (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DownloadLanguage")) ? "en" : Environment.GetEnvironmentVariable("DownloadLanguage")!);
     
     public static string ChapterNamingScheme { get => _chapterNamingScheme; set => UpdateValue(ref _chapterNamingScheme, value); }
-    private static string _chapterNamingScheme = Environment.GetEnvironmentVariable("ChapterNamingScheme") ?? "?V(Vol. %V ) Ch. %C?T( - %T)";
+    private static string _chapterNamingScheme = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ChapterNamingScheme")) ? "?V(Vol. %V ) Ch. %C?T( - %T)" : Environment.GetEnvironmentVariable("ChapterNamingScheme")!;
 
     // ReSharper disable once RedundantAssignment
     private static void UpdateValue<T>(ref T val, T newValue)
