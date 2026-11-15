@@ -67,8 +67,10 @@ The Settings overview additionally offers **Replay first-download tour** (restar
 ### Custom sources
 
 Under **Settings → Sources → Add custom source** you can teach Tranga a website by pasting selectors, no code needed.
-A source consists of three steps, and every step has a **Test** button that runs it against the real website and shows what
-the selectors extracted, so you can fix them before saving:
+The form is a stepper: **General** (the website itself) followed by the three steps below. Each of those steps is tried from
+the testing sidebar on the right: enter a search text, a series URL or a chapter URL and press **Test**. The step runs against
+the real website and the sidebar shows what the selectors extracted, so you can fix them before saving. The buttons next to a
+search or chapter result fill in the test of the next step. The source can only be created on the last step.
 
 1. **Search**: a URL (`{query}` is the URL-encoded search text), a selector for one element per result, and fields for
    title, link and cover image.
@@ -85,9 +87,13 @@ text; `srcset,src` tries several), and optionally a regular expression (the firs
 every match is replaced). Selectors of fields are relative to their item, XPaths copied from the browser (`//div/a`) work too.
 CSS supports `:not()`, `:has()`, `:contains()` and the other usual selectors. Relative links are resolved for you.
 
-Further settings: languages, a series URL pattern (named groups such as `(?<id>[^/]+)` can be used as `{id}` in the chapter and
-page URLs), request headers (e.g. `Cookie`; requests look like a regular browser unless you set a `User-Agent`), a rate limit,
-and whether to use FlareSolverr. A source can be exported and imported as JSON.
+The **General** step holds the name, the base URL (a trailing `/` is removed), an icon, the languages (codes such as `en`,
+`en-us` or `pt-BR`), a series URL pattern (named groups such as `(?<id>[^/]+)` can be used as `{id}` in the chapter and page
+URLs; try it on a URL in the sidebar to see whether it matches and which groups it captures), request headers (e.g. `Cookie`;
+requests look like a regular browser unless you set a `User-Agent`), a rate limit, and whether to use FlareSolverr.
+
+**Start from an example** fills the form with a built-in definition. **Show JSON** displays the source as JSON (with a Copy
+button) and **Import JSON** fills the form from a pasted definition, so sources can be shared.
 
 Good to know:
 
@@ -204,8 +210,8 @@ the login page will show the setup screen again on next load.
 <img src="Screenshots/manga.png" width="512" alt="manga page"/>
 <img src="Screenshots/manga-light.png" width="512" alt="light mode manga page"/>
 <img src="Screenshots/settings-sources.png" width="512" alt="settings: sources"/>
-<img src="Screenshots/settings-sources-new.png" width="512" alt="settings: creating a custom source"/>
-<img src="Screenshots/settings-sources-test.png" width="512" alt="settings: testing the search step of a custom source"/>
+<img src="Screenshots/settings-sources-new.png" width="512" alt="settings: the general step of creating a custom source"/>
+<img src="Screenshots/settings-sources-test.png" width="512" alt="settings: testing the search step of a custom source, with the results in the sidebar"/>
 <img src="Screenshots/settings-sources-custom.png" width="512" alt="settings: sources with a custom source"/>
 <img src="Screenshots/settings-appearance.png" width="512" alt="settings: appearance"/>
 
