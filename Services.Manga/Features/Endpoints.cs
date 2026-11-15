@@ -175,16 +175,21 @@ internal static class EndpointHelpers
         builder.MapGet("{customDownloaderId}", GetCustomDownloaderEndpoint.Handle)
             .WithSummary("Get custom Download-Source");
 
+        // The 400 of these three is the request body failing its own validation (SelectorDownloaderSettings and the other
+        // datatypes validate themselves, see Service.cs): it is only declared here so that the API documents it.
         builder.MapPost(string.Empty, PostCustomDownloaderEndpoint.Handle)
+            .ProducesValidationProblem()
             .WithSummary("Create custom Download-Source");
 
         builder.MapPut("{customDownloaderId}", PutCustomDownloaderEndpoint.Handle)
+            .ProducesValidationProblem()
             .WithSummary("Change custom Download-Source");
 
         builder.MapDelete("{customDownloaderId}", DeleteCustomDownloaderEndpoint.Handle)
             .WithSummary("Delete custom Download-Source");
 
         builder.MapPost("test", PostCustomDownloaderTestEndpoint.Handle)
+            .ProducesValidationProblem()
             .WithSummary("Test one step of a custom Download-Source definition against the real website");
     }
 

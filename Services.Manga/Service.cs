@@ -26,6 +26,10 @@ public sealed class Service : Common.Services.Service
 
         Builder.Services.AddScoped<EventPublisher>();
 
+        // Request bodies validate themselves (IValidatableObject / DataAnnotations on the datatype): an invalid one is
+        // answered with 400 and a list of problems before an endpoint runs, endpoints do not check anything themselves.
+        Builder.Services.AddValidation();
+
         SetupWebApplication<Endpoints>("/mangas");
 
         if (!Constants.OpenApiDocumentationRun)

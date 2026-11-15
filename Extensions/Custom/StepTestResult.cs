@@ -1,6 +1,6 @@
 namespace Extensions.Custom;
 
-/// <summary>Which part of a <see cref="SelectorDownloaderDefinition"/> is being checked.</summary>
+/// <summary>Which step of a <see cref="SelectorDownloaderDefinition"/> is tried against the real website.</summary>
 public enum SelectorDownloaderStep
 {
     /// <summary>Searching for a series</summary>

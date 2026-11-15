@@ -11,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import { FetchError } from 'ofetch';
 import type { PostMangasCustomDownloadersResponse } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
 
@@ -31,10 +30,7 @@ const create = async (definition: CustomSourceDefinition) => {
         });
     } catch (error: unknown) {
         // 400: the API lists everything that is wrong with the definition
-        errors.value =
-            error instanceof FetchError && Array.isArray(error.data)
-                ? (error.data as string[])
-                : [error instanceof FetchError && typeof error.data === 'string' ? error.data : 'Could not create the source.'];
+        errors.value = apiErrorMessages(error, 'Could not create the source.');
         return;
     } finally {
         saving.value = false;

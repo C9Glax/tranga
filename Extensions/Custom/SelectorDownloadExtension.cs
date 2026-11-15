@@ -59,29 +59,67 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     /// <inheritdoc />
     public Language[] SupportedLanguages { get; init; }
 
-    /// <param name="definition">A definition that passes <see cref="SelectorDownloaderDefinition.Validate()"/></param>
+    /// <param name="definition">A complete, valid definition with an <see cref="SelectorDownloaderSettings.Id"/></param>
     /// <param name="options">Defaults to the environment</param>
     /// <exception cref="ArgumentException">The definition is invalid</exception>
     public SelectorDownloadExtension(SelectorDownloaderDefinition definition, SelectorDownloaderOptions? options = null)
-        : this(definition, options, step: null)
+        : this(Checked(definition), options, definitionChecked: true)
     {
     }
 
     /// <summary>
-    /// Creates an extension that is only valid for trying out one <paramref name="step"/> (the other sections of the
-    /// definition may still be empty). Used by the live test panel.
+    /// Creates an extension for trying out a single step. It only needs the general <paramref name="settings"/> and the
+    /// section of the step that is tried (the others stay empty and are never used), so a step can be tested while the
+    /// rest of a definition does not exist yet. The settings and the given sections are validated; the
+    /// <see cref="SelectorDownloaderSettings.Id"/> is assigned when missing. Used by the live test of the frontend.
     /// </summary>
-    /// <exception cref="ArgumentException">The general settings or the chosen step are invalid</exception>
-    public static SelectorDownloadExtension CreateForTest(SelectorDownloaderDefinition definition, SelectorDownloaderStep step,
-        SelectorDownloaderOptions? options = null) => new(definition, options, step);
-
-    private SelectorDownloadExtension(SelectorDownloaderDefinition definition, SelectorDownloaderOptions? options, SelectorDownloaderStep? step)
+    /// <param name="settings">General settings of the website. Pass the plain settings, not a whole definition</param>
+    /// <param name="search">Needed to test the search</param>
+    /// <param name="chapters">Needed to test the chapter list</param>
+    /// <param name="images">Needed to test the pages of a chapter</param>
+    /// <param name="options">Defaults to the environment</param>
+    /// <exception cref="ArgumentException">The settings or one of the given sections is invalid</exception>
+    public static SelectorDownloadExtension CreateForTest(SelectorDownloaderSettings settings, SearchSpec? search = null,
+        ChaptersSpec? chapters = null, ImagesSpec? images = null, SelectorDownloaderOptions? options = null)
     {
-        // Also covers definitions stored before the base URL was normalized when they were saved.
-        definition = definition.Normalized();
-        if (definition.Validate(step) is { Count: > 0 } errors)
-            throw new ArgumentException(string.Join(" ", errors), nameof(definition));
+        SelectorDownloaderSettings normalized = settings.Normalized();
+        List<string> errors =
+        [
+            .. normalized.Validate(),
+            .. (search?.Validate(nameof(SelectorDownloaderDefinition.Search)) ?? []).Select(r => r.ErrorMessage ?? ""),
+            .. (chapters?.Validate(nameof(SelectorDownloaderDefinition.Chapters), normalized.SeriesUrlGroups()) ?? []).Select(r => r.ErrorMessage ?? ""),
+            .. (images?.Validate(nameof(SelectorDownloaderDefinition.Images)) ?? []).Select(r => r.ErrorMessage ?? "")
+        ];
+        if (errors.Count > 0)
+            throw new ArgumentException(string.Join(" ", errors), nameof(settings));
 
+        SelectorDownloaderDefinition definition = new SelectorDownloaderDefinition(normalized)
+        {
+            Id = normalized.Id == Guid.Empty ? Guid.NewGuid() : normalized.Id,
+            Search = search ?? new SearchSpec(),
+            Chapters = chapters ?? new ChaptersSpec(),
+            Images = images ?? new ImagesSpec()
+        };
+        return new SelectorDownloadExtension(definition, options, definitionChecked: true);
+    }
+
+    /// <summary>The normalized definition, or an <see cref="ArgumentException"/> listing what is wrong with it.</summary>
+    private static SelectorDownloaderDefinition Checked(SelectorDownloaderDefinition definition)
+    {
+        // Normalizing also covers definitions stored before the base URL was normalized when they were saved.
+        SelectorDownloaderDefinition normalized = definition.Normalized();
+        List<string> errors = [.. normalized.Validate()];
+        // The id is not part of what a client sends (the server assigns it), but an extension cannot exist without one.
+        if (normalized.Id == Guid.Empty)
+            errors.Insert(0, "Id must be set.");
+        if (errors.Count > 0)
+            throw new ArgumentException(string.Join(" ", errors), nameof(definition));
+        return normalized;
+    }
+
+    // definitionChecked only tells this constructor from the public one: the definition is valid for what it is used for.
+    private SelectorDownloadExtension(SelectorDownloaderDefinition definition, SelectorDownloaderOptions? options, bool definitionChecked)
+    {
         _definition = definition;
         _options = options ?? SelectorDownloaderOptions.FromEnvironment();
         _baseUri = new Uri(definition.BaseUrl);

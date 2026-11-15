@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { FetchError } from 'ofetch';
 import type { PostMangasCustomDownloadersTestResponse } from '~/api/tranga';
 
 const props = defineProps<{
@@ -37,16 +36,12 @@ const run = async () => {
     try {
         const result = await useNuxtApp().$tranga<PostMangasCustomDownloadersTestResponse>('/mangas/customDownloaders/test', {
             method: 'post',
-            body: { definition: customSourceForApi(props.definition), step: props.step, input: value },
+            body: customSourceTestBody(props.definition, props.step, value),
         });
         test.value = { step: props.step, input: value, loading: false, result, errors: [] };
     } catch (error: unknown) {
-        // 400: the API lists what is wrong with the definition (for this step)
-        const errors =
-            error instanceof FetchError && Array.isArray(error.data)
-                ? (error.data as string[])
-                : [error instanceof FetchError && typeof error.data === 'string' ? error.data : 'The test could not be run.'];
-        test.value = { step: props.step, input: value, loading: false, errors };
+        // 400: the API lists what is wrong with the settings or with the section of this step
+        test.value = { step: props.step, input: value, loading: false, errors: apiErrorMessages(error, 'The test could not be run.') };
     }
 };
 </script>

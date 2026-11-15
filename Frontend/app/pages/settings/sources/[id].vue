@@ -12,7 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { FetchError } from 'ofetch';
 import type {
     GetMangasCustomDownloadersByCustomDownloaderIdResponse,
     PutMangasCustomDownloadersByCustomDownloaderIdResponse,
@@ -40,10 +39,7 @@ const save = async (updated: CustomSourceDefinition) => {
             body: customSourceForApi(updated),
         });
     } catch (error: unknown) {
-        errors.value =
-            error instanceof FetchError && Array.isArray(error.data)
-                ? (error.data as string[])
-                : [error instanceof FetchError && typeof error.data === 'string' ? error.data : 'Could not save the source.'];
+        errors.value = apiErrorMessages(error, 'Could not save the source.');
         return;
     } finally {
         saving.value = false;

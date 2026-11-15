@@ -19,7 +19,7 @@ export type ServicesMangaChapter = {
 export type ServicesMangaChaptersSpec = {
     /**
      * URL of the page that lists the chapters. `{url}` is the series URL; the named groups of
-     * string? SelectorDownloaderDefinition.SeriesUrlPattern are available too, e.g.
+     * string? SelectorDownloaderSettings.SeriesUrlPattern are available too, e.g.
      * `https://example.com/series/{id}/chapters`.
      */
     urlTemplate?: string;
@@ -102,6 +102,15 @@ export type ServicesMangaGitInfoResponse = {
      * Whether the working tree had uncommitted changes at build time.
      */
     isDirty: boolean;
+};
+
+export type ServicesMangaHttpValidationProblemDetails = {
+    type?: null | string;
+    title?: null | string;
+    status?: null | number | string;
+    detail?: null | string;
+    instance?: null | string;
+    errors?: { [key: string]: Array<string> };
 };
 
 /**
@@ -193,9 +202,12 @@ export type ServicesMangaPatchMangaDownloadLinkRequest = { matched: boolean; pri
 export type ServicesMangaPatchMangaMonitoredRequest = { monitored: boolean };
 
 export type ServicesMangaPostCustomDownloaderTestRequest = {
-    definition: ServicesMangaSelectorDownloaderDefinition;
+    settings: ServicesMangaSelectorDownloaderSettings;
     step: string;
     input: string;
+    search?: null | ServicesMangaSearchSpec;
+    chapters?: null | ServicesMangaChaptersSpec;
+    images?: null | ServicesMangaImagesSpec;
 };
 
 export type ServicesMangaPostMangaDownloadLinkRequest = { downloadExtensionId: string; url: string };
@@ -252,12 +264,26 @@ export type ServicesMangaSearchSpec = {
 
 /**
  * Describes a user-defined download source that is driven entirely by CSS/XPath selectors, so that people can add a
- * website to Tranga without writing code. Turned into an IDownloadExtension by
- * SelectorDownloadExtension; persisted as one JSON document.
+ * website to Tranga without writing code: the SelectorDownloaderSettings of the website plus how to
+ * search, list chapters and find the pages. Turned into an IDownloadExtension by
+ * SelectorDownloadExtension; persisted as one JSON document. A definition is always validated as a whole;
+ * to try a single step without the others, use the settings and that step's section on their own.
  */
 export type ServicesMangaSelectorDownloaderDefinition = {
     /**
-     * Becomes Guid IExtension.Identifier. Persisted on download links, so it must never change.
+     * How to find series.
+     */
+    search?: ServicesMangaSearchSpec;
+    /**
+     * How to list the chapters of a series.
+     */
+    chapters?: ServicesMangaChaptersSpec;
+    /**
+     * How to find the pages of a chapter.
+     */
+    images?: ServicesMangaImagesSpec;
+    /**
+     * Becomes Guid IExtension.Identifier. Persisted on download links, so it must never change. Assigned by the server.
      */
     id?: string;
     /**
@@ -294,18 +320,52 @@ export type ServicesMangaSelectorDownloaderDefinition = {
      * different URL than the series page.
      */
     seriesUrlPattern?: null | string;
+};
+
+/**
+ * The general settings of a user-defined download source (the website itself, not how to scrape it). They validate
+ * themselves (IValidatableObject), so whoever receives one - an API endpoint, the test of a single step,
+ * the engine - does not have to know the rules.
+ */
+export type ServicesMangaSelectorDownloaderSettings = {
     /**
-     * How to find series.
+     * Becomes Guid IExtension.Identifier. Persisted on download links, so it must never change. Assigned by the server.
      */
-    search?: ServicesMangaSearchSpec;
+    id?: string;
     /**
-     * How to list the chapters of a series.
+     * Display name of the source.
      */
-    chapters?: ServicesMangaChaptersSpec;
+    name?: string;
     /**
-     * How to find the pages of a chapter.
+     * Root of the website, e.g. `https://weebcentral.com`. Relative URLs are resolved against it.
      */
-    images?: ServicesMangaImagesSpec;
+    baseUrl?: string;
+    /**
+     * Optional icon, defaults to the website's favicon.
+     */
+    iconUrl?: null | string;
+    /**
+     * Languages the website publishes in (e.g. `en`). A search in another language finds nothing.
+     */
+    languages?: Array<string>;
+    /**
+     * Route requests through the configured FlareSolverr instance (for Cloudflare protected sites).
+     */
+    useFlareSolverr?: boolean;
+    /**
+     * Requests per second to the website itself (0.1 - 20). Image CDNs on other hosts are limited separately.
+     */
+    requestsPerSecond?: number | string;
+    /**
+     * Extra request headers, e.g. a cookie or a User-Agent.
+     */
+    headers?: { [key: string]: string };
+    /**
+     * Optional regular expression that a series URL has to match. Its named groups (e.g. `(?&lt;id&gt;[^/]+)`) are
+     * available as `{id}` in string ChaptersSpec.UrlTemplate for sites whose chapter list lives at a
+     * different URL than the series page.
+     */
+    seriesUrlPattern?: null | string;
 };
 
 /**
@@ -1268,7 +1328,7 @@ export type PostMangasCustomDownloadersErrors = {
     /**
      * Bad Request
      */
-    400: Array<string>;
+    400: ServicesMangaHttpValidationProblemDetails;
 };
 
 export type PostMangasCustomDownloadersError = PostMangasCustomDownloadersErrors[keyof PostMangasCustomDownloadersErrors];
@@ -1372,7 +1432,7 @@ export type PutMangasCustomDownloadersByCustomDownloaderIdErrors = {
     /**
      * Bad Request
      */
-    400: Array<string>;
+    400: ServicesMangaHttpValidationProblemDetails;
     /**
      * Not Found
      */
@@ -1403,7 +1463,7 @@ export type PostMangasCustomDownloadersTestErrors = {
     /**
      * Bad Request
      */
-    400: Array<string>;
+    400: ServicesMangaHttpValidationProblemDetails;
 };
 
 export type PostMangasCustomDownloadersTestError = PostMangasCustomDownloadersTestErrors[keyof PostMangasCustomDownloadersTestErrors];

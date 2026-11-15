@@ -613,17 +613,43 @@ public sealed class SelectorDownloadExtensionTests : Common.Tests.TrangaTest, ID
     }
 
     [Fact]
-    public async Task TestStepWorksWhileOtherSectionsAreStillEmpty()
+    public async Task AStepCanBeTestedWithJustTheSettingsAndItsOwnSection()
     {
         _site.Html("/search?q=x", """<div class="result"><a class="title" href="/series/1">One</a><img src="/covers/1.jpg"></div>""");
-        SelectorDownloaderDefinition onlySearch = Definition() with { Chapters = new ChaptersSpec(), Images = new ImagesSpec() };
+        SelectorDownloaderDefinition definition = Definition();
 
-        using SelectorDownloadExtension extension = SelectorDownloadExtension.CreateForTest(onlySearch, SelectorDownloaderStep.Search, AllowLocalhost);
+        // no chapters and no images section exists at all, and there is no id yet
+        using SelectorDownloadExtension extension = SelectorDownloadExtension.CreateForTest(
+            new SelectorDownloaderSettings { Name = definition.Name, BaseUrl = definition.BaseUrl, RequestsPerSecond = 20 },
+            search: definition.Search, options: AllowLocalhost);
         StepTestResult result = await extension.TestSearchAsync("x", ct);
 
         Assert.Null(result.Error);
         Assert.Equal(1, result.ItemCount);
-        Assert.Throws<ArgumentException>(() => SelectorDownloadExtension.CreateForTest(onlySearch, SelectorDownloaderStep.Chapters, AllowLocalhost));
+        Assert.NotEqual(Guid.Empty, extension.Identifier);
+    }
+
+    [Fact]
+    public void ASectionThatIsGivenForATestHasToBeValid()
+    {
+        SelectorDownloaderSettings settings = new() { Name = "Fixture", BaseUrl = _site.BaseUrl };
+
+        ArgumentException brokenSearch = Assert.Throws<ArgumentException>(() =>
+            SelectorDownloadExtension.CreateForTest(settings, search: new SearchSpec(), options: AllowLocalhost));
+        Assert.Contains("Search URL is required.", brokenSearch.Message);
+        Assert.Throws<ArgumentException>(() =>
+            SelectorDownloadExtension.CreateForTest(settings, images: new ImagesSpec { UrlTemplate = "{nope}" }, options: AllowLocalhost));
+        // invalid general settings are refused whatever section is given
+        Assert.Throws<ArgumentException>(() =>
+            SelectorDownloadExtension.CreateForTest(settings with { BaseUrl = "not a url" }, search: Definition().Search, options: AllowLocalhost));
+    }
+
+    [Fact]
+    public void AnExtensionCannotBeCreatedWithoutAnId()
+    {
+        ArgumentException e = Assert.Throws<ArgumentException>(() => new SelectorDownloadExtension(Definition() with { Id = Guid.Empty }, AllowLocalhost));
+
+        Assert.Contains("Id must be set.", e.Message);
     }
 
     #endregion

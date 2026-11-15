@@ -19,14 +19,13 @@ internal abstract class PostCustomDownloaderEndpoint
     /// <param name="definition">The source. Its ID is ignored, a new one is assigned</param>
     /// <param name="ct"></param>
     /// <response code="200">The Download-Source was created and is available as Download-Extension straight away</response>
-    /// <response code="400">The definition is invalid; the body lists everything that is wrong with it</response>
-    public static async Task<Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>>> Handle(
+    /// <response code="400">The definition is invalid; the validation problem lists everything that is wrong with it</response>
+    public static async Task<Ok<SelectorDownloaderDefinition>> Handle(
         [FromServices] MangaContext mangaContext, [FromServices] EventPublisher eventPublisher,
         [FromBody] SelectorDownloaderDefinition definition, CancellationToken ct)
     {
+        // The definition validated itself before we got here (see SelectorDownloaderDefinition.Validate).
         definition = (definition with { Id = Guid.NewGuid() }).Normalized();
-        if (definition.Validate() is { Count: > 0 } errors)
-            return TypedResults.BadRequest(errors.ToArray());
 
         await mangaContext.CustomDownloaders.AddAsync(new DbCustomDownloader
         {

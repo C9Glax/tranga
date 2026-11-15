@@ -1,5 +1,7 @@
+import { FetchError } from 'ofetch';
 import type {
     PostMangasCustomDownloadersTestResponse,
+    ServicesMangaPostCustomDownloaderTestRequest,
     ServicesMangaSelectorDownloaderDefinition,
     ServicesMangaSelectorField,
 } from '~/api/tranga';
@@ -190,6 +192,40 @@ export const customSourceForApi = (source: CustomSourceDefinition): ServicesMang
         attribute: blankToNull(source.images.attribute),
     },
 });
+
+/**
+ * What is sent to try one step: the general settings and only the section of that step, so a step can be tried before the
+ * other steps exist (the server validates exactly what it gets).
+ */
+export const customSourceTestBody = (
+    source: CustomSourceDefinition,
+    step: CustomSourceTestStep,
+    input: string,
+): ServicesMangaPostCustomDownloaderTestRequest => {
+    const { search, chapters, images, ...settings } = customSourceForApi(source);
+    return { settings, step, input, ...(step === 'search' ? { search } : step === 'chapters' ? { chapters } : { images }) };
+};
+
+/**
+ * The messages of a failed API call. The API answers an invalid body with a validation problem
+ * (`{ errors: { field: [messages] } }`); a list of messages or a plain text are understood as well.
+ */
+export const apiErrorMessages = (error: unknown, fallback: string): string[] => {
+    if (error instanceof FetchError) {
+        const data: unknown = error.data;
+        if (Array.isArray(data)) return data.map(String);
+        if (typeof data === 'string' && data) return [data];
+        if (data && typeof data === 'object') {
+            const { errors, title } = data as { errors?: unknown; title?: unknown };
+            if (errors && typeof errors === 'object') {
+                const messages = Object.values(errors).flatMap((value) => (Array.isArray(value) ? value.map(String) : [String(value)]));
+                if (messages.length) return [...new Set(messages)];
+            }
+            if (typeof title === 'string' && title) return [title];
+        }
+    }
+    return [fallback];
+};
 
 /** The JSON that is exported: like the API payload, but without the id (it is assigned on import). */
 export const customSourceToJson = (source: CustomSourceDefinition): string => {

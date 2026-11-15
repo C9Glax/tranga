@@ -66,6 +66,27 @@ export const zServicesMangaGitInfoResponse = z.object({
 
 export type ServicesMangaGitInfoResponseZodType = z.infer<typeof zServicesMangaGitInfoResponse>;
 
+export const zServicesMangaHttpValidationProblemDetails = z.object({
+    type: z.nullish(z.string()),
+    title: z.nullish(z.string()),
+    status: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
+    detail: z.nullish(z.string()),
+    instance: z.nullish(z.string()),
+    errors: z.optional(z.record(z.string(), z.array(z.string()))),
+});
+
+export type ServicesMangaHttpValidationProblemDetailsZodType = z.infer<typeof zServicesMangaHttpValidationProblemDetails>;
+
 export const zServicesMangaMangaChapter = z.object({
     isDownloaded: z.boolean(),
     sourceUrl: z.nullable(z.string()),
@@ -274,6 +295,25 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
 
 /**
+ * The general settings of a user-defined download source (the website itself, not how to scrape it). They validate
+ * themselves (IValidatableObject), so whoever receives one - an API endpoint, the test of a single step,
+ * the engine - does not have to know the rules.
+ */
+export const zServicesMangaSelectorDownloaderSettings = z.object({
+    id: z.optional(z.uuid()),
+    name: z.optional(z.string()),
+    baseUrl: z.optional(z.string()),
+    iconUrl: z.nullish(z.string()),
+    languages: z.optional(z.array(z.string())),
+    useFlareSolverr: z.optional(z.boolean()),
+    requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
+    headers: z.optional(z.record(z.string(), z.string())),
+    seriesUrlPattern: z.nullish(z.string()),
+});
+
+export type ServicesMangaSelectorDownloaderSettingsZodType = z.infer<typeof zServicesMangaSelectorDownloaderSettings>;
+
+/**
  * Extracts one value from an HTML element: string SelectorField.Selector picks the element (relative to the item the field
  * belongs to; empty = the item itself), string? SelectorField.Attribute picks what to read (empty = the element's text), and
  * the optional string? SelectorField.Regex post-processes the result.
@@ -328,12 +368,28 @@ export const zServicesMangaSearchSpec = z.object({
 
 export type ServicesMangaSearchSpecZodType = z.infer<typeof zServicesMangaSearchSpec>;
 
+export const zServicesMangaPostCustomDownloaderTestRequest = z.object({
+    settings: zServicesMangaSelectorDownloaderSettings,
+    step: z.string(),
+    input: z.string(),
+    search: z.nullish(zServicesMangaSearchSpec),
+    chapters: z.nullish(zServicesMangaChaptersSpec),
+    images: z.nullish(zServicesMangaImagesSpec),
+});
+
+export type ServicesMangaPostCustomDownloaderTestRequestZodType = z.infer<typeof zServicesMangaPostCustomDownloaderTestRequest>;
+
 /**
  * Describes a user-defined download source that is driven entirely by CSS/XPath selectors, so that people can add a
- * website to Tranga without writing code. Turned into an IDownloadExtension by
- * SelectorDownloadExtension; persisted as one JSON document.
+ * website to Tranga without writing code: the SelectorDownloaderSettings of the website plus how to
+ * search, list chapters and find the pages. Turned into an IDownloadExtension by
+ * SelectorDownloadExtension; persisted as one JSON document. A definition is always validated as a whole;
+ * to try a single step without the others, use the settings and that step's section on their own.
  */
 export const zServicesMangaSelectorDownloaderDefinition = z.object({
+    search: z.optional(zServicesMangaSearchSpec),
+    chapters: z.optional(zServicesMangaChaptersSpec),
+    images: z.optional(zServicesMangaImagesSpec),
     id: z.optional(z.uuid()),
     name: z.optional(z.string()),
     baseUrl: z.optional(z.string()),
@@ -343,20 +399,9 @@ export const zServicesMangaSelectorDownloaderDefinition = z.object({
     requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
     headers: z.optional(z.record(z.string(), z.string())),
     seriesUrlPattern: z.nullish(z.string()),
-    search: z.optional(zServicesMangaSearchSpec),
-    chapters: z.optional(zServicesMangaChaptersSpec),
-    images: z.optional(zServicesMangaImagesSpec),
 });
 
 export type ServicesMangaSelectorDownloaderDefinitionZodType = z.infer<typeof zServicesMangaSelectorDownloaderDefinition>;
-
-export const zServicesMangaPostCustomDownloaderTestRequest = z.object({
-    definition: zServicesMangaSelectorDownloaderDefinition,
-    step: z.string(),
-    input: z.string(),
-});
-
-export type ServicesMangaPostCustomDownloaderTestRequestZodType = z.infer<typeof zServicesMangaPostCustomDownloaderTestRequest>;
 
 /**
  * What one step of a source definition produced against the real website, so users can fix their selectors before

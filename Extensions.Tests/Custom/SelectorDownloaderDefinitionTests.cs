@@ -45,9 +45,10 @@ public sealed class SelectorDownloaderDefinitionTests
         Assert.Equal(example.Images.PageSelector, copy.Images.PageSelector);
     }
 
+    // The id is not part of what clients send (the server assigns it), so the datatype does not ask for it.
+    // An extension cannot be created without one, see SelectorDownloadExtensionTests.AnExtensionCannotBeCreatedWithoutAnId.
     [Fact]
-    public void ExampleWithoutIdIsInvalid() =>
-        Assert.Contains("Id must be set.", (Valid with { Id = Guid.Empty }).Validate());
+    public void ModelValidationDoesNotAskForAnId() => Assert.Empty((Valid with { Id = Guid.Empty }).Validate());
 
     [Fact]
     public void EmptyDefinitionReportsEveryRequiredPart()
@@ -64,16 +65,67 @@ public sealed class SelectorDownloaderDefinitionTests
     }
 
     [Fact]
-    public void StepValidationOnlyChecksGeneralSettingsAndThatStep()
+    public void SettingsValidateThemselvesWithoutAnySection()
     {
-        SelectorDownloaderDefinition onlySearch = Valid with { Chapters = new ChaptersSpec(), Images = new ImagesSpec() };
+        SelectorDownloaderSettings settings = new() { Name = "Site", BaseUrl = "https://example.com" };
 
-        Assert.Empty(onlySearch.Validate(SelectorDownloaderStep.Search));
-        Assert.NotEmpty(onlySearch.Validate(SelectorDownloaderStep.Chapters));
-        Assert.NotEmpty(onlySearch.Validate(SelectorDownloaderStep.Images));
-        Assert.NotEmpty(onlySearch.Validate());
-        // general problems are always reported
-        Assert.NotEmpty((onlySearch with { Name = "" }).Validate(SelectorDownloaderStep.Search));
+        Assert.Empty(settings.Validate());
+        Assert.Contains("Name is required.", (settings with { Name = "" }).Validate());
+        Assert.Contains("Base URL must be an absolute http(s) URL.", (settings with { BaseUrl = "nope" }).Validate());
+    }
+
+    [Fact]
+    public void SectionsValidateThemselves()
+    {
+        SelectorDownloaderDefinition valid = Valid;
+
+        Assert.Empty(valid.Search.Validate("Search"));
+        Assert.Empty(valid.Chapters.Validate("Chapters", valid.SeriesUrlGroups()));
+        Assert.Empty(valid.Images.Validate("Images"));
+        Assert.NotEmpty(new SearchSpec().Validate("Search"));
+        Assert.NotEmpty(new ChaptersSpec().Validate("Chapters", []));
+        Assert.NotEmpty(new ImagesSpec().Validate("Images"));
+    }
+
+    [Fact]
+    public void AChapterListUrlMayUseTheGroupsOfTheSeriesPattern()
+    {
+        ChaptersSpec chapters = Valid.Chapters with { UrlTemplate = "/series/{id}/chapters" };
+
+        Assert.Empty(chapters.Validate("Chapters", ["id"]));
+        Assert.Contains(chapters.Validate("Chapters", []), r => r.ErrorMessage!.Contains("unknown placeholder '{id}'"));
+    }
+
+    [Fact]
+    public void TheDefinitionValidatesItsSettingsAndAllSectionsAtOnceAndNamesTheMembers()
+    {
+        SelectorDownloaderDefinition broken = Valid with { BaseUrl = "nope", Search = new SearchSpec(), Images = new ImagesSpec() };
+
+        List<System.ComponentModel.DataAnnotations.ValidationResult> results = broken
+            .Validate(new System.ComponentModel.DataAnnotations.ValidationContext(broken)).ToList();
+
+        string[] members = results.SelectMany(r => r.MemberNames).Distinct().ToArray();
+        Assert.Contains("BaseUrl", members);
+        Assert.Contains("Search.UrlTemplate", members);
+        Assert.Contains("Search.ItemSelector", members);
+        Assert.Contains("Images.ImageSelector", members);
+        Assert.DoesNotContain(members, m => m.StartsWith("Chapters"));
+        // plain Validate() is the same list as messages
+        Assert.Equal(results.Select(r => r.ErrorMessage), broken.Validate());
+    }
+
+    [Fact]
+    public void SettingsAreTheFlatPartOfTheDefinitionJson()
+    {
+        string json = SelectorDownloaderJson.Serialize(Valid);
+
+        SelectorDownloaderSettings? settings = System.Text.Json.JsonSerializer.Deserialize<SelectorDownloaderSettings>(json, SelectorDownloaderJson.Options);
+
+        Assert.NotNull(settings);
+        Assert.Equal(Valid.BaseUrl, settings.BaseUrl);
+        Assert.Equal(Valid.Name, settings.Name);
+        Assert.Contains("\"search\"", json);
+        Assert.Contains("\"baseUrl\"", json);
     }
 
     [Theory]

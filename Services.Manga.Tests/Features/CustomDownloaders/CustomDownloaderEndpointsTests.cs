@@ -36,10 +36,8 @@ public class CustomDownloaderEndpointsTests : TrangaTest
         (EventPublisher publisher, Mock<IChannel> channel) = CreateEventPublisher();
         Guid suppliedId = Guid.NewGuid();
 
-        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>> result =
-            await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid() with { Id = suppliedId }, ct);
+        Ok<SelectorDownloaderDefinition> ok = await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid() with { Id = suppliedId }, ct);
 
-        Ok<SelectorDownloaderDefinition> ok = Assert.IsType<Ok<SelectorDownloaderDefinition>>(result.Result);
         Assert.NotEqual(Guid.Empty, ok.Value!.Id);
         Assert.NotEqual(suppliedId, ok.Value.Id);
         DbCustomDownloader row = await context.CustomDownloaders.SingleAsync(ct);
@@ -55,10 +53,10 @@ public class CustomDownloaderEndpointsTests : TrangaTest
         await using MangaContext context = MangaContextFactory.Create();
         (EventPublisher publisher, _) = CreateEventPublisher();
 
-        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>> result =
+        Ok<SelectorDownloaderDefinition> result =
             await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid() with { BaseUrl = "https://weebcentral.com/ " }, ct);
 
-        Assert.Equal("https://weebcentral.com", Assert.IsType<Ok<SelectorDownloaderDefinition>>(result.Result).Value!.BaseUrl);
+        Assert.Equal("https://weebcentral.com", result.Value!.BaseUrl);
         Assert.Equal("https://weebcentral.com", SelectorDownloaderJson.Deserialize((await context.CustomDownloaders.SingleAsync(ct)).DefinitionJson)!.BaseUrl);
     }
 
@@ -68,29 +66,13 @@ public class CustomDownloaderEndpointsTests : TrangaTest
         await using MangaContext context = MangaContextFactory.Create();
         (EventPublisher publisher, _) = CreateEventPublisher(channelOpen: false);
 
-        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>> result =
-            await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct);
+        await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct);
 
-        Assert.IsType<Ok<SelectorDownloaderDefinition>>(result.Result);
         Assert.Single(await context.CustomDownloaders.ToListAsync(ct));
     }
 
-    [Fact]
-    public async Task Post_RejectsInvalidDefinitionsAndListsAllProblems()
-    {
-        await using MangaContext context = MangaContextFactory.Create();
-        (EventPublisher publisher, Mock<IChannel> channel) = CreateEventPublisher();
-
-        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>> result = await PostCustomDownloaderEndpoint.Handle(
-            context, publisher, Valid() with { Name = "", BaseUrl = "nonsense", Search = new SearchSpec() }, ct);
-
-        BadRequest<string[]> badRequest = Assert.IsType<BadRequest<string[]>>(result.Result);
-        Assert.Contains(badRequest.Value!, e => e.Contains("Name"));
-        Assert.Contains(badRequest.Value!, e => e.Contains("Base URL"));
-        Assert.Contains(badRequest.Value!, e => e.Contains("Search"));
-        Assert.Empty(await context.CustomDownloaders.ToListAsync(ct));
-        Assert.False(PublishedChangedEvent(channel));
-    }
+    // Invalid definitions are not an endpoint concern: the definition validates itself (SelectorDownloaderDefinitionTests)
+    // and the framework answers 400 before the endpoint runs.
 
     #endregion
 
@@ -116,7 +98,7 @@ public class CustomDownloaderEndpointsTests : TrangaTest
     {
         await using MangaContext context = MangaContextFactory.Create();
         (EventPublisher publisher, _) = CreateEventPublisher();
-        Guid id = (await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct)).Result is Ok<SelectorDownloaderDefinition> created ? created.Value!.Id : Guid.Empty;
+        Guid id = (await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct)).Value!.Id;
 
         Results<Ok<SelectorDownloaderDefinition>, NotFound> result = await GetCustomDownloaderEndpoint.Handle(context, id, ct);
 
@@ -142,10 +124,10 @@ public class CustomDownloaderEndpointsTests : TrangaTest
     {
         await using MangaContext context = MangaContextFactory.Create();
         (EventPublisher publisher, Mock<IChannel> channel) = CreateEventPublisher();
-        Guid id = ((Ok<SelectorDownloaderDefinition>)(await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid("Old"), ct)).Result).Value!.Id;
+        Guid id = (await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid("Old"), ct)).Value!.Id;
         channel.Invocations.Clear();
 
-        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>, NotFound> result = await PutCustomDownloaderEndpoint.Handle(
+        Results<Ok<SelectorDownloaderDefinition>, NotFound> result = await PutCustomDownloaderEndpoint.Handle(
             context, publisher, id, Valid("New") with { Id = Guid.NewGuid(), RequestsPerSecond = 2 }, ct);
 
         Ok<SelectorDownloaderDefinition> ok = Assert.IsType<Ok<SelectorDownloaderDefinition>>(result.Result);
@@ -158,26 +140,12 @@ public class CustomDownloaderEndpointsTests : TrangaTest
     }
 
     [Fact]
-    public async Task Put_RejectsInvalidDefinitionsWithoutChangingAnything()
-    {
-        await using MangaContext context = MangaContextFactory.Create();
-        (EventPublisher publisher, _) = CreateEventPublisher();
-        Guid id = ((Ok<SelectorDownloaderDefinition>)(await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid("Keep"), ct)).Result).Value!.Id;
-
-        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>, NotFound> result =
-            await PutCustomDownloaderEndpoint.Handle(context, publisher, id, Valid("Changed") with { RequestsPerSecond = 500 }, ct);
-
-        Assert.IsType<BadRequest<string[]>>(result.Result);
-        Assert.Equal("Keep", (await context.CustomDownloaders.AsNoTracking().SingleAsync(ct)).Name);
-    }
-
-    [Fact]
     public async Task Put_Returns404ForUnknownId()
     {
         await using MangaContext context = MangaContextFactory.Create();
         (EventPublisher publisher, _) = CreateEventPublisher();
 
-        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>, NotFound> result =
+        Results<Ok<SelectorDownloaderDefinition>, NotFound> result =
             await PutCustomDownloaderEndpoint.Handle(context, publisher, Guid.NewGuid(), Valid(), ct);
 
         Assert.IsType<NotFound>(result.Result);
@@ -192,7 +160,7 @@ public class CustomDownloaderEndpointsTests : TrangaTest
     {
         await using MangaContext context = MangaContextFactory.Create();
         (EventPublisher publisher, Mock<IChannel> channel) = CreateEventPublisher();
-        Guid id = ((Ok<SelectorDownloaderDefinition>)(await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct)).Result).Value!.Id;
+        Guid id = (await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct)).Value!.Id;
         channel.Invocations.Clear();
 
         Results<Ok, NotFound> result = await DeleteCustomDownloaderEndpoint.Handle(context, publisher, id, ct);
@@ -207,7 +175,7 @@ public class CustomDownloaderEndpointsTests : TrangaTest
     {
         await using MangaContext context = MangaContextFactory.Create();
         (EventPublisher publisher, _) = CreateEventPublisher();
-        Guid id = ((Ok<SelectorDownloaderDefinition>)(await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct)).Result).Value!.Id;
+        Guid id = (await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid(), ct)).Value!.Id;
         (DbManga manga, _, _) = await TestDataBuilder.SeedMangaWithChosenMetadata(context, ct: ct);
         DbDownloadLink downloadLink = new() { DownloadExtension = id, Identifier = "https://example.com/series/1", Series = "Series" };
         DbMangaDownloadLinks link = new()
