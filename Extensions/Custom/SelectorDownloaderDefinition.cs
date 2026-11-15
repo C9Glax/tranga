@@ -55,6 +55,15 @@ public sealed record SelectorDownloaderDefinition
     private static readonly string[] ForbiddenHeaders = ["host", "content-length", "transfer-encoding", "connection"];
     private static readonly Regex Placeholder = new(@"\{(\w+)\}", RegexOptions.Compiled, RegexTimeout);
 
+    private static readonly Regex LanguageCode = new(@"^[a-z]{2,3}(-[a-z]{4})?(-([a-z]{2}|\d{3}))?$",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase, RegexTimeout);
+
+    /// <summary>
+    /// The definition the way it is stored and used: the base URL without surrounding whitespace and trailing slashes
+    /// (<c>https://example.com/</c> is the same website as <c>https://example.com</c>, and relative URLs resolve the same).
+    /// </summary>
+    public SelectorDownloaderDefinition Normalized() => this with { BaseUrl = (BaseUrl ?? "").Trim().TrimEnd('/') };
+
     /// <summary>Checks the whole definition and returns a human readable message for everything that is wrong with it.</summary>
     public IReadOnlyList<string> Validate() => Validate(null);
 
@@ -141,7 +150,8 @@ public sealed record SelectorDownloaderDefinition
 
     private static bool IsValidLanguage(string language)
     {
-        if (string.IsNullOrWhiteSpace(language))
+        // Only codes like en, en-us or pt-BR: other words would otherwise become "custom cultures" on some platforms.
+        if (string.IsNullOrWhiteSpace(language) || !LanguageCode.IsMatch(language))
             return false;
         try
         {

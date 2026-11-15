@@ -30,7 +30,7 @@ internal abstract class PutCustomDownloaderEndpoint
         if (await mangaContext.CustomDownloaders.FirstOrDefaultAsync(c => c.CustomDownloaderId == customDownloaderId, ct) is not { } row)
             return TypedResults.NotFound();
 
-        definition = definition with { Id = customDownloaderId };
+        definition = (definition with { Id = customDownloaderId }).Normalized();
         if (definition.Validate() is { Count: > 0 } errors)
             return TypedResults.BadRequest(errors.ToArray());
 

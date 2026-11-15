@@ -32,8 +32,12 @@
                         label="Base URL"
                         name="baseUrl"
                         required
-                        :description="`Root of the website. Relative links are resolved against it.${privateHint}`">
-                        <UInput v-model="state.baseUrl" placeholder="https://example.com" class="w-full" />
+                        :description="`Root of the website. Relative links are resolved against it. A trailing / is removed.${privateHint}`">
+                        <UInput
+                            v-model="state.baseUrl"
+                            placeholder="https://example.com"
+                            class="w-full"
+                            @blur="state.baseUrl = normalizeBaseUrl(state.baseUrl)" />
                     </UFormField>
                     <UFormField label="Icon URL" name="iconUrl" description="Optional. Defaults to the website's favicon.">
                         <UInput v-model="state.iconUrl" placeholder="https://example.com/icon.png" class="w-full" />
@@ -42,18 +46,56 @@
                         label="Languages"
                         name="languages"
                         required
-                        description="Languages the website publishes in, e.g. en or pt-BR. Press Enter to add one.">
-                        <UInputTags v-model="state.languages" placeholder="en" class="w-full" />
+                        :error="languageError"
+                        description="Languages the website publishes in, as codes like en, en-us or pt-BR. Press Enter to add one.">
+                        <UInputTags v-model="languages" placeholder="en" class="w-full" />
                     </UFormField>
                     <UFormField
                         label="Series URL pattern"
                         name="seriesUrlPattern"
-                        description="Optional regular expression a series URL has to match. Named groups like (?<id>[^/]+) can be used as {id} in the chapter list URL below.">
-                        <UInput
-                            v-model="state.seriesUrlPattern"
-                            placeholder="^https://example\.com/series/(?<id>[^/]+)"
-                            :ui="{ base: 'font-mono' }"
-                            class="w-full" />
+                        description="Optional regular expression a series URL has to match. Named groups like (?<id>[^/]+) can be used as {id} in the chapter list URL below. Try it on a URL on the right.">
+                        <div class="flex flex-col gap-2">
+                            <div class="grid gap-2 md:grid-cols-2">
+                                <UInput
+                                    v-model="state.seriesUrlPattern"
+                                    placeholder="^https://example\.com/series/(?<id>[^/]+)"
+                                    :ui="{ base: 'font-mono' }"
+                                    class="w-full" />
+                                <UInput v-model="testUrls.pattern" placeholder="A series URL to try the pattern on" class="w-full" />
+                            </div>
+                            <div v-if="patternResult.state !== 'empty'" class="flex flex-row flex-wrap items-center gap-2 text-sm">
+                                <template v-if="patternResult.state === 'invalid'">
+                                    <UIcon name="i-lucide-circle-alert" class="text-error" />
+                                    <span class="text-error">{{ patternResult.message }}</span>
+                                </template>
+                                <template v-else-if="patternResult.state === 'no-match'">
+                                    <UIcon name="i-lucide-x" class="text-warning" />
+                                    <span class="text-warning">The pattern does not match this URL.</span>
+                                </template>
+                                <template v-else>
+                                    <UIcon name="i-lucide-check" class="text-success" />
+                                    <span class="text-success">Matches.</span>
+                                    <template v-if="patternResult.groups.length">
+                                        <UBadge
+                                            v-for="group in patternResult.groups"
+                                            :key="group.name"
+                                            color="neutral"
+                                            variant="subtle"
+                                            class="font-mono">
+                                            {{ placeholder(group.name) }} = {{ group.value || '(empty)' }}
+                                        </UBadge>
+                                    </template>
+                                    <span v-else class="text-muted">No named groups.</span>
+                                    <UButton
+                                        label="Use for the chapters test"
+                                        icon="i-lucide-arrow-down-to-line"
+                                        color="neutral"
+                                        variant="subtle"
+                                        size="xs"
+                                        @click="useSeriesUrl(testUrls.pattern.trim())" />
+                                </template>
+                            </div>
+                        </div>
                     </UFormField>
                     <div class="flex flex-row flex-wrap gap-6">
                         <UFormField
@@ -148,7 +190,13 @@
                         required
                         attribute-placeholder="Attribute, e.g. src or data-src,src"
                         description="Several attributes can be listed, the first one that has a value is used." />
-                    <CustomSourceTestPanel :definition="state" step="search" input-label="Search text" input-placeholder="one piece" />
+                    <CustomSourceTestPanel
+                        :definition="state"
+                        step="search"
+                        input-label="Search text"
+                        input-placeholder="one piece"
+                        pick-label="Use for chapters test"
+                        @pick="useSeriesUrl" />
                 </div>
             </UCard>
 
@@ -199,11 +247,14 @@
                         description="Optional. When the chapter list is split over several pages, the link to the next one (followed up to 50 times)."
                         attribute-placeholder="Attribute, e.g. href" />
                     <CustomSourceTestPanel
+                        v-model:input="testUrls.chapters"
                         :definition="state"
                         step="chapters"
                         input-label="Series URL"
                         input-placeholder="https://example.com/series/1"
-                        help="A series page of the website, e.g. copied from a search result." />
+                        help="A series page of the website. Use the button in the search test results to fill it in."
+                        pick-label="Use for pages test"
+                        @pick="useChapterUrl" />
                 </div>
             </UCard>
 
@@ -244,11 +295,12 @@
                         <UInput v-model="state.images.attribute" placeholder="data-src,src" :ui="{ base: 'font-mono' }" class="w-full" />
                     </UFormField>
                     <CustomSourceTestPanel
+                        v-model:input="testUrls.images"
                         :definition="state"
                         step="images"
                         input-label="Chapter URL"
                         input-placeholder="https://example.com/chapter/1"
-                        help="Lists the image URLs that would be downloaded; nothing is downloaded." />
+                        help="Lists the image URLs that would be downloaded; nothing is downloaded. Use the button in the chapters test results to fill it in." />
                 </div>
             </UCard>
 
@@ -340,6 +392,38 @@ const exampleItems = computed<DropdownMenuItem[]>(() =>
         },
     })),
 );
+
+// Only codes like en, en-us or pt-BR can be added as language: anything else is dropped with a message.
+const languageError = ref<string>();
+const languages = computed({
+    get: () => state.value.languages,
+    set: (tags: string[]) => {
+        const rejected = tags.filter((tag) => !isLanguageCode(tag));
+        languageError.value = rejected.length
+            ? `"${rejected.join('", "')}" is not a language code. Use codes like en, en-us or pt-BR.`
+            : undefined;
+        state.value.languages = tags.filter((tag) => isLanguageCode(tag)).map((tag) => tag.trim());
+    },
+});
+
+// URLs for trying the pattern and the chapter / page steps. A test result can fill in the one of the next step.
+const testUrls = reactive({ pattern: '', chapters: '', images: '' });
+const patternResult = computed(() => testSeriesPattern(state.value.seriesUrlPattern, testUrls.pattern));
+const placeholder = (group: string) => `{${group}}`; // how the group is written in the chapter list URL
+
+const useSeriesUrl = (url: string) => {
+    testUrls.chapters = url;
+    testUrls.pattern = url;
+    toast.add({
+        title: 'Filled in the series URL.',
+        description: 'It is used in the pattern preview and the chapters test.',
+        color: 'info',
+    });
+};
+const useChapterUrl = (url: string) => {
+    testUrls.images = url;
+    toast.add({ title: 'Filled in the chapter URL.', description: 'It is used in the pages test.', color: 'info' });
+};
 
 // The header rows are edited as a list; keep the definition (used by the test panels and on save) in sync.
 const syncHeaders = () => {

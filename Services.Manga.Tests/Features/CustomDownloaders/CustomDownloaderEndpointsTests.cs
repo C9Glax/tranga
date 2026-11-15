@@ -50,6 +50,19 @@ public class CustomDownloaderEndpointsTests : TrangaTest
     }
 
     [Fact]
+    public async Task Post_StoresTheBaseUrlWithoutTrailingSlash()
+    {
+        await using MangaContext context = MangaContextFactory.Create();
+        (EventPublisher publisher, _) = CreateEventPublisher();
+
+        Results<Ok<SelectorDownloaderDefinition>, BadRequest<string[]>> result =
+            await PostCustomDownloaderEndpoint.Handle(context, publisher, Valid() with { BaseUrl = "https://weebcentral.com/ " }, ct);
+
+        Assert.Equal("https://weebcentral.com", Assert.IsType<Ok<SelectorDownloaderDefinition>>(result.Result).Value!.BaseUrl);
+        Assert.Equal("https://weebcentral.com", SelectorDownloaderJson.Deserialize((await context.CustomDownloaders.SingleAsync(ct)).DefinitionJson)!.BaseUrl);
+    }
+
+    [Fact]
     public async Task Post_StillSucceedsWhenTheMessageBusIsDown()
     {
         await using MangaContext context = MangaContextFactory.Create();

@@ -525,6 +525,20 @@ public sealed class SelectorDownloadExtensionTests : Common.Tests.TrangaTest, ID
     }
 
     [Fact]
+    public async Task ATrailingSlashOfTheBaseUrlMakesNoDifference()
+    {
+        _site.Html("/search?q=x", """<div class="result"><a class="title" href="/series/1">One</a><img src="/covers/1.jpg"></div>""");
+        SelectorDownloadExtension extension = Extension(Definition() with { BaseUrl = $"  {_site.BaseUrl}/  " });
+
+        StepTestResult result = await extension.TestSearchAsync("x", ct);
+
+        Assert.Equal(_site.BaseUrl, extension.BaseUrl);
+        Assert.Equal($"{_site.BaseUrl}/search?q=x", result.RequestUrl);
+        Assert.Equal(1, result.ItemCount);
+        Assert.Equal($"{_site.BaseUrl}/series/1", result.Rows[0]["url"]);
+    }
+
+    [Fact]
     public async Task TestWarnsWhenTheItemSelectorMatchesNothing()
     {
         _site.Html("/search?q=x", "<p>rendered by javascript</p>");

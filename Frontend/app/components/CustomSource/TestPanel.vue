@@ -39,7 +39,30 @@
                 icon="i-lucide-triangle-alert"
                 :title="warning" />
 
-            <UTable v-if="rows.length" :data="rows" :columns="columns" :ui="{ td: 'max-w-xs truncate', th: 'capitalize' }" class="w-full" />
+            <UTable v-if="rows.length" :data="rows" :columns="columns" :ui="{ td: 'max-w-xs truncate', th: 'capitalize' }" class="w-full">
+                <template v-for="key in linkColumns" :key="key" #[`${key}-cell`]="{ row }">
+                    <a
+                        v-if="isHttpUrl(row.original[key])"
+                        :href="row.original[key]!"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-primary underline-offset-2 hover:underline"
+                        :title="row.original[key]!">
+                        {{ row.original[key] }}
+                    </a>
+                    <span v-else>{{ row.original[key] }}</span>
+                </template>
+                <template #pick-cell="{ row }">
+                    <UButton
+                        v-if="isHttpUrl(row.original.url)"
+                        :label="pickLabel"
+                        icon="i-lucide-arrow-down-to-line"
+                        color="neutral"
+                        variant="subtle"
+                        size="xs"
+                        @click="emit('pick', row.original.url!)" />
+                </template>
+            </UTable>
             <p v-if="Number(result.itemCount) > rows.length" class="text-xs text-muted">
                 Showing the first {{ rows.length }} of {{ result.itemCount }}.
             </p>
@@ -60,15 +83,25 @@ const props = defineProps<{
     inputLabel: string;
     inputPlaceholder?: string;
     help?: string;
+    /** When set, every result row with a URL gets a button with this label that emits `pick` (to fill the next step's test). */
+    pickLabel?: string;
 }>();
+const emit = defineEmits<{ pick: [url: string] }>();
 
-const input = ref('');
+const input = defineModel<string>('input', { default: '' });
 const loading = ref(false);
 const result = ref<PostMangasCustomDownloadersTestResponse>();
 const errors = ref<string[]>([]);
 
 const rows = computed<Row[]>(() => (result.value?.rows ?? []) as Row[]);
-const columns = computed<TableColumn<Row>[]>(() => Object.keys(rows.value[0] ?? {}).map((key) => ({ accessorKey: key, header: key })));
+// Columns that hold links to the website or its images are shown as clickable links.
+const LINK_COLUMNS = ['url', 'cover', 'page', 'image'];
+const linkColumns = computed(() => Object.keys(rows.value[0] ?? {}).filter((key) => LINK_COLUMNS.includes(key)));
+const isHttpUrl = (value: string | null | undefined): boolean => typeof value === 'string' && /^https?:\/\//i.test(value);
+const columns = computed<TableColumn<Row>[]>(() => [
+    ...Object.keys(rows.value[0] ?? {}).map((key) => ({ accessorKey: key, header: key })),
+    ...(props.pickLabel && rows.value.some((row) => isHttpUrl(row.url)) ? [{ id: 'pick', header: '' }] : []),
+]);
 
 const run = async () => {
     if (!input.value.trim()) return;

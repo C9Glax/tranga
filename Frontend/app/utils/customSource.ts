@@ -103,6 +103,35 @@ export const normalizeCustomSource = (source: ServicesMangaSelectorDownloaderDef
 
 const blankToNull = (value: string) => (value.trim() === '' ? null : value.trim());
 
+/** A language code as the server accepts it: `en`, `en-us`, `pt-BR`, `zh-Hans`, `es-419` (not just any word). */
+export const isLanguageCode = (value: string): boolean => /^[a-z]{2,3}(-[a-z]{4})?(-([a-z]{2}|\d{3}))?$/i.test(value.trim());
+
+/** Trims the base URL and removes trailing slashes: `https://example.com/` is the same website as `https://example.com`. */
+export const normalizeBaseUrl = (value: string): string => value.trim().replace(/\/+$/, '');
+
+export type SeriesPatternResult =
+    | { state: 'empty' }
+    | { state: 'invalid'; message: string }
+    | { state: 'no-match' }
+    | { state: 'match'; groups: { name: string; value: string }[] };
+
+/**
+ * Tries a series URL pattern on a URL, for the preview next to the pattern. Runs in the browser (JavaScript regex): the
+ * server uses .NET, which understands the same everyday syntax (named groups, classes, lookaheads) but not every extra.
+ */
+export const testSeriesPattern = (pattern: string, url: string): SeriesPatternResult => {
+    if (!pattern.trim() || !url.trim()) return { state: 'empty' };
+    let regex: RegExp;
+    try {
+        regex = new RegExp(pattern.trim());
+    } catch (error: unknown) {
+        return { state: 'invalid', message: error instanceof Error ? error.message : 'Not a valid regular expression.' };
+    }
+    const match = regex.exec(url.trim());
+    if (!match) return { state: 'no-match' };
+    return { state: 'match', groups: Object.entries(match.groups ?? {}).map(([name, value]) => ({ name, value: value ?? '' })) };
+};
+
 const fieldForApi = (source: CustomSourceField): ServicesMangaSelectorField => ({
     selector: source.selector.trim(),
     attribute: blankToNull(source.attribute),
@@ -114,7 +143,7 @@ const fieldForApi = (source: CustomSourceField): ServicesMangaSelectorField => (
 export const customSourceForApi = (source: CustomSourceDefinition): ServicesMangaSelectorDownloaderDefinition => ({
     id: source.id || undefined,
     name: source.name.trim(),
-    baseUrl: source.baseUrl.trim(),
+    baseUrl: normalizeBaseUrl(source.baseUrl),
     iconUrl: blankToNull(source.iconUrl),
     languages: source.languages.map((language) => language.trim()).filter(Boolean),
     useFlareSolverr: source.useFlareSolverr,

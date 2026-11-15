@@ -108,6 +108,46 @@ public sealed class SelectorDownloaderDefinitionTests
     }
 
     [Theory]
+    [InlineData("en")]
+    [InlineData("en-us")]
+    [InlineData("pt-BR")]
+    [InlineData("zh-Hans")]
+    [InlineData("es-419")]
+    public void CommonLanguageCodesAreAccepted(string language) => Assert.Empty((Valid with { Languages = [language] }).Validate());
+
+    [Theory]
+    [InlineData("amazing")]
+    [InlineData("wowthiscanbeinputhere")]
+    [InlineData("english")]
+    [InlineData("e")]
+    [InlineData("en_US")]
+    [InlineData("en us")]
+    public void WordsThatAreNotLanguageCodesAreRejected(string language) =>
+        Assert.Contains((Valid with { Languages = ["en", language] }).Validate(), e => e.Contains($"'{language}' is not a valid language"));
+
+    [Theory]
+    [InlineData("https://example.com/", "https://example.com")]
+    [InlineData("  https://example.com///  ", "https://example.com")]
+    [InlineData("https://example.com/en/", "https://example.com/en")]
+    [InlineData("https://example.com", "https://example.com")]
+    public void TheBaseUrlLosesWhitespaceAndTrailingSlashes(string baseUrl, string expected) =>
+        Assert.Equal(expected, (Valid with { BaseUrl = baseUrl }).Normalized().BaseUrl);
+
+    [Fact]
+    public void NormalizingKeepsEverythingElse()
+    {
+        SelectorDownloaderDefinition definition = Valid;
+
+        Assert.Equal(definition, definition.Normalized());
+    }
+
+    [Fact]
+    public void AnUnparsableBaseUrlStaysInvalidAfterNormalizing()
+    {
+        Assert.Contains("Base URL", string.Join(' ', (Valid with { BaseUrl = "///" }).Normalized().Validate()));
+    }
+
+    [Theory]
     [InlineData("Host")]
     [InlineData("content-length")]
     [InlineData("bad header")]

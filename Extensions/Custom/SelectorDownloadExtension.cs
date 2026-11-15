@@ -77,6 +77,8 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
 
     private SelectorDownloadExtension(SelectorDownloaderDefinition definition, SelectorDownloaderOptions? options, SelectorDownloaderStep? step)
     {
+        // Also covers definitions stored before the base URL was normalized when they were saved.
+        definition = definition.Normalized();
         if (definition.Validate(step) is { Count: > 0 } errors)
             throw new ArgumentException(string.Join(" ", errors), nameof(definition));
 

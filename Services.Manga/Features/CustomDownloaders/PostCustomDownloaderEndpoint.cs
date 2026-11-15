@@ -24,7 +24,7 @@ internal abstract class PostCustomDownloaderEndpoint
         [FromServices] MangaContext mangaContext, [FromServices] EventPublisher eventPublisher,
         [FromBody] SelectorDownloaderDefinition definition, CancellationToken ct)
     {
-        definition = definition with { Id = Guid.NewGuid() };
+        definition = (definition with { Id = Guid.NewGuid() }).Normalized();
         if (definition.Validate() is { Count: > 0 } errors)
             return TypedResults.BadRequest(errors.ToArray());
 
