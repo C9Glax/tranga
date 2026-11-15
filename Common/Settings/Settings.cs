@@ -4,8 +4,29 @@ namespace Common.Settings;
 
 public static class Settings
 {
-    public static bool AllowNSFW { get => _allowNsfw; set => UpdateValue(ref _allowNsfw, value); }
-    private static bool _allowNsfw = bool.Parse(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AllowNSFW")) ? "false" : Environment.GetEnvironmentVariable("AllowNSFW")!);
+    /// <summary>
+    /// The value of the <c>AllowNSFW</c> environment variable when it is set to a valid boolean, otherwise <c>null</c>.
+    /// </summary>
+    private static bool? _allowNsfwFromEnv = bool.TryParse(Environment.GetEnvironmentVariable("AllowNSFW"), out bool envValue) ? envValue : null;
+    private static bool _allowNsfw;
+
+    /// <summary>
+    /// Whether NSFW content is allowed. When the <c>AllowNSFW</c> environment variable is set it is final
+    /// (see <see cref="AllowNSFWLocked"/>); otherwise the value can be changed at runtime.
+    /// </summary>
+    public static bool AllowNSFW
+    {
+        get => _allowNsfwFromEnv ?? _allowNsfw;
+        set
+        {
+            if (AllowNSFWLocked)
+                throw new InvalidOperationException("AllowNSFW is set through the AllowNSFW environment variable and cannot be changed at runtime.");
+            UpdateValue(ref _allowNsfw, value);
+        }
+    }
+
+    /// <summary>Whether <see cref="AllowNSFW"/> is fixed by the <c>AllowNSFW</c> environment variable.</summary>
+    public static bool AllowNSFWLocked => _allowNsfwFromEnv.HasValue;
 
     public static Language DownloadLanguage { get => _downloadLanguage; set => UpdateValue(ref _downloadLanguage, value); }
     private static Language _downloadLanguage = new (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DownloadLanguage")) ? "en" : Environment.GetEnvironmentVariable("DownloadLanguage")!);

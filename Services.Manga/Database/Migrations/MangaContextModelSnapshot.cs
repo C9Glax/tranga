@@ -17,7 +17,7 @@ namespace Services.Manga.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -323,6 +323,20 @@ namespace Services.Manga.Database.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("DbPerson");
+                });
+
+            modelBuilder.Entity("Services.Manga.Database.DbSetting", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("Services.Manga.Database.DbChapter", b =>

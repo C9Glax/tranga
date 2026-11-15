@@ -16,6 +16,7 @@
                     <SettingsNotifications v-if="active === 'notifications'" />
                     <SettingsLibraries v-else-if="active === 'libraries'" />
                     <SettingsAppearance v-else-if="active === 'appearance'" />
+                    <SettingsBehavior v-else-if="active === 'behavior'" />
                     <SettingsSecurity v-else-if="active === 'security'" />
                     <SettingsDebug v-else-if="active === 'debug'" />
                 </div>
@@ -34,6 +35,7 @@ const items: TabsItem[] = [
     { label: 'Notifications', icon: 'i-lucide-megaphone', value: 'notifications' },
     { label: 'Libraries', icon: 'i-lucide-library', value: 'libraries' },
     { label: 'Appearance', icon: 'i-lucide-palette', value: 'appearance' },
+    { label: 'Behavior', icon: 'i-lucide-sliders-horizontal', value: 'behavior' },
     { label: 'Security', icon: 'i-lucide-key-round', value: 'security' },
     { label: 'Debug', icon: 'i-lucide-bug', value: 'debug' },
 ];

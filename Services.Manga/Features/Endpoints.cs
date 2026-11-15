@@ -5,6 +5,7 @@ using Services.Manga.Features.File;
 using Services.Manga.Features.Manga;
 using Services.Manga.Features.Manga.Search;
 using Services.Manga.Features.Metadata;
+using Services.Manga.Features.Settings;
 using Services.Manga.Features.Suwayomi;
 
 namespace Services.Manga.Features;
@@ -32,6 +33,10 @@ internal sealed class Endpoints : EndpointsBuilder
         builder.MapGroup("/files")
             .WithTags("Manga", "Files")
             .MapFileEndpoints();
+
+        builder.MapGroup("/settings")
+            .WithTags("Manga", "Settings")
+            .MapSettingsEndpoints();
 
         builder.MapGroup("/suwayomi")
             .WithTags("Manga", "Suwayomi")
@@ -183,5 +188,16 @@ internal static class EndpointHelpers
 
         builder.MapPost("/refresh", PostSuwayomiRefreshEndpoint.Handle)
             .WithSummary("Re-read the sources installed on the Suwayomi sidecar");
+    }
+}
+internal static class SettingsEndpointHelpers
+{
+    internal static void MapSettingsEndpoints(this RouteGroupBuilder builder)
+    {
+        builder.MapGet("behavior", GetBehaviorSettingsEndpoint.Handle)
+            .WithSummary("Get the Behavior-Settings");
+
+        builder.MapPatch("behavior", PatchBehaviorSettingsEndpoint.Handle)
+            .WithSummary("Update the Behavior-Settings");
     }
 }

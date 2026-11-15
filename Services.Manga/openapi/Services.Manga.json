@@ -1022,6 +1022,59 @@
         }
       }
     },
+    "/mangas/settings/behavior": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Settings"
+        ],
+        "summary": "Get the Behavior-Settings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BehaviorSettings"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Manga",
+          "Settings"
+        ],
+        "summary": "Update the Behavior-Settings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchBehaviorSettingsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/mangas/suwayomi/status": {
       "get": {
         "tags": [
@@ -1246,6 +1299,21 @@
   },
   "components": {
     "schemas": {
+      "BehaviorSettings": {
+        "required": [
+          "allowNsfw",
+          "allowNsfwLocked"
+        ],
+        "type": "object",
+        "properties": {
+          "allowNsfw": {
+            "type": "boolean"
+          },
+          "allowNsfwLocked": {
+            "type": "boolean"
+          }
+        }
+      },
       "Chapter": {
         "required": [
           "chapterId",
@@ -1771,6 +1839,20 @@
           }
         }
       },
+      "PatchBehaviorSettingsRequest": {
+        "required": [
+          "allowNsfw"
+        ],
+        "type": "object",
+        "properties": {
+          "allowNsfw": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      },
       "PatchMangaDownloadLinkRequest": {
         "required": [
           "matched",
@@ -2135,6 +2217,9 @@
     },
     {
       "name": "Files"
+    },
+    {
+      "name": "Settings"
     },
     {
       "name": "Suwayomi"
