@@ -18,7 +18,7 @@
     "urlTemplate": "/series/{id}/full-chapter-list",
     "itemSelector": "div[x-data] > a",
     "url": { "attribute": "href" },
-    "number": { "selector": "span.flex > span", "regex": "Chapter\\s+(\\d+(?:\\.\\d+)?)" },
+    "number": { "selector": "span.flex > span", "regex": "(\\d+(?:\\.\\d+)?)\\s*$" },
     "title": {},
     "date": { "selector": "time[datetime]", "attribute": "datetime" }
   },

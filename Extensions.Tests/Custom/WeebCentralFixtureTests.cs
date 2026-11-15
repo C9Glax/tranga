@@ -77,6 +77,24 @@ public sealed class WeebCentralFixtureTests : Common.Tests.TrangaTest, IDisposab
     }
 
     [Fact]
+    public async Task ChapterNamesDoNotHaveToContainTheWordChapter()
+    {
+        // Found with the real site: the Dr. STONE chapters are called "Z= 232.8", not "Chapter 232.8"
+        _site.Html("/series/NAMES/full-chapter-list", """
+            <div x-data="{}"><a href="/chapters/A"><span class="flex"><span>Z= 232.8</span></span><time datetime="2026-01-01T00:00:00Z"></time></a></div>
+            <div x-data="{}"><a href="/chapters/B"><span class="flex"><span>Chapter 12</span></span><time datetime="2026-01-02T00:00:00Z"></time></a></div>
+            <div x-data="{}"><a href="/chapters/C"><span class="flex"><span>Season 2 Chapter 5</span></span><time datetime="2026-01-03T00:00:00Z"></time></a></div>
+            <div x-data="{}"><a href="/chapters/D"><span class="flex"><span>Extra</span></span><time datetime="2026-01-04T00:00:00Z"></time></a></div>
+            """);
+        string series = $"{_site.BaseUrl}/series/NAMES/Names";
+
+        List<ChapterInfo>? chapters = await _extension.GetChapters(new MangaInfo(_extension.Identifier, "Names", series, series, new TrangaImage()), ct);
+
+        Assert.NotNull(chapters);
+        Assert.Equal(["232.8", "12", "5"], chapters.Select(c => c.Number)); // "Extra" has no number
+    }
+
+    [Fact]
     public async Task ImagesAreFoundInTheReaderSection()
     {
         StepTestResult result = await _extension.TestImagesAsync($"{_site.BaseUrl}/chapters/01M6RHBP1Y3A03BK0TZMBJ2YZN", ct);

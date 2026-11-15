@@ -33,7 +33,8 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
-- [x] Modular download sources (currently [MangaDex](https://api.mangadex.org/docs/) and [MANGA Plus](https://mangaplus.shueisha.co.jp))
+- [x] Modular download sources (built in: [MangaDex](https://api.mangadex.org/docs/) and [MANGA Plus](https://mangaplus.shueisha.co.jp))
+- [x] Custom download sources: add a website with CSS/XPath selectors, no code needed (see [Custom sources](#custom-sources))
 
 #### TODO LIST
 
@@ -62,6 +63,70 @@ All configuration that doesn't live in the [`.env`](Tranga.AppHost/aspire-output
 
 The Settings overview additionally offers **Replay first-download tour** (restarts the guided walkthrough) and
 **Backfill ComicInfo for downloaded chapters** (creates a task that adds `ComicInfo.xml` to already downloaded chapters; progress is shown on the Tasks page).
+
+### Custom sources
+
+Under **Settings → Sources → Add custom source** you can teach Tranga a website by pasting selectors, no code needed.
+A source consists of three steps, and every step has a **Test** button that runs it against the real website and shows what
+the selectors extracted, so you can fix them before saving:
+
+1. **Search**: a URL (`{query}` is the URL-encoded search text), a selector for one element per result, and fields for
+   title, link and cover image.
+2. **Chapters**: the page listing the chapters (by default the series page; `{url}` is the series link), a selector for
+   one element per chapter, and fields for link and number (optionally title and release date). A "next page" link is
+   followed if the list is paginated.
+3. **Pages**: the page that shows a chapter's images (by default the chapter page) and a selector for the images.
+
+A *field* is a selector (CSS or XPath, detected automatically; empty = the item itself), an attribute to read (empty = the
+text; `srcset,src` tries several), and optionally a regular expression (the first group is kept, or with "Replace with"
+every match is replaced). Selectors of fields are relative to their item, XPaths copied from the browser (`//div/a`) work too.
+CSS supports `:not()`, `:has()`, `:contains()` and the other usual selectors. Relative links are resolved for you.
+
+Further settings: languages, a series URL pattern (named groups such as `(?<id>[^/]+)` can be used as `{id}` in the chapter and
+page URLs), request headers (e.g. `Cookie`; requests look like a regular browser unless you set a `User-Agent`), a rate limit,
+and whether to use FlareSolverr. A source can be exported and imported as JSON.
+
+Good to know:
+
+- The data has to be in the HTML the server sends. Pages that build their content with JavaScript do not work (FlareSolverr
+  only helps with Cloudflare challenges).
+- Chapters without a number in their name are skipped; the first number found is used, so use a regex if a name contains
+  several (e.g. `(\d+(?:\.\d+)?)\s*$` takes the last one).
+- For safety, custom sources may only reach public websites: loopback, LAN and link-local addresses are refused. Set
+  `ALLOW_PRIVATE_SOURCE_HOSTS=true` ([EnvVars.md](EnvVars.md)) for a source on your own network.
+
+The **WeebCentral** definition below is built in as an example ("Start from an example") and mirrors the
+[keiyoushi](https://github.com/keiyoushi/extensions-source/tree/main/src/en/weebcentral) extension. The chapter list does not
+live on the series page but at `/series/{id}/full-chapter-list`, which is what the series URL pattern is for:
+
+```json
+{
+  "name": "WeebCentral",
+  "baseUrl": "https://weebcentral.com",
+  "languages": ["en"],
+  "requestsPerSecond": 0.5,
+  "seriesUrlPattern": "^https://weebcentral\\.com/series/(?<id>[^/?#]+)",
+  "search": {
+    "urlTemplate": "/search/data?text={query}&limit=32&offset=0&display_mode=Full%20Display",
+    "itemSelector": "article > section > a",
+    "title": { "selector": "div:not([class]):last-child" },
+    "url": { "attribute": "href" },
+    "cover": { "selector": "source, img", "attribute": "srcset,src", "regex": "/small/", "replacement": "/normal/" }
+  },
+  "chapters": {
+    "urlTemplate": "/series/{id}/full-chapter-list",
+    "itemSelector": "div[x-data] > a",
+    "url": { "attribute": "href" },
+    "number": { "selector": "span.flex > span", "regex": "(\\d+(?:\\.\\d+)?)\\s*$" },
+    "date": { "selector": "time[datetime]", "attribute": "datetime" }
+  },
+  "images": {
+    "urlTemplate": "{url}/images?is_prev=False&reading_style=long_strip",
+    "imageSelector": "section[x-data*=scroll] > img",
+    "attribute": "src"
+  }
+}
+```
 
 ### Adding a Komga library
 
