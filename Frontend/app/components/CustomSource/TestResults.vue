@@ -2,7 +2,7 @@
     <UCard :ui="{ body: 'flex max-h-[75vh] flex-col gap-3 overflow-y-auto' }" class="lg:sticky lg:top-4">
         <template #header>
             <h2 class="font-semibold">Test results</h2>
-            <p v-if="test" class="text-sm text-muted">{{ stepLabels[test.step] }} test for “{{ test.input }}”</p>
+            <p v-if="test" class="text-sm break-all text-muted">{{ stepLabels[test.step] }} test for “{{ test.input }}”</p>
             <p v-else class="text-sm text-muted">What the selectors extract from the real website.</p>
         </template>
 
