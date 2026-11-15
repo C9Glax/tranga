@@ -1,12 +1,5 @@
 <template>
     <div class="flex flex-col gap-4">
-        <UAlert
-            color="neutral"
-            variant="subtle"
-            icon="i-lucide-info"
-            title="Describe the website with selectors"
-            description="Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter). Test each step on the real website before saving." />
-
         <div class="flex flex-row flex-wrap gap-2">
             <UDropdownMenu v-if="examples?.length" :items="exampleItems">
                 <UButton
@@ -25,6 +18,12 @@
                 <UStepper ref="stepper" v-model="step" :items="steps" :linear="false" class="w-full">
                     <template #general>
                         <div class="flex flex-col gap-4 pt-4">
+                            <UAlert
+                                color="neutral"
+                                variant="subtle"
+                                icon="i-lucide-info"
+                                title="Describe the website with selectors"
+                                description="Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter). Test each step on the real website before saving." />
                             <UFormField label="Name" name="name" required>
                                 <UInput v-model="state.name" placeholder="My Manga Site" class="w-full" />
                             </UFormField>
