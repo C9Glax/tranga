@@ -66,113 +66,26 @@ The Settings overview additionally offers **Replay first-download tour** (restar
 
 ### Custom sources
 
-Under **Settings → Sources → Add custom source** you can teach Tranga a website by pasting selectors, no code needed.
-The form is a stepper: **General** (the website itself) followed by the three steps below. Each of those steps is tried from
-the testing sidebar on the right: enter a search text, a series URL or a chapter URL and press **Test**. The step runs against
-the real website and the sidebar shows what the selectors extracted, so you can fix them before saving. The buttons next to a
-search or chapter result fill in the test of the next step. The source can only be created on the last step.
+Websites that are not built in can be added under **Settings → Sources → Add custom source**, without writing any code. The
+form explains every step and lets you try it against the real website before you save.
 
-1. **Search**: a URL (`{query}` is the URL-encoded search text), a selector for one element per result, and fields for
-   title, link and cover image.
-2. **Chapters**: the page listing the chapters (by default the series page; `{url}` is the series link), a selector for
-   one element per chapter, and fields for link and number (optionally title and release date). A "next page" link is
-   followed if the list is paginated.
-3. **Pages**: the page that shows a chapter's images (by default the chapter page) and a selector for the images. Some
-   sites show only one image per web page; for those, add **Page links** (the links, or the options of a page dropdown,
-   that lead to every page of the chapter, in reading order). Every page is then opened and the image selector is applied
-   to it. A chapter fails (and is retried later) if one of its pages cannot be loaded or has no image.
+A custom source works by scraping: Tranga fetches a web page (the search results, the chapter list of a series, the page of a
+chapter) and picks the data it needs out of the HTML with path matching, i.e. CSS selectors or XPath expressions, optionally
+refined with a regular expression. Searching, listing the chapters and finding the page images are three separate steps, each
+with its own page and selectors. A source is a small JSON document, so it can be shared.
 
-A *field* is a selector (CSS or XPath, detected automatically; empty = the item itself), an attribute to read (empty = the
-text; `srcset,src` tries several), and optionally a regular expression (the first group is kept, or with "Replace with"
-every match is replaced). Selectors of fields are relative to their item, XPaths copied from the browser (`//div/a`) work too.
-CSS supports `:not()`, `:has()`, `:contains()` and the other usual selectors. Relative links are resolved for you.
+Examples to start from (they can also be loaded with **Start from an example** in the form), each mirroring the
+[keiyoushi](https://github.com/keiyoushi/extensions-source) extension of the same website:
 
-The **General** step holds the name, the base URL (a trailing `/` is removed), an icon, the languages (codes such as `en`,
-`en-us` or `pt-BR`), a series URL pattern (named groups such as `(?<id>[^/]+)` can be used as `{id}` in the chapter and page
-URLs; try it on a URL in the sidebar to see whether it matches and which groups it captures), request headers (e.g. `Cookie`;
-requests look like a regular browser unless you set a `User-Agent`), a rate limit, and whether to use FlareSolverr.
-
-**Start from an example** fills the form with a built-in definition. **Show JSON** displays the source as JSON (with a Copy
-button) and **Import JSON** fills the form from a pasted definition, so sources can be shared.
+- [WeebCentral](Extensions/Custom/Examples/weebcentral.json)
+- [MangaTown](Extensions/Custom/Examples/mangatown.json)
 
 Good to know:
 
 - The data has to be in the HTML the server sends. Pages that build their content with JavaScript do not work (FlareSolverr
   only helps with Cloudflare challenges).
-- Chapters without a number in their name are skipped; the first number found is used, so use a regex if a name contains
-  several (e.g. `(\d+(?:\.\d+)?)\s*$` takes the last one).
 - For safety, custom sources may only reach public websites: loopback, LAN and link-local addresses are refused. Set
   `ALLOW_PRIVATE_SOURCE_HOSTS=true` ([EnvVars.md](EnvVars.md)) for a source on your own network.
-
-The **WeebCentral** definition below is built in as an example ("Start from an example") and mirrors the
-[keiyoushi](https://github.com/keiyoushi/extensions-source/tree/main/src/en/weebcentral) extension. The chapter list does not
-live on the series page but at `/series/{id}/full-chapter-list`, which is what the series URL pattern is for:
-
-```json
-{
-  "name": "WeebCentral",
-  "baseUrl": "https://weebcentral.com",
-  "languages": ["en"],
-  "requestsPerSecond": 0.5,
-  "seriesUrlPattern": "^https://weebcentral\\.com/series/(?<id>[^/?#]+)",
-  "search": {
-    "urlTemplate": "/search/data?text={query}&limit=32&offset=0&display_mode=Full%20Display",
-    "itemSelector": "article > section > a",
-    "title": { "selector": "div:not([class]):last-child" },
-    "url": { "attribute": "href" },
-    "cover": { "selector": "source, img", "attribute": "srcset,src", "regex": "/small/", "replacement": "/normal/" }
-  },
-  "chapters": {
-    "urlTemplate": "/series/{id}/full-chapter-list",
-    "itemSelector": "div[x-data] > a",
-    "url": { "attribute": "href" },
-    "number": { "selector": "span.flex > span", "regex": "(\\d+(?:\\.\\d+)?)\\s*$" },
-    "date": { "selector": "time[datetime]", "attribute": "datetime" }
-  },
-  "images": {
-    "urlTemplate": "{url}/images?is_prev=False&reading_style=long_strip",
-    "imageSelector": "section[x-data*=scroll] > img",
-    "attribute": "src"
-  }
-}
-```
-
-**MangaTown** is built in as a second example and mirrors the
-[keiyoushi](https://github.com/keiyoushi/extensions-source/tree/main/src/en/mangatown) extension. It is built differently
-from WeebCentral, which shows what the selectors can do: the chapters are listed on the series page, their number is only
-in the link (`/manga/vagabond/v33/c327/` is chapter 327, not volume 33), the title is an XPath, and every page of a chapter is
-its own web page that is found through the page dropdown. Dates such as "Today" cannot be parsed with a date format and stay
-unknown.
-
-```json
-{
-  "name": "MangaTown",
-  "baseUrl": "https://www.mangatown.com",
-  "languages": ["en"],
-  "requestsPerSecond": 2,
-  "seriesUrlPattern": "^https?://(?:www\\.)?mangatown\\.com/manga/(?<id>[^/?#]+)/?$",
-  "search": {
-    "urlTemplate": "/search?name={query}",
-    "itemSelector": "li:has(a.manga_cover)",
-    "title": { "selector": "p.title a" },
-    "url": { "selector": "p.title a", "attribute": "href" },
-    "cover": { "selector": "img", "attribute": "src" }
-  },
-  "chapters": {
-    "itemSelector": "ul.chapter_list li",
-    "url": { "selector": "a", "attribute": "href" },
-    "number": { "selector": "a", "attribute": "href", "regex": "/c(\\d+(?:\\.\\d+)?)/?$" },
-    "title": { "selector": "./span[not(@class)][last()]", "regex": "^(?!Vol\\.?\\s*\\d+$).+$" },
-    "date": { "selector": "span.time" },
-    "dateFormat": "MMM dd,yyyy"
-  },
-  "images": {
-    "pageSelector": { "selector": "div.page_select option:not([value$='featured.html'])", "attribute": "value" },
-    "imageSelector": "div#viewer img",
-    "attribute": "src"
-  }
-}
-```
 
 ### Adding a Komga library
 
