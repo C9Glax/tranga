@@ -1,13 +1,11 @@
 <template>
-    <TrangaPage>
-        <UPageList>
-            <UTable :data="rows" :columns="columns" class="w-full">
-                <template #commit-cell="{ row }">
-                    <code class="text-sm">{{ row.original.commit }}</code>
-                </template>
-            </UTable>
-        </UPageList>
-    </TrangaPage>
+    <UPageList>
+        <UTable :data="rows" :columns="columns" class="w-full">
+            <template #commit-cell="{ row }">
+                <code class="text-sm">{{ row.original.commit }}</code>
+            </template>
+        </UTable>
+    </UPageList>
 </template>
 
 <script setup lang="ts">

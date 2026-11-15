@@ -1,40 +1,40 @@
 <template>
     <TrangaPage>
-        <UPageList>
-            <UButton to="/settings/sources" label="Sources" icon="i-lucide-globe" />
-            <UButton to="/settings/notifications" label="Notifications" icon="i-lucide-megaphone" />
-            <UButton to="/settings/libraries" label="Libraries" icon="i-lucide-library" />
-            <UButton to="/settings/appearance" label="Appearance" icon="i-lucide-palette" />
-            <UButton to="/settings/security" label="Security" icon="i-lucide-key-round" />
-            <UButton to="/settings/about" label="About" icon="i-lucide-info" />
-            <UButton label="Replay first-download tour" icon="i-lucide-wand-sparkles" variant="outline" @click="replayTour" />
-            <UButton
-                label="Backfill ComicInfo for downloaded chapters"
-                icon="i-lucide-file-cog"
-                variant="outline"
-                loading-auto
-                @click="backfillComicInfo" />
-        </UPageList>
+        <div class="flex flex-col gap-4">
+            <h1 class="text-2xl font-semibold">Settings</h1>
+
+            <div class="flex flex-col gap-2 md:flex-row">
+                <UTabs
+                    v-model="active"
+                    :items="items"
+                    :content="false"
+                    orientation="vertical"
+                    :ui="{ trigger: 'w-full justify-start text-left' }"
+                    class="shrink-0 self-start md:sticky md:top-0 md:w-48" />
+
+                <div class="min-w-0 flex-1">
+                    <SettingsNotifications v-if="active === 'notifications'" />
+                    <SettingsLibraries v-else-if="active === 'libraries'" />
+                    <SettingsAppearance v-else-if="active === 'appearance'" />
+                    <SettingsSecurity v-else-if="active === 'security'" />
+                    <SettingsDebug v-else-if="active === 'debug'" />
+                </div>
+            </div>
+        </div>
     </TrangaPage>
 </template>
 
 <script setup lang="ts">
-import type { PutTasksCreateBackfillComicInfoResponses } from '~/api/tranga';
-import { FetchError } from 'ofetch';
+import type { TabsItem } from '@nuxt/ui';
 
-const toast = useToast();
+// Empty string matches no tab, so nothing is selected until the user picks one.
+const active = ref<string>('');
 
-const replayTour = () => useNuxtApp().$tour.restart();
-
-const backfillComicInfo = async () => {
-    try {
-        await useNuxtApp().$tranga<PutTasksCreateBackfillComicInfoResponses>('/tasks/create/backfillComicInfo', { method: 'put' });
-    } catch (error: unknown) {
-        const description = error instanceof FetchError ? (error.data ?? error.message) : 'Could not start the backfill task.';
-        toast.add({ title: 'Failed to start backfill.', description, color: 'error' });
-        return;
-    }
-
-    toast.add({ title: 'Backfill task created.', description: 'Check the Tasks page for progress.', color: 'success' });
-};
+const items: TabsItem[] = [
+    { label: 'Notifications', icon: 'i-lucide-megaphone', value: 'notifications' },
+    { label: 'Libraries', icon: 'i-lucide-library', value: 'libraries' },
+    { label: 'Appearance', icon: 'i-lucide-palette', value: 'appearance' },
+    { label: 'Security', icon: 'i-lucide-key-round', value: 'security' },
+    { label: 'Debug', icon: 'i-lucide-bug', value: 'debug' },
+];
 </script>

@@ -1,19 +1,17 @@
 <template>
-    <TrangaPage>
-        <UPageList class="gap-4">
-            <UCard>
-                <template #header>
-                    <p class="font-semibold">NSFW covers</p>
-                </template>
+    <UPageList class="gap-4">
+        <UCard>
+            <template #header>
+                <p class="font-semibold">NSFW covers</p>
+            </template>
 
-                <URadioGroup
-                    v-model="nsfwCoverMode"
-                    legend="How should covers of NSFW manga be displayed?"
-                    :items="options"
-                    value-key="value" />
-            </UCard>
-        </UPageList>
-    </TrangaPage>
+            <URadioGroup
+                v-model="nsfwCoverMode"
+                legend="How should covers of NSFW manga be displayed?"
+                :items="options"
+                value-key="value" />
+        </UCard>
+    </UPageList>
 </template>
 
 <script setup lang="ts">
