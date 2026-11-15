@@ -1,5 +1,6 @@
 <template>
-    <UCard :ui="{ body: 'flex max-h-[60vh] flex-col gap-3 overflow-y-auto' }">
+    <!-- shrink-0: with long results the alerts must not be squashed to make room, the list scrolls instead -->
+    <UCard :ui="{ body: 'flex max-h-[60vh] flex-col gap-3 overflow-y-auto [&>*]:shrink-0' }">
         <template #header>
             <h2 class="font-semibold">Test results</h2>
             <p v-if="test" class="text-sm break-all text-muted">{{ stepLabels[test.step] }} test for “{{ test.input }}”</p>

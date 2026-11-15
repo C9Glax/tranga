@@ -8,10 +8,12 @@
  *
  * The sources screenshots temporarily create a custom source from the built-in WeebCentral example (through the UI) and
  * delete it again afterwards, so the stack ends up as it was. Its search test needs internet access; if WeebCentral
- * cannot be reached that one screenshot is skipped. Use --skip-sources to leave the custom source parts out entirely.
+ * cannot be reached that one screenshot is skipped. Use --skip-sources to leave the custom source parts out entirely, or
+ * --only-sources to take only those (settings-sources*.png), e.g. after changing the sources pages.
  *
  * Usage:
  *   npm run screenshots -- --base-url http://localhost:5000 [--out ../Screenshots] [--password <admin password>]
+ *                          [--skip-sources | --only-sources]
  *
  * Every option can also be set through the environment: TRANGA_URL, TRANGA_SCREENSHOT_DIR, TRANGA_PASSWORD.
  */
@@ -26,8 +28,10 @@ const { values } = parseArgs({
         out: { type: 'string', default: process.env.TRANGA_SCREENSHOT_DIR ?? '../Screenshots' },
         password: { type: 'string', default: process.env.TRANGA_PASSWORD },
         'skip-sources': { type: 'boolean', default: false },
+        'only-sources': { type: 'boolean', default: false },
     },
 });
+const onlySources = values['only-sources'];
 
 /** 1080p */
 const viewport = { width: 1920, height: 1080 };
@@ -153,53 +157,57 @@ try {
     const dark = await open('dark');
     await login(dark.page);
 
-    await dark.page.goto(baseUrl);
-    await settle(dark.page);
-    await shot(dark.page, 'startpage');
+    if (!onlySources) {
+        await dark.page.goto(baseUrl);
+        await settle(dark.page);
+        await shot(dark.page, 'startpage');
 
-    // Search dialog (the search button in the navbar opens the dashboard search).
-    await dark.page
-        .getByRole('button', { name: /search/i })
-        .first()
-        .click();
-    await dark.page.getByPlaceholder(/search for a title/i).fill('destiny unchain');
-    await settle(dark.page);
-    await shot(dark.page, 'search');
-    await dark.page.keyboard.press('Escape');
+        // Search dialog (the search button in the navbar opens the dashboard search).
+        await dark.page
+            .getByRole('button', { name: /search/i })
+            .first()
+            .click();
+        await dark.page.getByPlaceholder(/search for a title/i).fill('destiny unchain');
+        await settle(dark.page);
+        await shot(dark.page, 'search');
+        await dark.page.keyboard.press('Escape');
 
-    await dark.page.goto(`${baseUrl}/tasks`);
-    await settle(dark.page);
-    await shot(dark.page, 'tasks');
+        await dark.page.goto(`${baseUrl}/tasks`);
+        await settle(dark.page);
+        await shot(dark.page, 'tasks');
+    }
 
     await sourcesScreenshots(dark.page);
 
-    // Settings is a single tabbed page; Appearance is one of its tabs.
-    await dark.page.goto(`${baseUrl}/settings`);
-    await settle(dark.page);
-    await dark.page.getByRole('tab', { name: 'Appearance' }).click();
-    await settle(dark.page);
-    await shot(dark.page, 'settings-appearance');
-
-    // Manga page: first manga on the start page, in dark and light mode.
-    await dark.page.goto(baseUrl);
-    await settle(dark.page);
-    const mangaLink = dark.page.locator('a[href^="/manga/"]').first();
-    const mangaHref = (await mangaLink.count()) > 0 ? await mangaLink.getAttribute('href') : null;
-    if (mangaHref) {
-        await dark.page.goto(`${baseUrl}${mangaHref}`);
+    if (!onlySources) {
+        // Settings is a single tabbed page; Appearance is one of its tabs.
+        await dark.page.goto(`${baseUrl}/settings`);
         await settle(dark.page);
-        await shot(dark.page, 'manga');
+        await dark.page.getByRole('tab', { name: 'Appearance' }).click();
+        await settle(dark.page);
+        await shot(dark.page, 'settings-appearance');
 
-        const light = await open('light');
-        await light.page.goto(baseUrl);
-        await settle(light.page);
-        if (light.page.url().includes('/login')) await login(light.page);
-        await light.page.goto(`${baseUrl}${mangaHref}`);
-        await settle(light.page);
-        await shot(light.page, 'manga-light');
-        await light.context.close();
-    } else {
-        console.warn('No manga found on the start page - skipped manga screenshots. Add a manga first.');
+        // Manga page: first manga on the start page, in dark and light mode.
+        await dark.page.goto(baseUrl);
+        await settle(dark.page);
+        const mangaLink = dark.page.locator('a[href^="/manga/"]').first();
+        const mangaHref = (await mangaLink.count()) > 0 ? await mangaLink.getAttribute('href') : null;
+        if (mangaHref) {
+            await dark.page.goto(`${baseUrl}${mangaHref}`);
+            await settle(dark.page);
+            await shot(dark.page, 'manga');
+
+            const light = await open('light');
+            await light.page.goto(baseUrl);
+            await settle(light.page);
+            if (light.page.url().includes('/login')) await login(light.page);
+            await light.page.goto(`${baseUrl}${mangaHref}`);
+            await settle(light.page);
+            await shot(light.page, 'manga-light');
+            await light.context.close();
+        } else {
+            console.warn('No manga found on the start page - skipped manga screenshots. Add a manga first.');
+        }
     }
 
     await dark.context.close();
