@@ -1,4 +1,4 @@
-import type { TourStep, UseTourReturn } from '~/composables/useTour';
+import type { TourStep, UseTourReturn } from '@nuxt/ui/composables';
 
 const SEEN_KEY = 'tranga-tour-first-download-seen';
 
