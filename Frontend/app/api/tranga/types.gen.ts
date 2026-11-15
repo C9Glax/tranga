@@ -2,6 +2,8 @@
 
 export type ClientOptions = { baseUrl: `${string}://${string}/api` | (string & {}) };
 
+export type ServicesMangaBehaviorSettings = { allowNsfw: boolean; allowNsfwLocked: boolean };
+
 export type ServicesMangaChapter = {
     chapterId: string;
     mangaId: string;
@@ -114,6 +116,8 @@ export type ServicesMangaMetadata = {
 export type ServicesMangaMetadataExtension = { metadataExtensionId: string; name: string; iconUrl: string };
 
 export type ServicesMangaMetadataExtensionsList = { extensions?: Array<ServicesMangaMetadataExtension> };
+
+export type ServicesMangaPatchBehaviorSettingsRequest = { allowNsfw: null | boolean };
 
 export type ServicesMangaPatchMangaDownloadLinkRequest = { matched: boolean; priority: number | string };
 
@@ -1087,6 +1091,40 @@ export type GetMangasFilesByFileIdErrors = {
      * Internal Server Error
      */
     500: unknown;
+};
+
+export type GetMangasSettingsBehaviorData = { body?: never; path?: never; query?: never; url: '/mangas/settings/behavior' };
+
+export type GetMangasSettingsBehaviorResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaBehaviorSettings;
+};
+
+export type GetMangasSettingsBehaviorResponse = GetMangasSettingsBehaviorResponses[keyof GetMangasSettingsBehaviorResponses];
+
+export type PatchMangasSettingsBehaviorData = {
+    body: ServicesMangaPatchBehaviorSettingsRequest;
+    path?: never;
+    query?: never;
+    url: '/mangas/settings/behavior';
+};
+
+export type PatchMangasSettingsBehaviorErrors = {
+    /**
+     * Conflict
+     */
+    409: string;
+};
+
+export type PatchMangasSettingsBehaviorError = PatchMangasSettingsBehaviorErrors[keyof PatchMangasSettingsBehaviorErrors];
+
+export type PatchMangasSettingsBehaviorResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
 };
 
 export type GetMangasSuwayomiStatusData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/status' };

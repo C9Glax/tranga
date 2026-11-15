@@ -42,6 +42,9 @@ public sealed class MangaContext(DbContextOptions<MangaContext> options) : Trang
     /// <summary>The join entries linking chapters to their per-extension download links.</summary>
     public DbSet<DbChapterDownloadLink> ChapterDownloadLinks { get; init; }
 
+    /// <summary>The runtime-configurable settings, stored as key/value pairs.</summary>
+    public DbSet<DbSetting> Settings { get; init; }
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,6 +58,9 @@ public sealed class MangaContext(DbContextOptions<MangaContext> options) : Trang
         CreateDownloadLinkModel(modelBuilder);
         CreateMangaDownloadLinkModel(modelBuilder);
         CreateChapterDownloadLinkModel(modelBuilder);
+
+        modelBuilder.Entity<DbSetting>()
+            .HasKey(s => s.Key);
     }
 
     private void CreateMangaModel(ModelBuilder modelBuilder)

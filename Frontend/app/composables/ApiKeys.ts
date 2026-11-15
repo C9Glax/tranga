@@ -3,6 +3,7 @@ export namespace ApiKeys {
     export const MetadataExtensions = 'MetadataExtensions';
     export const SuwayomiStatus = 'SuwayomiStatus';
     export const SuwayomiExtensions = 'SuwayomiExtensions';
+    export const BehaviorSettings = 'BehaviorSettings';
 
     export namespace Manga {
         export const Manga = (id: string) => `Manga/${id}`;

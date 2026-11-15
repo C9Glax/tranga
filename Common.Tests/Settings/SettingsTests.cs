@@ -9,6 +9,7 @@ public class SettingsTests
     [Fact]
     public void AllowNSFWCanBeUpdatedAfterInitialization()
     {
+        Assert.SkipWhen(Common.Settings.Settings.AllowNSFWLocked, "AllowNSFW is locked by the environment variable.");
         bool original = Common.Settings.Settings.AllowNSFW;
         try
         {
@@ -22,6 +23,16 @@ public class SettingsTests
         {
             Common.Settings.Settings.AllowNSFW = original;
         }
+    }
+
+    [Fact]
+    public void AllowNSFWThrowsWhenLockedByEnvironmentVariable()
+    {
+        Assert.SkipUnless(Common.Settings.Settings.AllowNSFWLocked, "AllowNSFW is not set through the environment variable.");
+
+        bool original = Common.Settings.Settings.AllowNSFW;
+        Assert.Throws<InvalidOperationException>(() => Common.Settings.Settings.AllowNSFW = !original);
+        Assert.Equal(original, Common.Settings.Settings.AllowNSFW);
     }
 
     [Fact]

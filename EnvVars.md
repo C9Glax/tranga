@@ -2,7 +2,7 @@
 
 | ENV              | default    | behaviour                                                                                                                                                                          |
 |------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AllowNSFW        | `false`    | Allow NSFW content in search results (docker-compose/.env key: `ALLOWNSFW`)                                                                                                        |
+| AllowNSFW        | null       | Allow NSFW content in search results (docker-compose/.env key: `ALLOWNSFW`). When set to `true` or `false` this is final and the option is disabled in the frontend (Settings → Behavior); when empty/unset it defaults to `false` and can be changed in the frontend |
 | DownloadLanguage | `"en"`     | Language for downloaded chapters (docker-compose/.env key: `DOWNLOADLANGUAGE`)                                                                                                     | 
 | ChapterNamingScheme | `"?V(Vol. %V ) Ch. %C?T( - %T)"` | Template used to name downloaded chapter files: `%V` volume, `%C` chapter, `%T` title; `?X(...)` includes the text in parentheses only if that value exists |
 | MangaDirectory   | `"Manga"`  | Host path to bind-mount for downloaded Manga (docker-compose only; Covers are stored in a managed Docker volume) If you use Komga it is recommended to mount the path at `/tranga` | 

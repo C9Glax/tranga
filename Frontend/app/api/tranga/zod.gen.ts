@@ -2,6 +2,10 @@
 
 import * as z from 'zod/mini';
 
+export const zServicesMangaBehaviorSettings = z.object({ allowNsfw: z.boolean(), allowNsfwLocked: z.boolean() });
+
+export type ServicesMangaBehaviorSettingsZodType = z.infer<typeof zServicesMangaBehaviorSettings>;
+
 export const zServicesMangaChapter = z.object({
     chapterId: z.uuid(),
     mangaId: z.uuid(),
@@ -103,6 +107,10 @@ export type ServicesMangaMetadataExtensionZodType = z.infer<typeof zServicesMang
 export const zServicesMangaMetadataExtensionsList = z.object({ extensions: z.optional(z.array(zServicesMangaMetadataExtension)) });
 
 export type ServicesMangaMetadataExtensionsListZodType = z.infer<typeof zServicesMangaMetadataExtensionsList>;
+
+export const zServicesMangaPatchBehaviorSettingsRequest = z.object({ allowNsfw: z.nullable(z.boolean()) });
+
+export type ServicesMangaPatchBehaviorSettingsRequestZodType = z.infer<typeof zServicesMangaPatchBehaviorSettingsRequest>;
 
 export const zServicesMangaPatchMangaDownloadLinkRequest = z.object({
     matched: z.boolean(),

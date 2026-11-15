@@ -153,7 +153,7 @@ const filtered = computed(() => {
     const term = query.value.trim().toLowerCase();
     return (extensions.value ?? []).filter((extension) => {
         // Only dedicated adult extensions are hidden. Mixed ones (MangaDex, Weeb Central, ...) stay listed; their
-        // individual results are filtered server-side while AllowNSFW is off.
+        // individual results are filtered server-side while NSFW is disallowed (Settings -> Behavior / AllowNSFW env var).
         if (!showNsfw.value && extension.contentWarning === 'Nsfw') return false;
         if (installedOnly.value && !extension.isInstalled) return false;
         if (language.value !== ALL_LANGUAGES && extension.lang !== language.value) return false;
