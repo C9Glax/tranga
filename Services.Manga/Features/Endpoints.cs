@@ -169,6 +169,9 @@ internal static class EndpointHelpers
         builder.MapGet("capabilities", GetCustomDownloaderCapabilitiesEndpoint.Handle)
             .WithSummary("What this installation supports for custom Download-Sources");
 
+        builder.MapGet("examples", GetCustomDownloaderExamplesEndpoint.Handle)
+            .WithSummary("Example definitions of custom Download-Sources to start from");
+
         builder.MapGet("{customDownloaderId}", GetCustomDownloaderEndpoint.Handle)
             .WithSummary("Get custom Download-Source");
 

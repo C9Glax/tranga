@@ -1165,6 +1165,31 @@
         }
       }
     },
+    "/mangas/customDownloaders/examples": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Download",
+          "CustomDownloaders"
+        ],
+        "summary": "Example definitions of custom Download-Sources to start from",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SelectorDownloaderDefinition"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/mangas/customDownloaders/{customDownloaderId}": {
       "get": {
         "tags": [
@@ -2332,10 +2357,6 @@
               "string"
             ],
             "description": "When set, string? SelectorField.Regex replaces every match with this text instead of extracting."
-          },
-          "isUnused": {
-            "type": "boolean",
-            "description": "True when the field is not configured at all."
           }
         },
         "description": "Extracts one value from an HTML element: string SelectorField.Selector picks the element (relative to the item the field\nbelongs to; empty = the item itself), string? SelectorField.Attribute picks what to read (empty = the element's text), and\nthe optional string? SelectorField.Regex post-processes the result."

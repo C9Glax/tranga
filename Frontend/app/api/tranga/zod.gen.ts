@@ -21,7 +21,16 @@ export const zServicesMangaContentRating = z.enum(['Safe', 'Suggestive', 'Erotic
 
 export type ServicesMangaContentRatingZodType = z.infer<typeof zServicesMangaContentRating>;
 
-export const zServicesMangaDownloadExtension = z.object({ downloadExtensionsId: z.uuid(), name: z.string(), iconUrl: z.string() });
+export const zServicesMangaCustomDownloaderCapabilities = z.object({ flareSolverrConfigured: z.boolean(), allowPrivateHosts: z.boolean() });
+
+export type ServicesMangaCustomDownloaderCapabilitiesZodType = z.infer<typeof zServicesMangaCustomDownloaderCapabilities>;
+
+export const zServicesMangaDownloadExtension = z.object({
+    downloadExtensionsId: z.uuid(),
+    name: z.string(),
+    iconUrl: z.string(),
+    isCustom: z.boolean(),
+});
 
 export type ServicesMangaDownloadExtensionZodType = z.infer<typeof zServicesMangaDownloadExtension>;
 
@@ -56,6 +65,17 @@ export const zServicesMangaGitInfoResponse = z.object({
 });
 
 export type ServicesMangaGitInfoResponseZodType = z.infer<typeof zServicesMangaGitInfoResponse>;
+
+/**
+ * How to find the pages of a chapter.
+ */
+export const zServicesMangaImagesSpec = z.object({
+    urlTemplate: z.optional(z.string()),
+    imageSelector: z.optional(z.string()),
+    attribute: z.nullish(z.string()),
+});
+
+export type ServicesMangaImagesSpecZodType = z.infer<typeof zServicesMangaImagesSpec>;
 
 export const zServicesMangaMangaChapter = z.object({
     isDownloaded: z.boolean(),
@@ -263,6 +283,114 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 });
 
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
+
+/**
+ * Extracts one value from an HTML element: string SelectorField.Selector picks the element (relative to the item the field
+ * belongs to; empty = the item itself), string? SelectorField.Attribute picks what to read (empty = the element's text), and
+ * the optional string? SelectorField.Regex post-processes the result.
+ */
+export const zServicesMangaSelectorField = z.object({
+    selector: z.optional(z.string()),
+    attribute: z.nullish(z.string()),
+    regex: z.nullish(z.string()),
+    replacement: z.nullish(z.string()),
+});
+
+export type ServicesMangaSelectorFieldZodType = z.infer<typeof zServicesMangaSelectorField>;
+
+/**
+ * How to list the chapters of a series.
+ */
+export const zServicesMangaChaptersSpec = z.object({
+    urlTemplate: z.optional(z.string()),
+    itemSelector: z.optional(z.string()),
+    url: z.optional(zServicesMangaSelectorField),
+    number: z.optional(zServicesMangaSelectorField),
+    title: z.optional(zServicesMangaSelectorField),
+    date: z.optional(zServicesMangaSelectorField),
+    dateFormat: z.nullish(z.string()),
+    nextPage: z.optional(zServicesMangaSelectorField),
+});
+
+export type ServicesMangaChaptersSpecZodType = z.infer<typeof zServicesMangaChaptersSpec>;
+
+/**
+ * How to find series on the website.
+ */
+export const zServicesMangaSearchSpec = z.object({
+    urlTemplate: z.optional(z.string()),
+    itemSelector: z.optional(z.string()),
+    title: z.optional(zServicesMangaSelectorField),
+    url: z.optional(zServicesMangaSelectorField),
+    cover: z.optional(zServicesMangaSelectorField),
+});
+
+export type ServicesMangaSearchSpecZodType = z.infer<typeof zServicesMangaSearchSpec>;
+
+/**
+ * Describes a user-defined download source that is driven entirely by CSS/XPath selectors, so that people can add a
+ * website to Tranga without writing code. Turned into an IDownloadExtension by
+ * SelectorDownloadExtension; persisted as one JSON document.
+ */
+export const zServicesMangaSelectorDownloaderDefinition = z.object({
+    id: z.optional(z.uuid()),
+    name: z.optional(z.string()),
+    baseUrl: z.optional(z.string()),
+    iconUrl: z.nullish(z.string()),
+    languages: z.optional(z.array(z.string())),
+    useFlareSolverr: z.optional(z.boolean()),
+    requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
+    headers: z.optional(z.record(z.string(), z.string())),
+    seriesUrlPattern: z.nullish(z.string()),
+    search: z.optional(zServicesMangaSearchSpec),
+    chapters: z.optional(zServicesMangaChaptersSpec),
+    images: z.optional(zServicesMangaImagesSpec),
+});
+
+export type ServicesMangaSelectorDownloaderDefinitionZodType = z.infer<typeof zServicesMangaSelectorDownloaderDefinition>;
+
+export const zServicesMangaPostCustomDownloaderTestRequest = z.object({
+    definition: zServicesMangaSelectorDownloaderDefinition,
+    step: z.string(),
+    input: z.string(),
+});
+
+export type ServicesMangaPostCustomDownloaderTestRequestZodType = z.infer<typeof zServicesMangaPostCustomDownloaderTestRequest>;
+
+/**
+ * What one step of a source definition produced against the real website, so users can fix their selectors before
+ * saving the source.
+ */
+export const zServicesMangaStepTestResult = z.object({
+    requestUrl: z.nullish(z.string()),
+    statusCode: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
+    itemCount: z.optional(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
+    rows: z.optional(z.array(z.record(z.string(), z.string()))),
+    warnings: z.optional(z.array(z.string())),
+    error: z.nullish(z.string()),
+});
+
+export type ServicesMangaStepTestResultZodType = z.infer<typeof zServicesMangaStepTestResult>;
 
 export const zServicesTasksChapterSummary = z.object({
     chapterId: z.uuid(),

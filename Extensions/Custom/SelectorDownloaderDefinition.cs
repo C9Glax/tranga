@@ -234,6 +234,7 @@ public sealed record SelectorField
     public string? Replacement { get; init; }
 
     /// <summary>True when the field is not configured at all.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
     public bool IsUnused => string.IsNullOrWhiteSpace(Selector) && string.IsNullOrWhiteSpace(Attribute) && string.IsNullOrEmpty(Regex);
 }
 
