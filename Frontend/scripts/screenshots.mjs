@@ -118,18 +118,16 @@ const sourcesScreenshots = async (page) => {
         await page.waitForTimeout(500);
         await shot(page, 'settings-sources-new');
 
-        // Run the search step against the real website and show what the selectors extracted.
-        await page.getByRole('heading', { name: '1. Search' }).scrollIntoViewIfNeeded();
+        // Go to the search step (the form is a stepper), run it against the real website and show what the selectors
+        // extracted: the result appears next to the step.
+        await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByPlaceholder('one piece').fill('one piece');
         await page.getByRole('button', { name: 'Test', exact: true }).first().click();
         try {
             await page.getByText(/item\(s\) extracted/).waitFor({ timeout: 60_000 });
-            // Bring the whole test panel (input + result) into the middle of the view. The page scrolls inside the
-            // dashboard panel, so scrolling the window would do nothing.
-            await page
-                .getByText('Search text', { exact: true })
-                .locator('xpath=ancestor::div[contains(@class, "border")][1]')
-                .evaluate((el) => el.scrollIntoView({ block: 'center' }));
+            // Bring the test (input + button) into the middle of the view. The page scrolls inside the dashboard panel,
+            // so scrolling the window would do nothing.
+            await page.getByText('Search text', { exact: true }).evaluate((el) => el.scrollIntoView({ block: 'center' }));
             await page.waitForTimeout(500);
             await shot(page, 'settings-sources-test');
         } catch {

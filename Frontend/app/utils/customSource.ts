@@ -1,4 +1,20 @@
-import type { ServicesMangaSelectorDownloaderDefinition, ServicesMangaSelectorField } from '~/api/tranga';
+import type {
+    PostMangasCustomDownloadersTestResponse,
+    ServicesMangaSelectorDownloaderDefinition,
+    ServicesMangaSelectorField,
+} from '~/api/tranga';
+
+export type CustomSourceTestStep = 'search' | 'chapters' | 'images';
+
+/** The latest test of a step: kept by the form (not by the step) so it stays visible next to every step. */
+export type CustomSourceTestState = {
+    step: CustomSourceTestStep;
+    input: string;
+    loading: boolean;
+    result?: PostMangasCustomDownloadersTestResponse;
+    /** Problems with the definition that keep the step from being tested (HTTP 400). */
+    errors: string[];
+};
 
 /** One selector field as the form edits it: every part is a plain string (empty = not set). */
 export type CustomSourceField = { selector: string; attribute: string; regex: string; replacement: string };
