@@ -33,8 +33,7 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
-- [x] Download sources via a bundled [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server, giving access to
-  the ~2000 sources of the [keiyoushi](https://github.com/keiyoushi/extensions) extension repository
+- [x] Modular download sources (currently [MangaDex](https://api.mangadex.org/docs/))
 
 #### TODO LIST
 
@@ -48,23 +47,13 @@ You probably do not want to modify this. Use the [`.env`](Tranga.AppHost/aspire-
 - [.env](Tranga.AppHost/aspire-output/.env)
   - [Environment variable documentation](EnvVars.md)
 
-### Download sources (Suwayomi + keiyoushi)
-
-Apart from MangaDex, which is built in, Tranga gets its download sources from a bundled
-[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server. Install the sources you want under **Settings → Sources** (see [Settings](#settings)).
-
-**If FlareSolverr is configured for Tranga, the Suwayomi is pointed at the same instance.**
-
-> The `Suwayomi` volume is persistent state, not a cache. It holds the installed extension JARs as well as the rows
-> that map manga URLs back to the sidecar's internal ids. Deleting it means reinstalling your extensions.
-
 ### Settings
 
 All configuration that doesn't live in the [`.env`](Tranga.AppHost/aspire-output/.env) file is done in the web UI under **Settings**:
 
 | Page              | What it does                                                                                                                                                                                  |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Sources**       | Install, update and uninstall download extensions (Suwayomi / keiyoushi). Search, filter by language, show only installed ones, optionally show NSFW-only sources, refresh the catalogue.   |
+| **Sources**       | See the built-in download sources (MangaDex, MANGA Plus) and add, edit or delete your own custom sources. |
 | **Notifications** | Add notification extensions: Gotify, Discord, ntfy.sh, Telegram, or any other [Naprise](https://github.com/Genteure/naprise) service URL.                                                    |
 | **Libraries**     | Connect [Komga](https://komga.org/) or [Kavita](https://www.kavitareader.com/) libraries (see [Adding a Komga library](#adding-a-komga-library) and [Adding a Kavita library](#adding-a-kavita-library)).                                         |
 | **Appearance**    | Choose how covers of NSFW manga are displayed: always visible, visible on click, or never visible (blurred).                                                                                  |
@@ -131,8 +120,6 @@ npm run screenshots -- --base-url http://localhost:5000
 - [Sixlabors.ImageSharp](https://sixlabors.com/products/imagesharp/)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
   - [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
-- [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server)
-  - [keiyoushi extensions](https://github.com/keiyoushi/extensions)
 - [Naprise](https://github.com/Genteure/naprise)
 - [GitInfo](https://github.com/devlooped/GitInfo)
 - [Git-Describe](https://github.com/tvdstaaij/node-git-describe)

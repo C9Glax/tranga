@@ -21,12 +21,7 @@ export const zServicesMangaContentRating = z.enum(['Safe', 'Suggestive', 'Erotic
 
 export type ServicesMangaContentRatingZodType = z.infer<typeof zServicesMangaContentRating>;
 
-export const zServicesMangaDownloadExtension = z.object({
-    downloadExtensionsId: z.uuid(),
-    name: z.string(),
-    iconUrl: z.string(),
-    isSuwayomiSource: z.boolean(),
-});
+export const zServicesMangaDownloadExtension = z.object({ downloadExtensionsId: z.uuid(), name: z.string(), iconUrl: z.string() });
 
 export type ServicesMangaDownloadExtensionZodType = z.infer<typeof zServicesMangaDownloadExtension>;
 
@@ -268,68 +263,6 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 });
 
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
-
-/**
- *             How a Suwayomi source or extension is classified by its extension store.
- * Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into
- * SuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else
- * (MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed).
- */
-export const zServicesMangaSuwayomiContentWarning = z.enum(['Safe', 'Mixed', 'Nsfw']);
-
-export type ServicesMangaSuwayomiContentWarningZodType = z.infer<typeof zServicesMangaSuwayomiContentWarning>;
-
-/**
- * An extension offered by, or installed from, a configured extension store.
- */
-export const zServicesMangaSuwayomiExtensionInfo = z.object({
-    pkgName: z.string(),
-    name: z.string(),
-    lang: z.string(),
-    iconUrl: z.string(),
-    versionName: z.string(),
-    contentWarning: zServicesMangaSuwayomiContentWarning,
-    isInstalled: z.boolean(),
-    isObsolete: z.boolean(),
-    hasUpdate: z.boolean(),
-});
-
-export type ServicesMangaSuwayomiExtensionInfoZodType = z.infer<typeof zServicesMangaSuwayomiExtensionInfo>;
-
-/**
- * A source exposed by an installed extension, and the Tranga download-extension it is registered as.
- */
-export const zServicesMangaSuwayomiSourceInfo = z.object({
-    sourceId: z.string(),
-    extensionId: z.uuid(),
-    name: z.string(),
-    lang: z.string(),
-    iconUrl: z.string(),
-    homeUrl: z.string(),
-    contentWarning: zServicesMangaSuwayomiContentWarning,
-});
-
-export type ServicesMangaSuwayomiSourceInfoZodType = z.infer<typeof zServicesMangaSuwayomiSourceInfo>;
-
-/**
- * Reachability and version of the Suwayomi sidecar.
- */
-export const zServicesMangaSuwayomiStatus = z.object({
-    reachable: z.boolean(),
-    serverName: z.nullable(z.string()),
-    serverVersion: z.nullable(z.string()),
-    installedSourceCount: z.union([
-        z
-            .int()
-            .check(
-                z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
-            ),
-        z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
-    ]),
-});
-
-export type ServicesMangaSuwayomiStatusZodType = z.infer<typeof zServicesMangaSuwayomiStatus>;
 
 export const zServicesTasksChapterSummary = z.object({
     chapterId: z.uuid(),

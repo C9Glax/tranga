@@ -38,10 +38,8 @@ public sealed class Service : Common.Services.Service
                 && bool.TryParse(allowNsfw.Value, out bool allowNsfwValue))
                 Settings.AllowNSFW = allowNsfwValue;
 
-            // Registers the sources installed on the Suwayomi sidecar as download extensions. Best-effort: if the
-            // sidecar is off or not up yet, this is a no-op and the periodic refresh in Services.Tasks or an explicit
-            // POST /suwayomi/refresh picks the sources up later.
-            DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(CancellationToken.None).Wait();
+            // Loads the download extensions from all registered providers.
+            DownloadExtensionsCollection.RefreshAsync(CancellationToken.None).Wait();
         }
     }
 

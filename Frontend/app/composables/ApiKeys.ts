@@ -1,8 +1,6 @@
 export namespace ApiKeys {
     export const DownloadExtensions = 'DownloadExtensions';
     export const MetadataExtensions = 'MetadataExtensions';
-    export const SuwayomiStatus = 'SuwayomiStatus';
-    export const SuwayomiExtensions = 'SuwayomiExtensions';
     export const BehaviorSettings = 'BehaviorSettings';
 
     export namespace Manga {

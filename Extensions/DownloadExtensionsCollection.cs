@@ -1,48 +1,66 @@
 using Common.Datatypes;
 using Common.Settings;
 using Extensions.Data;
-using Extensions.Extensions;
-using Extensions.Extensions.Suwayomi;
 
 namespace Extensions;
 
+/// <summary>
+/// Registry of all available <see cref="IDownloadExtension"/>s, fed by one or more
+/// <see cref="IDownloadExtensionProvider"/>s. Each service process keeps its own copy.
+/// </summary>
 public static class DownloadExtensionsCollection
 {
+    private static readonly Lock ProvidersLock = new();
+    private static readonly List<IDownloadExtensionProvider> Providers = [new BuiltInDownloadExtensionProvider()];
+    private static volatile IDownloadExtension[] _extensions = LoadBuiltIn();
+
+    // Built-in extensions are available immediately, without anyone having to call RefreshAsync first.
+    private static IDownloadExtension[] LoadBuiltIn() =>
+        [.. new BuiltInDownloadExtensionProvider().LoadAsync(CancellationToken.None).GetAwaiter().GetResult()];
+
+    /// <summary>Every download extension currently available.</summary>
+    public static IDownloadExtension[] Extensions => _extensions;
+
     /// <summary>
-    /// Extensions compiled into Tranga. MangaDex is kept as a fallback so Tranga can still find something while the
-    /// Suwayomi sidecar is starting up or has no extensions installed yet; everything else comes from the sidecar.
+    /// Adds a provider. Its extensions become available after the next <see cref="RefreshAsync"/>.
     /// </summary>
-    private static readonly IDownloadExtension[] BuiltIn = [new MangaDex()];
+    public static void RegisterProvider(IDownloadExtensionProvider provider)
+    {
+        lock (ProvidersLock)
+            Providers.Add(provider);
+    }
 
     /// <summary>
-    /// Extensions backed by the Suwayomi sidecar, one per installed source. Replaced wholesale by
-    /// <see cref="RefreshSidecarExtensionsAsync"/> whenever the set of installed extensions changes.
-    /// </summary>
-    private static volatile IDownloadExtension[] _sidecar = [];
-
-    /// <summary>Every download extension currently available, built-in and sidecar-backed alike.</summary>
-    public static IDownloadExtension[] Extensions => [.. BuiltIn, .. _sidecar];
-
-    /// <summary>
-    /// Re-reads the sources installed on the Suwayomi sidecar and republishes them as download extensions.
+    /// Re-queries all providers and atomically replaces the set of available extensions.
     /// <para>
-    /// Best-effort by design: when the sidecar is unreachable the previously discovered set is left in place and no
-    /// exception escapes. Callers are startup hooks, the sources-changed event handler and a periodic task, none of
-    /// which should be able to take a service down just because the sidecar is still booting.
+    /// Best-effort: a provider that throws contributes nothing for this refresh but never takes the caller down.
+    /// Extensions whose identifier is already taken by an earlier provider are ignored.
     /// </para>
     /// </summary>
-    /// <returns>The number of sidecar-backed extensions now registered.</returns>
-    public static async Task<int> RefreshSidecarExtensionsAsync(CancellationToken ct)
+    /// <returns>The number of extensions now registered.</returns>
+    public static async Task<int> RefreshAsync(CancellationToken ct)
     {
-        IDownloadExtension[] discovered = await SuwayomiSource.DiscoverAsync(ct);
+        IDownloadExtensionProvider[] providers;
+        lock (ProvidersLock)
+            providers = [.. Providers];
 
-        // DiscoverAsync answers with an empty array both for "no sources installed" and for "sidecar unreachable".
-        // Only the former should clear the list, so an unreachable sidecar is distinguished by probing it first.
-        if (discovered.Length == 0 && await SuwayomiClient.GetAboutAsync(ct) is null)
-            return _sidecar.Length;
+        List<IDownloadExtension> all = [];
+        foreach (IDownloadExtensionProvider provider in providers)
+        {
+            try
+            {
+                foreach (IDownloadExtension extension in await provider.LoadAsync(ct))
+                    if (all.All(e => e.Identifier != extension.Identifier))
+                        all.Add(extension);
+            }
+            catch (Exception) when (!ct.IsCancellationRequested)
+            {
+                // A broken provider must not make the other providers' extensions disappear.
+            }
+        }
 
-        _sidecar = discovered;
-        return discovered.Length;
+        _extensions = [.. all];
+        return all.Count;
     }
 
     public static IDownloadExtension? GetExtension(Guid extensionId) => Extensions.FirstOrDefault(e => e.Identifier == extensionId);
@@ -54,15 +72,25 @@ public static class DownloadExtensionsCollection
         if (searchQuery.Language is null)
             searchQuery = searchQuery with { Language = Settings.DownloadLanguage };
 
-        List<Task<List<MangaInfo>?>> tasks = extensions.Select(e => e.SearchDownload(searchQuery, ct)).ToList();
+        List<Task<List<MangaInfo>?>> tasks = extensions.Select(e => SearchSafe(e, searchQuery, ct)).ToList();
 
         Task.WaitAll(tasks, ct);
 
-        List<MangaInfo> ret = tasks
-            .Where(t => t is { IsCompleted: true, Result: not null })
+        return tasks
+            .Where(t => t is { IsCompletedSuccessfully: true, Result: not null })
             .SelectMany(t => t.Result!).ToList();
-
-        return ret;
     }
 
+    /// <summary>An extension that throws contributes no results instead of failing the whole search.</summary>
+    private static async Task<List<MangaInfo>?> SearchSafe(IDownloadExtension extension, SearchQuery query, CancellationToken ct)
+    {
+        try
+        {
+            return await extension.SearchDownload(query, ct);
+        }
+        catch (Exception) when (!ct.IsCancellationRequested)
+        {
+            return null;
+        }
+    }
 }

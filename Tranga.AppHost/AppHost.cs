@@ -26,10 +26,6 @@ builder.AddDockerComposeEnvironment("env")
         {
             Name = "Covers"
         });
-        conf.AddVolume(new Volume()
-        {
-            Name = "Suwayomi"
-        });
     });
 
 IResourceBuilder<ParameterResource> postgresUser = builder.AddParameter("PostgresUser");
@@ -64,46 +60,6 @@ IResourceBuilder<ParameterResource> authSigningKey = builder.AddParameter("AuthS
 // existing CI Dockerfile (see e.g. Services.Manga/Dockerfile) via PublishAsDockerFile below, which already mounts
 // this exact secret id for its own `dotnet build`/`publish` steps.
 IResourceBuilder<ParameterResource> sixLaborsLicenseKey = builder.AddParameter("SixLaborsLicenseKey", secret: true);
-
-// Suwayomi speaks FlareSolverr natively, so it inherits whatever Tranga is configured to use. Under `aspire run` the
-// parameter is resolved now; the compose output overrides this with an interpolation so that .env stays authoritative
-// there (see PublishAsDockerComposeService below).
-bool flaresolverrConfigured = !string.IsNullOrEmpty(flaresolverrUrl.Resource.GetValueAsync(CancellationToken.None).Result);
-
-// The Suwayomi sidecar runs Tachiyomi/Mihon extension APKs (the keiyoushi repository) on the JVM, which is the only
-// way to reach those sources from .NET. Tranga depends on it: MangaDex aside, every download source comes from here.
-IResourceBuilder<ContainerResource> suwayomi = builder.AddContainer("suwayomi", "ghcr.io/suwayomi/suwayomi-server", "stable")
-    .WithHttpEndpoint(name: "http", port: 4567, targetPort: 4567)
-    .WithEnvironment("EXTENSION_STORES", "[\"https://github.com/keiyoushi/extensions/raw/repo/index.pb\"]")
-    // The sidecar is never reached by a browser: it is not routed through the gateway, so it would be unauthenticated
-    // if it were. Tranga's own Settings -> Sources page manages extensions, so the WebUI has no reason to run.
-    .WithEnvironment("WEB_UI_ENABLED", "false")
-    .WithEnvironment("AUTH_MODE", "none")
-    // KCEF downloads a ~500MB Chromium at first start to provide a WebView. FlareSolverr covers the Cloudflare
-    // cases Tranga cares about, so it stays off.
-    .WithEnvironment("KCEF_ENABLED", "false")
-    .WithEnvironment("FLARESOLVERR_ENABLED", flaresolverrConfigured ? "true" : "false")
-    .WithEnvironment("FLARESOLVERR_URL", flaresolverrUrl.Resource)
-    .PublishAsDockerComposeService((resource, service) =>
-    {
-        service.Name = "suwayomi";
-        service.Networks = ["tranga"];
-        // Derive the flag from FLARESOLVERRURL at container start rather than baking in whatever the parameter
-        // happened to be when this file was generated, so setting FlareSolverr in .env is enough to enable it here
-        // too. Compose expands ":+" to "true" only when the variable is set and non-empty; when it is empty the
-        // image's startup script falls back to the config default (`${FLARESOLVERR_ENABLED:-\1}`), i.e. false.
-        service.Environment["FLARESOLVERR_ENABLED"] = "${FLARESOLVERRURL:+true}";
-        // Persistent state, not a cache: this volume holds the installed extension JARs as well as the manga rows
-        // whose ids back url-to-id resolution. Wiping it means reinstalling every extension.
-        service.Volumes.Add(new Volume()
-        {
-            Name = "Suwayomi",
-            Source = "Suwayomi",
-            Target = "/home/suwayomi/.local/share/Tachidesk",
-            Type = "volume"
-        });
-        service.Restart = "on-failure:3";
-    });
 
 IResourceBuilder<RabbitMQServerResource> rabbitmq = builder.AddRabbitMQ("messaging", rabbitUser, rabbitPassword)
     .PublishAsDockerComposeService((resource, service) =>
@@ -143,7 +99,6 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         context.EnvironmentVariables["ChapterNamingScheme"] = chapterNamingScheme.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
         context.EnvironmentVariables["MAL_CLIENT_ID"] = malClientId.Resource;
-        context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -161,10 +116,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } },
-            // Only "started": the sidecar takes a while to be usable, and extension discovery is best-effort with a
-            // retry, so there is no reason to hold the service back until it is ready.
-            { "suwayomi", new ServiceDependency(){ Condition = "service_started" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
     })
@@ -195,7 +147,6 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         context.EnvironmentVariables["ChapterNamingScheme"] = chapterNamingScheme.Resource;
         context.EnvironmentVariables["FLARESOLVERR_URL"] = flaresolverrUrl.Resource;
         context.EnvironmentVariables["MAL_CLIENT_ID"] = malClientId.Resource;
-        context.EnvironmentVariables["SUWAYOMI_URL"] = suwayomi.GetEndpoint("http");
     })
     .PublishAsDockerComposeService((resource, service) =>
     {
@@ -212,10 +163,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         service.DependsOn = new()
         {
             { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
-            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } },
-            // Only "started": the sidecar takes a while to be usable, and extension discovery is best-effort with a
-            // retry, so there is no reason to hold the service back until it is ready.
-            { "suwayomi", new ServiceDependency(){ Condition = "service_started" } }
+            { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
     })
@@ -409,11 +357,6 @@ builder.AddYarp("gateway")
         yarp.AddRoute("/api/notifications/{**catch-all}", notificationsService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/libraries/{**catch-all}", librariesService).WithTransformPathRemovePrefix("/api");
         yarp.AddRoute("/api/auth/{**catch-all}", authService).WithTransformPathRemovePrefix("/api");
-
-        // The Suwayomi sidecar is deliberately not routed here. The gateway does not authenticate - every other route
-        // is protected by the service behind it - so exposing the sidecar would hand out unauthenticated control of
-        // it. Services reach it directly over the tranga network, and its extension icons are served back through
-        // the manga service.
     })
     .WithHostPort(port)
     .PublishAsDockerComposeService((resource, service) =>

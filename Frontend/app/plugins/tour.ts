@@ -2,20 +2,11 @@ import type { TourStep, UseTourReturn } from '~/composables/useTour';
 
 const SEEN_KEY = 'tranga-tour-first-download-seen';
 
-const TOUR_KEYS = [
-    'sources-nav',
-    'install-source',
-    'search-button',
-    'use-as-source',
-    'go-to-manga',
-    'more-download-links',
-    'add-link',
-    'match-download-link',
-] as const;
+const TOUR_KEYS = ['search-button', 'use-as-source', 'go-to-manga', 'more-download-links', 'add-link', 'match-download-link'] as const;
 type TourKey = (typeof TOUR_KEYS)[number];
 
 /**
- * "Sources", "Use as Source for Manga", "Go to Manga" and "More Download-Links" only
+ * "Use as Source for Manga", "Go to Manga" and "More Download-Links" only
  * exist as entries inside `ButtonProps[]`/`NavigationMenuItem[]` arrays passed into
  * shared page components (see `Tranga/Page.vue`'s nav items and
  * `Metadata/Page.vue`/`Manga/Page.vue`'s `actions` prop) - a Vue ref can't attach
@@ -28,7 +19,6 @@ type TourKey = (typeof TOUR_KEYS)[number];
  * targets below.
  */
 const SYNCED_CLASS_SELECTORS: Partial<Record<TourKey, string>> = {
-    'sources-nav': '.tour-sources-nav',
     'use-as-source': '.tour-use-as-source',
     'go-to-manga': '.tour-go-to-manga',
     'more-download-links': '.tour-more-download-links',
@@ -111,8 +101,6 @@ export default defineNuxtPlugin({
         }
 
         const targets = reactive<Record<TourKey, HTMLElement | null>>({
-            'sources-nav': null,
-            'install-source': null,
             'search-button': null,
             'use-as-source': null,
             'go-to-manga': null,
@@ -128,21 +116,7 @@ export default defineNuxtPlugin({
         const steps: FirstDownloadStep[] = [
             {
                 title: "Let's queue your first download",
-                body: "We'll install a download source, then find a manga and download its first chapters. It only takes a minute.",
-            },
-            {
-                key: 'sources-nav',
-                target: () => targets['sources-nav'] ?? undefined,
-                title: 'Pick where to download from',
-                body: 'Apart from MangaDex, Tranga gets its sources from installable extensions. Open Sources to browse them.',
-            },
-            {
-                key: 'install-source',
-                target: () => targets['install-source'] ?? undefined,
-                advanceSelector: '.tour-install-source',
-                title: 'Install a source',
-                body: 'Search for a site you read on and click Install. Its sources become available to Tranga straight away. Already have one installed? Skip ahead.',
-                manualNext: true,
+                body: "We'll find a manga and download its first chapters. It only takes a minute.",
             },
             {
                 key: 'search-button',

@@ -6,7 +6,6 @@ using Services.Manga.Features.Manga;
 using Services.Manga.Features.Manga.Search;
 using Services.Manga.Features.Metadata;
 using Services.Manga.Features.Settings;
-using Services.Manga.Features.Suwayomi;
 
 namespace Services.Manga.Features;
 
@@ -37,10 +36,6 @@ internal sealed class Endpoints : EndpointsBuilder
         builder.MapGroup("/settings")
             .WithTags("Manga", "Settings")
             .MapSettingsEndpoints();
-
-        builder.MapGroup("/suwayomi")
-            .WithTags("Manga", "Suwayomi")
-            .MapSuwayomiEndpoints();
     }
 }
 
@@ -159,45 +154,5 @@ internal static class EndpointHelpers
     {
         builder.MapGet("{fileId}", GetFileEndpoint.Handle)
             .WithSummary("Get File");
-    }
-
-    internal static void MapSuwayomiEndpoints(this RouteGroupBuilder builder)
-    {
-        builder.MapGet("/status", GetSuwayomiStatusEndpoint.Handle)
-            .WithSummary("Status of the Suwayomi sidecar");
-
-        builder.MapGet("/extensions", GetSuwayomiExtensionsEndpoint.Handle)
-            .WithSummary("Get the Suwayomi extension catalogue");
-
-        builder.MapPost("/extensions/{pkgName}/install", PostSuwayomiExtensionEndpoint.Install)
-            .WithSummary("Install a Suwayomi extension");
-
-        builder.MapPost("/extensions/{pkgName}/update", PostSuwayomiExtensionEndpoint.Update)
-            .WithSummary("Update a Suwayomi extension");
-
-        builder.MapDelete("/extensions/{pkgName}", PostSuwayomiExtensionEndpoint.Uninstall)
-            .WithSummary("Uninstall a Suwayomi extension");
-
-        // Anonymous on purpose - see the endpoint's remarks. Everything else in this group stays behind auth.
-        builder.MapGet("/icons/{iconId}", GetSuwayomiIconEndpoint.Handle)
-            .WithSummary("Get the icon of a Suwayomi extension")
-            .AllowAnonymous();
-
-        builder.MapGet("/sources", GetSuwayomiSourcesEndpoint.Handle)
-            .WithSummary("Get the sources of all installed Suwayomi extensions");
-
-        builder.MapPost("/refresh", PostSuwayomiRefreshEndpoint.Handle)
-            .WithSummary("Re-read the sources installed on the Suwayomi sidecar");
-    }
-}
-internal static class SettingsEndpointHelpers
-{
-    internal static void MapSettingsEndpoints(this RouteGroupBuilder builder)
-    {
-        builder.MapGet("behavior", GetBehaviorSettingsEndpoint.Handle)
-            .WithSummary("Get the Behavior-Settings");
-
-        builder.MapPatch("behavior", PatchBehaviorSettingsEndpoint.Handle)
-            .WithSummary("Update the Behavior-Settings");
     }
 }
