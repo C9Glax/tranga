@@ -7,8 +7,8 @@
         </template>
 
         <p v-if="!test" class="text-sm text-muted">
-            Use the <strong>Test</strong> button {{ buttonAbove ? 'above' : 'of this step' }} to try it on the website. The result shows up
-            here and stays visible while you change the selectors.
+            Use the <strong>Test</strong> button above to try it on the website. The result shows up here and stays visible while you change
+            the selectors.
         </p>
 
         <div v-else-if="test.loading" class="flex flex-row items-center gap-2 text-sm text-muted">
@@ -91,11 +91,7 @@
 <script setup lang="ts">
 type Row = Record<string, string | null>;
 
-const props = defineProps<{
-    test?: CustomSourceTestState;
-    /** True when the Test button of the current step sits directly above these results (and not in the step itself). */
-    buttonAbove?: boolean;
-}>();
+const props = defineProps<{ test?: CustomSourceTestState }>();
 const emit = defineEmits<{ pick: [step: CustomSourceTestStep, url: string] }>();
 
 const stepLabels: Record<CustomSourceTestStep, string> = { search: 'Search', chapters: 'Chapters', images: 'Pages' };

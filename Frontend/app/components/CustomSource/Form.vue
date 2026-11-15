@@ -252,14 +252,6 @@
                                     :ui="{ base: 'font-mono' }"
                                     class="w-full" />
                             </UFormField>
-                            <CustomSourceTestPanel
-                                v-model:input="testUrls.images"
-                                v-model:test="tests.images"
-                                :definition="state"
-                                step="images"
-                                input-label="Chapter URL"
-                                input-placeholder="https://example.com/chapter/1"
-                                help="Lists the image URLs that would be downloaded; nothing is downloaded. Use the button in the chapters test results to fill it in." />
                         </div>
                     </template>
                 </UStepper>
@@ -342,7 +334,7 @@
                     </div>
                 </div>
                 <div v-else class="flex flex-col gap-4 lg:sticky lg:top-4">
-                    <!-- Search and chapters are tried from here; the pages step still has its test input in the step itself. -->
+                    <!-- Every step is tried from here, right above its result. -->
                     <CustomSourceTestPanel
                         v-if="step === 'search'"
                         v-model:input="testUrls.search"
@@ -360,10 +352,16 @@
                         input-label="Series URL"
                         input-placeholder="https://example.com/series/1"
                         help="A series page of the website. Use the button in the search test results to fill it in." />
-                    <CustomSourceTestResults
-                        :test="currentTest"
-                        :button-above="step === 'search' || step === 'chapters'"
-                        @pick="pickFromResults" />
+                    <CustomSourceTestPanel
+                        v-else-if="step === 'pages'"
+                        v-model:input="testUrls.images"
+                        v-model:test="tests.images"
+                        :definition="state"
+                        step="images"
+                        input-label="Chapter URL"
+                        input-placeholder="https://example.com/chapter/1"
+                        help="Lists the image URLs that would be downloaded; nothing is downloaded. Use the button in the chapters test results to fill it in." />
+                    <CustomSourceTestResults :test="currentTest" @pick="pickFromResults" />
                 </div>
             </div>
         </div>
