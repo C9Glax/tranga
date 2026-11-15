@@ -5,6 +5,7 @@ using Common.Helpers;
 using Common.Settings;
 using Extensions.Data;
 using Extensions.Extensions.MangaPlusApi;
+using Extensions.Helpers;
 using Google.Protobuf;
 
 namespace Extensions.Extensions;
@@ -38,7 +39,6 @@ public sealed class MangaPlus : IDownloadExtension
 
     private const string ApiUrl = "https://jumpg-webapi.tokyo-cdn.com/api";
     private const int MaxSearchResults = 10;
-    private const int ImageDownloadAttempts = 3;
 
     // Identifies this process to the API; the real web client generates one per page load.
     private static readonly string SessionToken = Guid.NewGuid().ToString();
@@ -227,38 +227,15 @@ public sealed class MangaPlus : IDownloadExtension
     /// Downloads one image, retrying with a short backoff, and undoes the XOR encryption when a key is given.
     /// Returns null when all attempts fail.
     /// </summary>
-    private static async Task<TrangaImage?> DownloadImage(RequestClient client, string url, string? viewToken,
-        string? encryptionKey, CancellationToken ct)
-    {
-        for (int attempt = 1; attempt <= ImageDownloadAttempts; attempt++)
+    private static Task<TrangaImage?> DownloadImage(RequestClient client, string url, string? viewToken,
+        string? encryptionKey, CancellationToken ct) =>
+        ImageDownloader.DownloadAsync(client, () =>
         {
-            try
-            {
-                using HttpRequestMessage request = new(HttpMethod.Get, url);
-                if (!string.IsNullOrEmpty(viewToken))
-                    request.Headers.Add("Plus-Vw-Token", viewToken);
-                using HttpResponseMessage response = await client.SendAsync(request, ct);
-                if (response.IsSuccessStatusCode)
-                {
-                    byte[] data = await response.Content.ReadAsByteArrayAsync(ct);
-                    if (!string.IsNullOrEmpty(encryptionKey))
-                        Xor(data, Convert.FromHexString(encryptionKey));
-                    TrangaImage image = new();
-                    await image.WriteAsync(data, ct);
-                    return image;
-                }
-            }
-            catch (Exception) when (!ct.IsCancellationRequested)
-            {
-                // Retried below.
-            }
-
-            if (attempt < ImageDownloadAttempts)
-                await Task.Delay(TimeSpan.FromSeconds(attempt), ct);
-        }
-
-        return null;
-    }
+            HttpRequestMessage request = new(HttpMethod.Get, url);
+            if (!string.IsNullOrEmpty(viewToken))
+                request.Headers.Add("Plus-Vw-Token", viewToken);
+            return request;
+        }, string.IsNullOrEmpty(encryptionKey) ? null : data => Xor(data, Convert.FromHexString(encryptionKey)), ct);
 
     /// <summary>XORs <paramref name="data"/> in place with the repeating <paramref name="key"/>. Applying it twice restores the input.</summary>
     internal static void Xor(Span<byte> data, ReadOnlySpan<byte> key)

@@ -3,6 +3,7 @@ using Common.Datatypes;
 using Common.Helpers;
 using Common.Settings;
 using Extensions.Data;
+using Extensions.Helpers;
 using Newtonsoft.Json.Linq;
 using GeneratedExtensionClients.GeneratedClients.MangaDex;
 using Manga = GeneratedExtensionClients.GeneratedClients.MangaDex.Manga;
@@ -177,38 +178,9 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
             .ToList();
     }
 
-    private const int ImageDownloadAttempts = 3;
-
-    /// <summary>
-    /// Downloads one page, retrying with a short backoff on transport errors and non-success statuses (e.g. 429 or a
-    /// flaky MangaDex@Home node). Returns null when all attempts fail.
-    /// </summary>
-    private static async Task<TrangaImage?> DownloadImage(string url, CancellationToken ct)
-    {
-        for (int attempt = 1; attempt <= ImageDownloadAttempts; attempt++)
-        {
-            try
-            {
-                using HttpResponseMessage response = await MangaDexRequestClient.GetAsync(url, ct);
-                if (response.IsSuccessStatusCode)
-                {
-                    TrangaImage image = new();
-                    await using Stream data = await response.Content.ReadAsStreamAsync(ct);
-                    await data.CopyToAsync(image, ct);
-                    return image;
-                }
-            }
-            catch (Exception) when (!ct.IsCancellationRequested)
-            {
-                // Retried below.
-            }
-
-            if (attempt < ImageDownloadAttempts)
-                await Task.Delay(TimeSpan.FromSeconds(attempt), ct);
-        }
-
-        return null;
-    }
+    /// <summary>Downloads one page, with retries. Returns null when all attempts fail.</summary>
+    private static Task<TrangaImage?> DownloadImage(string url, CancellationToken ct) =>
+        ImageDownloader.DownloadAsync(MangaDexRequestClient, () => new HttpRequestMessage(HttpMethod.Get, url), null, ct);
 
     #endregion
 

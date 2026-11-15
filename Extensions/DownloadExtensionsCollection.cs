@@ -59,7 +59,19 @@ public static class DownloadExtensionsCollection
             }
         }
 
+        IDownloadExtension[] previous = _extensions;
         _extensions = [.. all];
+
+        // Extensions that own resources (HTTP clients) are replaced by fresh instances on every refresh. Dispose the
+        // old ones after a grace period so operations that already started with them can finish.
+        IDisposable[] replaced = previous.Where(extension => !all.Contains(extension)).OfType<IDisposable>().ToArray();
+        if (replaced.Length > 0)
+            _ = Task.Delay(TimeSpan.FromMinutes(2), CancellationToken.None).ContinueWith(_ =>
+            {
+                foreach (IDisposable disposable in replaced)
+                    disposable.Dispose();
+            }, TaskScheduler.Default);
+
         return all.Count;
     }
 

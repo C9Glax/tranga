@@ -27,6 +27,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Frozen (trimmed) real responses of websites, used as offline fixtures for the custom source tests -->
+        <None Update="Custom\Fixtures\*.html" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Common.Tests\Common.Tests.csproj" />
       <ProjectReference Include="..\Extensions\Extensions.csproj" />
     </ItemGroup>

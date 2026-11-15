@@ -18,6 +18,7 @@
 
     <ItemGroup>
       <PackageReference Include="Naprise" Version="0.1.1" />
+      <PackageReference Include="AngleSharp.XPath" Version="2.0.10" />
       <PackageReference Include="Google.Protobuf" Version="3.34.1" />
       <PackageReference Include="Grpc.Tools" Version="2.80.0">
         <PrivateAssets>all</PrivateAssets>
@@ -32,6 +33,11 @@
 
     <ItemGroup>
       <InternalsVisibleTo Include="Extensions.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <!-- Example custom source definitions, see SelectorDownloaderJson -->
+      <EmbeddedResource Include="Custom\Examples\*.json" LogicalName="Extensions.Custom.Examples.%(Filename)%(Extension)" />
     </ItemGroup>
 
 </Project>
