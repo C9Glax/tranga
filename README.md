@@ -164,16 +164,10 @@ the login page will show the setup screen again on next load.
 <img src="Screenshots/manga.png" width="512" alt="manga page"/>
 <img src="Screenshots/manga-light.png" width="512" alt="light mode manga page"/>
 <img src="Screenshots/settings-sources.png" width="512" alt="settings: sources"/>
+<img src="Screenshots/settings-sources-new.png" width="512" alt="settings: creating a custom source"/>
+<img src="Screenshots/settings-sources-test.png" width="512" alt="settings: testing the search step of a custom source"/>
+<img src="Screenshots/settings-sources-custom.png" width="512" alt="settings: sources with a custom source"/>
 <img src="Screenshots/settings-appearance.png" width="512" alt="settings: appearance"/>
-
-To regenerate them, start the stack (see [Running locally with Aspire](#running-locally-with-aspire)), then:
-
-```bash
-cd Frontend
-npm install
-npx playwright install chromium
-npm run screenshots -- --base-url http://localhost:5000
-```
 
 ## Built With
 

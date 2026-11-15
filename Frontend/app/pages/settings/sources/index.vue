@@ -12,7 +12,13 @@
             <UPageCard v-for="extension in downloadExtensions" :key="extension.downloadExtensionsId" variant="subtle">
                 <div class="flex flex-row items-center justify-between gap-3">
                     <div class="flex min-w-0 flex-row items-center gap-3">
-                        <img :src="extension.iconUrl" :alt="extension.name" class="size-8 shrink-0 rounded" />
+                        <img
+                            v-if="!failedIcons.has(extension.downloadExtensionsId)"
+                            :src="extension.iconUrl"
+                            :alt="extension.name"
+                            class="size-8 shrink-0 rounded"
+                            @error="failedIcons.add(extension.downloadExtensionsId)" />
+                        <UIcon v-else name="i-lucide-globe" class="size-8 shrink-0 text-muted" />
                         <span class="truncate font-medium">{{ extension.name }}</span>
                         <UBadge v-if="extension.isCustom" label="Custom" color="primary" variant="subtle" />
                         <UBadge v-else label="Built-in" color="neutral" variant="outline" />
@@ -50,6 +56,9 @@ const toast = useToast();
 const confirmModal = useOverlay().create(TrangaConfirmModal);
 
 const { downloadExtensions } = await useDownloadExtensions();
+
+// Icons come from other websites and can fail to load; those sources get a generic icon instead.
+const failedIcons = reactive(new Set<string>());
 
 const confirmDelete = (extension: ServicesMangaDownloadExtension) =>
     confirmModal.open({
