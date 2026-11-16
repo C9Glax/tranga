@@ -7,6 +7,7 @@
   </p>
 
 ![GitHub License](https://img.shields.io/github/license/C9glax/tranga)
+[![Translation status](https://img.shields.io/weblate/progress/tranga?server=https%3A%2F%2Fhosted.weblate.org)](https://hosted.weblate.org/projects/tranga/)
 
   <table>
     <tr>
@@ -242,7 +243,7 @@ If you want to contribute, please feel free to fork and create a Pull-Request!
 
 Please read [CONTRIBUTING](CONTRIBUTING.md)
 
-The frontend can be translated, see [Frontend/TRANSLATING.md](Frontend/TRANSLATING.md).
+The frontend can be translated on [Weblate](https://hosted.weblate.org/projects/tranga/), see [Frontend/TRANSLATING.md](Frontend/TRANSLATING.md).
 
 ## License
 
