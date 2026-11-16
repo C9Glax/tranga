@@ -42,7 +42,10 @@ export default defineNuxtConfig({
         strategy: 'no_prefix',
         defaultLocale: 'en',
         // `langDir` is resolved relative to the `i18n/` directory.
-        locales: [{ code: 'en', language: 'en-US', name: 'English', file: 'en.json' }],
+        locales: [
+            { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
+            { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json' },
+        ],
         langDir: 'locales',
         detectBrowserLanguage: { useCookie: true, cookieKey: 'tranga-locale', fallbackLocale: 'en' },
     },
