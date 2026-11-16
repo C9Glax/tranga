@@ -128,11 +128,9 @@ public sealed class MangaPlus : IDownloadExtension
         if (await DownloadImage(ImageClient, title.PortraitImageUrl, null, null, ct) is not { } cover)
             return null;
         // MANGA Plus is an all-ages publisher, so nothing on it is flagged NSFW.
-        return new MangaInfo(Identifier, title.Name, TitleUrl(title.TitleId), title.TitleId.ToString(), cover,
+        return new MangaInfo(Identifier, title.Name, $"{BaseUrl}/titles/{title.TitleId}", title.TitleId.ToString(), cover,
             Description: null, NSFW: false);
     }
-
-    private string TitleUrl(int titleId) => $"{BaseUrl}/titles/{titleId}";
 
     #endregion
 

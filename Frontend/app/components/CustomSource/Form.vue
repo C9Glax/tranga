@@ -371,7 +371,8 @@
                                     color="neutral"
                                     variant="subtle"
                                     class="font-mono">
-                                    {{ placeholder(group.name) }} = {{ group.value || '(empty)' }}
+                                    <!-- shown the way the group is written in the chapter list URL: {name} -->
+                                    {{ '{' + group.name + '}' }} = {{ group.value || '(empty)' }}
                                 </UBadge>
                             </template>
                             <span v-else class="text-muted">No named groups.</span>
@@ -610,7 +611,6 @@ const languages = computed({
 // What the tests try (and the URL the series URL pattern is tried on). A test result can fill in the one of the next step.
 const testUrls = reactive({ pattern: '', search: '', chapters: '', images: '' });
 const patternResult = computed(() => testSeriesPattern(state.value.seriesUrlPattern, testUrls.pattern));
-const placeholder = (group: string) => `{${group}}`; // how the group is written in the chapter list URL
 
 const useSeriesUrl = (url: string) => {
     testUrls.chapters = url;
@@ -621,11 +621,13 @@ const useSeriesUrl = (url: string) => {
         color: 'info',
     });
 };
-const useChapterUrl = (url: string) => {
+// A row of a test result was picked for the next step: a search result is a series (chapters test), a chapter leads to
+// its pages (pages test).
+const pickFromResults = (from: CustomSourceTestStep, url: string) => {
+    if (from === 'search') return useSeriesUrl(url);
     testUrls.images = url;
     toast.add({ title: 'Filled in the chapter URL.', description: 'It is used in the pages test.', color: 'info' });
 };
-const pickFromResults = (from: CustomSourceTestStep, url: string) => (from === 'search' ? useSeriesUrl(url) : useChapterUrl(url));
 
 // The header rows are edited as a list; keep the definition (used by the test panels and on save) in sync.
 const syncHeaders = () => {

@@ -188,12 +188,11 @@ export default defineNuxtPlugin({
         // Going back: the steps follow what the user does across several pages, and some of what they did cannot be
         // undone (a created manga has no "Use as Source" button anymore). So "back" means the nearest earlier step that
         // can be shown on the page the user is on right now: intro steps always can, the others when their element exists.
-        const canShow = (index: number): boolean => {
-            const key = steps[index]?.key;
-            return steps[index] !== undefined && (key === undefined || targets[key] !== null);
-        };
         const previousShowable = computed(() => {
-            for (let index = tour.index.value - 1; index >= 0; index--) if (canShow(index)) return index;
+            for (let index = tour.index.value - 1; index >= 0; index--) {
+                const key = steps[index]?.key;
+                if (key === undefined || targets[key] !== null) return index;
+            }
             return -1;
         });
         const canGoBack = computed(() => previousShowable.value >= 0);

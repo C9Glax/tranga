@@ -12,10 +12,9 @@ public static class DownloadExtensionsCollection
 {
     private static readonly Lock ProvidersLock = new();
     private static readonly List<IDownloadExtensionProvider> Providers = [new BuiltInDownloadExtensionProvider()];
-    private static volatile IDownloadExtension[] _extensions = LoadBuiltIn();
-
-    // Built-in extensions are available immediately, without anyone having to call RefreshAsync first.
-    private static IDownloadExtension[] LoadBuiltIn() =>
+    // Built-in extensions are available immediately, without anyone having to call RefreshAsync first (loading them
+    // does no I/O, so waiting for it here is safe).
+    private static volatile IDownloadExtension[] _extensions =
         [.. new BuiltInDownloadExtensionProvider().LoadAsync(CancellationToken.None).GetAwaiter().GetResult()];
 
     /// <summary>Every download extension currently available.</summary>

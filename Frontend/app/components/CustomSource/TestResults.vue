@@ -76,7 +76,7 @@
                             <dt class="text-xs font-medium text-muted capitalize">{{ key }}</dt>
                             <dd>
                                 <a
-                                    v-if="isLink(key, value)"
+                                    v-if="LINK_COLUMNS.includes(key) && isHttpUrl(value)"
                                     :href="value!"
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -115,10 +115,9 @@ const stepLabels: Record<CustomSourceTestStep, string> = { search: 'Search', cha
 
 const rows = computed<Row[]>(() => (props.test?.result?.rows ?? []) as Row[]);
 
-// Columns that hold links to the website or its images are shown as clickable links.
+// Columns that hold links to the website or its images are shown as clickable links (when the value really is one).
 const LINK_COLUMNS = ['url', 'cover', 'page', 'image'];
 const isHttpUrl = (value: string | null | undefined): boolean => typeof value === 'string' && /^https?:\/\//i.test(value);
-const isLink = (key: string, value: string | null | undefined): boolean => LINK_COLUMNS.includes(key) && isHttpUrl(value);
 
 // A search result becomes the series of the chapters test, a chapter the one of the pages test.
 const pickLabel = computed(() =>

@@ -14,11 +14,7 @@ namespace Extensions.Custom;
 /// <summary>Environment dependent behaviour of <see cref="SelectorDownloadExtension"/>, injectable for tests.</summary>
 /// <param name="AllowPrivateHosts">Whether sources may talk to loopback/LAN addresses</param>
 /// <param name="FlareSolverrUrl">The FlareSolverr instance sources with <see cref="SelectorDownloaderDefinition.UseFlareSolverr"/> use, if any</param>
-public sealed record SelectorDownloaderOptions(bool AllowPrivateHosts, string? FlareSolverrUrl)
-{
-    /// <summary>Taken from the environment (<c>ALLOW_PRIVATE_SOURCE_HOSTS</c>, <c>FLARESOLVERR_URL</c>).</summary>
-    public static SelectorDownloaderOptions FromEnvironment() => new(EnvVars.AllowPrivateSourceHosts, EnvVars.FlareSolverrUrl);
-}
+public sealed record SelectorDownloaderOptions(bool AllowPrivateHosts, string? FlareSolverrUrl);
 
 /// <summary>
 /// A download extension that reads a website with the selectors of a <see cref="SelectorDownloaderDefinition"/>:
@@ -64,7 +60,7 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     public Language[] SupportedLanguages { get; init; }
 
     /// <param name="definition">A complete, valid definition with an <see cref="SelectorDownloaderSettings.Id"/></param>
-    /// <param name="options">Defaults to the environment</param>
+    /// <param name="options">Defaults to the environment (<c>ALLOW_PRIVATE_SOURCE_HOSTS</c>, <c>FLARESOLVERR_URL</c>)</param>
     /// <exception cref="ArgumentException">The definition is invalid</exception>
     public SelectorDownloadExtension(SelectorDownloaderDefinition definition, SelectorDownloaderOptions? options = null)
         : this(Checked(definition), options, definitionChecked: true)
@@ -125,7 +121,8 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     private SelectorDownloadExtension(SelectorDownloaderDefinition definition, SelectorDownloaderOptions? options, bool definitionChecked)
     {
         _definition = definition;
-        _options = options ?? SelectorDownloaderOptions.FromEnvironment();
+        // Without options they come from the environment (ALLOW_PRIVATE_SOURCE_HOSTS, FLARESOLVERR_URL).
+        _options = options ?? new SelectorDownloaderOptions(EnvVars.AllowPrivateSourceHosts, EnvVars.FlareSolverrUrl);
         _baseUri = new Uri(definition.BaseUrl);
         _seriesPattern = string.IsNullOrWhiteSpace(definition.SeriesUrlPattern)
             ? null
@@ -176,11 +173,13 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     /// <inheritdoc />
     public async Task<List<MangaInfo>?> SearchDownload(SearchQuery query, CancellationToken ct)
     {
-        if (!SupportsLanguage(query.Language ?? Settings.DownloadLanguage) || string.IsNullOrWhiteSpace(query.Title))
+        // A website only has series in its own languages, so a search in another one finds nothing.
+        Language language = query.Language ?? Settings.DownloadLanguage;
+        if (!_definition.Languages.Any(language.Equals) || string.IsNullOrWhiteSpace(query.Title))
             return [];
 
         Dictionary<string, string> variables = SearchVariables(query.Title);
-        if (await TryFetchPage(SearchUrl(variables), ct) is not { Root: { } root } page)
+        if (await TryFetchPage(BuildUrl(_definition.Search.UrlTemplate, variables)!, ct) is not { Root: { } root } page)
             return null;
 
         List<SearchItem> items = ParseSearchItems(root, page.Url, variables).Items.Take(MaxSearchResults).ToList();
@@ -193,12 +192,9 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
         return results.OfType<MangaInfo>().ToList();
     }
 
+    /// <summary>The placeholders of the search URL template: the URL-encoded search text and the page (always the first).</summary>
     private static Dictionary<string, string> SearchVariables(string title) =>
         new() { ["query"] = Uri.EscapeDataString(title.Trim()), ["page"] = "1" };
-
-    private Uri SearchUrl(IReadOnlyDictionary<string, string> variables) => BuildUrl(_definition.Search.UrlTemplate, variables)!;
-
-    private bool SupportsLanguage(Language language) => _definition.Languages.Any(language.Equals);
 
     private sealed record SearchItem(string Title, string Url, string CoverUrl);
 
@@ -257,7 +253,9 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     /// <inheritdoc />
     public async Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct)
     {
-        if (SeriesVariables(mangaInfo.Identifier) is not { } variables ||
+        // The placeholders of the chapter list URL: {url} and the groups of the series URL pattern. A URL that does not
+        // match the pattern is not a series of this source.
+        if (UrlVariables(mangaInfo.Identifier, _seriesPattern) is not { } variables ||
             BuildUrl(_definition.Chapters.UrlTemplate, variables) is not { } firstUrl)
             return null;
 
@@ -270,19 +268,18 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
                 return pages == 0 ? null : chapters;
 
             chapters.AddRange(ParseChapterItems(root, page.Url, variables).Items);
-            next = ParseNextPage(root, page.Url, variables);
+            // The chapter list may go on on another page.
+            next = root.Url(Fill(_definition.Chapters.NextPage, variables), page.Url) is { } nextUrl ? new Uri(nextUrl) : null;
         }
 
         return chapters.DistinctBy(c => c.Url).ToList();
     }
 
-    /// <summary>The placeholders available in the chapter list URL template for a series, or null if it is not a series of this source.</summary>
-    private Dictionary<string, string>? SeriesVariables(string seriesUrl) => UrlVariables(seriesUrl, _seriesPattern);
-
-    /// <summary>The placeholders available in the pages URL template for a chapter, or null if the URL does not match the chapter URL pattern.</summary>
-    private Dictionary<string, string>? ChapterVariables(string chapterUrl) => UrlVariables(chapterUrl, _chapterPattern);
-
-    /// <summary><c>{url}</c> plus the named groups of <paramref name="pattern"/>. Null when the URL does not match the pattern.</summary>
+    /// <summary>
+    /// The placeholders a URL provides for the URL template of the next step: <c>{url}</c> itself plus the named groups of
+    /// <paramref name="pattern"/> (the series URL pattern for the chapter list, the chapter URL pattern for the pages).
+    /// Null when the URL does not match the pattern.
+    /// </summary>
     private static Dictionary<string, string>? UrlVariables(string url, Regex? pattern)
     {
         Dictionary<string, string> variables = new() { ["url"] = url };
@@ -343,9 +340,6 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
         return new ParseResult<ChapterInfo>(chapters, nodes.Count, missing);
     }
 
-    private Uri? ParseNextPage(ISourceNode root, Uri pageUrl, IReadOnlyDictionary<string, string> variables) =>
-        root.Url(Fill(_definition.Chapters.NextPage, variables), pageUrl) is { } next ? new Uri(next) : null;
-
     /// <summary>"Chapter 12.5" -> "12.5", "#012" -> "12", "Extra" -> null</summary>
     internal static string? ParseChapterNumber(string? text)
     {
@@ -377,7 +371,8 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     /// <inheritdoc />
     public async Task<List<ChapterImage>?> FetchChapterImages(ChapterInfo chapterInfo, CancellationToken ct)
     {
-        if (ChapterVariables(chapterInfo.Identifier) is not { } variables ||
+        // The placeholders of the pages URL: {url} and the groups of the chapter URL pattern.
+        if (UrlVariables(chapterInfo.Identifier, _chapterPattern) is not { } variables ||
             BuildUrl(_definition.Images.UrlTemplate, variables) is not { } url ||
             await TryFetchPage(url, ct) is not { Root: { } root } page)
             return null;
@@ -464,7 +459,7 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     public Task<StepTestResult> TestSearchAsync(string query, CancellationToken ct)
     {
         Dictionary<string, string> variables = SearchVariables(query);
-        return TestStep(SearchUrl(variables), ct, (root, pageUrl) =>
+        return TestStep(BuildUrl(_definition.Search.UrlTemplate, variables)!, ct, (root, pageUrl) =>
         {
             ParseResult<SearchItem> result = ParseSearchItems(root, pageUrl, variables);
             return (result.Matched, result.Missing, result.Items.Count, result.Items.Select(i => new Dictionary<string, string?>
@@ -477,7 +472,7 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     /// <summary>Runs the chapter list step for a series URL and reports what was extracted.</summary>
     public Task<StepTestResult> TestChaptersAsync(string seriesUrl, CancellationToken ct)
     {
-        if (ParseIdentifierFromUrl(seriesUrl) is not { } identifier || SeriesVariables(identifier) is not { } variables ||
+        if (ParseIdentifierFromUrl(seriesUrl) is not { } identifier || UrlVariables(identifier, _seriesPattern) is not { } variables ||
             BuildUrl(_definition.Chapters.UrlTemplate, variables) is not { } url)
             return Task.FromResult(new StepTestResult { Error = "That URL is not a series page of this source (check the base URL and the series URL pattern)." });
 
@@ -498,7 +493,7 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     /// </summary>
     public async Task<StepTestResult> TestImagesAsync(string chapterUrl, CancellationToken ct)
     {
-        if (ChapterVariables(chapterUrl.Trim()) is not { } variables)
+        if (UrlVariables(chapterUrl.Trim(), _chapterPattern) is not { } variables)
             return new StepTestResult { Error = "That URL does not match the chapter URL pattern." };
         if (BuildUrl(_definition.Images.UrlTemplate, variables) is not { } url)
             return new StepTestResult { Error = "The page URL could not be built from that chapter URL." };
