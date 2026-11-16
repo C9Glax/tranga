@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Sockets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -18,8 +19,9 @@ namespace Common.Database;
 /// starting up (first boot of the container) when the services come up.
 /// <para>
 /// <see cref="MigrateWithLockAsync"/> waits for Postgres and serializes the whole migration, database creation
-/// included, with a Postgres advisory lock. Advisory locks belong to a database, so the lock is taken on the admin
-/// database (<c>postgres</c>), which exists before the application database does.
+/// included, with a Postgres advisory lock. Advisory locks belong to a database, so the lock is taken on the default
+/// <c>postgres</c> database, which exists before the application database does. Where <c>postgres</c> is missing or off
+/// limits, the application database itself is used, as long as it exists already.
 /// </para>
 /// </remarks>
 public static class DatabaseMigrator
@@ -27,8 +29,13 @@ public static class DatabaseMigrator
     /// <summary>The advisory lock key every Tranga service takes while migrating (<c>TRANGA</c> as ASCII).</summary>
     private const long MigrationLockKey = 0x5452414E4741;
 
-    /// <summary>Admin databases that always exist, in the order the lock is tried on them (the same ones EF Core uses).</summary>
-    private static readonly string[] AdminDatabases = ["postgres", "template1"];
+    /// <summary>
+    /// The default maintenance database the lock is preferably taken on (EF Core's admin connection uses it as well):
+    /// it exists before the application database does, so the lock also covers creating that one. It is not
+    /// <c>template1</c>: <c>CREATE DATABASE</c> copies that one and fails with "source database "template1" is being
+    /// accessed by other users" while any session, such as the one holding the lock, is connected to it.
+    /// </summary>
+    private const string AdminDatabase = "postgres";
 
     private static readonly TimeSpan DefaultMaxWait = TimeSpan.FromSeconds(90);
 
@@ -74,6 +81,11 @@ public static class DatabaseMigrator
     /// <summary>Opens a connection to the admin database, retrying with backoff while Postgres is not accepting connections yet.</summary>
     private static async Task<NpgsqlConnection> OpenAdminConnectionAsync(NpgsqlConnectionStringBuilder template, TimeSpan maxWait, ILogger? logger, CancellationToken ct)
     {
+        // Not every server has the postgres database, or lets this user connect to it (managed Postgres, for example).
+        // Then the application database of the context is the next best thing; that only works once it exists.
+        string[] candidates = template.Database is { Length: > 0 } applicationDatabase && applicationDatabase != AdminDatabase
+            ? [AdminDatabase, applicationDatabase]
+            : [AdminDatabase];
         DateTime deadline = DateTime.UtcNow + maxWait;
         TimeSpan delay = TimeSpan.FromMilliseconds(500);
 
@@ -81,26 +93,7 @@ public static class DatabaseMigrator
         {
             try
             {
-                foreach (string adminDatabase in AdminDatabases)
-                {
-                    NpgsqlConnection connection = new(new NpgsqlConnectionStringBuilder(template.ConnectionString) { Database = adminDatabase }.ConnectionString);
-                    try
-                    {
-                        await connection.OpenAsync(ct);
-                        return connection;
-                    }
-                    catch (PostgresException e) when (e.SqlState == PostgresErrorCodes.InvalidCatalogName)
-                    {
-                        await connection.DisposeAsync(); // This admin database does not exist, try the next one.
-                    }
-                    catch (Exception)
-                    {
-                        await connection.DisposeAsync();
-                        throw;
-                    }
-                }
-
-                throw new InvalidOperationException($"None of the admin databases ({string.Join(", ", AdminDatabases)}) exists to take the migration lock on.");
+                return await OpenFirstAvailableAsync(template, candidates, ct);
             }
             catch (Exception e) when (IsStartingUp(e) && DateTime.UtcNow + delay < deadline)
             {
@@ -109,6 +102,31 @@ public static class DatabaseMigrator
                 delay = TimeSpan.FromSeconds(Math.Min(delay.TotalSeconds * 2, 5));
             }
         }
+    }
+
+    /// <summary>Opens the first of the databases that exists and that the user may connect to.</summary>
+    private static async Task<NpgsqlConnection> OpenFirstAvailableAsync(NpgsqlConnectionStringBuilder template, string[] databases, CancellationToken ct)
+    {
+        for (int i = 0; i < databases.Length; i++)
+        {
+            NpgsqlConnection connection = new(new NpgsqlConnectionStringBuilder(template.ConnectionString) { Database = databases[i] }.ConnectionString);
+            try
+            {
+                await connection.OpenAsync(ct);
+                return connection;
+            }
+            catch (PostgresException e) when (i < databases.Length - 1 && e.SqlState is PostgresErrorCodes.InvalidCatalogName or PostgresErrorCodes.InsufficientPrivilege)
+            {
+                await connection.DisposeAsync(); // Missing, or not allowed: try the next database.
+            }
+            catch (Exception)
+            {
+                await connection.DisposeAsync();
+                throw;
+            }
+        }
+
+        throw new UnreachableException("The last database failing always throws.");
     }
 
     /// <summary>Whether the exception means Postgres is (still) unreachable or starting up, as opposed to a mistake in the configuration.</summary>
