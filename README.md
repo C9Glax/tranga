@@ -71,22 +71,25 @@ form explains every step and lets you try it against the real website before you
 
 A custom source works by scraping: Tranga fetches a web page (the search results, the chapter list of a series, the page of a
 chapter) and picks the data it needs out of the HTML with path matching, i.e. CSS selectors or XPath expressions, optionally
-refined with a regular expression. Searching, listing the chapters and finding the page images are three separate steps, each
-with its own page and selectors. A source is a small JSON document, so it can be shared.
+refined with a regular expression. Websites whose pages are empty until JavaScript has loaded the content work too: there the
+source reads the JSON of the website's API, with paths (`data`, `manga.title`) in place of selectors. Searching, listing the
+chapters and finding the page images are three separate steps, each with its own page and selectors. A source is a small JSON
+document, so it can be shared.
 
 Examples to start from (they can also be loaded with **Start from an example** in the form), each mirroring the
 [keiyoushi](https://github.com/keiyoushi/extensions-source) extension of the same website:
 
 - [WeebCentral](Extensions/Custom/Examples/weebcentral.json)
 - [MangaTown](Extensions/Custom/Examples/mangatown.json)
+- [Manga.uno](Extensions/Custom/Examples/mangauno.json) (a JSON API)
 
 A [prompt for AI agents](Extensions/Custom/Examples/agent-prompt.md) lets one write the definition of a website for you
 (the form links to it as well).
 
 Good to know:
 
-- The data has to be in the HTML the server sends. Pages that build their content with JavaScript do not work (FlareSolverr
-  only helps with Cloudflare challenges).
+- The data has to be in what the server sends: the HTML of a page, or the JSON of the API a page loads its content from.
+  JavaScript is never run (FlareSolverr only helps with Cloudflare challenges).
 - For safety, custom sources may only reach public websites: loopback, LAN and link-local addresses are refused. Set
   `ALLOW_PRIVATE_SOURCE_HOSTS=true` ([EnvVars.md](EnvVars.md)) for a source on your own network.
 

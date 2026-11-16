@@ -315,6 +315,7 @@ export type {
     ServicesMangaSelectorDownloaderDefinition,
     ServicesMangaSelectorDownloaderSettings,
     ServicesMangaSelectorField,
+    ServicesMangaSourceFormat,
     ServicesMangaStepTestResult,
     ServicesNotificationsGetGitInfoData,
     ServicesNotificationsGetGitInfoResponse,

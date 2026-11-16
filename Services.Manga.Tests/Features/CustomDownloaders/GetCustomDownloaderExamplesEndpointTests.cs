@@ -19,5 +19,7 @@ public class GetCustomDownloaderExamplesEndpointTests
         });
         Assert.Contains(result.Value!, example => example.BaseUrl == "https://weebcentral.com");
         Assert.Contains(result.Value!, example => example.BaseUrl == "https://www.mangatown.com");
+        // one of them reads the JSON of an API, so the form can show what that looks like
+        Assert.Contains(result.Value!, example => example is { BaseUrl: "https://manga.uno", Format: SourceFormat.Json });
     }
 }

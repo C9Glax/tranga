@@ -1,0 +1,50 @@
+{
+  "chapter": {
+    "id": 800778,
+    "manga_id": 3,
+    "chapter_number": "1182.0000",
+    "volume": 117,
+    "title": "Zaza",
+    "language": "en",
+    "page_count": 3,
+    "source": "mangafire",
+    "source_chapter_id": "dkw:1182",
+    "external_url": null,
+    "published_at": "2026-05-12T00:00:00.000Z",
+    "pages_cached": 1
+  },
+  "manga": {
+    "id": 3,
+    "slug": "one-piece",
+    "title": "One Piece",
+    "japanese_title": "ワンピース",
+    "english_title": "One Piece",
+    "cover": "/covers/one-piece.webp",
+    "cover_override": null,
+    "type": "manga",
+    "anilist_country": "JP"
+  },
+  "prev_id": 800779,
+  "next_id": 16885486,
+  "pages": [
+    "https://xz7.fstr-cdn.com/pages/3/800778/1.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/2.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/3.webp"
+  ],
+  "pages_saver": [
+    "https://xz7.fstr-cdn.com/pages/3/800778/1.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/2.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/3.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/4.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/5.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/6.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/7.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/8.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/9.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/10.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/11.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/12.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/13.webp",
+    "https://xz7.fstr-cdn.com/pages/3/800778/14.webp"
+  ]
+}

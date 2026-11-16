@@ -13,7 +13,7 @@ internal sealed class FixtureSite : IDisposable
     internal sealed record Response(string Body, string ContentType = "text/html; charset=utf-8", HttpStatusCode Status = HttpStatusCode.OK,
         string? RedirectTo = null, byte[]? Bytes = null);
 
-    internal sealed record ReceivedRequest(string PathAndQuery, string? Referer, string? UserAgent, string? Cookie);
+    internal sealed record ReceivedRequest(string PathAndQuery, string? Referer, string? UserAgent, string? Cookie, string? Accept = null);
 
     private readonly HttpListener _listener = new();
     private readonly Dictionary<string, Response> _routes = new();
@@ -61,7 +61,7 @@ internal sealed class FixtureSite : IDisposable
                 HttpListenerContext context = await _listener.GetContextAsync();
                 lock (_requests)
                     _requests.Add(new ReceivedRequest(context.Request.Url!.PathAndQuery, context.Request.Headers["Referer"],
-                        context.Request.Headers["User-Agent"], context.Request.Headers["Cookie"]));
+                        context.Request.Headers["User-Agent"], context.Request.Headers["Cookie"], context.Request.Headers["Accept"]));
 
                 Response? response;
                 lock (_routes)

@@ -81,9 +81,29 @@ public sealed class AgentPromptTests
         Assert.Empty(shown.Except(known)); // the prompt shows a field that does not exist (anymore)
     }
 
+    [Fact]
+    public void EveryExampleIsMentioned() => Assert.All(
+        Directory.GetFiles(ExamplesDirectory, "*.json").Select(Path.GetFileName),
+        example => Assert.Contains($"/Extensions/Custom/Examples/{example}", Prompt));
+
+    [Fact]
+    public void ItAsksTheUserForTheWebsiteInsteadOfHavingAPlaceholderToFillIn()
+    {
+        Assert.Contains("Start by asking the user which website", Prompt);
+        Assert.DoesNotContain("<WEBSITE>", Prompt);
+    }
+
+    [Fact]
+    public void ItExplainsBothFormats()
+    {
+        Assert.Contains("**`html`**", Prompt);
+        Assert.Contains("**`json`**", Prompt);
+    }
+
     [Theory]
     [InlineData("weebcentral.json")]
     [InlineData("mangatown.json")]
+    [InlineData("mangauno.json")]
     public void TheExamplesItPointsToExist(string example)
     {
         Assert.Contains($"/Extensions/Custom/Examples/{example}", Prompt);

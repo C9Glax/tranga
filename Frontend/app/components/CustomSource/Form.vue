@@ -22,8 +22,8 @@
                                 color="neutral"
                                 variant="subtle"
                                 icon="i-lucide-info"
-                                title="Describe the website with selectors"
-                                description="Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter). Test each step on the real website before saving. Rather have an AI agent do the looking? Give it the prompt linked here, then paste its answer with Import JSON."
+                                :title="texts.introTitle"
+                                :description="`${texts.intro} Test each step on the real website before saving. Rather have an AI agent do the looking? Give it the prompt linked here, then paste its answer with Import JSON.`"
                                 :actions="[
                                     {
                                         label: 'Prompt for AI agents',
@@ -43,6 +43,18 @@
                                     placeholder="https://example.com"
                                     class="w-full"
                                     @blur="state.baseUrl = normalizeBaseUrl(state.baseUrl)" />
+                            </UFormField>
+                            <UFormField
+                                label="Response format"
+                                name="format"
+                                required
+                                description="What the website answers with. It applies to every step and decides how the answers are read.">
+                                <URadioGroup
+                                    v-model="state.format"
+                                    :items="formatItems"
+                                    variant="card"
+                                    :ui="{ fieldset: 'grid grid-cols-1 gap-2 sm:grid-cols-2' }"
+                                    class="w-full" />
                             </UFormField>
                             <UFormField label="Icon URL" name="iconUrl" description="Optional. Defaults to the website's favicon.">
                                 <UInput v-model="state.iconUrl" placeholder="https://example.com/icon.png" class="w-full" />
@@ -133,36 +145,42 @@
                                 label="Search URL"
                                 name="search.urlTemplate"
                                 required
-                                description="{query} is replaced with the URL-encoded search text. Relative to the base URL.">
+                                :description="`{query} is replaced with the URL-encoded search text. Relative to the base URL.${texts.urlNote}`">
                                 <UInput
                                     v-model="state.search.urlTemplate"
-                                    placeholder="/search?q={query}"
+                                    :placeholder="texts.searchUrlPlaceholder"
                                     :ui="{ base: 'font-mono' }"
                                     class="w-full" />
                             </UFormField>
-                            <UFormField
-                                label="Result item selector"
-                                name="search.itemSelector"
-                                required
-                                description="One element per search result: the wrapper around the whole result. The title, link and cover below are looked up inside this element, so their selectors are relative to it.">
+                            <UFormField :label="texts.searchItemLabel" name="search.itemSelector" required :description="texts.searchItem">
                                 <UInput
                                     v-model="state.search.itemSelector"
-                                    placeholder="div.search-result"
+                                    :placeholder="texts.searchItemPlaceholder"
                                     :ui="{ base: 'font-mono' }"
                                     class="w-full" />
                             </UFormField>
-                            <CustomSourceFieldInput v-model="state.search.title" label="Title" required />
+                            <CustomSourceFieldInput
+                                v-model="state.search.title"
+                                :format="state.format"
+                                label="Title"
+                                required
+                                json-placeholder="e.g. title" />
                             <CustomSourceFieldInput
                                 v-model="state.search.url"
+                                :format="state.format"
                                 label="Series link"
                                 required
-                                attribute-placeholder="e.g. href" />
+                                :description="texts.link"
+                                attribute-placeholder="e.g. href"
+                                json-placeholder="e.g. url or slug" />
                             <CustomSourceFieldInput
                                 v-model="state.search.cover"
+                                :format="state.format"
                                 label="Cover image"
                                 required
                                 attribute-placeholder="e.g. data-src,src"
-                                description="Several attributes can be listed, the first one that has a value is used." />
+                                json-placeholder="e.g. cover"
+                                :description="texts.cover" />
                         </div>
                     </template>
 
@@ -181,31 +199,44 @@
                                     class="w-full" />
                             </UFormField>
                             <UFormField
-                                label="Chapter item selector"
+                                :label="texts.chapterItemLabel"
                                 name="chapters.itemSelector"
                                 required
-                                description="One element per chapter.">
+                                :description="texts.chapterItem">
                                 <UInput
                                     v-model="state.chapters.itemSelector"
-                                    placeholder="ul.chapters > li"
+                                    :placeholder="texts.chapterItemPlaceholder"
                                     :ui="{ base: 'font-mono' }"
                                     class="w-full" />
                             </UFormField>
                             <CustomSourceFieldInput
                                 v-model="state.chapters.url"
+                                :format="state.format"
                                 label="Chapter link"
                                 required
-                                attribute-placeholder="e.g. href" />
+                                :description="texts.link"
+                                attribute-placeholder="e.g. href"
+                                json-placeholder="e.g. url or id" />
                             <CustomSourceFieldInput
                                 v-model="state.chapters.number"
+                                :format="state.format"
                                 label="Chapter number"
-                                description="Leave empty to search the whole item. The first number found is used (Chapter 12.5 → 12.5); chapters without a number are skipped. Use a regex to be more specific." />
-                            <CustomSourceFieldInput v-model="state.chapters.title" label="Chapter title" description="Optional." />
+                                :required="isJson"
+                                :description="texts.chapterNumber"
+                                json-placeholder="e.g. chapter_number" />
+                            <CustomSourceFieldInput
+                                v-model="state.chapters.title"
+                                :format="state.format"
+                                label="Chapter title"
+                                description="Optional."
+                                json-placeholder="e.g. title" />
                             <CustomSourceFieldInput
                                 v-model="state.chapters.date"
+                                :format="state.format"
                                 label="Release date"
                                 description="Optional."
-                                attribute-placeholder="e.g. datetime" />
+                                attribute-placeholder="e.g. datetime"
+                                json-placeholder="e.g. published_at" />
                             <UFormField
                                 label="Date format"
                                 name="chapters.dateFormat"
@@ -218,9 +249,11 @@
                             </UFormField>
                             <CustomSourceFieldInput
                                 v-model="state.chapters.nextPage"
+                                :format="state.format"
                                 label="Next page link"
                                 description="Optional. When the chapter list is split over several pages, the link to the next one (followed up to 50 times)."
-                                attribute-placeholder="e.g. href" />
+                                attribute-placeholder="e.g. href"
+                                json-placeholder="e.g. next" />
                         </div>
                     </template>
 
@@ -231,28 +264,37 @@
                                 label="Pages URL"
                                 name="images.urlTemplate"
                                 required
-                                description="{url} is the chapter link. Some sites load the images from a separate URL, e.g. {url}/images">
+                                description="{url} is the chapter link. Some sites load the images from a separate URL, e.g. {url}/images. Named groups of the chapter URL pattern can be used too, e.g. /api/chapter/{id}">
                                 <UInput v-model="state.images.urlTemplate" placeholder="{url}" :ui="{ base: 'font-mono' }" class="w-full" />
+                            </UFormField>
+                            <UFormField
+                                label="Chapter URL pattern"
+                                name="images.urlPattern"
+                                description="Optional regular expression the chapter link is matched against. Named groups like (?<id>\d+) can be used as {id} in the pages URL, for sites that load the pages from an address that only contains a part of the chapter link.">
+                                <UInput
+                                    v-model="state.images.urlPattern"
+                                    placeholder="/chapter/(?<id>\d+)"
+                                    :ui="{ base: 'font-mono' }"
+                                    class="w-full" />
                             </UFormField>
                             <CustomSourceFieldInput
                                 v-model="state.images.pageSelector"
+                                :format="state.format"
+                                json-placeholder="e.g. pages[*].url"
                                 label="Page links"
                                 description="Optional. Only for sites that show one image per web page: the links (or the options of a page dropdown) to every page of the chapter, in reading order. Every page is then opened to find its image."
                                 selector-placeholder="e.g. select.pages option"
                                 attribute-placeholder="default: href,value"
                                 attribute-hint="Leave empty to use href for links and value for the options of a page dropdown." />
-                            <UFormField
-                                label="Image selector"
-                                name="images.imageSelector"
-                                required
-                                description="One element per page image, in reading order. With page links: the image on each of those pages.">
+                            <UFormField :label="texts.imageLabel" name="images.imageSelector" required :description="texts.image">
                                 <UInput
                                     v-model="state.images.imageSelector"
-                                    placeholder="div.reader img"
+                                    :placeholder="texts.imagePlaceholder"
                                     :ui="{ base: 'font-mono' }"
                                     class="w-full" />
                             </UFormField>
                             <UFormField
+                                v-if="!isJson"
                                 label="Image attribute"
                                 name="images.attribute"
                                 description="Defaults to data-src,data-lazy-src,src (the first one that has a value).">
@@ -489,6 +531,62 @@ const exampleItems = computed<DropdownMenuItem[]>(() =>
     })),
 );
 
+// ----------------------------------------------------------------------- format (HTML or JSON)
+const isJson = computed(() => state.value.format === 'json');
+const formatItems = [
+    { value: 'html', label: 'HTML', description: 'Web pages, read with CSS selectors or XPath. What most websites need.' },
+    {
+        value: 'json',
+        label: 'JSON',
+        description: 'An API, read with paths. For websites whose pages are empty until JavaScript loads the content.',
+    },
+];
+
+// What differs between the formats in the texts of the steps: a selector picks an element, a path a value.
+const texts = computed(() =>
+    isJson.value
+        ? {
+              introTitle: "Describe the website's API with paths",
+              intro: "The pages of this website are built by JavaScript, so there is nothing in them to read: the content comes from an API. Open the website with the browser's developer tools on the Network tab (filter Fetch/XHR), search and open a chapter, and look for the requests that answer with JSON. Their addresses go into the URL fields; paths such as data, manga.title or pages[0] lead to the values in the answer. Paths of fields are relative to their item (one search result / chapter).",
+              urlNote: ' The address of the API that answers with the results, not the search page.',
+              searchUrlPlaceholder: '/api/search?q={query}',
+              searchItemLabel: 'Result items path',
+              searchItem:
+                  'The path to the list of search results in the answer, e.g. data or results.items. The title, link and cover below are looked up inside each result, so their paths are relative to it.',
+              searchItemPlaceholder: 'data',
+              link: 'An API often only has an id or slug: build the link with a regex and a replacement, e.g. ^(.+)$ and /series/$1.',
+              cover: 'Several paths can be listed, the first one that has a value is used.',
+              chapterItemLabel: 'Chapter items path',
+              chapterItem: 'The path to the list of chapters in the answer.',
+              chapterItemPlaceholder: 'chapters',
+              chapterNumber:
+                  'The first number found is used (Chapter 12.5 → 12.5); chapters without a number are skipped. An API often pads numbers (12.5000): cut that off with a regex such as ^(\\d+(?:\\.\\d*[1-9])?)',
+              imageLabel: 'Image URLs path',
+              image: 'The path to the image URLs of the chapter, in reading order, e.g. pages or pages[*].url. With page links: the image in the answer of each of those links.',
+              imagePlaceholder: 'pages',
+          }
+        : {
+              introTitle: 'Describe the website with selectors',
+              intro: 'Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter).',
+              urlNote: '',
+              searchUrlPlaceholder: '/search?q={query}',
+              searchItemLabel: 'Result item selector',
+              searchItem:
+                  'One element per search result: the wrapper around the whole result. The title, link and cover below are looked up inside this element, so their selectors are relative to it.',
+              searchItemPlaceholder: 'div.search-result',
+              link: undefined,
+              cover: 'Several attributes can be listed, the first one that has a value is used.',
+              chapterItemLabel: 'Chapter item selector',
+              chapterItem: 'One element per chapter.',
+              chapterItemPlaceholder: 'ul.chapters > li',
+              chapterNumber:
+                  'Leave empty to search the whole item. The first number found is used (Chapter 12.5 → 12.5); chapters without a number are skipped. Use a regex to be more specific.',
+              imageLabel: 'Image selector',
+              image: 'One element per page image, in reading order. With page links: the image on each of those pages.',
+              imagePlaceholder: 'div.reader img',
+          },
+);
+
 // The prompt lives next to the examples in the repository, so it can be improved without a release of the frontend.
 const agentPromptUrl = 'https://github.com/C9Glax/tranga/blob/main/Extensions/Custom/Examples/agent-prompt.md';
 
@@ -556,6 +654,7 @@ const measurePatternOffset = () => {
 useResizeObserver(() => sidebar.value?.parentElement, measurePatternOffset);
 onMounted(() => measurePatternOffset());
 watch(step, () => nextTick(measurePatternOffset));
+watch(isJson, () => nextTick(measurePatternOffset)); // the texts above the pattern field differ in height
 
 const submit = () => {
     // Pressing Enter in a field of an earlier step must not save a half finished source.

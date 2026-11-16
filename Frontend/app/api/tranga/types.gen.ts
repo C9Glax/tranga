@@ -32,8 +32,9 @@ export type ServicesMangaChaptersSpec = {
      */
     url?: ServicesMangaSelectorField;
     /**
-     * The chapter number, relative to the chapter item. When unused the item's text is searched. The first number
-     * in the extracted text is used (`Chapter 12.5` becomes `12.5`); chapters without one are skipped.
+     * The chapter number, relative to the chapter item. When unused the item's text is searched (HTML only: for JSON
+     * it is required). The first number in the extracted text is used (`Chapter 12.5` becomes `12.5`);
+     * chapters without one are skipped.
      */
     number?: ServicesMangaSelectorField;
     /**
@@ -118,15 +119,22 @@ export type ServicesMangaHttpValidationProblemDetails = {
  */
 export type ServicesMangaImagesSpec = {
     /**
-     * URL of the page that shows the images. `{url}` is the chapter URL, e.g. `{url}/images`.
+     * URL of the page that shows the images. `{url}` is the chapter URL, e.g. `{url}/images`; the named groups
+     * of string? ImagesSpec.UrlPattern are available too, e.g. `/api/chapter/{id}`.
      */
     urlTemplate?: string;
     /**
-     * Selects one element per page image, in reading order.
+     * Optional regular expression the chapter URL is matched against. Its named groups (e.g. `(?&lt;id&gt;\d+)$`)
+     * are available as `{id}` in string ImagesSpec.UrlTemplate, for sites whose images are loaded from a different
+     * URL than the chapter page (typically an API).
+     */
+    urlPattern?: null | string;
+    /**
+     * Selects one element per page image, in reading order. For JSON the path to the image URLs, e.g. `pages` or `pages[*].url`.
      */
     imageSelector?: string;
     /**
-     * Attribute holding the image URL. Defaults to `data-src,data-lazy-src,src`.
+     * Attribute holding the image URL. Defaults to `data-src,data-lazy-src,src`. Not used for JSON.
      */
     attribute?: null | string;
     /**
@@ -299,6 +307,11 @@ export type ServicesMangaSelectorDownloaderDefinition = {
      */
     iconUrl?: null | string;
     /**
+     * What the website answers with: HTML pages (the default) or JSON, for websites that load their content from an API.
+     * It applies to every step and decides what a "selector" is: a CSS selector / XPath expression, or a JSON path.
+     */
+    format?: ServicesMangaSourceFormat;
+    /**
      * Languages the website publishes in (e.g. `en`). A search in another language finds nothing.
      */
     languages?: Array<string>;
@@ -345,6 +358,11 @@ export type ServicesMangaSelectorDownloaderSettings = {
      */
     iconUrl?: null | string;
     /**
+     * What the website answers with: HTML pages (the default) or JSON, for websites that load their content from an API.
+     * It applies to every step and decides what a "selector" is: a CSS selector / XPath expression, or a JSON path.
+     */
+    format?: ServicesMangaSourceFormat;
+    /**
      * Languages the website publishes in (e.g. `en`). A search in another language finds nothing.
      */
     languages?: Array<string>;
@@ -369,14 +387,17 @@ export type ServicesMangaSelectorDownloaderSettings = {
 };
 
 /**
- * Extracts one value from an HTML element: string SelectorField.Selector picks the element (relative to the item the field
- * belongs to; empty = the item itself), string? SelectorField.Attribute picks what to read (empty = the element's text), and
- * the optional string? SelectorField.Regex post-processes the result.
+ * Extracts one value from an item (a search result, a chapter). For HTML, string SelectorField.Selector picks the element
+ * (relative to the item the field belongs to; empty = the item itself) and string? SelectorField.Attribute picks what to read
+ * (empty = the element's text). For JSON (SourceFormat.Json), string SelectorField.Selector is the path to the
+ * value inside the item and there are no attributes. The optional string? SelectorField.Regex post-processes the result.
  */
 export type ServicesMangaSelectorField = {
     /**
      * CSS selector or XPath expression (XPath when it starts with `/`, `./`, `../` or `(`).
-     * An XPath may end in `/@attribute` or `/text()`.
+     * An XPath may end in `/@attribute` or `/text()`. For JSON a path such as `title`,
+     * `manga.cover` or `names[0]`; alternatives separated by commas are tried in order
+     * (`english_title, title`) and `$` is the item itself.
      */
     selector?: string;
     /**
@@ -390,10 +411,17 @@ export type ServicesMangaSelectorField = {
      */
     regex?: null | string;
     /**
-     * When set, string? SelectorField.Regex replaces every match with this text instead of extracting.
+     * When set, string? SelectorField.Regex replaces every match with this text instead of extracting. The placeholders of the
+     * step's URL template can be used (`{url}`, the named groups of the URL patterns, ...), which is how a link is
+     * built from an id: regex `^(.+)$`, replacement `/series/{slug}/chapter/$1`.
      */
     replacement?: null | string;
 };
+
+/**
+ * What a website answers with, which decides how its responses are read.
+ */
+export type ServicesMangaSourceFormat = 'html' | 'json';
 
 /**
  * What one step of a source definition produced against the real website, so users can fix their selectors before

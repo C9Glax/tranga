@@ -87,6 +87,37 @@ public class PostCustomDownloaderTestEndpointTests : TrangaTest
     }
 
     [Fact]
+    public void Request_ChecksTheSectionInTheFormatOfTheSettings()
+    {
+        SelectorDownloaderDefinition uno = SelectorDownloaderJson.MangaUnoExample();
+        SelectorDownloaderSettings json = new() { Name = uno.Name, BaseUrl = uno.BaseUrl, Format = SourceFormat.Json, SeriesUrlPattern = uno.SeriesUrlPattern };
+        PostCustomDownloaderTestRequest request = new() { Settings = json, Step = "search", Input = "x", Search = uno.Search };
+
+        // "data" is a path; the same section is not usable as CSS selectors (a field without attribute or selector...)
+        Assert.Empty(Validate(request));
+        ValidationResult result = Assert.Single(Validate(request with { Search = uno.Search with { ItemSelector = "div.result > a" } }));
+        Assert.Contains("not a valid JSON path", result.ErrorMessage);
+        Assert.Equal(["Search.ItemSelector"], result.MemberNames);
+        // and a JSON chapter needs its number, which an HTML chapter does not
+        Assert.Contains(Validate(new PostCustomDownloaderTestRequest
+        {
+            Settings = json, Step = "chapters", Input = "https://manga.uno/m/x", Chapters = uno.Chapters with { Number = new SelectorField() }
+        }), r => r.ErrorMessage == "Chapter number is required.");
+    }
+
+    [Fact]
+    public void Request_AnImagesTestMayUseTheGroupsOfItsOwnChapterUrlPattern()
+    {
+        SelectorDownloaderDefinition uno = SelectorDownloaderJson.MangaUnoExample();
+        SelectorDownloaderSettings json = new() { Name = uno.Name, BaseUrl = uno.BaseUrl, Format = SourceFormat.Json };
+        PostCustomDownloaderTestRequest request = new() { Settings = json, Step = "images", Input = "https://manga.uno/r/x/1", Images = uno.Images };
+
+        // the example's pages URL is /api/chapter/{id}, {id} is a group of the chapter URL pattern of the same section
+        Assert.Empty(Validate(request));
+        Assert.NotEmpty(Validate(request with { Images = uno.Images with { UrlPattern = null } }));
+    }
+
+    [Fact]
     public void Request_AChaptersTestMayUseTheGroupsOfTheSettingsSeriesPattern()
     {
         PostCustomDownloaderTestRequest request = new()

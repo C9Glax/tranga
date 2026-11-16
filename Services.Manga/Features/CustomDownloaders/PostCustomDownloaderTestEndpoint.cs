@@ -96,21 +96,21 @@ internal abstract class PostCustomDownloaderTestEndpoint
                     if (Search is null)
                         yield return new ValidationResult("The search section is required to test the search.", [nameof(Search)]);
                     else
-                        foreach (ValidationResult result in Search.Validate(nameof(Search)))
+                        foreach (ValidationResult result in Search.Validate(nameof(Search), Settings.Format))
                             yield return result;
                     break;
                 case SelectorDownloaderStep.Chapters:
                     if (Chapters is null)
                         yield return new ValidationResult("The chapters section is required to test the chapter list.", [nameof(Chapters)]);
                     else
-                        foreach (ValidationResult result in Chapters.Validate(nameof(Chapters), Settings.SeriesUrlGroups()))
+                        foreach (ValidationResult result in Chapters.Validate(nameof(Chapters), Settings.Format, Settings.SeriesUrlGroups()))
                             yield return result;
                     break;
                 default:
                     if (Images is null)
                         yield return new ValidationResult("The images section is required to test the pages.", [nameof(Images)]);
                     else
-                        foreach (ValidationResult result in Images.Validate(nameof(Images)))
+                        foreach (ValidationResult result in Images.Validate(nameof(Images), Settings.Format))
                             yield return result;
                     break;
             }

@@ -41,8 +41,16 @@ public static class SelectorDownloaderJson
     /// </summary>
     public static SelectorDownloaderDefinition MangaTownExample() => Example("mangatown");
 
+    /// <summary>
+    /// A ready-made definition for Manga.uno, mirroring the keiyoushi Tachiyomi extension. Unlike the other two the
+    /// website has no HTML to read: its pages are built by JavaScript from a JSON API, so the definition reads that API
+    /// (<see cref="SourceFormat.Json"/>) and builds the links from ids. Its <see cref="SelectorDownloaderDefinition.Id"/>
+    /// is empty and must be replaced before use.
+    /// </summary>
+    public static SelectorDownloaderDefinition MangaUnoExample() => Example("mangauno");
+
     /// <summary>All embedded examples, in the order they are offered to users.</summary>
-    public static IReadOnlyList<SelectorDownloaderDefinition> Examples() => [WeebCentralExample(), MangaTownExample()];
+    public static IReadOnlyList<SelectorDownloaderDefinition> Examples() => [WeebCentralExample(), MangaTownExample(), MangaUnoExample()];
 
     private static SelectorDownloaderDefinition Example(string name)
     {

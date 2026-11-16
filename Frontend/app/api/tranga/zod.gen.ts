@@ -295,28 +295,10 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
 
 /**
- * The general settings of a user-defined download source (the website itself, not how to scrape it). They validate
- * themselves (IValidatableObject), so whoever receives one - an API endpoint, the test of a single step,
- * the engine - does not have to know the rules.
- */
-export const zServicesMangaSelectorDownloaderSettings = z.object({
-    id: z.optional(z.uuid()),
-    name: z.optional(z.string()),
-    baseUrl: z.optional(z.string()),
-    iconUrl: z.nullish(z.string()),
-    languages: z.optional(z.array(z.string())),
-    useFlareSolverr: z.optional(z.boolean()),
-    requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
-    headers: z.optional(z.record(z.string(), z.string())),
-    seriesUrlPattern: z.nullish(z.string()),
-});
-
-export type ServicesMangaSelectorDownloaderSettingsZodType = z.infer<typeof zServicesMangaSelectorDownloaderSettings>;
-
-/**
- * Extracts one value from an HTML element: string SelectorField.Selector picks the element (relative to the item the field
- * belongs to; empty = the item itself), string? SelectorField.Attribute picks what to read (empty = the element's text), and
- * the optional string? SelectorField.Regex post-processes the result.
+ * Extracts one value from an item (a search result, a chapter). For HTML, string SelectorField.Selector picks the element
+ * (relative to the item the field belongs to; empty = the item itself) and string? SelectorField.Attribute picks what to read
+ * (empty = the element's text). For JSON (SourceFormat.Json), string SelectorField.Selector is the path to the
+ * value inside the item and there are no attributes. The optional string? SelectorField.Regex post-processes the result.
  */
 export const zServicesMangaSelectorField = z.object({
     selector: z.optional(z.string()),
@@ -348,6 +330,7 @@ export type ServicesMangaChaptersSpecZodType = z.infer<typeof zServicesMangaChap
  */
 export const zServicesMangaImagesSpec = z.object({
     urlTemplate: z.optional(z.string()),
+    urlPattern: z.nullish(z.string()),
     imageSelector: z.optional(z.string()),
     attribute: z.nullish(z.string()),
     pageSelector: z.optional(zServicesMangaSelectorField),
@@ -368,16 +351,12 @@ export const zServicesMangaSearchSpec = z.object({
 
 export type ServicesMangaSearchSpecZodType = z.infer<typeof zServicesMangaSearchSpec>;
 
-export const zServicesMangaPostCustomDownloaderTestRequest = z.object({
-    settings: zServicesMangaSelectorDownloaderSettings,
-    step: z.string(),
-    input: z.string(),
-    search: z.nullish(zServicesMangaSearchSpec),
-    chapters: z.nullish(zServicesMangaChaptersSpec),
-    images: z.nullish(zServicesMangaImagesSpec),
-});
+/**
+ * What a website answers with, which decides how its responses are read.
+ */
+export const zServicesMangaSourceFormat = z.enum(['html', 'json']);
 
-export type ServicesMangaPostCustomDownloaderTestRequestZodType = z.infer<typeof zServicesMangaPostCustomDownloaderTestRequest>;
+export type ServicesMangaSourceFormatZodType = z.infer<typeof zServicesMangaSourceFormat>;
 
 /**
  * Describes a user-defined download source that is driven entirely by CSS/XPath selectors, so that people can add a
@@ -394,6 +373,7 @@ export const zServicesMangaSelectorDownloaderDefinition = z.object({
     name: z.optional(z.string()),
     baseUrl: z.optional(z.string()),
     iconUrl: z.nullish(z.string()),
+    format: z.optional(zServicesMangaSourceFormat),
     languages: z.optional(z.array(z.string())),
     useFlareSolverr: z.optional(z.boolean()),
     requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
@@ -402,6 +382,37 @@ export const zServicesMangaSelectorDownloaderDefinition = z.object({
 });
 
 export type ServicesMangaSelectorDownloaderDefinitionZodType = z.infer<typeof zServicesMangaSelectorDownloaderDefinition>;
+
+/**
+ * The general settings of a user-defined download source (the website itself, not how to scrape it). They validate
+ * themselves (IValidatableObject), so whoever receives one - an API endpoint, the test of a single step,
+ * the engine - does not have to know the rules.
+ */
+export const zServicesMangaSelectorDownloaderSettings = z.object({
+    id: z.optional(z.uuid()),
+    name: z.optional(z.string()),
+    baseUrl: z.optional(z.string()),
+    iconUrl: z.nullish(z.string()),
+    format: z.optional(zServicesMangaSourceFormat),
+    languages: z.optional(z.array(z.string())),
+    useFlareSolverr: z.optional(z.boolean()),
+    requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
+    headers: z.optional(z.record(z.string(), z.string())),
+    seriesUrlPattern: z.nullish(z.string()),
+});
+
+export type ServicesMangaSelectorDownloaderSettingsZodType = z.infer<typeof zServicesMangaSelectorDownloaderSettings>;
+
+export const zServicesMangaPostCustomDownloaderTestRequest = z.object({
+    settings: zServicesMangaSelectorDownloaderSettings,
+    step: z.string(),
+    input: z.string(),
+    search: z.nullish(zServicesMangaSearchSpec),
+    chapters: z.nullish(zServicesMangaChaptersSpec),
+    images: z.nullish(zServicesMangaImagesSpec),
+});
+
+export type ServicesMangaPostCustomDownloaderTestRequestZodType = z.infer<typeof zServicesMangaPostCustomDownloaderTestRequest>;
 
 /**
  * What one step of a source definition produced against the real website, so users can fix their selectors before

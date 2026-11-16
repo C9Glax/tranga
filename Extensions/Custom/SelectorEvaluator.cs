@@ -118,7 +118,7 @@ internal static class SelectorEvaluator
     /// <summary>The node's text with whitespace collapsed (what a browser shows).</summary>
     internal static string NormalizedText(INode node) => Whitespace.Replace(node.TextContent, " ").Trim();
 
-    private static string? ApplyRegex(string value, SelectorField field)
+    internal static string? ApplyRegex(string value, SelectorField field)
     {
         if (string.IsNullOrEmpty(field.Regex))
             return value;

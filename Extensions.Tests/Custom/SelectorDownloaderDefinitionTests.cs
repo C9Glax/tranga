@@ -79,12 +79,12 @@ public sealed class SelectorDownloaderDefinitionTests
     {
         SelectorDownloaderDefinition valid = Valid;
 
-        Assert.Empty(valid.Search.Validate("Search"));
-        Assert.Empty(valid.Chapters.Validate("Chapters", valid.SeriesUrlGroups()));
-        Assert.Empty(valid.Images.Validate("Images"));
-        Assert.NotEmpty(new SearchSpec().Validate("Search"));
-        Assert.NotEmpty(new ChaptersSpec().Validate("Chapters", []));
-        Assert.NotEmpty(new ImagesSpec().Validate("Images"));
+        Assert.Empty(valid.Search.Validate("Search", SourceFormat.Html));
+        Assert.Empty(valid.Chapters.Validate("Chapters", SourceFormat.Html, valid.SeriesUrlGroups()));
+        Assert.Empty(valid.Images.Validate("Images", SourceFormat.Html));
+        Assert.NotEmpty(new SearchSpec().Validate("Search", SourceFormat.Html));
+        Assert.NotEmpty(new ChaptersSpec().Validate("Chapters", SourceFormat.Html, []));
+        Assert.NotEmpty(new ImagesSpec().Validate("Images", SourceFormat.Html));
     }
 
     [Fact]
@@ -92,8 +92,8 @@ public sealed class SelectorDownloaderDefinitionTests
     {
         ChaptersSpec chapters = Valid.Chapters with { UrlTemplate = "/series/{id}/chapters" };
 
-        Assert.Empty(chapters.Validate("Chapters", ["id"]));
-        Assert.Contains(chapters.Validate("Chapters", []), r => r.ErrorMessage!.Contains("unknown placeholder '{id}'"));
+        Assert.Empty(chapters.Validate("Chapters", SourceFormat.Html, ["id"]));
+        Assert.Contains(chapters.Validate("Chapters", SourceFormat.Html, []), r => r.ErrorMessage!.Contains("unknown placeholder '{id}'"));
     }
 
     [Fact]
@@ -300,4 +300,98 @@ public sealed class SelectorDownloaderDefinitionTests
     [InlineData("[1,2]")]
     [InlineData("")]
     public void DeserializeReturnsNullForGarbage(string json) => Assert.Null(SelectorDownloaderJson.Deserialize(json));
+
+    // ------------------------------------------------------------------------------------------------ JSON sources
+
+    private static SelectorDownloaderDefinition ValidJson => SelectorDownloaderJson.MangaUnoExample() with { Id = Guid.NewGuid() };
+
+    [Fact]
+    public void MangaUnoExampleIsValidAndReadsJson()
+    {
+        Assert.Empty(ValidJson.Validate());
+        Assert.Equal(SourceFormat.Json, ValidJson.Format);
+    }
+
+    [Fact]
+    public void EveryExampleIsOfferedAndValid() =>
+        Assert.All(SelectorDownloaderJson.Examples(), example => Assert.Empty((example with { Id = Guid.NewGuid() }).Validate()));
+
+    [Fact]
+    public void ADefinitionWithoutAFormatReadsHtml() =>
+        Assert.Equal(SourceFormat.Html, SelectorDownloaderJson.Deserialize("""{"name":"X","baseUrl":"https://x.test"}""")!.Format);
+
+    [Fact]
+    public void TheFormatIsReadFromItsLowerCaseName() => Assert.Equal(SourceFormat.Json,
+        SelectorDownloaderJson.Deserialize("""{"name":"X","baseUrl":"https://x.test","format":"json"}""")!.Format);
+
+    [Fact]
+    public void TheFormatIsWrittenInLowerCase()
+    {
+        Assert.Contains("\"format\":\"json\"", SelectorDownloaderJson.Serialize(ValidJson));
+        Assert.Contains("\"format\":\"html\"", SelectorDownloaderJson.Serialize(Valid));
+    }
+
+    [Theory]
+    [InlineData("\"xml\"")]
+    [InlineData("\"JSON\"")] // the names are exactly html and json
+    [InlineData("1")]
+    public void AnUnknownFormatIsNotADefinition(string format) => Assert.Null(
+        SelectorDownloaderJson.Deserialize($$"""{"name":"X","baseUrl":"https://x.test","format":{{format}}}"""));
+
+    [Fact]
+    public void AJsonSourceIsCheckedAsPathsNotSelectors()
+    {
+        SelectorDownloaderDefinition definition = ValidJson;
+
+        // a CSS selector is not a path, and a path with a filter is not supported
+        IReadOnlyList<string> css = (definition with { Search = definition.Search with { ItemSelector = "div.result > a" } }).Validate();
+        IReadOnlyList<string> filter = (definition with { Chapters = definition.Chapters with { ItemSelector = "chapters[?(@.language=='en')]" } }).Validate();
+        // the same paths are fine selectors for nothing in HTML either way, but "a.b[0]" is a valid CSS selector: only the format decides
+        IReadOnlyList<string> asHtml = (Valid with { Search = Valid.Search with { ItemSelector = "data[0]" } }).Validate();
+
+        Assert.Contains(css, e => e.Contains("Search result item selector is not a valid JSON path"));
+        Assert.Contains(filter, e => e.Contains("Chapter item selector is not a valid JSON path"));
+        Assert.Contains(asHtml, e => e.Contains("Search result item selector is not a valid selector"));
+    }
+
+    [Fact]
+    public void AJsonSourceNeedsAChapterNumberAndIgnoresAttributes()
+    {
+        SelectorDownloaderDefinition definition = ValidJson;
+
+        // an HTML chapter can be searched for a number, a JSON object cannot
+        IReadOnlyList<string> noNumber = (definition with { Chapters = definition.Chapters with { Number = new SelectorField() } }).Validate();
+        // there are no attributes in JSON, so a field with only an attribute reads nothing
+        IReadOnlyList<string> onlyAttribute = (definition with { Search = definition.Search with { Url = new SelectorField { Attribute = "href" } } }).Validate();
+
+        Assert.Contains("Chapter number is required.", noNumber);
+        Assert.Contains("Search result URL is required.", onlyAttribute);
+        Assert.Empty((Valid with { Chapters = Valid.Chapters with { Number = new SelectorField() } }).Validate());
+    }
+
+    [Fact]
+    public void TheGroupsOfTheChapterUrlPatternCanBeUsedInThePagesUrl()
+    {
+        SelectorDownloaderDefinition definition = ValidJson;
+
+        IReadOnlyList<string> withoutPattern = (definition with { Images = definition.Images with { UrlPattern = null } }).Validate();
+        IReadOnlyList<string> badPattern = (definition with { Images = definition.Images with { UrlPattern = "(" } }).Validate();
+
+        Assert.Equal(["id"], definition.Images.UrlGroups());
+        Assert.Contains(withoutPattern, e => e.Contains("Chapter pages URL uses unknown placeholder '{id}'"));
+        Assert.Contains(badPattern, e => e.Contains("Chapter URL pattern is not a valid regular expression"));
+    }
+
+    [Fact]
+    public void AJsonSourceSurvivesJsonRoundTrip()
+    {
+        SelectorDownloaderDefinition definition = ValidJson;
+
+        SelectorDownloaderDefinition? parsed = SelectorDownloaderJson.Deserialize(SelectorDownloaderJson.Serialize(definition));
+
+        Assert.NotNull(parsed);
+        Assert.Equal(SourceFormat.Json, parsed.Format);
+        Assert.Equal(definition.Images, parsed.Images);
+        Assert.Equal(definition.Chapters, parsed.Chapters);
+    }
 }

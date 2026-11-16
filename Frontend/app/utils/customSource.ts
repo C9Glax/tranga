@@ -18,6 +18,9 @@ export type CustomSourceTestState = {
     errors: string[];
 };
 
+/** What the website answers with: HTML pages (CSS selectors / XPath) or the JSON of an API (paths). */
+export type CustomSourceFormat = 'html' | 'json';
+
 /** One selector field as the form edits it: every part is a plain string (empty = not set). */
 export type CustomSourceField = { selector: string; attribute: string; regex: string; replacement: string };
 
@@ -27,6 +30,7 @@ export type CustomSourceDefinition = {
     name: string;
     baseUrl: string;
     iconUrl: string;
+    format: CustomSourceFormat;
     languages: string[];
     useFlareSolverr: boolean;
     requestsPerSecond: number;
@@ -43,7 +47,7 @@ export type CustomSourceDefinition = {
         dateFormat: string;
         nextPage: CustomSourceField;
     };
-    images: { urlTemplate: string; pageSelector: CustomSourceField; imageSelector: string; attribute: string };
+    images: { urlTemplate: string; urlPattern: string; pageSelector: CustomSourceField; imageSelector: string; attribute: string };
 };
 
 export const emptyField = (): CustomSourceField => ({ selector: '', attribute: '', regex: '', replacement: '' });
@@ -53,6 +57,7 @@ export const emptyCustomSource = (): CustomSourceDefinition => ({
     name: '',
     baseUrl: '',
     iconUrl: '',
+    format: 'html',
     languages: ['en'],
     useFlareSolverr: false,
     requestsPerSecond: 1,
@@ -69,7 +74,7 @@ export const emptyCustomSource = (): CustomSourceDefinition => ({
         dateFormat: '',
         nextPage: emptyField(),
     },
-    images: { urlTemplate: '{url}', pageSelector: emptyField(), imageSelector: '', attribute: '' },
+    images: { urlTemplate: '{url}', urlPattern: '', pageSelector: emptyField(), imageSelector: '', attribute: '' },
 });
 
 const field = (source: ServicesMangaSelectorField | undefined): CustomSourceField => ({
@@ -88,6 +93,8 @@ export const normalizeCustomSource = (source: ServicesMangaSelectorDownloaderDef
         name: source.name ?? '',
         baseUrl: source.baseUrl ?? '',
         iconUrl: source.iconUrl ?? '',
+        // pasted JSON may spell it "JSON": the server only accepts the two lower case values, so it is corrected here
+        format: String(source.format ?? '').toLowerCase() === 'json' ? 'json' : 'html',
         languages: source.languages?.length ? [...source.languages] : defaults.languages,
         useFlareSolverr: source.useFlareSolverr ?? false,
         requestsPerSecond: Number(source.requestsPerSecond ?? 1) || 1,
@@ -112,6 +119,7 @@ export const normalizeCustomSource = (source: ServicesMangaSelectorDownloaderDef
         },
         images: {
             urlTemplate: source.images?.urlTemplate ?? defaults.images.urlTemplate,
+            urlPattern: source.images?.urlPattern ?? '',
             pageSelector: field(source.images?.pageSelector),
             imageSelector: source.images?.imageSelector ?? '',
             attribute: source.images?.attribute ?? '',
@@ -150,48 +158,56 @@ export const testSeriesPattern = (pattern: string, url: string): SeriesPatternRe
     return { state: 'match', groups: Object.entries(match.groups ?? {}).map(([name, value]) => ({ name, value: value ?? '' })) };
 };
 
-const fieldForApi = (source: CustomSourceField): ServicesMangaSelectorField => ({
-    selector: source.selector.trim(),
-    attribute: blankToNull(source.attribute),
-    regex: blankToNull(source.regex),
-    replacement: blankToNull(source.replacement),
-});
-
-/** What is sent to the API (and shown as JSON): empty optional values become null, blank header rows are dropped. */
-export const customSourceForApi = (source: CustomSourceDefinition): ServicesMangaSelectorDownloaderDefinition => ({
-    id: source.id || undefined,
-    name: source.name.trim(),
-    baseUrl: normalizeBaseUrl(source.baseUrl),
-    iconUrl: blankToNull(source.iconUrl),
-    languages: source.languages.map((language) => language.trim()).filter(Boolean),
-    useFlareSolverr: source.useFlareSolverr,
-    requestsPerSecond: source.requestsPerSecond,
-    headers: Object.fromEntries(Object.entries(source.headers).filter(([name]) => name.trim() !== '')),
-    seriesUrlPattern: blankToNull(source.seriesUrlPattern),
-    search: {
-        urlTemplate: source.search.urlTemplate.trim(),
-        itemSelector: source.search.itemSelector.trim(),
-        title: fieldForApi(source.search.title),
-        url: fieldForApi(source.search.url),
-        cover: fieldForApi(source.search.cover),
-    },
-    chapters: {
-        urlTemplate: source.chapters.urlTemplate.trim(),
-        itemSelector: source.chapters.itemSelector.trim(),
-        url: fieldForApi(source.chapters.url),
-        number: fieldForApi(source.chapters.number),
-        title: fieldForApi(source.chapters.title),
-        date: fieldForApi(source.chapters.date),
-        dateFormat: blankToNull(source.chapters.dateFormat),
-        nextPage: fieldForApi(source.chapters.nextPage),
-    },
-    images: {
-        urlTemplate: source.images.urlTemplate.trim(),
-        pageSelector: fieldForApi(source.images.pageSelector),
-        imageSelector: source.images.imageSelector.trim(),
-        attribute: blankToNull(source.images.attribute),
-    },
-});
+/**
+ * What is sent to the API (and shown as JSON): empty optional values become null, blank header rows are dropped. JSON
+ * has no attributes, so the ones left over from before the format was switched are not sent (they stay in the form, in
+ * case the format is switched back).
+ */
+export const customSourceForApi = (source: CustomSourceDefinition): ServicesMangaSelectorDownloaderDefinition => {
+    const json = source.format === 'json';
+    const fieldForApi = (value: CustomSourceField): ServicesMangaSelectorField => ({
+        selector: value.selector.trim(),
+        attribute: json ? null : blankToNull(value.attribute),
+        regex: blankToNull(value.regex),
+        replacement: blankToNull(value.replacement),
+    });
+    return {
+        id: source.id || undefined,
+        name: source.name.trim(),
+        baseUrl: normalizeBaseUrl(source.baseUrl),
+        iconUrl: blankToNull(source.iconUrl),
+        format: source.format,
+        languages: source.languages.map((language) => language.trim()).filter(Boolean),
+        useFlareSolverr: source.useFlareSolverr,
+        requestsPerSecond: source.requestsPerSecond,
+        headers: Object.fromEntries(Object.entries(source.headers).filter(([name]) => name.trim() !== '')),
+        seriesUrlPattern: blankToNull(source.seriesUrlPattern),
+        search: {
+            urlTemplate: source.search.urlTemplate.trim(),
+            itemSelector: source.search.itemSelector.trim(),
+            title: fieldForApi(source.search.title),
+            url: fieldForApi(source.search.url),
+            cover: fieldForApi(source.search.cover),
+        },
+        chapters: {
+            urlTemplate: source.chapters.urlTemplate.trim(),
+            itemSelector: source.chapters.itemSelector.trim(),
+            url: fieldForApi(source.chapters.url),
+            number: fieldForApi(source.chapters.number),
+            title: fieldForApi(source.chapters.title),
+            date: fieldForApi(source.chapters.date),
+            dateFormat: blankToNull(source.chapters.dateFormat),
+            nextPage: fieldForApi(source.chapters.nextPage),
+        },
+        images: {
+            urlTemplate: source.images.urlTemplate.trim(),
+            urlPattern: blankToNull(source.images.urlPattern),
+            pageSelector: fieldForApi(source.images.pageSelector),
+            imageSelector: source.images.imageSelector.trim(),
+            attribute: json ? null : blankToNull(source.images.attribute),
+        },
+    };
+};
 
 /**
  * What is sent to try one step: the general settings and only the section of that step, so a step can be tried before the
