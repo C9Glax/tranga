@@ -170,6 +170,14 @@ public sealed class MangaUnoFixtureTests : Common.Tests.TrangaTest, IDisposable
     }
 
     [Fact]
+    public void OnlySeriesPagesOfTheSiteAreRecognised()
+    {
+        Assert.Equal($"{_site.BaseUrl}/m/one-piece", _extension.ParseIdentifierFromUrl($"{_site.BaseUrl}/m/one-piece"));
+        Assert.Null(_extension.ParseIdentifierFromUrl($"{_site.BaseUrl}/r/one-piece/800778")); // a chapter
+        Assert.Null(_extension.ParseIdentifierFromUrl("https://example.com/m/one-piece"));
+    }
+
+    [Fact]
     public async Task ApiRequestsAskForJsonAndKeepTheBrowserUserAgent()
     {
         await _extension.TestSearchAsync("one", ct);

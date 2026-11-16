@@ -13,6 +13,16 @@ on:
       - "Services.Notifications/**"
       - "Services.Notifications.Tests/**"
       - ".github/workflows/unit_tests-services_notifications.yml"
+  pull_request:
+    paths:
+      - "Common/**"
+      - "Common.Database/**"
+      - "Common.Services/**"
+      - "Extensions/**"
+      - "GeneratedExtensionClient/**"
+      - "Services.Notifications/**"
+      - "Services.Notifications.Tests/**"
+      - ".github/workflows/unit_tests-services_notifications.yml"
 
 jobs:
   build:

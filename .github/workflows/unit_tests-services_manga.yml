@@ -13,6 +13,16 @@ on:
       - "Services.Manga/**"
       - "Services.Manga.Tests/**"
       - ".github/workflows/unit_tests-services_manga.yml"
+  pull_request:
+    paths:
+      - "Common/**"
+      - "Common.Database/**"
+      - "Common.Services/**"
+      - "Extensions/**"
+      - "GeneratedExtensionClient/**"
+      - "Services.Manga/**"
+      - "Services.Manga.Tests/**"
+      - ".github/workflows/unit_tests-services_manga.yml"
 
 jobs:
   build:
