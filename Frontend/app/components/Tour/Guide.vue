@@ -12,9 +12,11 @@
                 <div class="flex items-center justify-between gap-2 pt-1">
                     <div class="flex items-center gap-1">
                         <UButton v-if="canGoBack" variant="ghost" color="neutral" size="sm" icon="i-lucide-arrow-left" @click="goBack()">
-                            Back
+                            {{ $t('common.back') }}
                         </UButton>
-                        <UButton v-if="showSkip" variant="ghost" color="neutral" size="sm" @click="tour.finish()">Skip tour</UButton>
+                        <UButton v-if="showSkip" variant="ghost" color="neutral" size="sm" @click="tour.finish()">{{
+                            $t('tour.skip')
+                        }}</UButton>
                     </div>
                     <UButton v-if="showPrimary" size="sm" @click="onPrimary">{{ primaryLabel }}</UButton>
                 </div>
@@ -26,7 +28,7 @@
          popover is shown. This chip keeps the tour dismissible meanwhile. -->
     <UButton
         v-if="tour.open.value && !visible"
-        label="Skip tour"
+        :label="$t('tour.skip')"
         icon="i-lucide-x"
         color="neutral"
         variant="subtle"
@@ -36,13 +38,15 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n();
 const { tour, canGoBack, goBack } = useNuxtApp().$tour;
 
 type CurrentStep = { title?: string; body?: string; key?: string; manualNext?: boolean } | undefined;
 const current = computed(() => tour.current.value as CurrentStep);
 
-const title = computed(() => current.value?.title ?? '');
-const body = computed(() => current.value?.body ?? '');
+// The steps hold i18n keys (see plugins/tour.ts).
+const title = computed(() => (current.value?.title ? t(current.value.title) : ''));
+const body = computed(() => (current.value?.body ? t(current.value.body) : ''));
 const isEdgeStep = computed(() => current.value?.key === undefined);
 
 // A step whose element does not exist yet resolves to the center of the screen (the composable cannot tell "no target on
@@ -54,8 +58,8 @@ const visible = computed(() => tour.open.value && (anchored.value || isEdgeStep.
 const showSkip = computed(() => !isEdgeStep.value);
 const showPrimary = computed(() => isEdgeStep.value || current.value?.manualNext === true);
 const primaryLabel = computed(() => {
-    if (!isEdgeStep.value) return 'Next step';
-    return tour.hasNext.value ? "Let's go" : 'Finish';
+    if (!isEdgeStep.value) return t('tour.nextStep');
+    return tour.hasNext.value ? t('tour.letsGo') : t('tour.finish');
 });
 
 const onPrimary = (): void => {

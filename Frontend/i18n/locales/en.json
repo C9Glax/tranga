@@ -1,0 +1,633 @@
+{
+    "common": {
+        "home": "Home",
+        "back": "Back",
+        "logOut": "Log out",
+        "password": "Password",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "loading": "Loading",
+        "nothingHere": "There is nothing here...",
+        "unnamed": "(unnamed)",
+        "name": "Name",
+        "username": "Username",
+        "host": "Host",
+        "port": "Port",
+        "apiKey": "API Key",
+        "add": "Add",
+        "topic": "Topic",
+        "token": "Token",
+        "nsfw": "NSFW",
+        "chapters": "Chapters",
+        "filter": "Filter",
+        "next": "Next",
+        "save": "Save",
+        "edit": "Edit",
+        "test": "Test",
+        "baseUrl": "Base URL"
+    },
+    "nav": {
+        "tranga": "Tranga",
+        "allTasks": "All Tasks",
+        "workers": "Workers",
+        "sources": "Sources",
+        "settings": "Settings",
+        "links": "Links",
+        "apiDocs": "API Docs",
+        "github": "Github",
+        "libraries": "Libraries"
+    },
+    "auth": {
+        "login": {
+            "title": "Log in",
+            "submit": "Log in",
+            "failed": "Login failed.",
+            "incorrectPassword": "Incorrect password."
+        },
+        "setup": {
+            "title": "Create admin password",
+            "description": "This is the only account for this instance - there are no user profiles.",
+            "submit": "Create password",
+            "confirmPassword": "Confirm password",
+            "failed": "Setup failed.",
+            "couldNotCreate": "Could not create the password."
+        },
+        "passwordRequired": "Password is required.",
+        "passwordTooShort": "Password must be at least 8 characters.",
+        "passwordsDoNotMatch": "Passwords do not match."
+    },
+    "settings": {
+        "appearance": {
+            "language": {
+                "title": "Language",
+                "legend": "Which language should Tranga be displayed in?"
+            },
+            "nsfwCovers": {
+                "title": "NSFW covers",
+                "legend": "How should covers of NSFW manga be displayed?",
+                "show": {
+                    "label": "Always visible",
+                    "description": "NSFW covers are shown like any other cover."
+                },
+                "click": {
+                    "label": "Visible on click",
+                    "description": "NSFW covers are blurred until you click them."
+                },
+                "hide": {
+                    "label": "Never visible",
+                    "description": "NSFW covers always stay blurred."
+                }
+            }
+        },
+        "tabs": {
+            "notifications": "Notifications",
+            "libraries": "Libraries",
+            "appearance": "Appearance",
+            "behavior": "Behavior",
+            "security": "Security",
+            "debug": "Debug"
+        },
+        "about": {
+            "service": "Service",
+            "version": "Version",
+            "commit": "Commit",
+            "branch": "Branch"
+        },
+        "behavior": {
+            "content": "Content",
+            "allowNsfwLocked": "Set by the AllowNSFW environment variable and cannot be changed here.",
+            "allowNsfw": {
+                "label": "Allow NSFW content",
+                "description": "Include NSFW manga in search results and allow NSFW sources."
+            },
+            "updateFailed": "Failed to update setting.",
+            "updateFailedFallback": "Could not update the setting."
+        },
+        "debug": {
+            "about": "About",
+            "maintenance": "Maintenance",
+            "replayTour": "Replay first-download tour",
+            "backfillComicInfo": "Backfill ComicInfo for downloaded chapters",
+            "backfillFailed": "Failed to start backfill.",
+            "backfillFailedFallback": "Could not start the backfill task.",
+            "backfillCreated": "Backfill task created.",
+            "backfillCreatedDescription": "Check the Tasks page for progress."
+        },
+        "security": {
+            "apiKeys": "API Keys",
+            "newKey": "New API key",
+            "newKeyDescription": "Copy this now - it will not be shown again.",
+            "copyKey": "Copy API key",
+            "name": "Name",
+            "namePlaceholder": "e.g. backup script",
+            "createKey": "Create key",
+            "created": "Created {date}",
+            "revoke": "Revoke",
+            "noKeys": "No API keys yet",
+            "noKeysDescription": "Create one to use Tranga from scripts and other tools.",
+            "createFailed": "Failed creating API key.",
+            "createFailedFallback": "Could not create the API key.",
+            "revoked": "API key revoked.",
+            "revokeFailed": "Failed revoking API key.",
+            "revokeFailedFallback": "Could not revoke the API key."
+        },
+        "libraries": {
+            "add": "Add Library",
+            "type": "Library Type",
+            "rootPath": "Library Root Path",
+            "rootPathDescription": "Path inside the Komga container where Tranga's manga volume is mounted. Defaults to /tranga.",
+            "authKey": "Auth Key",
+            "authKeyDescription": "Create one in Kavita under User Settings → Manage Auth Keys.",
+            "kavitaLibrary": "Kavita Library",
+            "kavitaLibraryDescription": "Test the connection to load the libraries on your Kavita server. Pick the one that contains Tranga's manga folder.",
+            "kavitaLibraryPlaceholder": "Test the connection first",
+            "usernameAndPassword": "Username & Password",
+            "connectionVerified": "Connection verified",
+            "testConnection": "Test Connection",
+            "toast": {
+                "connectionVerified": "Connection verified.",
+                "connectionFailed": "Connection test failed.",
+                "connectionFailedFallback": "Could not verify the connection.",
+                "addFailed": "Failed adding library.",
+                "addFailedFallback": "Could not add the library.",
+                "added": "Added library.",
+                "removeFailed": "Failed to remove library.",
+                "removed": "Removed library.",
+                "linkFailed": "Failed to link Manga.",
+                "linked": "Linked {count} Manga.",
+                "noneLinked": "No new Manga matched by name."
+            },
+            "linkManga": "Link Manga"
+        },
+        "notifications": {
+            "add": "Add extension",
+            "serviceUrl": "Service Url",
+            "appToken": "AppToken",
+            "webhookId": "Webhook ID",
+            "webhookToken": "Webhook Token",
+            "chatId": "Chat ID",
+            "toast": {
+                "addFailed": "Failed adding extension!",
+                "added": "Added extension.",
+                "removeFailed": "Failed to remove extension.",
+                "removed": "Removed extension."
+            }
+        }
+    },
+    "manga": {
+        "monitored": "Monitored",
+        "notMonitored": "Not Monitored",
+        "viewInLibrary": "View in Library",
+        "nav": {
+            "manga": "Manga",
+            "metadataEntries": "Metadata-Entries",
+            "tasks": "Manga Tasks",
+            "downloads": "Manga Downloads",
+            "actions": "Actions",
+            "downloadTasks": "Manga Download Tasks"
+        },
+        "empty": {
+            "title": "Nothing here!",
+            "description": "Start searching..."
+        },
+        "search": {
+            "placeholder": "Search for a title or paste a link... ({example}?)",
+            "localManga": "Local Manga",
+            "searchResults": "Search Results",
+            "searchOn": "Search on:"
+        },
+        "merge": {
+            "title": "Merge Manga",
+            "intro": "Merging combines both Manga into {target}. {source} will be deleted. Download Links from both Manga are always combined automatically.",
+            "titleSummaryCover": "Title, Summary & Cover",
+            "target": "Target",
+            "source": "Source",
+            "keepTitle": "Keep {title}",
+            "useTitle": "Use {title}",
+            "preview": "Preview",
+            "noMetadata": "No metadata",
+            "keepChaptersOf": "Keep {title}'s Chapters ({count})",
+            "resultingChapters": "Merged Manga will have {count} Chapters. The other Manga's Chapters are discarded.",
+            "merge": "Merge"
+        },
+        "noDownloadLinks": {
+            "title": "No Download Links",
+            "description": "This manga doesn't have any download links yet."
+        },
+        "moreDownloadLinks": "More Download-Links",
+        "syncToLibrary": "Sync to Library",
+        "mergeInto": "Merge into...",
+        "remove": "Remove"
+    },
+    "chapters": {
+        "downloaded": "Downloaded",
+        "notDownloaded": "Not Downloaded",
+        "delete": "Delete Chapter",
+        "deleteDescription": "This permanently deletes \"{label}\": its downloaded file is removed from disk, and if a library is linked, a rescan is triggered so it's removed there too. This cannot be undone.",
+        "volumeShort": "Vol. {volume}",
+        "chapterShort": "Ch. {number}",
+        "columns": {
+            "volume": "Volume",
+            "number": "Number",
+            "title": "Title",
+            "releaseDate": "Release Date",
+            "status": "Status"
+        },
+        "empty": {
+            "title": "No chapters yet",
+            "description": "Chapters appear here once they have been found."
+        },
+        "volumeAbbr": "Vol",
+        "chapterAbbr": "Ch"
+    },
+    "downloadLinks": {
+        "match": "Match",
+        "unmatch": "Unmatch",
+        "searchResult": "Search Result",
+        "searchPlaceholder": "Search term, or paste a manga URL to add it directly",
+        "extension": "Extension",
+        "addLink": "Add Link",
+        "addFailed": "Failed adding download-link.",
+        "addFailedFallback": "Could not add the download-link.",
+        "added": "Added download-link."
+    },
+    "metadata": {
+        "goToManga": "Go to Manga",
+        "useAsSource": "Use as Source for Manga",
+        "isSource": "Is Source"
+    },
+    "downloads": {
+        "includeFinished": "Include finished downloads"
+    },
+    "tasks": {
+        "type": {
+            "BackfillComicInfoTask": "Backfill ComicInfo",
+            "DbFileCleanupTask": "File cleanup",
+            "GetMangaChaptersTask": "Get chapters",
+            "MissingChapterScanTask": "Missing chapter scan",
+            "PeriodicMangaChapterFetcherTask": "Periodic chapter fetch",
+            "DownloadChapterTask": "Download Chapter Task"
+        },
+        "state": {
+            "Pending": {
+                "label": "Pending",
+                "description": "Not yet queued; either not due, or blocked on a dependency."
+            },
+            "Blocked": {
+                "label": "Blocked",
+                "description": "Due to run, but blocked on an unfinished dependency."
+            },
+            "Queued": {
+                "label": "Queued",
+                "description": "In the ready queue, waiting for a worker to pick it up."
+            },
+            "Running": {
+                "label": "Running",
+                "description": "Currently executing on a worker."
+            },
+            "Completed": {
+                "label": "Completed",
+                "description": "Finished successfully."
+            },
+            "Failed": {
+                "label": "Failed",
+                "description": "Finished with an exception."
+            }
+        },
+        "chaptersCount": "{count} chapter | {count} chapters",
+        "columns": {
+            "type": "Type",
+            "state": "State",
+            "manga": "Manga",
+            "chapter": "Chapter",
+            "lastRun": "Last Run",
+            "interval": "Interval",
+            "nextRun": "Next Run"
+        },
+        "empty": {
+            "title": "No tasks",
+            "description": "Tasks show up here as soon as something is queued."
+        },
+        "logs": {
+            "columns": {
+                "time": "Time",
+                "level": "Level",
+                "message": "Message"
+            },
+            "empty": {
+                "title": "No log entries",
+                "description": "Nothing has been logged for this task yet."
+            }
+        },
+        "filters": {
+            "presets": "Filter presets",
+            "preset": "Preset",
+            "manga": "Manga",
+            "allMangas": "All Mangas",
+            "type": "Type",
+            "allTypes": "All Types",
+            "state": "State",
+            "allStates": "All States",
+            "clear": "Clear filters",
+            "activeDownloads": "Active Downloads"
+        },
+        "lastRun": "Last run",
+        "exportCsv": "Export CSV"
+    },
+    "workers": {
+        "status": {
+            "Busy": "Busy",
+            "Retiring": "Retiring",
+            "Idle": "Idle"
+        },
+        "unknownTask": "Unknown task",
+        "columns": {
+            "worker": "Worker",
+            "status": "Status",
+            "currentTask": "Current Task",
+            "startedAt": "Started At",
+            "lastHeartbeat": "Last Heartbeat"
+        },
+        "empty": {
+            "title": "No workers",
+            "description": "No worker is running right now."
+        }
+    },
+    "toast": {
+        "chapterDeleted": "Chapter deleted",
+        "chapterDeleteFailed": "Could not delete Chapter!",
+        "setAsSource": "Set as Source!",
+        "removedAsSource": "Removed as Source",
+        "setDownloadLinkSourceFailed": "Could not set DownloadLink as Source!",
+        "removeDownloadLinkSourceFailed": "Could not remove DownloadLink as Source!",
+        "monitoringStarted": "Now Monitoring",
+        "monitoringStopped": "Stopped Monitoring",
+        "monitoringStartFailed": "Could not start monitoring",
+        "monitoringStopFailed": "Could not stop monitoring",
+        "mangaRemoved": "Manga removed",
+        "mangaRemoveFailed": "Could not remove Manga!",
+        "syncQueued": "Library sync queued!",
+        "syncFailed": "Could not queue library sync!",
+        "metadataSetFailed": "Could not set Metadata as Source!",
+        "mangaMerged": "Manga merged",
+        "mangaMergeFailed": "Could not merge Manga!"
+    },
+    "tour": {
+        "skip": "Skip tour",
+        "nextStep": "Next step",
+        "letsGo": "Let's go",
+        "finish": "Finish",
+        "steps": {
+            "intro": {
+                "title": "Let's queue your first download",
+                "body": "We'll find a manga and download its first chapters. It only takes a minute."
+            },
+            "searchButton": {
+                "title": "Search for a manga",
+                "body": "Click here (or press ⌘K / Ctrl K) and type a title to search your configured extensions."
+            },
+            "useAsSource": {
+                "title": "Add it to your library",
+                "body": "Picking a result creates a draft entry. Click this to make it the source for a new Manga."
+            },
+            "goToManga": {
+                "title": "Open the Manga page",
+                "body": "This is where you'll manage download links and see progress."
+            },
+            "moreDownloadLinks": {
+                "title": "Find download sources",
+                "body": "Search extensions for chapters of this series."
+            },
+            "addLink": {
+                "title": "Check the results",
+                "body": "Tranga has already searched all extensions for this series: the results are listed below. If none of them is right, search again with a different title, or paste a link to the series, choose an extension and click Add Link."
+            },
+            "matchDownloadLink": {
+                "title": "Confirm the match",
+                "body": "Click Match to confirm this is the right series — Tranga queues the download as soon as it's matched."
+            },
+            "outro": {
+                "title": "You're all set!",
+                "body": "Tranga will download chapters in the background. Check progress any time under Manga → Manga Downloads."
+            }
+        }
+    },
+    "customSource": {
+        "optional": "Optional.",
+        "example": "e.g. {value}",
+        "exampleEither": "e.g. {first} or {second}",
+        "defaultValue": "default: {value}",
+        "errors": {
+            "invalidRegex": "Not a valid regular expression.",
+            "jsonNotObject": "The JSON has to be an object.",
+            "invalidJson": "That is not valid JSON.",
+            "createFailed": "Could not create the source.",
+            "saveFailed": "Could not save the source.",
+            "testFailed": "The test could not be run.",
+            "saveFailedTitle": "The source could not be saved",
+            "notALanguageCode": "{rejected} is not a language code. Use codes like en, en-us or pt-BR."
+        },
+        "steps": {
+            "general": {
+                "title": "General",
+                "description": "The website"
+            },
+            "search": {
+                "title": "Search",
+                "description": "Find series"
+            },
+            "chapters": {
+                "title": "Chapters",
+                "description": "List chapters"
+            },
+            "pages": {
+                "title": "Pages",
+                "description": "Find images"
+            }
+        },
+        "format": {
+            "html": {
+                "label": "HTML",
+                "description": "Web pages, read with CSS selectors or XPath. What most websites need."
+            },
+            "json": {
+                "label": "JSON",
+                "description": "An API, read with paths. For websites whose pages are empty until JavaScript loads the content."
+            }
+        },
+        "form": {
+            "examples": "Start from an example",
+            "exampleFallback": "Example",
+            "showJson": "Show JSON",
+            "importJson": "Import JSON",
+            "promptForAi": "Prompt for AI agents",
+            "introWithHint": "{intro} Test each step on the real website before saving. Rather have an AI agent do the looking? Give it the prompt linked here, then paste its answer with Import JSON.",
+            "namePlaceholder": "My Manga Site",
+            "responseFormat": "Response format",
+            "responseFormatDescription": "What the website answers with. It applies to every step and decides how the answers are read.",
+            "iconUrl": "Icon URL",
+            "iconUrlDescription": "Optional. Defaults to the website's favicon.",
+            "languages": "Languages",
+            "languagesDescription": "Languages the website publishes in, as codes like en, en-us or pt-BR.",
+            "seriesUrlPattern": "Series URL pattern",
+            "seriesUrlPatternDescription": "Optional regular expression a series URL has to match. Named groups like {group} can be used as {id} in the chapter list URL. Try it on a URL on the right.",
+            "requestsPerSecond": "Requests per second",
+            "requestsPerSecondDescription": "Limit for the website itself (0.1 - 20). 0.5 = one request every two seconds.",
+            "flareSolverr": "FlareSolverr",
+            "flareSolverrDescription": "Route requests through FlareSolverr, for Cloudflare protected sites.",
+            "flareSolverrMissing": "No FlareSolverr instance is configured (FLARESOLVERR_URL).",
+            "useFlareSolverr": "Use FlareSolverr",
+            "headers": "Request headers",
+            "headersDescription": "Optional, sent with every request, e.g. Cookie or User-Agent. Requests look like a regular browser unless you set a User-Agent.",
+            "headerName": "Header name",
+            "headerValue": "Value",
+            "removeHeader": "Remove header",
+            "addHeader": "Add header",
+            "loadedExample": "Loaded example \"{name}\".",
+            "reviewHint": "Review it and use the test buttons before saving.",
+            "filledSeriesUrl": "Filled in the series URL.",
+            "filledSeriesUrlDescription": "It is used in the pattern preview and the chapters test.",
+            "filledChapterUrl": "Filled in the chapter URL.",
+            "filledChapterUrlDescription": "It is used in the pages test.",
+            "copied": "Copied to the clipboard.",
+            "copyFailed": "Could not copy.",
+            "copyFailedDescription": "Select the text and copy it manually.",
+            "imported": "Imported the definition into the form.",
+            "jsonTitle": "Source as JSON",
+            "jsonDescription": "The definition as it is in the form now. Copy it to share the source.",
+            "close": "Close",
+            "copy": "Copy",
+            "importTitle": "Import JSON",
+            "importDescription": "Paste someone else's definition. It replaces what is in the form; nothing is saved until you create the source.",
+            "import": "Import",
+            "patternTry": "A series URL to try the pattern on",
+            "patternNoMatch": "The pattern does not match this URL.",
+            "patternMatches": "Matches.",
+            "patternNoGroups": "No named groups.",
+            "patternEmptyGroup": "(empty)",
+            "useForChaptersTest": "Use for the chapters test"
+        },
+        "search": {
+            "intro": "Finds the series for a search text.",
+            "urlLabel": "Search URL",
+            "urlDescription": "{query} is replaced with the URL-encoded search text. Relative to the base URL.",
+            "title": "Title",
+            "link": "Series link",
+            "cover": "Cover image",
+            "testLabel": "Search text",
+            "testPlaceholder": "one piece"
+        },
+        "chapters": {
+            "intro": "Lists the chapters of a series.",
+            "urlLabel": "Chapter list URL",
+            "urlDescription": "{url} is the series link. Named groups of the series URL pattern can be used too, e.g. {example}",
+            "link": "Chapter link",
+            "number": "Chapter number",
+            "title": "Chapter title",
+            "date": "Release date",
+            "dateFormat": "Date format",
+            "dateFormatDescription": "Optional .NET format like dd/MM/yyyy. ISO dates and common formats work without it.",
+            "nextPage": "Next page link",
+            "nextPageDescription": "Optional. When the chapter list is split over several pages, the link to the next one (followed up to 50 times).",
+            "testLabel": "Series URL",
+            "testHelp": "A series page of the website. Use the button in the search test results to fill it in."
+        },
+        "pages": {
+            "intro": "Finds the page images of a chapter.",
+            "urlLabel": "Pages URL",
+            "urlDescription": "{url} is the chapter link. Some sites load the images from a separate URL, e.g. {example1}. Named groups of the chapter URL pattern can be used too, e.g. {example2}",
+            "urlPattern": "Chapter URL pattern",
+            "urlPatternDescription": "Optional regular expression the chapter link is matched against. Named groups like {group} can be used as {id} in the pages URL, for sites that load the pages from an address that only contains a part of the chapter link.",
+            "pageLinks": "Page links",
+            "pageLinksAttributeHint": "Leave empty to use href for links and value for the options of a page dropdown.",
+            "imageAttribute": "Image attribute",
+            "imageAttributeDescription": "Defaults to {value} (the first one that has a value).",
+            "testLabel": "Chapter URL",
+            "testHelp": "Lists the image URLs that would be downloaded; nothing is downloaded. Use the button in the chapters test results to fill it in."
+        },
+        "field": {
+            "selectorPlaceholder": "CSS selector or XPath",
+            "attributePlaceholder": "Attribute",
+            "jsonPlaceholder": "JSON path",
+            "selectorHint": "Leave empty to use the item itself.",
+            "attributeHint": "Leave empty to read the text of the element. Several attributes can be listed, separated by commas: the first one that has a value is used.",
+            "jsonPathHint": "The path to the value inside the item, e.g. title, manga.cover or names[0]. Several paths can be listed, separated by commas: the first one that has a value is used. $ is the item itself.",
+            "regexAndReplacement": "Regex and replacement",
+            "regex": "Regex",
+            "replaceWith": "Replace with",
+            "replacementHint": "Replaces every match of the regex. $1 is its first group, and the placeholders of this step's URL can be used, e.g. {example} to build a link from an id."
+        },
+        "results": {
+            "title": "Test results",
+            "testFor": "{step} test for “{input}”",
+            "idle": "What the selectors extract from the real website.",
+            "steps": {
+                "search": "Search",
+                "chapters": "Chapters",
+                "images": "Pages"
+            },
+            "running": {
+                "search": "Running the search test…",
+                "chapters": "Running the chapters test…",
+                "images": "Running the pages test…"
+            },
+            "emptyTitle": "Nothing tested yet",
+            "emptyDescription": "Use the Test button above to try it on the website. The result shows up here and stays visible while you change the selectors.",
+            "cannotTest": "This step cannot be tested yet",
+            "requested": "Requested: {url}",
+            "extracted": "{count} item extracted | {count} items extracted",
+            "requestedWithStatus": "Requested: {url} (HTTP {status})",
+            "showing": "Showing the first {shown} of {total}.",
+            "useForChapters": "Use for chapters test",
+            "useForPages": "Use for pages test"
+        },
+        "texts": {
+            "html": {
+                "introTitle": "Describe the website with selectors",
+                "intro": "Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter).",
+                "searchItemLabel": "Result item selector",
+                "searchItem": "One element per search result: the wrapper around the whole result. The title, link and cover below are looked up inside this element, so their selectors are relative to it.",
+                "cover": "Several attributes can be listed, the first one that has a value is used.",
+                "chapterItemLabel": "Chapter item selector",
+                "chapterItem": "One element per chapter.",
+                "chapterNumber": "Leave empty to search the whole item. The first number found is used (Chapter 12.5 → 12.5); chapters without a number are skipped. Use a regex to be more specific.",
+                "imageLabel": "Image selector",
+                "image": "One element per page image, in reading order. With page links: the image on each of those pages.",
+                "pageLinks": "Optional. Only for sites that show one image per web page: the links (or the options of a page dropdown) to every page of the chapter, in reading order. Every page is then opened to find its image."
+            },
+            "json": {
+                "introTitle": "Describe the website's API with paths",
+                "intro": "The pages of this website are built by JavaScript, so there is nothing in them to read: the content comes from an API. Open the website with the browser's developer tools on the Network tab (filter Fetch/XHR), search and open a chapter, and look for the requests that answer with JSON. Their addresses go into the URL fields; paths such as data, manga.title or pages[0] lead to the values in the answer. Paths of fields are relative to their item (one search result / chapter).",
+                "urlNote": "The address of the API that answers with the results, not the search page.",
+                "searchItemLabel": "Result items path",
+                "searchItem": "The path to the list of search results in the answer, e.g. data or results.items. The title, link and cover below are looked up inside each result, so their paths are relative to it.",
+                "link": "An API often only has an id or slug: build the link with a regex and a replacement, e.g. {regex} and {replacement}.",
+                "cover": "Several paths can be listed, the first one that has a value is used.",
+                "chapterItemLabel": "Chapter items path",
+                "chapterItem": "The path to the list of chapters in the answer.",
+                "chapterNumber": "The first number found is used (Chapter 12.5 → 12.5); chapters without a number are skipped. An API often pads numbers (12.5000): cut that off with a regex such as {regex}",
+                "imageLabel": "Image URLs path",
+                "image": "The path to the image URLs of the chapter, in reading order, e.g. pages or pages[*].url. With page links: the image in the answer of each of those links.",
+                "pageLinks": "Optional. Only for an API that has to be asked for every page of a chapter on its own: the path to the addresses of those requests, in reading order. Each of them is then requested to find its image. Leave it empty when one answer lists all the images."
+            }
+        },
+        "sources": {
+            "description": "Tranga searches all of these when looking for a manga to download. Websites that are not built in can be added as custom sources.",
+            "add": "Add custom source",
+            "custom": "Custom",
+            "builtIn": "Built-in",
+            "deleteTitle": "Delete {name}",
+            "deleteDescription": "Manga that use this source keep their download links and chapters, but nothing can be searched, listed or downloaded through it anymore.",
+            "deleteFailed": "Failed deleting the source.",
+            "deleted": "Deleted {name}.",
+            "createSubmit": "Create source",
+            "created": "Created {name}.",
+            "createdDescription": "It is available as a download source straight away.",
+            "notFound": "Source not found",
+            "notFoundDescription": "This custom source does not exist (anymore).",
+            "backToSources": "Back to sources",
+            "saveSubmit": "Save changes",
+            "saved": "Saved {name}."
+        }
+    }
+}

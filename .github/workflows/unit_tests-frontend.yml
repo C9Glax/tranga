@@ -36,6 +36,13 @@ jobs:
       - name: Check formatting
         run: npx prettier . --check
         working-directory: ./Frontend
+      - name: Generate Nuxt config for ESLint
+        # eslint.config.mjs builds on the config Nuxt generates into .nuxt
+        run: npx nuxt prepare
+        working-directory: ./Frontend
+      - name: Lint (includes the translation checks)
+        run: npm run lint
+        working-directory: ./Frontend
       - name: Check types
         run: npm run typecheck
         working-directory: ./Frontend

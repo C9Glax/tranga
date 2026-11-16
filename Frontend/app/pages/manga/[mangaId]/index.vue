@@ -3,8 +3,8 @@
         <DownloadLinkList
             :download-links="downloadLinks"
             :loading="statusDownloadLinks !== 'success'"
-            empty-title="No Download Links"
-            empty-description="This manga doesn't have any download links yet."
+            :empty-title="$t('manga.noDownloadLinks.title')"
+            :empty-description="$t('manga.noDownloadLinks.description')"
             :empty-actions="[moreDownloadLinksAction]" />
     </MangaPage>
 </template>
@@ -17,6 +17,7 @@ import { syncMangaToKomga } from '~/utils/syncMangaToKomga';
 import { removeManga } from '~/utils/removeManga';
 
 const mangaId = useRoute().params.mangaId as string;
+const { t } = useI18n();
 
 const { data: manga, status: statusManga } = await useTranga<GetMangasByMangaIdResponse>(() => `/mangas/${mangaId}`, {
     key: ApiKeys.Manga.Manga(mangaId),
@@ -28,7 +29,7 @@ const { data: downloadLinks, status: statusDownloadLinks } = useTranga<GetMangas
 );
 
 const moreDownloadLinksAction = computed<ButtonProps>(() => ({
-    label: 'More Download-Links',
+    label: t('manga.moreDownloadLinks'),
     to: `/manga/${mangaId}/downloadLinks`,
     icon: 'i-lucide-download',
     variant: 'outline',
@@ -36,21 +37,21 @@ const moreDownloadLinksAction = computed<ButtonProps>(() => ({
 }));
 
 const syncToKomgaAction = computed<ButtonProps>(() => ({
-    label: 'Sync to Library',
+    label: t('manga.syncToLibrary'),
     icon: 'i-lucide-refresh-cw',
     variant: 'outline',
     onClick: () => syncMangaToKomga(mangaId),
 }));
 
 const mergeAction = computed<ButtonProps>(() => ({
-    label: 'Merge into...',
+    label: t('manga.mergeInto'),
     icon: 'i-lucide-git-merge',
     variant: 'outline',
     to: `/manga/${mangaId}/merge`,
 }));
 
 const removeAction = computed<ButtonProps>(() => ({
-    label: 'Remove',
+    label: t('manga.remove'),
     icon: 'i-lucide-trash-2',
     color: 'error',
     variant: 'outline',

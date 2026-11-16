@@ -151,7 +151,10 @@ export const testSeriesPattern = (pattern: string, url: string): SeriesPatternRe
     try {
         regex = new RegExp(pattern.trim());
     } catch (error: unknown) {
-        return { state: 'invalid', message: error instanceof Error ? error.message : 'Not a valid regular expression.' };
+        return {
+            state: 'invalid',
+            message: error instanceof Error ? error.message : useNuxtApp().$i18n.t('customSource.errors.invalidRegex'),
+        };
     }
     const match = regex.exec(url.trim());
     if (!match) return { state: 'no-match' };
@@ -253,9 +256,10 @@ export const customSourceToJson = (source: CustomSourceDefinition): string => {
 export const customSourceFromJson = (json: string): { source?: CustomSourceDefinition; error?: string } => {
     try {
         const parsed: unknown = JSON.parse(json);
-        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return { error: 'The JSON has to be an object.' };
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed))
+            return { error: useNuxtApp().$i18n.t('customSource.errors.jsonNotObject') };
         return { source: normalizeCustomSource(parsed as ServicesMangaSelectorDownloaderDefinition) };
     } catch (error: unknown) {
-        return { error: error instanceof Error ? error.message : 'That is not valid JSON.' };
+        return { error: error instanceof Error ? error.message : useNuxtApp().$i18n.t('customSource.errors.invalidJson') };
     }
 };

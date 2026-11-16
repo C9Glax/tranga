@@ -2,7 +2,7 @@
     <TrangaPage>
         <CustomSourceForm
             :initial="initial"
-            submit-label="Create source"
+            :submit-label="$t('customSource.sources.createSubmit')"
             :saving="saving"
             :errors="errors"
             show-examples
@@ -14,6 +14,7 @@
 import type { PostMangasCustomDownloadersResponse } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
 
+const { t } = useI18n();
 const toast = useToast();
 
 const initial = emptyCustomSource();
@@ -30,7 +31,7 @@ const create = async (definition: CustomSourceDefinition) => {
         });
     } catch (error: unknown) {
         // 400: the API lists everything that is wrong with the definition
-        errors.value = apiErrorMessages(error, 'Could not create the source.');
+        errors.value = apiErrorMessages(error, t('customSource.errors.createFailed'));
         return;
     } finally {
         saving.value = false;
@@ -38,8 +39,8 @@ const create = async (definition: CustomSourceDefinition) => {
 
     await refreshNuxtData([ApiKeys.DownloadExtensions, ApiKeys.CustomDownloaders]);
     toast.add({
-        title: `Created ${definition.name}.`,
-        description: 'It is available as a download source straight away.',
+        title: t('customSource.sources.created', { name: definition.name }),
+        description: t('customSource.sources.createdDescription'),
         color: 'success',
     });
     await navigateTo('/settings/sources');

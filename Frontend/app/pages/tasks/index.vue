@@ -1,14 +1,19 @@
 <template>
     <TrangaPage rimless>
         <div class="m-4 px-4 flex flex-wrap gap-4 items-end">
-            <UFormField label="Filter presets">
+            <UFormField :label="$t('tasks.filters.presets')">
                 <UFieldGroup>
-                    <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" placeholder="Preset" class="w-56" />
+                    <USelectMenu
+                        v-model="presetFilter"
+                        :items="presetOptions"
+                        value-key="value"
+                        :placeholder="$t('tasks.filters.preset')"
+                        class="w-56" />
                     <UButton v-if="presetFilter" icon="i-lucide-x" color="neutral" variant="outline" @click="presetFilter = undefined" />
                 </UFieldGroup>
             </UFormField>
 
-            <UFormField label="Manga">
+            <UFormField :label="$t('tasks.filters.manga')">
                 <UFieldGroup>
                     <USelectMenu
                         v-model="mangaFilter"
@@ -16,23 +21,35 @@
                         :loading="mangaStatus === 'pending'"
                         value-key="value"
                         searchable
-                        placeholder="All Mangas"
+                        :placeholder="$t('tasks.filters.allMangas')"
                         class="w-56" />
                     <UButton v-if="mangaFilter" icon="i-lucide-x" color="neutral" variant="outline" @click="mangaFilter = undefined" />
                 </UFieldGroup>
             </UFormField>
 
-            <UFormField label="Type">
-                <USelectMenu v-model="typeFilter" :items="typeOptions" value-key="value" multiple placeholder="All Types" class="w-56" />
+            <UFormField :label="$t('tasks.filters.type')">
+                <USelectMenu
+                    v-model="typeFilter"
+                    :items="typeOptions"
+                    value-key="value"
+                    multiple
+                    :placeholder="$t('tasks.filters.allTypes')"
+                    class="w-56" />
             </UFormField>
 
-            <UFormField label="State">
-                <USelectMenu v-model="stateFilter" :items="stateOptions" value-key="value" multiple placeholder="All States" class="w-56" />
+            <UFormField :label="$t('tasks.filters.state')">
+                <USelectMenu
+                    v-model="stateFilter"
+                    :items="stateOptions"
+                    value-key="value"
+                    multiple
+                    :placeholder="$t('tasks.filters.allStates')"
+                    class="w-56" />
             </UFormField>
 
             <UButton
                 v-if="mangaFilter || typeFilter.length || stateFilter.length"
-                label="Clear filters"
+                :label="$t('tasks.filters.clear')"
                 icon="i-lucide-filter-x"
                 color="neutral"
                 variant="ghost"
@@ -49,6 +66,7 @@ import { useInfiniteScroll } from '@vueuse/core';
 import type { GetTasksResponse, GetMangasResponse, ServicesTasksTask, ServicesTasksTaskState } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
 
+const { t, locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
@@ -89,31 +107,37 @@ const TASK_TYPE_NAMES = [
     'DbFileCleanupTask',
     'BackfillComicInfoTask',
 ];
-const typeOptions = TASK_TYPE_NAMES.map((n) => ({ label: taskTypeLabel(n), value: n })).sort((a, b) => a.label.localeCompare(b.label));
+const typeOptions = computed(() =>
+    TASK_TYPE_NAMES.map((n) => ({ label: taskTypeLabel(n), value: n })).sort((a, b) => a.label.localeCompare(b.label, locale.value)),
+);
 
-const stateOptions: { label: string; description: string; value: ServicesTasksTaskState }[] = (
-    ['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed'] as ServicesTasksTaskState[]
-).map((s) => ({ label: s, description: taskStateDescription(s), value: s }));
+const stateOptions = computed((): { label: string; description: string; value: ServicesTasksTaskState }[] =>
+    (['Pending', 'Blocked', 'Queued', 'Running', 'Completed', 'Failed'] as ServicesTasksTaskState[]).map((s) => ({
+        label: taskStateLabel(s),
+        description: taskStateDescription(s),
+        value: s,
+    })),
+);
 
 // Presets combine Type + State filters for common views. Derived from (not stored separately
 // from) the type/state query params, so the dropdown stays in sync however those get set.
-const presetOptions: { label: string; value: string; taskTypes: string[]; taskStates: ServicesTasksTaskState[] }[] = [
+const presetOptions = computed((): { label: string; value: string; taskTypes: string[]; taskStates: ServicesTasksTaskState[] }[] => [
     {
-        label: 'Active Downloads',
+        label: t('tasks.filters.activeDownloads'),
         value: 'active-downloads',
         taskTypes: ['DownloadChapterTask'],
         taskStates: ['Queued', 'Pending', 'Running'],
     },
-];
+]);
 
 function sameSet(a: string[], b: string[]) {
     return a.length === b.length && new Set(a).size === new Set(b).size && a.every((v) => b.includes(v));
 }
 
 const presetFilter = computed<string | undefined>({
-    get: () => presetOptions.find((p) => sameSet(p.taskTypes, typeFilter.value) && sameSet(p.taskStates, stateFilter.value))?.value,
+    get: () => presetOptions.value.find((p) => sameSet(p.taskTypes, typeFilter.value) && sameSet(p.taskStates, stateFilter.value))?.value,
     set: (v) => {
-        const preset = presetOptions.find((p) => p.value === v);
+        const preset = presetOptions.value.find((p) => p.value === v);
         setQueries({ type: preset?.taskTypes.join(','), state: preset?.taskStates.join(',') });
     },
 });

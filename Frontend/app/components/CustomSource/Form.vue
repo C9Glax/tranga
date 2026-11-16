@@ -3,14 +3,19 @@
         <div class="flex flex-row flex-wrap gap-2">
             <UDropdownMenu v-if="examples?.length" :items="exampleItems">
                 <UButton
-                    label="Start from an example"
+                    :label="$t('customSource.form.examples')"
                     icon="i-lucide-wand-sparkles"
                     color="neutral"
                     variant="subtle"
                     trailing-icon="i-lucide-chevron-down" />
             </UDropdownMenu>
-            <UButton label="Show JSON" icon="i-lucide-braces" color="neutral" variant="subtle" @click="openJson" />
-            <UButton label="Import JSON" icon="i-lucide-file-input" color="neutral" variant="subtle" @click="openImport" />
+            <UButton :label="$t('customSource.form.showJson')" icon="i-lucide-braces" color="neutral" variant="subtle" @click="openJson" />
+            <UButton
+                :label="$t('customSource.form.importJson')"
+                icon="i-lucide-file-input"
+                color="neutral"
+                variant="subtle"
+                @click="openImport" />
         </div>
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -23,10 +28,10 @@
                                 variant="subtle"
                                 icon="i-lucide-info"
                                 :title="texts.introTitle"
-                                :description="`${texts.intro} Test each step on the real website before saving. Rather have an AI agent do the looking? Give it the prompt linked here, then paste its answer with Import JSON.`"
+                                :description="$t('customSource.form.introWithHint', { intro: texts.intro })"
                                 :actions="[
                                     {
-                                        label: 'Prompt for AI agents',
+                                        label: $t('customSource.form.promptForAi'),
                                         icon: 'i-lucide-bot',
                                         to: agentPromptUrl,
                                         target: '_blank',
@@ -34,10 +39,10 @@
                                         variant: 'outline',
                                     },
                                 ]" />
-                            <UFormField label="Name" name="name" required>
-                                <UInput v-model="state.name" placeholder="My Manga Site" class="w-full" />
+                            <UFormField :label="$t('common.name')" name="name" required>
+                                <UInput v-model="state.name" :placeholder="$t('customSource.form.namePlaceholder')" class="w-full" />
                             </UFormField>
-                            <UFormField label="Base URL" name="baseUrl" required>
+                            <UFormField :label="$t('common.baseUrl')" name="baseUrl" required>
                                 <UInput
                                     v-model="state.baseUrl"
                                     placeholder="https://example.com"
@@ -45,10 +50,10 @@
                                     @blur="state.baseUrl = normalizeBaseUrl(state.baseUrl)" />
                             </UFormField>
                             <UFormField
-                                label="Response format"
+                                :label="$t('customSource.form.responseFormat')"
                                 name="format"
                                 required
-                                description="What the website answers with. It applies to every step and decides how the answers are read.">
+                                :description="$t('customSource.form.responseFormatDescription')">
                                 <URadioGroup
                                     v-model="state.format"
                                     :items="formatItems"
@@ -56,21 +61,24 @@
                                     :ui="{ fieldset: 'grid grid-cols-1 gap-2 sm:grid-cols-2' }"
                                     class="w-full" />
                             </UFormField>
-                            <UFormField label="Icon URL" name="iconUrl" description="Optional. Defaults to the website's favicon.">
+                            <UFormField
+                                :label="$t('customSource.form.iconUrl')"
+                                name="iconUrl"
+                                :description="$t('customSource.form.iconUrlDescription')">
                                 <UInput v-model="state.iconUrl" placeholder="https://example.com/icon.png" class="w-full" />
                             </UFormField>
                             <UFormField
-                                label="Languages"
+                                :label="$t('customSource.form.languages')"
                                 name="languages"
                                 required
                                 :error="languageError"
-                                description="Languages the website publishes in, as codes like en, en-us or pt-BR.">
+                                :description="$t('customSource.form.languagesDescription')">
                                 <UInputTags v-model="languages" placeholder="en" class="w-full" />
                             </UFormField>
                             <UFormField
-                                label="Series URL pattern"
+                                :label="$t('customSource.form.seriesUrlPattern')"
                                 name="seriesUrlPattern"
-                                description="Optional regular expression a series URL has to match. Named groups like (?<id>[^/]+) can be used as {id} in the chapter list URL. Try it on a URL on the right.">
+                                :description="$t('customSource.form.seriesUrlPatternDescription', { group: '(?<id>[^/]+)', id: '{id}' })">
                                 <!-- measured, so the pattern test in the sidebar can start at the same height -->
                                 <div ref="patternInput">
                                     <UInput
@@ -82,9 +90,9 @@
                             </UFormField>
                             <div class="flex flex-row flex-wrap gap-6">
                                 <UFormField
-                                    label="Requests per second"
+                                    :label="$t('customSource.form.requestsPerSecond')"
                                     name="requestsPerSecond"
-                                    description="Limit for the website itself (0.1 - 20). 0.5 = one request every two seconds.">
+                                    :description="$t('customSource.form.requestsPerSecondDescription')">
                                     <UInputNumber
                                         v-model="state.requestsPerSecond"
                                         :min="0.1"
@@ -93,40 +101,38 @@
                                         :format-options="{ maximumFractionDigits: 2 }" />
                                 </UFormField>
                                 <UFormField
-                                    label="FlareSolverr"
+                                    :label="$t('customSource.form.flareSolverr')"
                                     name="useFlareSolverr"
-                                    description="Route requests through FlareSolverr, for Cloudflare protected sites.">
+                                    :description="$t('customSource.form.flareSolverrDescription')">
                                     <!-- Only explains itself while the switch is disabled. The wrapper keeps hovering working on a disabled switch. -->
-                                    <UTooltip
-                                        text="No FlareSolverr instance is configured (FLARESOLVERR_URL)."
-                                        :disabled="!flareSolverrMissing">
+                                    <UTooltip :text="$t('customSource.form.flareSolverrMissing')" :disabled="!flareSolverrMissing">
                                         <span class="inline-flex">
                                             <USwitch
                                                 v-model="state.useFlareSolverr"
                                                 :disabled="flareSolverrMissing"
-                                                label="Use FlareSolverr" />
+                                                :label="$t('customSource.form.useFlareSolverr')" />
                                         </span>
                                     </UTooltip>
                                 </UFormField>
                             </div>
                             <UFormField
-                                label="Request headers"
+                                :label="$t('customSource.form.headers')"
                                 name="headers"
-                                description="Optional, sent with every request, e.g. Cookie or User-Agent. Requests look like a regular browser unless you set a User-Agent.">
+                                :description="$t('customSource.form.headersDescription')">
                                 <div class="flex flex-col gap-2">
                                     <div v-for="(row, index) in headerRows" :key="index" class="flex flex-row gap-2">
-                                        <UInput v-model="row.name" placeholder="Header name" class="w-56" />
-                                        <UInput v-model="row.value" placeholder="Value" class="grow" />
+                                        <UInput v-model="row.name" :placeholder="$t('customSource.form.headerName')" class="w-56" />
+                                        <UInput v-model="row.value" :placeholder="$t('customSource.form.headerValue')" class="grow" />
                                         <UButton
                                             icon="i-lucide-trash-2"
                                             color="neutral"
                                             variant="ghost"
-                                            aria-label="Remove header"
+                                            :aria-label="$t('customSource.form.removeHeader')"
                                             @click="headerRows.splice(index, 1)" />
                                     </div>
                                     <div>
                                         <UButton
-                                            label="Add header"
+                                            :label="$t('customSource.form.addHeader')"
                                             icon="i-lucide-plus"
                                             color="neutral"
                                             variant="subtle"
@@ -140,12 +146,12 @@
 
                     <template #search>
                         <div class="flex flex-col gap-4 pt-4">
-                            <p class="text-sm text-muted">Finds the series for a search text.</p>
+                            <p class="text-sm text-muted">{{ $t('customSource.search.intro') }}</p>
                             <UFormField
-                                label="Search URL"
+                                :label="$t('customSource.search.urlLabel')"
                                 name="search.urlTemplate"
                                 required
-                                :description="`{query} is replaced with the URL-encoded search text. Relative to the base URL.${texts.urlNote}`">
+                                :description="searchUrlDescription">
                                 <UInput
                                     v-model="state.search.urlTemplate"
                                     :placeholder="texts.searchUrlPlaceholder"
@@ -162,36 +168,41 @@
                             <CustomSourceFieldInput
                                 v-model="state.search.title"
                                 :format="state.format"
-                                label="Title"
+                                :label="$t('customSource.search.title')"
                                 required
-                                json-placeholder="e.g. title" />
+                                :json-placeholder="$t('customSource.example', { value: 'title' })" />
                             <CustomSourceFieldInput
                                 v-model="state.search.url"
                                 :format="state.format"
-                                label="Series link"
+                                :label="$t('customSource.search.link')"
                                 required
                                 :description="texts.link"
-                                attribute-placeholder="e.g. href"
-                                json-placeholder="e.g. url or slug" />
+                                :attribute-placeholder="$t('customSource.example', { value: 'href' })"
+                                :json-placeholder="$t('customSource.exampleEither', { first: 'url', second: 'slug' })" />
                             <CustomSourceFieldInput
                                 v-model="state.search.cover"
                                 :format="state.format"
-                                label="Cover image"
+                                :label="$t('customSource.search.cover')"
                                 required
-                                attribute-placeholder="e.g. data-src,src"
-                                json-placeholder="e.g. cover"
+                                :attribute-placeholder="$t('customSource.example', { value: 'data-src,src' })"
+                                :json-placeholder="$t('customSource.example', { value: 'cover' })"
                                 :description="texts.cover" />
                         </div>
                     </template>
 
                     <template #chapters>
                         <div class="flex flex-col gap-4 pt-4">
-                            <p class="text-sm text-muted">Lists the chapters of a series.</p>
+                            <p class="text-sm text-muted">{{ $t('customSource.chapters.intro') }}</p>
                             <UFormField
-                                label="Chapter list URL"
+                                :label="$t('customSource.chapters.urlLabel')"
                                 name="chapters.urlTemplate"
                                 required
-                                description="{url} is the series link. Named groups of the series URL pattern can be used too, e.g. https://example.com/series/{id}/chapters">
+                                :description="
+                                    $t('customSource.chapters.urlDescription', {
+                                        url: '{url}',
+                                        example: 'https://example.com/series/{id}/chapters',
+                                    })
+                                ">
                                 <UInput
                                     v-model="state.chapters.urlTemplate"
                                     placeholder="{url}"
@@ -212,35 +223,35 @@
                             <CustomSourceFieldInput
                                 v-model="state.chapters.url"
                                 :format="state.format"
-                                label="Chapter link"
+                                :label="$t('customSource.chapters.link')"
                                 required
                                 :description="texts.link"
-                                attribute-placeholder="e.g. href"
-                                json-placeholder="e.g. url or id" />
+                                :attribute-placeholder="$t('customSource.example', { value: 'href' })"
+                                :json-placeholder="$t('customSource.exampleEither', { first: 'url', second: 'id' })" />
                             <CustomSourceFieldInput
                                 v-model="state.chapters.number"
                                 :format="state.format"
-                                label="Chapter number"
+                                :label="$t('customSource.chapters.number')"
                                 :required="isJson"
                                 :description="texts.chapterNumber"
-                                json-placeholder="e.g. chapter_number" />
+                                :json-placeholder="$t('customSource.example', { value: 'chapter_number' })" />
                             <CustomSourceFieldInput
                                 v-model="state.chapters.title"
                                 :format="state.format"
-                                label="Chapter title"
-                                description="Optional."
-                                json-placeholder="e.g. title" />
+                                :label="$t('customSource.chapters.title')"
+                                :description="$t('customSource.optional')"
+                                :json-placeholder="$t('customSource.example', { value: 'title' })" />
                             <CustomSourceFieldInput
                                 v-model="state.chapters.date"
                                 :format="state.format"
-                                label="Release date"
-                                description="Optional."
-                                attribute-placeholder="e.g. datetime"
-                                json-placeholder="e.g. published_at" />
+                                :label="$t('customSource.chapters.date')"
+                                :description="$t('customSource.optional')"
+                                :attribute-placeholder="$t('customSource.example', { value: 'datetime' })"
+                                :json-placeholder="$t('customSource.example', { value: 'published_at' })" />
                             <UFormField
-                                label="Date format"
+                                :label="$t('customSource.chapters.dateFormat')"
                                 name="chapters.dateFormat"
-                                description="Optional .NET format like dd/MM/yyyy. ISO dates and common formats work without it.">
+                                :description="$t('customSource.chapters.dateFormatDescription')">
                                 <UInput
                                     v-model="state.chapters.dateFormat"
                                     placeholder="yyyy-MM-dd"
@@ -250,27 +261,33 @@
                             <CustomSourceFieldInput
                                 v-model="state.chapters.nextPage"
                                 :format="state.format"
-                                label="Next page link"
-                                description="Optional. When the chapter list is split over several pages, the link to the next one (followed up to 50 times)."
-                                attribute-placeholder="e.g. href"
-                                json-placeholder="e.g. next" />
+                                :label="$t('customSource.chapters.nextPage')"
+                                :description="$t('customSource.chapters.nextPageDescription')"
+                                :attribute-placeholder="$t('customSource.example', { value: 'href' })"
+                                :json-placeholder="$t('customSource.example', { value: 'next' })" />
                         </div>
                     </template>
 
                     <template #pages>
                         <div class="flex flex-col gap-4 pt-4">
-                            <p class="text-sm text-muted">Finds the page images of a chapter.</p>
+                            <p class="text-sm text-muted">{{ $t('customSource.pages.intro') }}</p>
                             <UFormField
-                                label="Pages URL"
+                                :label="$t('customSource.pages.urlLabel')"
                                 name="images.urlTemplate"
                                 required
-                                description="{url} is the chapter link. Some sites load the images from a separate URL, e.g. {url}/images. Named groups of the chapter URL pattern can be used too, e.g. /api/chapter/{id}">
+                                :description="
+                                    $t('customSource.pages.urlDescription', {
+                                        url: '{url}',
+                                        example1: '{url}/images',
+                                        example2: '/api/chapter/{id}',
+                                    })
+                                ">
                                 <UInput v-model="state.images.urlTemplate" placeholder="{url}" :ui="{ base: 'font-mono' }" class="w-full" />
                             </UFormField>
                             <UFormField
-                                label="Chapter URL pattern"
+                                :label="$t('customSource.pages.urlPattern')"
                                 name="images.urlPattern"
-                                description="Optional regular expression the chapter link is matched against. Named groups like (?<id>\d+) can be used as {id} in the pages URL, for sites that load the pages from an address that only contains a part of the chapter link.">
+                                :description="$t('customSource.pages.urlPatternDescription', { group: '(?<id>\\d+)', id: '{id}' })">
                                 <UInput
                                     v-model="state.images.urlPattern"
                                     placeholder="/chapter/(?<id>\d+)"
@@ -280,12 +297,12 @@
                             <CustomSourceFieldInput
                                 v-model="state.images.pageSelector"
                                 :format="state.format"
-                                json-placeholder="e.g. pages[*].url"
-                                label="Page links"
+                                :json-placeholder="$t('customSource.example', { value: 'pages[*].url' })"
+                                :label="$t('customSource.pages.pageLinks')"
                                 :description="texts.pageLinks"
                                 selector-placeholder="e.g. select.pages option"
-                                attribute-placeholder="default: href,value"
-                                attribute-hint="Leave empty to use href for links and value for the options of a page dropdown." />
+                                :attribute-placeholder="$t('customSource.defaultValue', { value: 'href,value' })"
+                                :attribute-hint="$t('customSource.pages.pageLinksAttributeHint')" />
                             <UFormField :label="texts.imageLabel" name="images.imageSelector" required :description="texts.image">
                                 <UInput
                                     v-model="state.images.imageSelector"
@@ -295,9 +312,9 @@
                             </UFormField>
                             <UFormField
                                 v-if="!isJson"
-                                label="Image attribute"
+                                :label="$t('customSource.pages.imageAttribute')"
                                 name="images.attribute"
-                                description="Defaults to data-src,data-lazy-src,src (the first one that has a value).">
+                                :description="$t('customSource.pages.imageAttributeDescription', { value: 'data-src,data-lazy-src,src' })">
                                 <UInput
                                     v-model="state.images.attribute"
                                     placeholder="data-src,src"
@@ -313,7 +330,7 @@
                     color="error"
                     variant="subtle"
                     icon="i-lucide-circle-alert"
-                    title="The source could not be saved">
+                    :title="$t('customSource.errors.saveFailedTitle')">
                     <template #description>
                         <ul class="list-disc pl-4">
                             <li v-for="error in errors" :key="error">{{ error }}</li>
@@ -323,22 +340,27 @@
 
                 <div class="flex flex-row flex-wrap items-center justify-between gap-2">
                     <UButton
-                        label="Back"
+                        :label="$t('common.back')"
                         icon="i-lucide-arrow-left"
                         color="neutral"
                         variant="outline"
                         :disabled="!stepper?.hasPrev"
                         @click="stepper?.prev()" />
                     <div class="flex flex-row flex-wrap justify-end gap-2">
-                        <UButton label="Cancel" color="neutral" variant="ghost" to="/settings/sources" />
+                        <UButton :label="$t('common.cancel')" color="neutral" variant="ghost" to="/settings/sources" />
                         <UButton
-                            label="Next"
+                            :label="$t('common.next')"
                             trailing-icon="i-lucide-arrow-right"
                             color="neutral"
                             variant="outline"
                             :disabled="!stepper?.hasNext"
                             @click="stepper?.next()" />
-                        <UButton v-if="isLastStep" type="submit" :label="submitLabel" icon="i-lucide-save" :loading="saving" />
+                        <UButton
+                            v-if="isLastStep"
+                            type="submit"
+                            :label="submitLabel ?? $t('common.save')"
+                            icon="i-lucide-save"
+                            :loading="saving" />
                     </div>
                 </div>
             </UForm>
@@ -349,8 +371,8 @@
                 <div v-if="isGeneralStep" class="flex flex-col gap-2">
                     <UInput
                         v-model="testUrls.pattern"
-                        aria-label="A series URL to try the pattern on"
-                        placeholder="A series URL to try the pattern on"
+                        :aria-label="$t('customSource.form.patternTry')"
+                        :placeholder="$t('customSource.form.patternTry')"
                         class="w-full" />
                     <div v-if="patternResult.state !== 'empty'" class="flex flex-row flex-wrap items-center gap-2 text-sm">
                         <template v-if="patternResult.state === 'invalid'">
@@ -359,11 +381,11 @@
                         </template>
                         <template v-else-if="patternResult.state === 'no-match'">
                             <UIcon name="i-lucide-x" class="text-warning" />
-                            <span class="text-warning">The pattern does not match this URL.</span>
+                            <span class="text-warning">{{ $t('customSource.form.patternNoMatch') }}</span>
                         </template>
                         <template v-else>
                             <UIcon name="i-lucide-check" class="text-success" />
-                            <span class="text-success">Matches.</span>
+                            <span class="text-success">{{ $t('customSource.form.patternMatches') }}</span>
                             <template v-if="patternResult.groups.length">
                                 <UBadge
                                     v-for="group in patternResult.groups"
@@ -372,12 +394,12 @@
                                     variant="subtle"
                                     class="font-mono">
                                     <!-- shown the way the group is written in the chapter list URL: {name} -->
-                                    {{ '{' + group.name + '}' }} = {{ group.value || '(empty)' }}
+                                    {{ '{' + group.name + '}' }} = {{ group.value || $t('customSource.form.patternEmptyGroup') }}
                                 </UBadge>
                             </template>
-                            <span v-else class="text-muted">No named groups.</span>
+                            <span v-else class="text-muted">{{ $t('customSource.form.patternNoGroups') }}</span>
                             <UButton
-                                label="Use for the chapters test"
+                                :label="$t('customSource.form.useForChaptersTest')"
                                 icon="i-lucide-arrow-down-to-line"
                                 color="neutral"
                                 variant="subtle"
@@ -394,50 +416,47 @@
                         v-model:test="tests.search"
                         :definition="state"
                         step="search"
-                        input-label="Search text"
-                        input-placeholder="one piece" />
+                        :input-label="$t('customSource.search.testLabel')"
+                        :input-placeholder="$t('customSource.search.testPlaceholder')" />
                     <CustomSourceTestPanel
                         v-else-if="step === 'chapters'"
                         v-model:input="testUrls.chapters"
                         v-model:test="tests.chapters"
                         :definition="state"
                         step="chapters"
-                        input-label="Series URL"
+                        :input-label="$t('customSource.chapters.testLabel')"
                         input-placeholder="https://example.com/series/1"
-                        help="A series page of the website. Use the button in the search test results to fill it in." />
+                        :help="$t('customSource.chapters.testHelp')" />
                     <CustomSourceTestPanel
                         v-else-if="step === 'pages'"
                         v-model:input="testUrls.images"
                         v-model:test="tests.images"
                         :definition="state"
                         step="images"
-                        input-label="Chapter URL"
+                        :input-label="$t('customSource.pages.testLabel')"
                         input-placeholder="https://example.com/chapter/1"
-                        help="Lists the image URLs that would be downloaded; nothing is downloaded. Use the button in the chapters test results to fill it in." />
+                        :help="$t('customSource.pages.testHelp')" />
                     <CustomSourceTestResults :test="currentTest" @pick="pickFromResults" />
                 </div>
             </div>
         </div>
 
-        <UModal
-            v-model:open="jsonOpen"
-            title="Source as JSON"
-            description="The definition as it is in the form now. Copy it to share the source.">
+        <UModal v-model:open="jsonOpen" :title="$t('customSource.form.jsonTitle')" :description="$t('customSource.form.jsonDescription')">
             <template #body>
                 <UTextarea :model-value="json" readonly :rows="18" :ui="{ base: 'font-mono text-xs' }" class="w-full" />
             </template>
             <template #footer>
                 <div class="flex w-full flex-row justify-end gap-2">
-                    <UButton label="Close" color="neutral" variant="ghost" @click="jsonOpen = false" />
-                    <UButton label="Copy" icon="i-lucide-copy" @click="copyJson" />
+                    <UButton :label="$t('customSource.form.close')" color="neutral" variant="ghost" @click="jsonOpen = false" />
+                    <UButton :label="$t('customSource.form.copy')" icon="i-lucide-copy" @click="copyJson" />
                 </div>
             </template>
         </UModal>
 
         <UModal
             v-model:open="importOpen"
-            title="Import JSON"
-            description="Paste someone else's definition. It replaces what is in the form; nothing is saved until you create the source.">
+            :title="$t('customSource.form.importTitle')"
+            :description="$t('customSource.form.importDescription')">
             <template #body>
                 <div class="flex flex-col gap-3">
                     <UTextarea
@@ -451,8 +470,12 @@
             </template>
             <template #footer>
                 <div class="flex w-full flex-row justify-end gap-2">
-                    <UButton label="Cancel" color="neutral" variant="ghost" @click="importOpen = false" />
-                    <UButton label="Import" icon="i-lucide-file-input" :disabled="!importText.trim()" @click="importJson" />
+                    <UButton :label="$t('common.cancel')" color="neutral" variant="ghost" @click="importOpen = false" />
+                    <UButton
+                        :label="$t('customSource.form.import')"
+                        icon="i-lucide-file-input"
+                        :disabled="!importText.trim()"
+                        @click="importJson" />
                 </div>
             </template>
         </UModal>
@@ -468,10 +491,11 @@ import { ApiKeys } from '~/composables/ApiKeys';
 
 const props = withDefaults(
     defineProps<{ initial: CustomSourceDefinition; submitLabel?: string; saving?: boolean; errors?: string[]; showExamples?: boolean }>(),
-    { submitLabel: 'Save', saving: false, errors: () => [], showExamples: false },
+    { saving: false, errors: () => [], showExamples: false },
 );
 const emit = defineEmits<{ submit: [definition: CustomSourceDefinition] }>();
 
+const { t } = useI18n();
 const toast = useToast();
 
 const state = ref<CustomSourceDefinition>(normalizeCustomSource(props.initial));
@@ -486,12 +510,36 @@ loadState(state.value);
 // ----------------------------------------------------------------------- steps
 // The stepper only shows the current step, so everything the steps share (the definition, the test inputs and the
 // latest test result) lives here and not in the steps themselves.
-const steps: StepperItem[] = [
-    { value: 'general', slot: 'general', title: 'General', description: 'The website', icon: 'i-lucide-globe' },
-    { value: 'search', slot: 'search', title: 'Search', description: 'Find series', icon: 'i-lucide-search' },
-    { value: 'chapters', slot: 'chapters', title: 'Chapters', description: 'List chapters', icon: 'i-lucide-list-ordered' },
-    { value: 'pages', slot: 'pages', title: 'Pages', description: 'Find images', icon: 'i-lucide-images' },
-];
+const steps = computed((): StepperItem[] => [
+    {
+        value: 'general',
+        slot: 'general',
+        title: t('customSource.steps.general.title'),
+        description: t('customSource.steps.general.description'),
+        icon: 'i-lucide-globe',
+    },
+    {
+        value: 'search',
+        slot: 'search',
+        title: t('customSource.steps.search.title'),
+        description: t('customSource.steps.search.description'),
+        icon: 'i-lucide-search',
+    },
+    {
+        value: 'chapters',
+        slot: 'chapters',
+        title: t('customSource.steps.chapters.title'),
+        description: t('customSource.steps.chapters.description'),
+        icon: 'i-lucide-list-ordered',
+    },
+    {
+        value: 'pages',
+        slot: 'pages',
+        title: t('customSource.steps.pages.title'),
+        description: t('customSource.steps.pages.description'),
+        icon: 'i-lucide-images',
+    },
+]);
 const step = ref('general');
 const stepper = useTemplateRef<{ next: () => void; prev: () => void; hasNext: boolean; hasPrev: boolean }>('stepper');
 
@@ -519,13 +567,13 @@ const flareSolverrMissing = computed(
 
 const exampleItems = computed<DropdownMenuItem[]>(() =>
     (examples.value ?? []).map((example) => ({
-        label: example.name ?? 'Example',
+        label: example.name ?? t('customSource.form.exampleFallback'),
         icon: 'i-lucide-wand-sparkles',
         onSelect: () => {
             loadState({ ...normalizeCustomSource(example), id: state.value.id });
             toast.add({
-                title: `Loaded example "${example.name}".`,
-                description: 'Review it and use the test buttons before saving.',
+                title: t('customSource.form.loadedExample', { name: example.name }),
+                description: t('customSource.form.reviewHint'),
                 color: 'info',
             });
         },
@@ -534,62 +582,40 @@ const exampleItems = computed<DropdownMenuItem[]>(() =>
 
 // ----------------------------------------------------------------------- format (HTML or JSON)
 const isJson = computed(() => state.value.format === 'json');
-const formatItems = [
-    { value: 'html', label: 'HTML', description: 'Web pages, read with CSS selectors or XPath. What most websites need.' },
-    {
-        value: 'json',
-        label: 'JSON',
-        description: 'An API, read with paths. For websites whose pages are empty until JavaScript loads the content.',
-    },
-];
+const formatItems = computed(() => [
+    { value: 'html', label: t('customSource.format.html.label'), description: t('customSource.format.html.description') },
+    { value: 'json', label: t('customSource.format.json.label'), description: t('customSource.format.json.description') },
+]);
 
 // What differs between the formats in the texts of the steps: a selector picks an element, a path a value.
-const texts = computed(() =>
-    isJson.value
-        ? {
-              introTitle: "Describe the website's API with paths",
-              intro: "The pages of this website are built by JavaScript, so there is nothing in them to read: the content comes from an API. Open the website with the browser's developer tools on the Network tab (filter Fetch/XHR), search and open a chapter, and look for the requests that answer with JSON. Their addresses go into the URL fields; paths such as data, manga.title or pages[0] lead to the values in the answer. Paths of fields are relative to their item (one search result / chapter).",
-              urlNote: ' The address of the API that answers with the results, not the search page.',
-              searchUrlPlaceholder: '/api/search?q={query}',
-              searchItemLabel: 'Result items path',
-              searchItem:
-                  'The path to the list of search results in the answer, e.g. data or results.items. The title, link and cover below are looked up inside each result, so their paths are relative to it.',
-              searchItemPlaceholder: 'data',
-              link: 'An API often only has an id or slug: build the link with a regex and a replacement, e.g. ^(.+)$ and /series/$1.',
-              cover: 'Several paths can be listed, the first one that has a value is used.',
-              chapterItemLabel: 'Chapter items path',
-              chapterItem: 'The path to the list of chapters in the answer.',
-              chapterItemPlaceholder: 'chapters',
-              chapterNumber:
-                  'The first number found is used (Chapter 12.5 → 12.5); chapters without a number are skipped. An API often pads numbers (12.5000): cut that off with a regex such as ^(\\d+(?:\\.\\d*[1-9])?)',
-              imageLabel: 'Image URLs path',
-              image: 'The path to the image URLs of the chapter, in reading order, e.g. pages or pages[*].url. With page links: the image in the answer of each of those links.',
-              imagePlaceholder: 'pages',
-              pageLinks:
-                  'Optional. Only for an API that has to be asked for every page of a chapter on its own: the path to the addresses of those requests, in reading order. Each of them is then requested to find its image. Leave it empty when one answer lists all the images.',
-          }
-        : {
-              introTitle: 'Describe the website with selectors',
-              intro: 'Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter).',
-              urlNote: '',
-              searchUrlPlaceholder: '/search?q={query}',
-              searchItemLabel: 'Result item selector',
-              searchItem:
-                  'One element per search result: the wrapper around the whole result. The title, link and cover below are looked up inside this element, so their selectors are relative to it.',
-              searchItemPlaceholder: 'div.search-result',
-              link: undefined,
-              cover: 'Several attributes can be listed, the first one that has a value is used.',
-              chapterItemLabel: 'Chapter item selector',
-              chapterItem: 'One element per chapter.',
-              chapterItemPlaceholder: 'ul.chapters > li',
-              chapterNumber:
-                  'Leave empty to search the whole item. The first number found is used (Chapter 12.5 → 12.5); chapters without a number are skipped. Use a regex to be more specific.',
-              imageLabel: 'Image selector',
-              image: 'One element per page image, in reading order. With page links: the image on each of those pages.',
-              imagePlaceholder: 'div.reader img',
-              pageLinks:
-                  'Optional. Only for sites that show one image per web page: the links (or the options of a page dropdown) to every page of the chapter, in reading order. Every page is then opened to find its image.',
-          },
+const texts = computed(() => {
+    const kind = isJson.value ? 'json' : 'html';
+    const text = (key: string, params: Record<string, string> = {}) => t(`customSource.texts.${kind}.${key}`, params);
+    return {
+        introTitle: text('introTitle'),
+        intro: text('intro'),
+        urlNote: isJson.value ? text('urlNote') : '',
+        // Examples of what to type are code, not prose: they are not translated.
+        searchUrlPlaceholder: isJson.value ? '/api/search?q={query}' : '/search?q={query}',
+        searchItemLabel: text('searchItemLabel'),
+        searchItem: text('searchItem'),
+        searchItemPlaceholder: isJson.value ? 'data' : 'div.search-result',
+        link: isJson.value ? text('link', { regex: '^(.+)$', replacement: '/series/$1' }) : undefined,
+        cover: text('cover'),
+        chapterItemLabel: text('chapterItemLabel'),
+        chapterItem: text('chapterItem'),
+        chapterItemPlaceholder: isJson.value ? 'chapters' : 'ul.chapters > li',
+        chapterNumber: text('chapterNumber', { regex: '^(\\d+(?:\\.\\d*[1-9])?)' }),
+        imageLabel: text('imageLabel'),
+        image: text('image'),
+        imagePlaceholder: isJson.value ? 'pages' : 'div.reader img',
+        pageLinks: text('pageLinks'),
+    };
+});
+
+// The description of the search URL: what {query} is, and for an API what address to enter.
+const searchUrlDescription = computed(() =>
+    [t('customSource.search.urlDescription', { query: '{query}' }), texts.value.urlNote].filter(Boolean).join(' '),
 );
 
 // The prompt lives next to the examples in the repository, so it can be improved without a release of the frontend.
@@ -602,7 +628,7 @@ const languages = computed({
     set: (tags: string[]) => {
         const rejected = tags.filter((tag) => !isLanguageCode(tag));
         languageError.value = rejected.length
-            ? `"${rejected.join('", "')}" is not a language code. Use codes like en, en-us or pt-BR.`
+            ? t('customSource.errors.notALanguageCode', { rejected: `"${rejected.join('", "')}"` })
             : undefined;
         state.value.languages = tags.filter((tag) => isLanguageCode(tag)).map((tag) => tag.trim());
     },
@@ -616,8 +642,8 @@ const useSeriesUrl = (url: string) => {
     testUrls.chapters = url;
     testUrls.pattern = url;
     toast.add({
-        title: 'Filled in the series URL.',
-        description: 'It is used in the pattern preview and the chapters test.',
+        title: t('customSource.form.filledSeriesUrl'),
+        description: t('customSource.form.filledSeriesUrlDescription'),
         color: 'info',
     });
 };
@@ -626,7 +652,11 @@ const useSeriesUrl = (url: string) => {
 const pickFromResults = (from: CustomSourceTestStep, url: string) => {
     if (from === 'search') return useSeriesUrl(url);
     testUrls.images = url;
-    toast.add({ title: 'Filled in the chapter URL.', description: 'It is used in the pages test.', color: 'info' });
+    toast.add({
+        title: t('customSource.form.filledChapterUrl'),
+        description: t('customSource.form.filledChapterUrlDescription'),
+        color: 'info',
+    });
 };
 
 // The header rows are edited as a list; keep the definition (used by the test panels and on save) in sync.
@@ -638,8 +668,8 @@ const syncHeaders = () => {
 watch(headerRows, syncHeaders, { deep: true });
 
 // The source can only be created / saved on the last step, after all of them have been seen.
-const isLastStep = computed(() => step.value === steps[steps.length - 1]?.value);
-const isGeneralStep = computed(() => step.value === steps[0]?.value);
+const isLastStep = computed(() => step.value === steps.value[steps.value.length - 1]?.value);
+const isGeneralStep = computed(() => step.value === steps.value[0]?.value);
 
 // The pattern test in the sidebar starts at the height of the pattern field. The sidebar only sits next to the steps
 // from the `lg` breakpoint on (below that it is stacked underneath), and the height changes with the content above the
@@ -682,9 +712,9 @@ const openJson = () => {
 const copyJson = async () => {
     try {
         await navigator.clipboard.writeText(json.value);
-        toast.add({ title: 'Copied to the clipboard.', color: 'success' });
+        toast.add({ title: t('customSource.form.copied'), color: 'success' });
     } catch {
-        toast.add({ title: 'Could not copy.', description: 'Select the text and copy it manually.', color: 'error' });
+        toast.add({ title: t('customSource.form.copyFailed'), description: t('customSource.form.copyFailedDescription'), color: 'error' });
     }
 };
 
@@ -706,10 +736,6 @@ const importJson = () => {
     }
     loadState({ ...source, id: state.value.id });
     importOpen.value = false;
-    toast.add({
-        title: 'Imported the definition into the form.',
-        description: 'Review it and use the test buttons before saving.',
-        color: 'success',
-    });
+    toast.add({ title: t('customSource.form.imported'), description: t('customSource.form.reviewHint'), color: 'success' });
 };
 </script>
