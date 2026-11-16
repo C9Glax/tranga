@@ -74,31 +74,3 @@ code (`pt-BR` becomes `pt_br`), and fall back to English.
 
 Only merge a new language once a reasonable part of it is translated: it is listed in the language picker as soon as it is
 in `nuxt.config.ts`.
-
-## For maintainers: setting up Weblate
-
-[hosted.weblate.org](https://hosted.weblate.org) is free for open source projects (Tranga is GPL-3). Nothing in this repository
-depends on Weblate being set up: without it, the translation files are simply edited by pull request.
-
-1. Request hosting for libre projects on hosted.weblate.org and create the project (_Tranga_) with a component
-   (_Frontend_).
-2. Component settings:
-    - **Version control system**: GitHub pull requests (or _Git_ pushing to a branch), repository `C9Glax/tranga`, the
-      branch the frontend is developed on.
-    - **File mask**: `Frontend/i18n/locales/*.json`
-    - **Monolingual base language file**: `Frontend/i18n/locales/en.json`
-    - **Template for new translations**: `Frontend/i18n/locales/en.json`
-    - **File format**: _JSON file_ (nested structure, not the flat variant, and not i18next)
-    - **Language code style**: BCP style with hyphen, so that `pt-BR` is a file called `pt-BR.json`, like the code in
-      `nuxt.config.ts`.
-    - **Translation flags** (optional): the _Placeholders_ check warns translators who drop a `{name}`. Its flag takes a
-      regular expression, e.g. `placeholders:r"\{[a-zA-Z0-9]+\}"`.
-3. Add-ons (optional): _Remove blank strings_ (untranslated texts are then missing from the files instead of being `""`;
-   the app already treats both as "use English", this is a second safety net), _Cleanup translation files_ and _Squash Git
-   commits_.
-4. Repository side: add the webhook `https://hosted.weblate.org/hooks/github/` (Settings -> Webhooks, event: push) so that
-   changes to `en.json` reach Weblate without waiting for its periodic pull.
-5. The translation files are excluded from prettier (`.prettierignore`) and from the formatting rules of ESLint, as Weblate
-   writes them in its own layout. `npm run lint` still validates every message (`valid-message-syntax`).
-6. Put the link to the project into the _For translators_ section above and into the README (a status badge is available in
-   the Weblate project's _Share_ tab).
