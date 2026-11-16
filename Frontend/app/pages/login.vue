@@ -3,8 +3,8 @@
         <UAuthForm
             :schema="schema"
             :fields="fields"
-            title="Log in"
-            :submit="{ label: 'Log in' }"
+            :title="$t('auth.login.title')"
+            :submit="{ label: $t('auth.login.submit') }"
             class="w-full max-w-sm"
             @submit="onSubmit" />
     </AuthPage>
@@ -17,13 +17,14 @@ import { FetchError } from 'ofetch';
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 
+const { t } = useI18n();
 const toast = useToast();
 
-const schema = z.object({ password: z.string().min(1, 'Password is required.') });
+const schema = computed(() => z.object({ password: z.string().min(1, t('auth.passwordRequired')) }));
 
-const fields = [{ name: 'password', label: 'Password', type: 'password' as const, required: true }];
+const fields = computed(() => [{ name: 'password', label: t('common.password'), type: 'password' as const, required: true }]);
 
-const onSubmit = async (payload: FormSubmitEvent<z.infer<typeof schema>>) => {
+const onSubmit = async (payload: FormSubmitEvent<z.infer<typeof schema.value>>) => {
     try {
         const response = await useNuxtApp().$tranga<ServicesAuthAuthTokenResponse>('/auth/login', {
             method: 'post',
@@ -32,8 +33,8 @@ const onSubmit = async (payload: FormSubmitEvent<z.infer<typeof schema>>) => {
         setAuthToken(response.token);
         await navigateTo('/');
     } catch (error: unknown) {
-        const description = error instanceof FetchError ? (error.data ?? error.message) : 'Incorrect password.';
-        toast.add({ title: 'Login failed.', description, color: 'error' });
+        const description = error instanceof FetchError ? (error.data ?? error.message) : t('auth.login.incorrectPassword');
+        toast.add({ title: t('auth.login.failed'), description, color: 'error' });
     }
 };
 </script>

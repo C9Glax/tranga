@@ -1,0 +1,39 @@
+{
+    "common": { "home": "Home", "back": "Back", "logOut": "Log out", "password": "Password" },
+    "nav": {
+        "tranga": "Tranga",
+        "allTasks": "All Tasks",
+        "workers": "Workers",
+        "sources": "Sources",
+        "settings": "Settings",
+        "links": "Links",
+        "apiDocs": "API Docs",
+        "github": "Github"
+    },
+    "auth": {
+        "login": { "title": "Log in", "submit": "Log in", "failed": "Login failed.", "incorrectPassword": "Incorrect password." },
+        "setup": {
+            "title": "Create admin password",
+            "description": "This is the only account for this instance - there are no user profiles.",
+            "submit": "Create password",
+            "confirmPassword": "Confirm password",
+            "failed": "Setup failed.",
+            "couldNotCreate": "Could not create the password."
+        },
+        "passwordRequired": "Password is required.",
+        "passwordTooShort": "Password must be at least 8 characters.",
+        "passwordsDoNotMatch": "Passwords do not match."
+    },
+    "settings": {
+        "appearance": {
+            "language": { "title": "Language", "legend": "Which language should Tranga be displayed in?" },
+            "nsfwCovers": {
+                "title": "NSFW covers",
+                "legend": "How should covers of NSFW manga be displayed?",
+                "show": { "label": "Always visible", "description": "NSFW covers are shown like any other cover." },
+                "click": { "label": "Visible on click", "description": "NSFW covers are blurred until you click them." },
+                "hide": { "label": "Never visible", "description": "NSFW covers always stay blurred." }
+            }
+        }
+    }
+}
