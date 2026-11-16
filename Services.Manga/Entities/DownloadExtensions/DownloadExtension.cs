@@ -1,8 +1,7 @@
 namespace Services.Manga.Entities.DownloadExtensions;
 
 /// <summary>
-/// A download source extension (e.g. MangaDex, WeebCentral, or any source installed on the Suwayomi sidecar) that
-/// manga/chapters can be attributed to.
+/// A download source extension (e.g. MangaDex) that manga/chapters can be attributed to.
 /// </summary>
 public sealed record DownloadExtension
 {
@@ -13,14 +12,13 @@ public sealed record DownloadExtension
     public required string Name { get; init; }
 
     /// <summary>
-    /// URL to the download extension's icon/logo. Absolute for the built-in extensions; relative to the gateway
-    /// (<c>/suwayomi/...</c>) for sources served through the Suwayomi sidecar.
+    /// URL to the download extension's icon/logo.
     /// </summary>
     public required string IconUrl { get; init; }
 
     /// <summary>
-    /// Whether this extension is provided by the Suwayomi sidecar rather than compiled into Tranga. Sidecar-backed
-    /// extensions appear and disappear as the user installs and removes extensions under Settings -> Sources.
+    /// Whether this is a user-defined, selector based source (created under Settings -> Sources) rather than one that
+    /// is built into Tranga. Only custom sources can be edited or deleted.
     /// </summary>
-    public required bool IsSuwayomiSource { get; init; }
+    public required bool IsCustom { get; init; }
 }

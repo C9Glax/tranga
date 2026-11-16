@@ -13,9 +13,53 @@ export type ServicesMangaChapter = {
     releaseDate: null | string;
 };
 
+/**
+ * How to list the chapters of a series.
+ */
+export type ServicesMangaChaptersSpec = {
+    /**
+     * URL of the page that lists the chapters. `{url}` is the series URL; the named groups of
+     * string? SelectorDownloaderSettings.SeriesUrlPattern are available too, e.g.
+     * `https://example.com/series/{id}/chapters`.
+     */
+    urlTemplate?: string;
+    /**
+     * Selects one element per chapter.
+     */
+    itemSelector?: string;
+    /**
+     * The chapter's link, relative to the chapter item.
+     */
+    url?: ServicesMangaSelectorField;
+    /**
+     * The chapter number, relative to the chapter item. When unused the item's text is searched (HTML only: for JSON
+     * it is required). The first number in the extracted text is used (`Chapter 12.5` becomes `12.5`);
+     * chapters without one are skipped.
+     */
+    number?: ServicesMangaSelectorField;
+    /**
+     * Optional chapter title.
+     */
+    title?: ServicesMangaSelectorField;
+    /**
+     * Optional release date.
+     */
+    date?: ServicesMangaSelectorField;
+    /**
+     * Optional .NET date format for SelectorField ChaptersSpec.Date (e.g. `yyyy-MM-dd`); ISO 8601 and common formats are tried without it.
+     */
+    dateFormat?: null | string;
+    /**
+     * Optional link to the next page of the chapter list (followed up to 50 times).
+     */
+    nextPage?: ServicesMangaSelectorField;
+};
+
 export type ServicesMangaContentRating = 'Safe' | 'Suggestive' | 'Erotica' | 'Pornographic';
 
-export type ServicesMangaDownloadExtension = { downloadExtensionsId: string; name: string; iconUrl: string; isSuwayomiSource: boolean };
+export type ServicesMangaCustomDownloaderCapabilities = { flareSolverrConfigured: boolean; allowPrivateHosts: boolean };
+
+export type ServicesMangaDownloadExtension = { downloadExtensionsId: string; name: string; iconUrl: string; isCustom: boolean };
 
 export type ServicesMangaDownloadExtensionsList = { extensions?: Array<ServicesMangaDownloadExtension> };
 
@@ -59,6 +103,48 @@ export type ServicesMangaGitInfoResponse = {
      * Whether the working tree had uncommitted changes at build time.
      */
     isDirty: boolean;
+};
+
+export type ServicesMangaHttpValidationProblemDetails = {
+    type?: null | string;
+    title?: null | string;
+    status?: null | number | string;
+    detail?: null | string;
+    instance?: null | string;
+    errors?: { [key: string]: Array<string> };
+};
+
+/**
+ * How to find the pages of a chapter.
+ */
+export type ServicesMangaImagesSpec = {
+    /**
+     * URL of the page that shows the images. `{url}` is the chapter URL, e.g. `{url}/images`; the named groups
+     * of string? ImagesSpec.UrlPattern are available too, e.g. `/api/chapter/{id}`.
+     */
+    urlTemplate?: string;
+    /**
+     * Optional regular expression the chapter URL is matched against. Its named groups (e.g. `(?&lt;id&gt;\d+)$`)
+     * are available as `{id}` in string ImagesSpec.UrlTemplate, for sites whose images are loaded from a different
+     * URL than the chapter page (typically an API).
+     */
+    urlPattern?: null | string;
+    /**
+     * Selects one element per page image, in reading order. For JSON the path to the image URLs, e.g. `pages` or `pages[*].url`.
+     */
+    imageSelector?: string;
+    /**
+     * Attribute holding the image URL. Defaults to `data-src,data-lazy-src,src`. Not used for JSON.
+     */
+    attribute?: null | string;
+    /**
+     * Only for sites that show one image per HTML page: selects the links (or the options of a page dropdown) that
+     * lead to each page of the chapter, in reading order. The attribute defaults to `href,value`. Every page
+     * found is then fetched and the image selector is applied to it. The chapter page itself is not fetched twice
+     * when it is one of the pages. When the selector finds nothing, the image selector is applied to the chapter
+     * page, as if this was not set.
+     */
+    pageSelector?: ServicesMangaSelectorField;
 };
 
 export type ServicesMangaManga = {
@@ -123,6 +209,15 @@ export type ServicesMangaPatchMangaDownloadLinkRequest = { matched: boolean; pri
 
 export type ServicesMangaPatchMangaMonitoredRequest = { monitored: boolean };
 
+export type ServicesMangaPostCustomDownloaderTestRequest = {
+    settings: ServicesMangaSelectorDownloaderSettings;
+    step: string;
+    input: string;
+    search?: null | ServicesMangaSearchSpec;
+    chapters?: null | ServicesMangaChaptersSpec;
+    images?: null | ServicesMangaImagesSpec;
+};
+
 export type ServicesMangaPostMangaDownloadLinkRequest = { downloadExtensionId: string; url: string };
 
 export type ServicesMangaPostMangaMergeRequest = { sourceMangaId: string; keepSourceMetadata: boolean; keepSourceChapters: boolean };
@@ -148,109 +243,215 @@ export type ServicesMangaSearchQuery = {
 };
 
 /**
- *             How a Suwayomi source or extension is classified by its extension store.
- * Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into
- * SuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else
- * (MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed).
+ * How to find series on the website.
  */
-export type ServicesMangaSuwayomiContentWarning = 'Safe' | 'Mixed' | 'Nsfw';
-
-/**
- * An extension offered by, or installed from, a configured extension store.
- */
-export type ServicesMangaSuwayomiExtensionInfo = {
+export type ServicesMangaSearchSpec = {
     /**
-     * Android package name; the identifier used to install, update and uninstall.
+     * URL of the search results. `{query}` is replaced with the URL-encoded search text and `{page}` with the
+     * page number (always 1). Relative URLs are resolved against the base URL, e.g.
+     * `/search/data?text={query}&amp;limit=32`.
      */
-    pkgName: string;
+    urlTemplate?: string;
     /**
-     * Display name of the extension.
+     * Selects one element per search result (the same selector may also match the result's link).
      */
-    name: string;
+    itemSelector?: string;
     /**
-     * Tachiyomi language code, e.g. `en`, `pt-BR`, `all`.
+     * The series title, relative to the result item.
      */
-    lang: string;
+    title?: ServicesMangaSelectorField;
     /**
-     * Gateway-relative url of the extension's icon.
+     * Link to the series page, relative to the result item. Relative links are resolved.
      */
-    iconUrl: string;
+    url?: ServicesMangaSelectorField;
     /**
-     * Version currently installed, or offered by the store when not installed.
+     * The cover image URL, relative to the result item.
      */
-    versionName: string;
-    /**
-     * How the extension store classifies the content. A `Mixed` extension stays usable while `AllowNSFW` is off; only `Nsfw` ones are held back.
-     */
-    contentWarning: ServicesMangaSuwayomiContentWarning;
-    /**
-     * Whether the extension is installed on the sidecar.
-     */
-    isInstalled: boolean;
-    /**
-     * Whether the extension is no longer offered by any configured store.
-     */
-    isObsolete: boolean;
-    /**
-     * Whether a newer version is available.
-     */
-    hasUpdate: boolean;
+    cover?: ServicesMangaSelectorField;
 };
 
 /**
- * A source exposed by an installed extension, and the Tranga download-extension it is registered as.
+ * Describes a user-defined download source that is driven entirely by CSS/XPath selectors, so that people can add a
+ * website to Tranga without writing code: the SelectorDownloaderSettings of the website plus how to
+ * search, list chapters and find the pages. Turned into an IDownloadExtension by
+ * SelectorDownloadExtension; persisted as one JSON document. A definition is always validated as a whole;
+ * to try a single step without the others, use the settings and that step's section on their own.
  */
-export type ServicesMangaSuwayomiSourceInfo = {
+export type ServicesMangaSelectorDownloaderDefinition = {
     /**
-     * The Tachiyomi source id.
+     * How to find series.
      */
-    sourceId: string;
+    search?: ServicesMangaSearchSpec;
     /**
-     * The Tranga extension identifier derived from SourceId.
+     * How to list the chapters of a series.
      */
-    extensionId: string;
+    chapters?: ServicesMangaChaptersSpec;
     /**
-     * Display name of the source, normally including its language.
+     * How to find the pages of a chapter.
      */
-    name: string;
+    images?: ServicesMangaImagesSpec;
     /**
-     * Tachiyomi language code.
+     * Becomes Guid IExtension.Identifier. Persisted on download links, so it must never change. Assigned by the server.
      */
-    lang: string;
+    id?: string;
     /**
-     * Gateway-relative url of the source's icon.
+     * Display name of the source.
      */
-    iconUrl: string;
+    name?: string;
     /**
-     * The source's own website.
+     * Root of the website, e.g. `https://weebcentral.com`. Relative URLs are resolved against it.
      */
-    homeUrl: string;
+    baseUrl?: string;
     /**
-     * How the extension store classifies the source's content.
+     * Optional icon, defaults to the website's favicon.
      */
-    contentWarning: ServicesMangaSuwayomiContentWarning;
+    iconUrl?: null | string;
+    /**
+     * What the website answers with: HTML pages (the default) or JSON, for websites that load their content from an API.
+     * It applies to every step and decides what a "selector" is: a CSS selector / XPath expression, or a JSON path.
+     */
+    format?: ServicesMangaSourceFormat;
+    /**
+     * Languages the website publishes in (e.g. `en`). A search in another language finds nothing.
+     */
+    languages?: Array<string>;
+    /**
+     * Route requests through the configured FlareSolverr instance (for Cloudflare protected sites).
+     */
+    useFlareSolverr?: boolean;
+    /**
+     * Requests per second to the website itself (0.1 - 20). Image CDNs on other hosts are limited separately.
+     */
+    requestsPerSecond?: number | string;
+    /**
+     * Extra request headers, e.g. a cookie or a User-Agent.
+     */
+    headers?: { [key: string]: string };
+    /**
+     * Optional regular expression that a series URL has to match. Its named groups (e.g. `(?&lt;id&gt;[^/]+)`) are
+     * available as `{id}` in string ChaptersSpec.UrlTemplate for sites whose chapter list lives at a
+     * different URL than the series page.
+     */
+    seriesUrlPattern?: null | string;
 };
 
 /**
- * Reachability and version of the Suwayomi sidecar.
+ * The general settings of a user-defined download source (the website itself, not how to scrape it). They validate
+ * themselves (IValidatableObject), so whoever receives one - an API endpoint, the test of a single step,
+ * the engine - does not have to know the rules.
  */
-export type ServicesMangaSuwayomiStatus = {
+export type ServicesMangaSelectorDownloaderSettings = {
     /**
-     * Whether the sidecar answered. False means the container is missing or still starting.
+     * Becomes Guid IExtension.Identifier. Persisted on download links, so it must never change. Assigned by the server.
      */
-    reachable: boolean;
+    id?: string;
     /**
-     * Sidecar product name, when reachable.
+     * Display name of the source.
      */
-    serverName: null | string;
+    name?: string;
     /**
-     * Sidecar version, when reachable.
+     * Root of the website, e.g. `https://weebcentral.com`. Relative URLs are resolved against it.
      */
-    serverVersion: null | string;
+    baseUrl?: string;
     /**
-     * Number of sources currently exposed by installed extensions.
+     * Optional icon, defaults to the website's favicon.
      */
-    installedSourceCount: number | string;
+    iconUrl?: null | string;
+    /**
+     * What the website answers with: HTML pages (the default) or JSON, for websites that load their content from an API.
+     * It applies to every step and decides what a "selector" is: a CSS selector / XPath expression, or a JSON path.
+     */
+    format?: ServicesMangaSourceFormat;
+    /**
+     * Languages the website publishes in (e.g. `en`). A search in another language finds nothing.
+     */
+    languages?: Array<string>;
+    /**
+     * Route requests through the configured FlareSolverr instance (for Cloudflare protected sites).
+     */
+    useFlareSolverr?: boolean;
+    /**
+     * Requests per second to the website itself (0.1 - 20). Image CDNs on other hosts are limited separately.
+     */
+    requestsPerSecond?: number | string;
+    /**
+     * Extra request headers, e.g. a cookie or a User-Agent.
+     */
+    headers?: { [key: string]: string };
+    /**
+     * Optional regular expression that a series URL has to match. Its named groups (e.g. `(?&lt;id&gt;[^/]+)`) are
+     * available as `{id}` in string ChaptersSpec.UrlTemplate for sites whose chapter list lives at a
+     * different URL than the series page.
+     */
+    seriesUrlPattern?: null | string;
+};
+
+/**
+ * Extracts one value from an item (a search result, a chapter). For HTML, string SelectorField.Selector picks the element
+ * (relative to the item the field belongs to; empty = the item itself) and string? SelectorField.Attribute picks what to read
+ * (empty = the element's text). For JSON (SourceFormat.Json), string SelectorField.Selector is the path to the
+ * value inside the item and there are no attributes. The optional string? SelectorField.Regex post-processes the result.
+ */
+export type ServicesMangaSelectorField = {
+    /**
+     * CSS selector or XPath expression (XPath when it starts with `/`, `./`, `../` or `(`).
+     * An XPath may end in `/@attribute` or `/text()`. For JSON a path such as `title`,
+     * `manga.cover` or `names[0]`; alternatives separated by commas are tried in order
+     * (`english_title, title`) and `$` is the item itself.
+     */
+    selector?: string;
+    /**
+     * Attribute to read, e.g. `href`. A comma separated list (`srcset,src`) is tried in order and the first
+     * non-empty value wins. Empty reads the element's text.
+     */
+    attribute?: null | string;
+    /**
+     * Regular expression applied to the value. Without string? SelectorField.Replacement the first capture group (or the
+     * whole match) is kept; a value that does not match counts as missing.
+     */
+    regex?: null | string;
+    /**
+     * When set, string? SelectorField.Regex replaces every match with this text instead of extracting. The placeholders of the
+     * step's URL template can be used (`{url}`, the named groups of the URL patterns, ...), which is how a link is
+     * built from an id: regex `^(.+)$`, replacement `/series/{slug}/chapter/$1`.
+     */
+    replacement?: null | string;
+};
+
+/**
+ * What a website answers with, which decides how its responses are read.
+ */
+export type ServicesMangaSourceFormat = 'html' | 'json';
+
+/**
+ * What one step of a source definition produced against the real website, so users can fix their selectors before
+ * saving the source.
+ */
+export type ServicesMangaStepTestResult = {
+    /**
+     * The URL that was requested, once the template has been filled in.
+     */
+    requestUrl?: null | string;
+    /**
+     * HTTP status of the response, when there was one.
+     */
+    statusCode?: null | number | string;
+    /**
+     * How many items (search results, chapters, images) were extracted in total.
+     */
+    itemCount?: number | string;
+    /**
+     * The first extracted items, one dictionary of field name to value each.
+     */
+    rows?: Array<{ [key: string]: string }>;
+    /**
+     * Things that probably are not what the user wants (selector matched nothing, fields missing, ...).
+     */
+    warnings?: Array<string>;
+    /**
+     * Why the step failed, if it did.
+     */
+    error?: null | string;
 };
 
 export type ServicesTasksChapterSummary = {
@@ -1133,110 +1334,177 @@ export type PatchMangasSettingsBehaviorResponses = {
     200: unknown;
 };
 
-export type GetMangasSuwayomiStatusData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/status' };
+export type GetMangasCustomDownloadersData = { body?: never; path?: never; query?: never; url: '/mangas/customDownloaders' };
 
-export type GetMangasSuwayomiStatusResponses = {
+export type GetMangasCustomDownloadersResponses = {
     /**
      * OK
      */
-    200: ServicesMangaSuwayomiStatus;
+    200: Array<ServicesMangaSelectorDownloaderDefinition>;
 };
 
-export type GetMangasSuwayomiStatusResponse = GetMangasSuwayomiStatusResponses[keyof GetMangasSuwayomiStatusResponses];
+export type GetMangasCustomDownloadersResponse = GetMangasCustomDownloadersResponses[keyof GetMangasCustomDownloadersResponses];
 
-export type GetMangasSuwayomiExtensionsData = {
+export type PostMangasCustomDownloadersData = {
+    body: ServicesMangaSelectorDownloaderDefinition;
+    path?: never;
+    query?: never;
+    url: '/mangas/customDownloaders';
+};
+
+export type PostMangasCustomDownloadersErrors = {
+    /**
+     * Bad Request
+     */
+    400: ServicesMangaHttpValidationProblemDetails;
+};
+
+export type PostMangasCustomDownloadersError = PostMangasCustomDownloadersErrors[keyof PostMangasCustomDownloadersErrors];
+
+export type PostMangasCustomDownloadersResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaSelectorDownloaderDefinition;
+};
+
+export type PostMangasCustomDownloadersResponse = PostMangasCustomDownloadersResponses[keyof PostMangasCustomDownloadersResponses];
+
+export type GetMangasCustomDownloadersCapabilitiesData = {
     body?: never;
     path?: never;
-    query?: { refresh?: boolean };
-    url: '/mangas/suwayomi/extensions';
+    query?: never;
+    url: '/mangas/customDownloaders/capabilities';
 };
 
-export type GetMangasSuwayomiExtensionsResponses = {
+export type GetMangasCustomDownloadersCapabilitiesResponses = {
     /**
      * OK
      */
-    200: Array<ServicesMangaSuwayomiExtensionInfo>;
+    200: ServicesMangaCustomDownloaderCapabilities;
 };
 
-export type GetMangasSuwayomiExtensionsResponse = GetMangasSuwayomiExtensionsResponses[keyof GetMangasSuwayomiExtensionsResponses];
+export type GetMangasCustomDownloadersCapabilitiesResponse =
+    GetMangasCustomDownloadersCapabilitiesResponses[keyof GetMangasCustomDownloadersCapabilitiesResponses];
 
-export type PostMangasSuwayomiExtensionsByPkgNameInstallData = {
+export type GetMangasCustomDownloadersExamplesData = {
     body?: never;
-    path: { pkgName: string };
+    path?: never;
     query?: never;
-    url: '/mangas/suwayomi/extensions/{pkgName}/install';
+    url: '/mangas/customDownloaders/examples';
 };
 
-export type PostMangasSuwayomiExtensionsByPkgNameInstallResponses = {
+export type GetMangasCustomDownloadersExamplesResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: Array<ServicesMangaSelectorDownloaderDefinition>;
 };
 
-export type PostMangasSuwayomiExtensionsByPkgNameUpdateData = {
+export type GetMangasCustomDownloadersExamplesResponse =
+    GetMangasCustomDownloadersExamplesResponses[keyof GetMangasCustomDownloadersExamplesResponses];
+
+export type DeleteMangasCustomDownloadersByCustomDownloaderIdData = {
     body?: never;
-    path: { pkgName: string };
+    path: { customDownloaderId: string };
     query?: never;
-    url: '/mangas/suwayomi/extensions/{pkgName}/update';
+    url: '/mangas/customDownloaders/{customDownloaderId}';
 };
 
-export type PostMangasSuwayomiExtensionsByPkgNameUpdateResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type DeleteMangasSuwayomiExtensionsByPkgNameData = {
-    body?: never;
-    path: { pkgName: string };
-    query?: never;
-    url: '/mangas/suwayomi/extensions/{pkgName}';
-};
-
-export type DeleteMangasSuwayomiExtensionsByPkgNameResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type GetMangasSuwayomiIconsByIconIdData = {
-    body?: never;
-    path: { iconId: string };
-    query?: never;
-    url: '/mangas/suwayomi/icons/{iconId}';
-};
-
-export type GetMangasSuwayomiIconsByIconIdErrors = {
+export type DeleteMangasCustomDownloadersByCustomDownloaderIdErrors = {
     /**
      * Not Found
      */
     404: unknown;
 };
 
-export type GetMangasSuwayomiSourcesData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/sources' };
-
-export type GetMangasSuwayomiSourcesResponses = {
+export type DeleteMangasCustomDownloadersByCustomDownloaderIdResponses = {
     /**
      * OK
      */
-    200: Array<ServicesMangaSuwayomiSourceInfo>;
+    200: unknown;
 };
 
-export type GetMangasSuwayomiSourcesResponse = GetMangasSuwayomiSourcesResponses[keyof GetMangasSuwayomiSourcesResponses];
+export type GetMangasCustomDownloadersByCustomDownloaderIdData = {
+    body?: never;
+    path: { customDownloaderId: string };
+    query?: never;
+    url: '/mangas/customDownloaders/{customDownloaderId}';
+};
 
-export type PostMangasSuwayomiRefreshData = { body?: never; path?: never; query?: never; url: '/mangas/suwayomi/refresh' };
+export type GetMangasCustomDownloadersByCustomDownloaderIdErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
 
-export type PostMangasSuwayomiRefreshResponses = {
+export type GetMangasCustomDownloadersByCustomDownloaderIdResponses = {
     /**
      * OK
      */
-    200: number | string;
+    200: ServicesMangaSelectorDownloaderDefinition;
 };
 
-export type PostMangasSuwayomiRefreshResponse = PostMangasSuwayomiRefreshResponses[keyof PostMangasSuwayomiRefreshResponses];
+export type GetMangasCustomDownloadersByCustomDownloaderIdResponse =
+    GetMangasCustomDownloadersByCustomDownloaderIdResponses[keyof GetMangasCustomDownloadersByCustomDownloaderIdResponses];
+
+export type PutMangasCustomDownloadersByCustomDownloaderIdData = {
+    body: ServicesMangaSelectorDownloaderDefinition;
+    path: { customDownloaderId: string };
+    query?: never;
+    url: '/mangas/customDownloaders/{customDownloaderId}';
+};
+
+export type PutMangasCustomDownloadersByCustomDownloaderIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: ServicesMangaHttpValidationProblemDetails;
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type PutMangasCustomDownloadersByCustomDownloaderIdError =
+    PutMangasCustomDownloadersByCustomDownloaderIdErrors[keyof PutMangasCustomDownloadersByCustomDownloaderIdErrors];
+
+export type PutMangasCustomDownloadersByCustomDownloaderIdResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaSelectorDownloaderDefinition;
+};
+
+export type PutMangasCustomDownloadersByCustomDownloaderIdResponse =
+    PutMangasCustomDownloadersByCustomDownloaderIdResponses[keyof PutMangasCustomDownloadersByCustomDownloaderIdResponses];
+
+export type PostMangasCustomDownloadersTestData = {
+    body: ServicesMangaPostCustomDownloaderTestRequest;
+    path?: never;
+    query?: never;
+    url: '/mangas/customDownloaders/test';
+};
+
+export type PostMangasCustomDownloadersTestErrors = {
+    /**
+     * Bad Request
+     */
+    400: ServicesMangaHttpValidationProblemDetails;
+};
+
+export type PostMangasCustomDownloadersTestError = PostMangasCustomDownloadersTestErrors[keyof PostMangasCustomDownloadersTestErrors];
+
+export type PostMangasCustomDownloadersTestResponses = {
+    /**
+     * OK
+     */
+    200: ServicesMangaStepTestResult;
+};
+
+export type PostMangasCustomDownloadersTestResponse =
+    PostMangasCustomDownloadersTestResponses[keyof PostMangasCustomDownloadersTestResponses];
 
 export type ServicesMangaGetGitInfoData = { body?: never; path?: never; query?: never; url: '/mangas/gitinfo' };
 

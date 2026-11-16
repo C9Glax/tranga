@@ -1,0 +1,33 @@
+<section @click="handleClick" class="w-full flex-1 flex flex-col pb-4 cursor-pointer" hx-get="https://weebcentral.com/chapters/01M6RHBP1Y3A03BK0TZMBJ2YZN/images" hx-include="[name='reading_style'],[name='current_page']" hx-swap="outerHTML" hx-trigger="change from:[name='reading_style']" id="chapter-images" style="gap: var(--strip-gap, 0px)" x-data="{
+		scrollDown() { window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'smooth' }); },
+		scrollUp() { window.scrollBy({ top: -window.innerHeight * 0.75, behavior: 'smooth' }); },
+		handleClick(e) {
+			const clickX = e.clientX;
+			const sectionWidth = e.currentTarget.getBoundingClientRect().width;
+			const isLeftHalf = clickX &lt; sectionWidth / 2;
+
+			if (isLeftHalf) {
+				this.scrollUp();
+			} else {
+				this.scrollDown();
+			}
+		},
+	}">
+<img alt="Page 1" class="max-w-full h-auto mx-auto" decoding="async" loading="lazy" onerror="this.onerror=null; this.style.minHeight=''; this.src='/static/images/broken_image.jpg'" onload="this.style.minHeight=''" src="https://scans-hot.planeptune.us/manga/One-Piece/1198-001.png" style="min-height: 50vh"/>
+<img alt="Page 2" class="max-w-full h-auto mx-auto" decoding="async" loading="lazy" onerror="this.onerror=null; this.style.minHeight=''; this.src='/static/images/broken_image.jpg'" onload="this.style.minHeight=''" src="https://scans-hot.planeptune.us/manga/One-Piece/1198-002.png" style="min-height: 50vh"/>
+<img alt="Page 3" class="max-w-full h-auto mx-auto" decoding="async" loading="lazy" onerror="this.onerror=null; this.style.minHeight=''; this.src='/static/images/broken_image.jpg'" onload="this.style.minHeight=''" src="https://scans-hot.planeptune.us/manga/One-Piece/1198-003.png" style="min-height: 50vh"/>
+<img alt="Page 4" class="max-w-full h-auto mx-auto" decoding="async" loading="lazy" onerror="this.onerror=null; this.style.minHeight=''; this.src='/static/images/broken_image.jpg'" onload="this.style.minHeight=''" src="https://scans-hot.planeptune.us/manga/One-Piece/1198-004.png" style="min-height: 50vh"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</section>

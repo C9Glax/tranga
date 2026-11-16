@@ -75,6 +75,15 @@
                 <span v-else class="text-dimmed">-</span>
             </template>
         </template>
+
+        <template #loading><TrangaTableLoading /></template>
+        <template #empty>
+            <UEmpty
+                icon="i-lucide-list-checks"
+                title="No tasks"
+                description="Tasks show up here as soon as something is queued."
+                variant="naked" />
+        </template>
     </UTable>
 </template>
 

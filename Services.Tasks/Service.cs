@@ -3,6 +3,7 @@ using Extensions;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using Services.Manga.Database;
+using Services.Manga.Helpers;
 using Services.Tasks.Database;
 using Services.Tasks.EventHandlers;
 using Services.Tasks.Features;
@@ -56,9 +57,9 @@ public sealed class Service : Common.Services.Service
             using TasksContext tasksContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<TasksContext>();
             tasksContext.Database.MigrateAsync(CancellationToken.None).Wait();
 
-            // Best-effort: an unreachable sidecar leaves the collection untouched, and SuwayomiSourceRefreshTask
-            // retries on its own schedule.
-            DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(CancellationToken.None).Wait();
+            // The user-defined sources live in the manga database; then load all download extensions.
+            DownloadExtensionsCollection.RegisterProvider(CustomDownloaderStore.CreateProvider(App.Services));
+            DownloadExtensionsCollection.RefreshAsync(CancellationToken.None).Wait();
 
             CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
         }
@@ -73,7 +74,7 @@ public sealed class Service : Common.Services.Service
     {
         IChannel channel = app.Services.GetRequiredService<IChannel>();
         _eventHandlers.Add(new DownloadLinkModifiedHandler(channel, app.Services));
-        _eventHandlers.Add(new SuwayomiSourcesChangedHandler(channel));
+        _eventHandlers.Add(new DownloadExtensionsChangedHandler(channel));
     }
 
     /// <summary>
@@ -89,7 +90,6 @@ public sealed class Service : Common.Services.Service
         TasksCollection.PeriodicTasks.Add(new DbFileCleanupTask());
         TasksCollection.PeriodicTasks.Add(new MissingChapterScanTask());
         TasksCollection.PeriodicTasks.Add(new PeriodicMangaChapterFetcherTask());
-        TasksCollection.PeriodicTasks.Add(new SuwayomiSourceRefreshTask());
         try
         {
             foreach (TaskBase task in TasksCollection.GetKnownTasks())

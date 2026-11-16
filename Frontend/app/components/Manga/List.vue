@@ -24,7 +24,13 @@
         </UPageCard>
 
         <template #empty>
-            <UEmpty icon="i-lucide-download" title="Nothing here!" description="Start searching..." class="mx-auto h-min" variant="naked">
+            <!-- tour-intro: the first step of the guided tour points at this empty state (see plugins/tour.ts) -->
+            <UEmpty
+                icon="i-lucide-download"
+                title="Nothing here!"
+                description="Start searching..."
+                class="tour-intro mx-auto h-min"
+                variant="naked">
                 <template #actions>
                     <UDashboardSearchButton color="secondary" />
                 </template>

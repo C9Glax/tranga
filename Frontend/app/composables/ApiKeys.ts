@@ -1,9 +1,12 @@
 export namespace ApiKeys {
     export const DownloadExtensions = 'DownloadExtensions';
     export const MetadataExtensions = 'MetadataExtensions';
-    export const SuwayomiStatus = 'SuwayomiStatus';
-    export const SuwayomiExtensions = 'SuwayomiExtensions';
     export const BehaviorSettings = 'BehaviorSettings';
+
+    export const CustomDownloaders = 'CustomDownloaders';
+    export const CustomDownloader = (id: string) => `CustomDownloaders/${id}`;
+    export const CustomDownloaderCapabilities = 'CustomDownloaders/Capabilities';
+    export const CustomDownloaderExamples = 'CustomDownloaders/Examples';
 
     export namespace Manga {
         export const Manga = (id: string) => `Manga/${id}`;

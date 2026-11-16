@@ -20,6 +20,18 @@ public sealed class RequestClient : HttpClient
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Tranga", "2.1")));
     }
 
+    /// <summary>
+    /// Creates a client on top of a caller-provided <paramref name="innerHandler"/> (e.g. one that refuses private
+    /// addresses, or that talks to FlareSolverr only for some sources) instead of the global default handler.
+    /// </summary>
+    /// <param name="innerHandler">The handler requests are finally sent through</param>
+    /// <param name="limiter">Optional client-side rate limiter placed in front of <paramref name="innerHandler"/></param>
+    public RequestClient(HttpMessageHandler innerHandler, RateLimiter? limiter = null)
+        : base(limiter is null ? innerHandler : new ClientSideRateLimitedHandler(limiter, innerHandler))
+    {
+        DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Tranga", "2.1")));
+    }
+
     public RequestClient() : base(CreateCloudflareHandler())
     {
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Tranga", "2.1")));

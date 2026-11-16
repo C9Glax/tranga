@@ -83,6 +83,32 @@ namespace Services.Manga.Database.Migrations
                     b.ToTable("ChapterDownloadLinks");
                 });
 
+            modelBuilder.Entity("Services.Manga.Database.DbCustomDownloader", b =>
+                {
+                    b.Property<Guid>("CustomDownloaderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DefinitionJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("CustomDownloaderId");
+
+                    b.ToTable("CustomDownloaders");
+                });
+
             modelBuilder.Entity("Services.Manga.Database.DbDownloadLink", b =>
                 {
                     b.Property<Guid>("DownloadLinkId")

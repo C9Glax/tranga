@@ -1,7 +1,6 @@
 <template>
     <ClientOnly>
         <UDashboardSearch
-            v-bind="$props"
             v-model:search-term="searchTerm"
             :color-mode="false"
             :placeholder="`Search for a title or paste a link... (${randomManga}?)`"
@@ -47,9 +46,6 @@ import useMetadataExtensions from '~/composables/MetadataExtension';
 import { ApiKeys } from '~/composables/ApiKeys';
 import type { CommandPaletteGroup, CommandPaletteItem } from '@nuxt/ui/components/CommandPalette.vue';
 import { MangaCover } from '#components';
-import type { DashboardSearchProps } from '@nuxt/ui/components/DashboardSearch.vue';
-
-defineProps<DashboardSearchProps>();
 
 const searchTerm = ref<string>();
 

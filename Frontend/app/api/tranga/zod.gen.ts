@@ -21,11 +21,15 @@ export const zServicesMangaContentRating = z.enum(['Safe', 'Suggestive', 'Erotic
 
 export type ServicesMangaContentRatingZodType = z.infer<typeof zServicesMangaContentRating>;
 
+export const zServicesMangaCustomDownloaderCapabilities = z.object({ flareSolverrConfigured: z.boolean(), allowPrivateHosts: z.boolean() });
+
+export type ServicesMangaCustomDownloaderCapabilitiesZodType = z.infer<typeof zServicesMangaCustomDownloaderCapabilities>;
+
 export const zServicesMangaDownloadExtension = z.object({
     downloadExtensionsId: z.uuid(),
     name: z.string(),
     iconUrl: z.string(),
-    isSuwayomiSource: z.boolean(),
+    isCustom: z.boolean(),
 });
 
 export type ServicesMangaDownloadExtensionZodType = z.infer<typeof zServicesMangaDownloadExtension>;
@@ -61,6 +65,27 @@ export const zServicesMangaGitInfoResponse = z.object({
 });
 
 export type ServicesMangaGitInfoResponseZodType = z.infer<typeof zServicesMangaGitInfoResponse>;
+
+export const zServicesMangaHttpValidationProblemDetails = z.object({
+    type: z.nullish(z.string()),
+    title: z.nullish(z.string()),
+    status: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
+    detail: z.nullish(z.string()),
+    instance: z.nullish(z.string()),
+    errors: z.optional(z.record(z.string(), z.array(z.string()))),
+});
+
+export type ServicesMangaHttpValidationProblemDetailsZodType = z.infer<typeof zServicesMangaHttpValidationProblemDetails>;
 
 export const zServicesMangaMangaChapter = z.object({
     isDownloaded: z.boolean(),
@@ -270,66 +295,159 @@ export const zServicesMangaPostSearchMangaRequest = z.object({
 export type ServicesMangaPostSearchMangaRequestZodType = z.infer<typeof zServicesMangaPostSearchMangaRequest>;
 
 /**
- *             How a Suwayomi source or extension is classified by its extension store.
- * Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into
- * SuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else
- * (MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed).
+ * Extracts one value from an item (a search result, a chapter). For HTML, string SelectorField.Selector picks the element
+ * (relative to the item the field belongs to; empty = the item itself) and string? SelectorField.Attribute picks what to read
+ * (empty = the element's text). For JSON (SourceFormat.Json), string SelectorField.Selector is the path to the
+ * value inside the item and there are no attributes. The optional string? SelectorField.Regex post-processes the result.
  */
-export const zServicesMangaSuwayomiContentWarning = z.enum(['Safe', 'Mixed', 'Nsfw']);
-
-export type ServicesMangaSuwayomiContentWarningZodType = z.infer<typeof zServicesMangaSuwayomiContentWarning>;
-
-/**
- * An extension offered by, or installed from, a configured extension store.
- */
-export const zServicesMangaSuwayomiExtensionInfo = z.object({
-    pkgName: z.string(),
-    name: z.string(),
-    lang: z.string(),
-    iconUrl: z.string(),
-    versionName: z.string(),
-    contentWarning: zServicesMangaSuwayomiContentWarning,
-    isInstalled: z.boolean(),
-    isObsolete: z.boolean(),
-    hasUpdate: z.boolean(),
+export const zServicesMangaSelectorField = z.object({
+    selector: z.optional(z.string()),
+    attribute: z.nullish(z.string()),
+    regex: z.nullish(z.string()),
+    replacement: z.nullish(z.string()),
 });
 
-export type ServicesMangaSuwayomiExtensionInfoZodType = z.infer<typeof zServicesMangaSuwayomiExtensionInfo>;
+export type ServicesMangaSelectorFieldZodType = z.infer<typeof zServicesMangaSelectorField>;
 
 /**
- * A source exposed by an installed extension, and the Tranga download-extension it is registered as.
+ * How to list the chapters of a series.
  */
-export const zServicesMangaSuwayomiSourceInfo = z.object({
-    sourceId: z.string(),
-    extensionId: z.uuid(),
-    name: z.string(),
-    lang: z.string(),
-    iconUrl: z.string(),
-    homeUrl: z.string(),
-    contentWarning: zServicesMangaSuwayomiContentWarning,
+export const zServicesMangaChaptersSpec = z.object({
+    urlTemplate: z.optional(z.string()),
+    itemSelector: z.optional(z.string()),
+    url: z.optional(zServicesMangaSelectorField),
+    number: z.optional(zServicesMangaSelectorField),
+    title: z.optional(zServicesMangaSelectorField),
+    date: z.optional(zServicesMangaSelectorField),
+    dateFormat: z.nullish(z.string()),
+    nextPage: z.optional(zServicesMangaSelectorField),
 });
 
-export type ServicesMangaSuwayomiSourceInfoZodType = z.infer<typeof zServicesMangaSuwayomiSourceInfo>;
+export type ServicesMangaChaptersSpecZodType = z.infer<typeof zServicesMangaChaptersSpec>;
 
 /**
- * Reachability and version of the Suwayomi sidecar.
+ * How to find the pages of a chapter.
  */
-export const zServicesMangaSuwayomiStatus = z.object({
-    reachable: z.boolean(),
-    serverName: z.nullable(z.string()),
-    serverVersion: z.nullable(z.string()),
-    installedSourceCount: z.union([
-        z
-            .int()
-            .check(
-                z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
-                z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
-            ),
-        z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
-    ]),
+export const zServicesMangaImagesSpec = z.object({
+    urlTemplate: z.optional(z.string()),
+    urlPattern: z.nullish(z.string()),
+    imageSelector: z.optional(z.string()),
+    attribute: z.nullish(z.string()),
+    pageSelector: z.optional(zServicesMangaSelectorField),
 });
 
-export type ServicesMangaSuwayomiStatusZodType = z.infer<typeof zServicesMangaSuwayomiStatus>;
+export type ServicesMangaImagesSpecZodType = z.infer<typeof zServicesMangaImagesSpec>;
+
+/**
+ * How to find series on the website.
+ */
+export const zServicesMangaSearchSpec = z.object({
+    urlTemplate: z.optional(z.string()),
+    itemSelector: z.optional(z.string()),
+    title: z.optional(zServicesMangaSelectorField),
+    url: z.optional(zServicesMangaSelectorField),
+    cover: z.optional(zServicesMangaSelectorField),
+});
+
+export type ServicesMangaSearchSpecZodType = z.infer<typeof zServicesMangaSearchSpec>;
+
+/**
+ * What a website answers with, which decides how its responses are read.
+ */
+export const zServicesMangaSourceFormat = z.enum(['html', 'json']);
+
+export type ServicesMangaSourceFormatZodType = z.infer<typeof zServicesMangaSourceFormat>;
+
+/**
+ * Describes a user-defined download source that is driven entirely by CSS/XPath selectors, so that people can add a
+ * website to Tranga without writing code: the SelectorDownloaderSettings of the website plus how to
+ * search, list chapters and find the pages. Turned into an IDownloadExtension by
+ * SelectorDownloadExtension; persisted as one JSON document. A definition is always validated as a whole;
+ * to try a single step without the others, use the settings and that step's section on their own.
+ */
+export const zServicesMangaSelectorDownloaderDefinition = z.object({
+    search: z.optional(zServicesMangaSearchSpec),
+    chapters: z.optional(zServicesMangaChaptersSpec),
+    images: z.optional(zServicesMangaImagesSpec),
+    id: z.optional(z.uuid()),
+    name: z.optional(z.string()),
+    baseUrl: z.optional(z.string()),
+    iconUrl: z.nullish(z.string()),
+    format: z.optional(zServicesMangaSourceFormat),
+    languages: z.optional(z.array(z.string())),
+    useFlareSolverr: z.optional(z.boolean()),
+    requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
+    headers: z.optional(z.record(z.string(), z.string())),
+    seriesUrlPattern: z.nullish(z.string()),
+});
+
+export type ServicesMangaSelectorDownloaderDefinitionZodType = z.infer<typeof zServicesMangaSelectorDownloaderDefinition>;
+
+/**
+ * The general settings of a user-defined download source (the website itself, not how to scrape it). They validate
+ * themselves (IValidatableObject), so whoever receives one - an API endpoint, the test of a single step,
+ * the engine - does not have to know the rules.
+ */
+export const zServicesMangaSelectorDownloaderSettings = z.object({
+    id: z.optional(z.uuid()),
+    name: z.optional(z.string()),
+    baseUrl: z.optional(z.string()),
+    iconUrl: z.nullish(z.string()),
+    format: z.optional(zServicesMangaSourceFormat),
+    languages: z.optional(z.array(z.string())),
+    useFlareSolverr: z.optional(z.boolean()),
+    requestsPerSecond: z.optional(z.union([z.number(), z.string().check(z.regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/))])),
+    headers: z.optional(z.record(z.string(), z.string())),
+    seriesUrlPattern: z.nullish(z.string()),
+});
+
+export type ServicesMangaSelectorDownloaderSettingsZodType = z.infer<typeof zServicesMangaSelectorDownloaderSettings>;
+
+export const zServicesMangaPostCustomDownloaderTestRequest = z.object({
+    settings: zServicesMangaSelectorDownloaderSettings,
+    step: z.string(),
+    input: z.string(),
+    search: z.nullish(zServicesMangaSearchSpec),
+    chapters: z.nullish(zServicesMangaChaptersSpec),
+    images: z.nullish(zServicesMangaImagesSpec),
+});
+
+export type ServicesMangaPostCustomDownloaderTestRequestZodType = z.infer<typeof zServicesMangaPostCustomDownloaderTestRequest>;
+
+/**
+ * What one step of a source definition produced against the real website, so users can fix their selectors before
+ * saving the source.
+ */
+export const zServicesMangaStepTestResult = z.object({
+    requestUrl: z.nullish(z.string()),
+    statusCode: z.nullish(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
+    itemCount: z.optional(
+        z.union([
+            z
+                .int()
+                .check(
+                    z.minimum(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }),
+                    z.maximum(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
+                ),
+            z.string().check(z.regex(/^-?(?:0|[1-9]\d*)$/)),
+        ]),
+    ),
+    rows: z.optional(z.array(z.record(z.string(), z.string()))),
+    warnings: z.optional(z.array(z.string())),
+    error: z.nullish(z.string()),
+});
+
+export type ServicesMangaStepTestResultZodType = z.infer<typeof zServicesMangaStepTestResult>;
 
 export const zServicesTasksChapterSummary = z.object({
     chapterId: z.uuid(),

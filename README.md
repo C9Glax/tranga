@@ -33,8 +33,8 @@
   - Sync Metadata
   - Scan chapters
   - Sync Cover images
-- [x] Download sources via a bundled [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server, giving access to
-  the ~2000 sources of the [keiyoushi](https://github.com/keiyoushi/extensions) extension repository
+- [x] Modular download sources (built in: [MangaDex](https://api.mangadex.org/docs/) and [MANGA Plus](https://mangaplus.shueisha.co.jp))
+- [x] Custom download sources: add a website with CSS/XPath selectors, no code needed (see [Custom sources](#custom-sources))
 
 #### TODO LIST
 
@@ -48,23 +48,13 @@ You probably do not want to modify this. Use the [`.env`](Tranga.AppHost/aspire-
 - [.env](Tranga.AppHost/aspire-output/.env)
   - [Environment variable documentation](EnvVars.md)
 
-### Download sources (Suwayomi + keiyoushi)
-
-Apart from MangaDex, which is built in, Tranga gets its download sources from a bundled
-[Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) server. Install the sources you want under **Settings → Sources** (see [Settings](#settings)).
-
-**If FlareSolverr is configured for Tranga, the Suwayomi is pointed at the same instance.**
-
-> The `Suwayomi` volume is persistent state, not a cache. It holds the installed extension JARs as well as the rows
-> that map manga URLs back to the sidecar's internal ids. Deleting it means reinstalling your extensions.
-
 ### Settings
 
 All configuration that doesn't live in the [`.env`](Tranga.AppHost/aspire-output/.env) file is done in the web UI under **Settings**:
 
 | Page              | What it does                                                                                                                                                                                  |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Sources**       | Install, update and uninstall download extensions (Suwayomi / keiyoushi). Search, filter by language, show only installed ones, optionally show NSFW-only sources, refresh the catalogue.   |
+| **Sources**       | See the built-in download sources (MangaDex, MANGA Plus) and add, edit or delete your own custom sources. |
 | **Notifications** | Add notification extensions: Gotify, Discord, ntfy.sh, Telegram, or any other [Naprise](https://github.com/Genteure/naprise) service URL.                                                    |
 | **Libraries**     | Connect [Komga](https://komga.org/) or [Kavita](https://www.kavitareader.com/) libraries (see [Adding a Komga library](#adding-a-komga-library) and [Adding a Kavita library](#adding-a-kavita-library)).                                         |
 | **Appearance**    | Choose how covers of NSFW manga are displayed: always visible, visible on click, or never visible (blurred).                                                                                  |
@@ -73,6 +63,35 @@ All configuration that doesn't live in the [`.env`](Tranga.AppHost/aspire-output
 
 The Settings overview additionally offers **Replay first-download tour** (restarts the guided walkthrough) and
 **Backfill ComicInfo for downloaded chapters** (creates a task that adds `ComicInfo.xml` to already downloaded chapters; progress is shown on the Tasks page).
+
+### Custom sources
+
+Websites that are not built in can be added under **Settings → Sources → Add custom source**, without writing any code. The
+form explains every step and lets you try it against the real website before you save.
+
+A custom source works by scraping: Tranga fetches a web page (the search results, the chapter list of a series, the page of a
+chapter) and picks the data it needs out of the HTML with path matching, i.e. CSS selectors or XPath expressions, optionally
+refined with a regular expression. Websites whose pages are empty until JavaScript has loaded the content work too: there the
+source reads the JSON of the website's API, with paths (`data`, `manga.title`) in place of selectors. Searching, listing the
+chapters and finding the page images are three separate steps, each with its own page and selectors. A source is a small JSON
+document, so it can be shared.
+
+Examples to start from (they can also be loaded with **Start from an example** in the form), each mirroring the
+[keiyoushi](https://github.com/keiyoushi/extensions-source) extension of the same website:
+
+- [WeebCentral](Extensions/Custom/Examples/weebcentral.json)
+- [MangaTown](Extensions/Custom/Examples/mangatown.json)
+- [Manga.uno](Extensions/Custom/Examples/mangauno.json) (a JSON API)
+
+A [prompt for AI agents](Extensions/Custom/Examples/agent-prompt.md) lets one write the definition of a website for you
+(the form links to it as well).
+
+Good to know:
+
+- The data has to be in what the server sends: the HTML of a page, or the JSON of the API a page loads its content from.
+  JavaScript is never run (FlareSolverr only helps with Cloudflare challenges).
+- For safety, custom sources may only reach public websites: loopback, LAN and link-local addresses are refused. Set
+  `ALLOW_PRIVATE_SOURCE_HOSTS=true` ([EnvVars.md](EnvVars.md)) for a source on your own network.
 
 ### Adding a Komga library
 
@@ -110,16 +129,10 @@ the login page will show the setup screen again on next load.
 <img src="Screenshots/manga.png" width="512" alt="manga page"/>
 <img src="Screenshots/manga-light.png" width="512" alt="light mode manga page"/>
 <img src="Screenshots/settings-sources.png" width="512" alt="settings: sources"/>
+<img src="Screenshots/settings-sources-new.png" width="512" alt="settings: the general step of creating a custom source"/>
+<img src="Screenshots/settings-sources-test.png" width="512" alt="settings: testing the search step of a custom source, with the results in the sidebar"/>
+<img src="Screenshots/settings-sources-custom.png" width="512" alt="settings: sources with a custom source"/>
 <img src="Screenshots/settings-appearance.png" width="512" alt="settings: appearance"/>
-
-To regenerate them, start the stack (see [Running locally with Aspire](#running-locally-with-aspire)), then:
-
-```bash
-cd Frontend
-npm install
-npx playwright install chromium
-npm run screenshots -- --base-url http://localhost:5000
-```
 
 ## Built With
 
@@ -131,8 +144,6 @@ npm run screenshots -- --base-url http://localhost:5000
 - [Sixlabors.ImageSharp](https://sixlabors.com/products/imagesharp/)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
   - [FlareSolverrSharp](https://github.com/FlareSolverr/FlareSolverrSharp)
-- [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server)
-  - [keiyoushi extensions](https://github.com/keiyoushi/extensions)
 - [Naprise](https://github.com/Genteure/naprise)
 - [GitInfo](https://github.com/devlooped/GitInfo)
 - [Git-Describe](https://github.com/tvdstaaij/node-git-describe)

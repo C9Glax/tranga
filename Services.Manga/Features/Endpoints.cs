@@ -1,12 +1,12 @@
 using Common.Services;
 using Services.Manga.Features.Chapters;
+using Services.Manga.Features.CustomDownloaders;
 using Services.Manga.Features.DownloadLinks;
 using Services.Manga.Features.File;
 using Services.Manga.Features.Manga;
 using Services.Manga.Features.Manga.Search;
 using Services.Manga.Features.Metadata;
 using Services.Manga.Features.Settings;
-using Services.Manga.Features.Suwayomi;
 
 namespace Services.Manga.Features;
 
@@ -38,9 +38,9 @@ internal sealed class Endpoints : EndpointsBuilder
             .WithTags("Manga", "Settings")
             .MapSettingsEndpoints();
 
-        builder.MapGroup("/suwayomi")
-            .WithTags("Manga", "Suwayomi")
-            .MapSuwayomiEndpoints();
+        builder.MapGroup("/customDownloaders")
+            .WithTags("Manga", "Download", "CustomDownloaders")
+            .MapCustomDownloaderEndpoints();
     }
 }
 
@@ -161,37 +161,38 @@ internal static class EndpointHelpers
             .WithSummary("Get File");
     }
 
-    internal static void MapSuwayomiEndpoints(this RouteGroupBuilder builder)
+    internal static void MapCustomDownloaderEndpoints(this RouteGroupBuilder builder)
     {
-        builder.MapGet("/status", GetSuwayomiStatusEndpoint.Handle)
-            .WithSummary("Status of the Suwayomi sidecar");
+        builder.MapGet(string.Empty, GetCustomDownloadersEndpoint.Handle)
+            .WithSummary("List of all custom Download-Sources");
 
-        builder.MapGet("/extensions", GetSuwayomiExtensionsEndpoint.Handle)
-            .WithSummary("Get the Suwayomi extension catalogue");
+        builder.MapGet("capabilities", GetCustomDownloaderCapabilitiesEndpoint.Handle)
+            .WithSummary("What this installation supports for custom Download-Sources");
 
-        builder.MapPost("/extensions/{pkgName}/install", PostSuwayomiExtensionEndpoint.Install)
-            .WithSummary("Install a Suwayomi extension");
+        builder.MapGet("examples", GetCustomDownloaderExamplesEndpoint.Handle)
+            .WithSummary("Example definitions of custom Download-Sources to start from");
 
-        builder.MapPost("/extensions/{pkgName}/update", PostSuwayomiExtensionEndpoint.Update)
-            .WithSummary("Update a Suwayomi extension");
+        builder.MapGet("{customDownloaderId}", GetCustomDownloaderEndpoint.Handle)
+            .WithSummary("Get custom Download-Source");
 
-        builder.MapDelete("/extensions/{pkgName}", PostSuwayomiExtensionEndpoint.Uninstall)
-            .WithSummary("Uninstall a Suwayomi extension");
+        // The 400 of these three is the request body failing its own validation (SelectorDownloaderSettings and the other
+        // datatypes validate themselves, see Service.cs): it is only declared here so that the API documents it.
+        builder.MapPost(string.Empty, PostCustomDownloaderEndpoint.Handle)
+            .ProducesValidationProblem()
+            .WithSummary("Create custom Download-Source");
 
-        // Anonymous on purpose - see the endpoint's remarks. Everything else in this group stays behind auth.
-        builder.MapGet("/icons/{iconId}", GetSuwayomiIconEndpoint.Handle)
-            .WithSummary("Get the icon of a Suwayomi extension")
-            .AllowAnonymous();
+        builder.MapPut("{customDownloaderId}", PutCustomDownloaderEndpoint.Handle)
+            .ProducesValidationProblem()
+            .WithSummary("Change custom Download-Source");
 
-        builder.MapGet("/sources", GetSuwayomiSourcesEndpoint.Handle)
-            .WithSummary("Get the sources of all installed Suwayomi extensions");
+        builder.MapDelete("{customDownloaderId}", DeleteCustomDownloaderEndpoint.Handle)
+            .WithSummary("Delete custom Download-Source");
 
-        builder.MapPost("/refresh", PostSuwayomiRefreshEndpoint.Handle)
-            .WithSummary("Re-read the sources installed on the Suwayomi sidecar");
+        builder.MapPost("test", PostCustomDownloaderTestEndpoint.Handle)
+            .ProducesValidationProblem()
+            .WithSummary("Test one step of a custom Download-Source definition against the real website");
     }
-}
-internal static class SettingsEndpointHelpers
-{
+
     internal static void MapSettingsEndpoints(this RouteGroupBuilder builder)
     {
         builder.MapGet("behavior", GetBehaviorSettingsEndpoint.Handle)

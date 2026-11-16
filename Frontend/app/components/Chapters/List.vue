@@ -37,6 +37,15 @@
         <template #actions-cell="{ row }">
             <UButton icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Delete Chapter" @click="onDelete(row.original)" />
         </template>
+
+        <template #loading><TrangaTableLoading /></template>
+        <template #empty>
+            <UEmpty
+                icon="i-lucide-book-open"
+                title="No chapters yet"
+                description="Chapters appear here once they have been found."
+                variant="naked" />
+        </template>
     </UTable>
 </template>
 

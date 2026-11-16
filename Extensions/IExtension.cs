@@ -18,8 +18,8 @@ public interface IExtension
     public string BaseUrl { get; init; }
 
     /// <summary>
-    /// Url to the extension's icon/logo, shown by the frontend. Absolute for the built-in extensions; relative to the
-    /// gateway for extensions served through the Suwayomi sidecar.
+    /// Url to the extension's icon/logo, shown by the frontend. Absolute for the built-in extensions; providers of
+    /// dynamic extensions may use a gateway-relative path.
     /// </summary>
     public string IconUrl { get; init; }
 }

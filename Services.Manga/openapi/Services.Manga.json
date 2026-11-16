@@ -1075,43 +1075,14 @@
         }
       }
     },
-    "/mangas/suwayomi/status": {
+    "/mangas/customDownloaders": {
       "get": {
         "tags": [
           "Manga",
-          "Suwayomi"
+          "Download",
+          "CustomDownloaders"
         ],
-        "summary": "Status of the Suwayomi sidecar",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuwayomiStatus"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mangas/suwayomi/extensions": {
-      "get": {
-        "tags": [
-          "Manga",
-          "Suwayomi"
-        ],
-        "summary": "Get the Suwayomi extension catalogue",
-        "parameters": [
-          {
-            "name": "refresh",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
+        "summary": "List of all custom Download-Sources",
         "responses": {
           "200": {
             "description": "OK",
@@ -1120,7 +1091,94 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SuwayomiExtensionInfo"
+                    "$ref": "#/components/schemas/SelectorDownloaderDefinition"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Manga",
+          "Download",
+          "CustomDownloaders"
+        ],
+        "summary": "Create custom Download-Source",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectorDownloaderDefinition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectorDownloaderDefinition"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mangas/customDownloaders/capabilities": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Download",
+          "CustomDownloaders"
+        ],
+        "summary": "What this installation supports for custom Download-Sources",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDownloaderCapabilities"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mangas/customDownloaders/examples": {
+      "get": {
+        "tags": [
+          "Manga",
+          "Download",
+          "CustomDownloaders"
+        ],
+        "summary": "Example definitions of custom Download-Sources to start from",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SelectorDownloaderDefinition"
                   }
                 }
               }
@@ -1129,145 +1187,158 @@
         }
       }
     },
-    "/mangas/suwayomi/extensions/{pkgName}/install": {
-      "post": {
-        "tags": [
-          "Manga",
-          "Suwayomi"
-        ],
-        "summary": "Install a Suwayomi extension",
-        "parameters": [
-          {
-            "name": "pkgName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mangas/suwayomi/extensions/{pkgName}/update": {
-      "post": {
-        "tags": [
-          "Manga",
-          "Suwayomi"
-        ],
-        "summary": "Update a Suwayomi extension",
-        "parameters": [
-          {
-            "name": "pkgName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mangas/suwayomi/extensions/{pkgName}": {
-      "delete": {
-        "tags": [
-          "Manga",
-          "Suwayomi"
-        ],
-        "summary": "Uninstall a Suwayomi extension",
-        "parameters": [
-          {
-            "name": "pkgName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mangas/suwayomi/icons/{iconId}": {
+    "/mangas/customDownloaders/{customDownloaderId}": {
       "get": {
         "tags": [
           "Manga",
-          "Suwayomi"
+          "Download",
+          "CustomDownloaders"
         ],
-        "summary": "Get the icon of a Suwayomi extension",
+        "summary": "Get custom Download-Source",
         "parameters": [
           {
-            "name": "iconId",
+            "name": "customDownloaderId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectorDownloaderDefinition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Manga",
+          "Download",
+          "CustomDownloaders"
+        ],
+        "summary": "Change custom Download-Source",
+        "parameters": [
+          {
+            "name": "customDownloaderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectorDownloaderDefinition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectorDownloaderDefinition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Manga",
+          "Download",
+          "CustomDownloaders"
+        ],
+        "summary": "Delete custom Download-Source",
+        "parameters": [
+          {
+            "name": "customDownloaderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
           "404": {
             "description": "Not Found"
           }
         }
       }
     },
-    "/mangas/suwayomi/sources": {
-      "get": {
-        "tags": [
-          "Manga",
-          "Suwayomi"
-        ],
-        "summary": "Get the sources of all installed Suwayomi extensions",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SuwayomiSourceInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mangas/suwayomi/refresh": {
+    "/mangas/customDownloaders/test": {
       "post": {
         "tags": [
           "Manga",
-          "Suwayomi"
+          "Download",
+          "CustomDownloaders"
         ],
-        "summary": "Re-read the sources installed on the Suwayomi sidecar",
+        "summary": "Test one step of a custom Download-Source definition against the real website",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostCustomDownloaderTestRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "pattern": "^-?(?:0|[1-9]\\d*)$",
-                  "type": [
-                    "integer",
-                    "string"
-                  ],
-                  "format": "int32"
+                  "$ref": "#/components/schemas/StepTestResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -1363,6 +1434,47 @@
           }
         }
       },
+      "ChaptersSpec": {
+        "type": "object",
+        "properties": {
+          "urlTemplate": {
+            "type": "string",
+            "description": "URL of the page that lists the chapters. `{url}` is the series URL; the named groups of\nstring? SelectorDownloaderSettings.SeriesUrlPattern are available too, e.g.\n`https://example.com/series/{id}/chapters`."
+          },
+          "itemSelector": {
+            "type": "string",
+            "description": "Selects one element per chapter."
+          },
+          "url": {
+            "description": "The chapter's link, relative to the chapter item.",
+            "$ref": "#/components/schemas/SelectorField"
+          },
+          "number": {
+            "description": "The chapter number, relative to the chapter item. When unused the item's text is searched (HTML only: for JSON\nit is required). The first number in the extracted text is used (`Chapter 12.5` becomes `12.5`);\nchapters without one are skipped.",
+            "$ref": "#/components/schemas/SelectorField"
+          },
+          "title": {
+            "description": "Optional chapter title.",
+            "$ref": "#/components/schemas/SelectorField"
+          },
+          "date": {
+            "description": "Optional release date.",
+            "$ref": "#/components/schemas/SelectorField"
+          },
+          "dateFormat": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional .NET date format for SelectorField ChaptersSpec.Date (e.g. `yyyy-MM-dd`); ISO 8601 and common formats are tried without it."
+          },
+          "nextPage": {
+            "description": "Optional link to the next page of the chapter list (followed up to 50 times).",
+            "$ref": "#/components/schemas/SelectorField"
+          }
+        },
+        "description": "How to list the chapters of a series."
+      },
       "ContentRating": {
         "enum": [
           "Safe",
@@ -1372,12 +1484,27 @@
           null
         ]
       },
+      "CustomDownloaderCapabilities": {
+        "required": [
+          "flareSolverrConfigured",
+          "allowPrivateHosts"
+        ],
+        "type": "object",
+        "properties": {
+          "flareSolverrConfigured": {
+            "type": "boolean"
+          },
+          "allowPrivateHosts": {
+            "type": "boolean"
+          }
+        }
+      },
       "DownloadExtension": {
         "required": [
           "downloadExtensionsId",
           "name",
           "iconUrl",
-          "isSuwayomiSource"
+          "isCustom"
         ],
         "type": "object",
         "properties": {
@@ -1391,7 +1518,7 @@
           "iconUrl": {
             "type": "string"
           },
-          "isSuwayomiSource": {
+          "isCustom": {
             "type": "boolean"
           }
         }
@@ -1510,6 +1637,85 @@
           }
         },
         "description": "Build commit/version/branch info for this service, sourced from devlooped/GitInfo at build time."
+      },
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "ImagesSpec": {
+        "type": "object",
+        "properties": {
+          "urlTemplate": {
+            "type": "string",
+            "description": "URL of the page that shows the images. `{url}` is the chapter URL, e.g. `{url}/images`; the named groups\nof string? ImagesSpec.UrlPattern are available too, e.g. `/api/chapter/{id}`."
+          },
+          "urlPattern": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional regular expression the chapter URL is matched against. Its named groups (e.g. `(?&lt;id&gt;\\d+)$`)\nare available as `{id}` in string ImagesSpec.UrlTemplate, for sites whose images are loaded from a different\nURL than the chapter page (typically an API)."
+          },
+          "imageSelector": {
+            "type": "string",
+            "description": "Selects one element per page image, in reading order. For JSON the path to the image URLs, e.g. `pages` or `pages[*].url`."
+          },
+          "attribute": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Attribute holding the image URL. Defaults to `data-src,data-lazy-src,src`. Not used for JSON."
+          },
+          "pageSelector": {
+            "description": "Only for sites that show one image per HTML page: selects the links (or the options of a page dropdown) that\nlead to each page of the chapter, in reading order. The attribute defaults to `href,value`. Every page\nfound is then fetched and the image selector is applied to it. The chapter page itself is not fetched twice\nwhen it is one of the pages. When the selector finds nothing, the image selector is applied to the chapter\npage, as if this was not set.",
+            "$ref": "#/components/schemas/SelectorField"
+          }
+        },
+        "description": "How to find the pages of a chapter."
       },
       "Manga": {
         "required": [
@@ -1884,6 +2090,55 @@
           }
         }
       },
+      "PostCustomDownloaderTestRequest": {
+        "required": [
+          "settings",
+          "step",
+          "input"
+        ],
+        "type": "object",
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/SelectorDownloaderSettings"
+          },
+          "step": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string"
+          },
+          "search": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SearchSpec"
+              }
+            ]
+          },
+          "chapters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ChaptersSpec"
+              }
+            ]
+          },
+          "images": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ImagesSpec"
+              }
+            ]
+          }
+        }
+      },
       "PostMangaDownloadLinkRequest": {
         "required": [
           "downloadExtensionId",
@@ -2056,149 +2311,265 @@
           }
         }
       },
-      "SuwayomiContentWarning": {
-        "enum": [
-          "Safe",
-          "Mixed",
-          "Nsfw"
-        ],
-        "description": "            How a Suwayomi source or extension is classified by its extension store.\n            Suwayomi also exposes a deprecated isNsfw boolean, but that collapses SuwayomiContentWarning.Mixed into\nSuwayomiContentWarning.Nsfw — which would wrongly lock out sites that merely allow adult content alongside everything else\n(MangaDex and Weeb Central are both SuwayomiContentWarning.Mixed)."
-      },
-      "SuwayomiExtensionInfo": {
-        "required": [
-          "pkgName",
-          "name",
-          "lang",
-          "iconUrl",
-          "versionName",
-          "contentWarning",
-          "isInstalled",
-          "isObsolete",
-          "hasUpdate"
-        ],
+      "SearchSpec": {
         "type": "object",
         "properties": {
-          "pkgName": {
+          "urlTemplate": {
             "type": "string",
-            "description": "Android package name; the identifier used to install, update and uninstall."
+            "description": "URL of the search results. `{query}` is replaced with the URL-encoded search text and `{page}` with the\npage number (always 1). Relative URLs are resolved against the base URL, e.g.\n`/search/data?text={query}&amp;limit=32`."
           },
-          "name": {
+          "itemSelector": {
             "type": "string",
-            "description": "Display name of the extension."
+            "description": "Selects one element per search result (the same selector may also match the result's link)."
           },
-          "lang": {
-            "type": "string",
-            "description": "Tachiyomi language code, e.g. `en`, `pt-BR`, `all`."
+          "title": {
+            "description": "The series title, relative to the result item.",
+            "$ref": "#/components/schemas/SelectorField"
           },
-          "iconUrl": {
-            "type": "string",
-            "description": "Gateway-relative url of the extension's icon."
+          "url": {
+            "description": "Link to the series page, relative to the result item. Relative links are resolved.",
+            "$ref": "#/components/schemas/SelectorField"
           },
-          "versionName": {
-            "type": "string",
-            "description": "Version currently installed, or offered by the store when not installed."
-          },
-          "contentWarning": {
-            "description": "How the extension store classifies the content. A `Mixed` extension stays usable while `AllowNSFW` is off; only `Nsfw` ones are held back.",
-            "$ref": "#/components/schemas/SuwayomiContentWarning"
-          },
-          "isInstalled": {
-            "type": "boolean",
-            "description": "Whether the extension is installed on the sidecar."
-          },
-          "isObsolete": {
-            "type": "boolean",
-            "description": "Whether the extension is no longer offered by any configured store."
-          },
-          "hasUpdate": {
-            "type": "boolean",
-            "description": "Whether a newer version is available."
+          "cover": {
+            "description": "The cover image URL, relative to the result item.",
+            "$ref": "#/components/schemas/SelectorField"
           }
         },
-        "description": "An extension offered by, or installed from, a configured extension store."
+        "description": "How to find series on the website."
       },
-      "SuwayomiSourceInfo": {
-        "required": [
-          "sourceId",
-          "extensionId",
-          "name",
-          "lang",
-          "iconUrl",
-          "homeUrl",
-          "contentWarning"
-        ],
+      "SelectorDownloaderDefinition": {
         "type": "object",
         "properties": {
-          "sourceId": {
-            "type": "string",
-            "description": "The Tachiyomi source id."
+          "search": {
+            "description": "How to find series.",
+            "$ref": "#/components/schemas/SearchSpec"
           },
-          "extensionId": {
+          "chapters": {
+            "description": "How to list the chapters of a series.",
+            "$ref": "#/components/schemas/ChaptersSpec"
+          },
+          "images": {
+            "description": "How to find the pages of a chapter.",
+            "$ref": "#/components/schemas/ImagesSpec"
+          },
+          "id": {
             "type": "string",
-            "description": "The Tranga extension identifier derived from SourceId.",
+            "description": "Becomes Guid IExtension.Identifier. Persisted on download links, so it must never change. Assigned by the server.",
             "format": "uuid"
           },
           "name": {
             "type": "string",
-            "description": "Display name of the source, normally including its language."
+            "description": "Display name of the source."
           },
-          "lang": {
+          "baseUrl": {
             "type": "string",
-            "description": "Tachiyomi language code."
+            "description": "Root of the website, e.g. `https://weebcentral.com`. Relative URLs are resolved against it."
           },
           "iconUrl": {
-            "type": "string",
-            "description": "Gateway-relative url of the source's icon."
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional icon, defaults to the website's favicon."
           },
-          "homeUrl": {
-            "type": "string",
-            "description": "The source's own website."
+          "format": {
+            "description": "What the website answers with: HTML pages (the default) or JSON, for websites that load their content from an API.\nIt applies to every step and decides what a \"selector\" is: a CSS selector / XPath expression, or a JSON path.",
+            "$ref": "#/components/schemas/SourceFormat"
           },
-          "contentWarning": {
-            "description": "How the extension store classifies the source's content.",
-            "$ref": "#/components/schemas/SuwayomiContentWarning"
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Languages the website publishes in (e.g. `en`). A search in another language finds nothing."
+          },
+          "useFlareSolverr": {
+            "type": "boolean",
+            "description": "Route requests through the configured FlareSolverr instance (for Cloudflare protected sites)."
+          },
+          "requestsPerSecond": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "Requests per second to the website itself (0.1 - 20). Image CDNs on other hosts are limited separately.",
+            "format": "double"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Extra request headers, e.g. a cookie or a User-Agent."
+          },
+          "seriesUrlPattern": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional regular expression that a series URL has to match. Its named groups (e.g. `(?&lt;id&gt;[^/]+)`) are\navailable as `{id}` in string ChaptersSpec.UrlTemplate for sites whose chapter list lives at a\ndifferent URL than the series page."
           }
         },
-        "description": "A source exposed by an installed extension, and the Tranga download-extension it is registered as."
+        "description": "Describes a user-defined download source that is driven entirely by CSS/XPath selectors, so that people can add a\nwebsite to Tranga without writing code: the SelectorDownloaderSettings of the website plus how to\nsearch, list chapters and find the pages. Turned into an IDownloadExtension by\nSelectorDownloadExtension; persisted as one JSON document. A definition is always validated as a whole;\nto try a single step without the others, use the settings and that step's section on their own."
       },
-      "SuwayomiStatus": {
-        "required": [
-          "reachable",
-          "serverName",
-          "serverVersion",
-          "installedSourceCount"
-        ],
+      "SelectorDownloaderSettings": {
         "type": "object",
         "properties": {
-          "reachable": {
+          "id": {
+            "type": "string",
+            "description": "Becomes Guid IExtension.Identifier. Persisted on download links, so it must never change. Assigned by the server.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the source."
+          },
+          "baseUrl": {
+            "type": "string",
+            "description": "Root of the website, e.g. `https://weebcentral.com`. Relative URLs are resolved against it."
+          },
+          "iconUrl": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional icon, defaults to the website's favicon."
+          },
+          "format": {
+            "description": "What the website answers with: HTML pages (the default) or JSON, for websites that load their content from an API.\nIt applies to every step and decides what a \"selector\" is: a CSS selector / XPath expression, or a JSON path.",
+            "$ref": "#/components/schemas/SourceFormat"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Languages the website publishes in (e.g. `en`). A search in another language finds nothing."
+          },
+          "useFlareSolverr": {
             "type": "boolean",
-            "description": "Whether the sidecar answered. False means the container is missing or still starting."
+            "description": "Route requests through the configured FlareSolverr instance (for Cloudflare protected sites)."
           },
-          "serverName": {
+          "requestsPerSecond": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "Requests per second to the website itself (0.1 - 20). Image CDNs on other hosts are limited separately.",
+            "format": "double"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Extra request headers, e.g. a cookie or a User-Agent."
+          },
+          "seriesUrlPattern": {
             "type": [
               "null",
               "string"
             ],
-            "description": "Sidecar product name, when reachable."
+            "description": "Optional regular expression that a series URL has to match. Its named groups (e.g. `(?&lt;id&gt;[^/]+)`) are\navailable as `{id}` in string ChaptersSpec.UrlTemplate for sites whose chapter list lives at a\ndifferent URL than the series page."
+          }
+        },
+        "description": "The general settings of a user-defined download source (the website itself, not how to scrape it). They validate\nthemselves (IValidatableObject), so whoever receives one - an API endpoint, the test of a single step,\nthe engine - does not have to know the rules."
+      },
+      "SelectorField": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "CSS selector or XPath expression (XPath when it starts with `/`, `./`, `../` or `(`).\nAn XPath may end in `/@attribute` or `/text()`. For JSON a path such as `title`,\n`manga.cover` or `names[0]`; alternatives separated by commas are tried in order\n(`english_title, title`) and `$` is the item itself."
           },
-          "serverVersion": {
+          "attribute": {
             "type": [
               "null",
               "string"
             ],
-            "description": "Sidecar version, when reachable."
+            "description": "Attribute to read, e.g. `href`. A comma separated list (`srcset,src`) is tried in order and the first\nnon-empty value wins. Empty reads the element's text."
           },
-          "installedSourceCount": {
+          "regex": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Regular expression applied to the value. Without string? SelectorField.Replacement the first capture group (or the\nwhole match) is kept; a value that does not match counts as missing."
+          },
+          "replacement": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When set, string? SelectorField.Regex replaces every match with this text instead of extracting. The placeholders of the\nstep's URL template can be used (`{url}`, the named groups of the URL patterns, ...), which is how a link is\nbuilt from an id: regex `^(.+)$`, replacement `/series/{slug}/chapter/$1`."
+          }
+        },
+        "description": "Extracts one value from an item (a search result, a chapter). For HTML, string SelectorField.Selector picks the element\n(relative to the item the field belongs to; empty = the item itself) and string? SelectorField.Attribute picks what to read\n(empty = the element's text). For JSON (SourceFormat.Json), string SelectorField.Selector is the path to the\nvalue inside the item and there are no attributes. The optional string? SelectorField.Regex post-processes the result."
+      },
+      "SourceFormat": {
+        "enum": [
+          "html",
+          "json"
+        ],
+        "description": "What a website answers with, which decides how its responses are read."
+      },
+      "StepTestResult": {
+        "type": "object",
+        "properties": {
+          "requestUrl": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The URL that was requested, once the template has been filled in."
+          },
+          "statusCode": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "HTTP status of the response, when there was one.",
+            "format": "int32"
+          },
+          "itemCount": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "description": "Number of sources currently exposed by installed extensions.",
+            "description": "How many items (search results, chapters, images) were extracted in total.",
             "format": "int32"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "description": "The first extracted items, one dictionary of field name to value each."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Things that probably are not what the user wants (selector matched nothing, fields missing, ...)."
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why the step failed, if it did."
           }
         },
-        "description": "Reachability and version of the Suwayomi sidecar."
+        "description": "What one step of a source definition produced against the real website, so users can fix their selectors before\nsaving the source."
       }
     }
   },
@@ -2222,7 +2593,7 @@
       "name": "Settings"
     },
     {
-      "name": "Suwayomi"
+      "name": "CustomDownloaders"
     },
     {
       "name": "GitInfo"

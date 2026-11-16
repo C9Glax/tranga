@@ -1,0 +1,88 @@
+// Subset of the MANGA Plus (jumpg-webapi.tokyo-cdn.com) response schema, reverse engineered by the keiyoushi
+// Tachiyomi extension (src/all/mangaplus/.../Dto.kt). Field numbers are what the API sends on the wire; only the
+// fields Tranga needs are declared, protobuf skips the rest.
+syntax = "proto3";
+
+option csharp_namespace = "Extensions.Extensions.MangaPlusApi";
+
+message MangaPlusResponse {
+  SuccessResult success = 1;
+  ErrorResult error = 2;
+}
+
+message ErrorResult {
+  Popup english_popup = 2;
+}
+
+message Popup {
+  string subject = 1;
+  string body = 2;
+}
+
+message SuccessResult {
+  TitleDetailView title_detail_view = 8;
+  MangaViewer manga_viewer = 10;
+  AllTitlesView all_titles_view = 25;
+}
+
+message AllTitlesView {
+  repeated AllTitlesGroup all_titles_group = 1;
+}
+
+message AllTitlesGroup {
+  repeated Title titles = 2;
+}
+
+message Title {
+  int32 title_id = 1;
+  string name = 2;
+  string author = 3;
+  string portrait_image_url = 4;
+  // 0 = English, 1 = Spanish, 2 = French, 3 = Indonesian, 4 = Portuguese (BR), 5 = Russian, 6 = Thai, 7 = German,
+  // 9 = Vietnamese
+  int32 language = 7;
+}
+
+message TitleDetailView {
+  Title title = 1;
+  string overview = 3;
+  string viewing_period_description = 7;
+  string non_appearance_info = 8;
+  repeated ChapterListGroup chapter_list_group = 28;
+  repeated TagName genre_list = 31;
+}
+
+message TagName {
+  string name = 1;
+  string slug = 2;
+}
+
+message ChapterListGroup {
+  repeated Chapter first_chapter_list = 2;
+  repeated Chapter last_chapter_list = 4;
+}
+
+message Chapter {
+  int32 chapter_id = 2;
+  // e.g. "#12"; non-numeric for extras and one-shots
+  string name = 3;
+  // Absent when the chapter has expired and can no longer be read
+  optional string sub_title = 4;
+  int32 start_time_stamp = 6;
+}
+
+message MangaViewer {
+  repeated MangaPlusPage pages = 1;
+  int32 title_id = 9;
+  string view_token = 19;
+}
+
+message MangaPlusPage {
+  MangaPage manga_page = 1;
+}
+
+message MangaPage {
+  string image_url = 1;
+  // Hex string, the image bytes are XORed with it (repeating)
+  string encryption_key = 5;
+}

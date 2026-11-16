@@ -1,13 +1,13 @@
 using Extensions;
-using Extensions.Extensions.Suwayomi;
+using Extensions.Custom;
 
 namespace Services.Manga.Entities.DownloadExtensions;
 
 /// <summary>
 /// The set of download extensions available to the manga service, exposed as an API-friendly list.
 /// <para>
-/// Projected from the live <see cref="DownloadExtensionsCollection"/> rather than hardcoded, because the
-/// Suwayomi-backed extensions are discovered at runtime and change as the user installs or removes them.
+/// Projected from the live <see cref="DownloadExtensionsCollection"/> rather than hardcoded, because
+/// extension providers can add and remove extensions at runtime.
 /// </para>
 /// </summary>
 public sealed record DownloadExtensionsList
@@ -19,7 +19,7 @@ public sealed record DownloadExtensionsList
             DownloadExtensionsId = extension.Identifier,
             Name = extension.Name,
             IconUrl = extension.IconUrl,
-            IsSuwayomiSource = extension is SuwayomiSource
+            IsCustom = extension is SelectorDownloadExtension
         })
         .ToArray();
 }

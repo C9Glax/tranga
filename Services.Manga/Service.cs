@@ -5,6 +5,7 @@ using Extensions;
 using Microsoft.EntityFrameworkCore;
 using Services.Manga.Database;
 using Services.Manga.Features;
+using Services.Manga.Helpers;
 using Task = System.Threading.Tasks.Task;
 
 namespace Services.Manga;
@@ -25,6 +26,10 @@ public sealed class Service : Common.Services.Service
 
         Builder.Services.AddScoped<EventPublisher>();
 
+        // Request bodies validate themselves (IValidatableObject / DataAnnotations on the datatype): an invalid one is
+        // answered with 400 and a list of problems before an endpoint runs, endpoints do not check anything themselves.
+        Builder.Services.AddValidation();
+
         SetupWebApplication<Endpoints>("/mangas");
 
         if (!Constants.OpenApiDocumentationRun)
@@ -38,10 +43,9 @@ public sealed class Service : Common.Services.Service
                 && bool.TryParse(allowNsfw.Value, out bool allowNsfwValue))
                 Settings.AllowNSFW = allowNsfwValue;
 
-            // Registers the sources installed on the Suwayomi sidecar as download extensions. Best-effort: if the
-            // sidecar is off or not up yet, this is a no-op and the periodic refresh in Services.Tasks or an explicit
-            // POST /suwayomi/refresh picks the sources up later.
-            DownloadExtensionsCollection.RefreshSidecarExtensionsAsync(CancellationToken.None).Wait();
+            // The user-defined sources live in this service's database; then load all download extensions.
+            DownloadExtensionsCollection.RegisterProvider(CustomDownloaderStore.CreateProvider(App.Services));
+            DownloadExtensionsCollection.RefreshAsync(CancellationToken.None).Wait();
         }
     }
 

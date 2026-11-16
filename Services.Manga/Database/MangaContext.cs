@@ -45,6 +45,9 @@ public sealed class MangaContext(DbContextOptions<MangaContext> options) : Trang
     /// <summary>The runtime-configurable settings, stored as key/value pairs.</summary>
     public DbSet<DbSetting> Settings { get; init; }
 
+    /// <summary>The user-defined, selector based download sources.</summary>
+    public DbSet<DbCustomDownloader> CustomDownloaders { get; init; }
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,9 +61,16 @@ public sealed class MangaContext(DbContextOptions<MangaContext> options) : Trang
         CreateDownloadLinkModel(modelBuilder);
         CreateMangaDownloadLinkModel(modelBuilder);
         CreateChapterDownloadLinkModel(modelBuilder);
+        CreateCustomDownloaderModel(modelBuilder);
 
         modelBuilder.Entity<DbSetting>()
             .HasKey(s => s.Key);
+    }
+
+    private void CreateCustomDownloaderModel(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<DbCustomDownloader>()
+            .HasKey(c => c.CustomDownloaderId);
     }
 
     private void CreateMangaModel(ModelBuilder modelBuilder)

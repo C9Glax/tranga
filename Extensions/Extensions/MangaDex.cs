@@ -3,6 +3,7 @@ using Common.Datatypes;
 using Common.Helpers;
 using Common.Settings;
 using Extensions.Data;
+using Extensions.Helpers;
 using Newtonsoft.Json.Linq;
 using GeneratedExtensionClients.GeneratedClients.MangaDex;
 using Manga = GeneratedExtensionClients.GeneratedClients.MangaDex.Manga;
@@ -97,6 +98,9 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
 
     #region Chapters
 
+    private static readonly Anonymous9[] AllContentRatings =
+        [Anonymous9.Safe, Anonymous9.Suggestive, Anonymous9.Erotica, Anonymous9.Pornographic];
+
     public async Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct)
     {
         int offset = 0;
@@ -111,6 +115,9 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
                 limit: limit,
                 // https://api.mangadex.org/docs/3-enumerations/#language-codes--localization
                 translatedLanguage: [Settings.DownloadLanguage.TwoLetterISOLanguageName],
+                // The API excludes "pornographic" chapters unless asked for explicitly. The manga itself was already
+                // chosen (and NSFW-filtered when searching), so every chapter of it has to be listed.
+                contentRating: AllContentRatings,
                 cancellationToken: ct);
 
             if (list.Data is null)
@@ -160,26 +167,20 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
             return null;
         List<string> urls = r.Chapter.Data.Select(image => $"{r.BaseUrl}/data/{r.Chapter.Hash}/{image}").ToList();
 
-        List<ChapterImage> images = new();
-        List<(int index, Task<HttpResponseMessage> request)> requests = urls
-            .Select((url, index) => (index, MangaDexRequestClient.GetAsync(url, ct)))
-            .ToList();
+        TrangaImage?[] downloaded = await Task.WhenAll(urls.Select(url => DownloadImage(url, ct)));
 
-        await Task.WhenAll(requests.Select(t => t.request));
-
-        if (requests.Any(tuple => !tuple.request.IsCompletedSuccessfully))
+        // A chapter with a missing page is worse than no chapter, so any failed page fails the whole chapter.
+        if (downloaded.Any(image => image is null))
             return null;
 
-        foreach ((int index, Task<HttpResponseMessage> request) in requests)
-        {
-            TrangaImage image = new();
-            Stream data = await request.Result.Content.ReadAsStreamAsync(ct);
-            await data.CopyToAsync(image, ct);
-            images.Add(new ChapterImage(this.Identifier, chapterInfo.Identifier, index, image));
-        }
-
-        return images;
+        return downloaded
+            .Select((image, index) => new ChapterImage(this.Identifier, chapterInfo.Identifier, index, image!))
+            .ToList();
     }
+
+    /// <summary>Downloads one page, with retries. Returns null when all attempts fail.</summary>
+    private static Task<TrangaImage?> DownloadImage(string url, CancellationToken ct) =>
+        ImageDownloader.DownloadAsync(MangaDexRequestClient, () => new HttpRequestMessage(HttpMethod.Get, url), null, ct);
 
     #endregion
 

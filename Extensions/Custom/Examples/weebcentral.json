@@ -1,0 +1,30 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "name": "WeebCentral (example)",
+  "baseUrl": "https://weebcentral.com",
+  "languages": ["en"],
+  "useFlareSolverr": false,
+  "requestsPerSecond": 0.5,
+  "headers": {},
+  "seriesUrlPattern": "^https://weebcentral\\.com/series/(?<id>[^/?#]+)",
+  "search": {
+    "urlTemplate": "/search/data?text={query}&limit=32&offset=0&display_mode=Full%20Display",
+    "itemSelector": "article > section > a",
+    "title": { "selector": "div:not([class]):last-child" },
+    "url": { "attribute": "href" },
+    "cover": { "selector": "source, img", "attribute": "srcset,src", "regex": "/small/", "replacement": "/normal/" }
+  },
+  "chapters": {
+    "urlTemplate": "/series/{id}/full-chapter-list",
+    "itemSelector": "div[x-data] > a",
+    "url": { "attribute": "href" },
+    "number": { "selector": "span.flex > span", "regex": "(\\d+(?:\\.\\d+)?)\\s*$" },
+    "title": {},
+    "date": { "selector": "time[datetime]", "attribute": "datetime" }
+  },
+  "images": {
+    "urlTemplate": "{url}/images?is_prev=False&reading_style=long_strip",
+    "imageSelector": "section[x-data*=scroll] > img",
+    "attribute": "src"
+  }
+}
