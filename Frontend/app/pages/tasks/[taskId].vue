@@ -11,18 +11,18 @@
                             color="neutral" />
                     </UTooltip>
                     <UTooltip :text="taskStateDescription(task.status)">
-                        <UBadge :label="task.status" :color="taskStateBadgeColor(task.status)" variant="subtle" />
+                        <UBadge :label="taskStateLabel(task.status)" :color="taskStateBadgeColor(task.status)" variant="subtle" />
                     </UTooltip>
                     <TasksMangaCell v-if="'manga' in task" :manga="task.manga" />
                     <TasksChapterCell v-if="'chapter' in task" :chapter="task.chapter" />
-                    <TrangaTime v-if="task.lastRun" prefix="Last run" :model-value="task.lastRun" relative />
+                    <TrangaTime v-if="task.lastRun" :prefix="$t('tasks.lastRun')" :model-value="task.lastRun" relative />
                 </template>
                 <USkeleton v-else class="h-lh w-64" />
 
                 <UButton
                     class="ml-auto"
                     icon="i-lucide-download"
-                    label="Export CSV"
+                    :label="$t('tasks.exportCsv')"
                     variant="outline"
                     color="neutral"
                     :disabled="!logs?.length"

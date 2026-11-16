@@ -19,7 +19,11 @@
         "token": "Token",
         "nsfw": "NSFW",
         "chapters": "Chapters",
-        "filter": "Filter"
+        "filter": "Filter",
+        "next": "Next",
+        "save": "Save",
+        "edit": "Edit",
+        "test": "Test"
     },
     "nav": {
         "tranga": "Tranga",
@@ -33,7 +37,12 @@
         "libraries": "Libraries"
     },
     "auth": {
-        "login": { "title": "Log in", "submit": "Log in", "failed": "Login failed.", "incorrectPassword": "Incorrect password." },
+        "login": {
+            "title": "Log in",
+            "submit": "Log in",
+            "failed": "Login failed.",
+            "incorrectPassword": "Incorrect password."
+        },
         "setup": {
             "title": "Create admin password",
             "description": "This is the only account for this instance - there are no user profiles.",
@@ -48,13 +57,25 @@
     },
     "settings": {
         "appearance": {
-            "language": { "title": "Language", "legend": "Which language should Tranga be displayed in?" },
+            "language": {
+                "title": "Language",
+                "legend": "Which language should Tranga be displayed in?"
+            },
             "nsfwCovers": {
                 "title": "NSFW covers",
                 "legend": "How should covers of NSFW manga be displayed?",
-                "show": { "label": "Always visible", "description": "NSFW covers are shown like any other cover." },
-                "click": { "label": "Visible on click", "description": "NSFW covers are blurred until you click them." },
-                "hide": { "label": "Never visible", "description": "NSFW covers always stay blurred." }
+                "show": {
+                    "label": "Always visible",
+                    "description": "NSFW covers are shown like any other cover."
+                },
+                "click": {
+                    "label": "Visible on click",
+                    "description": "NSFW covers are blurred until you click them."
+                },
+                "hide": {
+                    "label": "Never visible",
+                    "description": "NSFW covers always stay blurred."
+                }
             }
         },
         "tabs": {
@@ -65,11 +86,19 @@
             "security": "Security",
             "debug": "Debug"
         },
-        "about": { "service": "Service", "version": "Version", "commit": "Commit", "branch": "Branch" },
+        "about": {
+            "service": "Service",
+            "version": "Version",
+            "commit": "Commit",
+            "branch": "Branch"
+        },
         "behavior": {
             "content": "Content",
             "allowNsfwLocked": "Set by the AllowNSFW environment variable and cannot be changed here.",
-            "allowNsfw": { "label": "Allow NSFW content", "description": "Include NSFW manga in search results and allow NSFW sources." },
+            "allowNsfw": {
+                "label": "Allow NSFW content",
+                "description": "Include NSFW manga in search results and allow NSFW sources."
+            },
             "updateFailed": "Failed to update setting.",
             "updateFailedFallback": "Could not update the setting."
         },
@@ -157,7 +186,10 @@
             "actions": "Actions",
             "downloadTasks": "Manga Download Tasks"
         },
-        "empty": { "title": "Nothing here!", "description": "Start searching..." },
+        "empty": {
+            "title": "Nothing here!",
+            "description": "Start searching..."
+        },
         "search": {
             "placeholder": "Search for a title or paste a link... ({example}?)",
             "localManga": "Local Manga",
@@ -178,7 +210,10 @@
             "resultingChapters": "Merged Manga will have {count} Chapters. The other Manga's Chapters are discarded.",
             "merge": "Merge"
         },
-        "noDownloadLinks": { "title": "No Download Links", "description": "This manga doesn't have any download links yet." },
+        "noDownloadLinks": {
+            "title": "No Download Links",
+            "description": "This manga doesn't have any download links yet."
+        },
         "moreDownloadLinks": "More Download-Links",
         "syncToLibrary": "Sync to Library",
         "mergeInto": "Merge into...",
@@ -191,8 +226,19 @@
         "deleteDescription": "This permanently deletes \"{label}\": its downloaded file is removed from disk, and if a library is linked, a rescan is triggered so it's removed there too. This cannot be undone.",
         "volumeShort": "Vol. {volume}",
         "chapterShort": "Ch. {number}",
-        "columns": { "volume": "Volume", "number": "Number", "title": "Title", "releaseDate": "Release Date", "status": "Status" },
-        "empty": { "title": "No chapters yet", "description": "Chapters appear here once they have been found." }
+        "columns": {
+            "volume": "Volume",
+            "number": "Number",
+            "title": "Title",
+            "releaseDate": "Release Date",
+            "status": "Status"
+        },
+        "empty": {
+            "title": "No chapters yet",
+            "description": "Chapters appear here once they have been found."
+        },
+        "volumeAbbr": "Vol",
+        "chapterAbbr": "Ch"
     },
     "downloadLinks": {
         "match": "Match",
@@ -205,6 +251,165 @@
         "addFailedFallback": "Could not add the download-link.",
         "added": "Added download-link."
     },
-    "metadata": { "goToManga": "Go to Manga", "useAsSource": "Use as Source for Manga", "isSource": "Is Source" },
-    "downloads": { "includeFinished": "Include finished downloads" }
+    "metadata": {
+        "goToManga": "Go to Manga",
+        "useAsSource": "Use as Source for Manga",
+        "isSource": "Is Source"
+    },
+    "downloads": {
+        "includeFinished": "Include finished downloads"
+    },
+    "tasks": {
+        "type": {
+            "BackfillComicInfoTask": "Backfill ComicInfo",
+            "DbFileCleanupTask": "File cleanup",
+            "GetMangaChaptersTask": "Get chapters",
+            "MissingChapterScanTask": "Missing chapter scan",
+            "PeriodicMangaChapterFetcherTask": "Periodic chapter fetch",
+            "DownloadChapterTask": "Download Chapter Task"
+        },
+        "state": {
+            "Pending": {
+                "label": "Pending",
+                "description": "Not yet queued; either not due, or blocked on a dependency."
+            },
+            "Blocked": {
+                "label": "Blocked",
+                "description": "Due to run, but blocked on an unfinished dependency."
+            },
+            "Queued": {
+                "label": "Queued",
+                "description": "In the ready queue, waiting for a worker to pick it up."
+            },
+            "Running": {
+                "label": "Running",
+                "description": "Currently executing on a worker."
+            },
+            "Completed": {
+                "label": "Completed",
+                "description": "Finished successfully."
+            },
+            "Failed": {
+                "label": "Failed",
+                "description": "Finished with an exception."
+            }
+        },
+        "chaptersCount": "{count} chapter | {count} chapters",
+        "columns": {
+            "type": "Type",
+            "state": "State",
+            "manga": "Manga",
+            "chapter": "Chapter",
+            "lastRun": "Last Run",
+            "interval": "Interval",
+            "nextRun": "Next Run"
+        },
+        "empty": {
+            "title": "No tasks",
+            "description": "Tasks show up here as soon as something is queued."
+        },
+        "logs": {
+            "columns": {
+                "time": "Time",
+                "level": "Level",
+                "message": "Message"
+            },
+            "empty": {
+                "title": "No log entries",
+                "description": "Nothing has been logged for this task yet."
+            }
+        },
+        "filters": {
+            "presets": "Filter presets",
+            "preset": "Preset",
+            "manga": "Manga",
+            "allMangas": "All Mangas",
+            "type": "Type",
+            "allTypes": "All Types",
+            "state": "State",
+            "allStates": "All States",
+            "clear": "Clear filters",
+            "activeDownloads": "Active Downloads"
+        },
+        "lastRun": "Last run",
+        "exportCsv": "Export CSV"
+    },
+    "workers": {
+        "status": {
+            "Busy": "Busy",
+            "Retiring": "Retiring",
+            "Idle": "Idle"
+        },
+        "unknownTask": "Unknown task",
+        "columns": {
+            "worker": "Worker",
+            "status": "Status",
+            "currentTask": "Current Task",
+            "startedAt": "Started At",
+            "lastHeartbeat": "Last Heartbeat"
+        },
+        "empty": {
+            "title": "No workers",
+            "description": "No worker is running right now."
+        }
+    },
+    "toast": {
+        "chapterDeleted": "Chapter deleted",
+        "chapterDeleteFailed": "Could not delete Chapter!",
+        "setAsSource": "Set as Source!",
+        "removedAsSource": "Removed as Source",
+        "setDownloadLinkSourceFailed": "Could not set DownloadLink as Source!",
+        "removeDownloadLinkSourceFailed": "Could not remove DownloadLink as Source!",
+        "monitoringStarted": "Now Monitoring",
+        "monitoringStopped": "Stopped Monitoring",
+        "monitoringStartFailed": "Could not start monitoring",
+        "monitoringStopFailed": "Could not stop monitoring",
+        "mangaRemoved": "Manga removed",
+        "mangaRemoveFailed": "Could not remove Manga!",
+        "syncQueued": "Library sync queued!",
+        "syncFailed": "Could not queue library sync!",
+        "metadataSetFailed": "Could not set Metadata as Source!",
+        "mangaMerged": "Manga merged",
+        "mangaMergeFailed": "Could not merge Manga!"
+    },
+    "tour": {
+        "skip": "Skip tour",
+        "nextStep": "Next step",
+        "letsGo": "Let's go",
+        "finish": "Finish",
+        "steps": {
+            "intro": {
+                "title": "Let's queue your first download",
+                "body": "We'll find a manga and download its first chapters. It only takes a minute."
+            },
+            "searchButton": {
+                "title": "Search for a manga",
+                "body": "Click here (or press ⌘K / Ctrl K) and type a title to search your configured extensions."
+            },
+            "useAsSource": {
+                "title": "Add it to your library",
+                "body": "Picking a result creates a draft entry. Click this to make it the source for a new Manga."
+            },
+            "goToManga": {
+                "title": "Open the Manga page",
+                "body": "This is where you'll manage download links and see progress."
+            },
+            "moreDownloadLinks": {
+                "title": "Find download sources",
+                "body": "Search extensions for chapters of this series."
+            },
+            "addLink": {
+                "title": "Check the results",
+                "body": "Tranga has already searched all extensions for this series: the results are listed below. If none of them is right, search again with a different title, or paste a link to the series, choose an extension and click Add Link."
+            },
+            "matchDownloadLink": {
+                "title": "Confirm the match",
+                "body": "Click Match to confirm this is the right series — Tranga queues the download as soon as it's matched."
+            },
+            "outro": {
+                "title": "You're all set!",
+                "body": "Tranga will download chapters in the background. Check progress any time under Manga → Manga Downloads."
+            }
+        }
+    }
 }

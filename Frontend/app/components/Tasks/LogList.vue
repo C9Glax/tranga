@@ -16,8 +16,8 @@
         <template #empty>
             <UEmpty
                 icon="i-lucide-scroll-text"
-                title="No log entries"
-                description="Nothing has been logged for this task yet."
+                :title="$t('tasks.logs.empty.title')"
+                :description="$t('tasks.logs.empty.description')"
                 variant="naked" />
         </template>
     </UTable>
@@ -29,12 +29,14 @@ import type { TableColumn } from '@nuxt/ui/components/Table.vue';
 
 defineProps<{ logs?: ServicesTasksTaskLogEntry[]; loading?: boolean }>();
 
+const { t } = useI18n();
+
 const tableRef = useTemplateRef('tableRef');
 defineExpose({ tableRef });
 
-const columns: TableColumn<ServicesTasksTaskLogEntry>[] = [
-    { accessorKey: 'timestamp', header: 'Time' },
-    { accessorKey: 'level', header: 'Level' },
-    { accessorKey: 'message', header: 'Message' },
-];
+const columns = computed((): TableColumn<ServicesTasksTaskLogEntry>[] => [
+    { accessorKey: 'timestamp', header: t('tasks.logs.columns.time') },
+    { accessorKey: 'level', header: t('tasks.logs.columns.level') },
+    { accessorKey: 'message', header: t('tasks.logs.columns.message') },
+]);
 </script>

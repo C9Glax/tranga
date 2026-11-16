@@ -38,7 +38,7 @@
         <template #state-cell="{ row }">
             <span v-if="isGroupRow(row.original)" class="text-dimmed">-</span>
             <UTooltip v-else :text="taskStateDescription(row.original.status)">
-                <UBadge :label="row.original.status" :color="taskStateBadgeColor(row.original.status)" variant="subtle" />
+                <UBadge :label="taskStateLabel(row.original.status)" :color="taskStateBadgeColor(row.original.status)" variant="subtle" />
             </UTooltip>
         </template>
 
@@ -48,7 +48,7 @@
         </template>
 
         <template #chapter-cell="{ row }">
-            <UBadge v-if="isGroupRow(row.original)" :label="`${row.original.tasks.length} chapters`" variant="subtle" color="neutral" />
+            <UBadge v-if="isGroupRow(row.original)" :label="$t('tasks.chaptersCount', row.original.tasks.length)" variant="subtle" color="neutral" />
             <TasksChapterCell v-else-if="'chapter' in row.original" :chapter="row.original.chapter" />
         </template>
 
@@ -80,8 +80,8 @@
         <template #empty>
             <UEmpty
                 icon="i-lucide-list-checks"
-                title="No tasks"
-                description="Tasks show up here as soon as something is queued."
+                :title="$t('tasks.empty.title')"
+                :description="$t('tasks.empty.description')"
                 variant="naked" />
         </template>
     </UTable>
@@ -104,6 +104,8 @@ type DisplayRow = ServicesTasksTask | ChapterTaskGroup;
 const isGroupRow = (row: DisplayRow): row is ChapterTaskGroup => '__group' in row;
 
 const props = defineProps<{ tasks?: ServicesTasksTask[]; loading?: boolean }>();
+
+const { t } = useI18n();
 
 const nextRun = (task: ServicesTasksTask): Date | undefined => {
     if (!task.lastRun || !task.interval) return undefined;
@@ -241,12 +243,12 @@ const sortableHeader = (label: string) => {
     };
 };
 
-const columns: TableColumn<DisplayRow>[] = [
+const columns = computed((): TableColumn<DisplayRow>[] => [
     { accessorKey: 'expand', header: '', enableSorting: false },
-    { accessorKey: 'type', header: 'Type', enableSorting: false },
+    { accessorKey: 'type', header: t('tasks.columns.type'), enableSorting: false },
     {
         accessorKey: 'state',
-        header: sortableHeader('State'),
+        header: sortableHeader(t('tasks.columns.state')),
         sortingFn: (rowA, rowB) => {
             const a = rowState(rowA.original);
             const b = rowState(rowB.original);
@@ -256,22 +258,22 @@ const columns: TableColumn<DisplayRow>[] = [
             return STATE_SORT_ORDER[a] - STATE_SORT_ORDER[b];
         },
     },
-    { accessorKey: 'manga', header: 'Manga', enableSorting: false },
+    { accessorKey: 'manga', header: t('tasks.columns.manga'), enableSorting: false },
     {
         accessorKey: 'chapter',
-        header: sortableHeader('Chapter'),
+        header: sortableHeader(t('tasks.columns.chapter')),
         sortingFn: (rowA, rowB) => compareChapterNumber(rowChapterNumber(rowA.original), rowChapterNumber(rowB.original)),
     },
     {
         accessorKey: 'lastRun',
-        header: sortableHeader('Last Run'),
+        header: sortableHeader(t('tasks.columns.lastRun')),
         sortingFn: (rowA, rowB) => compareNullableDate(rowLastRun(rowA.original), rowLastRun(rowB.original)),
     },
-    { accessorKey: 'interval', header: 'Interval', enableSorting: false },
+    { accessorKey: 'interval', header: t('tasks.columns.interval'), enableSorting: false },
     {
         accessorKey: 'nextRun',
-        header: sortableHeader('Next Run'),
+        header: sortableHeader(t('tasks.columns.nextRun')),
         sortingFn: (rowA, rowB) => compareNullableDate(rowNextRun(rowA.original), rowNextRun(rowB.original)),
     },
-];
+]);
 </script>
