@@ -39,6 +39,17 @@ IResourceBuilder<PostgresServerResource> postgres = builder
     {
         service.Name = "tranga-pg";
         service.Networks = ["tranga"];
+        // The services migrate the database on startup, so they must only start once Postgres accepts connections.
+        // -h 127.0.0.1 matters: while the image initializes a fresh data directory it runs a temporary server that
+        // only listens on the unix socket, which a plain `pg_isready` already reports as ready.
+        service.Healthcheck = new Healthcheck
+        {
+            Test = ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\""],
+            Interval = "5s",
+            Timeout = "5s",
+            Retries = 12,
+            StartPeriod = "10s"
+        };
     });
 IResourceBuilder<PostgresDatabaseResource> db = postgres.AddDatabase(EnvVars.DBName);
 
@@ -117,7 +128,7 @@ IResourceBuilder<ProjectResource> tasksService = builder.AddProject<Services_Tas
         });
         service.DependsOn = new()
         {
-            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_healthy" } },
             { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
@@ -165,7 +176,7 @@ IResourceBuilder<ProjectResource> mangaService = builder.AddProject<Services_Man
         });
         service.DependsOn = new()
         {
-            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_healthy" } },
             { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
@@ -200,7 +211,7 @@ IResourceBuilder<ProjectResource> notificationsService = builder.AddProject<Serv
         service.Image = "ghcr.io/c9glax/tranga-services_notifications:external-connectors";
         service.DependsOn = new()
         {
-            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_healthy" } },
             { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
@@ -243,7 +254,7 @@ IResourceBuilder<ProjectResource> librariesService = builder.AddProject<Services
         });
         service.DependsOn = new()
         {
-            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_healthy" } },
             { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";
@@ -278,7 +289,7 @@ IResourceBuilder<ProjectResource> authService = builder.AddProject<Services_Auth
         service.Image = "ghcr.io/c9glax/tranga-services_auth:external-connectors";
         service.DependsOn = new()
         {
-            { "tranga-pg", new ServiceDependency(){ Condition = "service_started" } },
+            { "tranga-pg", new ServiceDependency(){ Condition = "service_healthy" } },
             { "messaging", new ServiceDependency(){ Condition = "service_healthy" } }
         };
         service.Restart = "on-failure:3";

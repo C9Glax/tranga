@@ -35,7 +35,7 @@ public sealed class Service : Common.Services.Service
         if (!Constants.OpenApiDocumentationRun)
         {
             using MangaContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
-            context.Database.MigrateAsync(CancellationToken.None).Wait();
+            context.Database.MigrateWithLockAsync(CancellationToken.None, logger: App.Logger).Wait();
 
             // Runtime-configurable settings are persisted; an environment variable still takes precedence (locked).
             if (!Settings.AllowNSFWLocked

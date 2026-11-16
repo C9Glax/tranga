@@ -1,3 +1,4 @@
+using Common.Database;
 using Common.Services.Events;
 using Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -47,19 +48,21 @@ public sealed class Service : Common.Services.Service
         SetupWebApplication<Endpoints>("/tasks");
 
         if (!Constants.OpenApiDocumentationRun)
-            AddTrangaEventHandlers(App);
-
-        if (!Constants.OpenApiDocumentationRun)
         {
             using MangaContext mangaContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<MangaContext>();
-            mangaContext.Database.MigrateAsync(CancellationToken.None).Wait();
+            mangaContext.Database.MigrateWithLockAsync(CancellationToken.None, logger: App.Logger).Wait();
 
             using TasksContext tasksContext = App.Services.CreateScope().ServiceProvider.GetRequiredService<TasksContext>();
-            tasksContext.Database.MigrateAsync(CancellationToken.None).Wait();
+            tasksContext.Database.MigrateWithLockAsync(CancellationToken.None, logger: App.Logger).Wait();
 
             // The user-defined sources live in the manga database; then load all download extensions.
             DownloadExtensionsCollection.RegisterProvider(CustomDownloaderStore.CreateProvider(App.Services));
             DownloadExtensionsCollection.RefreshAsync(CancellationToken.None).Wait();
+
+            // The handlers start consuming right away and work on the database and the extensions, so they only
+            // register once both are ready. Registered earlier, a message that is already waiting in the queue would
+            // be handled against a missing schema and dropped.
+            AddTrangaEventHandlers(App);
 
             CreateDefaultTasks(App.Services.GetRequiredService<TaskQueue>(), CancellationToken.None).Wait();
         }

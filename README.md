@@ -188,24 +188,16 @@ This starts everything and opens the Aspire dashboard, from which you can inspec
 Regenerate it with:
 
 ```bash
-dotnet run --project Tranga.AppHost/Tranga.AppHost.csproj --publisher docker-compose --output-path aspire-output
+dotnet run --project Tranga.AppHost/Tranga.AppHost.csproj -- --operation publish --step publish --output-path aspire-output
 ```
 
-Building the service container images during publish requires a [SixLabors ImageSharp](https://sixlabors.com/pricing/)
-license — `Common` depends on ImageSharp, and its license check only tolerates a missing license in Debug builds; the
-Release build used for publish fails without one. Supply yours via the `SixLaborsLicenseKey` Aspire parameter:
+This only writes `docker-compose.yaml` and `.env` (a relative output path is relative to the AppHost project). It does
+not build the service images, which CI publishes, so no [SixLabors ImageSharp](https://sixlabors.com/pricing/) license is
+needed either. Parameters that are new since the last run are added to `.env` with an empty value.
 
-```bash
-Parameters__SixLaborsLicenseKey="$(cat Common/sixlabors.lic)" \
-  dotnet run --project Tranga.AppHost/Tranga.AppHost.csproj --publisher docker-compose --output-path aspire-output
-```
-
-(`Common/sixlabors.lic` is gitignored — get one from [sixlabors.com/pricing](https://sixlabors.com/pricing/) and drop it there,
-or pass the license string directly.)
-
-> Aspire caches resolved publish parameter values per-deployment under `~/.aspire/deployments/*/development.json`. If you
-> change the license value and a re-run doesn't seem to pick it up, edit that file directly or delete it to force
-> re-resolution.
+> Don't use the older `--publisher docker-compose` form: with Aspire 13 it prepares the compose deployment targets twice
+> and fails with `Sequence contains more than one matching element` (while still exiting with code 0 and leaving both files
+> untouched, so check `git diff Tranga.AppHost/aspire-output` after regenerating).
 
 <!-- CONTRIBUTING -->
 ## Contributing
