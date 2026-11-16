@@ -13,9 +13,11 @@ on:
       - "Services.Notifications/**"
       - "Services.Notifications.Tests/**"
       - ".github/workflows/unit_tests-services_notifications.yml"
+  pull_request:
 
 jobs:
   build:
+    name: Notifications Service Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

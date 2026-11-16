@@ -13,9 +13,11 @@ on:
       - "Services.Libraries/**"
       - "Services.Libraries.Tests/**"
       - ".github/workflows/unit_tests-services_libraries.yml"
+  pull_request:
 
 jobs:
   build:
+    name: Libraries Service Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

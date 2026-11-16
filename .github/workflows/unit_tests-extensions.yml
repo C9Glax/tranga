@@ -10,9 +10,11 @@ on:
       - "Extensions.Tests/**"
       - "GeneratedExtensionClient/**"
       - ".github/workflows/unit_tests-extensions.yml"
+  pull_request:
 
 jobs:
   build:
+    name: Extensions Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
