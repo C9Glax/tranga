@@ -2117,6 +2117,16 @@
               }
             ]
           },
+          "series": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SeriesSpec"
+              }
+            ]
+          },
           "chapters": {
             "oneOf": [
               {
@@ -2344,6 +2354,10 @@
             "description": "How to find series.",
             "$ref": "#/components/schemas/SearchSpec"
           },
+          "series": {
+            "description": "How to read the page of a series, for a series that was added by its URL. Optional.",
+            "$ref": "#/components/schemas/SeriesSpec"
+          },
           "chapters": {
             "description": "How to list the chapters of a series.",
             "$ref": "#/components/schemas/ChaptersSpec"
@@ -2507,6 +2521,20 @@
           }
         },
         "description": "Extracts one value from an item (a search result, a chapter). For HTML, string SelectorField.Selector picks the element\n(relative to the item the field belongs to; empty = the item itself) and string? SelectorField.Attribute picks what to read\n(empty = the element's text). For JSON (SourceFormat.Json), string SelectorField.Selector is the path to the\nvalue inside the item and there are no attributes. The optional string? SelectorField.Regex post-processes the result."
+      },
+      "SeriesSpec": {
+        "type": "object",
+        "properties": {
+          "urlTemplate": {
+            "type": "string",
+            "description": "URL of the page that shows the series. `{url}` is the series URL (the default, for sites where it is the page\nitself); the named groups of string? SelectorDownloaderSettings.SeriesUrlPattern are available too, e.g.\n`/api/manga/{slug}` for a site that loads its pages from an API."
+          },
+          "cover": {
+            "description": "The cover image URL, in the page of the series (for JSON the path from the root of the answer). Unlike the\nfields of a search result it is not relative to an item. Without it, a series added by its URL gets no cover\nof the website.",
+            "$ref": "#/components/schemas/SelectorField"
+          }
+        },
+        "description": "How to read the page of a series. A series that is found by a search comes with its cover, one that is added by\npasting its URL does not: there is only the page of the series to take it from. Optional: without a cover field\nsuch a series is added without the cover of the website."
       },
       "SourceFormat": {
         "enum": [

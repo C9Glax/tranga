@@ -57,8 +57,9 @@ form explains every step and lets you try it against the real website before you
 A custom source works by scraping: Tranga fetches a web page (the search results, the chapter list of a series, the page of a
 chapter) and picks the data it needs out of the HTML with path matching, i.e. CSS selectors or XPath expressions, optionally
 refined with a regular expression. Websites whose pages are empty until JavaScript has loaded the content work too: there the
-source reads the JSON of the website's API, with paths (`data`, `manga.title`) in place of selectors. Searching, listing the
-chapters and finding the page images are three separate steps, each with its own page and selectors. A source is a small JSON
+source reads the JSON of the website's API, with paths (`data`, `manga.title`) in place of selectors. Searching, finding the
+cover on the page of a series (for a series that is added by pasting its link, which has no search result), listing the
+chapters and finding the page images are separate steps, each with its own page and selectors. A source is a small JSON
 document, so it can be shared.
 
 Examples to start from (they can also be loaded with **Start from an example** in the form), each mirroring the

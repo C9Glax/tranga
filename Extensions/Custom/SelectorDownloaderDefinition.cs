@@ -146,6 +146,9 @@ public sealed record SelectorDownloaderDefinition : SelectorDownloaderSettings
     /// <summary>How to find series.</summary>
     public SearchSpec Search { get; init; } = new();
 
+    /// <summary>How to read the page of a series, for a series that was added by its URL. Optional.</summary>
+    public SeriesSpec Series { get; init; } = new();
+
     /// <summary>How to list the chapters of a series.</summary>
     public ChaptersSpec Chapters { get; init; } = new();
 
@@ -159,6 +162,7 @@ public sealed record SelectorDownloaderDefinition : SelectorDownloaderSettings
     public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext) =>
         base.Validate(validationContext)
             .Concat(Search.Validate(nameof(Search), Format))
+            .Concat(Series.Validate(nameof(Series), Format, SeriesUrlGroups()))
             .Concat(Chapters.Validate(nameof(Chapters), Format, SeriesUrlGroups()))
             .Concat(Images.Validate(nameof(Images), Format));
 }
@@ -346,6 +350,41 @@ public sealed record SearchSpec
         .Concat(SelectorValidation.Field($"{member}.{nameof(Title)}", "Search result title", Title, format, required: true))
         .Concat(SelectorValidation.Field($"{member}.{nameof(Url)}", "Search result URL", Url, format, required: true))
         .Concat(SelectorValidation.Field($"{member}.{nameof(Cover)}", "Search result cover", Cover, format, required: true));
+}
+
+/// <summary>
+/// How to read the page of a series. A series that is found by a search comes with its cover, one that is added by
+/// pasting its URL does not: there is only the page of the series to take it from. Optional: without a cover field
+/// such a series is added without the cover of the website.
+/// </summary>
+public sealed record SeriesSpec
+{
+    /// <summary>
+    /// URL of the page that shows the series. <c>{url}</c> is the series URL (the default, for sites where it is the page
+    /// itself); the named groups of <see cref="SelectorDownloaderSettings.SeriesUrlPattern"/> are available too, e.g.
+    /// <c>/api/manga/{slug}</c> for a site that loads its pages from an API.
+    /// </summary>
+    public string UrlTemplate { get; init; } = "{url}";
+
+    /// <summary>
+    /// The cover image URL, in the page of the series (for JSON the path from the root of the answer). Unlike the
+    /// fields of a search result it is not relative to an item. Without it, a series added by its URL gets no cover
+    /// of the website.
+    /// </summary>
+    public SelectorField Cover { get; init; } = new();
+
+    /// <summary>Whether the section says where the cover is, for a source with this <paramref name="format"/>.</summary>
+    public bool HasCover(SourceFormat format) => !SelectorValidation.IsUnused(Cover, format);
+
+    /// <summary>
+    /// Everything that is wrong with the series section. <paramref name="member"/> is the name it has in its parent (for
+    /// the error keys), <paramref name="format"/> the <see cref="SelectorDownloaderSettings.Format"/> of the source,
+    /// <paramref name="seriesUrlGroups"/> the named groups of the series URL pattern that <see cref="UrlTemplate"/> may use.
+    /// </summary>
+    public IEnumerable<ValidationResult> Validate(string member, SourceFormat format, IEnumerable<string> seriesUrlGroups) => SelectorValidation
+        // Nothing is requested when there is no cover to read, so the template only has to be right when it is used.
+        .Template($"{member}.{nameof(UrlTemplate)}", "Series page URL", UrlTemplate, ["url", .. seriesUrlGroups], required: false)
+        .Concat(SelectorValidation.Field($"{member}.{nameof(Cover)}", "Series cover", Cover, format, required: false));
 }
 
 /// <summary>How to list the chapters of a series.</summary>

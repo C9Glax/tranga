@@ -13,6 +13,67 @@ public sealed class SelectorDownloaderDefinitionTests
     public void MangaTownExampleIsValid() => Assert.Empty((SelectorDownloaderJson.MangaTownExample() with { Id = Guid.NewGuid() }).Validate());
 
     [Fact]
+    public void EveryExampleHasItsOwnCoverSelectorForSeriesAddedByUrl()
+    {
+        IReadOnlyList<SelectorDownloaderDefinition> examples = SelectorDownloaderJson.Examples();
+
+        // nothing is guessed: what a site's series page offers (a preview image, an image in the info block, a field of
+        // the API answer) is written down by the source itself
+        Assert.All(examples, example => Assert.True(example.Series.HasCover(example.Format), example.Name));
+        Assert.Equal(examples.Count, examples.Select(e => e.Series.Cover.Selector).Distinct().Count());
+    }
+
+    [Fact]
+    public void TheSeriesSectionIsOptional()
+    {
+        SelectorDownloaderDefinition definition = Valid;
+
+        Assert.Empty((definition with { Series = new SeriesSpec() }).Validate());
+        Assert.False(new SeriesSpec().HasCover(SourceFormat.Html));
+        // a blank template is the series URL itself
+        Assert.Empty((definition with { Series = definition.Series with { UrlTemplate = "" } }).Validate());
+    }
+
+    [Fact]
+    public void TheSeriesCoverNeedsASelectorThatCompiles()
+    {
+        SelectorDownloaderDefinition definition = Valid;
+
+        IReadOnlyList<string> errors = (definition with
+        {
+            Series = definition.Series with { Cover = new SelectorField { Selector = "img[", Attribute = "src" } }
+        }).Validate();
+
+        Assert.Contains(errors, e => e.Contains("Series cover is not a valid selector"));
+    }
+
+    [Fact]
+    public void TheSeriesPageUrlMayOnlyUseThePlaceholdersOfTheSeriesUrl()
+    {
+        SelectorDownloaderDefinition definition = Valid;
+
+        // {id} is a group of the series URL pattern of the example, {query} only exists in the search
+        Assert.Empty((definition with { Series = definition.Series with { UrlTemplate = "/series/{id}/info" } }).Validate());
+        Assert.Contains((definition with { Series = definition.Series with { UrlTemplate = "/series/{query}" } }).Validate(),
+            e => e.Contains("Series page URL") && e.Contains("{query}"));
+    }
+
+    [Fact]
+    public void TheSeriesSectionSurvivesJsonRoundTrip()
+    {
+        SelectorDownloaderDefinition example = SelectorDownloaderJson.MangaUnoExample();
+
+        SelectorDownloaderDefinition? copy = SelectorDownloaderJson.Deserialize(SelectorDownloaderJson.Serialize(example));
+
+        Assert.NotNull(copy);
+        Assert.Equal(example.Series, copy.Series);
+        // a stored definition from before the section existed has none, which means no cover of the website
+        SelectorDownloaderDefinition? stored = SelectorDownloaderJson.Deserialize("""{ "name": "Old", "baseUrl": "https://example.com" }""");
+        Assert.NotNull(stored);
+        Assert.False(stored.Series.HasCover(stored.Format));
+    }
+
+    [Fact]
     public void ThePageListIsOptional() => Assert.True(Valid.Images.PageSelector.IsUnused);
 
     [Fact]

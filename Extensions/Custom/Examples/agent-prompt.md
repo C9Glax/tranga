@@ -16,9 +16,10 @@ that exists there (it makes your tests easier). Do not do anything else before y
 document.
 
 Tranga is a manga downloader. A custom source tells it how to use a website without any code: Tranga requests a
-page and picks the data it needs out of the answer. Three steps are described, each with its own request: **search**
-(find series by a title), **chapters** (list the chapters of a series) and **images** (find the page images of a
-chapter).
+page and picks the data it needs out of the answer. Four steps are described, each with its own request: **search**
+(find series by a title), **series** (the cover of a series that a user adds by pasting its address, which has no
+search result to take it from), **chapters** (list the chapters of a series) and **images** (find the page images of
+a chapter).
 
 A source reads one of two formats, for all of its steps:
 
@@ -48,12 +49,15 @@ A source reads one of two formats, for all of its steps:
      an `html` source that uses those addresses.
 2. **Search.** Find the address that answers with the results for a title you know exists. Find what is repeated once
    per result (the *item*), and in it the title, the link to the series and the cover image.
-3. **Series.** Fetch the chapters of a series from the results (the series page, or the address they are loaded from,
-   see `seriesUrlPattern` below). Find what is repeated once per chapter, and in it the link, the number, and if
-   there are any the title and date. Check whether the list is paginated.
-4. **Chapter.** Fetch a chapter. Find the page images, in reading order. Check whether all of them are in this one
+3. **Series cover.** Fetch the page of one series (or the address it is loaded from). Find the cover image on it: the
+   image of the info block, a `<meta>` tag the site names its cover in for link previews, a field of the API answer.
+   Every website does this differently, so look at the page and write the selector for **this** website.
+4. **Chapters.** Fetch the chapters of a series from the results (the series page, or the address they are loaded
+   from, see `seriesUrlPattern` below). Find what is repeated once per chapter, and in it the link, the number, and
+   if there are any the title and date. Check whether the list is paginated.
+5. **Chapter.** Fetch a chapter. Find the page images, in reading order. Check whether all of them are in this one
    answer, or whether every page of the chapter has to be fetched on its own (then use `pageSelector`).
-5. **Write the definition**, then **verify** it, then **answer** (see below).
+6. **Write the definition**, then **verify** it, then **answer** (see below).
 
 ## The definition
 
@@ -78,6 +82,10 @@ with example values for an `html` source:
     "title": { "selector": "h3 a", "attribute": "title", "regex": "^(.+?) \\(Manga\\)$", "replacement": "" },
     "url": { "selector": "h3 a", "attribute": "href" },
     "cover": { "selector": "img", "attribute": "data-src,src" }
+  },
+  "series": {
+    "urlTemplate": "/series/{id}",
+    "cover": { "selector": "div.info img.cover", "attribute": "src" }
   },
   "chapters": {
     "urlTemplate": "/series/{id}/chapters",
@@ -112,7 +120,7 @@ with example values for an `html` source:
 | `useFlareSolverr` | `true` only if the website sits behind a Cloudflare challenge (a plain request is answered with a "Just a moment" page or HTTP 403/503). Needs a FlareSolverr instance on the Tranga installation. |
 | `requestsPerSecond` | Requests per second to the website, 0.1 to 20. Be conservative (0.5 to 2). |
 | `headers` | Extra request headers (a cookie, a `User-Agent`, ...). `Host`, `Content-Length`, `Transfer-Encoding` and `Connection` cannot be set. A `json` source asks for JSON (`Accept`) by itself. |
-| `seriesUrlPattern` | Optional regular expression a series URL has to match. Its **named groups** (`(?<id>…)`) can be used as `{id}` in `chapters.urlTemplate`. Needed when the chapter list is at a different address than the series page, which is always the case for an API. |
+| `seriesUrlPattern` | Optional regular expression a series URL has to match. Its **named groups** (`(?<id>…)`) can be used as `{id}` in `chapters.urlTemplate` and `series.urlTemplate`. Needed when the chapter list is at a different address than the series page, which is always the case for an API. |
 
 ### Selector fields
 
@@ -153,10 +161,22 @@ booleans are read as they are written. `null`, empty strings, objects and lists 
 - `title`, `url` and `cover` are all required and are looked up **inside** the item. `url` has to become the address
   of the series **page** (what a person would open), also for `json`: build it with `regex` and `replacement` when the
   API only has an id or slug.
-- When a user adds a series by pasting its URL there is no search result to take the cover from. For `html` sources
-  Tranga then uses the preview image of the series page (its `og:image`, else `twitter:image` meta tag); nothing has
-  to be configured, but check that the series page has one. `json` sources have no series page, such a series gets the
-  cover of the manga it was added to.
+
+### Series
+
+Optional, but without it a series that a user adds by pasting its address has no cover of the website (it gets the
+cover of the manga it was added to instead). A series that is found by a search comes with its cover, so this is only
+about the page of the series.
+
+- `urlTemplate`: the address of the page that shows the series. Defaults to `{url}`, the series address itself.
+  The named groups of `seriesUrlPattern` are available (`/api/manga/{slug}`), for sites whose page is built from an API.
+- `cover`: the address of the cover image. Unlike the fields of a search result it is **not** relative to an item:
+  `html`: a selector for the whole page, with the attribute that holds the address (`src`, `data-src`, or `content` of
+  a `<meta>` tag); `json`: the path from the root of the answer (`manga.cover`). `regex` and `replacement` work as
+  everywhere (`^` with the address of the image host as `replacement` puts a host in front of a path).
+- Choose the selector so that it finds the cover of **this** series and nothing else on the page: sites show covers of
+  other series in lists next to it. Do not assume that the site has a `<meta property="og:image">` tag: some do, and
+  the example of such a site uses it, others do not. Look at the page.
 
 ### Chapters
 
@@ -188,7 +208,7 @@ booleans are read as they are written. `null`, empty strings, objects and lists 
 ### Placeholders
 
 Only these exist in the URL templates, anything else is rejected: `{query}`, `{page}` (search), `{url}` and the named
-groups of `seriesUrlPattern` (chapters), `{url}` and the named groups of `images.urlPattern` (images). The same ones
+groups of `seriesUrlPattern` (series and chapters), `{url}` and the named groups of `images.urlPattern` (images). The same ones
 can be used in the `replacement` of the fields of that step.
 
 ## Verify
@@ -205,9 +225,10 @@ a sensible order, images that are the actual pages (not thumbnails, logos or ads
   POST <tranga>/api/mangas/customDownloaders/test
   {
     "settings": { …the general fields: name, baseUrl, format, languages, useFlareSolverr, requestsPerSecond, headers, seriesUrlPattern… },
-    "step": "search" | "chapters" | "images",
+    "step": "search" | "series" | "chapters" | "images",
     "input": "<a search text> | <a series URL> | <a chapter URL>",
     "search": { …the search section… },     // for step "search"
+    "series": { …the series section… },     // for step "series" (the cover of the page, it needs a cover)
     "chapters": { …the chapters section… }, // for step "chapters"
     "images": { …the images section… }      // for step "images"
   }
@@ -233,9 +254,12 @@ image addresses that have to be computed), say so and explain why, instead of gu
 Complete, working definitions of three websites. Read the ones of your format first and copy their style.
 
 - `html`: <https://raw.githubusercontent.com/C9Glax/tranga/main/Extensions/Custom/Examples/weebcentral.json>
-  loads the search results and the chapter list from separate HTML fragments (see `seriesUrlPattern` and `{id}`).
+  loads the search results and the chapter list from separate HTML fragments (see `seriesUrlPattern` and `{id}`) and
+  reads the cover of a series from the `og:image` tag of its page.
 - `html`: <https://raw.githubusercontent.com/C9Glax/tranga/main/Extensions/Custom/Examples/mangatown.json>
-  has one image per HTML page (`pageSelector`) and reads the chapter number from the link.
+  has one image per HTML page (`pageSelector`), reads the chapter number from the link and the cover from the image of
+  the info block of the series page.
 - `json`: <https://raw.githubusercontent.com/C9Glax/tranga/main/Extensions/Custom/Examples/mangauno.json>
-  is a JavaScript application on top of an API: links are built from a slug and an id with `replacement`, and
-  `images.urlPattern` leads from the chapter page back to the API.
+  is a JavaScript application on top of an API: links are built from a slug and an id with `replacement`, the cover
+  comes from the same API answer as the chapters (`series.urlTemplate`), and `images.urlPattern` leads from the
+  chapter page back to the API.

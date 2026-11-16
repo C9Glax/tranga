@@ -37,6 +37,19 @@ public sealed class MangaTownCustomSourceTests : Common.Tests.TrangaTest, IDispo
     }
 
     [Fact]
+    public async Task CoverOfAPastedSeriesUrlIsDownloadedFromThePageOfTheSeries()
+    {
+        // a series that is added by its URL has no search result: the cover is the image of the info block of its page
+        MangaInfo manga = new(_extension.Identifier, "", SeriesUrl, SeriesUrl, new TrangaImage());
+
+        TrangaImage? cover = await _extension.GetCover(manga, ct);
+
+        Assert.NotNull(cover);
+        await cover.ToJpeg(ct); // an image, not an error page
+        Assert.True(cover.Length > 0);
+    }
+
+    [Fact]
     public async Task ChaptersAreListedFromTheSeriesPage()
     {
         MangaInfo manga = new(_extension.Identifier, "Naruto dj - Family Wedding", SeriesUrl, SeriesUrl, new TrangaImage());

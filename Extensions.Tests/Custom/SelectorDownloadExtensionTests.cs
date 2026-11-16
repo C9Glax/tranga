@@ -140,67 +140,147 @@ public sealed class SelectorDownloadExtensionTests : Common.Tests.TrangaTest, ID
 
     #endregion
 
-    #region Cover
+    #region Series cover
 
     private string SeriesUrl => $"{_site.BaseUrl}/series/7/some-series";
 
+    private static readonly SeriesSpec CoverImage = new() { Cover = new SelectorField { Selector = "img.cover", Attribute = "src" } };
+
+    private SelectorDownloadExtension ExtensionWithSeries(SeriesSpec series, SelectorDownloaderDefinition? definition = null) =>
+        Extension((definition ?? Definition()) with { Series = series });
+
     [Fact]
-    public async Task CoverOfAPastedSeriesUrlIsTheOgImageOfThePage()
+    public async Task CoverIsTakenFromThePageOfTheSeriesWithTheSelectorOfTheDefinition()
     {
         _site
-            .Html("/series/7/some-series", $"""<html><head><meta property="og:image" content="{_site.BaseUrl}/covers/1.jpg"></head></html>""")
+            .Html("/series/7/some-series", $"""<html><body><img src="/covers/2.jpg"><img class="cover" src="{_site.BaseUrl}/covers/1.jpg"></body></html>""")
             .Map("/covers/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
 
-        TrangaImage? cover = await Extension().GetCover(Manga(SeriesUrl), ct);
+        TrangaImage? cover = await ExtensionWithSeries(CoverImage).GetCover(Manga(SeriesUrl), ct);
 
         Assert.NotNull(cover);
         Assert.Equal(Jpeg().Length, cover.Length);
+        Assert.Equal(["/series/7/some-series", "/covers/1.jpg"], _site.Requests.Select(r => r.PathAndQuery));
     }
 
     [Fact]
-    public async Task RelativeOgImageIsResolvedAgainstThePage()
+    public async Task RelativeCoverUrlIsResolvedAgainstThePage()
     {
         _site
-            .Html("/series/7/some-series", """<html><head><meta property="og:image" content="/covers/1.jpg"></head></html>""")
+            .Html("/series/7/some-series", """<html><body><img class="cover" src="/covers/1.jpg"></body></html>""")
             .Map("/covers/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
 
-        Assert.NotNull(await Extension().GetCover(Manga(SeriesUrl), ct));
+        Assert.NotNull(await ExtensionWithSeries(CoverImage).GetCover(Manga(SeriesUrl), ct));
     }
 
     [Fact]
-    public async Task TwitterImageIsUsedWhenThePageHasNoOgImage()
+    public async Task OnlyTheSelectorOfTheDefinitionDecidesWhereTheCoverIs()
     {
+        // a page that names its cover for link previews: that is the business of the sources that read it, not of the engine
         _site
-            .Html("/series/7/some-series", """<html><head><meta name="twitter:image" content="/covers/2.jpg"></head></html>""")
-            .Map("/covers/2.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+            .Html("/series/7/some-series", """<html><head><meta property="og:image" content="/covers/1.jpg"></head><body></body></html>""")
+            .Map("/covers/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
 
-        Assert.NotNull(await Extension().GetCover(Manga(SeriesUrl), ct));
+        Assert.Null(await ExtensionWithSeries(CoverImage).GetCover(Manga(SeriesUrl), ct));
+        Assert.DoesNotContain(_site.Requests, r => r.PathAndQuery == "/covers/1.jpg");
+
+        SeriesSpec previewImage = new() { Cover = new SelectorField { Selector = "meta[property='og:image']", Attribute = "content" } };
+        Assert.NotNull(await ExtensionWithSeries(previewImage).GetCover(Manga(SeriesUrl), ct));
     }
 
     [Fact]
-    public async Task PageWithoutPreviewImageHasNoCover()
+    public async Task WithoutACoverSelectorNothingIsRequestedAndThereIsNoCover()
     {
-        _site.Html("/series/7/some-series", "<html><head><title>Some series</title></head><body><img src=\"/covers/1.jpg\"></body></html>");
+        _site.Html("/series/7/some-series", """<html><body><img class="cover" src="/covers/1.jpg"></body></html>""");
 
         Assert.Null(await Extension().GetCover(Manga(SeriesUrl), ct));
+        Assert.Empty(_site.Requests);
+    }
+
+    [Fact]
+    public async Task ThePageOfTheSeriesCanBeAtAnotherUrlThanTheSeriesUrl()
+    {
+        // like the chapter list: the named groups of the series URL pattern are available in the template
+        _site
+            .Html("/details/7", """<html><body><img class="cover" src="/covers/1.jpg"></body></html>""")
+            .Map("/covers/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+        SelectorDownloaderDefinition definition = Definition() with { SeriesUrlPattern = $"^{System.Text.RegularExpressions.Regex.Escape(_site.BaseUrl)}/series/(?<id>\\d+)" };
+
+        TrangaImage? cover = await ExtensionWithSeries(CoverImage with { UrlTemplate = "/details/{id}" }, definition).GetCover(Manga(SeriesUrl), ct);
+
+        Assert.NotNull(cover);
+        Assert.Equal(["/details/7", "/covers/1.jpg"], _site.Requests.Select(r => r.PathAndQuery));
+    }
+
+    [Fact]
+    public async Task RegexAndReplacementOfTheCoverApplyLikeInTheOtherSteps()
+    {
+        // the page only has a file name, the image is somewhere else (here: another path of the fixture site, like a CDN)
+        _site
+            .Html("/series/7/some-series", """<html><body><img class="cover" src="thumb-1.jpg"></body></html>""")
+            .Map("/covers/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+        SeriesSpec onCdn = new() { Cover = CoverImage.Cover with { Regex = @"^thumb-(\d+\.jpg)$", Replacement = $"{_site.BaseUrl}/covers/$1" } };
+
+        Assert.NotNull(await ExtensionWithSeries(onCdn).GetCover(Manga(SeriesUrl), ct));
+        // without the replacement the file name would be resolved against the page and not found
+        Assert.Null(await ExtensionWithSeries(CoverImage).GetCover(Manga(SeriesUrl), ct));
     }
 
     [Fact]
     public async Task CoverIsMissingWhenThePageOrTheImageCannotBeFetched()
     {
-        SelectorDownloadExtension extension = Extension();
+        SelectorDownloadExtension extension = ExtensionWithSeries(CoverImage);
         // no page at all (404)
         Assert.Null(await extension.GetCover(Manga(SeriesUrl), ct));
 
         // a page, but the image it names is gone (404)
-        _site.Html("/series/7/some-series", """<html><head><meta property="og:image" content="/covers/gone.jpg"></head></html>""");
+        _site.Html("/series/7/some-series", """<html><body><img class="cover" src="/covers/gone.jpg"></body></html>""");
+        Assert.Null(await extension.GetCover(Manga(SeriesUrl), ct));
+
+        // a page that does not have the cover at all
+        _site.Html("/series/7/some-series", "<html><body><p>Some series</p></body></html>");
         Assert.Null(await extension.GetCover(Manga(SeriesUrl), ct));
     }
 
     [Fact]
     public async Task CoverIsNotFetchedForAUrlOfAnotherWebsite()
     {
-        Assert.Null(await Extension().GetCover(Manga("https://other.test/series/7/some-series"), ct));
+        Assert.Null(await ExtensionWithSeries(CoverImage).GetCover(Manga("https://other.test/series/7/some-series"), ct));
+        Assert.Empty(_site.Requests);
+    }
+
+    [Fact]
+    public async Task TestSeriesReportsTheCoverOfThePage()
+    {
+        _site.Html("/series/7/some-series", """<html><body><img class="cover" src="/covers/1.jpg"></body></html>""");
+
+        StepTestResult result = await ExtensionWithSeries(CoverImage).TestSeriesAsync(SeriesUrl, ct);
+
+        Assert.Null(result.Error);
+        Assert.Empty(result.Warnings);
+        Assert.Equal(1, result.ItemCount);
+        Assert.Equal($"{_site.BaseUrl}/covers/1.jpg", Assert.Single(result.Rows)["cover"]);
+        Assert.Equal(SeriesUrl, result.RequestUrl);
+    }
+
+    [Fact]
+    public async Task TestSeriesWarnsWhenThePageHasNoCover()
+    {
+        _site.Html("/series/7/some-series", "<html><body><p>Some series</p></body></html>");
+
+        StepTestResult result = await ExtensionWithSeries(CoverImage).TestSeriesAsync(SeriesUrl, ct);
+
+        Assert.Null(result.Error);
+        Assert.Equal(0, result.ItemCount);
+        Assert.Contains(result.Warnings, w => w.Contains("cover selector found no image address"));
+    }
+
+    [Fact]
+    public async Task TestSeriesRejectsAUrlThatIsNoSeriesOfTheSource()
+    {
+        StepTestResult result = await ExtensionWithSeries(CoverImage).TestSeriesAsync("https://other.test/series/7", ct);
+
+        Assert.Contains("not a series page of this source", result.Error);
         Assert.Empty(_site.Requests);
     }
 

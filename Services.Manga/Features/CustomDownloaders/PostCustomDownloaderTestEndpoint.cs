@@ -27,6 +27,7 @@ internal abstract class PostCustomDownloaderTestEndpoint
         using SelectorDownloadExtension extension = req.TestedStep switch
         {
             SelectorDownloaderStep.Search => SelectorDownloadExtension.CreateForTest(req.Settings, search: req.Search),
+            SelectorDownloaderStep.Series => SelectorDownloadExtension.CreateForTest(req.Settings, series: req.Series),
             SelectorDownloaderStep.Chapters => SelectorDownloadExtension.CreateForTest(req.Settings, chapters: req.Chapters),
             _ => SelectorDownloadExtension.CreateForTest(req.Settings, images: req.Images)
         };
@@ -38,6 +39,7 @@ internal abstract class PostCustomDownloaderTestEndpoint
             StepTestResult result = req.TestedStep switch
             {
                 SelectorDownloaderStep.Search => await extension.TestSearchAsync(input, timeout.Token),
+                SelectorDownloaderStep.Series => await extension.TestSeriesAsync(input, timeout.Token),
                 SelectorDownloaderStep.Chapters => await extension.TestChaptersAsync(input, timeout.Token),
                 _ => await extension.TestImagesAsync(input, timeout.Token)
             };
@@ -59,14 +61,17 @@ internal abstract class PostCustomDownloaderTestEndpoint
         /// <summary>The general settings of the website (base URL, headers, rate limit, ...)</summary>
         public required SelectorDownloaderSettings Settings { get; init; }
 
-        /// <summary>What to test: <c>search</c>, <c>chapters</c> or <c>images</c></summary>
+        /// <summary>What to test: <c>search</c>, <c>series</c>, <c>chapters</c> or <c>images</c></summary>
         public required string Step { get; init; }
 
-        /// <summary>The search text (search), a series URL (chapters) or a chapter URL (images)</summary>
+        /// <summary>The search text (search), a series URL (series and chapters) or a chapter URL (images)</summary>
         public required string Input { get; init; }
 
         /// <summary>How to find series. Required for the step <c>search</c></summary>
         public SearchSpec? Search { get; init; }
+
+        /// <summary>How to read the page of a series. Required for the step <c>series</c></summary>
+        public SeriesSpec? Series { get; init; }
 
         /// <summary>How to list chapters. Required for the step <c>chapters</c></summary>
         public ChaptersSpec? Chapters { get; init; }
@@ -82,7 +87,7 @@ internal abstract class PostCustomDownloaderTestEndpoint
         {
             if (!Enum.TryParse(Step, ignoreCase: true, out SelectorDownloaderStep step) || !Enum.IsDefined(step))
             {
-                yield return new ValidationResult($"Unknown step '{Step}'. Use search, chapters or images.", [nameof(Step)]);
+                yield return new ValidationResult($"Unknown step '{Step}'. Use search, series, chapters or images.", [nameof(Step)]);
                 yield break;
             }
 
@@ -98,6 +103,18 @@ internal abstract class PostCustomDownloaderTestEndpoint
                     else
                         foreach (ValidationResult result in Search.Validate(nameof(Search), Settings.Format))
                             yield return result;
+                    break;
+                case SelectorDownloaderStep.Series:
+                    if (Series is null)
+                        yield return new ValidationResult("The series section is required to test the series page.", [nameof(Series)]);
+                    else
+                    {
+                        foreach (ValidationResult result in Series.Validate(nameof(Series), Settings.Format, Settings.SeriesUrlGroups()))
+                            yield return result;
+                        // Nothing to try without a cover: the section is optional for a source, but not for its test.
+                        if (!Series.HasCover(Settings.Format))
+                            yield return new ValidationResult("The series cover is required to test the series page.", [$"{nameof(Series)}.{nameof(SeriesSpec.Cover)}"]);
+                    }
                     break;
                 case SelectorDownloaderStep.Chapters:
                     if (Chapters is null)

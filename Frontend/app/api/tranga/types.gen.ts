@@ -214,6 +214,7 @@ export type ServicesMangaPostCustomDownloaderTestRequest = {
     step: string;
     input: string;
     search?: null | ServicesMangaSearchSpec;
+    series?: null | ServicesMangaSeriesSpec;
     chapters?: null | ServicesMangaChaptersSpec;
     images?: null | ServicesMangaImagesSpec;
 };
@@ -282,6 +283,10 @@ export type ServicesMangaSelectorDownloaderDefinition = {
      * How to find series.
      */
     search?: ServicesMangaSearchSpec;
+    /**
+     * How to read the page of a series, for a series that was added by its URL. Optional.
+     */
+    series?: ServicesMangaSeriesSpec;
     /**
      * How to list the chapters of a series.
      */
@@ -416,6 +421,26 @@ export type ServicesMangaSelectorField = {
      * built from an id: regex `^(.+)$`, replacement `/series/{slug}/chapter/$1`.
      */
     replacement?: null | string;
+};
+
+/**
+ * How to read the page of a series. A series that is found by a search comes with its cover, one that is added by
+ * pasting its URL does not: there is only the page of the series to take it from. Optional: without a cover field
+ * such a series is added without the cover of the website.
+ */
+export type ServicesMangaSeriesSpec = {
+    /**
+     * URL of the page that shows the series. `{url}` is the series URL (the default, for sites where it is the page
+     * itself); the named groups of string? SelectorDownloaderSettings.SeriesUrlPattern are available too, e.g.
+     * `/api/manga/{slug}` for a site that loads its pages from an API.
+     */
+    urlTemplate?: string;
+    /**
+     * The cover image URL, in the page of the series (for JSON the path from the root of the answer). Unlike the
+     * fields of a search result it is not relative to an item. Without it, a series added by its URL gets no cover
+     * of the website.
+     */
+    cover?: ServicesMangaSelectorField;
 };
 
 /**

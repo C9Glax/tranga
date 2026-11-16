@@ -131,6 +131,50 @@ public class PostCustomDownloaderTestEndpointTests : TrangaTest
     }
 
     [Fact]
+    public void Request_ASeriesTestNeedsItsSectionAndACover()
+    {
+        PostCustomDownloaderTestRequest request = new()
+        {
+            Settings = Settings(), Step = "series", Input = "https://weebcentral.com/series/1", Series = Example().Series
+        };
+
+        Assert.Empty(Validate(request));
+        Assert.Equal(["Series"], Assert.Single(Validate(request with { Series = null })).MemberNames);
+        // optional for a source, but there is nothing to try without it
+        ValidationResult noCover = Assert.Single(Validate(request with { Series = new SeriesSpec() }));
+        Assert.Contains("series cover is required", noCover.ErrorMessage);
+        Assert.Equal(["Series.Cover"], noCover.MemberNames);
+    }
+
+    [Fact]
+    public void Request_ASeriesTestChecksItsSection()
+    {
+        PostCustomDownloaderTestRequest request = new()
+        {
+            Settings = Settings(), Step = "series", Input = "https://weebcentral.com/series/1",
+            Series = Example().Series with { Cover = new SelectorField { Selector = "meta[", Attribute = "content" } }
+        };
+
+        ValidationResult result = Assert.Single(Validate(request));
+
+        Assert.Contains("Series cover", result.ErrorMessage);
+        Assert.Equal(["Series.Cover"], result.MemberNames);
+    }
+
+    [Fact]
+    public void Request_ASeriesTestMayUseTheGroupsOfTheSettingsSeriesPattern()
+    {
+        PostCustomDownloaderTestRequest request = new()
+        {
+            Settings = Settings(), Step = "series", Input = "https://weebcentral.com/series/1",
+            Series = Example().Series with { UrlTemplate = "/series/{id}/info" }
+        };
+
+        Assert.Empty(Validate(request));
+        Assert.NotEmpty(Validate(request with { Settings = Settings() with { SeriesUrlPattern = null } }));
+    }
+
+    [Fact]
     public void Request_TheSettingsValidateThemselves()
     {
         // not the request's business: the settings are validated by their own datatype (the framework does that as well)
@@ -149,6 +193,22 @@ public class PostCustomDownloaderTestEndpointTests : TrangaTest
         Assert.NotNull(result.Value!.Error);
         Assert.Contains("ALLOW_PRIVATE_SOURCE_HOSTS", result.Value.Error);
         Assert.Equal("http://localhost:1/search/data?text=x&limit=32&offset=0&display_mode=Full%20Display", result.Value.RequestUrl);
+    }
+
+    [Fact]
+    public async Task Test_TriesTheSeriesPage()
+    {
+        PostCustomDownloaderTestRequest request = new()
+        {
+            Settings = Settings("http://localhost:1") with { SeriesUrlPattern = null }, Step = "series",
+            Input = "http://localhost:1/series/1", Series = Example().Series
+        };
+
+        Ok<StepTestResult> result = await PostCustomDownloaderTestEndpoint.Handle(request, ct);
+
+        // the host is refused, but the request was built from the series URL and sent to it
+        Assert.Equal("http://localhost:1/series/1", result.Value!.RequestUrl);
+        Assert.Contains("ALLOW_PRIVATE_SOURCE_HOSTS", result.Value.Error);
     }
 
     [Fact]

@@ -43,7 +43,8 @@ public sealed class MangaUnoFixtureTests : Common.Tests.TrangaTest, IDisposable
             BaseUrl = _site.BaseUrl,
             RequestsPerSecond = 20,
             SeriesUrlPattern = $"^{Regex.Escape(_site.BaseUrl)}/m/(?<slug>[^/?#]+)",
-            Search = example.Search with { Cover = example.Search.Cover with { Replacement = _site.BaseUrl } }
+            Search = example.Search with { Cover = example.Search.Cover with { Replacement = _site.BaseUrl } },
+            Series = example.Series with { Cover = example.Series.Cover with { Replacement = _site.BaseUrl } }
         };
     }
 
@@ -54,12 +55,28 @@ public sealed class MangaUnoFixtureTests : Common.Tests.TrangaTest, IDisposable
     }
 
     [Fact]
-    public async Task JsonSourcesHaveNoSeriesPageToTakeACoverFrom()
+    public async Task CoverOfAPastedSeriesUrlIsReadFromTheApiAnswerOfTheSeries()
     {
+        // there is no HTML page to read for this site: the cover is in the JSON the series page is built from
+        _site.Map("/covers/one-piece.webp", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
         string seriesUrl = $"{_site.BaseUrl}/m/one-piece";
 
-        Assert.Null(await _extension.GetCover(new MangaInfo(_extension.Identifier, "", seriesUrl, seriesUrl, new TrangaImage()), ct));
-        Assert.Empty(_site.Requests);
+        TrangaImage? cover = await _extension.GetCover(new MangaInfo(_extension.Identifier, "", seriesUrl, seriesUrl, new TrangaImage()), ct);
+
+        Assert.NotNull(cover);
+        Assert.Equal(Jpeg().Length, cover.Length);
+        Assert.Equal(["/api/manga/one-piece", "/covers/one-piece.webp"], _site.Requests.Select(r => r.PathAndQuery));
+    }
+
+    [Fact]
+    public async Task TestSeriesReportsTheCoverOfTheApiAnswer()
+    {
+        StepTestResult result = await _extension.TestSeriesAsync($"{_site.BaseUrl}/m/one-piece", ct);
+
+        Assert.Null(result.Error);
+        Assert.Empty(result.Warnings);
+        Assert.Equal($"{_site.BaseUrl}/covers/one-piece.webp", Assert.Single(result.Rows)["cover"]);
+        Assert.Equal($"{_site.BaseUrl}/api/manga/one-piece", result.RequestUrl);
     }
 
     private string Fixture(string name) => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Custom", "Fixtures", name))

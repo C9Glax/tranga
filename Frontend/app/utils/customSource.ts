@@ -6,7 +6,7 @@ import type {
     ServicesMangaSelectorField,
 } from '~/api/tranga';
 
-export type CustomSourceTestStep = 'search' | 'chapters' | 'images';
+export type CustomSourceTestStep = 'search' | 'series' | 'chapters' | 'images';
 
 /** The latest test of a step: kept by the form (not by the step) so it stays visible next to every step. */
 export type CustomSourceTestState = {
@@ -37,6 +37,7 @@ export type CustomSourceDefinition = {
     headers: Record<string, string>;
     seriesUrlPattern: string;
     search: { urlTemplate: string; itemSelector: string; title: CustomSourceField; url: CustomSourceField; cover: CustomSourceField };
+    series: { urlTemplate: string; cover: CustomSourceField };
     chapters: {
         urlTemplate: string;
         itemSelector: string;
@@ -64,6 +65,7 @@ export const emptyCustomSource = (): CustomSourceDefinition => ({
     headers: {},
     seriesUrlPattern: '',
     search: { urlTemplate: '', itemSelector: '', title: emptyField(), url: emptyField(), cover: emptyField() },
+    series: { urlTemplate: '{url}', cover: emptyField() },
     chapters: {
         urlTemplate: '{url}',
         itemSelector: '',
@@ -107,6 +109,7 @@ export const normalizeCustomSource = (source: ServicesMangaSelectorDownloaderDef
             url: field(source.search?.url),
             cover: field(source.search?.cover),
         },
+        series: { urlTemplate: source.series?.urlTemplate ?? defaults.series.urlTemplate, cover: field(source.series?.cover) },
         chapters: {
             urlTemplate: source.chapters?.urlTemplate ?? defaults.chapters.urlTemplate,
             itemSelector: source.chapters?.itemSelector ?? '',
@@ -192,6 +195,7 @@ export const customSourceForApi = (source: CustomSourceDefinition): ServicesMang
             url: fieldForApi(source.search.url),
             cover: fieldForApi(source.search.cover),
         },
+        series: { urlTemplate: source.series.urlTemplate.trim(), cover: fieldForApi(source.series.cover) },
         chapters: {
             urlTemplate: source.chapters.urlTemplate.trim(),
             itemSelector: source.chapters.itemSelector.trim(),
@@ -221,8 +225,9 @@ export const customSourceTestBody = (
     step: CustomSourceTestStep,
     input: string,
 ): ServicesMangaPostCustomDownloaderTestRequest => {
-    const { search, chapters, images, ...settings } = customSourceForApi(source);
-    return { settings, step, input, ...(step === 'search' ? { search } : step === 'chapters' ? { chapters } : { images }) };
+    const { search, series, chapters, images, ...settings } = customSourceForApi(source);
+    const section = step === 'search' ? { search } : step === 'series' ? { series } : step === 'chapters' ? { chapters } : { images };
+    return { settings, step, input, ...section };
 };
 
 /**

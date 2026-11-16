@@ -108,10 +108,10 @@ public sealed class WeebCentralFixtureTests : Common.Tests.TrangaTest, IDisposab
     }
 
     [Fact]
-    public async Task CoverOfAPastedSeriesUrlIsThePreviewImageOfItsPage()
+    public async Task CoverOfAPastedSeriesUrlComesFromThePageOfTheSeries()
     {
         // Found with the real site: a series page names its cover for link previews (og:image), a pasted URL has no
-        // search result to take it from.
+        // search result to take it from. The example says so in its "series" section.
         const string pastedSeriesId = "01JGRW9YR8AYQFAMVQ416AY8GX";
         string seriesUrl = $"{_site.BaseUrl}/series/{pastedSeriesId}/majutsu-wo-kiwamete";
         _site
@@ -124,6 +124,19 @@ public sealed class WeebCentralFixtureTests : Common.Tests.TrangaTest, IDisposab
         Assert.NotNull(cover);
         Assert.True(cover.Length > 0);
         Assert.Equal(Jpeg().Length, cover.Length);
+    }
+
+    [Fact]
+    public async Task TestSeriesReportsTheCoverOfThePage()
+    {
+        const string pastedSeriesId = "01JGRW9YR8AYQFAMVQ416AY8GX";
+        _site.Html($"/series/{pastedSeriesId}/majutsu-wo-kiwamete", Fixture("weebcentral-series.html").Replace("https://temp.compsci88.com", _site.BaseUrl));
+
+        StepTestResult result = await _extension.TestSeriesAsync($"{_site.BaseUrl}/series/{pastedSeriesId}/majutsu-wo-kiwamete", ct);
+
+        Assert.Null(result.Error);
+        Assert.Empty(result.Warnings);
+        Assert.Equal($"{_site.BaseUrl}/cover/fallback/{pastedSeriesId}.jpg", Assert.Single(result.Rows)["cover"]);
     }
 
     private static byte[] Jpeg()
