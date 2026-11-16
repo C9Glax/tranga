@@ -1,7 +1,7 @@
 <template>
     <TrangaPage>
         <div class="flex flex-col gap-4">
-            <h1 class="text-2xl font-semibold">Settings</h1>
+            <h1 class="text-2xl font-semibold">{{ $t('nav.settings') }}</h1>
 
             <div class="flex flex-col gap-2 md:flex-row">
                 <UTabs
@@ -31,12 +31,14 @@ import type { TabsItem } from '@nuxt/ui';
 // Empty string matches no tab, so nothing is selected until the user picks one.
 const active = ref<string>('');
 
-const items: TabsItem[] = [
-    { label: 'Notifications', icon: 'i-lucide-megaphone', value: 'notifications' },
-    { label: 'Libraries', icon: 'i-lucide-library', value: 'libraries' },
-    { label: 'Appearance', icon: 'i-lucide-palette', value: 'appearance' },
-    { label: 'Behavior', icon: 'i-lucide-sliders-horizontal', value: 'behavior' },
-    { label: 'Security', icon: 'i-lucide-key-round', value: 'security' },
-    { label: 'Debug', icon: 'i-lucide-bug', value: 'debug' },
-];
+const { t } = useI18n();
+
+const items = computed((): TabsItem[] => [
+    { label: t('settings.tabs.notifications'), icon: 'i-lucide-megaphone', value: 'notifications' },
+    { label: t('settings.tabs.libraries'), icon: 'i-lucide-library', value: 'libraries' },
+    { label: t('settings.tabs.appearance'), icon: 'i-lucide-palette', value: 'appearance' },
+    { label: t('settings.tabs.behavior'), icon: 'i-lucide-sliders-horizontal', value: 'behavior' },
+    { label: t('settings.tabs.security'), icon: 'i-lucide-key-round', value: 'security' },
+    { label: t('settings.tabs.debug'), icon: 'i-lucide-bug', value: 'debug' },
+]);
 </script>

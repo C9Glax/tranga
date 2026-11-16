@@ -1,0 +1,3 @@
+# The translation files are written by Weblate (see TRANSLATING.md), in its own layout: formatting them here would make
+# every translation pull request fail the prettier check.
+i18n/locales/

@@ -3,23 +3,23 @@
         <div class="flex flex-col gap-1">
             <!-- What an empty value means does not fit into a placeholder, it is shown as tooltip. -->
             <UFieldGroup class="w-full">
-                <UTooltip :text="isJson ? jsonPathHint : selectorHint">
+                <UTooltip :text="isJson ? $t('customSource.field.jsonPathHint') : selectorHintText">
                     <UInput
                         v-model="selector"
-                        :placeholder="isJson ? jsonPlaceholder : selectorPlaceholder"
+                        :placeholder="isJson ? jsonPlaceholderText : selectorPlaceholderText"
                         :ui="{ base: 'font-mono' }"
                         class="min-w-0 grow" />
                 </UTooltip>
                 <!-- JSON has no attributes: the path leads to the value itself. -->
-                <UTooltip v-if="!isJson" :text="attributeHint">
-                    <UInput v-model="attribute" :placeholder="attributePlaceholder" :ui="{ base: 'font-mono' }" class="w-36 sm:w-52" />
+                <UTooltip v-if="!isJson" :text="attributeHintText">
+                    <UInput v-model="attribute" :placeholder="attributePlaceholderText" :ui="{ base: 'font-mono' }" class="w-36 sm:w-52" />
                 </UTooltip>
             </UFieldGroup>
 
             <!-- Regex and replacement are rarely needed: collapsed unless they are already in use. -->
             <UCollapsible v-model:open="advanced">
                 <UButton
-                    label="Regex and replacement"
+                    :label="$t('customSource.field.regexAndReplacement')"
                     icon="i-lucide-regex"
                     :trailing-icon="advanced ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
                     color="neutral"
@@ -28,10 +28,17 @@
                     class="self-start" />
                 <template #content>
                     <UFieldGroup class="w-full pt-1">
-                        <UInput v-model="regex" placeholder="Regex" :ui="{ base: 'font-mono' }" class="min-w-0 grow" />
-                        <UTooltip
-                            text="Replaces every match of the regex. $1 is its first group, and the placeholders of this step's URL can be used, e.g. /series/{id}/$1 to build a link from an id.">
-                            <UInput v-model="replacement" placeholder="Replace with" :ui="{ base: 'font-mono' }" class="min-w-0 grow" />
+                        <UInput
+                            v-model="regex"
+                            :placeholder="$t('customSource.field.regex')"
+                            :ui="{ base: 'font-mono' }"
+                            class="min-w-0 grow" />
+                        <UTooltip :text="$t('customSource.field.replacementHint', { example: '/series/{id}/$1' })">
+                            <UInput
+                                v-model="replacement"
+                                :placeholder="$t('customSource.field.replaceWith')"
+                                :ui="{ base: 'font-mono' }"
+                                class="min-w-0 grow" />
                         </UTooltip>
                     </UFieldGroup>
                 </template>
@@ -59,20 +66,19 @@ const props = withDefaults(
         /** Tooltip of the attribute input: what it means when it is left empty. */
         attributeHint?: string;
     }>(),
-    {
-        format: 'html',
-        selectorPlaceholder: 'CSS selector or XPath',
-        attributePlaceholder: 'Attribute',
-        jsonPlaceholder: 'JSON path',
-        selectorHint: 'Leave empty to use the item itself.',
-        attributeHint:
-            'Leave empty to read the text of the element. Several attributes can be listed, separated by commas: the first one that has a value is used.',
-    },
+    { format: 'html' },
 );
 
+const { t } = useI18n();
+
+// The texts that are not given by the parent are translated here.
+const selectorPlaceholderText = computed(() => props.selectorPlaceholder ?? t('customSource.field.selectorPlaceholder'));
+const attributePlaceholderText = computed(() => props.attributePlaceholder ?? t('customSource.field.attributePlaceholder'));
+const jsonPlaceholderText = computed(() => props.jsonPlaceholder ?? t('customSource.field.jsonPlaceholder'));
+const selectorHintText = computed(() => props.selectorHint ?? t('customSource.field.selectorHint'));
+const attributeHintText = computed(() => props.attributeHint ?? t('customSource.field.attributeHint'));
+
 const isJson = computed(() => props.format === 'json');
-const jsonPathHint =
-    'The path to the value inside the item, e.g. title, manga.cover or names[0]. Several paths can be listed, separated by commas: the first one that has a value is used. $ is the item itself.';
 
 // Regex and replacement are rarely needed, so they only show up when asked for or already in use.
 const advanced = ref(Boolean(model.value.regex || model.value.replacement));

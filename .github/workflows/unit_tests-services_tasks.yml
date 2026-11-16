@@ -13,9 +13,11 @@ on:
       - "Services.Tasks/**"
       - "Services.Tasks.Tests/**"
       - ".github/workflows/unit_tests-services_tasks.yml"
+  pull_request:
 
 jobs:
   build:
+    name: Tasks Service Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

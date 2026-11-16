@@ -16,7 +16,13 @@
                 class="absolute inset-0 z-0 size-full" />
             <div
                 class="pointer-events-none absolute inset-x-0 bottom-0 z-1 flex flex-col gap-1 bg-linear-to-t from-black/90 via-black/55 to-transparent px-3 pb-3 pt-12">
-                <UBadge v-if="manga.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" size="sm" class="self-start" />
+                <UBadge
+                    v-if="manga.metadataEntry?.nsfw"
+                    :label="$t('common.nsfw')"
+                    color="error"
+                    variant="solid"
+                    size="sm"
+                    class="self-start" />
                 <p class="line-clamp-3 wrap-break-word text-[16.67px] font-semibold leading-tight text-white text-shadow-sm">
                     <TrangaTitle :title="manga.metadataEntry?.series" :max-length="1000" />
                 </p>
@@ -27,8 +33,8 @@
             <!-- tour-intro: the first step of the guided tour points at this empty state (see plugins/tour.ts) -->
             <UEmpty
                 icon="i-lucide-download"
-                title="Nothing here!"
-                description="Start searching..."
+                :title="$t('manga.empty.title')"
+                :description="$t('manga.empty.description')"
                 class="tour-intro mx-auto h-min"
                 variant="naked">
                 <template #actions>

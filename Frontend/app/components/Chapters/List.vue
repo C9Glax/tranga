@@ -29,21 +29,26 @@
 
         <template #status-cell="{ row }">
             <UBadge
-                :label="row.original.isDownloaded ? 'Downloaded' : 'Not Downloaded'"
+                :label="row.original.isDownloaded ? $t('chapters.downloaded') : $t('chapters.notDownloaded')"
                 :color="row.original.isDownloaded ? 'secondary' : 'neutral'"
                 variant="subtle" />
         </template>
 
         <template #actions-cell="{ row }">
-            <UButton icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Delete Chapter" @click="onDelete(row.original)" />
+            <UButton
+                icon="i-lucide-trash-2"
+                color="error"
+                variant="ghost"
+                :aria-label="$t('chapters.delete')"
+                @click="onDelete(row.original)" />
         </template>
 
         <template #loading><TrangaTableLoading /></template>
         <template #empty>
             <UEmpty
                 icon="i-lucide-book-open"
-                title="No chapters yet"
-                description="Chapters appear here once they have been found."
+                :title="$t('chapters.empty.title')"
+                :description="$t('chapters.empty.description')"
                 variant="naked" />
         </template>
     </UTable>
@@ -57,15 +62,23 @@ import type { Column, SortingState } from '@tanstack/vue-table';
 
 defineProps<{ chapters?: ServicesMangaMangaChapter[]; loading?: boolean }>();
 
+const { t } = useI18n();
+
 const confirmModal = useOverlay().create(TrangaConfirmModal);
 
 const chapterLabel = (chapter: ServicesMangaMangaChapter) =>
-    [chapter.volume ? `Vol. ${chapter.volume}` : null, `Ch. ${chapter.number}`, chapter.title].filter(Boolean).join(' - ');
+    [
+        chapter.volume ? t('chapters.volumeShort', { volume: chapter.volume }) : null,
+        t('chapters.chapterShort', { number: chapter.number }),
+        chapter.title,
+    ]
+        .filter(Boolean)
+        .join(' - ');
 
 const onDelete = (chapter: ServicesMangaMangaChapter) => {
     confirmModal.open({
-        title: 'Delete Chapter',
-        description: `This permanently deletes "${chapterLabel(chapter)}": its downloaded file is removed from disk, and if a library is linked, a rescan is triggered so it's removed there too. This cannot be undone.`,
+        title: t('chapters.delete'),
+        description: t('chapters.deleteDescription', { label: chapterLabel(chapter) }),
         onConfirm: () => deleteChapter(chapter.mangaId, chapter.chapterId),
     });
 };
@@ -106,20 +119,20 @@ const sortableHeader = (label: string) => {
     };
 };
 
-const columns: TableColumn<ServicesMangaMangaChapter>[] = [
+const columns = computed((): TableColumn<ServicesMangaMangaChapter>[] => [
     {
         accessorKey: 'volume',
-        header: sortableHeader('Volume'),
+        header: sortableHeader(t('chapters.columns.volume')),
         sortingFn: (rowA, rowB) => compareChapterField(rowA.original.volume, rowB.original.volume),
     },
     {
         accessorKey: 'number',
-        header: sortableHeader('Number'),
+        header: sortableHeader(t('chapters.columns.number')),
         sortingFn: (rowA, rowB) => compareChapterField(rowA.original.number, rowB.original.number),
     },
-    { accessorKey: 'title', header: 'Title', enableSorting: false },
-    { accessorKey: 'releaseDate', header: 'Release Date', enableSorting: false },
-    { accessorKey: 'status', header: 'Status', enableSorting: false },
+    { accessorKey: 'title', header: t('chapters.columns.title'), enableSorting: false },
+    { accessorKey: 'releaseDate', header: t('chapters.columns.releaseDate'), enableSorting: false },
+    { accessorKey: 'status', header: t('chapters.columns.status'), enableSorting: false },
     { id: 'actions', header: '', enableSorting: false },
-];
+]);
 </script>

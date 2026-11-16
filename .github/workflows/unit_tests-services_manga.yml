@@ -13,9 +13,11 @@ on:
       - "Services.Manga/**"
       - "Services.Manga.Tests/**"
       - ".github/workflows/unit_tests-services_manga.yml"
+  pull_request:
 
 jobs:
   build:
+    name: Manga Service Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

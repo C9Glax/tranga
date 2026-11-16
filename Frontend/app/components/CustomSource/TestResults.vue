@@ -2,22 +2,24 @@
     <!-- shrink-0: with long results the alerts must not be squashed to make room, the list scrolls instead -->
     <UCard :ui="{ body: 'flex max-h-[60vh] flex-col gap-3 overflow-y-auto [&>*]:shrink-0' }">
         <template #header>
-            <h2 class="font-semibold">Test results</h2>
-            <p v-if="test" class="text-sm break-all text-muted">{{ stepLabels[test.step] }} test for “{{ test.input }}”</p>
-            <p v-else class="text-sm text-muted">What the selectors extract from the real website.</p>
+            <h2 class="font-semibold">{{ $t('customSource.results.title') }}</h2>
+            <p v-if="test" class="text-sm break-all text-muted">
+                {{ $t('customSource.results.testFor', { step: stepLabels[test.step], input: test.input }) }}
+            </p>
+            <p v-else class="text-sm text-muted">{{ $t('customSource.results.idle') }}</p>
         </template>
 
         <UEmpty
             v-if="!test"
             icon="i-lucide-flask-conical"
-            title="Nothing tested yet"
-            description="Use the Test button above to try it on the website. The result shows up here and stays visible while you change the selectors."
+            :title="$t('customSource.results.emptyTitle')"
+            :description="$t('customSource.results.emptyDescription')"
             variant="naked"
             size="sm" />
 
         <!-- The same shape as the finished result: an alert and a couple of result cards. -->
         <div v-else-if="test.loading" class="flex flex-col gap-3" role="status" aria-live="polite">
-            <p class="text-sm text-muted">Running the {{ stepLabels[test.step].toLowerCase() }} test…</p>
+            <p class="text-sm text-muted">{{ $t(`customSource.results.running.${test.step}`) }}</p>
             <USkeleton class="h-14 w-full" />
             <UCard v-for="n in 2" :key="n" variant="subtle" :ui="{ body: 'p-3 sm:p-3' }">
                 <div class="flex flex-col gap-2">
@@ -34,7 +36,7 @@
             color="error"
             variant="subtle"
             icon="i-lucide-circle-alert"
-            title="This step cannot be tested yet">
+            :title="$t('customSource.results.cannotTest')">
             <template #description>
                 <ul class="list-disc pl-4">
                     <li v-for="error in test.errors" :key="error">{{ error }}</li>
@@ -49,15 +51,17 @@
                 variant="subtle"
                 icon="i-lucide-circle-alert"
                 :title="test.result.error"
-                :description="test.result.requestUrl ? `Requested: ${test.result.requestUrl}` : undefined"
+                :description="test.result.requestUrl ? $t('customSource.results.requested', { url: test.result.requestUrl }) : undefined"
                 :ui="{ description: 'break-all' }" />
             <UAlert
                 v-else
                 color="success"
                 variant="subtle"
                 icon="i-lucide-check"
-                :title="`${test.result.itemCount} item(s) extracted`"
-                :description="`Requested: ${test.result.requestUrl} (HTTP ${test.result.statusCode})`"
+                :title="$t('customSource.results.extracted', Number(test.result.itemCount))"
+                :description="
+                    $t('customSource.results.requestedWithStatus', { url: test.result.requestUrl, status: test.result.statusCode })
+                "
                 :ui="{ description: 'break-all' }" />
 
             <UAlert
@@ -99,7 +103,7 @@
                 </UCard>
             </div>
             <p v-if="Number(test.result.itemCount) > rows.length" class="text-xs text-muted">
-                Showing the first {{ rows.length }} of {{ test.result.itemCount }}.
+                {{ $t('customSource.results.showing', { shown: rows.length, total: test.result.itemCount }) }}
             </p>
         </template>
     </UCard>
@@ -108,10 +112,18 @@
 <script setup lang="ts">
 type Row = Record<string, string | null>;
 
+const { t } = useI18n();
+
 const props = defineProps<{ test?: CustomSourceTestState }>();
 const emit = defineEmits<{ pick: [step: CustomSourceTestStep, url: string] }>();
 
-const stepLabels: Record<CustomSourceTestStep, string> = { search: 'Search', chapters: 'Chapters', images: 'Pages' };
+const stepLabels = computed(
+    (): Record<CustomSourceTestStep, string> => ({
+        search: t('customSource.results.steps.search'),
+        chapters: t('customSource.results.steps.chapters'),
+        images: t('customSource.results.steps.images'),
+    }),
+);
 
 const rows = computed<Row[]>(() => (props.test?.result?.rows ?? []) as Row[]);
 
@@ -121,6 +133,10 @@ const isHttpUrl = (value: string | null | undefined): boolean => typeof value ==
 
 // A search result becomes the series of the chapters test, a chapter the one of the pages test.
 const pickLabel = computed(() =>
-    props.test?.step === 'search' ? 'Use for chapters test' : props.test?.step === 'chapters' ? 'Use for pages test' : undefined,
+    props.test?.step === 'search'
+        ? t('customSource.results.useForChapters')
+        : props.test?.step === 'chapters'
+          ? t('customSource.results.useForPages')
+          : undefined,
 );
 </script>

@@ -2,16 +2,16 @@
     <UPageList class="gap-4">
         <UCard>
             <template #header>
-                <p class="font-semibold">Content</p>
+                <p class="font-semibold">{{ $t('settings.behavior.content') }}</p>
             </template>
 
-            <UTooltip :disabled="!settings?.allowNsfwLocked" text="Set by the AllowNSFW environment variable and cannot be changed here.">
+            <UTooltip :disabled="!settings?.allowNsfwLocked" :text="$t('settings.behavior.allowNsfwLocked')">
                 <USwitch
                     :model-value="settings?.allowNsfw ?? false"
                     :disabled="!settings || settings.allowNsfwLocked"
                     :loading="saving"
-                    label="Allow NSFW content"
-                    description="Include NSFW manga in search results and allow NSFW sources."
+                    :label="$t('settings.behavior.allowNsfw.label')"
+                    :description="$t('settings.behavior.allowNsfw.description')"
                     @update:model-value="setAllowNsfw" />
             </UTooltip>
         </UCard>
@@ -23,6 +23,7 @@ import type { ServicesMangaBehaviorSettings } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
 import { FetchError } from 'ofetch';
 
+const { t } = useI18n();
 const toast = useToast();
 
 const { data: settings, refresh } = useTranga<ServicesMangaBehaviorSettings>('/mangas/settings/behavior', {
@@ -38,8 +39,8 @@ const setAllowNsfw = async (value: boolean | 'indeterminate') => {
         // Cached source/search data was filtered with the previous value.
         await refreshNuxtData([ApiKeys.DownloadExtensions, ApiKeys.MetadataExtensions]);
     } catch (error: unknown) {
-        const description = error instanceof FetchError ? (error.data ?? error.message) : 'Could not update the setting.';
-        toast.add({ title: 'Failed to update setting.', description, color: 'error' });
+        const description = error instanceof FetchError ? (error.data ?? error.message) : t('settings.behavior.updateFailedFallback');
+        toast.add({ title: t('settings.behavior.updateFailed'), description, color: 'error' });
     } finally {
         await refresh();
         saving.value = false;

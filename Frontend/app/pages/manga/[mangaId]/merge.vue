@@ -1,7 +1,7 @@
 <template>
     <TrangaPage>
         <UContainer class="flex gap-2 flex-col">
-            <UInput v-model="search" placeholder="Filter" class="w-full" />
+            <UInput v-model="search" :placeholder="$t('common.filter')" class="w-full" />
             <MangaList :mangas="mergeCandidates" :loading="status !== 'success'" select-mode @select="onSelectTarget" />
         </UContainer>
     </TrangaPage>

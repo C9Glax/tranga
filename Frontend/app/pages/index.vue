@@ -10,6 +10,8 @@ import type { GetLibrariesResponse, GetMangasResponse } from '~/api/tranga';
 import { ApiKeys } from '~/composables/ApiKeys';
 import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
+const { t } = useI18n();
+
 const search = ref<string>();
 
 const { data, status, refresh } = await useTranga<GetMangasResponse>('/mangas', { key: ApiKeys.Manga.List });
@@ -27,7 +29,7 @@ const { data: libraries } = useTranga<GetLibrariesResponse>('/libraries', { key:
 const navigation = computed((): TrangaPageTitleProps | undefined =>
     libraries.value && libraries.value.length > 0
         ? {
-              title: { label: 'Libraries', type: 'label' },
+              title: { label: t('nav.libraries'), type: 'label' },
               items:
                   libraries.value?.map((library) => ({
                       label: library.name,

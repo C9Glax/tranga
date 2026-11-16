@@ -65,6 +65,7 @@ An _Extension_ is an interface to an external service that can provide metadata,
 ## Repo-specific conventions
 
 - Nullable reference types and implicit usings are enabled solution-wide.
+- Frontend text is never hardcoded: use `$t('some.key')` / `useI18n().t` (or `useNuxtApp().$i18n.t` in utils and plugins) with nested keys in `Frontend/i18n/locales/en.json`. Only `en.json` is edited by hand; the other locale files belong to Weblate. `npm run lint` enforces this. See `Frontend/TRANSLATING.md`.
 - Use explicit types for local variables instead of `var` — this is a deliberate codestyle choice for readability (see `CONTRIBUTING.md`).
 - Environment variable names are documented in `EnvVars.md` and implemented in `Common/Settings/EnvVars.cs` plus `Tranga.AppHost/EnvVars.cs` — keep all three in sync when adding config.
 - Prefer changing shared behavior in `Common.*` (`Common`, `Common.Database`, `Common.Services`) or `Tranga.ServiceDefaults` instead of duplicating bootstrapping logic inside individual services.

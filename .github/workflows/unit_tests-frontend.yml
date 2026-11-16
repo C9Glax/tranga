@@ -10,9 +10,11 @@ on:
       - "Services.Tasks/openapi/**"
       - "Services.Notifications/openapi/**"
       - ".github/workflows/unit_tests-frontend.yml"
+  pull_request:
 
 jobs:
   build:
+    name: Frontend Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,6 +35,13 @@ jobs:
         working-directory: ./Frontend
       - name: Check formatting
         run: npx prettier . --check
+        working-directory: ./Frontend
+      - name: Generate Nuxt config for ESLint
+        # eslint.config.mjs builds on the config Nuxt generates into .nuxt
+        run: npx nuxt prepare
+        working-directory: ./Frontend
+      - name: Lint (includes the translation checks)
+        run: npm run lint
         working-directory: ./Frontend
       - name: Check types
         run: npm run typecheck

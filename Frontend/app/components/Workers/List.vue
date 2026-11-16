@@ -11,7 +11,10 @@
         </template>
 
         <template #status-cell="{ row }">
-            <UBadge :label="row.original.status" :color="workerStatusBadgeColor(row.original.status)" variant="subtle" />
+            <UBadge
+                :label="$t(`workers.status.${row.original.status}`)"
+                :color="workerStatusBadgeColor(row.original.status)"
+                variant="subtle" />
         </template>
 
         <template #currentTask-cell="{ row }">
@@ -23,7 +26,9 @@
                                 ? 'i-lucide-repeat'
                                 : 'i-lucide-line-dot-right-horizontal'
                         "
-                        :label="currentTask(row.original) ? taskTypeLabel(currentTask(row.original)!.taskTypeName) : 'Unknown task'"
+                        :label="
+                            currentTask(row.original) ? taskTypeLabel(currentTask(row.original)!.taskTypeName) : $t('workers.unknownTask')
+                        "
                         variant="subtle"
                         color="neutral" />
                 </UTooltip>
@@ -43,7 +48,7 @@
 
         <template #loading><TrangaTableLoading /></template>
         <template #empty>
-            <UEmpty icon="i-lucide-cpu" title="No workers" description="No worker is running right now." variant="naked" />
+            <UEmpty icon="i-lucide-cpu" :title="$t('workers.empty.title')" :description="$t('workers.empty.description')" variant="naked" />
         </template>
     </UTable>
 </template>
@@ -53,6 +58,8 @@ import type { ServicesTasksWorker, ServicesTasksTask } from '~/api/tranga';
 import type { TableColumn } from '@nuxt/ui/components/Table.vue';
 
 const props = defineProps<{ workers?: ServicesTasksWorker[]; tasks?: ServicesTasksTask[]; loading?: boolean }>();
+
+const { t } = useI18n();
 
 const currentTask = (worker: ServicesTasksWorker): ServicesTasksTask | undefined =>
     (props.tasks ?? []).find((t) => t.taskId === worker.currentTaskId);
@@ -73,11 +80,11 @@ const sorted = computed((): ServicesTasksWorker[] =>
     [...(props.workers ?? [])].sort((w1, w2) => statusOrder[w1.status] - statusOrder[w2.status]),
 );
 
-const columns: TableColumn<ServicesTasksWorker>[] = [
-    { accessorKey: 'workerId', header: 'Worker' },
-    { accessorKey: 'status', header: 'Status' },
-    { accessorKey: 'currentTask', header: 'Current Task' },
-    { accessorKey: 'startedAt', header: 'Started At' },
-    { accessorKey: 'lastHeartbeat', header: 'Last Heartbeat' },
-];
+const columns = computed((): TableColumn<ServicesTasksWorker>[] => [
+    { accessorKey: 'workerId', header: t('workers.columns.worker') },
+    { accessorKey: 'status', header: t('workers.columns.status') },
+    { accessorKey: 'currentTask', header: t('workers.columns.currentTask') },
+    { accessorKey: 'startedAt', header: t('workers.columns.startedAt') },
+    { accessorKey: 'lastHeartbeat', header: t('workers.columns.lastHeartbeat') },
+]);
 </script>

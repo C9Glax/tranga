@@ -8,7 +8,13 @@
                 </template>
                 <template #footer>
                     <div class="flex w-full flex-col gap-1">
-                        <UButton label="Log out" icon="i-lucide-log-out" color="neutral" variant="ghost" block @click="logout" />
+                        <UButton
+                            :label="$t('common.logOut')"
+                            icon="i-lucide-log-out"
+                            color="neutral"
+                            variant="ghost"
+                            block
+                            @click="logout" />
                         <UColorModeSelect variant="soft" class="w-full" />
                     </div>
                 </template>
@@ -18,7 +24,7 @@
                 <template #header>
                     <UDashboardNavbar :toggle="true">
                         <template #left>
-                            <UTooltip text="Home" :kbds="['ctrl', 'h']" class="mx-4 my-2">
+                            <UTooltip :text="$t('common.home')" :kbds="['ctrl', 'h']" class="mx-4 my-2">
                                 <NuxtLink to="/">
                                     <div class="h-full flex gap-2 items-center">
                                         <img src="/blahaj.png" class="h-lh cursor-grab" alt="Blahaj" />
@@ -61,6 +67,8 @@ useTourTargetRef('search-button');
 
 const props = defineProps<TrangaPageProps>();
 
+const { t } = useI18n();
+
 export interface TrangaPageProps {
     /**
      * Additional section in the navigation menu
@@ -95,30 +103,36 @@ const defaultItems = computed((): NavigationMenuItem[] => {
     const canGoBack = import.meta.client && !!window.history.state?.back;
 
     return [
-        { label: 'Home', to: '/', icon: 'i-lucide-home', type: 'link', ui: { linkLeadingIcon: 'text-primary', linkLabel: 'text-primary' } },
         {
-            label: 'Back',
+            label: t('common.home'),
+            to: '/',
+            icon: 'i-lucide-home',
+            type: 'link',
+            ui: { linkLeadingIcon: 'text-primary', linkLabel: 'text-primary' },
+        },
+        {
+            label: t('common.back'),
             onSelect: () => router.back(),
             icon: 'i-lucide-arrow-left',
             type: 'link',
             disabled: !canGoBack,
             ui: { linkLeadingIcon: 'text-secondary', linkLabel: 'text-secondary' },
         },
-        { label: 'Tranga', type: 'label' },
-        { label: 'All Tasks', to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
-        { label: 'Workers', to: `/workers`, icon: 'i-lucide-cpu' },
-        { label: 'Sources', to: '/settings/sources', icon: 'i-lucide-globe' },
-        { label: 'Settings', to: '/settings', icon: 'i-lucide-settings' },
-        { label: 'Links', type: 'label' },
+        { label: t('nav.tranga'), type: 'label' },
+        { label: t('nav.allTasks'), to: `/tasks`, icon: 'i-lucide-biceps-flexed' },
+        { label: t('nav.workers'), to: `/workers`, icon: 'i-lucide-cpu' },
+        { label: t('nav.sources'), to: '/settings/sources', icon: 'i-lucide-globe' },
+        { label: t('nav.settings'), to: '/settings', icon: 'i-lucide-settings' },
+        { label: t('nav.links'), type: 'label' },
         {
-            label: 'API Docs',
+            label: t('nav.apiDocs'),
             to: '/docs/',
             external: true,
             icon: 'i-lucide-file-code',
             ui: { linkLeadingIcon: 'text-neutral-400', linkLabel: 'text-neutral-400' },
         },
         {
-            label: 'Github',
+            label: t('nav.github'),
             to: 'https://github.com/C9Glax/tranga',
             external: true,
             icon: 'i-lucide-github',

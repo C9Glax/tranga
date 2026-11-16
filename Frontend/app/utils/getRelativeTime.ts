@@ -10,22 +10,21 @@ const units: Record<string, number> = {
     second: 1000,
 };
 
-const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-
 /**
  * Returns the relative time string (like 'in 2 days')
  * @param d1 relative Date
+ * @param locale BCP 47 language tag the text is formatted in
  * @param d2 optional second Date (or now)
  */
-export const getRelativeTime = (d1: Date, d2 = new Date()) => {
+export const getRelativeTime = (d1: Date, locale: string, d2 = new Date()) => {
+    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
     const elapsed: number = d1.getTime() - d2.getTime();
 
     // "Math.abs" accounts for both "past" & "future" scenarios
     for (const u in units) {
         const unit = units[u]!;
         if (Math.abs(elapsed) > unit || u == 'second') {
-            // @ts-ignore u is RelativeTimeFormatUnit
-            return rtf.format(Math.round(elapsed / unit), u);
+            return rtf.format(Math.round(elapsed / unit), u as Intl.RelativeTimeFormatUnit);
         }
     }
 };

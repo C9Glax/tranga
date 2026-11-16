@@ -39,7 +39,9 @@ const SYNCED_CLASS_SELECTORS: Partial<Record<TourKey, string>> = {
 
 interface FirstDownloadStep extends TourStep {
     key?: TourKey;
+    /** i18n key of the title (translated by Tour/Guide.vue) */
     title: string;
+    /** i18n key of the text (translated by Tour/Guide.vue) */
     body: string;
     /**
      * Shows a manual "Next step" button alongside "Skip tour" instead of relying
@@ -132,55 +134,54 @@ export default defineNuxtPlugin({
             if ((TOUR_KEYS as readonly string[]).includes(key)) targets[key as TourKey] = el;
         };
 
+        // `title` and `body` are i18n keys (tour.steps.*), translated by Tour/Guide.vue when the step is shown, so the
+        // tour follows the language the user switches to while it is open.
         const steps: FirstDownloadStep[] = [
             {
                 // No `key`: this is an intro step (it has "Let's go" instead of "Skip tour"). It points at the empty state
                 // of the start page when there is one, otherwise at the search button, so it never floats attached to nothing.
                 target: () => targets.intro ?? targets['search-button'] ?? undefined,
-                title: "Let's queue your first download",
-                body: "We'll find a manga and download its first chapters. It only takes a minute.",
+                title: 'tour.steps.intro.title',
+                body: 'tour.steps.intro.body',
             },
             {
                 key: 'search-button',
                 target: () => targets['search-button'] ?? undefined,
-                title: 'Search for a manga',
-                body: 'Click here (or press ⌘K / Ctrl K) and type a title to search your configured extensions.',
+                title: 'tour.steps.searchButton.title',
+                body: 'tour.steps.searchButton.body',
             },
             {
                 key: 'use-as-source',
                 target: () => targets['use-as-source'] ?? undefined,
-                title: 'Add it to your library',
-                body: 'Picking a result creates a draft entry. Click this to make it the source for a new Manga.',
+                title: 'tour.steps.useAsSource.title',
+                body: 'tour.steps.useAsSource.body',
             },
             {
                 key: 'go-to-manga',
                 target: () => targets['go-to-manga'] ?? undefined,
-                title: 'Open the Manga page',
-                body: "This is where you'll manage download links and see progress.",
+                title: 'tour.steps.goToManga.title',
+                body: 'tour.steps.goToManga.body',
             },
             {
                 key: 'more-download-links',
                 target: () => targets['more-download-links'] ?? undefined,
-                title: 'Find download sources',
-                body: 'Search extensions for chapters of this series.',
+                title: 'tour.steps.moreDownloadLinks.title',
+                body: 'tour.steps.moreDownloadLinks.body',
             },
             {
                 key: 'add-link',
                 target: () => targets['add-link'] ?? undefined,
-                title: 'Check the results',
-                body: 'Tranga has already searched all extensions for this series: the results are listed below. If none of them is right, search again with a different title, or paste a link to the series, choose an extension and click Add Link.',
+                title: 'tour.steps.addLink.title',
+                body: 'tour.steps.addLink.body',
                 manualNext: true,
             },
             {
                 key: 'match-download-link',
                 target: () => targets['match-download-link'] ?? undefined,
-                title: 'Confirm the match',
-                body: "Click Match to confirm this is the right series — Tranga queues the download as soon as it's matched.",
+                title: 'tour.steps.matchDownloadLink.title',
+                body: 'tour.steps.matchDownloadLink.body',
             },
-            {
-                title: "You're all set!",
-                body: 'Tranga will download chapters in the background. Check progress any time under Manga → Manga Downloads.',
-            },
+            { title: 'tour.steps.outro.title', body: 'tour.steps.outro.body' },
         ];
 
         const tour = useTour(steps);

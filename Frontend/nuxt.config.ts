@@ -11,7 +11,7 @@ const gitInfo = (() => {
 })();
 
 export default defineNuxtConfig({
-    modules: ['@nuxt/eslint', '@nuxt/ui'],
+    modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxtjs/i18n'],
 
     devtools: { enabled: true },
 
@@ -35,4 +35,15 @@ export default defineNuxtConfig({
     vite: { server: { allowedHosts: ['host.docker.internal', 'aspire.dev.internal'] } },
 
     eslint: { config: { stylistic: { semi: true, arrowParens: true, braceStyle: '1tbs', indent: 4, commaDangle: 'always-multiline' } } },
+
+    // Translations live in i18n/locales/<code>.json and are managed through Weblate (see TRANSLATING.md): only en.json is
+    // edited by hand. A new language needs its file plus an entry in `locales` below.
+    i18n: {
+        strategy: 'no_prefix',
+        defaultLocale: 'en',
+        // `langDir` is resolved relative to the `i18n/` directory.
+        locales: [{ code: 'en', language: 'en-US', name: 'English', file: 'en.json' }],
+        langDir: 'locales',
+        detectBrowserLanguage: { useCookie: true, cookieKey: 'tranga-locale', fallbackLocale: 'en' },
+    },
 });

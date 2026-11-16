@@ -2,7 +2,7 @@ import type { ServicesMangaPatchMangaDownloadLinkRequest, PatchMangasByMangaIdDo
 import { ApiKeys } from '~/composables/ApiKeys';
 
 export const patchMangaDownloadLink = async (downloadLinkId: string, mangaId: string, body: ServicesMangaPatchMangaDownloadLinkRequest) => {
-    const { $tranga } = useNuxtApp();
+    const { $tranga, $i18n } = useNuxtApp();
     const toast = useToast();
     try {
         await $tranga<PatchMangasByMangaIdDownloadLinksByDownloadIdResponses>(`/mangas/${mangaId}/downloadLinks/${downloadLinkId}`, {
@@ -10,10 +10,10 @@ export const patchMangaDownloadLink = async (downloadLinkId: string, mangaId: st
             body: body,
         });
         await refreshNuxtData([ApiKeys.Manga.Manga(mangaId), ApiKeys.Manga.DownloadLinks(mangaId)]);
-        toast.add({ title: body.matched ? 'Set as Source!' : 'Removed as Source', color: 'success' });
+        toast.add({ title: body.matched ? $i18n.t('toast.setAsSource') : $i18n.t('toast.removedAsSource'), color: 'success' });
     } catch {
         toast.add({
-            title: body.matched ? 'Could not set DownloadLink as Source!' : 'Could not remove DownloadLink as Source!',
+            title: body.matched ? $i18n.t('toast.setDownloadLinkSourceFailed') : $i18n.t('toast.removeDownloadLinkSourceFailed'),
             color: 'error',
         });
     }

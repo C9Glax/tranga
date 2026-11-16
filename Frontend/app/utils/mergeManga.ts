@@ -7,15 +7,15 @@ export const mergeManga = async (
     keepSourceMetadata: boolean,
     keepSourceChapters: boolean,
 ) => {
-    const { $tranga } = useNuxtApp();
+    const { $tranga, $i18n } = useNuxtApp();
     const toast = useToast();
     try {
         const body: ServicesMangaPostMangaMergeRequest = { sourceMangaId, keepSourceMetadata, keepSourceChapters };
         await $tranga<PostMangasByMangaIdMergeResponses>(`/mangas/${targetMangaId}/merge`, { method: 'post', body });
-        toast.add({ title: 'Manga merged', color: 'success' });
+        toast.add({ title: $i18n.t('toast.mangaMerged'), color: 'success' });
         await refreshNuxtData([ApiKeys.Manga.List]);
         await navigateTo(`/manga/${targetMangaId}`);
     } catch {
-        toast.add({ title: 'Could not merge Manga!', color: 'error' });
+        toast.add({ title: $i18n.t('toast.mangaMergeFailed'), color: 'error' });
     }
 };

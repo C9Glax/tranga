@@ -4,7 +4,7 @@
             <UFieldGroup class="w-full">
                 <UInput v-model="input" :placeholder="inputPlaceholder" class="grow" @keydown.enter.prevent="run" />
                 <UButton
-                    label="Test"
+                    :label="$t('common.test')"
                     icon="i-lucide-flask-conical"
                     color="neutral"
                     :loading="test?.loading && test.step === step"
@@ -17,6 +17,8 @@
 
 <script setup lang="ts">
 import type { PostMangasCustomDownloadersTestResponse } from '~/api/tranga';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     definition: CustomSourceDefinition;
@@ -43,7 +45,12 @@ const run = async () => {
         test.value = { step: props.step, input: value, loading: false, result, errors: [] };
     } catch (error: unknown) {
         // 400: the API lists what is wrong with the settings or with the section of this step
-        test.value = { step: props.step, input: value, loading: false, errors: apiErrorMessages(error, 'The test could not be run.') };
+        test.value = {
+            step: props.step,
+            input: value,
+            loading: false,
+            errors: apiErrorMessages(error, t('customSource.errors.testFailed')),
+        };
     }
 };
 </script>

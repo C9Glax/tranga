@@ -3,13 +3,25 @@
         <UEmpty
             v-if="!definition"
             icon="i-lucide-globe"
-            title="Source not found"
-            description="This custom source does not exist (anymore)."
+            :title="$t('customSource.sources.notFound')"
+            :description="$t('customSource.sources.notFoundDescription')"
             variant="naked"
             :actions="[
-                { label: 'Back to sources', icon: 'i-lucide-arrow-left', color: 'neutral', variant: 'subtle', to: '/settings/sources' },
+                {
+                    label: $t('customSource.sources.backToSources'),
+                    icon: 'i-lucide-arrow-left',
+                    color: 'neutral',
+                    variant: 'subtle',
+                    to: '/settings/sources',
+                },
             ]" />
-        <CustomSourceForm v-else :initial="definition" submit-label="Save changes" :saving="saving" :errors="errors" @submit="save" />
+        <CustomSourceForm
+            v-else
+            :initial="definition"
+            :submit-label="$t('customSource.sources.saveSubmit')"
+            :saving="saving"
+            :errors="errors"
+            @submit="save" />
     </TrangaPage>
 </template>
 
@@ -21,6 +33,7 @@ import type {
 import { ApiKeys } from '~/composables/ApiKeys';
 
 const route = useRoute();
+const { t } = useI18n();
 const toast = useToast();
 const id = String(route.params.id);
 
@@ -41,7 +54,7 @@ const save = async (updated: CustomSourceDefinition) => {
             body: customSourceForApi(updated),
         });
     } catch (error: unknown) {
-        errors.value = apiErrorMessages(error, 'Could not save the source.');
+        errors.value = apiErrorMessages(error, t('customSource.errors.saveFailed'));
         return;
     } finally {
         saving.value = false;
@@ -49,7 +62,7 @@ const save = async (updated: CustomSourceDefinition) => {
 
     clearNuxtData(ApiKeys.CustomDownloader(id));
     await refreshNuxtData([ApiKeys.DownloadExtensions, ApiKeys.CustomDownloaders]);
-    toast.add({ title: `Saved ${updated.name}.`, color: 'success' });
+    toast.add({ title: t('customSource.sources.saved', { name: updated.name }), color: 'success' });
     await navigateTo('/settings/sources');
 };
 </script>

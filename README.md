@@ -214,6 +214,8 @@ If you want to contribute, please feel free to fork and create a Pull-Request!
 
 Please read [CONTRIBUTING](CONTRIBUTING.md)
 
+The frontend can be translated, see [Frontend/TRANSLATING.md](Frontend/TRANSLATING.md).
+
 ## License
 
 Distributed under the GNU GPLv3 License. See [LICENSE](https://github.com/C9Glax/tranga/blob/main/LICENSE) for more information.
