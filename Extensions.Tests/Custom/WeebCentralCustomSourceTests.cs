@@ -82,6 +82,20 @@ public sealed class WeebCentralCustomSourceTests : Common.Tests.TrangaTest, IDis
     }
 
     [Fact]
+    public async Task CoverOfAPastedSeriesUrlIsDownloaded()
+    {
+        // the series page of a manga whose link is added by pasting its URL: no search result to take the cover from
+        string url = "https://weebcentral.com/series/01JGRW9YR8AYQFAMVQ416AY8GX/majutsu-wo-kiwamete-tabi-ni-deta-tensei-elf-moteamashita-jumyou-de-ikeru-densetsu-to-naru";
+        MangaInfo manga = new(_extension.Identifier, "", url, _extension.ParseIdentifierFromUrl(url)!, new TrangaImage());
+
+        TrangaImage? cover = await _extension.GetCover(manga, ct);
+
+        Assert.NotNull(cover);
+        await cover.ToJpeg(ct); // an image, not an error page
+        Assert.True(cover.Length > 0);
+    }
+
+    [Fact]
     public void ParseIdentifierFromUrl()
     {
         Assert.Equal(OnePieceUrl, _extension.ParseIdentifierFromUrl(OnePieceUrl));
