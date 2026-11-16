@@ -74,14 +74,18 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(GetMangaC
     /// A <see cref="DbChapterDownloadLink"/> is attached to an existing/previously added <see cref="DbChapter"/> with the same
     /// Number only if that chapter has no link for the same extension yet (the key is ChapterId + DownloadExtension);
     /// otherwise (e.g. extras without a number that share a fallback number) a separate <see cref="DbChapter"/> is created.
+    /// Links added during this run are not visible to database queries yet, so they are tracked in memory to keep the
+    /// same chapter from receiving two links for one extension (also when the chapter was loaded from the database).
     /// </summary>
     internal static async Task<(int AddedChapters, int AddedLinks, int SkippedExisting)> MergeChaptersAsync(
         MangaContext ctx, DbManga manga, IEnumerable<ChapterInfo> chapters, ILogger logger, CancellationToken ct)
     {
         int addedLinks = 0, addedChapters = 0, skippedExisting = 0;
-        // Chapters added during this run are not visible to database queries yet.
+        // Chapters and links added during this run are not visible to database queries yet.
         List<DbChapter> batch = [];
         HashSet<(Guid Extension, string Identifier)> batchLinks = [];
+        // (ChapterId, DownloadExtension) keys of the links added during this run, for new and already existing chapters.
+        HashSet<(Guid ChapterId, Guid Extension)> addedChapterLinks = [];
 
         foreach (ChapterInfo info in chapters)
         {
@@ -100,15 +104,22 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(GetMangaC
 
             // Insert DownloadLinks into chapters that already exist and do not have a link for this extension yet
             DbChapter? target = batch.FirstOrDefault(c =>
-                c.Number == info.Number && c.DownloadLinks!.All(l => l.DownloadExtension != info.ExtensionIdentifier));
-            target ??= await ctx.Chapters.FirstOrDefaultAsync(c =>
-                c.MangaId == manga.MangaId && c.Number == info.Number &&
-                !c.DownloadLinks!.Any(l => l.DownloadExtension == info.ExtensionIdentifier), ct);
+                c.Number == info.Number && !addedChapterLinks.Contains((c.ChapterId, info.ExtensionIdentifier)));
+            if (target is null)
+            {
+                // Chapters that already got a link for this extension in this run, the database does not know about them yet.
+                List<Guid> taken = addedChapterLinks.Where(l => l.Extension == info.ExtensionIdentifier)
+                    .Select(l => l.ChapterId).ToList();
+                target = await ctx.Chapters.FirstOrDefaultAsync(c =>
+                    c.MangaId == manga.MangaId && c.Number == info.Number && !taken.Contains(c.ChapterId) &&
+                    !c.DownloadLinks!.Any(l => l.DownloadExtension == info.ExtensionIdentifier), ct);
+            }
 
             if (target is not null)
             {
                 DbChapterDownloadLink newLink = info.ToChapterDownloadLink(target);
                 await ctx.AddAsync(newLink, ct);
+                addedChapterLinks.Add((target.ChapterId, info.ExtensionIdentifier));
                 logger.LogDebug("Added DownloadLink {Identifier} to Chapter {ChapterId} (Number {Number}).",
                     info.Identifier, target.ChapterId, info.Number);
                 addedLinks++;
@@ -118,6 +129,7 @@ internal sealed class GetMangaChaptersTask(Guid mangaId) : RunOnceTask(GetMangaC
                 DbChapter chapter = info.ToChapter(manga).CreateAndAddChapterDownloadLink(info);
                 await ctx.AddAsync(chapter, ct);
                 batch.Add(chapter);
+                addedChapterLinks.Add((chapter.ChapterId, info.ExtensionIdentifier));
                 logger.LogDebug("Added Chapter {ChapterId} (Number {Number}, Title '{Title}') with DownloadLink {Identifier}.",
                     chapter.ChapterId, info.Number, info.Title, info.Identifier);
                 addedChapters++;

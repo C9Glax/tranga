@@ -74,6 +74,35 @@ public class GetMangaChaptersTaskTests : TrangaTest
     }
 
     [Fact]
+    public async Task MergeChaptersAsync_ExistingChapterWithoutLinks_DuplicateNumbersFromSameExtension_CreatesSeparateChapter()
+    {
+        // e.g. a source was removed and re-added: its chapters still exist, but without a link for the re-added extension,
+        // and the source returns several entries (scanlation groups, extras) for the same number.
+        (MangaContext ctx, DbManga manga) = await Setup();
+        DbChapter existing = new() { MangaId = manga.MangaId, Number = "5" };
+        await ctx.Chapters.AddAsync(existing, ct);
+        await ctx.SaveChangesAsync(ct);
+
+        // used to attach both links to the existing chapter, violating the (ChapterId, DownloadExtension) key
+        Assert.Equal((1, 1, 0), await Merge(ctx, manga, Info("5", "/a"), Info("5", "/b")));
+        Assert.Equal(2, await ctx.Chapters.CountAsync(ct));
+        Assert.Equal(2, await ctx.ChapterDownloadLinks.CountAsync(ct));
+        Assert.Single(await ctx.ChapterDownloadLinks.Where(l => l.ChapterId == existing.ChapterId).ToListAsync(ct));
+    }
+
+    [Fact]
+    public async Task MergeChaptersAsync_ExistingChapterFromOtherExtension_DuplicateNumbersFromSameExtension_CreatesSeparateChapter()
+    {
+        (MangaContext ctx, DbManga manga) = await Setup();
+        ChapterInfo other = new(Guid.CreateVersion7(), "5", "https://other.org/5", "/other5");
+        await Merge(ctx, manga, other);
+
+        Assert.Equal((1, 1, 0), await Merge(ctx, manga, Info("5", "/a"), Info("5", "/b")));
+        Assert.Equal(2, await ctx.Chapters.CountAsync(ct));
+        Assert.Equal(3, await ctx.ChapterDownloadLinks.CountAsync(ct));
+    }
+
+    [Fact]
     public async Task MergeChaptersAsync_SameNumberFromOtherExtension_AttachesLinkToExistingChapter()
     {
         (MangaContext ctx, DbManga manga) = await Setup();
