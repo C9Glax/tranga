@@ -10,6 +10,14 @@ services:
       - "5432"
     networks:
       - "tranga"
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\""
+      interval: "5s"
+      timeout: "5s"
+      retries: 12
+      start_period: "10s"
   messaging:
     image: "docker.io/library/rabbitmq:4.3"
     environment:
@@ -62,6 +70,7 @@ services:
       AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
+      ChapterNamingScheme: "${CHAPTERNAMINGSCHEME}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
       MAL_CLIENT_ID: "${MALCLIENTID}"
       ALLOW_PRIVATE_SOURCE_HOSTS: "${ALLOWPRIVATESOURCEHOSTS}"
@@ -73,7 +82,7 @@ services:
         source: "${MangaDirectory}"
     depends_on:
       tranga-pg:
-        condition: "service_started"
+        condition: "service_healthy"
       messaging:
         condition: "service_healthy"
     user: "${PUID:-1000}:${PGID:-1000}"
@@ -113,6 +122,7 @@ services:
       AUTH_SIGNING_KEY: "${AUTHSIGNINGKEY}"
       AllowNSFW: "${ALLOWNSFW}"
       DownloadLanguage: "${DOWNLOADLANGUAGE}"
+      ChapterNamingScheme: "${CHAPTERNAMINGSCHEME}"
       FLARESOLVERR_URL: "${FLARESOLVERRURL}"
       MAL_CLIENT_ID: "${MALCLIENTID}"
       ALLOW_PRIVATE_SOURCE_HOSTS: "${ALLOWPRIVATESOURCEHOSTS}"
@@ -124,7 +134,7 @@ services:
         source: "Covers"
     depends_on:
       tranga-pg:
-        condition: "service_started"
+        condition: "service_healthy"
       messaging:
         condition: "service_healthy"
     networks:
@@ -165,7 +175,7 @@ services:
       - "8080"
     depends_on:
       tranga-pg:
-        condition: "service_started"
+        condition: "service_healthy"
       messaging:
         condition: "service_healthy"
     networks:
@@ -211,7 +221,7 @@ services:
         read_only: true
     depends_on:
       tranga-pg:
-        condition: "service_started"
+        condition: "service_healthy"
       messaging:
         condition: "service_healthy"
     networks:
@@ -252,7 +262,7 @@ services:
       - "8080"
     depends_on:
       tranga-pg:
-        condition: "service_started"
+        condition: "service_healthy"
       messaging:
         condition: "service_healthy"
     networks:
