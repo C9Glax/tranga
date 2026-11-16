@@ -7,7 +7,6 @@ import type {
     GetMangasMetadataByMetadataIdMangaRelatedResponse,
     GetMangasMetadataByMetadataIdMangaResponse,
     GetMangasMetadataByMetadataIdResponse,
-    ServicesMangaMetadata,
 } from '~/api/tranga';
 import type { ButtonProps } from '@nuxt/ui/components/Button.vue';
 import { patchMangaMetadataSource } from '~/utils/patchMangaMetadataSource';
@@ -33,7 +32,7 @@ const { data: relatedMangaIds } = await useTranga<GetMangasMetadataByMetadataIdM
     { key: Manga.Metadata.RelatedManga(metadataId) },
 );
 
-const actions = (m?: ServicesMangaMetadata): ButtonProps[] | undefined => {
+const actions = (): ButtonProps[] | undefined => {
     const items: ButtonProps[] = [];
 
     if (mangaId && relatedMangaIds.value?.find((m) => m === mangaId) && !manga.value) {

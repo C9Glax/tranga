@@ -18,4 +18,5 @@ export const parseTimespan = (timespan: string): number | undefined => {
     return val;
 };
 
-const regexp = new RegExp('-?(?<days>\d\.)?(?<hours>[0-9]{2}):(?<minutes>[0-9]{2}):(?<seconds>[0-9]{2})(?<ticks>\.[0-9]{7})?');
+// Backslashes are doubled: in a string literal '\d' is just 'd' and '\.' is just '.', so the days part would never match.
+const regexp = new RegExp('-?(?<days>\\d+\\.)?(?<hours>[0-9]{2}):(?<minutes>[0-9]{2}):(?<seconds>[0-9]{2})(?<ticks>\\.[0-9]{7})?');

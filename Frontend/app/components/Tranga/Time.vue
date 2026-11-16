@@ -21,5 +21,5 @@ export interface TrangaTimeProps extends /* @vue-ignore */ TrangaDoubleBadgeProp
     relative?: boolean;
 }
 
-const date = computed(() => (time.value ? (time instanceof Date ? time : new Date(time.value)) : undefined));
+const date = computed(() => (time.value ? (time.value instanceof Date ? time.value : new Date(time.value)) : undefined));
 </script>

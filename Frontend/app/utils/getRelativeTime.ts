@@ -24,8 +24,7 @@ export const getRelativeTime = (d1: Date, locale: string, d2 = new Date()) => {
     for (const u in units) {
         const unit = units[u]!;
         if (Math.abs(elapsed) > unit || u == 'second') {
-            // @ts-ignore u is RelativeTimeFormatUnit
-            return rtf.format(Math.round(elapsed / unit), u);
+            return rtf.format(Math.round(elapsed / unit), u as Intl.RelativeTimeFormatUnit);
         }
     }
 };

@@ -19,20 +19,17 @@ const { extension } = defineProps<{ extension: ServicesNotificationsNotification
 const { t } = useI18n();
 const toast = useToast();
 const removeExtension = async () => {
-    const result = await useNuxtApp().$tranga<DeleteNotificationsExtensionsByExtensionIdResponses>(
-        `/notifications/extensions/${extension.id}`,
-        {
-            method: 'delete',
-            onResponse({ response }) {
-                if (response.status !== 200) {
-                    toast.add({ title: t('settings.notifications.toast.removeFailed'), color: 'error' });
-                    return;
-                }
-                clearNuxtData(ApiKeys.Notifications.Extension(extension.id));
-                refreshNuxtData(ApiKeys.Notifications.Extensions);
-                toast.add({ title: t('settings.notifications.toast.removed'), color: 'success' });
-            },
+    await useNuxtApp().$tranga<DeleteNotificationsExtensionsByExtensionIdResponses>(`/notifications/extensions/${extension.id}`, {
+        method: 'delete',
+        onResponse({ response }) {
+            if (response.status !== 200) {
+                toast.add({ title: t('settings.notifications.toast.removeFailed'), color: 'error' });
+                return;
+            }
+            clearNuxtData(ApiKeys.Notifications.Extension(extension.id));
+            refreshNuxtData(ApiKeys.Notifications.Extensions);
+            toast.add({ title: t('settings.notifications.toast.removed'), color: 'success' });
         },
-    );
+    });
 };
 </script>
