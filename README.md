@@ -48,22 +48,6 @@ You probably do not want to modify this. Use the [`.env`](Tranga.AppHost/aspire-
 - [.env](Tranga.AppHost/aspire-output/.env)
   - [Environment variable documentation](EnvVars.md)
 
-### Settings
-
-All configuration that doesn't live in the [`.env`](Tranga.AppHost/aspire-output/.env) file is done in the web UI under **Settings**:
-
-| Page              | What it does                                                                                                                                                                                  |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Sources**       | See the built-in download sources (MangaDex, MANGA Plus) and add, edit or delete your own custom sources. |
-| **Notifications** | Add notification extensions: Gotify, Discord, ntfy.sh, Telegram, or any other [Naprise](https://github.com/Genteure/naprise) service URL.                                                    |
-| **Libraries**     | Connect [Komga](https://komga.org/) or [Kavita](https://www.kavitareader.com/) libraries (see [Adding a Komga library](#adding-a-komga-library) and [Adding a Kavita library](#adding-a-kavita-library)).                                         |
-| **Appearance**    | Choose how covers of NSFW manga are displayed: always visible, visible on click, or never visible (blurred).                                                                                  |
-| **Security**      | Create and revoke API keys (only relevant when `UseAuth` is enabled).                                                                                                                         |
-| **About**         | Shows version and git commit of every running service.                                                                                                                                        |
-
-The Settings overview additionally offers **Replay first-download tour** (restarts the guided walkthrough) and
-**Backfill ComicInfo for downloaded chapters** (creates a task that adds `ComicInfo.xml` to already downloaded chapters; progress is shown on the Tasks page).
-
 ### Custom sources
 
 Websites that are not built in can be added under **Settings → Sources → Add custom source**, without writing any code. The
@@ -123,16 +107,68 @@ the login page will show the setup screen again on next load.
 
 ## Screenshots
 
-<img src="Screenshots/startpage.png" width="512" alt="start page"/>
-<img src="Screenshots/search.png" width="512" alt="search dialog"/>
-<img src="Screenshots/tasks.png" width="512" alt="tasks page"/>
-<img src="Screenshots/manga.png" width="512" alt="manga page"/>
-<img src="Screenshots/manga-light.png" width="512" alt="light mode manga page"/>
-<img src="Screenshots/settings-sources.png" width="512" alt="settings: sources"/>
-<img src="Screenshots/settings-sources-new.png" width="512" alt="settings: the general step of creating a custom source"/>
-<img src="Screenshots/settings-sources-test.png" width="512" alt="settings: testing the search step of a custom source, with the results in the sidebar"/>
-<img src="Screenshots/settings-sources-custom.png" width="512" alt="settings: sources with a custom source"/>
-<img src="Screenshots/settings-appearance.png" width="512" alt="settings: appearance"/>
+Click a screenshot to see it in full size.
+
+### Library
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="Screenshots/startpage.png"><img src="Screenshots/startpage.png" width="400" alt="start page"/></a><br/>
+      <b>Home</b>
+    </td>
+    <td align="center">
+      <a href="Screenshots/manga.png"><img src="Screenshots/manga.png" width="400" alt="manga page"/></a><br/>
+      <b>Manga page</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="Screenshots/manga-light.png"><img src="Screenshots/manga-light.png" width="400" alt="light mode manga page"/></a><br/>
+      <b>Manga page (light mode)</b>
+    </td>
+    <td align="center">
+      <a href="Screenshots/tasks.png"><img src="Screenshots/tasks.png" width="400" alt="tasks page"/></a><br/>
+      <b>Tasks</b>
+    </td>
+  </tr>
+</table>
+
+### Settings
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="Screenshots/settings-sources.png"><img src="Screenshots/settings-sources.png" width="400" alt="settings: sources"/></a><br/>
+      <b>Sources</b>
+    </td>
+    <td align="center">
+      <a href="Screenshots/settings-appearance.png"><img src="Screenshots/settings-appearance.png" width="400" alt="settings: appearance"/></a><br/>
+      <b>Appearance</b>
+    </td>
+  </tr>
+</table>
+
+### Adding a custom source
+
+The steps of adding a [custom source](#custom-sources):
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="Screenshots/settings-sources-new.png"><img src="Screenshots/settings-sources-new.png" width="270" alt="settings: the general step of creating a custom source"/></a><br/>
+      <b>1. General step</b>
+    </td>
+    <td align="center">
+      <a href="Screenshots/settings-sources-test.png"><img src="Screenshots/settings-sources-test.png" width="270" alt="settings: testing the search step of a custom source, with the results in the sidebar"/></a><br/>
+      <b>2. Testing the search step</b>
+    </td>
+    <td align="center">
+      <a href="Screenshots/settings-sources-custom.png"><img src="Screenshots/settings-sources-custom.png" width="270" alt="settings: sources with a custom source"/></a><br/>
+      <b>3. The new source in the list</b>
+    </td>
+  </tr>
+</table>
 
 ## Built With
 
