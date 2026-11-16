@@ -10,6 +10,13 @@ on:
       - "Services.Tasks/openapi/**"
       - "Services.Notifications/openapi/**"
       - ".github/workflows/unit_tests-frontend.yml"
+  pull_request:
+    paths:
+      - "Frontend/**"
+      - "Services.Manga/openapi/**"
+      - "Services.Tasks/openapi/**"
+      - "Services.Notifications/openapi/**"
+      - ".github/workflows/unit_tests-frontend.yml"
 
 jobs:
   build:

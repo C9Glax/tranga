@@ -13,6 +13,16 @@ on:
       - "Services.Tasks/**"
       - "Services.Tasks.Tests/**"
       - ".github/workflows/unit_tests-services_tasks.yml"
+  pull_request:
+    paths:
+      - "Common/**"
+      - "Common.Database/**"
+      - "Common.Services/**"
+      - "Extensions/**"
+      - "GeneratedExtensionClient/**"
+      - "Services.Tasks/**"
+      - "Services.Tasks.Tests/**"
+      - ".github/workflows/unit_tests-services_tasks.yml"
 
 jobs:
   build:
