@@ -249,7 +249,8 @@
         "addLink": "Add Link",
         "addFailed": "Failed adding download-link.",
         "addFailedFallback": "Could not add the download-link.",
-        "added": "Added download-link."
+        "added": "Added download-link.",
+        "addedHint": "Click Match on the link below to start downloading from it."
     },
     "metadata": {
         "goToManga": "Go to Manga",

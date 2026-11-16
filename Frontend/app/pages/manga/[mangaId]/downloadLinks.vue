@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PostMangasSearchByMangaIdDownloadLinksResponse } from '~/api/tranga';
+import type { PostMangasByMangaIdDownloadLinksResponse, PostMangasSearchByMangaIdDownloadLinksResponse } from '~/api/tranga';
 import useDownloadExtensions from '~/composables/DownloadExtension';
 import { FetchError } from 'ofetch';
 import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
@@ -69,8 +69,9 @@ const addExtensionId = ref<string | undefined>();
 
 const addLink = async () => {
     if (!addExtensionId.value || !searchTerm.value) return;
+    let added: PostMangasByMangaIdDownloadLinksResponse;
     try {
-        await useNuxtApp().$tranga(`/mangas/${mangaId}/downloadLinks`, {
+        added = await useNuxtApp().$tranga<PostMangasByMangaIdDownloadLinksResponse>(`/mangas/${mangaId}/downloadLinks`, {
             method: 'post',
             body: { downloadExtensionId: addExtensionId.value, url: searchTerm.value },
         });
@@ -80,8 +81,10 @@ const addLink = async () => {
         return;
     }
 
-    await refreshDownloadLinks();
-    toast.add({ title: t('downloadLinks.added'), color: 'success' });
+    // The list is the result of a text search, and a text search for the pasted URL finds nothing: show the link that
+    // was just added instead, so it can be matched.
+    downloadLinks.value = [added, ...(downloadLinks.value ?? []).filter((link) => link.downloadId !== added.downloadId)];
+    toast.add({ title: t('downloadLinks.added'), description: t('downloadLinks.addedHint'), color: 'success' });
     searchTerm.value = '';
     addExtensionId.value = undefined;
 };
