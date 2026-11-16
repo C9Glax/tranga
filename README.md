@@ -80,6 +80,9 @@ Examples to start from (they can also be loaded with **Start from an example** i
 - [WeebCentral](Extensions/Custom/Examples/weebcentral.json)
 - [MangaTown](Extensions/Custom/Examples/mangatown.json)
 
+A [prompt for AI agents](Extensions/Custom/Examples/agent-prompt.md) lets one write the definition of a website for you
+(the form links to it as well).
+
 Good to know:
 
 - The data has to be in the HTML the server sends. Pages that build their content with JavaScript do not work (FlareSolverr

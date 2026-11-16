@@ -23,7 +23,17 @@
                                 variant="subtle"
                                 icon="i-lucide-info"
                                 title="Describe the website with selectors"
-                                description="Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter). Test each step on the real website before saving." />
+                                description="Open the website, right-click an element, choose Inspect, then right-click it in the inspector and pick Copy → Copy selector (CSS) or Copy XPath. Selectors of fields are relative to their item (the element repeated for every search result / chapter). Test each step on the real website before saving. Rather have an AI agent do the looking? Give it the prompt linked here, then paste its answer with Import JSON."
+                                :actions="[
+                                    {
+                                        label: 'Prompt for AI agents',
+                                        icon: 'i-lucide-bot',
+                                        to: agentPromptUrl,
+                                        target: '_blank',
+                                        color: 'neutral',
+                                        variant: 'outline',
+                                    },
+                                ]" />
                             <UFormField label="Name" name="name" required>
                                 <UInput v-model="state.name" placeholder="My Manga Site" class="w-full" />
                             </UFormField>
@@ -478,6 +488,9 @@ const exampleItems = computed<DropdownMenuItem[]>(() =>
         },
     })),
 );
+
+// The prompt lives next to the examples in the repository, so it can be improved without a release of the frontend.
+const agentPromptUrl = 'https://github.com/C9Glax/tranga/blob/main/Extensions/Custom/Examples/agent-prompt.md';
 
 // Only codes like en, en-us or pt-BR can be added as language: anything else is dropped with a message.
 const languageError = ref<string>();
