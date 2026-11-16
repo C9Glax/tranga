@@ -282,7 +282,7 @@
                                 :format="state.format"
                                 json-placeholder="e.g. pages[*].url"
                                 label="Page links"
-                                description="Optional. Only for sites that show one image per web page: the links (or the options of a page dropdown) to every page of the chapter, in reading order. Every page is then opened to find its image."
+                                :description="texts.pageLinks"
                                 selector-placeholder="e.g. select.pages option"
                                 attribute-placeholder="default: href,value"
                                 attribute-hint="Leave empty to use href for links and value for the options of a page dropdown." />
@@ -564,6 +564,8 @@ const texts = computed(() =>
               imageLabel: 'Image URLs path',
               image: 'The path to the image URLs of the chapter, in reading order, e.g. pages or pages[*].url. With page links: the image in the answer of each of those links.',
               imagePlaceholder: 'pages',
+              pageLinks:
+                  'Optional. Only for an API that has to be asked for every page of a chapter on its own: the path to the addresses of those requests, in reading order. Each of them is then requested to find its image. Leave it empty when one answer lists all the images.',
           }
         : {
               introTitle: 'Describe the website with selectors',
@@ -584,6 +586,8 @@ const texts = computed(() =>
               imageLabel: 'Image selector',
               image: 'One element per page image, in reading order. With page links: the image on each of those pages.',
               imagePlaceholder: 'div.reader img',
+              pageLinks:
+                  'Optional. Only for sites that show one image per web page: the links (or the options of a page dropdown) to every page of the chapter, in reading order. Every page is then opened to find its image.',
           },
 );
 
