@@ -7,7 +7,7 @@
         "delete": "Delete",
         "cancel": "Cancel",
         "loading": "Loading",
-        "nothingHere": "There is nothing here...",
+        "nothingHere": "There is nothing here…",
         "unnamed": "(unnamed)",
         "name": "Name",
         "username": "Username",
@@ -35,6 +35,7 @@
         "links": "Links",
         "apiDocs": "API Docs",
         "github": "Github",
+        "weblate": "Weblate",
         "libraries": "Libraries"
     },
     "auth": {
@@ -188,10 +189,10 @@
         },
         "empty": {
             "title": "Nothing here!",
-            "description": "Start searching..."
+            "description": "Start searching…"
         },
         "search": {
-            "placeholder": "Search for a title or paste a link... ({example}?)",
+            "placeholder": "Search for a title or paste a link… ({example}?)",
             "localManga": "Local Manga",
             "searchResults": "Search Results",
             "searchOn": "Search on:"
@@ -216,7 +217,7 @@
         },
         "moreDownloadLinks": "More Download-Links",
         "syncToLibrary": "Sync to Library",
-        "mergeInto": "Merge into...",
+        "mergeInto": "Merge into…",
         "remove": "Remove"
     },
     "chapters": {

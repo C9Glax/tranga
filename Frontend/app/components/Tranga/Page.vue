@@ -15,7 +15,17 @@
                             variant="ghost"
                             block
                             @click="logout" />
-                        <UColorModeSelect variant="soft" class="w-full" />
+                        <div class="flex gap-1">
+                            <UColorModeSelect variant="soft" class="min-w-0 flex-1" />
+                            <!-- Only the flag is shown, the sidebar is too narrow for two labelled selects (the list shows the names). -->
+                            <ULocaleSelect
+                                v-model="selectedLocale"
+                                :locales="localeItems"
+                                variant="soft"
+                                :aria-label="$t('settings.appearance.language.title')"
+                                :ui="{ value: 'hidden' }"
+                                class="shrink-0" />
+                        </div>
                     </div>
                 </template>
             </UDashboardSidebar>
@@ -67,7 +77,19 @@ useTourTargetRef('search-button');
 
 const props = defineProps<TrangaPageProps>();
 
-const { t } = useI18n();
+const { t, locale, locales, setLocale } = useI18n();
+
+// ULocaleSelect wants Nuxt UI's Locale shape, the configured languages only provide a code and a name.
+const localeItems = computed(() =>
+    locales.value.map((l) => ({
+        code: l.code,
+        name: l.name ?? l.code,
+        dir: l.dir === 'rtl' ? ('rtl' as const) : ('ltr' as const),
+        messages: {},
+    })),
+);
+
+const selectedLocale = computed({ get: () => locale.value, set: (code) => void setLocale(code) });
 
 export interface TrangaPageProps {
     /**
@@ -136,6 +158,13 @@ const defaultItems = computed((): NavigationMenuItem[] => {
             to: 'https://github.com/C9Glax/tranga',
             external: true,
             icon: 'i-lucide-github',
+            ui: { linkLeadingIcon: 'text-neutral-400', linkLabel: 'text-neutral-400' },
+        },
+        {
+            label: t('nav.weblate'),
+            to: 'https://hosted.weblate.org/projects/tranga/',
+            external: true,
+            icon: 'i-simple-icons-weblate',
             ui: { linkLeadingIcon: 'text-neutral-400', linkLabel: 'text-neutral-400' },
         },
     ];

@@ -1,0 +1,378 @@
+{
+    "common": {
+        "home": "Start",
+        "back": "Zurück",
+        "logOut": "Abmelden",
+        "password": "Passwort",
+        "delete": "Löschen",
+        "cancel": "Abbrechen",
+        "loading": "Laden",
+        "nothingHere": "Hier ist noch nichts…",
+        "unnamed": "(unbenannt)",
+        "name": "Name",
+        "username": "Benutzername",
+        "host": "Host",
+        "port": "Port",
+        "apiKey": "API Schlüssel",
+        "add": "Hinzufügen",
+        "topic": "Thema",
+        "token": "Token",
+        "nsfw": "NSFW",
+        "chapters": "Kapitel",
+        "filter": "Filter",
+        "next": "Nächstes",
+        "save": "Speichern",
+        "edit": "Bearbeiten",
+        "test": "Test",
+        "baseUrl": "Base URL"
+    },
+    "nav": {
+        "allTasks": "Alle Vorgänge",
+        "workers": "Workers",
+        "sources": "Quellen",
+        "settings": "Einstellungen",
+        "links": "Links",
+        "apiDocs": "API Docs",
+        "github": "Github",
+        "tranga": "Tranga"
+    },
+    "auth": {
+        "login": {
+            "title": "Anmelden",
+            "submit": "Anmelden",
+            "failed": "Anmelden fehlgeschlagen.",
+            "incorrectPassword": "Falsches Passwort."
+        },
+        "setup": {
+            "title": "Adminpassword erstellen",
+            "description": "Dies ist der einzige Account der Instanz - Es gibe keine Benutzerprofile.",
+            "submit": "Passwort erstellen",
+            "confirmPassword": "Passwort bestätigen",
+            "failed": "Einrichten fehlgeschlagen.",
+            "couldNotCreate": "Konnte das Passwort nicht erstellen."
+        },
+        "passwordRequired": "Passwort ist erforderlich.",
+        "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein.",
+        "passwordsDoNotMatch": "Passwörter stimmen nicht überein."
+    },
+    "settings": {
+        "appearance": {
+            "language": {
+                "title": "Sprache",
+                "legend": "In welcher Sprache soll Tranga angezeigt werden?"
+            },
+            "nsfwCovers": {
+                "title": "NSFW Einbände",
+                "legend": "Wie sollen Einbände von NSFW Manga dargestellt werden?",
+                "show": {
+                    "label": "Immer sichtbar",
+                    "description": "NSFW Einbände werden wie alle anderen dargestellt."
+                },
+                "click": {
+                    "label": "Sichtbar nach Klick",
+                    "description": "NSFW Einbände sind verdeckt bis zum anklicken."
+                },
+                "hide": {
+                    "label": "Nie sichtbar",
+                    "description": "NSFW Einbände sind immer verdeckt."
+                }
+            }
+        },
+        "tabs": {
+            "notifications": "Benachrichtigungen",
+            "behavior": "Verhalten",
+            "security": "Sicherheit"
+        },
+        "about": {
+            "service": "Dienst",
+            "version": "Version",
+            "commit": "Commit",
+            "branch": "Branch"
+        },
+        "behavior": {
+            "content": "Inhalt",
+            "allowNsfwLocked": "Durch die AllowNSFW Umgebungsvariable vorgegeben und kann hier nicht geändert werden.",
+            "allowNsfw": {
+                "label": "NSFW Inhalte erlauben",
+                "description": "NSFW Manga in den Suchergebnissen und Quellen erlauben."
+            },
+            "updateFailed": "Einstellung konnte nicht aktualisiert werden.",
+            "updateFailedFallback": "Einstellung konnte nicht aktualisiert werden."
+        },
+        "debug": {
+            "about": "Über",
+            "maintenance": "Wartung",
+            "replayTour": "Die Einführungstour nochmal abspielen",
+            "backfillComicInfo": "ComicInfo für heruntergeladene Kapitel nachfüllen",
+            "backfillFailed": "Nachfüllen fehlgeschlagen.",
+            "backfillFailedFallback": "Konnte den Nachfüllvorgang nicht starten.",
+            "backfillCreated": "Nachfüllvorgang erstellt.",
+            "backfillCreatedDescription": "Gehe zur Vorgangsseite um den Fortschritt anzuzeigen."
+        },
+        "security": {
+            "apiKeys": "API Schlüssel",
+            "newKey": "Neuer API Schlüssel",
+            "newKeyDescription": "Jetzt kopieren - wird nicht erneut angezeigt.",
+            "copyKey": "API Schlüssel kopieren",
+            "name": "Name",
+            "namePlaceholder": "z.B. Backupskript",
+            "createKey": "Schlüssel erstellen",
+            "created": "Erstellt {date}",
+            "revoke": "Widerrufen",
+            "noKeys": "Noch keine API Schlüssel",
+            "noKeysDescription": "Erstelle einen um Tranga mit Skripten und anderen Werkzeugen zu verwenden.",
+            "createFailed": "Erstellen des API Schlüssels fehlgeschlagen.",
+            "createFailedFallback": "Konnte API Schlüssel nicht erstellen.",
+            "revoked": "API Schlüssel wiederrufen.",
+            "revokeFailed": "API Schlüssel widerrufen fehlgeschlagen.",
+            "revokeFailedFallback": "Konnte den API Schlüssel nicht widerrufen."
+        },
+        "libraries": {
+            "rootPathDescription": "Pfad innerhalb des Komga Containers an dem Tranga's manga volume eingehangen ist. Default /tranga.",
+            "authKeyDescription": "Erstelle einen in Kavita unter Benutzereinstellungen → Auth Keys verwalten.",
+            "kavitaLibraryPlaceholder": "Teste die Verbindung zuerst",
+            "usernameAndPassword": "Benutzername und Passwort",
+            "connectionVerified": "Verbindung verifiziert",
+            "testConnection": "Verbindung testen",
+            "toast": {
+                "connectionVerified": "Verbidung verifiziert.",
+                "connectionFailed": "Verbidungstest fehlgeschlagen.",
+                "connectionFailedFallback": "Konnte die Verbindung nicht verifizieren.",
+                "linkFailed": "Konnte Manga nicht verbinden.",
+                "linked": "{count} Manga verbunden.",
+                "noneLinked": "Kein neuer Manga mit diesem Namen gepaart."
+            },
+            "linkManga": "Manga verbinden"
+        },
+        "notifications": {
+            "add": "Erweiterung hinzufügen",
+            "serviceUrl": "Dienst URL",
+            "appToken": "AppToken",
+            "webhookId": "Webhook ID",
+            "webhookToken": "Webhook Token",
+            "chatId": "Chat ID",
+            "toast": {
+                "addFailed": "Konnte Erweiterung nicht hinzufügen!",
+                "added": "Erweiterung hinzugefügt.",
+                "removeFailed": "Erweiterung entfernen fehlgeschlagen.",
+                "removed": "Erweiterung entfernt."
+            }
+        }
+    },
+    "manga": {
+        "nav": {
+            "manga": "Manga",
+            "metadataEntries": "Metadateneinträge",
+            "tasks": "Manga Vorgänge",
+            "downloads": "Manga Downloads",
+            "actions": "Aktionen",
+            "downloadTasks": "Manga Downloadvorgänge"
+        },
+        "empty": {
+            "title": "Hier ist nichts!",
+            "description": "Suchen…"
+        },
+        "search": {
+            "placeholder": "Suche nach einem Titel oder füge einen Link ein... ({example}?)",
+            "localManga": "Lokaler Manga",
+            "searchResults": "Suchergebnisse",
+            "searchOn": "Suchen bei:"
+        },
+        "merge": {
+            "title": "Manga zusammenführen",
+            "intro": "Führt beide Manga in {target} zusammen. {source} wird gelöscht. Download Links beider Manga werden automatisch kombiniert.",
+            "titleSummaryCover": "Titel, Zusammenfassung & Einband",
+            "target": "Ziel",
+            "source": "Quelle",
+            "keepTitle": "Behalte {title}",
+            "useTitle": "Benutze {title}",
+            "preview": "Vorschau",
+            "noMetadata": "Keine Metadaten",
+            "keepChaptersOf": "Behalte {title}'s Kapitel ({count})",
+            "resultingChapters": "Der zusammengeführte Manga wird {count} Kapitel haben. Die Kapitel des anderen Manga werden verworfen.",
+            "merge": "Zusammenführen"
+        },
+        "noDownloadLinks": {
+            "title": "Keine Download Links",
+            "description": "Dieser Manga hat noch keine Download Links."
+        },
+        "moreDownloadLinks": "Mehr Download Links",
+        "mergeInto": "Zusammenführen in…",
+        "remove": "Entfernen"
+    },
+    "chapters": {
+        "downloaded": "Heruntergeladen",
+        "notDownloaded": "Nicht heruntergeladen",
+        "delete": "Kapitel löschen",
+        "deleteDescription": "Dies löscht \"{label}\": Die heruntergeladene Datei wird entfernt und aus der verbundenen Bibliothek ebenfalls gelöscht. Dies kann nicht rückgängig gemacht werden.",
+        "volumeShort": "Band {volume}",
+        "chapterShort": "Kapitel {number}",
+        "columns": {
+            "volume": "Band",
+            "number": "Nummer",
+            "title": "Titel",
+            "releaseDate": "Veröffentlichungsdatum",
+            "status": "Status"
+        },
+        "empty": {
+            "title": "Noch keine Kapitel",
+            "description": "Kapitel erscheinen hier sobald sie gefunden wurden."
+        }
+    },
+    "toast": {
+        "metadataSetFailed": "Konnte Metadaten nicht als Quelle setzen!",
+        "mangaMerged": "Manga zusammengeführt",
+        "mangaMergeFailed": "Konnte Manga nicht zusammenführen!"
+    },
+    "tour": {
+        "skip": "Tour überspringen",
+        "nextStep": "Nächster Schritt",
+        "letsGo": "Auf geht's",
+        "finish": "Beenden"
+    },
+    "customSource": {
+        "optional": "Optional.",
+        "errors": {
+            "invalidRegex": "Kein gültiges RegEx.",
+            "invalidJson": "Das ist nicht valides JSON.",
+            "createFailed": "Konnte Quelle nicht erstellen.",
+            "saveFailed": "Konnte Quelle nicht speichern.",
+            "testFailed": "Der Test konnte nicht durchgeführt werden.",
+            "saveFailedTitle": "Die Quelle konnte nicht gespeichert werden",
+            "notALanguageCode": "{rejected} ist kein Sprachcode. Verwende codes wie en, en-us oder pt-BR."
+        },
+        "steps": {
+            "general": {
+                "title": "Übersicht",
+                "description": "Die Webseite"
+            },
+            "search": {
+                "title": "Suche",
+                "description": "Serie finden"
+            },
+            "chapters": {
+                "title": "Kapitel",
+                "description": "Kapitel auflisten"
+            },
+            "pages": {
+                "title": "Seiten",
+                "description": "Bilder finden"
+            }
+        },
+        "format": {
+            "html": {
+                "label": "HTML"
+            },
+            "json": {
+                "label": "JSON"
+            }
+        },
+        "form": {
+            "examples": "Aus einem Beispiel erstellen",
+            "exampleFallback": "Beispiel",
+            "showJson": "JSON anzeigen",
+            "importJson": "JSON importieren",
+            "promptForAi": "Prompt für AI Agenten",
+            "namePlaceholder": "Meine Manga Seite",
+            "responseFormat": "Antwortformat",
+            "iconUrl": "Icon URL",
+            "iconUrlDescription": "Optional. Fällt zurück auf das Favicon der Webseite.",
+            "languages": "Sprachen",
+            "requestsPerSecond": "Anfragen pro Sekunde",
+            "flareSolverr": "FlareSolverr",
+            "flareSolverrMissing": "Keine FlareSolverr Instanz konfiguriert (FLARESOLVERR_URL).",
+            "useFlareSolverr": "Benutze FlareSolverr",
+            "headers": "Anfragenheader",
+            "headerName": "Kopfzeilenname",
+            "headerValue": "Wert",
+            "removeHeader": "Kopfzeile entfernen",
+            "addHeader": "Kopfzeile hinzufügen",
+            "loadedExample": "Beispiel \"{name}\" geladen.",
+            "filledSeriesUrl": "Serien URL befüllt.",
+            "filledChapterUrl": "Kapitel URL befüllt.",
+            "copied": "In die Zwischenablage kopiert.",
+            "copyFailed": "Kopieren fehlgeschlagen.",
+            "jsonTitle": "Quelle als JSON",
+            "close": "Schließen",
+            "copy": "Kopieren",
+            "importTitle": "JSON importieren",
+            "import": "Importieren",
+            "patternMatches": "Treffer.",
+            "patternNoGroups": "Keine definierten Gruppen.",
+            "patternEmptyGroup": "(leer)"
+        },
+        "search": {
+            "urlLabel": "Such-URL",
+            "title": "Titel",
+            "link": "Serienlink",
+            "cover": "Einband bild",
+            "testLabel": "Suchtext",
+            "testPlaceholder": "One Piece"
+        },
+        "chapters": {
+            "intro": "Listet die Kapitel einer Serie auf.",
+            "urlLabel": "Kapitel-Listen URL",
+            "link": "Kapitel link",
+            "number": "Kapitelnummer",
+            "title": "Kapiteltitel",
+            "date": "Veröffentlichungsdatum",
+            "dateFormat": "Datumsformat",
+            "testLabel": "Serien URL"
+        },
+        "pages": {
+            "intro": "Findet die Seitenbilder eines Kapitels.",
+            "urlLabel": "Seiten URL",
+            "imageAttribute": "Bildattribut",
+            "testLabel": "Kapitel URL"
+        },
+        "field": {
+            "selectorPlaceholder": "CSS-Selektor oder XPath",
+            "attributePlaceholder": "Attribut",
+            "jsonPlaceholder": "JSON Pfad",
+            "selectorHint": "Leer lassen um das Item selbst zu benutzen.",
+            "regexAndReplacement": "RegEx und Ersatz",
+            "regex": "RegEx",
+            "replaceWith": "Ersetzen mit"
+        },
+        "results": {
+            "title": "Testergebnisse",
+            "testFor": "{step} Test für “{input}”",
+            "steps": {
+                "search": "Suchen",
+                "chapters": "Kapitel",
+                "images": "Seiten"
+            },
+            "running": {
+                "search": "Der Suchtest wird durchgeführt…",
+                "chapters": "Der Kapiteltest wird durchgeführt…",
+                "images": "Der Seitentest wird durchgeführt…"
+            },
+            "emptyTitle": "Noch nichts gespeichert",
+            "cannotTest": "Dieser Schritt kann noch nicht getestet werden",
+            "requested": "Angefragt: {url}",
+            "requestedWithStatus": "Angefragt: {url} (HTTP {status})",
+            "showing": "Zeige die ersten {shown} von {total}.",
+            "useForChapters": "Für den Kapiteltest verwenden",
+            "useForPages": "Für den Seitentest verwenden"
+        },
+        "texts": {
+            "html": {
+                "chapterItem": "Ein Element pro Kapitel."
+            }
+        },
+        "sources": {
+            "add": "Benutzerdefinierte Quelle hinzufügen",
+            "custom": "Benutzerdefiniert",
+            "builtIn": "Eingebaut",
+            "deleteTitle": "{name} löschen",
+            "deleteFailed": "Löschen der Quelle fehlgeschlagen.",
+            "deleted": "{name} gelöscht.",
+            "createSubmit": "Quelle erstellt",
+            "created": "{name} erstellt.",
+            "notFound": "Quelle nicht gefunden",
+            "backToSources": "Zurück zu den Quellen",
+            "saveSubmit": "Änderungen speichern",
+            "saved": "{name} gespeichert."
+        }
+    }
+}
