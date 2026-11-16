@@ -352,6 +352,15 @@ export const zServicesMangaSearchSpec = z.object({
 export type ServicesMangaSearchSpecZodType = z.infer<typeof zServicesMangaSearchSpec>;
 
 /**
+ * How to read the page of a series. A series that is found by a search comes with its cover, one that is added by
+ * pasting its URL does not: there is only the page of the series to take it from. Optional: without a cover field
+ * such a series is added without the cover of the website.
+ */
+export const zServicesMangaSeriesSpec = z.object({ urlTemplate: z.optional(z.string()), cover: z.optional(zServicesMangaSelectorField) });
+
+export type ServicesMangaSeriesSpecZodType = z.infer<typeof zServicesMangaSeriesSpec>;
+
+/**
  * What a website answers with, which decides how its responses are read.
  */
 export const zServicesMangaSourceFormat = z.enum(['html', 'json']);
@@ -367,6 +376,7 @@ export type ServicesMangaSourceFormatZodType = z.infer<typeof zServicesMangaSour
  */
 export const zServicesMangaSelectorDownloaderDefinition = z.object({
     search: z.optional(zServicesMangaSearchSpec),
+    series: z.optional(zServicesMangaSeriesSpec),
     chapters: z.optional(zServicesMangaChaptersSpec),
     images: z.optional(zServicesMangaImagesSpec),
     id: z.optional(z.uuid()),
@@ -408,6 +418,7 @@ export const zServicesMangaPostCustomDownloaderTestRequest = z.object({
     step: z.string(),
     input: z.string(),
     search: z.nullish(zServicesMangaSearchSpec),
+    series: z.nullish(zServicesMangaSeriesSpec),
     chapters: z.nullish(zServicesMangaChaptersSpec),
     images: z.nullish(zServicesMangaImagesSpec),
 });

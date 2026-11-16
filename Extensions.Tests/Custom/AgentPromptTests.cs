@@ -73,7 +73,7 @@ public sealed class AgentPromptTests
     [Fact]
     public void TheSkeletonShowsEveryFieldAndNothingElse()
     {
-        HashSet<string> known = PropertyNamesOf(typeof(SelectorDownloaderDefinition), typeof(SearchSpec), typeof(ChaptersSpec), typeof(ImagesSpec), typeof(SelectorField));
+        HashSet<string> known = PropertyNamesOf(typeof(SelectorDownloaderDefinition), typeof(SearchSpec), typeof(SeriesSpec), typeof(ChaptersSpec), typeof(ImagesSpec), typeof(SelectorField));
         HashSet<string> shown = [];
         CollectNames(JsonDocument.Parse(Skeleton).RootElement, shown);
 

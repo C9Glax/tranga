@@ -14,6 +14,9 @@
     "url": { "attribute": "href" },
     "cover": { "selector": "source, img", "attribute": "srcset,src", "regex": "/small/", "replacement": "/normal/" }
   },
+  "series": {
+    "cover": { "selector": "meta[property='og:image']", "attribute": "content" }
+  },
   "chapters": {
     "urlTemplate": "/series/{id}/full-chapter-list",
     "itemSelector": "div[x-data] > a",

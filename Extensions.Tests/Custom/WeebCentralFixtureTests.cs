@@ -2,6 +2,8 @@ using System.Text.RegularExpressions;
 using Common.Helpers;
 using Extensions.Custom;
 using Extensions.Data;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Extensions.Tests.Custom;
 
@@ -103,6 +105,46 @@ public sealed class WeebCentralFixtureTests : Common.Tests.TrangaTest, IDisposab
         Assert.Equal(4, result.ItemCount);
         Assert.Equal("https://scans-hot.planeptune.us/manga/One-Piece/1198-001.png", result.Rows[0]["url"]);
         Assert.All(result.Rows, r => Assert.StartsWith("https://", r["url"]));
+    }
+
+    [Fact]
+    public async Task CoverOfAPastedSeriesUrlComesFromThePageOfTheSeries()
+    {
+        // Found with the real site: a series page names its cover for link previews (og:image), a pasted URL has no
+        // search result to take it from. The example says so in its "series" section.
+        const string pastedSeriesId = "01JGRW9YR8AYQFAMVQ416AY8GX";
+        string seriesUrl = $"{_site.BaseUrl}/series/{pastedSeriesId}/majutsu-wo-kiwamete";
+        _site
+            .Html($"/series/{pastedSeriesId}/majutsu-wo-kiwamete", Fixture("weebcentral-series.html").Replace("https://temp.compsci88.com", _site.BaseUrl))
+            .Map($"/cover/fallback/{pastedSeriesId}.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+        MangaInfo manga = new(_extension.Identifier, "", seriesUrl, _extension.ParseIdentifierFromUrl(seriesUrl)!, new TrangaImage());
+
+        TrangaImage? cover = await _extension.GetCover(manga, ct);
+
+        Assert.NotNull(cover);
+        Assert.True(cover.Length > 0);
+        Assert.Equal(Jpeg().Length, cover.Length);
+    }
+
+    [Fact]
+    public async Task TestSeriesReportsTheCoverOfThePage()
+    {
+        const string pastedSeriesId = "01JGRW9YR8AYQFAMVQ416AY8GX";
+        _site.Html($"/series/{pastedSeriesId}/majutsu-wo-kiwamete", Fixture("weebcentral-series.html").Replace("https://temp.compsci88.com", _site.BaseUrl));
+
+        StepTestResult result = await _extension.TestSeriesAsync($"{_site.BaseUrl}/series/{pastedSeriesId}/majutsu-wo-kiwamete", ct);
+
+        Assert.Null(result.Error);
+        Assert.Empty(result.Warnings);
+        Assert.Equal($"{_site.BaseUrl}/cover/fallback/{pastedSeriesId}.jpg", Assert.Single(result.Rows)["cover"]);
+    }
+
+    private static byte[] Jpeg()
+    {
+        using Image<Rgb24> image = new(4, 4);
+        using MemoryStream stream = new();
+        image.SaveAsJpeg(stream);
+        return stream.ToArray();
     }
 
     [Fact]

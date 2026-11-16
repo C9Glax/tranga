@@ -10,7 +10,10 @@ public enum SelectorDownloaderStep
     Chapters,
 
     /// <summary>Finding the pages of a chapter</summary>
-    Images
+    Images,
+
+    /// <summary>Reading the page of a series (its cover)</summary>
+    Series
 }
 
 /// <summary>

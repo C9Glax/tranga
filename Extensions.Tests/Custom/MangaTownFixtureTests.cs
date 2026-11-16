@@ -62,7 +62,40 @@ public sealed class MangaTownFixtureTests : Common.Tests.TrangaTest, IDisposable
         return stream.ToArray();
     }
 
+    private const string SeriesPath = "/manga/naruto_dj_family_wedding/";
+    private const string CoverPath = "/store/manga/27207/ocover.jpg?token=abc&ttl=1794934800&v=1494399959";
+
+    private void ServeSeriesPage() => _site
+        // the real cover lives on a CDN, the fixture site serves it instead
+        .Html(SeriesPath, Fixture("mangatown-series.html").Replace("http://fmcdn.mangahere.com/", $"{_site.BaseUrl}/"))
+        .Map(CoverPath, new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+
     private MangaInfo Series(string path) => new(_extension.Identifier, "Series", $"{_site.BaseUrl}{path}", $"{_site.BaseUrl}{path}", new TrangaImage());
+
+    [Fact]
+    public async Task CoverOfAPastedSeriesUrlIsTheImageOfTheInfoBlockOfItsPage()
+    {
+        ServeSeriesPage();
+
+        TrangaImage? cover = await _extension.GetCover(Series(SeriesPath), ct);
+
+        // the page has other images (the loader of the comments), only the one of the info block is the cover
+        Assert.NotNull(cover);
+        Assert.Equal(Jpeg().Length, cover.Length);
+        Assert.Equal([SeriesPath, CoverPath], _site.Requests.Select(r => r.PathAndQuery));
+    }
+
+    [Fact]
+    public async Task TestSeriesReportsTheCoverOfThePage()
+    {
+        ServeSeriesPage();
+
+        StepTestResult result = await _extension.TestSeriesAsync($"{_site.BaseUrl}{SeriesPath}", ct);
+
+        Assert.Null(result.Error);
+        Assert.Empty(result.Warnings);
+        Assert.Equal($"{_site.BaseUrl}{CoverPath}", Assert.Single(result.Rows)["cover"]);
+    }
 
     [Fact]
     public async Task SearchExtractsTheTitleAndNotTheGenreOrLatestChapterLinks()

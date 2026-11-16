@@ -80,13 +80,14 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     /// <param name="options">Defaults to the environment</param>
     /// <exception cref="ArgumentException">The settings or one of the given sections is invalid</exception>
     public static SelectorDownloadExtension CreateForTest(SelectorDownloaderSettings settings, SearchSpec? search = null,
-        ChaptersSpec? chapters = null, ImagesSpec? images = null, SelectorDownloaderOptions? options = null)
+        ChaptersSpec? chapters = null, ImagesSpec? images = null, SelectorDownloaderOptions? options = null, SeriesSpec? series = null)
     {
         SelectorDownloaderSettings normalized = settings.Normalized();
         List<string> errors =
         [
             .. normalized.Validate(),
             .. (search?.Validate(nameof(SelectorDownloaderDefinition.Search), normalized.Format) ?? []).Select(r => r.ErrorMessage ?? ""),
+            .. (series?.Validate(nameof(SelectorDownloaderDefinition.Series), normalized.Format, normalized.SeriesUrlGroups()) ?? []).Select(r => r.ErrorMessage ?? ""),
             .. (chapters?.Validate(nameof(SelectorDownloaderDefinition.Chapters), normalized.Format, normalized.SeriesUrlGroups()) ?? []).Select(r => r.ErrorMessage ?? ""),
             .. (images?.Validate(nameof(SelectorDownloaderDefinition.Images), normalized.Format) ?? []).Select(r => r.ErrorMessage ?? "")
         ];
@@ -97,6 +98,7 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
         {
             Id = normalized.Id == Guid.Empty ? Guid.NewGuid() : normalized.Id,
             Search = search ?? new SearchSpec(),
+            Series = series ?? new SeriesSpec(),
             Chapters = chapters ?? new ChaptersSpec(),
             Images = images ?? new ImagesSpec()
         };
@@ -245,6 +247,44 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
     }
 
     private static string HostWithoutWww(Uri uri) => uri.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? uri.Host[4..] : uri.Host;
+
+    #endregion
+
+    #region Cover
+
+    /// <summary>
+    /// The cover of a series added by its URL, read from the page of the series as the <see cref="SeriesSpec"/> of the
+    /// definition says. Null when the source does not say where the cover is, or the page or the image cannot be loaded.
+    /// </summary>
+    public async Task<TrangaImage?> GetCover(MangaInfo mangaInfo, CancellationToken ct)
+    {
+        if (await FetchSeriesCover(mangaInfo.Identifier, ct) is not { } cover)
+            return null;
+
+        return await DownloadImage(cover, _baseUri.ToString(), ct);
+    }
+
+    /// <summary>The address of the cover image of the series at <paramref name="seriesUrl"/>, null if it cannot be found.</summary>
+    private async Task<Uri?> FetchSeriesCover(string seriesUrl, CancellationToken ct)
+    {
+        SeriesSpec spec = _definition.Series;
+        // The series URL is the identifier of a custom source, a URL of another website is not fetched.
+        if (!spec.HasCover(_definition.Format) ||
+            ParseIdentifierFromUrl(seriesUrl) is not { } identifier ||
+            UrlVariables(identifier, _seriesPattern) is not { } variables ||
+            BuildSeriesUrl(variables) is not { } pageUrl ||
+            await TryFetchPage(pageUrl, ct) is not { Root: { } root } page)
+            return null;
+
+        return ParseSeriesCover(root, page.Url, variables);
+    }
+
+    /// <summary>The URL of the page of the series: the series URL itself unless the definition says otherwise.</summary>
+    private Uri? BuildSeriesUrl(IReadOnlyDictionary<string, string> variables) =>
+        BuildUrl(string.IsNullOrWhiteSpace(_definition.Series.UrlTemplate) ? "{url}" : _definition.Series.UrlTemplate, variables);
+
+    private Uri? ParseSeriesCover(ISourceNode root, Uri pageUrl, IReadOnlyDictionary<string, string> variables) =>
+        root.Url(Fill(_definition.Series.Cover, variables), pageUrl) is { } cover && Uri.TryCreate(cover, UriKind.Absolute, out Uri? url) ? url : null;
 
     #endregion
 
@@ -467,6 +507,28 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
                 ["title"] = i.Title, ["url"] = i.Url, ["cover"] = i.CoverUrl
             }), "title, URL or cover");
         });
+    }
+
+    /// <summary>Runs the series page step for a series URL and reports the cover that was found.</summary>
+    public async Task<StepTestResult> TestSeriesAsync(string seriesUrl, CancellationToken ct)
+    {
+        if (ParseIdentifierFromUrl(seriesUrl) is not { } identifier || UrlVariables(identifier, _seriesPattern) is not { } variables ||
+            BuildSeriesUrl(variables) is not { } url)
+            return new StepTestResult { Error = "That URL is not a series page of this source (check the base URL and the series URL pattern)." };
+
+        StepTestResult result = await TestStep(url, ct, (root, pageUrl) =>
+        {
+            Uri? cover = ParseSeriesCover(root, pageUrl, variables);
+            // The page is the only "item": the warnings about skipped items do not fit, the one below does.
+            return (1, 0, cover is null ? 0 : 1, cover is null ? [] : [new Dictionary<string, string?> { ["cover"] = cover.AbsoluteUri }], "cover");
+        });
+
+        return result.Error is null && result.ItemCount == 0
+            ? result with
+            {
+                Warnings = [.. result.Warnings, "The cover selector found no image address on the page of the series. The site may render it with JavaScript, or the selector is wrong."]
+            }
+            : result;
     }
 
     /// <summary>Runs the chapter list step for a series URL and reports what was extracted.</summary>

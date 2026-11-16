@@ -120,6 +120,7 @@ const emit = defineEmits<{ pick: [step: CustomSourceTestStep, url: string] }>();
 const stepLabels = computed(
     (): Record<CustomSourceTestStep, string> => ({
         search: t('customSource.results.steps.search'),
+        series: t('customSource.results.steps.series'),
         chapters: t('customSource.results.steps.chapters'),
         images: t('customSource.results.steps.images'),
     }),

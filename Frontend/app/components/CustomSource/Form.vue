@@ -190,6 +190,25 @@
                         </div>
                     </template>
 
+                    <template #series>
+                        <div class="flex flex-col gap-4 pt-4">
+                            <p class="text-sm text-muted">{{ $t('customSource.series.intro') }}</p>
+                            <UFormField
+                                :label="$t('customSource.series.urlLabel')"
+                                name="series.urlTemplate"
+                                :description="$t('customSource.series.urlDescription', { url: '{url}', example: '/api/manga/{slug}' })">
+                                <UInput v-model="state.series.urlTemplate" placeholder="{url}" :ui="{ base: 'font-mono' }" class="w-full" />
+                            </UFormField>
+                            <CustomSourceFieldInput
+                                v-model="state.series.cover"
+                                :format="state.format"
+                                :label="$t('customSource.series.cover')"
+                                :description="texts.seriesCover"
+                                :attribute-placeholder="$t('customSource.example', { value: 'src' })"
+                                :json-placeholder="$t('customSource.example', { value: 'manga.cover' })" />
+                        </div>
+                    </template>
+
                     <template #chapters>
                         <div class="flex flex-col gap-4 pt-4">
                             <p class="text-sm text-muted">{{ $t('customSource.chapters.intro') }}</p>
@@ -419,6 +438,15 @@
                         :input-label="$t('customSource.search.testLabel')"
                         :input-placeholder="$t('customSource.search.testPlaceholder')" />
                     <CustomSourceTestPanel
+                        v-else-if="step === 'series'"
+                        v-model:input="testUrls.series"
+                        v-model:test="tests.series"
+                        :definition="state"
+                        step="series"
+                        :input-label="$t('customSource.series.testLabel')"
+                        input-placeholder="https://example.com/series/1"
+                        :help="$t('customSource.series.testHelp')" />
+                    <CustomSourceTestPanel
                         v-else-if="step === 'chapters'"
                         v-model:input="testUrls.chapters"
                         v-model:test="tests.chapters"
@@ -526,6 +554,13 @@ const steps = computed((): StepperItem[] => [
         icon: 'i-lucide-search',
     },
     {
+        value: 'series',
+        slot: 'series',
+        title: t('customSource.steps.series.title'),
+        description: t('customSource.steps.series.description'),
+        icon: 'i-lucide-image',
+    },
+    {
         value: 'chapters',
         slot: 'chapters',
         title: t('customSource.steps.chapters.title'),
@@ -546,7 +581,12 @@ const stepper = useTemplateRef<{ next: () => void; prev: () => void; hasNext: bo
 // The latest test of every step. The sidebar shows the one of the step that is open, so going from the search to the
 // chapters step does not leave the search result next to the chapter selectors.
 const tests = reactive<Partial<Record<CustomSourceTestStep, CustomSourceTestState>>>({});
-const testStepOf: Record<string, CustomSourceTestStep | undefined> = { search: 'search', chapters: 'chapters', pages: 'images' };
+const testStepOf: Record<string, CustomSourceTestStep | undefined> = {
+    search: 'search',
+    series: 'series',
+    chapters: 'chapters',
+    pages: 'images',
+};
 const currentTest = computed(() => {
     const testStep = testStepOf[step.value];
     return testStep ? tests[testStep] : undefined;
@@ -602,6 +642,7 @@ const texts = computed(() => {
         searchItemPlaceholder: isJson.value ? 'data' : 'div.search-result',
         link: isJson.value ? text('link', { regex: '^(.+)$', replacement: '/series/$1' }) : undefined,
         cover: text('cover'),
+        seriesCover: text('seriesCover'),
         chapterItemLabel: text('chapterItemLabel'),
         chapterItem: text('chapterItem'),
         chapterItemPlaceholder: isJson.value ? 'chapters' : 'ul.chapters > li',
@@ -635,10 +676,11 @@ const languages = computed({
 });
 
 // What the tests try (and the URL the series URL pattern is tried on). A test result can fill in the one of the next step.
-const testUrls = reactive({ pattern: '', search: '', chapters: '', images: '' });
+const testUrls = reactive({ pattern: '', search: '', series: '', chapters: '', images: '' });
 const patternResult = computed(() => testSeriesPattern(state.value.seriesUrlPattern, testUrls.pattern));
 
 const useSeriesUrl = (url: string) => {
+    testUrls.series = url;
     testUrls.chapters = url;
     testUrls.pattern = url;
     toast.add({

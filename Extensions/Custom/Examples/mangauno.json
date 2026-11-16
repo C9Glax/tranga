@@ -15,6 +15,10 @@
     "url": { "selector": "slug", "regex": "^(.+)$", "replacement": "/m/$1" },
     "cover": { "selector": "cover", "regex": "^", "replacement": "https://xz7.fstr-cdn.com" }
   },
+  "series": {
+    "urlTemplate": "/api/manga/{slug}",
+    "cover": { "selector": "manga.cover", "regex": "^", "replacement": "https://xz7.fstr-cdn.com" }
+  },
   "chapters": {
     "urlTemplate": "/api/manga/{slug}",
     "itemSelector": "chapters",

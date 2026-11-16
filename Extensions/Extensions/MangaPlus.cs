@@ -152,6 +152,21 @@ public sealed class MangaPlus : IDownloadExtension
 
     #endregion
 
+    #region Cover
+
+    /// <summary>The cover of the title with the id <see cref="MangaInfo.Identifier"/>, for a link added by its URL.</summary>
+    public async Task<TrangaImage?> GetCover(MangaInfo mangaInfo, CancellationToken ct)
+    {
+        // Unlike the chapters, the cover does not depend on the language: a title of another catalogue has one as well.
+        if (await GetApi($"title_detailV3?title_id={mangaInfo.Identifier}&clang={CurrentLanguage().Name}", ct) is not
+            { Success.TitleDetailView: { } detail })
+            return null;
+
+        return await DownloadImage(ImageClient, detail.Title.PortraitImageUrl, null, null, ct);
+    }
+
+    #endregion
+
     #region Chapters
 
     public async Task<List<ChapterInfo>?> GetChapters(MangaInfo mangaInfo, CancellationToken ct)
