@@ -9,13 +9,10 @@ on:
       - "Common.Tests/**"
       - ".github/workflows/unit_tests-common.yml"
   pull_request:
-    paths:
-      - "Common/**"
-      - "Common.Tests/**"
-      - ".github/workflows/unit_tests-common.yml"
 
 jobs:
   build:
+    name: Common Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

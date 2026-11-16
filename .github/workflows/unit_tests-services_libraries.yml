@@ -14,18 +14,10 @@ on:
       - "Services.Libraries.Tests/**"
       - ".github/workflows/unit_tests-services_libraries.yml"
   pull_request:
-    paths:
-      - "Common/**"
-      - "Common.Database/**"
-      - "Common.Services/**"
-      - "Extensions/**"
-      - "GeneratedExtensionClient/**"
-      - "Services.Libraries/**"
-      - "Services.Libraries.Tests/**"
-      - ".github/workflows/unit_tests-services_libraries.yml"
 
 jobs:
   build:
+    name: Libraries Service Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
