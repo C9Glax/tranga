@@ -4,14 +4,14 @@ The frontend uses [`@nuxtjs/i18n`](https://i18n.nuxtjs.org) (vue-i18n). Every te
 `i18n/locales/<language>.json`:
 
 - `en.json` is the **source**. Only developers edit it, by hand.
-- All other files are the translations. They are written by [Weblate](https://weblate.org) and are not edited by hand.
+- All other files are the translations. They are written by [Weblate](https://hosted.weblate.org/projects/tranga/) and are not edited by hand.
 
 Text that comes from the backend (error messages of the API, names and descriptions of extensions) is not part of the
 frontend and is not translated here.
 
 ## For translators
 
-Translate on Weblate (the link goes here once the project is set up). Things to keep in mind:
+Translate on [Weblate](https://hosted.weblate.org/projects/tranga/). Things to keep in mind:
 
 - **Placeholders** like `{count}`, `{name}` or `{url}` are replaced by the app. Keep them exactly as they are, but move them
   wherever the sentence needs them. Some of them stand for something that must not be translated, for example `{query}` or
