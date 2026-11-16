@@ -155,15 +155,34 @@ public sealed class Mangaworld : MangaConnector
                .ToList()
             ?? [];
 
+        // Autore + Artista (link dopo le rispettive etichette)
+        List<Author> authors =
+            GetInfoAnchorTexts(doc, "Autore:")
+                .Concat(GetInfoAnchorTexts(doc, "Artista:"))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(a => new Author(a))
+                .ToList();
+
+        // Link esterni (MyAnimeList, AniList, MangaUpdates): il MetadataFetcher MyAnimeList li usa per l'aggancio automatico
+        List<Link> links = ExtractLinks(doc);
+
+        List<AltTitle> altTitles = ExtractAltTitles(doc);
+
+        uint? year = null;
+        string? yearText = GetInfoAnchorTexts(doc, "Anno di uscita:").FirstOrDefault();
+        if (uint.TryParse(yearText, NumberStyles.None, CultureInfo.InvariantCulture, out uint parsedYear))
+            year = parsedYear;
+
         Manga m = new Manga(
             HtmlEntity.DeEntitize(title).Trim(),
             description,
             cover,
             status,
-            [],
+            authors,
             tags,
-            [],
-            [],
+            links,
+            altTitles,
+            year: year,
             originalLanguage: "it");
 
         MangaConnectorId<Manga> mcId = new MangaConnectorId<Manga>(m, this, $"{id}/{slug}", seriesUrl.ToString());
@@ -362,6 +381,58 @@ public sealed class Mangaworld : MangaConnector
     {
         HtmlNode? node = doc.DocumentNode.SelectSingleNode("//span[normalize-space(text())='Stato:']/following-sibling::*[1]");
         return node?.InnerText?.Trim();
+    }
+
+    private static List<string> GetInfoAnchorTexts(HtmlDocument doc, string label) =>
+        doc.DocumentNode
+           .SelectNodes($"//div[contains(@class,'meta-data')]//span[normalize-space(text())='{label}']/following-sibling::a")
+           ?.Select(a => HtmlEntity.DeEntitize(a.InnerText).Trim())
+           .Where(s => !string.IsNullOrWhiteSpace(s))
+           .ToList()
+        ?? [];
+
+    private static readonly Dictionary<string, string> KnownLinkProviders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["myanimelist.net"] = "MyAnimeList",
+        ["anilist.co"] = "AniList",
+        ["mangaupdates.com"] = "MangaUpdates"
+    };
+
+    private static List<Link> ExtractLinks(HtmlDocument doc)
+    {
+        List<Link> links = [];
+        HashSet<string> providers = new(StringComparer.OrdinalIgnoreCase);
+        foreach (HtmlNode a in doc.DocumentNode.SelectNodes("//div[contains(@class,'references')]//a[@href]") ?? new HtmlNodeCollection(null))
+        {
+            string href = HtmlEntity.DeEntitize(a.GetAttributeValue("href", "")).Trim();
+            if (!Uri.TryCreate(href, UriKind.Absolute, out Uri? uri) || href.Length > 2048)
+                continue;
+            string host = uri.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? uri.Host[4..] : uri.Host;
+            if (!KnownLinkProviders.TryGetValue(host, out string? provider) || !providers.Add(provider))
+                continue;
+            links.Add(new Link(provider, href));
+        }
+        return links;
+    }
+
+    private static List<AltTitle> ExtractAltTitles(HtmlDocument doc)
+    {
+        HtmlNode? label = doc.DocumentNode.SelectSingleNode("//div[contains(@class,'meta-data')]//span[normalize-space(text())='Titoli alternativi:']");
+        if (label?.ParentNode is not { } container)
+            return [];
+
+        string raw = HtmlEntity.DeEntitize(container.InnerText);
+        int idx = raw.IndexOf("Titoli alternativi:", StringComparison.Ordinal);
+        if (idx >= 0)
+            raw = raw[(idx + "Titoli alternativi:".Length)..];
+
+        // la lingua non è indicata dal sito: "und" (ISO 639-2, non determinata)
+        return raw.Split(',')
+                  .Select(t => t.Trim())
+                  .Where(t => t.Length is > 0 and <= 256)
+                  .Distinct(StringComparer.OrdinalIgnoreCase)
+                  .Select(t => new AltTitle("und", t))
+                  .ToList();
     }
 
     private static string RemoveDiacritics(string s)
