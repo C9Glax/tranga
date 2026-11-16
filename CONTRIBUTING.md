@@ -36,6 +36,12 @@ The **Tasks**-service handles automated tasks, for example updating metadata and
 Wherever possible add unit-tests (we are using xunit) for your code.
 Each project has a corresponding `<name>.Tests` project.
 
+## Translations
+
+Every text of the frontend lives in [Frontend/i18n/locales/en.json](Frontend/i18n/locales/en.json) and is used through
+`$t('some.key')`; texts are never written directly into a component. How to add texts, how translations work and how
+to add a language: [Frontend/TRANSLATING.md](Frontend/TRANSLATING.md).
+
 
 ## Adding an _Extension_
 

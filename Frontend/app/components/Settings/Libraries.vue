@@ -19,7 +19,7 @@
                             <UFormField :label="$t('common.name')" name="name">
                                 <UInput v-model="state.name" class="w-full" />
                             </UFormField>
-                            <UFormField :label="$t('settings.libraries.baseUrl')" name="baseUrl">
+                            <UFormField :label="$t('common.baseUrl')" name="baseUrl">
                                 <UInput v-model="state.baseUrl" class="w-full" />
                             </UFormField>
                             <UFormField

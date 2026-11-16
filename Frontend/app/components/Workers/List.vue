@@ -11,7 +11,10 @@
         </template>
 
         <template #status-cell="{ row }">
-            <UBadge :label="$t(`workers.status.${row.original.status}`)" :color="workerStatusBadgeColor(row.original.status)" variant="subtle" />
+            <UBadge
+                :label="$t(`workers.status.${row.original.status}`)"
+                :color="workerStatusBadgeColor(row.original.status)"
+                variant="subtle" />
         </template>
 
         <template #currentTask-cell="{ row }">
@@ -23,7 +26,9 @@
                                 ? 'i-lucide-repeat'
                                 : 'i-lucide-line-dot-right-horizontal'
                         "
-                        :label="currentTask(row.original) ? taskTypeLabel(currentTask(row.original)!.taskTypeName) : $t('workers.unknownTask')"
+                        :label="
+                            currentTask(row.original) ? taskTypeLabel(currentTask(row.original)!.taskTypeName) : $t('workers.unknownTask')
+                        "
                         variant="subtle"
                         color="neutral" />
                 </UTooltip>

@@ -3,7 +3,12 @@
         <div class="m-4 px-4 flex flex-wrap gap-4 items-end">
             <UFormField :label="$t('tasks.filters.presets')">
                 <UFieldGroup>
-                    <USelectMenu v-model="presetFilter" :items="presetOptions" value-key="value" :placeholder="$t('tasks.filters.preset')" class="w-56" />
+                    <USelectMenu
+                        v-model="presetFilter"
+                        :items="presetOptions"
+                        value-key="value"
+                        :placeholder="$t('tasks.filters.preset')"
+                        class="w-56" />
                     <UButton v-if="presetFilter" icon="i-lucide-x" color="neutral" variant="outline" @click="presetFilter = undefined" />
                 </UFieldGroup>
             </UFormField>
@@ -23,11 +28,23 @@
             </UFormField>
 
             <UFormField :label="$t('tasks.filters.type')">
-                <USelectMenu v-model="typeFilter" :items="typeOptions" value-key="value" multiple :placeholder="$t('tasks.filters.allTypes')" class="w-56" />
+                <USelectMenu
+                    v-model="typeFilter"
+                    :items="typeOptions"
+                    value-key="value"
+                    multiple
+                    :placeholder="$t('tasks.filters.allTypes')"
+                    class="w-56" />
             </UFormField>
 
             <UFormField :label="$t('tasks.filters.state')">
-                <USelectMenu v-model="stateFilter" :items="stateOptions" value-key="value" multiple :placeholder="$t('tasks.filters.allStates')" class="w-56" />
+                <USelectMenu
+                    v-model="stateFilter"
+                    :items="stateOptions"
+                    value-key="value"
+                    multiple
+                    :placeholder="$t('tasks.filters.allStates')"
+                    class="w-56" />
             </UFormField>
 
             <UButton

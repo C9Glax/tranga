@@ -181,10 +181,7 @@ export default defineNuxtPlugin({
                 title: 'tour.steps.matchDownloadLink.title',
                 body: 'tour.steps.matchDownloadLink.body',
             },
-            {
-                title: 'tour.steps.outro.title',
-                body: 'tour.steps.outro.body',
-            },
+            { title: 'tour.steps.outro.title', body: 'tour.steps.outro.body' },
         ];
 
         const tour = useTour(steps);

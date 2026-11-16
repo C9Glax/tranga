@@ -48,7 +48,11 @@
         </template>
 
         <template #chapter-cell="{ row }">
-            <UBadge v-if="isGroupRow(row.original)" :label="$t('tasks.chaptersCount', row.original.tasks.length)" variant="subtle" color="neutral" />
+            <UBadge
+                v-if="isGroupRow(row.original)"
+                :label="$t('tasks.chaptersCount', row.original.tasks.length)"
+                variant="subtle"
+                color="neutral" />
             <TasksChapterCell v-else-if="'chapter' in row.original" :chapter="row.original.chapter" />
         </template>
 

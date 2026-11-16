@@ -14,7 +14,9 @@
                         <UButton v-if="canGoBack" variant="ghost" color="neutral" size="sm" icon="i-lucide-arrow-left" @click="goBack()">
                             {{ $t('common.back') }}
                         </UButton>
-                        <UButton v-if="showSkip" variant="ghost" color="neutral" size="sm" @click="tour.finish()">{{ $t('tour.skip') }}</UButton>
+                        <UButton v-if="showSkip" variant="ghost" color="neutral" size="sm" @click="tour.finish()">{{
+                            $t('tour.skip')
+                        }}</UButton>
                     </div>
                     <UButton v-if="showPrimary" size="sm" @click="onPrimary">{{ primaryLabel }}</UButton>
                 </div>
