@@ -11,15 +11,10 @@ on:
       - "Services.Notifications/openapi/**"
       - ".github/workflows/unit_tests-frontend.yml"
   pull_request:
-    paths:
-      - "Frontend/**"
-      - "Services.Manga/openapi/**"
-      - "Services.Tasks/openapi/**"
-      - "Services.Notifications/openapi/**"
-      - ".github/workflows/unit_tests-frontend.yml"
 
 jobs:
   build:
+    name: Frontend Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

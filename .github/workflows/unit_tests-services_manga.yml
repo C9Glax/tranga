@@ -14,18 +14,10 @@ on:
       - "Services.Manga.Tests/**"
       - ".github/workflows/unit_tests-services_manga.yml"
   pull_request:
-    paths:
-      - "Common/**"
-      - "Common.Database/**"
-      - "Common.Services/**"
-      - "Extensions/**"
-      - "GeneratedExtensionClient/**"
-      - "Services.Manga/**"
-      - "Services.Manga.Tests/**"
-      - ".github/workflows/unit_tests-services_manga.yml"
 
 jobs:
   build:
+    name: Manga Service Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
