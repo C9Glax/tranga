@@ -108,6 +108,13 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
         if (await Mangas.FirstOrDefaultAsync(m => m.Key == other.Key, ct) is { } f)
             return other.Key;
 
+        // Same series on the same MangaConnector (the title on the site may have changed since it was added)
+        foreach (MangaConnectorId<Manga> otherId in other.MangaConnectorIds)
+            if (await MangaConnectorToManga.FirstOrDefaultAsync(id =>
+                    id.MangaConnectorName == otherId.MangaConnectorName &&
+                    id.IdOnConnectorSite == otherId.IdOnConnectorSite, ct) is { } existingId)
+                return existingId.ObjId;
+
         var mangas = await MangaWithMetadata().Select(m => new
         {
             Id = m.Key,
