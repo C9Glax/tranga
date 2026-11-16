@@ -1,10 +1,10 @@
 <template>
     <TrangaPage :navigation="navigation">
-        <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }" title="Search Result">
+        <UPageSection :ui="{ container: 'sm:py-0 lg:py-0 gap-8 sm:gap-8' }" :title="$t('downloadLinks.searchResult')">
             <div class="flex flex-row gap-2">
                 <UInput
                     v-model="searchTerm"
-                    placeholder="Search term, or paste a manga URL to add it directly"
+                    :placeholder="$t('downloadLinks.searchPlaceholder')"
                     :loading="statusDownloadLinks === 'pending'"
                     :disabled="statusDownloadLinks === 'pending'"
                     class="w-full"
@@ -19,11 +19,11 @@
                     :loading="!downloadExtensions"
                     value-key="value"
                     searchable
-                    placeholder="Extension"
+                    :placeholder="$t('downloadLinks.extension')"
                     class="w-48" />
                 <span ref="add-link">
                     <UButton
-                        label="Add Link"
+                        :label="$t('downloadLinks.addLink')"
                         icon="i-lucide-plus"
                         loading-auto
                         :disabled="!addExtensionId || !searchTerm"
@@ -43,6 +43,7 @@ import { FetchError } from 'ofetch';
 import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
 const mangaId = useRoute().params.mangaId as string;
+const { t } = useI18n();
 const toast = useToast();
 
 useTourTargetRef('add-link');
@@ -75,26 +76,26 @@ const addLink = async () => {
             body: { downloadExtensionId: addExtensionId.value, url: searchTerm.value },
         });
     } catch (error: unknown) {
-        const description = error instanceof FetchError ? (error.data ?? error.message) : 'Could not add the download-link.';
-        toast.add({ title: 'Failed adding download-link.', description, color: 'error' });
+        const description = error instanceof FetchError ? (error.data ?? error.message) : t('downloadLinks.addFailedFallback');
+        toast.add({ title: t('downloadLinks.addFailed'), description, color: 'error' });
         return;
     }
 
     await refreshDownloadLinks();
-    toast.add({ title: 'Added download-link.', color: 'success' });
+    toast.add({ title: t('downloadLinks.added'), color: 'success' });
     searchTerm.value = '';
     addExtensionId.value = undefined;
 };
 
 const navigation = computed((): TrangaPageTitleProps => {
     return {
-        title: { label: 'Manga', type: 'label' },
+        title: { label: t('manga.nav.manga'), type: 'label' },
         items: [
-            { label: 'Manga', to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
-            { label: 'Metadata-Entries', to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
-            { label: 'Manga Tasks', to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },
-            { label: 'Manga Download Tasks', to: `/manga/${mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
-            { label: 'Chapters', to: `/manga/${mangaId}/chapters`, icon: 'i-lucide-list-checks' },
+            { label: t('manga.nav.manga'), to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
+            { label: t('manga.nav.metadataEntries'), to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
+            { label: t('manga.nav.tasks'), to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },
+            { label: t('manga.nav.downloadTasks'), to: `/manga/${mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
+            { label: t('common.chapters'), to: `/manga/${mangaId}/chapters`, icon: 'i-lucide-list-checks' },
         ],
     };
 });

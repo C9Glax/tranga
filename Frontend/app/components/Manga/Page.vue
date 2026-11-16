@@ -27,10 +27,10 @@
                             :color="releaseStatusBadgeColor(manga.metadataEntry.status)"
                             variant="outline" />
                         <USkeleton v-else class="h-lh w-14" />
-                        <UBadge v-if="manga?.metadataEntry?.nsfw" label="NSFW" color="error" variant="solid" />
+                        <UBadge v-if="manga?.metadataEntry?.nsfw" :label="$t('common.nsfw')" color="error" variant="solid" />
                         <UBadge
                             v-if="manga"
-                            :label="manga.monitored ? 'Monitored' : 'Not Monitored'"
+                            :label="manga.monitored ? $t('manga.monitored') : $t('manga.notMonitored')"
                             :color="manga.monitored ? 'success' : 'neutral'"
                             :variant="manga.monitored ? 'solid' : 'outline'"
                             class="cursor-pointer select-none"
@@ -88,6 +88,8 @@ export interface MangaPageProps {
 
 const props = defineProps<MangaPageProps>();
 
+const { t } = useI18n();
+
 const displayTitle = computed(() => props.title ?? props.manga?.metadataEntry?.series);
 
 const togglingMonitored = ref(false);
@@ -125,7 +127,7 @@ const navigation = computed((): TrangaPageTitleProps => {
 
     const komgaLinkItems: NavigationMenuItem[] = (libraryMappings.value ?? []).map(
         (mapping): NavigationMenuItem => ({
-            label: 'View in Library',
+            label: t('manga.viewInLibrary'),
             to: mapping.seriesUrl,
             icon: 'i-lucide-external-link',
             target: '_blank',
@@ -133,15 +135,15 @@ const navigation = computed((): TrangaPageTitleProps => {
     );
 
     return {
-        title: { label: 'Manga', type: 'label' },
+        title: { label: t('manga.nav.manga'), type: 'label' },
         items: [
-            { label: 'Manga', to: `/manga/${props.manga?.mangaId}`, icon: 'i-lucide-book' },
-            { label: 'Metadata-Entries', to: `/manga/${props.manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
-            { label: 'Manga Tasks', to: `/tasks?manga=${props.manga?.mangaId}`, icon: 'i-lucide-biceps-flexed' },
-            { label: 'Manga Downloads', to: `/manga/${props.manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
-            { label: 'Chapters', to: `/manga/${props.manga?.mangaId}/chapters`, icon: 'i-lucide-list-checks' },
+            { label: t('manga.nav.manga'), to: `/manga/${props.manga?.mangaId}`, icon: 'i-lucide-book' },
+            { label: t('manga.nav.metadataEntries'), to: `/manga/${props.manga?.mangaId}/metadataEntries`, icon: 'i-lucide-list' },
+            { label: t('manga.nav.tasks'), to: `/tasks?manga=${props.manga?.mangaId}`, icon: 'i-lucide-biceps-flexed' },
+            { label: t('manga.nav.downloads'), to: `/manga/${props.manga?.mangaId}/downloads`, icon: 'i-lucide-cloud-download' },
+            { label: t('common.chapters'), to: `/manga/${props.manga?.mangaId}/chapters`, icon: 'i-lucide-list-checks' },
             ...komgaLinkItems,
-            ...(actionItems.length ? [{ label: 'Actions', type: 'label' } as NavigationMenuItem, ...actionItems] : []),
+            ...(actionItems.length ? [{ label: t('manga.nav.actions'), type: 'label' } as NavigationMenuItem, ...actionItems] : []),
         ],
     };
 });

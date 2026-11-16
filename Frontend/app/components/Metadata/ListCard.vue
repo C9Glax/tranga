@@ -17,7 +17,7 @@
         </template>
         <template #badge>
             <UBadge v-if="metadata.status" :label.camel="metadata.status" :color="releaseStatusBadgeColor(metadata.status)" />
-            <UBadge v-if="metadata.nsfw" label="NSFW" color="error" variant="solid" />
+            <UBadge v-if="metadata.nsfw" :label="$t('common.nsfw')" color="error" variant="solid" />
         </template>
         <template #date>
             <p class="text-dimmed">{{ props.metadata.year }}</p>

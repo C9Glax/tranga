@@ -1,5 +1,26 @@
 {
-    "common": { "home": "Home", "back": "Back", "logOut": "Log out", "password": "Password" },
+    "common": {
+        "home": "Home",
+        "back": "Back",
+        "logOut": "Log out",
+        "password": "Password",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "loading": "Loading",
+        "nothingHere": "There is nothing here...",
+        "unnamed": "(unnamed)",
+        "name": "Name",
+        "username": "Username",
+        "host": "Host",
+        "port": "Port",
+        "apiKey": "API Key",
+        "add": "Add",
+        "topic": "Topic",
+        "token": "Token",
+        "nsfw": "NSFW",
+        "chapters": "Chapters",
+        "filter": "Filter"
+    },
     "nav": {
         "tranga": "Tranga",
         "allTasks": "All Tasks",
@@ -8,7 +29,8 @@
         "settings": "Settings",
         "links": "Links",
         "apiDocs": "API Docs",
-        "github": "Github"
+        "github": "Github",
+        "libraries": "Libraries"
     },
     "auth": {
         "login": { "title": "Log in", "submit": "Log in", "failed": "Login failed.", "incorrectPassword": "Incorrect password." },
@@ -34,6 +56,155 @@
                 "click": { "label": "Visible on click", "description": "NSFW covers are blurred until you click them." },
                 "hide": { "label": "Never visible", "description": "NSFW covers always stay blurred." }
             }
+        },
+        "tabs": {
+            "notifications": "Notifications",
+            "libraries": "Libraries",
+            "appearance": "Appearance",
+            "behavior": "Behavior",
+            "security": "Security",
+            "debug": "Debug"
+        },
+        "about": { "service": "Service", "version": "Version", "commit": "Commit", "branch": "Branch" },
+        "behavior": {
+            "content": "Content",
+            "allowNsfwLocked": "Set by the AllowNSFW environment variable and cannot be changed here.",
+            "allowNsfw": { "label": "Allow NSFW content", "description": "Include NSFW manga in search results and allow NSFW sources." },
+            "updateFailed": "Failed to update setting.",
+            "updateFailedFallback": "Could not update the setting."
+        },
+        "debug": {
+            "about": "About",
+            "maintenance": "Maintenance",
+            "replayTour": "Replay first-download tour",
+            "backfillComicInfo": "Backfill ComicInfo for downloaded chapters",
+            "backfillFailed": "Failed to start backfill.",
+            "backfillFailedFallback": "Could not start the backfill task.",
+            "backfillCreated": "Backfill task created.",
+            "backfillCreatedDescription": "Check the Tasks page for progress."
+        },
+        "security": {
+            "apiKeys": "API Keys",
+            "newKey": "New API key",
+            "newKeyDescription": "Copy this now - it will not be shown again.",
+            "copyKey": "Copy API key",
+            "name": "Name",
+            "namePlaceholder": "e.g. backup script",
+            "createKey": "Create key",
+            "created": "Created {date}",
+            "revoke": "Revoke",
+            "noKeys": "No API keys yet",
+            "noKeysDescription": "Create one to use Tranga from scripts and other tools.",
+            "createFailed": "Failed creating API key.",
+            "createFailedFallback": "Could not create the API key.",
+            "revoked": "API key revoked.",
+            "revokeFailed": "Failed revoking API key.",
+            "revokeFailedFallback": "Could not revoke the API key."
+        },
+        "libraries": {
+            "add": "Add Library",
+            "type": "Library Type",
+            "baseUrl": "Base URL",
+            "rootPath": "Library Root Path",
+            "rootPathDescription": "Path inside the Komga container where Tranga's manga volume is mounted. Defaults to /tranga.",
+            "authKey": "Auth Key",
+            "authKeyDescription": "Create one in Kavita under User Settings → Manage Auth Keys.",
+            "kavitaLibrary": "Kavita Library",
+            "kavitaLibraryDescription": "Test the connection to load the libraries on your Kavita server. Pick the one that contains Tranga's manga folder.",
+            "kavitaLibraryPlaceholder": "Test the connection first",
+            "usernameAndPassword": "Username & Password",
+            "connectionVerified": "Connection verified",
+            "testConnection": "Test Connection",
+            "toast": {
+                "connectionVerified": "Connection verified.",
+                "connectionFailed": "Connection test failed.",
+                "connectionFailedFallback": "Could not verify the connection.",
+                "addFailed": "Failed adding library.",
+                "addFailedFallback": "Could not add the library.",
+                "added": "Added library.",
+                "removeFailed": "Failed to remove library.",
+                "removed": "Removed library.",
+                "linkFailed": "Failed to link Manga.",
+                "linked": "Linked {count} Manga.",
+                "noneLinked": "No new Manga matched by name."
+            },
+            "linkManga": "Link Manga"
+        },
+        "notifications": {
+            "add": "Add extension",
+            "serviceUrl": "Service Url",
+            "appToken": "AppToken",
+            "webhookId": "Webhook ID",
+            "webhookToken": "Webhook Token",
+            "chatId": "Chat ID",
+            "toast": {
+                "addFailed": "Failed adding extension!",
+                "added": "Added extension.",
+                "removeFailed": "Failed to remove extension.",
+                "removed": "Removed extension."
+            }
         }
-    }
+    },
+    "manga": {
+        "monitored": "Monitored",
+        "notMonitored": "Not Monitored",
+        "viewInLibrary": "View in Library",
+        "nav": {
+            "manga": "Manga",
+            "metadataEntries": "Metadata-Entries",
+            "tasks": "Manga Tasks",
+            "downloads": "Manga Downloads",
+            "actions": "Actions",
+            "downloadTasks": "Manga Download Tasks"
+        },
+        "empty": { "title": "Nothing here!", "description": "Start searching..." },
+        "search": {
+            "placeholder": "Search for a title or paste a link... ({example}?)",
+            "localManga": "Local Manga",
+            "searchResults": "Search Results",
+            "searchOn": "Search on:"
+        },
+        "merge": {
+            "title": "Merge Manga",
+            "intro": "Merging combines both Manga into {target}. {source} will be deleted. Download Links from both Manga are always combined automatically.",
+            "titleSummaryCover": "Title, Summary & Cover",
+            "target": "Target",
+            "source": "Source",
+            "keepTitle": "Keep {title}",
+            "useTitle": "Use {title}",
+            "preview": "Preview",
+            "noMetadata": "No metadata",
+            "keepChaptersOf": "Keep {title}'s Chapters ({count})",
+            "resultingChapters": "Merged Manga will have {count} Chapters. The other Manga's Chapters are discarded.",
+            "merge": "Merge"
+        },
+        "noDownloadLinks": { "title": "No Download Links", "description": "This manga doesn't have any download links yet." },
+        "moreDownloadLinks": "More Download-Links",
+        "syncToLibrary": "Sync to Library",
+        "mergeInto": "Merge into...",
+        "remove": "Remove"
+    },
+    "chapters": {
+        "downloaded": "Downloaded",
+        "notDownloaded": "Not Downloaded",
+        "delete": "Delete Chapter",
+        "deleteDescription": "This permanently deletes \"{label}\": its downloaded file is removed from disk, and if a library is linked, a rescan is triggered so it's removed there too. This cannot be undone.",
+        "volumeShort": "Vol. {volume}",
+        "chapterShort": "Ch. {number}",
+        "columns": { "volume": "Volume", "number": "Number", "title": "Title", "releaseDate": "Release Date", "status": "Status" },
+        "empty": { "title": "No chapters yet", "description": "Chapters appear here once they have been found." }
+    },
+    "downloadLinks": {
+        "match": "Match",
+        "unmatch": "Unmatch",
+        "searchResult": "Search Result",
+        "searchPlaceholder": "Search term, or paste a manga URL to add it directly",
+        "extension": "Extension",
+        "addLink": "Add Link",
+        "addFailed": "Failed adding download-link.",
+        "addFailedFallback": "Could not add the download-link.",
+        "added": "Added download-link."
+    },
+    "metadata": { "goToManga": "Go to Manga", "useAsSource": "Use as Source for Manga", "isSource": "Is Source" },
+    "downloads": { "includeFinished": "Include finished downloads" }
 }

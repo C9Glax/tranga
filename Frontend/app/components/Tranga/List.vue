@@ -7,7 +7,7 @@
     </div>
 
     <slot v-else name="empty">
-        <UEmpty v-bind="emptyProps" title="There is nothing here..." />
+        <UEmpty v-bind="emptyProps" :title="$t('common.nothingHere')" />
     </slot>
 </template>
 

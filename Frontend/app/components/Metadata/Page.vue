@@ -17,7 +17,7 @@
                         :color="releaseStatusBadgeColor(metadata.status)"
                         variant="outline" />
                     <USkeleton v-else class="h-lh w-14" />
-                    <UBadge v-if="metadata?.nsfw" label="NSFW" color="error" variant="solid" />
+                    <UBadge v-if="metadata?.nsfw" :label="$t('common.nsfw')" color="error" variant="solid" />
                 </div>
             </template>
 

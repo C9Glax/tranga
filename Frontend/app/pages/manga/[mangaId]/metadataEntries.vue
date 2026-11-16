@@ -12,6 +12,7 @@ import { ApiKeys } from '~/composables/ApiKeys';
 import type { TrangaPageTitleProps } from '~/components/Tranga/Page.vue';
 
 const mangaId = useRoute().params.mangaId as string;
+const { t } = useI18n();
 
 const { data: metadataSources, status: statusMetadata } = await useTranga<GetMangasByMangaIdMetadataRelatedResponse>(
     () => `/mangas/${mangaId}/metadata/related`,
@@ -20,12 +21,12 @@ const { data: metadataSources, status: statusMetadata } = await useTranga<GetMan
 
 const navigation = computed((): TrangaPageTitleProps => {
     return {
-        title: { label: 'Manga', type: 'label' },
+        title: { label: t('manga.nav.manga'), type: 'label' },
         items: [
-            { label: 'Manga', to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
-            { label: 'Metadata-Entries', to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
-            { label: 'Manga Tasks', to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },
-            { label: 'Chapters', to: `/manga/${mangaId}/chapters`, icon: 'i-lucide-list-checks' },
+            { label: t('manga.nav.manga'), to: `/manga/${mangaId}`, icon: 'i-lucide-book' },
+            { label: t('manga.nav.metadataEntries'), to: `/manga/${mangaId}/metadataEntries`, icon: 'i-lucide-list' },
+            { label: t('manga.nav.tasks'), to: `/tasks?manga=${mangaId}`, icon: 'i-lucide-biceps-flexed' },
+            { label: t('common.chapters'), to: `/manga/${mangaId}/chapters`, icon: 'i-lucide-list-checks' },
         ],
     };
 });

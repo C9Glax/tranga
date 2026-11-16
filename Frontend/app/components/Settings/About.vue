@@ -19,6 +19,7 @@ import type {
 import type { TableColumn } from '@nuxt/ui/components/Table.vue';
 import { ApiKeys } from '~/composables/ApiKeys';
 
+const { t } = useI18n();
 const config = useRuntimeConfig();
 
 const { data: manga } = useTranga<ServicesMangaGitInfoResponse>('/mangas/gitinfo', { key: ApiKeys.GitInfo.Manga });
@@ -47,10 +48,10 @@ const rows = computed<Row[]>(() => [
     toRow('Auth', auth.value),
 ]);
 
-const columns: TableColumn<Row>[] = [
-    { accessorKey: 'service', header: 'Service' },
-    { accessorKey: 'version', header: 'Version' },
-    { accessorKey: 'commit', header: 'Commit' },
-    { accessorKey: 'branch', header: 'Branch' },
-];
+const columns = computed((): TableColumn<Row>[] => [
+    { accessorKey: 'service', header: t('settings.about.service') },
+    { accessorKey: 'version', header: t('settings.about.version') },
+    { accessorKey: 'commit', header: t('settings.about.commit') },
+    { accessorKey: 'branch', header: t('settings.about.branch') },
+]);
 </script>

@@ -3,7 +3,7 @@
         <UDashboardSearch
             v-model:search-term="searchTerm"
             :color-mode="false"
-            :placeholder="`Search for a title or paste a link... (${randomManga}?)`"
+            :placeholder="$t('manga.search.placeholder', { example: randomManga })"
             :groups="displayManga"
             :ui="{ modal: 'sm:h-auto max-h-full' }"
             :loading="loading"
@@ -29,7 +29,7 @@
                 <UProgress v-else :model-value="100" />
                 <UCheckboxGroup
                     v-model="selectedExtensions"
-                    legend="Search on:"
+                    :legend="$t('manga.search.searchOn')"
                     orientation="horizontal"
                     color="secondary"
                     :items="metadataExtensions.extensions"
@@ -46,6 +46,8 @@ import useMetadataExtensions from '~/composables/MetadataExtension';
 import { ApiKeys } from '~/composables/ApiKeys';
 import type { CommandPaletteGroup, CommandPaletteItem } from '@nuxt/ui/components/CommandPalette.vue';
 import { MangaCover } from '#components';
+
+const { t } = useI18n();
 
 const searchTerm = ref<string>();
 
@@ -70,7 +72,7 @@ interface MyCommandPaletteItem extends CommandPaletteItem {
 const matchedManga = computed((): CommandPaletteGroup<MyCommandPaletteItem>[] => [
     {
         id: 'localResults',
-        label: 'Local Manga',
+        label: t('manga.search.localManga'),
         items: data.value?.map((manga) => ({
             label: manga.metadataEntry?.series,
             description: manga.metadataEntry?.summary ?? undefined,
@@ -88,7 +90,7 @@ const searchResult = ref<ServicesMangaMetadata[]>();
 const searchResultItems = computed((): CommandPaletteGroup<MyCommandPaletteItem>[] => [
     {
         id: 'searchResults',
-        label: 'Search Results',
+        label: t('manga.search.searchResults'),
         // A pasted link never fuzzy-matches the title of the manga it resolved to, so don't filter those results client-side.
         ignoreFilter: isUrl(searchTerm.value),
         items: searchResult.value?.map((manga) => ({

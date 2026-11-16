@@ -7,8 +7,8 @@
                 </div>
 
                 <div class="flex justify-end gap-2">
-                    <UButton :label="cancelLabel" variant="ghost" @click="emit('close')" />
-                    <UButton :label="confirmLabel" :color="color" :loading="loading" @click="confirm" />
+                    <UButton :label="cancelLabel ?? $t('common.cancel')" variant="ghost" @click="emit('close')" />
+                    <UButton :label="confirmLabel ?? $t('common.delete')" :color="color" :loading="loading" @click="confirm" />
                 </div>
             </div>
         </template>
@@ -22,12 +22,14 @@ const props = withDefaults(
     defineProps<{
         title: string;
         description?: string;
+        /** Defaults to the translated "Delete" */
         confirmLabel?: string;
+        /** Defaults to the translated "Cancel" */
         cancelLabel?: string;
         color?: ButtonProps['color'];
         onConfirm: () => Promise<void> | void;
     }>(),
-    { confirmLabel: 'Delete', cancelLabel: 'Cancel', color: 'error' },
+    { color: 'error' },
 );
 const emit = defineEmits(['close']);
 

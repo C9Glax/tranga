@@ -15,7 +15,7 @@
         </template>
         <template #badge>
             <UBadge v-if="downloadLink.language" :label="downloadLink.language" />
-            <UBadge v-if="downloadLink.nsfw" label="NSFW" color="error" variant="solid" />
+            <UBadge v-if="downloadLink.nsfw" :label="$t('common.nsfw')" color="error" variant="solid" />
         </template>
         <template #authors>
             <div class="flex flex-row items-center gap-4">
@@ -34,8 +34,13 @@
                     target="_blank"
                     :ui="{ description: 'truncate h-lh max-w-24' }" />
                 <UFieldGroup v-if="mDl">
-                    <UButton v-if="!mDl.matched" variant="soft" label="Match" class="tour-match-download-link" @click="updateMatch(true)" />
-                    <UButton v-if="mDl.matched" variant="outline" label="Unmatch" @click="updateMatch(false)" />
+                    <UButton
+                        v-if="!mDl.matched"
+                        variant="soft"
+                        :label="$t('downloadLinks.match')"
+                        class="tour-match-download-link"
+                        @click="updateMatch(true)" />
+                    <UButton v-if="mDl.matched" variant="outline" :label="$t('downloadLinks.unmatch')" @click="updateMatch(false)" />
                     <UInputNumber
                         :default-value="mDl.priority as number"
                         @update:model-value="(v: number | undefined) => updateMatch(undefined, v)" />
