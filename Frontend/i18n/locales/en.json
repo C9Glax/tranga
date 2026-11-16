@@ -35,6 +35,7 @@
         "links": "Links",
         "apiDocs": "API Docs",
         "github": "Github",
+        "weblate": "Weblate",
         "libraries": "Libraries"
     },
     "auth": {
