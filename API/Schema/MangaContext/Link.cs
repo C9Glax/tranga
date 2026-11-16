@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Schema.MangaContext;
 
 [PrimaryKey("Key")]
-public class Link(string linkProvider, string linkUrl) : Identifiable(TokenGen.CreateToken(typeof(Link), linkProvider, linkUrl))
+public class Link(string linkProvider, string linkUrl) : Identifiable(TokenGen.CreateToken(typeof(Link)))
 {
     [StringLength(64)]
     public string LinkProvider { get; init; } = linkProvider;
