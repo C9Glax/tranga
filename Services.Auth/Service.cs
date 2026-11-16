@@ -1,3 +1,4 @@
+using Common.Database;
 using Common.Database.Auth;
 using Common.Services.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ public sealed class Service : Common.Services.Service
         if (!Constants.OpenApiDocumentationRun)
         {
             using AuthContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<AuthContext>();
-            context.Database.MigrateAsync(CancellationToken.None).Wait();
+            context.Database.MigrateWithLockAsync(CancellationToken.None, logger: App.Logger).Wait();
         }
     }
 

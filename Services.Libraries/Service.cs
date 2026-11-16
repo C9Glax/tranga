@@ -1,3 +1,4 @@
+using Common.Database;
 using Common.Services.Events;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
@@ -37,7 +38,7 @@ public sealed class Service : Common.Services.Service
         if (!Constants.OpenApiDocumentationRun)
         {
             using LibrariesContext context = App.Services.CreateScope().ServiceProvider.GetRequiredService<LibrariesContext>();
-            context.Database.MigrateAsync(CancellationToken.None).Wait();
+            context.Database.MigrateWithLockAsync(CancellationToken.None, logger: App.Logger).Wait();
         }
     }
 
